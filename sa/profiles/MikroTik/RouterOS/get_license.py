@@ -18,7 +18,10 @@ class Script(NOCScript):
     name = "MikroTik.RouterOS.get_license"
     cache = True
     implements = [IGetLicense]
-    rx_lic = re.compile(r"^\s*software-id: (?P<sid>\S+).+upgradable-to: (?P<upto>\S+).+nlevel: (?P<nlevel>\d+).+features:.*(?P<features>\.*)$", re.MULTILINE | re.DOTALL)
+    rx_lic = re.compile(
+        r"^\s*software-id: (?P<sid>\S+).+upgradable-to: (?P<upto>\S+).+nlevel:"
+        r" (?P<nlevel>\d+).+features:.*(?P<features>\.*)$",
+        re.MULTILINE | re.DOTALL)
 
     def execute(self):
         v = self.cli("system license print")
