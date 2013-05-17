@@ -45,13 +45,14 @@ def SQL(sql):
 
 
 class TagsExpression(object):
-    def __init__(self, tags):
+    def __init__(self, query, tags):
         if type(tags) not in (list, tuple):
             tags = [str(tags)]
         self.tags = tags
+        self.table = query.get_meta().db_table
 
     def as_sql(self, qn, connection):
-        return "%s::text[] <@ tags", [self.tags]
+        return "%%s::text[] <@ %s.%s" % (self.table, qn("tags")), [self.tags]
 
 
 class TagsNode(tree.Node):
@@ -65,7 +66,7 @@ class TagsNode(tree.Node):
         return obj
 
     def add_to_query(self, query, aliases):
-        query.where.add(TagsExpression(self.tags), self.connector)
+        query.where.add(TagsExpression(query, self.tags), self.connector)
 
 
 def QTags(tags):
