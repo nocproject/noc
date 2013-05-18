@@ -204,8 +204,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         me.graph.getStylesheet().putCellStyle('end', style);
         // Port style
         var pstyle = mxUtils.clone(style);
-        style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
-        style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+        pstyle[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+        pstyle[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
         delete style[mxConstants.STYLE_ROUNDED];
         me.graph.getStylesheet().putCellStyle('port', pstyle);
         // iport
