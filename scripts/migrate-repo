@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!./bin/python
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
 ## migrate-repo
@@ -13,9 +13,6 @@ import os
 import sys
 import subprocess
 import datetime
-## Setup envoronment
-import set_env
-set_env.setup(use_django=True)
 ## Django modules
 from django.db import connection
 ## NOC modules

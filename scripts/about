@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!./bin/python
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
 ## System Version Report
@@ -112,12 +112,6 @@ def about():
         ["psycopg2", get_psycopg_version()],
         ["pymongo", get_pymongo_version()]
     ]
-    cv_path = os.path.join("contrib", "lib", "VERSION.csv")
-    if os.path.exists(cv_path):
-        with open(cv_path) as f:
-            r = csv.reader(f)
-            for row in r:
-                versions += [row]
     for c, v in versions:
         print "|%s|%s|" % (c, v.replace("\n", " "))
 

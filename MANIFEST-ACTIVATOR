@@ -1,10 +1,5 @@
 VERSION
 __init__.py
-contrib/lib/easy-install.pth
-contrib/lib/protobuf-*.egg/
-contrib/lib/pyasn1-*.egg/
-contrib/lib/pysnmp-*.egg/
-contrib/lib/site.py
 etc/noc-activator.defaults
 etc/noc-launcher.defaults
 etc/noc.defaults
@@ -40,6 +35,5 @@ sa/rpc.py
 sa/script/
 scripts/noc-activator.py
 scripts/noc-launcher.py
-scripts/set_env.py
 scripts/stdin-wrapper
 settings.py

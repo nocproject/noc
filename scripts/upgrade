@@ -1,15 +1,14 @@
 #!/bin/sh
+##----------------------------------------------------------------------
+## Initialize and upgrade NOC
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##---------------------------------------------------------------------
 
-PREFIX=$(dirname $0)/../
-cd $PREFIX
-PREFIX=$PWD
-PROGNAME=$(basename $0)
-REV=${1:-tip}
-
-# Include configs
-[ -f $PREFIX/etc/upgrade.defaults ] && . $PREFIX/etc/upgrade.defaults
-[ -f $PREFIX/etc/upgrade.conf ] && . $PREFIX/etc/upgrade.conf
-
+##
+## Helper functions definitions
+##
 error_exit ( ) {
     echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
     echo "Terminating" 1>&2
@@ -20,14 +19,142 @@ info ( ) {
     echo $1 1>&2
 }
 
+ensure_dir ( ) {
+    if [ ! -d "$1" ]; then
+        info "   Creating $1"
+    fi
+    chown $NOC_USER:$NOC_GROUP $1
+    chmod $2 $1
+}
+
+# Write config option
+# ensure_prog <prog> <section> <option>
+ensure_prog ( ) {
+    prog=`which $1`
+    if [ $? -ne 0 ]; then
+        rm ./etc/noc.conf
+        error_exit "$LINENO: '$1' is not found"
+    fi
+    ./scripts/set-conf.py ./etc/noc.conf $2 $3 $prog || error_exit "Unable to set etc/noc.conf:[$2]/$3"
+}
+
+##
+cd `dirname $0`/../
+PROGNAME=`basename $0`
+##
+## Include configs
+##
+[ -f ./etc/upgrade.defaults ] && . ./etc/upgrade.defaults
+[ -f ./etc/upgrade.conf ] && . ./etc/upgrade.conf
+##
+## Check upgrade system has been configured
+##
+if [ "$ENABLED" != "yes" ]; then
+    error_exit "Upgrade is disabled. Please edit etc/upgrade.conf and run $0 again"
+fi
+## Determine NOC user
+if [ -z "$NOC_USER" ]; then
+    NOC_USER=`id -n -u`
+fi
+## Determine NOC group
+if [ -z "$NOC_GROUP" ]; then
+    NOC_GROUP=`id -n -g`
+fi
+## Check upgrade.conf
+[ -z "$LOCAL_REPO" ] && error_exit "$LINENO: LOCAL_REPO is not set"
+[ -z "$BACKUP" ] && error_exit "$LINENO: BACKUP is not set"
+[ -z "$LOG" ] && error_exit "$LINENO: LOG is not set"
+[ -z "$PIDDIR" ] && error_exit "$LINENO: PIDDIR is not set"
+
+##
+## Set up configuration files, when necessary
+##
+info "Set up configuration files"
+for d in ./etc/noc*.defaults; do
+    conf=`echo $d|sed 's/.defaults$/.conf/'`
+    if [ ! -f $conf ]; then
+        info "    Creating $conf"
+        cp $d $conf
+        chmod 640 $conf
+        chown $NOC_USER:$NOC_GROUP $conf
+        ./scripts/set-conf.py $conf main logfile $LOG || error_exit "$LINENO: Unable to set $conf:[main]/logfile"
+        ./scripts/set-conf.py $conf main pidfile $PIDDIR || error_exit "$LINENO: Unable to set $conf:[main]/pidfile"
+        if [ $conf = "./etc/noc.conf" ]; then
+            ensure_prog ssh path ssh
+            ensure_prog pg_dump path pg_dump
+            ensure_prog tar path tar
+            ensure_prog gzip path gzip
+            ensure_prog smidump path smidump
+            ensure_prog smilint path smilint
+            ensure_prog mongodump path mongodump
+            ensure_prog hg cm vcs_path
+            ./scripts/set-conf.py ./etc/noc.conf cm repo $LOCAL_REPO || error_exit "$LINENO: Unable to set etc/noc.conf:[cm]/repo"
+            ./scripts/set-conf.py ./etc/noc.conf path backup $BACKUP || error_exit "$LINENO: Unable to set etc/noc.conf:[path]/backup"
+        fi
+    fi
+done
+##
+## Create required directories
+##
+info "Creating required directories"
+ensure_dir local 750
+ensure_dir etc/ssh 700
+[ -z "$LOCAL_REPO" ] || ensure_dir $LOCAL_REPO 750
+[ -z "$BACKUP" ] || ensure_dir $BACKUP 750
+[ -z "$LOG" ] || ensure_dir $LOG 750
+##
 ## Pull repo
-info "Pulling $REV"
-$HG pull -r "$REV" -u || error_exit "Failed to pull $REV"
-## Sync contrib
-info "Syncing contrib/"
-$PREFIX/scripts/sync-contrib || error_exit "Failed to sync contrib/"
-## Run post-update
-info "Running post-update"
-$SUDO -u $NOCUSER $PREFIX/scripts/post-update || error_exit "Failed to post-update"
-
-
+##
+if [ "$FOLLOW" != "none" ]; then
+    info "Pulling revision '$FOLLOW' from $REPO"
+    if [ -x ./bin/hg ]; then
+        HG=./bin/hg
+    else
+        HG=`which hg`
+    fi
+    $HG pull -r $FOLLOW -u $REPO || error_exit "$LINENO: Failed to pull repo"
+fi
+##
+## Check virtualenv is enabled and set up
+##
+info "Checking virtualenv"
+if [ ! -x ./bin/python ]; then
+    info "vitualenv is not configured. Trying to set up"
+    # Check virtualenv is available
+    which virtualenv
+    if [ $? -ne 0 ]; then
+        error_exit "$LINENO: virtualenv is not installed.\nPlease install virtualenv:\n > pip install virtualenv\nand run $0 again"
+    fi
+    # Initialize virtualenv
+    info "Setting up virtualenv"
+    virtualenv $PWD --no-site-packages
+    if [ $? -ne 0 ]; then
+        error_exit "$LINENO: Cannot setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
+    fi
+fi
+##
+## Update required python modules
+##
+info "Updating python libraries"
+./bin/pip install -r requirements.txt || error_exit "$LINENO: Cannot update python libraries"
+##
+## Install noc.pth
+##
+info "Installing noc.pth"
+./scripts/install-pth.py || error_exit "$LINENO: Cannot install noc.pth"
+##
+## Check for hanging .pyc files
+##
+info "Looking for hanging .pyc files"
+./scripts/check-pyc.py || error_exit "$LINENO: Inconsistent .pyc files found"
+##
+## Run rest with $NOC_USER credentials
+##
+info "Running the rest of upgrade process with user $NOC_USER credentials"
+if [ "$NOC_USER" = `id -n -u` ]; then
+    ./scripts/upgrade-user
+else
+    su $NOC_USER -c "./scripts/upgrade-user"
+fi
+# Done
+info "$PROGNAME complete"
