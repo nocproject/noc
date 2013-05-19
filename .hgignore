@@ -9,9 +9,12 @@ syntax: glob
 dist/
 build/
 noc.egg-info/
+bin/*
 etc/*.conf
 etc/certs/*
 etc/ssh/id_*
+include/*
+lib/python*
 local/*
 static/doc/*
 contrib/lib/*

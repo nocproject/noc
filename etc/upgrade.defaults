@@ -1,10 +1,68 @@
 #!/bin/sh
+#
+# NOC upgrade system configuration
+#
 
-## NOC username
-NOCUSER=noc
+#
+# ENABLED:
+# Enable upgrade system.
+# Read and configure following file
+# and change to ENABLED=yes
+#
+ENABLED=no
 
-## hg path
-HG=$(which hg)
+#
+# NOC_USER:
+# Default system user for NOC daemons
+# Leave empty for current user
+#
+NOC_USER=
 
-## sudo path
-SUDO=$(which sudo)
+#
+# NOC_GROUP:
+# Default system group for NOC daemons
+# Leave empty for current user's group
+#
+NOC_GROUP=
+
+#
+# REPO:
+# Hg repo to pull updates
+#
+REPO=http://hg.nocproject.org/noc
+
+#
+# FOLLOW:
+# Tag to pull from repo
+# Possible values
+# none - disable pull
+# tip - fetch last revision
+# release - fetch last release
+# rXXXX - fetch revision XXXX
+# XXXXX - fetch tag XXXXX
+#
+FOLLOW=tip
+
+#
+# LOCAL_REPO:
+# Path to local repos
+#
+LOCAL_REPO=
+
+#
+# BACKUP:
+# Path to the backup directory
+#
+BACKUP=
+
+#
+# LOG:
+# Path to the LOG directory
+#
+LOG=
+
+#
+# PIDDIR:
+# Path to the pidfiles directory
+#
+PIDDIR=

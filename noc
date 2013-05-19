@@ -13,5 +13,5 @@ if [ $1 = "runserver" ]; then
         exec ./scripts/noc-web.py -f start
     fi
 else
-    exec /usr/bin/env python manage.py "$@"
+    exec ./bin/python manage.py "$@"
 fi
