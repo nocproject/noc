@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!./bin/python
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
 ## Check for hanging *.pyc files
@@ -11,12 +11,10 @@
 import os
 import sys
 ## NOC modules
-import set_env
-set_env.setup(use_django=True)
+from noc.settings import INSTALLED_APPS
+
 
 def check():
-    from settings import INSTALLED_APPS
-
     # Check for hanging *.pyc
     r = []
     for app in INSTALLED_APPS:

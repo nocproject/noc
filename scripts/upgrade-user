@@ -1,0 +1,63 @@
+#!/bin/sh
+##----------------------------------------------------------------------
+## Initialize and upgrade NOC:
+## Performed with $NOC_USER credentials
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##---------------------------------------------------------------------
+
+##
+## Helper functions definitions
+##
+PROGNAME=`basename $0`
+
+error_exit ( ) {
+    echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
+    echo "Terminating" 1>&2
+    exit 1
+}
+
+info ( ) {
+    echo $1 1>&2
+}
+
+# Check configuration files
+info "Checking configuration files"
+./scripts/check-conf || error_exit "$LINENO: configuration check failed"
+# Check postgresql database
+info "Checking postgresql database connection"
+./scripts/check-db.py --pg || error_exit "$LINENO: Unable to connect to postgresql database. Check noc.conf settings"
+# Check mongodb database connection
+info "Checking mongodb database connection"
+./scripts/check-db.py --mongo || error_exit "$LINENO: Unable to connect to mongodb database. Check noc.conf settings"
+# Syncronize database
+info "Syncronizing database"
+./noc syncdb || error_exit "$LINENO: syncdb failed"
+# Migrate database
+info "Migrating database"
+./noc migrate || error_exit "$LINENO: migrate failed"
+# Set up permissions
+info "Setting up permissions"
+./noc sync-perm || error_exit "$LINENO: sync-perm failed"
+# Generate SSH keys
+if [ ! -f etc/ssh/id_rsa ]; then
+    info "Generating SSH keys"
+    ./noc generate-ssh-keys || error_exit "$LINENO: generate-ssh-keys failed"
+fi
+# Update manifests
+info "Updating manifests"
+./noc sync-manifest || error_exit "$LINENO: failed to update manifests"
+# Syncronize pyRules
+info "Syncronizing pyRules"
+./noc sync-pyrules || error_exit "$LINENO: sync-pyrules failed"
+# Syncronize mongodb collections
+info "Syncronize collections"
+./noc sync-collections || error_exit "$LINENO: sync-collections failed"
+# Syncronize refbooks
+info "Syncronizing refbooks"
+./noc sync-refbooks || error_exit "$LINENO: sync-refbooks failed"
+# Syncronize MIBS
+info "Syncronize MIBs"
+./noc sync-mibs || error_exit "$LINENO: sync-mibs failed"
+#

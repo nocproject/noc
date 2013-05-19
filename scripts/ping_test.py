@@ -1,12 +1,8 @@
-#!/usr/bin/env python
+#!./bin/python
 import threading
 import sys
 import readline
 # NOC modules
-import set_env
-
-set_env.setup(use_django=False)
-
 from noc.lib.nbsocket.socketfactory import SocketFactory
 from noc.lib.nbsocket.pingsocket import Ping4Socket
 from noc.lib.validators import is_ipv4

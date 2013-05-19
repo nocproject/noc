@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!./bin/python
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
 ## Apply ignored_interfaces to given interface profile
@@ -7,12 +7,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Bootstrap
-import set_env
-set_env.setup(use_django=True)
-
+## NOC modules
 from noc.inv.models import Interface, InterfaceProfile
 from noc.sa.models import ManagedObjectAttribute
+
 
 def migrate(profile):
     print "Setting profile %s" % profile.name

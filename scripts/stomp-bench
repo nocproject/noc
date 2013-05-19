@@ -1,9 +1,5 @@
-#!/usr/bin/env python
+#!./bin/python
 # NOC modules
-import set_env
- 
-set_env.setup(use_django=True)
- 
 from noc.lib.stomp.client import STOMPClient
 from noc.lib.stomp.threadclient import ThreadedSTOMPClient
 from noc.lib.debug import error_report
@@ -17,7 +13,8 @@ QUEUE = "/queue/t1"
 TOPIC = "/topic/t1"
 
 DEST = TOPIC
- 
+
+
 def callback(destination, body):
     global STATS, SF
 
@@ -41,11 +38,13 @@ def callback(destination, body):
         n = body["n"]
         STATS += [(n, dt)]
 
+
 def get_client(addr, port, client_id=None, threaded=False):
     if threaded:
         return ThreadedSTOMPClient(addr, port, client_id=client_id)
     else:
         return STOMPClient(addr, port, client_id=client_id)
+
 
 def main_producer(messages, synchronous=False, persistent=False,
                   threaded=False):
@@ -67,12 +66,14 @@ def main_producer(messages, synchronous=False, persistent=False,
         destination=DEST, receipt=synchronous, persistent=persistent)
     client.stop()
 
+
 def main_consumer(threaded=False):
     client = get_client("127.0.0.1", 19705,
         client_id="consumer", threaded=threaded)
     client.start()
     client.subscribe(DEST, callback=callback)
     client.wait()
+
 
 def usage():
     print "STOMP Server Benchmark"
