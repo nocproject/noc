@@ -235,27 +235,10 @@ class Launcher(Daemon):
                 self.crashinfo_uid = uid
                 self.crashinfo_dir = os.path.dirname(self.config.get("main", "logfile"))
 
-    def sync_contrib(self):
-        """
-        Rebuild contrib/lib if necessary
-        """
-        sync = os.path.join("scripts", "sync-contrib")
-        if os.path.exists(sync):
-            logging.info("Synchronizing contrib")
-            r = subprocess.call([sync])
-            if r == 0:
-                logging.info("contrib synchronized")
-            else:
-                logging.error("contrib synchronization failed")
-        else:
-            logging.info("Skipping contrib synchronization")
-
     def run(self):
         """
         Main loop
         """
-        # Rebuild contrib/ when necessary
-        self.sync_contrib()
         # Check for updates
         self.check_updates()
         # Main loop
