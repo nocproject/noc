@@ -66,3 +66,20 @@ LOG=
 # Path to the pidfiles directory
 #
 PIDDIR=
+
+#
+# PostgreSQL database connection
+#
+PG_DB=noc
+PG_USER=noc
+PG_PASSWORD=noc
+PG_HOST=
+PG_PORT=
+#
+# Mongodb database connection
+#
+MONGO_DB=noc
+MONGO_USER=noc
+MONGO_PASSWORD=noc
+MONGO_HOST=
+MONGO_PORT=
