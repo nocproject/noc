@@ -60,6 +60,7 @@ aptinstall libgmp10
 aptinstall libgpm-dev
 aptinstall nginx
 aptinstall postgresql
+aptinstall libpq-dev
 aptinstall postgis
 aptinstall mongodb
 aptinstall mercurial
