@@ -8,7 +8,7 @@
 ##----------------------------------------------------------------------
 
 PROGNAME=`basename $0`
-DIST=share/vagrant/x86_6x/Debian/7.0
+DIST=/opt/noc/share/vagrant/x86_64/Debian/7.0
 
 error_exit ( ) {
     echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
