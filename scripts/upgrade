@@ -22,6 +22,7 @@ info ( ) {
 ensure_dir ( ) {
     if [ ! -d "$1" ]; then
         info "   Creating $1"
+        mkdir $1 || error_exit "Unable to create directory '$1'"
     fi
     chown $NOC_USER:$NOC_GROUP $1
     chmod $2 $1
