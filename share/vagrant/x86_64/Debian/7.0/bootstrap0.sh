@@ -22,7 +22,7 @@ info ( ) {
     echo $1 1>&2
 }
 
-apt-install ( ) {
+aptinstall ( ) {
     apt-get install -y $1 || error_exit "Failed to install $1"
 }
 
@@ -50,16 +50,16 @@ fi
 ##
 ## Install base packages
 ##
-apt-install python
-apt-install python-dev
-apt-install python-virtualenv
-apt-install libgmp10
-apt-install libgpm-dev
-apt-install nginx
-apt-install postgresql
-apt-install postgis
-apt-install mongodb
-apt-install mercurial
+aptinstall python
+aptinstall python-dev
+aptinstall python-virtualenv
+aptinstall libgmp10
+aptinstall libgpm-dev
+aptinstall nginx
+aptinstall postgresql
+aptinstall postgis
+aptinstall mongodb
+aptinstall mercurial
 ##
 ## Set up Postgresql database
 ##
