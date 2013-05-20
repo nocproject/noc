@@ -61,8 +61,8 @@ aptinstall libgmp-dev
 aptinstall nginx
 aptinstall postgresql
 aptinstall libpq-dev
-aptinstall postgis
 aptinstall postgresql-9.1-postgis
+aptinstall postgis
 aptinstall mongodb
 aptinstall mercurial
 aptinstall smitools
