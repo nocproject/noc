@@ -50,6 +50,9 @@ fi
 ##
 ## Install base packages
 ##
+aptinstall less
+aptinstall telnet
+aptinstall tcpdump
 aptinstall python
 aptinstall python-dev
 aptinstall python-virtualenv
@@ -60,20 +63,19 @@ aptinstall postgresql
 aptinstall postgis
 aptinstall mongodb
 aptinstall mercurial
+aptinstall libsmi2-common
 ##
 ## Set up Postgresql database
 ##
-su - postgres << __EOF__
-createuser -s -E -P noc
-thenocproject
-thenocproject
-createdb -EUTF8 -Onoc noc
+su - postgres -c psql << __EOF__
+CREATE USER noc SUPERUSER ENCRYPTED PASSWORD 'thenocproject';
+CREATE DATABASE noc WITH OWNER=noc ENCODING=UTF8;
 __EOF__
 ##
 ## Set up mongodb user
 ##
 mongo noc << __EOF__
-db.addUser("noc", "noc")
+db.addUser("noc", "thenocproject")
 __EOF__
 ##
 ## Set up daemon autostart
