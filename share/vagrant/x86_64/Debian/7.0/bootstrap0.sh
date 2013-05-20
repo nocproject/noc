@@ -23,7 +23,7 @@ info ( ) {
 }
 
 aptinstall ( ) {
-    apt-get install -y $1 || error_exit "Failed to install $1"
+    apt-get install -q -y $1 || error_exit "Failed to install $1"
 }
 
 ##
