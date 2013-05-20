@@ -30,8 +30,9 @@ fi
 # Put upgrade.conf in place
 cp $DIST/files/upgrade.conf etc/upgrade.conf || error_exit "Cannot copy upgrade.conf"
 # Put nginx.conf in place
+rm -f /etc/nginx/sites-enabled/default
 cp $DIST/files/nginx.conf /etc/nginx/sites-available/noc.conf || error_exit "Cannot copy nginx config"
-ls -n /etc/nginx/sites-available/noc.conf /etc/nginx/sites-enabled/noc.conf || error_exit "Cannot set up nginx config"
+ln -s /etc/nginx/sites-available/noc.conf /etc/nginx/sites-enabled/noc.conf || error_exit "Cannot set up nginx config"
 # Put init script
 cp $DIST/files/noc-launcher /etc/init.d/ || error_exit "Cannot install init file"
 update-rc.d noc-launcher start
