@@ -9,6 +9,7 @@
 ## Python modules
 import logging
 import os
+import sys
 import errno
 import signal
 import socket
@@ -68,16 +69,16 @@ class Web(Daemon):
             django.core.handlers.wsgi.WSGIHandler()
         )
 
+        vi = sys.version_info
+
         application = tornado.web.Application([
             # /static/
             (r"^/static/(.*)", tornado.web.StaticFileHandler, {
                 "path": "static"}),
             # /media/
             (r"^/media/(.*)", tornado.web.StaticFileHandler, {
-                "path": "contrib/lib/django/contrib/admin/static"}),
-            # /doc/
-            (r"^/doc/(.*)", tornado.web.StaticFileHandler, {
-                "path": "share/doc/users_guide/html"}),
+                "path": "lib/python%d.%d/site-packages//django/contrib/admin/static" % (vi.major, vi.minor)
+            }),
             # NOC application's js, img and css files
             # @todo: write proper static handler
             (r"(/[^/]+/[^/]+/(?:js|img|css)/.+)", AppStaticFileHandler, {
