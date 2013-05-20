@@ -1,0 +1,9 @@
+##
+## Debian 7.0 NOC Vagrantfile
+##
+Vagrant.configure("2") do |config|
+    config.vm.box = "noc-x86_64-Debian-7.0";
+    # config.vm.box_url = ""
+    config.vm.hostname = "noc"
+    config.vm.provision :shell, :path => "/opt/noc/share/vagrant/x86_64/Debian/7.0/bootstrap.sh"
+end
