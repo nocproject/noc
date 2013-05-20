@@ -81,6 +81,7 @@ for d in ./etc/noc*.defaults; do
         ./scripts/set-conf.py $conf main logfile $LOG || error_exit "$LINENO: Unable to set $conf:[main]/logfile"
         ./scripts/set-conf.py $conf main pidfile $PIDDIR || error_exit "$LINENO: Unable to set $conf:[main]/pidfile"
         if [ $conf = "./etc/noc.conf" ]; then
+            # Set up paths
             ensure_prog ssh path ssh
             ensure_prog pg_dump path pg_dump
             ensure_prog tar path tar
@@ -91,6 +92,18 @@ for d in ./etc/noc*.defaults; do
             ensure_prog hg cm vcs_path
             ./scripts/set-conf.py ./etc/noc.conf cm repo $LOCAL_REPO || error_exit "$LINENO: Unable to set etc/noc.conf:[cm]/repo"
             ./scripts/set-conf.py ./etc/noc.conf path backup $BACKUP || error_exit "$LINENO: Unable to set etc/noc.conf:[path]/backup"
+            # Set up PostgreSQL database
+            ./scripts/set-conf.py ./etc/noc.conf database name $PG_DB || error_exit "$LINENO: Unable to set etc/noc.conf:[database]/name"
+            ./scripts/set-conf.py ./etc/noc.conf database user $PG_USER || error_exit "$LINENO: Unable to set etc/noc.conf:[database]/user"
+            ./scripts/set-conf.py ./etc/noc.conf database password $PG_PASSWORD || error_exit "$LINENO: Unable to set etc/noc.conf:[database]/password"
+            ./scripts/set-conf.py ./etc/noc.conf database host $PG_HOST || error_exit "$LINENO: Unable to set etc/noc.conf:[database]/host"
+            ./scripts/set-conf.py ./etc/noc.conf database port $PG_PORT || error_exit "$LINENO: Unable to set etc/noc.conf:[database]/port"
+            # Set up PostgreSQL database
+            ./scripts/set-conf.py ./etc/noc.conf nosql_database name $MONGO_DB || error_exit "$LINENO: Unable to set etc/noc.conf:[nosql_database]/name"
+            ./scripts/set-conf.py ./etc/noc.conf nosql_database user $MONGO_USER || error_exit "$LINENO: Unable to set etc/noc.conf:[nosql_database]/user"
+            ./scripts/set-conf.py ./etc/noc.conf nosql_database password $MONGO_PASSWORD || error_exit "$LINENO: Unable to set etc/noc.conf:[nosql_database]/password"
+            ./scripts/set-conf.py ./etc/noc.conf nosql_database host $MONGO_HOST || error_exit "$LINENO: Unable to set etc/noc.conf:[nosql_database]/host"
+            ./scripts/set-conf.py ./etc/noc.conf nosql_database port $MONGO_PORT || error_exit "$LINENO: Unable to set etc/noc.conf:[nosql_database]/port"
         fi
     fi
 done
