@@ -63,7 +63,8 @@ aptinstall postgresql
 aptinstall postgis
 aptinstall mongodb
 aptinstall mercurial
-aptinstall libsmi2-common
+aptinstall smitools
+aptinstall sudo
 ##
 ## Set up Postgresql database
 ##
