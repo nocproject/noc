@@ -32,6 +32,7 @@ aptinstall ( ) {
 apt-get update || die "Failed to run: apt-get: update"
 apt-get upgrade || die "Failed to run: apt-get upgrade"
 apt-get dist-upgrade || die "Failed to run: apt-get dist-upgrade"
+locale-gen
 ##
 ## Create NOC user and group
 ##
@@ -57,7 +58,7 @@ aptinstall python
 aptinstall python-dev
 aptinstall python-virtualenv
 aptinstall libgmp10
-aptinstall libgpm-dev
+aptinstall libgmp-dev
 aptinstall nginx
 aptinstall postgresql
 aptinstall libpq-dev
@@ -73,6 +74,7 @@ su - postgres -c psql << __EOF__
 CREATE USER noc SUPERUSER ENCRYPTED PASSWORD 'thenocproject';
 CREATE DATABASE noc WITH OWNER=noc ENCODING='UTF8';
 __EOF__
+[ $? -eq 0 ] || error_exit "Failed to initialize PostgreSQL database and user"
 ##
 ## Set up mongodb user
 ##
