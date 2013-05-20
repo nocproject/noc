@@ -43,9 +43,9 @@ grep -e ^noc: /etc/passwd
 if [ $? -ne 0 ]; then
     useradd -g noc -s /bin/bash -d /home/noc -m noc
     passwd noc << __EOF__
-    thenocproject
-    thenocproject
-    __EOF__
+thenocproject
+thenocproject
+__EOF__
 fi
 ##
 ## Install base packages
