@@ -33,7 +33,7 @@ info "Checking mongodb database connection"
 ./scripts/check-db.py --mongo || error_exit "$LINENO: Unable to connect to mongodb database. Check noc.conf settings"
 # Syncronize database
 info "Syncronizing database"
-./noc syncdb || error_exit "$LINENO: syncdb failed"
+./noc syncdb --noinput || error_exit "$LINENO: syncdb failed"
 # Migrate database
 info "Migrating database"
 ./noc migrate || error_exit "$LINENO: migrate failed"
