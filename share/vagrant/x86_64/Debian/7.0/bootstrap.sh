@@ -8,6 +8,7 @@
 ##----------------------------------------------------------------------
 
 PROGNAME=`basename $0`
+DIST=share/vagrant/x86_6x/Debian/7.0
 
 error_exit ( ) {
     echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
@@ -15,20 +16,24 @@ error_exit ( ) {
     exit 1
 }
 
-pushd /opt/noc || error_exit "No NOC distribution found"
+START_DIR=$PWD
+cd /opt/noc || error_exit "No NOC distribution found"
 hg in
 if [ $? -eq 0 ]; then
     # Changes found
     # Fetch and restart
     hg pull -u || error_exit "Failed to fetch updates"
-    popd
+    cd $START_DIR
     exec $0
 fi
 
 # Put upgrade.conf in place
-cp share/vagrant/x86_6x/Debian/7.0/files/upgrade.conf etc/upgrade.conf
+cp $DIST/files/upgrade.conf etc/upgrade.conf || error_exit "Cannot copy upgrade.conf"
 # Put nginx.conf in place
-cp share/vagrant/x86_6x/Debian/7.0/files/nginx.conf /etc/nginx/sites-available/noc.conf
-ls -n /etc/nginx/sites-available/noc.conf /etc/nginx/sites-enabled/noc.conf
+cp $DIST/files/nginx.conf /etc/nginx/sites-available/noc.conf || error_exit "Cannot copy nginx config"
+ls -n /etc/nginx/sites-available/noc.conf /etc/nginx/sites-enabled/noc.conf || error_exit "Cannot set up nginx config"
+# Put init script
+cp $DIST/files/noc-launcher /etc/init.d/ || error_exit "Cannot install init file"
+update-rc.d noc-launcher start
 # Run NOC's upgrade process
 ./scripts/upgrade
