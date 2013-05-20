@@ -71,7 +71,7 @@ aptinstall sudo
 ##
 su - postgres -c psql << __EOF__
 CREATE USER noc SUPERUSER ENCRYPTED PASSWORD 'thenocproject';
-CREATE DATABASE noc WITH OWNER=noc ENCODING=UTF8;
+CREATE DATABASE noc WITH OWNER=noc ENCODING='UTF8';
 __EOF__
 ##
 ## Set up mongodb user
