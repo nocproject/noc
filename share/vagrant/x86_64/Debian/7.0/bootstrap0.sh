@@ -32,7 +32,6 @@ aptinstall ( ) {
 apt-get update || die "Failed to run: apt-get: update"
 apt-get upgrade || die "Failed to run: apt-get upgrade"
 apt-get dist-upgrade || die "Failed to run: apt-get dist-upgrade"
-locale-gen
 ##
 ## Create NOC user and group
 ##
@@ -63,6 +62,7 @@ aptinstall nginx
 aptinstall postgresql
 aptinstall libpq-dev
 aptinstall postgis
+aptinstall postgresql-9.1-postgis
 aptinstall mongodb
 aptinstall mercurial
 aptinstall smitools
