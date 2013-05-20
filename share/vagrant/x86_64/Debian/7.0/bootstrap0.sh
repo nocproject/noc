@@ -82,9 +82,9 @@ __EOF__
 ##
 ## Set up daemon autostart
 ##
-update-rc.d postgresql start
-update-rc.d mongodb start
-update-rc.d nginx start
+update-rc.d postgresql enable
+update-rc.d mongodb enable
+update-rc.d nginx enable
 ##
 ## Get NOC
 ##
