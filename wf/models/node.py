@@ -21,6 +21,7 @@ class Node(nosql.Document):
     workflow = nosql.PlainReferenceField(Workflow)
     lane = nosql.PlainReferenceField(Lane)
     name = nosql.StringField()
+    label = nosql.StringField()
     description = nosql.StringField()
     handler = nosql.StringField()
     # param -> value

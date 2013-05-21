@@ -44,6 +44,7 @@ class WorkflowApplication(ExtDocApplication):
                 "type": "node",
                 "id": str(n.id),
                 "name": n.name,
+                "label": n.label or n.name,
                 "description": n.description,
                 "handler": n.handler,
                 "conditional": n.handler_class.conditional,
@@ -94,6 +95,7 @@ class WorkflowApplication(ExtDocApplication):
                 else:
                     n = Node(workflow=wf)
                 n.name = r["name"]
+                n.label = r.get("label")
                 n.description = r["description"]
                 n.handler = r["handler"]
                 n.params = r["params"]

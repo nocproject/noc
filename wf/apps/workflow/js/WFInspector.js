@@ -62,6 +62,14 @@ Ext.define("NOC.wf.workflow.WFInspector", {
                     width: 288
                 },
                 {
+                    xtype: "textfield",
+                    name: "label",
+                    itemId: "label",
+                    labelAlign: "top",
+                    fieldLabel: "Label",
+                    width: 288
+                },
+                {
                     xtype: "combobox",
                     name: "handler",
                     itemId: "handler",
@@ -97,6 +105,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
         });
         me.callParent();
         me.nameField = me.getComponent("name");
+        me.labelField = me.getComponent("label");
         me.descriptionField = me.getComponent("description");
         me.handlerField = me.getComponent("handler");
     },
@@ -108,6 +117,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
             me.currentCell = cell;
             me.setDisabled(false);
             me.nameField.setValue(data.name);
+            me.labelField.setValue(data.label);
             me.handlerField.setValue(data.handler);
             me.descriptionField.setValue(data.description);
             me.paramsGrid.setSource(data.params);
@@ -141,10 +151,11 @@ Ext.define("NOC.wf.workflow.WFInspector", {
         }
         d = me.currentCell.wfdata;
         d.name = me.nameField.getValue();
+        d.label = me.labelField.getValue();
         // me.currentCell.setValue(d.name);
         me.editor.graph.model.beginUpdate();
         try {
-            me.editor.graph.model.setValue(me.currentCell, d.name);
+            me.editor.graph.model.setValue(me.currentCell, d.label);
         } finally {
             me.editor.graph.model.endUpdate();
         }
