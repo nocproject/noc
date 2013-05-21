@@ -691,7 +691,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         if(cell.ptype === undefined) {
             return true;
         }
-        if((cell.ptype === me.OPORT) || (cell.ptype === me.TPORT) || (cell.ptype === me.FPORT)) {
+        if((cell.ptype === me.OPORT) || (cell.ptype === me.TPORT) || (cell.ptype === me.FPORT) || cell.ptype === me.SPORT) {
             return cell.getEdgeCount() === 0;
         }
         return false;
