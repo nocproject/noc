@@ -170,7 +170,15 @@ class ExtDocApplication(ExtApplication):
         except self.model.DoesNotExist:
             o = self.model(**attrs)
             o.save()
-            return self.response(self.instance_to_dict(o), status=self.CREATED)
+            format = request.GET.get(self.format_param)
+            if format == "ext":
+                r = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                r = self.instance_to_dict(o)
+            return self.response(r, status=self.CREATED)
 
     @view(method=["GET"], url="^(?P<id>[0-9a-f]{24})/?$",
           access="read", api=True)
