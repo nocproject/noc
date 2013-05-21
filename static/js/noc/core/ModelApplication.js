@@ -543,7 +543,6 @@ Ext.define("NOC.core.ModelApplication", {
     //
     saveInlines: function(parentId, stores) {
         var me = this;
-        console.log("saveInlines", parentId, stores);
         if(stores.length > 0) {
             var istore = stores[0];
             if(parentId) {
