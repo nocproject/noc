@@ -43,6 +43,15 @@ Ext.define("NOC.dns.dnszone.Model", {
             persist: false
         },
         {
+            name: "project",
+            type: "int"
+        },
+        {
+            name: "project__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "notification_group",
             type: "int"
         },

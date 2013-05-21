@@ -14,7 +14,8 @@ Ext.define("NOC.dns.dnszone.Application", {
         "NOC.dns.dnszone.RecordsModel",
         "NOC.dns.dnszone.RRTypeField",
         "NOC.dns.dnszoneprofile.LookupField",
-        "NOC.main.notificationgroup.LookupField"
+        "NOC.main.notificationgroup.LookupField",
+        "NOC.project.project.LookupField"
     ],
     model: "NOC.dns.dnszone.Model",
     search: true,
@@ -40,6 +41,12 @@ Ext.define("NOC.dns.dnszone.Application", {
             dataIndex: "profile",
             renderer: NOC.render.Lookup("profile"),
             width: 100
+        },
+        {
+            text: "Project",
+            dataIndex: "project",
+            renderer: NOC.render.Lookup("project"),
+            width: 150
         },
         {
             text: "Paid Till",
@@ -97,6 +104,12 @@ Ext.define("NOC.dns.dnszone.Application", {
             allowBlank: false
         },
         {
+            name: "project",
+            xtype: "project.project.LookupField",
+            fieldLabel: "Project",
+            allowBlank: true
+        },
+        {
             name: "notification_group",
             xtype: "main.notificationgroup.LookupField",
             fieldLabel: "Notification Group",
@@ -121,6 +134,12 @@ Ext.define("NOC.dns.dnszone.Application", {
             name: "profile",
             ftype: "lookup",
             lookup: "dns.dnszoneprofile"
+        },
+        {
+            title: "By Project",
+            name: "project",
+            ftype: "lookup",
+            lookup: "project.project"
         },
         {
             title: "By Notification",

@@ -20,6 +20,7 @@ from django.dispatch import receiver
 from dnszoneprofile import DNSZoneProfile
 from noc.main.models import (NotificationGroup, SystemNotification,
                              SystemTemplate)
+from noc.project.models.project import Project
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
 from noc.lib.fields import TagsField
@@ -66,6 +67,9 @@ class DNSZone(models.Model):
     name = models.CharField(_("Domain"), max_length=256, unique=True)
     description = models.CharField(_("Description"),
         null=True, blank=True, max_length=64)
+    project = models.ForeignKey(
+        Project, verbose_name="Project",
+        null=True, blank=True, related_name="dnszone_set")
     # @todo: Rename to is_provisioned
     is_auto_generated = models.BooleanField(_("Auto generated?"))
     serial = models.IntegerField(_("Serial"), default=0)
