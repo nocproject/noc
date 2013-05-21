@@ -37,4 +37,20 @@ ln -s /etc/nginx/sites-available/noc.conf /etc/nginx/sites-enabled/noc.conf || e
 cp $DIST/files/noc-launcher /etc/init.d/ || error_exit "Cannot install init file"
 update-rc.d noc-launcher start
 # Run NOC's upgrade process
-./scripts/upgrade
+./scripts/upgrade || error_exit "Failed to upgrade NOC"
+# Set up configs
+./scripts/set-conf.py etc/noc-launcher.conf noc-activator user root
+./scripts/set-conf.py etc/noc-activator.conf activator listen_traps eth0
+./scripts/set-conf.py etc/noc-activator.conf activator listen_syslog eth0
+./scripts/set-conf.py etc/noc-activator.conf activator name default
+./scripts/set-conf.py etc/noc-activator.conf activator secret thenocproject
+su - postgres -c "psql noc" << __EOF__
+BEGIN;
+UPDATE sa_activator SET auth='thenocproject';
+COMMIT;
+__EOF__
+[ $? -ne 0 ] && error_exit "Failed to set activator password"
+# Run nginx
+/etc/init.d/nginx restart
+# Run NOC
+/etc/init.d/noc-launcher start
