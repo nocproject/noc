@@ -1,0 +1,16 @@
+<table border="1" width="100%">
+    <tr><td colspan="2">VC</td></tr>
+    {{#each vc}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+    <tr><td colspan="2">DNS Zones</td></tr>
+    {{#each dnszone}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">-</td>
+    </tr>
+    {{/each}}
+</table>
