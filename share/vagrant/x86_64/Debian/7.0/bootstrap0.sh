@@ -23,22 +23,26 @@ info ( ) {
 }
 
 aptinstall ( ) {
+    info "Installing $1"
     apt-get install -y $1 || error_exit "Failed to install $1"
 }
 
 ##
 ## Update base system
 ##
+info "Updating base system"
 apt-get update || die "Failed to run: apt-get: update"
 apt-get upgrade || die "Failed to run: apt-get upgrade"
 apt-get dist-upgrade || die "Failed to run: apt-get dist-upgrade"
 ##
 ## Create NOC user and group
 ##
+info "Create group 'noc'"
 grep -e ^noc: /etc/group
 if [ $? -ne 0 ]; then
     groupadd noc
 fi
+info "Create user 'noc'"
 grep -e ^noc: /etc/passwd
 if [ $? -ne 0 ]; then
     useradd -g noc -s /bin/bash -d /home/noc -m noc
@@ -70,6 +74,7 @@ aptinstall sudo
 ##
 ## Set up Postgresql database
 ##
+info "Create PostgreSQL 'noc' user and database"
 su - postgres -c psql << __EOF__
 CREATE USER noc SUPERUSER ENCRYPTED PASSWORD 'thenocproject';
 CREATE DATABASE noc WITH OWNER=noc ENCODING='UTF8';
@@ -78,6 +83,7 @@ __EOF__
 ##
 ## Set up mongodb user
 ##
+info "Setting MongoDB authentication"
 mongo noc << __EOF__
 db.addUser("noc", "thenocproject")
 __EOF__
@@ -91,7 +97,9 @@ update-rc.d nginx enable
 ## Get NOC
 ##
 cd /opt || error_exit "cd /opt failed"
+info "Fetching NOC"
 hg clone http://hg.nocproject.org/noc noc
 if [ "$1" != "--no-bootstrap" ]; then
+    info "Running bootstrap.sh"
     /opt/noc/share/vagrant/x86_64/Debian/7.0/bootstrap.sh
 fi
