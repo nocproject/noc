@@ -12,7 +12,7 @@ import logging
 from django.template import Template, Context
 # NOC modules
 from base import BaseHandler
-from noc.sa.interfaces.base import StringParameter
+from noc.sa.interfaces import StringParameter
 
 
 class LogHandler(BaseHandler):
@@ -20,9 +20,9 @@ class LogHandler(BaseHandler):
     Log message
     """
     params = {
-        "format": StringParameter()
+        "msg": StringParameter()
     }
 
-    def handler(self, process, node, format=""):
-        s = Template(format).render(process.context)
+    def handler(self, process, node, msg):
+        s = Template(msg).render(Context(process.context))
         logging.info(s)

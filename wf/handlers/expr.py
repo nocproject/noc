@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## AssignHandler
+## ExprHandler
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 # NOC modules
-from base import BaseHandler
-from noc.sa.interfaces.base import Parameter
+from base import BaseHandler, ContextVarParameter, ExprParameter
 
 
-class AssignHandler(BaseHandler):
+class ExprHandler(BaseHandler):
     """
-    Assign *op1* to *op2*
+    Assign `v` to the result of `expr`
     """
     params = {
-        "op0": Parameter(),
-        "op1": Parameter()
+        "v": ContextVarParameter(),
+        "expr": ExprParameter()
     }
 
-    def handler(self, process, node, op0, op1):
-        process.update_context_ref(node, "op0", op1)
+    def handler(self, process, node, v, expr):
+        v.set(expr)

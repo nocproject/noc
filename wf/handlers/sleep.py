@@ -7,8 +7,7 @@
 ##----------------------------------------------------------------------
 
 # NOC modules
-from base import BaseHandler
-from noc.sa.interfaces.base import IntParameter
+from base import BaseHandler, ExprParameter
 
 
 class SleepHandler(BaseHandler):
@@ -16,8 +15,8 @@ class SleepHandler(BaseHandler):
     Sleep *t* seconds and resume execution
     """
     params = {
-        "t": IntParameter()
+        "t": ExprParameter()
     }
 
-    def handler(self, process, node, t=1):
+    def handler(self, process, node, t):
         process.sleep(t)

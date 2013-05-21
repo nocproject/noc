@@ -1,25 +1,23 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## EqualHandler
+## CompareHandler
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 # NOC modules
-from base import BaseHandler
-from noc.sa.interfaces.base import Parameter
+from base import BaseHandler, ExprParameter
 
 
-class EqualHandler(BaseHandler):
+class CompareHandler(BaseHandler):
     """
-    Compare *op1* and *op2*
+    Process `expr` as boolean expression
     """
     conditional = True
     params = {
-        "op0": Parameter(),
-        "op1": Parameter()
+        "expr": ExprParameter(),
     }
 
-    def handler(self, process, node, op0=None, op1=None):
-        return str(op0) == str(op1)
+    def handler(self, process, node, expr):
+        return bool(expr)
