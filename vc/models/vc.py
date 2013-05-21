@@ -15,6 +15,7 @@ from django.db.models import Q
 from error import InvalidLabelException, MissedLabelException
 from vcdomain import VCDomain
 from noc.main.models import ResourceState, Style
+from noc.project.models.project import Project
 from noc.lib.fields import TagsField
 from noc.lib.app.site import site
 from noc.lib.validators import is_int
@@ -41,6 +42,9 @@ class VC(models.Model):
     name = models.CharField("Name", max_length=64)
     state = models.ForeignKey(ResourceState, verbose_name="State",
         default=ResourceState.get_default)
+    project = models.ForeignKey(
+        Project, verbose_name="Project",
+        null=True, blank=True, related_name="vc_set")
     l1 = models.IntegerField("Label 1")
     l2 = models.IntegerField("Label 2", default=0)
     description = models.CharField("Description", max_length=256, null=True,
