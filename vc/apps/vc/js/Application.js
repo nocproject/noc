@@ -13,6 +13,7 @@ Ext.define("NOC.vc.vc.Application", {
         "NOC.core.TagsField",
         "NOC.main.style.LookupField",
         "NOC.main.resourcestate.LookupField",
+        "NOC.project.project.LookupField",
         "NOC.vc.vcdomain.LookupField"
     ],
     model: "NOC.vc.vc.Model",
@@ -31,6 +32,12 @@ Ext.define("NOC.vc.vc.Application", {
             name: "state",
             ftype: "lookup",
             lookup: "main.resourcestate"
+        },
+        {
+            title: "By Project",
+            name: "project",
+            ftype: "lookup",
+            lookup: "project.project"
         },
         {
             title: "By VC Filter",
@@ -67,6 +74,11 @@ Ext.define("NOC.vc.vc.Application", {
                     text: "State",
                     dataIndex: "state",
                     renderer: NOC.render.Lookup("state")
+                },
+                {
+                    text: "Project",
+                    dataIndex: "project",
+                    renderer: NOC.render.Lookup("project")
                 },
                 {
                     text: "Label",
@@ -131,6 +143,12 @@ Ext.define("NOC.vc.vc.Application", {
                     xtype: "main.resourcestate.LookupField",
                     fieldLabel: "State",
                     allowBlank: false
+                },
+                {
+                    name: "project",
+                    xtype: "project.project.LookupField",
+                    fieldLabel: "Project",
+                    allowBlank: true
                 },
                 {
                     name: "l1",

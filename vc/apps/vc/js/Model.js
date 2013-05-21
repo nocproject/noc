@@ -64,6 +64,15 @@ Ext.define("NOC.vc.vc.Model", {
             type: "string",
             persist: false
         },
+        {
+            name: "project",
+            type: "int"
+        },
+        {
+            name: "project__label",
+            type: "string",
+            persist: false
+        },
         // Info fields
         {
             name: "interfaces_count",
