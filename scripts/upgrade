@@ -66,6 +66,11 @@ fi
 [ -z "$BACKUP" ] && error_exit "$LINENO: BACKUP is not set"
 [ -z "$LOG" ] && error_exit "$LINENO: LOG is not set"
 [ -z "$PIDDIR" ] && error_exit "$LINENO: PIDDIR is not set"
+## Check directories path does not point to existing NOC directory
+[ "$LOCAL_REPO" = "$PWD" ] && error_exit "$LINENO: LOCAL_REPO points to $PWD"
+[ "$BACKUP" = "$PWD" ] && error_exit "$LINENO: BACKUP points to $PWD"
+[ "$LOG" = "$PWD" ] && error_exit "$LINENO: LOG points to $PWD"
+[ "$PIDDIR" = "$PWD" ] && error_exit "$LINENO: PIDDIR points to $PWD"
 
 ##
 ## Set up configuration files, when necessary
