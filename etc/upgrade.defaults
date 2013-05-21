@@ -45,27 +45,27 @@ FOLLOW=tip
 
 #
 # LOCAL_REPO:
-# Path to local repos
+# Path to local repos (configs, dns zones, etc)
 #
-LOCAL_REPO=
+LOCAL_REPO=/var/noc/repo
 
 #
 # BACKUP:
 # Path to the backup directory
 #
-BACKUP=
+BACKUP=/var/noc/backup
 
 #
 # LOG:
 # Path to the LOG directory
 #
-LOG=
+LOG=/var/noc/log
 
 #
 # PIDDIR:
 # Path to the pidfiles directory
 #
-PIDDIR=
+PIDDIR=/var/noc/log/run
 
 #
 # PostgreSQL database connection
