@@ -311,7 +311,14 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             ]);
         }
+        me.toolbarIdLabel = Ext.create("Ext.toolbar.TextItem", {
+            text: "ID:"
+        })
         formToolbar = formToolbar.concat(me.formToolbar);
+        formToolbar = formToolbar.concat([
+            "->",
+            me.toolbarIdLabel
+        ]);
 
         // Prepare inlines grid
         var formInlines = [];
@@ -593,6 +600,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.currentRecord = null;
         me.resetInlines();
         me.setFormTitle(me.createTitle);
+        me.toolbarIdLabel.setText("NEW");
         me.toggle();
         // Focus on first field
         me.focusOnFirstField();
@@ -609,6 +617,7 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this;
         me.currentRecord = record;
         me.setFormTitle(me.changeTitle);
+        me.toolbarIdLabel.setText("ID: " + me.currentRecord.get("id"));
         // Show edit form
         me.toggle();
         // Load records
