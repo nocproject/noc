@@ -41,15 +41,8 @@ class Process(nosql.Document):
         logging.info("[%s (PID: %s)] %s" % (
             self.workflow, self.id, msg))
 
-    def update_context_ref(self, node, param, value):
-        """
-        Update context with variable referenced by node param
-        :param node:
-        :param param:
-        :param value:
-        :return:
-        """
-        self.context[node.params[param]] = value
+    def update_context(self, param, value):
+        self.context[param] = value
 
     def step(self):
         to_sleep = False
@@ -84,7 +77,7 @@ class Process(nosql.Document):
                 self.save()
             else:
                 if self.trace:
-                    self.info("Stopping at node '%s'" % self.node.name)
+                    self.info("Stopping at node '%s' with context %s" % (self.node.name, self.context))
                 return True
         return False  # Suspended
 
