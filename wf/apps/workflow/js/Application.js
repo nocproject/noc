@@ -100,25 +100,6 @@ Ext.define("NOC.wf.workflow.Application", {
     ],
     inlines: [
         {
-            title: "Lanes",
-            model: "NOC.wf.workflow.LanesModel",
-            columns: [
-                {
-                    text: "Name",
-                    dataIndex: "name",
-                    width: 200,
-                    editor: "textfield"
-                },
-                {
-                    text: "Act",
-                    dataIndex: "is_active",
-                    width: 50,
-                    renderer: NOC.render.Bool,
-                    editor: "checkboxfield"
-                }
-            ]
-        },
-        {
             title: "Variables",
             model: "NOC.wf.workflow.VariablesModel",
             columns: [
@@ -144,9 +125,33 @@ Ext.define("NOC.wf.workflow.Application", {
                 {
                     text: "Default",
                     dataIndex: "default",
-                    width: 100,
-                    editor: "textfield",
-                    flex: 1
+                    width: 200,
+                    editor: "textfield"
+                },
+                {
+                    text: "Description",
+                    dataIndex: "description",
+                    flex: 1,
+                    editor: "textfield"
+                }
+            ]
+        },
+        {
+            title: "Lanes",
+            model: "NOC.wf.workflow.LanesModel",
+            columns: [
+                {
+                    text: "Name",
+                    dataIndex: "name",
+                    width: 200,
+                    editor: "textfield"
+                },
+                {
+                    text: "Act",
+                    dataIndex: "is_active",
+                    width: 50,
+                    renderer: NOC.render.Bool,
+                    editor: "checkboxfield"
                 }
             ]
         }

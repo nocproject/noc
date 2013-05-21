@@ -35,6 +35,10 @@ Ext.define("NOC.wf.workflow.VariablesModel", {
         {
             name: "required",
             type: "boolean"
+        },
+        {
+            name: "description",
+            type: "str"
         }
     ]
 });

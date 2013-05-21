@@ -29,6 +29,7 @@ class Variable(nosql.Document):
     default = nosql.StringField()
     # Required to start the process
     required = nosql.BooleanField()
+    description = nosql.StringField()
 
     def __unicode__(self):
         return "%s %s (%s)" % (self.workflow, self.name, self.type)
