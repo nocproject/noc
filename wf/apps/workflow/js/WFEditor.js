@@ -385,7 +385,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         }
         // Create node
         v = me.graph.insertVertex(parent, null,
-            data.name,
+            data.label,
             data.x, data.y, w, h,
             style
         );
@@ -451,6 +451,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                                     nodes[value.next_true_node].iport,
                                     null
                                 );
+                            } else {
+                                me.addEndNode(nodes[value.id].tport);
                             }
                             if(value.next_false_node) {
                                 me.graph.insertEdge(
@@ -459,6 +461,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                                     nodes[value.id].fport,
                                     nodes[value.next_false_node].iport
                                 );
+                            } else {
+                                me.addEndNode(nodes[value.id].fport);
                             }
                         } else {
                             if(value.next_node) {
@@ -544,6 +548,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 type: "node",
                 id: cid,
                 name: c.wfdata.name,
+                label: c.wfdata.label,
                 description: c.wfdata.description,
                 handler: c.wfdata.handler,
                 params: c.wfdata.params,
