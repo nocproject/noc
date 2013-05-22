@@ -1,13 +1,48 @@
 <table border="1" width="100%">
-    <tr><td colspan="2">VC</td></tr>
+    {{#if vc.length}}
+    <tr><th colspan="2"><b>VC</b></th></tr>
+    {{/if}}
     {{#each vc}}
     <tr>
         <td>{{label}}</td>
         <td style="width: 100px">{{state__label}}</td>
     </tr>
     {{/each}}
-    <tr><td colspan="2">DNS Zones</td></tr>
+
+    {{#if dnszone.length}}
+    <tr><th colspan="2"><b>DNS Zones</b></th></tr>
+    {{/if}}
     {{#each dnszone}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">-</td>
+    </tr>
+    {{/each}}
+
+    {{#if vrf.length}}
+    <tr><th colspan="2"><b>VRF</b></th></tr>
+    {{/if}}
+    {{#each vrf}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">-</td>
+    </tr>
+    {{/each}}
+
+    {{#if prefix.length}}
+    <tr><th colspan="2"><b>Prefix</b></th></tr>
+    {{/if}}
+    {{#each prefix}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">-</td>
+    </tr>
+    {{/each}}
+
+    {{#if address.length}}
+    <tr><th colspan="2"><b>Address</b></th></tr>
+    {{/if}}
+    {{#each address}}
     <tr>
         <td>{{label}}</td>
         <td style="width: 100px">-</td>

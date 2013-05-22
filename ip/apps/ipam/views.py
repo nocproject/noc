@@ -24,6 +24,7 @@ from noc.lib.colors import *
 from noc.sa.interfaces import MACAddressParameter, InterfaceTypeError
 from noc.ip.models import *
 from noc.main.models import Permission, Style, CustomField, ResourceState
+from noc.project.models.project import Project
 from noc.peer.models import AS
 from noc.vc.models import VCBindFilter
 from noc.sa.models import ReduceTask, ManagedObject
@@ -435,6 +436,11 @@ class IPAMAppplication(Application):
                         is_active=True).order_by("name"),
                     help_text=_("Prefix state")
                 )
+                project = forms.ModelChoiceField(label=_("Project"),
+                    queryset=Project.objects.order_by("code"),
+                    help_text=_("Project"),
+                    required=False
+                )
                 asn = forms.ModelChoiceField(
                     label=_("ASN"),
                     queryset=AS.objects.order_by("asn"),
@@ -524,6 +530,7 @@ class IPAMAppplication(Application):
                 p = Prefix(vrf=vrf, afi=afi,
                            prefix=form.cleaned_data["prefix"].strip(),
                            state=form.cleaned_data["state"],
+                           project=form.cleaned_data["project"],
                            asn=form.cleaned_data["asn"],
                            description=form.cleaned_data["description"],
                            tags=form.cleaned_data["tags"],
@@ -604,6 +611,11 @@ class IPAMAppplication(Application):
                 state = forms.ModelChoiceField(label=_("State"),
                     queryset=ResourceState.objects.filter(is_active=True).order_by("name"),
                     help_text=_("Prefix state")
+                )
+                project = forms.ModelChoiceField(label=_("Project"),
+                    queryset=Project.objects.order_by("code"),
+                    help_text=_("Project"),
+                    required=False
                 )
                 if can_bind_vc:
                     vc = forms.ModelChoiceField(
@@ -695,6 +707,7 @@ class IPAMAppplication(Application):
             initial = {
                 "asn": prefix.asn.id,
                 "state": prefix.state.id,
+                "project": prefix.project.id if prefix.project else None,
                 "vc": prefix.vc.id if prefix.vc else None,
                 "description": prefix.description,
                 "dual_stack_prefix": ds_prefix,
@@ -762,6 +775,11 @@ class IPAMAppplication(Application):
                     queryset=ResourceState.objects.filter(is_active=True).order_by("name"),
                     help_text=_("Prefix state")
                 )
+            project = forms.ModelChoiceField(label=_("Project"),
+                queryset=Project.objects.order_by("code"),
+                help_text=_("Project"),
+                required=False
+            )
             fqdn = forms.CharField(label=_("FQDN"), validators=[check_fqdn])
             mac = forms.CharField(label=_("MAC"), required=False)
             auto_update_mac = forms.BooleanField(
@@ -870,6 +888,7 @@ class IPAMAppplication(Application):
                     afi=afi,
                     address=form.cleaned_data["address"],
                     state=form.cleaned_data["state"],
+                    project=form.cleaned_data["project"],
                     fqdn=form.cleaned_data["fqdn"],
                     mac=form.cleaned_data["mac"],
                     auto_update_mac=form.cleaned_data["auto_update_mac"],
@@ -980,6 +999,7 @@ class IPAMAppplication(Application):
                                     name=form.cleaned_data["managed_object"])
                 address.address = form.cleaned_data["address"]
                 address.state = form.cleaned_data["state"]
+                address.project = form.cleaned_data["project"]
                 address.fqdn = form.cleaned_data["fqdn"]
                 address.mac = form.cleaned_data["mac"]
                 address.auto_update_mac = form.cleaned_data["auto_update_mac"]
@@ -1012,6 +1032,7 @@ class IPAMAppplication(Application):
             initial = {
                 "address": address.address,
                 "state": address.state,
+                "project": address.project.id if address.project else None,
                 "fqdn": address.fqdn,
                 "mac": address.mac,
                 "auto_update_mac": address.auto_update_mac,

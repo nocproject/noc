@@ -18,6 +18,10 @@ th[class=state] {
     width: 70px;
 }
 
+th[class=project] {
+    width: 70px;
+}
+
 th[class=rd] {
     width: 50px;
 }
@@ -55,6 +59,7 @@ function on_mynetworks(n)
                     <th class="rd">RD</th>
                     <th class="addresses">IPv4</th>
                     <th class="addresses">IPv6</th>
+                    <th class="project">Project</th>
                     <th class="description">Description</th>
                     <th class="bookmarks">Bookmarks</th>
                     <th class="tags">Tags</th>
@@ -67,7 +72,8 @@ function on_mynetworks(n)
                     <td>{{vrf.rd}}</td>
                     <td>{% if vrf.afi_ipv4 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '4' '0.0.0.0/0' %}">View</a>{% endif %}</td>
                     <td>{% if vrf.afi_ipv6 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '6' '::/0' %}">View</a>{% endif %}</td>
-                    <td>{{vrf.description}}</td>
+                    <td>{% if vrf.project %}{{ vrf.project.code }}{% endif %}</td>
+                    <td>{% if vrf.description %}{{vrf.description}}{% endif %}</td>
                     <td>
                         {% if vrf.bookmarks %}
                         <select onchange="return on_mynetworks(this);">

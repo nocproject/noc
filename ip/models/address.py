@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 ## NOC modules
+from noc.project.models.project import Project
 from vrf import VRF
 from prefix import Prefix
 from afi import AFI_CHOICES
@@ -19,8 +20,9 @@ from noc.sa.models import ManagedObject
 from noc.lib.fields import TagsField, INETField, MACField
 from noc.lib.app import site
 from noc.lib.search import SearchResult
-from noc.lib.validators import ValidationError,\
-    check_fqdn, check_ipv4, check_ipv6, is_ipv4, is_ipv6
+from noc.lib.validators import (
+    ValidationError, check_fqdn, check_ipv4, check_ipv6,
+    is_ipv4, is_ipv6)
 
 
 class Address(models.Model):
@@ -47,6 +49,9 @@ class Address(models.Model):
         max_length=255,
         help_text=_("Full-qualified Domain Name"),
         validators=[check_fqdn])
+    project = models.ForeignKey(
+        Project, verbose_name="Project",
+        null=True, blank=True, related_name="address_set")
     mac = MACField(
         "MAC",
         null=True,

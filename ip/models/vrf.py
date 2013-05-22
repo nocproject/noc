@@ -15,6 +15,7 @@ from django.db import models
 from django.db.models import Q
 ## NOC modules
 from noc.main.models import Style, ResourceState, CustomField
+from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from vrfgroup import VRFGroup
 from noc.lib.validators import check_rd, is_rd
@@ -55,6 +56,9 @@ class VRF(models.Model):
         _("IPv6"),
         default=False,
         help_text=_("Enable IPv6 Address Family"))
+    project = models.ForeignKey(
+        Project, verbose_name="Project",
+        null=True, blank=True, related_name="vrf_set")
     description = models.TextField(
         _("Description"), blank=True, null=True)
     tt = models.IntegerField(

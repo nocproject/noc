@@ -33,6 +33,9 @@ class ProjectApplication(ExtModelApplication):
         project = self.get_object_or_404(Project, id=id)
         r = {
             "vc": [f(o) for o in project.vc_set.all()],
-            "dnszone": [f(o) for o in project.dnszone_set.all()]
+            "dnszone": [f(o) for o in project.dnszone_set.all()],
+            "vrf": [f(o) for o in project.vrf_set.all()],
+            "prefix": [f(o) for o in project.prefix_set.all()],
+            "address": [f(o) for o in project.address_set.all()]
         }
         return r

@@ -12,6 +12,7 @@ from django.db import models, connection
 from django.db.models import Q
 from django.contrib.auth.models import User
 ## NOC modules
+from noc.project.models.project import Project
 from vrf import VRF
 from afi import AFI_CHOICES
 from noc.peer.models import AS
@@ -57,6 +58,9 @@ class Prefix(models.Model):
         help_text=_("Autonomous system granted with prefix"),
         default=AS.default_as
     )
+    project = models.ForeignKey(
+        Project, verbose_name="Project",
+        null=True, blank=True, related_name="prefix_set")
     vc = models.ForeignKey(
         VC,
         verbose_name=_("VC"),
