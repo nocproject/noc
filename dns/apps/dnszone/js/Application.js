@@ -53,7 +53,8 @@ Ext.define("NOC.dns.dnszone.Application", {
             dataIndex: "paid_till",
             width: 100,
             format: "Y-m-d",
-            startDay: 1
+            startDay: 1,
+            renderer: NOC.render.Date
         },
         {
             text: "Notification",
