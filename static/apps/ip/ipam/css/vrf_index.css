@@ -63,6 +63,10 @@ th[class=gw] {
     width: 1em;
 }
 
+th[class=project] {
+    width: 5em;
+}
+
 #ranges th[class=legend] {
     width: 1em;
 }

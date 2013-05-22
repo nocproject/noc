@@ -13,6 +13,7 @@ Ext.define("NOC.ip.vrf.Application", {
         "NOC.ip.vrfgroup.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.resourcestate.LookupField",
+        "NOC.project.project.LookupField",
         "NOC.core.TagsField"
     ],
     model: "NOC.ip.vrf.Model",
@@ -32,6 +33,11 @@ Ext.define("NOC.ip.vrf.Application", {
             text: "Group",
             dataIndex: "vrf_group",
             renderer: NOC.render.Lookup("vrf_group")
+        },
+        {
+            text: "Project",
+            dataIndex: "project",
+            renderer: NOC.render.Lookup("project")
         },
         {
             text: "RD",
@@ -79,6 +85,12 @@ Ext.define("NOC.ip.vrf.Application", {
             xtype: "ip.vrfgroup.LookupField",
             fieldLabel: "VRF Group",
             allowBlank: false
+        },
+        {
+            name: "project",
+            xtype: "project.project.LookupField",
+            fieldLabel: "Project",
+            allowBlank: true
         },
         {
             name: "rd",
@@ -142,6 +154,12 @@ Ext.define("NOC.ip.vrf.Application", {
             name: "vrf_group",
             ftype: "lookup",
             lookup: "ip.vrfgroup"
+        },
+        {
+            title: "By Project",
+            name: "project",
+            ftype: "lookup",
+            lookup: "project.project"
         },
         {
             title: "By IPv4",
