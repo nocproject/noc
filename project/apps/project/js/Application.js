@@ -90,5 +90,10 @@ Ext.define("NOC.project.project.Application", {
     onProjectResources: function() {
         var me = this;
         me.showProjectResources(me.currentRecord);
+    },
+    //
+    onPreview: function(record) {
+        var me = this;
+        me.showProjectResources(record);
     }
 });
