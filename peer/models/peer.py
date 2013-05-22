@@ -9,6 +9,7 @@
 ## Django modules
 from django.db import models
 ## Peer modules
+from noc.project.models.project import Project
 from asn import AS
 from peergroup import PeerGroup
 from peeringpoint import PeeringPoint
@@ -30,6 +31,9 @@ class Peer(models.Model):
 
     peer_group = models.ForeignKey(
         PeerGroup, verbose_name="Peer Group")
+    project = models.ForeignKey(
+        Project, verbose_name="Project",
+        null=True, blank=True, related_name="peer_set")
     peering_point = models.ForeignKey(
         PeeringPoint, verbose_name="Peering Point")
     local_asn = models.ForeignKey(AS, verbose_name="Local AS")

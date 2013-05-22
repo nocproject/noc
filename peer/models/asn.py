@@ -9,7 +9,10 @@
 ## Django modules
 from django.db import models
 ## NOC modules
-from noc.peer.models import Organisation, Person, Maintainer
+from noc.project.models.project import Project
+from person import Person
+from organisation import Organisation
+from maintainer import Maintainer
 from rir import RIR
 from noc.settings import config
 from noc.lib.rpsl import rpsl_format
@@ -27,9 +30,13 @@ class AS(models.Model):
     asn = models.IntegerField("ASN", unique=True)
     # as-name RPSL Field
     as_name = models.CharField("AS Name", max_length=64, null=True, blank=True)
+    project = models.ForeignKey(
+        Project, verbose_name="Project",
+        null=True, blank=True, related_name="asn_set")
     # RPSL descr field
     description = models.CharField("Description", max_length=64)
-    organisation = models.ForeignKey(Organisation, verbose_name="Organisation")
+    organisation = models.ForeignKey(
+        Organisation, verbose_name="Organisation")
     administrative_contacts = models.ManyToManyField(
         Person,
         verbose_name="admin-c",

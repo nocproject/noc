@@ -12,6 +12,7 @@ Ext.define("NOC.peer.peer.Application", {
         "NOC.peer.peer.Model",
         "NOC.peer.peeringpoint.LookupField",
         "NOC.peer.peergroup.LookupField",
+        "NOC.project.project.LookupField",
         "NOC.core.TagsField",
         "NOC.peer.as.LookupField"
     ],
@@ -29,6 +30,11 @@ Ext.define("NOC.peer.peer.Application", {
             flex: 1,
             dataIndex: "peer_group",
             renderer: NOC.render.Lookup("peer_group")
+        },
+        {
+            text: "Project",
+            dataIndex: "project",
+            renderer: NOC.render.Lookup("project")
         },
         {
             text: "Local AS",
@@ -118,6 +124,13 @@ Ext.define("NOC.peer.peer.Application", {
                     fieldLabel: "Peer Group",
                     width: 400,
                     allowBlank: false
+                },
+                {
+                    name: "project",
+                    xtype: "project.project.LookupField",
+                    fieldLabel: "Project",
+                    width: 400,
+                    allowBlank: true
                 },
                 {
                     name: "local_asn",
