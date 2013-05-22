@@ -82,6 +82,16 @@ NOC.render.WrapColumn = function (val){
     return '<div style="white-space:normal !important;">'+ val +'</div>';
 };
 
+NOC.render.Date = function(val) {
+    if(!val) {
+        return "";
+    }
+    var d = val.getDate(),
+        m = val.getMonth() + 1,
+        y = val.getFullYear();
+    return '' + y + '-' + (m<=9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+};
+
 //
 // Run new Map/Reduce task
 // Usage:
