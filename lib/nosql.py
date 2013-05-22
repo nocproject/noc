@@ -119,6 +119,11 @@ class PlainReferenceField(BaseField):
     def lookup_member(self, name):
         return self.document_type._fields.get(name)
 
+    def prepare_query_value(self, op, value):
+        if value is None:
+            return None
+        return self.to_mongo(value)
+
 
 class PlainReferenceListField(PlainReferenceField):
     def __get__(self, instance, owner):
@@ -221,6 +226,11 @@ class ForeignKeyField(BaseField):
 
     def lookup_member(self, name):
         return None
+
+    def prepare_query_value(self, op, value):
+        if value is None:
+            return None
+        return self.to_mongo(value)
 
 
 ESC1 = "__"  # Escape for '.'
