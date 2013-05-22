@@ -15,7 +15,17 @@
     {{#each dnszone}}
     <tr>
         <td>{{label}}</td>
-        <td style="width: 100px">-</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+
+    {{#if as.length}}
+    <tr><th colspan="2"><b>AS</b></th></tr>
+    {{/if}}
+    {{#each as}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
     </tr>
     {{/each}}
 
@@ -25,7 +35,7 @@
     {{#each vrf}}
     <tr>
         <td>{{label}}</td>
-        <td style="width: 100px">-</td>
+        <td style="width: 100px">{{state__label}}</td>
     </tr>
     {{/each}}
 
@@ -35,7 +45,7 @@
     {{#each prefix}}
     <tr>
         <td>{{label}}</td>
-        <td style="width: 100px">-</td>
+        <td style="width: 100px">{{state__label}}</td>
     </tr>
     {{/each}}
 
@@ -45,7 +55,17 @@
     {{#each address}}
     <tr>
         <td>{{label}}</td>
-        <td style="width: 100px">-</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+
+    {{#if peer.length}}
+    <tr><th colspan="2"><b>Peers</b></th></tr>
+    {{/if}}
+    {{#each peer}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
     </tr>
     {{/each}}
 </table>

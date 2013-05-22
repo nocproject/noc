@@ -34,6 +34,15 @@ Ext.define("NOC.peer.peer.Model", {
             persist:false
         },
         {
+            name: "project",
+            type: "int"
+        },
+        {
+            name: "project__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "local_asn",
             type: "string"
         },
