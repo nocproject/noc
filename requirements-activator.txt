@@ -1,0 +1,6 @@
+gmpy==1.16
+pycrypto>=2.6
+netifaces>=0.8
+protobuf==2.4.1
+pyasn1==0.1.2
+pysnmp==4.2.1
