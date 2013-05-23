@@ -1,8 +1,8 @@
 VERSION
 __init__.py
 etc/noc-activator.defaults
-etc/noc-launcher.defaults
 etc/noc.defaults
+etc/manifests/sync.defaults
 etc/ssh/
 lib/__init__.py
 lib/daemon.py
