@@ -2,7 +2,8 @@ VERSION
 __init__.py
 etc/noc-activator.defaults
 etc/noc.defaults
-etc/manifests/sync.defaults
+etc/manifests/activator.defaults
+etc/requirements/activator.txt
 etc/ssh/
 lib/__init__.py
 lib/daemon.py
@@ -13,11 +14,11 @@ lib/fileutils.py
 lib/fsm.py
 lib/ip.py
 lib/mac.py
-lib/nbsocket/*.py
-lib/nbsocket/protocols/*.py
+lib/nbsocket/
 lib/pmhash.py
 lib/pyquote.py
 lib/registry.py
+lib/serialize.py
 lib/text.py
 lib/validators.py
 lib/version.py
@@ -35,6 +36,7 @@ sa/rpc.py
 sa/script/
 scripts/noc-activator.py
 scripts/noc-launcher.py
+scripts/install-pth.py
 scripts/stdin-wrapper
 settings.py
 requirements-activator.txt
