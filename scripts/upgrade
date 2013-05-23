@@ -155,7 +155,7 @@ fi
 ## Update required python modules
 ##
 info "Updating python libraries"
-./bin/pip install -r requirements.txt || error_exit "$LINENO: Cannot update python libraries"
+./bin/pip install -r etc/requirements/noc.txt || error_exit "$LINENO: Cannot update python libraries"
 ##
 ## Install noc.pth
 ##
