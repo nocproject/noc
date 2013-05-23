@@ -77,7 +77,7 @@ class Web(Daemon):
                 "path": "static"}),
             # /media/
             (r"^/media/(.*)", tornado.web.StaticFileHandler, {
-                "path": "lib/python%d.%d/site-packages/django/contrib/admin/static" % (vi.major, vi.minor)
+                "path": "lib/python%d.%d/site-packages/django/contrib/admin/static" % (vi[0], vi[1])
             }),
             # NOC application's js, img and css files
             # @todo: write proper static handler
