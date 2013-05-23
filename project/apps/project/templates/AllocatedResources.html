@@ -29,6 +29,16 @@
     </tr>
     {{/each}}
 
+    {{#if asset.length}}
+    <tr><th colspan="2"><b>as-set</b></th></tr>
+    {{/if}}
+    {{#each asset}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+
     {{#if vrf.length}}
     <tr><th colspan="2"><b>VRF</b></th></tr>
     {{/if}}

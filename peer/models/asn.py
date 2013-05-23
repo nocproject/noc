@@ -32,7 +32,7 @@ class AS(models.Model):
     as_name = models.CharField("AS Name", max_length=64, null=True, blank=True)
     project = models.ForeignKey(
         Project, verbose_name="Project",
-        null=True, blank=True, related_name="asn_set")
+        null=True, blank=True, related_name="as_set")
     # RPSL descr field
     description = models.CharField("Description", max_length=64)
     organisation = models.ForeignKey(

@@ -25,7 +25,7 @@ class ASSet(models.Model):
     name = models.CharField("Name", max_length=32, unique=True)
     project = models.ForeignKey(
         Project, verbose_name="Project",
-        null=True, blank=True, related_name="as_set")
+        null=True, blank=True, related_name="asset_set")
     description = models.CharField("Description", max_length=64)
     members = models.TextField("Members", null=True, blank=True)
     rpsl_header = models.TextField("RPSL Header", null=True, blank=True)
