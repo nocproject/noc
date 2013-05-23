@@ -45,3 +45,7 @@ listen_tftp =
 
 [ssh]
 key = etc/ssh/id_rsa
+
+[update]
+name = activator
+enabled = false

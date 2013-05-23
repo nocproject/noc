@@ -39,4 +39,3 @@ scripts/noc-launcher.py
 scripts/install-pth.py
 scripts/stdin-wrapper
 settings.py
-requirements-activator.txt
