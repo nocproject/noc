@@ -49,17 +49,7 @@ def get_version():
 
 def get_pg_version():
     with os.popen("pg_config --version") as f:
-        return f.read().strip()
-
-
-def get_psycopg_version():
-    import psycopg2
-    return psycopg2.__version__
-
-
-def get_pymongo_version():
-    import pymongo
-    return pymongo.version
+        return f.read().strip().split(" ", 1)[1]
 
 
 def get_mongo_version():
@@ -96,6 +86,14 @@ def get_brand():
     return None
 
 
+def get_python_packages():
+    o = check_output(["./bin/pip", "freeze"])
+    r = []
+    for l in o.splitlines():
+        r += [l.split("==", 1)]
+    return r
+
+
 def about():
     versions = [
         ["NOC", get_version()],
@@ -108,10 +106,9 @@ def about():
         ["Python", sys.version],
         ["PostgreSQL", get_pg_version()],
         ["MongoDB", get_mongo_version()],
-        ["Python Path", ":".join(sys.path)],
-        ["psycopg2", get_psycopg_version()],
-        ["pymongo", get_pymongo_version()]
+        ["Python Path", ":".join(sys.path)]
     ]
+    versions += get_python_packages()
     for c, v in versions:
         print "|%s|%s|" % (c, v.replace("\n", " "))
 
