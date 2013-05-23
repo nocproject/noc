@@ -17,11 +17,15 @@ class Script(NOCScript):
     implements = [IGetARP]
 
     rx_line = re.compile(
-        r"^(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2})\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<interface>\S+)")
+        r"^(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2})\s+"
+        r"(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
+        r"(?P<interface>\S+)"
+    )
 
     def execute(self, vrf=None):
-        if vrf:
-            cmd = "show arp no-resolve vpn %s" % vrf
-        else:
-            cmd = "show arp no-resolve"
-        return self.cli(cmd, list_re=self.rx_line)
+        if not vrf:
+            vrf = "default"
+        return self.cli(
+            "show arp no-resolve vpn %s" % vrf,
+            list_re=self.rx_line
+        )
