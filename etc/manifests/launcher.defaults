@@ -8,5 +8,4 @@ lib/updateclient.py
 main/__init__.py
 main/launcher.py
 scripts/noc-launcher.py
-scripts/set_env.py
 settings.py

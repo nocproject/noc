@@ -1,5 +1,6 @@
 etc/noc-sync.defaults
 etc/manifests/sync.defaults
+etc/requirements/sync.txt
 dns/__init__.py
 dns/utils/__init__.py
 dns/utils/zonefile.py
@@ -14,7 +15,6 @@ lib/stomp/
 lib/validators.py
 lib/version.py
 scripts/noc-sync.py
-scripts/set_env.py
 main/sync/channel.py
 main/sync/daemon.py
 main/sync/channels/__init__.py
