@@ -37,7 +37,8 @@ class ProjectApplication(ExtModelApplication):
             "vrf": [f(o) for o in project.vrf_set.all()],
             "prefix": [f(o) for o in project.prefix_set.all()],
             "address": [f(o) for o in project.address_set.all()],
-            "as": [f(o) for o in project.asn_set.all()],
+            "as": [f(o) for o in project.as_set.all()],
+            "asset": [f(o) for o in project.asset_set.all()],
             "peer": [f(o) for o in project.peer_set.all()],
         }
         return r
