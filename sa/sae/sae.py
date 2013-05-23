@@ -73,9 +73,6 @@ class SAE(Daemon):
         self.sae_listener = None
         self.sae_ssl_listener = None
         #
-        self.activator_manifest = None
-        self.activator_manifest_files = None
-        #
         self.mo_cache = {}  # object_id -> Managed Object
         #
         t = time.time()
@@ -120,43 +117,6 @@ class SAE(Daemon):
         # Settings
         self.mrt_schedule_interval = 1
         self.activator_status_interval = 60
-
-    def build_manifest(self):
-        """
-        Build activator manifest
-        """
-        logging.info("Building manifest")
-        manifest = read_file("MANIFEST-ACTIVATOR").split("\n")
-        manifest = [x.strip() for x in manifest if x]
-        self.activator_manifest = ManifestResponse()
-        self.activator_manifest_files = set()
-        has_errors = False
-        files = set()
-        for f in manifest:
-            if "*" in f:
-                ff = glob.glob(f)
-            else:
-                ff = [f]
-            for g in ff:
-                if os.path.isdir(g):
-                    for dirpath, dirnames, filenames in os.walk(g):
-                        if "tests" in dirpath.split(os.sep):
-                            continue
-                        for f in [f for f in filenames if f.endswith(".py")]:
-                            files.add(os.path.join(dirpath, f))
-                else:
-                    files.add(g)
-        for f in files:
-            self.activator_manifest_files.add(f)
-            cs = self.activator_manifest.files.add()
-            cs.name = f
-            try:
-                cs.hash = file_hash(f)
-            except IOError:
-                logging.error("Error while building activator manifest. "
-                              "File %s is not found" % f)
-                has_errors = True
-        return not has_errors
 
     def start_listeners(self):
         """
@@ -226,9 +186,6 @@ class SAE(Daemon):
         """
         Run SAE daemon event loop
         """
-        if not self.build_manifest():
-            logging.error("Inconsistent MANIFEST-ACTIVATOR file. Exiting")
-            os._exit(1)
         logging.info("Cleaning activator capabilities cache")
         ActivatorCapabilitiesCache.reset_cache(self.shards)
         self.start_listeners()
