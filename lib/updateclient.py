@@ -146,7 +146,8 @@ class UpdateClient(object):
             else:
                 # Delete files
                 self.debug("Deleting %s" % path)
-                os.unlink(path)
+                if os.path.exists(path):
+                    os.unlink(path)
         if data:
             self.info("System has been updated")
         else:
