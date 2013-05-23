@@ -286,7 +286,7 @@ class Launcher(Daemon):
         if not self.update_names:
             return
         # Update
-        logging.info("Checking for updates")
+        logging.info("Checking for updates: %s" % ", ".join(self.update_names))
         uc = UpdateClient(self.update_url, self.update_names)
         if uc.request_update():
             # Updated, restart
