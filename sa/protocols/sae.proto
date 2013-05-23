@@ -199,33 +199,6 @@ message ScriptResponse {
 }
 
 //
-// Software Upgrade
-//
-message FileChecksum {
-    required string name   = 1; // Relative file name
-    required string hash   = 2; // SHA1 hexdigest
-}
-
-message ManifestRequest {
-}
-
-message ManifestResponse {
-    repeated FileChecksum files = 1;
-}
-
-message SoftwareUpgradeRequest {
-    repeated string names = 1; // Relative file names
-}
-
-message FileCode {
-    required string name = 1;
-    required string code = 2;
-}
-
-message SoftwareUpgradeResponse {
-    repeated FileCode codes = 1;
-}
-//
 // Event processing
 //
 message RefreshObjectMappingsRequest{
@@ -353,8 +326,6 @@ service SAEService {
     rpc ping             (PingRequest)            returns (PingResponse);
     rpc register         (RegisterRequest)        returns (RegisterResponse);
     rpc auth             (AuthRequest)            returns (AuthResponse);
-    rpc manifest         (ManifestRequest)        returns (ManifestResponse);
-    rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeResponse);
     rpc set_caps         (SetCapsRequest)         returns (SetCapsResponse);
     rpc script           (ScriptRequest)          returns (ScriptResponse);
     rpc refresh_object_mappings (RefreshObjectMappingsRequest) returns (RefreshObjectMappingsResponse);

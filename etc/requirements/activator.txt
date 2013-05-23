@@ -1,7 +1,7 @@
 gmpy==1.16
 pycrypto>=2.6
 netifaces>=0.8
-protobuf==2.4.1
+protobuf==2.5.0
 pyasn1==0.1.2
 pysnmp==4.2.1
 python-cjson>=1.0.5

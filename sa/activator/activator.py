@@ -22,12 +22,12 @@ from threading import RLock
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
 from noc.sa.script.ssh.keys import Key
-from noc.sa.rpc import (file_hash, get_digest,
+from noc.sa.rpc import (get_digest,
                         PROTOCOL_NAME, PROTOCOL_VERSION, PUBLIC_KEYS,
                         CIPHERS, MACS, COMPRESSIONS, KEY_EXCHANGES)
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.activator.servers import ServersHub
-from noc.lib.fileutils import safe_rewrite, read_file
+from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM, check_state
 from noc.lib.nbsocket.socketfactory import SocketFactory
@@ -63,7 +63,6 @@ class Activator(Daemon, FSM):
                 "timeout" : "IDLE",
                 "close"   : "IDLE",
                 "setup"   : "SETUP",
-                "upgrade" : "UPGRADE",
                 "error"   : "IDLE",
         },
         ## Protocol version negotiated
@@ -100,11 +99,6 @@ class Activator(Daemon, FSM):
                 "caps"    : "CAPS",
                 "close"   : "IDLE",
         },
-        "UPGRADE" : {
-                "setup"   : "SETUP",
-                "close"   : "IDLE",
-                "refused" : "IDLE"
-        },
         "CAPS" : {
                 "establish" : "ESTABLISHED",
         },
@@ -117,9 +111,6 @@ class Activator(Daemon, FSM):
         Daemon.__init__(self)
         self.activator_name = self.config.get("activator", "name")
         logging.info("Running activator '%s'" % self.activator_name)
-        # Check wrether activator started in bundle or in stand-alone mode
-        self.stand_alone_mode = (self.config.getboolean("activator", "software_update")
-                                 and not os.path.exists(os.path.join("sa", "sae", "sae.py")))
         self.service = Service()
         self.service.activator = self
         self.factory = SocketFactory(
@@ -229,12 +220,8 @@ class Activator(Daemon, FSM):
         """
         Entering CONNECTED state
         """
-        self.set_timeout(10)
-        if self.stand_alone_mode:
-            self.event("upgrade")
-        else:
-            logging.info("Bundled packaging. Skipping software updates")
-            self.protocol()
+        self.set_timeout(3)
+        self.protocol()
 
     def on_SETUP_enter(self):
         """
@@ -271,13 +258,6 @@ class Activator(Daemon, FSM):
         self.set_timeout(10)
         self.event("caps")
 
-    def on_UPGRADE_enter(self):
-        """
-        Entering UPGRADE state
-        """
-        logging.info("Requesting software update")
-        self.manifest()
-
     def on_CAPS_enter(self):
         """
         Entering CAPS state
@@ -307,8 +287,6 @@ class Activator(Daemon, FSM):
                 to_refresh_filters = True
         if to_refresh_filters:
             self.get_object_mappings()
-        if self.stand_alone_mode:
-            self.check_crashinfo()
 
     def start_trap_collectors(self):
         """
@@ -461,10 +439,6 @@ class Activator(Daemon, FSM):
         if (self.get_state() == "ESTABLISHED" and self.next_mappings_update and
             t > self.next_mappings_update):
             self.get_object_mappings()
-        # Check for pending crashinfos
-        if (self.stand_alone_mode  and self.get_state() == "ESTABLISHED" and
-            self.next_crashinfo_check and t > self.next_crashinfo_check):
-            self.check_crashinfo()
         # Perform delayed calls
         while not self.script_call_queue.empty():
             try:
@@ -505,7 +479,7 @@ class Activator(Daemon, FSM):
         logging.info("Rebooting")
         os.execv(sys.executable, [sys.executable] + sys.argv)
 
-    @check_state("CONNECTED", "UPGRADE")
+    @check_state("CONNECTED")
     def protocol(self):
         """ Start protocol negotiation """
         def protocol_callback(transaction, response=None, error=None):
@@ -521,11 +495,7 @@ class Activator(Daemon, FSM):
                 self.event("error")
                 return
             logging.info("Protocol version negotiated")
-            if self.stand_alone_mode:
-                self.event("upgrade")
-            else:
-                logging.info("In-bundle package. Skiping software updates")
-                self.event("setup")
+            self.event("setup")
 
         logging.info("Negotiation protocol '%s' version '%s'" % (
             PROTOCOL_NAME, PROTOCOL_VERSION))
@@ -615,56 +585,6 @@ class Activator(Daemon, FSM):
                               self.config.get("activator", "secret"),
                               self.nonce))
         self.sae_stream.proxy.auth(r, auth_callback)
-
-    @check_state("UPGRADE")
-    def manifest(self):
-        def manifest_callback(transaction, response=None, error=None):
-            if self.get_state() != "UPGRADE":
-                return
-            if error:
-                logging.error("Manifest error: %s" % error.text)
-                self.manifest_transaction = None
-                return
-            if transaction.id == self.manifest_transaction.id:
-                update_list = [cs.name for cs in response.files
-                               if (not os.path.exists(cs.name) or
-                                   cs.hash != file_hash(cs.name))]
-                self.manifest_transaction = None
-                if update_list:
-                    self.software_upgrade(update_list)
-                else:
-                    self.protocol()
-                    self.event("setup")
-            else:
-                logging.error("Transaction id mismatch")
-                self.manifest_transaction = None
-
-        logging.info("Requesting manifest")
-        r = ManifestRequest()
-        self.manifest_transaction = self.sae_stream.proxy.manifest(r, manifest_callback)
-
-    @check_state("UPGRADE")
-    def software_upgrade(self, update_list):
-        def software_upgrade_callback(transaction, response=None, error=None):
-            if error:
-                logging.error("Upgrade error: %s" % error.text)
-                self.software_upgrade_transaction = None
-                return
-            if transaction.id == self.software_upgrade_transaction.id:
-                logging.info("Upgrading software")
-                for u in response.codes:
-                    logging.info("Upgrade: %s" % u.name)
-                    safe_rewrite(u.name, u.code)
-                self.software_upgrade_transaction = None
-                self.reboot()
-            else:
-                logging.error("Transaction id mismatch")
-                self.software_upgrade_transaction = None
-        logging.debug("Requesting software upgrade for %s" % str(update_list))
-        r = SoftwareUpgradeRequest()
-        for f in update_list:
-            r.names.append(f)
-        self.software_upgrade_transaction = self.sae_stream.proxy.software_upgrade(r, software_upgrade_callback)
 
     @check_state("CAPS")
     def send_caps(self):

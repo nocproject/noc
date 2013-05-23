@@ -177,28 +177,6 @@ class Service(SAEService):
         self.sae.join_activator_pool(request.name, controller.stream)
         done(controller, response=r)
 
-    def manifest(self, controller, request, done):
-        """
-        Handle RCP manifest request
-        """
-        done(controller, response=self.sae.activator_manifest)
-
-    def software_upgrade(self, controller, request, done):
-        """
-        Handle RPC software upgrade request
-        """
-        r = SoftwareUpgradeResponse()
-        for n in request.names:
-            if n not in self.sae.activator_manifest_files:
-                done(controller,
-                     error=Error(code=ERR_INVALID_UPGRADE,
-                                 text="Invalid file requested for upgrade: %s" % n))
-                return
-            u = r.codes.add()
-            u.name = n
-            u.code = read_file(n)
-        done(controller, response=r)
-
     def set_caps(self, controller, request, done):
         """
         Handle RPC set_caps request
