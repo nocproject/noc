@@ -12,7 +12,8 @@ import os
 
 
 def find_site_packages():
-    return [p for p in sys.path if p.endswith("site-packages")][-1]
+    vi = sys.version_info
+    return "lib/python%d.%d/site-packages" % (vi[0], vi[1])
 
 
 def get_pth():
