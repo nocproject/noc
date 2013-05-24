@@ -167,6 +167,11 @@ class PlainReferenceListField(PlainReferenceField):
         else:
             return document
 
+    def prepare_query_value(self, op, value):
+        if value is None:
+            return None
+        return PlainReferenceField.to_mongo(self, value)
+
 
 class ForeignKeyField(BaseField):
     """
