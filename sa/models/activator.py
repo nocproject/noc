@@ -12,6 +12,7 @@ from django.db import models
 ## NOC modules
 from activatorcapabilitiescache import ActivatorCapabilitiesCache
 from noc.main.models import Shard
+from noc.main.models.prefixtable import PrefixTable
 from noc.lib.fields import TagsField
 from noc.lib.app.site import site
 
@@ -30,10 +31,9 @@ class Activator(models.Model):
 
     name = models.CharField(_("Name"), max_length=32, unique=True)
     shard = models.ForeignKey(Shard, verbose_name=_("Shard"))
-    ip = models.IPAddressField(_("From IP"))
-    to_ip = models.IPAddressField(_("To IP"))
-    auth = models.CharField(_("Auth String"), max_length=64)
     is_active = models.BooleanField(_("Is Active"), default=True)
+    prefix_table = models.ForeignKey(PrefixTable, verbose_name=_("Prefix Table"))
+    auth = models.CharField(_("Auth String"), max_length=64)
     tags = TagsField(_("Tags"), null=True, blank=True)
 
     def __unicode__(self):
@@ -49,10 +49,17 @@ class Activator(models.Model):
 
         :param ip: IP address
         :type ip: String
-        :rtype: Bool
+        :rtype: bool
         """
-        return Activator.objects.filter(
-            ip__gte=ip, to_ip__lte=ip).exists()
+        return Activator.objects.filter(is_active=True).extra(
+            tables=["main_prefixtable", "main_prefixtableprefix"],
+            where=[
+                "main_prefixtable.id=main_prefixtableprefix.table_id",
+                "sa_activator.prefix_table_id=main_prefixtable.id",
+                "%s::inet <<= main_prefixtableprefix.prefix"
+                ],
+            params=[ip]
+        ).exists()
 
     @property
     def capabilities(self):

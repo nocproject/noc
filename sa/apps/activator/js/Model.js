@@ -29,12 +29,13 @@ Ext.define("NOC.sa.activator.Model", {
             persist: false
         },
         {
-            name: "ip",
-            type: "string"
+            name: "prefix_table",
+            type: "int"
         },
         {
-            name: "to_ip",
-            type: "string"
+            name: "prefix_table__label",
+            type: "string",
+            persist: false
         },
         {
             name: "auth",
