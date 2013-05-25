@@ -1202,7 +1202,7 @@ class TagsParameter(Parameter):
     """
     def clean(self, value):
         if type(value) in (list, tuple):
-            v = [str(v).strip() for v in value]
+            v = [unicode(v).strip() for v in value]
             return [x for x in v if x]
         elif isinstance(value, basestring):
             v = [x.strip() for x in value.split(",")]
