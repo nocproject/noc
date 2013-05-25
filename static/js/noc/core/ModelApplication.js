@@ -544,6 +544,7 @@ Ext.define("NOC.core.ModelApplication", {
                     record.setDirty();
                 }
                 this.showOpError("save", op, status);
+                console.log(response.responseText);
             }
         });
     },
