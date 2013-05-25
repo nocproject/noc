@@ -28,9 +28,8 @@ from noc.sa.models import (Activator, ManagedObject, MapTask,
                            script_registry, profile_registry,
                            ActivatorCapabilitiesCache, FailedScriptLog)
 from noc.fm.models import NewEvent
-from noc.sa.rpc import RPCSocket, file_hash
+from noc.sa.rpc import RPCSocket
 from noc.sa.protocols.sae_pb2 import *
-from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
 from noc.lib.nbsocket import SocketFactory
 from noc.lib.ip import IP
@@ -133,12 +132,6 @@ class SAE(Daemon):
         if self.sae_listener is None:
             logging.info("Starting SAE listener at %s:%d" % (sae_listen, sae_port))
             self.sae_listener = self.factory.listen_tcp(sae_listen, sae_port, SAESocket)
-
-    def check_activator_access(self, address):
-        """
-        Check connecting activator address
-        """
-        return Activator.check_ip_access(address)
 
     def update_activator_capabilities(self, pool):
         """

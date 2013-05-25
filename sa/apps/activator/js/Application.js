@@ -11,6 +11,7 @@ Ext.define("NOC.sa.activator.Application", {
     requires: [
         "NOC.sa.activator.Model",
         "NOC.main.shard.LookupField",
+        "NOC.main.prefixtable.LookupField",
         "NOC.core.TagsField"
     ],
     model: "NOC.sa.activator.Model",
@@ -30,12 +31,9 @@ Ext.define("NOC.sa.activator.Application", {
             renderer: NOC.render.Lookup("shard")
         },
         {
-            text: "IP",
-            dataIndex: "ip"
-        },
-        {
-            text: "to IP",
-            dataIndex: "to_ip"
+            text: "Prefix",
+            dataIndex: "prefix_table",
+            renderer: NOC.render.Lookup("prefix_table")
         },
         {
             text: "Tags",
@@ -57,15 +55,9 @@ Ext.define("NOC.sa.activator.Application", {
             allowBlank: false
         },
         {
-            name: "ip",
-            xtype: "textfield",
-            fieldLabel: "From IP",
-            allowBlank: false
-        },
-        {
-            name: "to_ip",
-            xtype: "textfield",
-            fieldLabel: "To IP",
+            name: "prefix_table",
+            xtype: "main.prefixtable.LookupField",
+            fieldLabel: "Prefix Table",
             allowBlank: false
         },
         {
