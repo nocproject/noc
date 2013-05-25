@@ -459,7 +459,48 @@ class IPv4(IP):
     ##
     def set_mask(self, mask=32):
         return self._to_prefix(self.d, mask)
-    
+
+    @classmethod
+    def range_to_prefixes(cls, first, last):
+        """
+        Convert IPv4 address range to minimal list of covering prefixes
+
+        >>> IPv4.range_to_prefixes('192.168.0.2', '192.168.0.2')
+        [<IPv4 192.168.0.2/32>]
+        >>> IPv4.range_to_prefixes('192.168.0.2', '192.168.0.16')
+        [<IPv4 192.168.0.2/31>, <IPv4 192.168.0.4/30>, <IPv4 192.168.0.8/29>, <IPv4 192.168.0.16/32>]
+        >>> IPv4.range_to_prefixes('0.0.0.0', '255.255.255.255')
+        [<IPv4 0.0.0.0/0>]
+
+        :param cls:
+        :param first:
+        :param last:
+        :return:
+        """
+        r = []
+        if isinstance(first, basestring):
+            first = IPv4(first)
+        if isinstance(last, basestring):
+            last = IPv4(last)
+        while first <= last:
+            d = first.d
+            n = 0
+            m = 2
+            while d % m == 0 and n < 32:
+                if IPv4("%s/%d" % (first.prefix.split("/")[0], 31 - n)).last < last:
+                    n += 1
+                    m <<= 1
+                else:
+                    break
+            pfx = IPv4("%s/%d" % (first.prefix.split("/")[0], 32 - n))
+            r += [pfx]
+            nfirst = pfx.last + 1
+            if nfirst.d == first.d:
+                # 255.255.255.255 + 1 -> 0.0.0.0
+                break
+            else:
+                first = nfirst
+        return r
 
 ##
 ## IPv6 prefix
