@@ -1,0 +1,11 @@
+##
+## Debian 7.0 NOC Vagrantfile
+##
+Vagrant.configure("2") do |config|
+    config.vm.box = "noc-x86_64-Ubuntu-12.04";
+    # config.vm.box_url = ""
+    config.vm.hostname = "noc"
+    config.vm.provision :shell, :path => "./bootstrap.sh", :args => "--test"
+    config.ssh.default.username = "user"
+
+end
