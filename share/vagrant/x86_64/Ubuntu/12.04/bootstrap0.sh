@@ -101,5 +101,5 @@ info "Fetching NOC"
 hg clone http://hg.nocproject.org/noc noc
 if [ "$1" != "--no-bootstrap" ]; then
     info "Running bootstrap.sh"
-    /opt/noc/share/vagrant/x86_64/Ubuntu/12.4/bootstrap.sh
+    /opt/noc/share/vagrant/x86_64/Ubuntu/12.04/bootstrap.sh
 fi

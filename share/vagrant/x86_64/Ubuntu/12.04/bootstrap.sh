@@ -8,7 +8,7 @@
 ##----------------------------------------------------------------------
 
 PROGNAME=`basename $0`
-DIST=/opt/noc/share/vagrant/x86_64/Ubuntu/12.4
+DIST=/opt/noc/share/vagrant/x86_64/Ubuntu/12.04
 if [ "$1" = "--test" ]; then
     TEST=0
     echo "Running in the test mode...."
