@@ -112,7 +112,7 @@ class UpdateClient(object):
         b = os.path.basename(path)
         h, p = tempfile.mkstemp(suffix=".tmp", prefix=b, dir=d)
         f = os.fdopen(h, "w")
-        f.write(data)
+        f.write(data.encode("utf8"))
         f.close()
         if os.path.exists(path):
             os.unlink(path)
