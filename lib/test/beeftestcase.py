@@ -178,7 +178,7 @@ class BeefTestCase(unittest.TestCase):
                 old_result = self.result
             if noc.settings.TEST_FIXED_BEEF_BASE and old_result != new_result:
                 self.fix_beef(new_result)
-            self.assertEquals(new_result, old_result)
+            self.assertEquals(old_result, new_result)
         else:
             # Exception raised
             self.assertTrue(script.error_traceback is None,
