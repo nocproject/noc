@@ -21,25 +21,27 @@ class Script(NOCScript):
 
     TIMEOUT = 240
 
-    rx_dis_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s+:\s+(?:administratively\s+)?(?P<admin_status>up|down)\n"
-                            r"(?:Line\s+protocol\s+current\s+state\s+:\s+(?P<oper_status>up|down)\n)?"
-                            r"(?:Last line protocol up time :[^\n]+\n)?"
-                            r"(?:Description\s*:\s*(?P<desc>[^\n,]+)(?:, (?:Switch|Router) Port)?\n)?"
-                            r"(?:(?:Route|Switch) Port[^\n]+\n)?"
-                            r"(?:PVID[^\n]+\n)?" # vrp v5.3
-                            r"(?:The Maximum Transmit Unit[^\n]+\n)?" # vrp v5.3
-                            r"(?:Internet protocol processing[^\n]+\n)?" # vrp v5.3
-                            r"(?:Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n)?"
-                            r"IP Sending Frames\' Format is\s+\w+,\s+Hardware\s+(?P<hardw>[^\n]+)\n"
-                            r"(?:Encapsulation\s+(?P<encaps>[^\n]))?",
-                            re.MULTILINE | re.IGNORECASE)
+    rx_iface_sep = re.compile(r"^(\S+) current state\s*:\s+",
+                              re.MULTILINE)
+    rx_line_proto = re.compile(
+        r"Line protocol current state : (?P<o_state>UP|DOWN)",
+        re.IGNORECASE
+    )
+    rx_mac = re.compile(
+        "Hardware address is (?P<mac>[0-9af]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
+    )
+    rx_ipv4 = re.compile(
+        r"Internet Address is (?P<ip>\d{1,2}\.\d{1,2}\.\d{1,2}\.\d{1,2}/\d{1,2})",
+        re.IGNORECASE
+    )
+
+    rx_iftype = re.compile(r"^(\S+?)\d+.*$")
 
     rx_dis_ip_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s+:\s+(?:administratively\s+)?(?P<admin_status>up|down)", re.IGNORECASE)
-    rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}[.\-]\w{4}[.\-]\w{4})", re.MULTILINE | re.IGNORECASE)
+
     rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
-    #rx_sec_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}) Sub", re.MULTILINE | re.IGNORECASE)
+
     rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+", re.MULTILINE)
-    rx_huawei_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?)$", re.IGNORECASE)
 
     types = {
         "Aux": "physical",
@@ -108,74 +110,83 @@ class Script(NOCScript):
         ospfs = self.get_ospfint()
 
         v = self.cli("display interface")
-        for match in self.rx_dis_int.finditer(v):
-            full_ifname = match.group("interface")
+        il = self.rx_iface_sep.split(v)[1:]
+        for full_ifname, data in zip(il[::2], il[1::2]):
             ifname = self.profile.convert_interface_name(full_ifname)
-
-            if ifname in ["NULL"]:
+            if ifname.startswith("NULL"):
                 continue
-
-            a_stat = match.group("admin_status").lower() == "up"
-            if match.group("oper_status"):
-                o_stat = match.group("oper_status").lower() == "up"
-            else:
-                o_stat = a_stat
-
-            hw = match.group("hardw")
-
             sub = {
                 "name": ifname,
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "enabled_protocols": []
+                "admin_status": True,
+                "oper_status": True,
+                "enabled_protocols": [],
+                "enabled_afi": []
             }
-
-            if match.group("desc") and match.group("desc") != "---":
-                sub["description"] = match.group("desc")
-
-            matchmac = self.rx_mac.search(hw)
-            if matchmac:
-                sub["mac"] = matchmac.group("mac")
-
-            if ifname in switchports and ifname not in portchannel_members:
-                sub["enabled_afi"] = ['BRIDGE']
+            if (ifname in switchports and
+                        ifname not in portchannel_members):
+                # Bridge
+                sub["enabled_afi"] += ['BRIDGE']
                 u, t = switchports[ifname]
                 if u:
                     sub["untagged_vlan"] = u
                 if t:
                     sub["tagged_vlans"] = t
-
-            # Static vlans
-            if match.group("encaps"):
-                encaps = match.group("encaps")
-                if encaps[:6] == "802.1Q":
-                    sub["vlan_ids"] = [encaps.split(",")[2].split()[2]]
-
-            # IPv4
-            if match.group("ip"):
-                if ifname in ipv4_interfaces:
-                    sub["enabled_afi"] = ['IPv4']
-                    sub["ipv4_addresses"] = ipv4_interfaces[ifname]
+            elif ifname in ipv4_interfaces:
+                # IPv4
+                sub["enabled_afi"] = ['IPv4']
+                sub["ipv4_addresses"] = ipv4_interfaces[ifname]
             if ifname in ospfs:
+                # OSPF
                 sub["enabled_protocols"] += ["OSPF"]
-
+            if ifname.lower().startswith("vlanif"):
+                # SVI
+                sub["vlan_ids"] = int(ifname[6:].strip())
+            # Parse data
+            a_stat, data = data.split("\n", 1)
+            a_stat = a_stat.lower().endswith("up")
+            o_stat = None
+            for l in data.splitlines():
+                # Oper. status
+                if o_stat is None:
+                    match = self.rx_line_proto.search(l)
+                    if match:
+                        o_stat = match.group("o_state").lower().endswith("up")
+                        continue
+                # Process description
+                if l.startswith("Description:"):
+                    d = l[12:].strip()
+                    if d != "---":
+                        sub["description"] = d
+                    continue
+                # MAC
+                if not sub.get("mac"):
+                    match = self.rx_mac.search(l)
+                    if match:
+                        sub["mac"] = match.group("mac")
+                        continue
+                # Static vlans
+                if l.startswith("Encapsulation "):
+                    enc = l[14:]
+                    if enc.startswith("802.1Q"):
+                        sub["vlan_ids"] = [enc.split(",")[2].split()[2]]
+                    continue
             if "." not in ifname:
+                if o_stat is None:
+                    o_stat = False
+                match = self.rx_iftype.match(ifname)
+                iftype = self.types[match.group(1)]
                 iface = {
                     "name": ifname,
                     "admin_status": a_stat,
                     "oper_status": o_stat,
-                    "type": self.types[re.sub(r'\d.*', "", ifname)],
+                    "type": iftype,
                     "enabled_protocols": [],
                     "subinterfaces": [sub]
                 }
-                if match.group("desc") and match.group("desc") != "---":
-                    iface["description"] = match.group("desc")
-
                 if "mac" in sub:
                     iface["mac"] = sub["mac"]
-                # Set VLAN IDs for SVI
-                if iface["type"] == "SVI":
-                    sub["vlan_ids"] = [int(ifname[6:].strip())]
+                if "description" in sub:
+                    iface["description"] = sub["description"]
                 # Portchannel member
                 if ifname in portchannel_members:
                     ai, is_lacp = portchannel_members[ifname]
@@ -183,12 +194,7 @@ class Script(NOCScript):
                     iface["enabled_protocols"] += ["LACP"]
                 interfaces += [iface]
             else:
-                # Append additional subinterface
-                try:
-                    interfaces[-1]["subinterfaces"] += [sub]
-                except KeyError:
-                    interfaces[-1]["subinterfaces"] = [sub]
-
+                interfaces[-1]["subinterfaces"] += [sub]
         # Process VRFs
         vrfs = {
             "default": {
