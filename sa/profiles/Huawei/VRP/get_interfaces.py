@@ -140,7 +140,7 @@ class Script(NOCScript):
                 sub["enabled_protocols"] += ["OSPF"]
             if ifname.lower().startswith("vlanif"):
                 # SVI
-                sub["vlan_ids"] = int(ifname[6:].strip())
+                sub["vlan_ids"] = [int(ifname[6:].strip())]
             # Parse data
             a_stat, data = data.split("\n", 1)
             a_stat = a_stat.lower().endswith("up")
