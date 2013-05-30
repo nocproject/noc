@@ -54,54 +54,8 @@ from asset import ASSet
 from peeringpoint import PeeringPoint
 from peergroup import PeerGroup
 from peer import Peer
-
-
-class WhoisASSetMembers(nosql.Document):
-    """
-    as-set -> members lookup
-    """
-    meta = {
-        "collection": "noc.whois.asset.members",
-        "allow_inheritance": False
-    }
-
-    as_set = nosql.StringField(unique=True)
-    members = nosql.ListField(nosql.StringField())
-
-    def __unicode__(self):
-        return self.as_set
-
-    @classmethod
-    def lookup(cls, key):
-        v = cls.objects.filter(as_set=key.upper()).first()
-        if v is None:
-            return []
-        else:
-            return v.members
-
-
-class WhoisOriginRoute(nosql.Document):
-    """
-    origin -> route
-    """
-    meta = {
-        "collection": "noc.whois.origin.route",
-        "allow_inheritance": False
-    }
-
-    origin = nosql.StringField(unique=True)
-    routes = nosql.ListField(nosql.StringField())
-
-    def __unicode__(self):
-        return self.as_set
-
-    @classmethod
-    def lookup(cls, key):
-        v = cls.objects.filter(origin=key.upper()).first()
-        if v is None:
-            return []
-        else:
-            return v.routes
+from whoisassetmembers import WhoisASSetMembers
+from whoisoriginroute import WhoisOriginRoute
 
 
 class WhoisCache(object):
