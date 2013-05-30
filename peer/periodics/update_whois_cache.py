@@ -102,11 +102,13 @@ class Task(NOCTask):
                     n += 1
         return n
 
-    def process_as_set_members(self, db):
+    def process_as_set_members(self):
         """
         Update as-set -> members
         :return:
         """
+        from noc.peer.models.whoisassetmembers import WhoisASSetMembers
+
         r = defaultdict(list)
         if self.use_ripe:
             self.info("Processing RIPE as-set -> members")
@@ -129,20 +131,18 @@ class Task(NOCTask):
         if r:
             # Upload to database
             self.info("Updating noc.whois.asset.members collection")
-            c = db.noc.whois.asset.members
-            c.drop()  # @todo: Use renameCollection() instead
-            c.insert([{"as_set": k, "members": r[k] } for k in r],
-                manipulate=False, check_keys=False)
-            self.info("Reindexing noc.whois.asset.members collection")
-            c.ensure_index("as_set")
-            count = c.count()
+            count = WhoisASSetMembers.upload(
+                [{"as_set": k, "members": r[k]} for k in r]
+            )
             self.info("%d records written into noc.whois.asset.members collection" % count)
 
-    def process_origin_route(self, db):
+    def process_origin_route(self):
         """
         Update origin -> route
         :return:
         """
+        from noc.peer.models.whoisoriginroute import WhoisOriginRoute
+
         r = defaultdict(list)
         if self.use_ripe:
             self.info("Processing RIPE origin -> route")
@@ -162,25 +162,18 @@ class Task(NOCTask):
         if r:
             # Upload to database
             self.info("Updating noc.whois.origin.route collection")
-            c = db.noc.whois.origin.route
-            c.drop()  # @todo: Use renameCollection() instead
-            c.insert([{"origin": k, "routes": r[k] } for k in r],
-                manipulate=False, check_keys=False)
-            self.info("Reindexing noc.whois.origin.route collection")
-            c.ensure_index("origin")
-            count = c.count()
+            count = WhoisOriginRoute.upload(
+                [{"origin": k, "routes": r[k]} for k in r]
+            )
             self.info("%d records written into noc.whois.origin.route collection" % count)
 
     def execute(self):
-        from noc.lib.nosql import get_db
-        
         self._url_cache = {}  # URL -> data
         # Read config
         self.use_ripe = config.getboolean("peer", "use_ripe")
         self.use_arin = config.getboolean("peer", "use_arin")
         self.use_radb = config.getboolean("peer", "use_radb")
         # Process
-        db = get_db()
-        self.process_as_set_members(db)
-        self.process_origin_route(db)
+        self.process_as_set_members()
+        self.process_origin_route()
         return True
