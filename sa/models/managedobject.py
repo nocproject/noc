@@ -424,15 +424,16 @@ class ManagedObject(models.Model):
             ("enable_version_inventory", "version_inventory", 5),
             ("enable_config_polling", "config_discovery", 20),
             ("enable_interface_discovery", "interface_discovery", 20),
+            ("enable_vlan_discovery", "vlan_discovery", 7),
             ("enable_lldp_discovery", "lldp_discovery", 5),
             ("enable_bfd_discovery", "bfd_discovery", 5),
             ("enable_stp_discovery", "stp_discovery", 15),
             ("enable_cdp_discovery", "cdp_discovery", 5),
             ("enable_rep_discovery", "rep_discovery", 5),
             ("enable_ip_discovery", "ip_discovery", 20),
-            ("enable_mac_discovery", "mac_discovery", 20)]:
+            ("enable_mac_discovery", "mac_discovery", 20)
+        ]:
             if getattr(op, attr):
-                print job, delta
                 refresh_schedule(
                     "inv.discovery", job, self.id, delta=delta)
                 delta += duration
