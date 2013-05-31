@@ -58,8 +58,8 @@ fi
 ##
 
 # Attach repos
-zypper ar http://download.opensuse.org/repositories/server:/database/openSUSE_12.3 server:database || error_exit "Unable to add repo server:database"
-zypper ar http://download.opensuse.org/repositories/Application:/Geo/openSUSE_12.3 Application:Geo || error_exit "Unable to add repo Application:Geo"
+zypper ar -G http://download.opensuse.org/repositories/server:/database/openSUSE_12.3 server:database || error_exit "Unable to add repo server:database"
+zypper ar -G http://download.opensuse.org/repositories/Application:/Geo/openSUSE_12.3 Application:Geo || error_exit "Unable to add repo Application:Geo"
 # Install packages
 zypper --non-interactive remove patterns-openSUSE-minimal_base-conflicts
 zinstall tcpdump
