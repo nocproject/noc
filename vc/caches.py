@@ -12,7 +12,6 @@ from noc.settings import config
 from noc.lib.cache import Cache
 from noc.inv.models import SubInterface, Q
 from noc.vc.models import VC
-from noc.sa.caches import managedobjectselector_object_ids
 from noc.lib.ip import IP
 
 
@@ -31,9 +30,7 @@ class VCInterfacesCount(Cache):
     def find(cls, vc):
         if not hasattr(vc, "id"):
             vc = VC.objects.get(id=int(vc))
-        if not vc.vc_domain.selector:
-            return 0
-        objects = managedobjectselector_object_ids.get(vc.vc_domain.selector)
+        objects = vc.vc_domain.managedobject_set.values_list("id", flat=True)
         l1 = vc.l1
         n = SubInterface.objects.filter(
             Q(managed_object__in=objects) &
@@ -60,9 +57,7 @@ class VCPrefixes(Cache):
     def find(cls, vc):
         if not hasattr(vc, "id"):
             vc = VC.objects.get(id=int(vc))
-        if not vc.vc_domain.selector:
-            return []
-        objects = managedobjectselector_object_ids.get(vc.vc_domain.selector)
+        objects = vc.vc_domain.managedobject_set.values_list("id", flat=True)
         ipv4 = set()
         ipv6 = set()
         # @todo: Exact match on vlan_ids
