@@ -278,6 +278,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "row_class",
             type: "string",
             persist: false
+        },
+        {
+            name: "mo_count",
+            type: "int",
+            persist: false
         }
     ]
 });

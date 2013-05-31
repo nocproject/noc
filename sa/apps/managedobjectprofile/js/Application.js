@@ -58,6 +58,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             renderer: NOC.render.Bool
         },
         {
+            text: "VLAN",
+            dataIndex: "enable_vlan_discovery",
+            width: 50,
+            renderer: NOC.render.Bool
+        },
+        {
             text: "MAC",
             dataIndex: "enable_mac_discovery",
             width: 50,
@@ -110,6 +116,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             dataIndex: "sync_ipam",
             width: 50,
             renderer: NOC.render.Bool
+        },
+        {
+            text: "Objects",
+            dataIndex: "mo_count",
+            width: 50,
+            align: "right"
         }
     ],
     fields: [
@@ -300,6 +312,26 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 },
                 {
                     name: "prefix_discovery_max_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                // VLAN discovery
+                {
+                    xtype: "label",
+                    text: "VLAN discovery"
+                },
+                {
+                    name: "enable_vlan_discovery",
+                    xtype: "checkboxfield",
+                    allowBlank: false
+                },
+                {
+                    name: "vlan_discovery_min_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                {
+                    name: "vlan_discovery_max_interval",
                     xtype: "numberfield",
                     allowBlank: false
                 },
