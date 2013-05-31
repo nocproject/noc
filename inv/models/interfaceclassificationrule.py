@@ -113,7 +113,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         v = IP.prefix(self.value1)
         r = [
             "def %s(iface):" % f_name,
-            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(is_ipv%(afi)s=True)]" % {"afi": v.afi},
+            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(enabled_afi='IPv%(afi)s')]" % {"afi": v.afi},
             "    a = sum(a, [])",
         ]
         if "/" in self.value1:
@@ -136,7 +136,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         v = IP.prefix(self.value1)
         r = [
             "def %s(iface):" % f_name,
-            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(is_ipv%(afi)s=True)]" % {"afi": v.afi},
+            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(enabled_afi='IPv%(afi)s')]" % {"afi": v.afi},
             "    a = sum(a, [])",
             "    v = IP.prefix(%r)" % v.prefix,
             "    return any(x for x in a if IP.prefix(x) in v)"
@@ -151,7 +151,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             raise SyntaxError("Invalid VLAN")
         r = [
             "def %s(iface):" % f_name,
-            "    for si in iface.subinterface_set.filter(is_bridge):",
+            "    for si in iface.subinterface_set.filter(enabled_afi='BRIDGE'):",
             "        if si.untagged_vlan = %d:" % vlan,
             "            return True",
             "    return False"
