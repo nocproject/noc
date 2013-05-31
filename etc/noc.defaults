@@ -440,6 +440,8 @@ save = true
 initial_submit_interval = 900
 # Upper limit of new schedule submitted at once
 initial_submit_concurrency = 20
+# change_state = PLANNED -> ALLOCATED; RESERVED -> ALLOCATED
+change_state =
 
 [mac_discovery]
 enabled = true
