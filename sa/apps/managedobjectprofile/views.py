@@ -20,4 +20,7 @@ class ManagedObjectProfileApplication(ExtModelApplication):
     model = ManagedObjectProfile
 
     def field_row_class(self, o):
-            return o.style.css_class_name if o.style else ""
+        return o.style.css_class_name if o.style else ""
+
+    def field_mo_count(self, o):
+        return o.managedobject_set.count()
