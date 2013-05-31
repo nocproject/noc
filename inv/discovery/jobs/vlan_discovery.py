@@ -36,7 +36,7 @@ class VLANDiscoveryJob(MODiscoveryJob):
             self.report.submit(
                 vc_domain=vc_domain,
                 l1=v["vlan_id"],
-                name=v["name"]
+                name=v.get("name")
             )
         self.report.send()
         return True

@@ -63,7 +63,7 @@ class VLANReport(Report):
             vc = VC(
                 vc_domain=vc_domain,
                 name=name,
-                l1=l1
+                l1=l1, l2=0
             )
             vc.save()
 
