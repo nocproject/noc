@@ -8,7 +8,7 @@ class Migration:
         for d in self.d_types:
             db.add_column("sa_managedobjectprofile",
                 "enable_%s_discovery" % d,
-                models.BooleanField("", default=True))
+                models.BooleanField("", default=False))
             db.add_column("sa_managedobjectprofile",
                 "%s_discovery_min_interval" % d,
                 models.IntegerField("", default=600))
