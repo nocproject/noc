@@ -191,7 +191,9 @@ class Script(NOCScript):
                 if ifname in portchannel_members:
                     ai, is_lacp = portchannel_members[ifname]
                     iface["aggregated_interface"] = ai
-                    iface["enabled_protocols"] += ["LACP"]
+                    iface["subinterfaces"] = []
+                    if is_lacp:
+                        iface["enabled_protocols"] += ["LACP"]
                 interfaces += [iface]
             else:
                 interfaces[-1]["subinterfaces"] += [sub]
@@ -222,9 +224,12 @@ class Script(NOCScript):
                     imap[i] = v["name"]
         for i in interfaces:
             subs = i["subinterfaces"]
-            for vrf in set(imap.get(si["name"], "default") for si in subs):
-                c = i.copy()
-                c["subinterfaces"] = [si for si in subs
-                                      if imap.get(si["name"], "default") == vrf]
-                vrfs[vrf]["interfaces"] += [c]
+            if subs:
+                for vrf in set(imap.get(si["name"], "default") for si in subs):
+                    c = i.copy()
+                    c["subinterfaces"] = [si for si in subs
+                                          if imap.get(si["name"], "default") == vrf]
+                    vrfs[vrf]["interfaces"] += [c]
+            elif i.get("aggregated_interface"):
+                vrfs["default"]["interfaces"] += [i]
         return vrfs.values()
