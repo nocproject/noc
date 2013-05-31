@@ -12,8 +12,6 @@ from django.db import models
 from vctype import VCType
 from vcfilter import VCFilter
 from noc.main.models import Style
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.sa.models.selectorcache import SelectorCache
 
 
 class VCDomain(models.Model):
@@ -33,10 +31,6 @@ class VCDomain(models.Model):
         "Enable Provisioning", default=False)
     enable_vc_bind_filter = models.BooleanField(
         "Enable VC Bind filter", default=False)
-    selector = models.ForeignKey(
-        ManagedObjectSelector,
-        verbose_name="Selector",
-        null=True, blank=True)
     style = models.ForeignKey(
         Style,
         verbose_name="Style",
@@ -52,16 +46,7 @@ class VCDomain(models.Model):
         :param managed_object: Managed Object instance
         :return: VC Domain instance or None
         """
-        c = SelectorCache.objects.filter(object=managed_object.id,
-            vc_domain__ne=None).first()
-        if not c:
-            return None  # No cached entry found
-        if not c.vc_domain:
-            return None  # No assotiated domain
-        try:
-            return cls.objects.get(id=c.vc_domain)
-        except cls.DoesNotExist:
-            return None  # Record not found
+        return managed_object.vc_domain
 
     def get_free_label(self, vc_filter=None):
         """

@@ -86,6 +86,13 @@ class ManagedObjectProfile(models.Model):
         _("Min. prefix discovery interval"), default=600)
     prefix_discovery_max_interval = models.IntegerField(
         _("Max. prefix discovery interval"), default=86400)
+    # VLAN discovery
+    enable_vlan_discovery = models.BooleanField(
+        _("Enable VLAN discovery"), default=False)
+    vlan_discovery_min_interval = models.IntegerField(
+        _("Min. VLAN discovery interval"), default=600)
+    vlan_discovery_max_interval = models.IntegerField(
+        _("Max. VLAN discovery interval"), default=86400)
     # MAC discovery
     enable_mac_discovery = models.BooleanField(
             _("Enable MAC discovery"), default=True)

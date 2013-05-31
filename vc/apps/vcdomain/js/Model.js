@@ -39,10 +39,6 @@ Ext.define("NOC.vc.vcdomain.Model", {
             defaultValue: false
         },
         {
-            name: "selector",
-            type: "int"
-        },
-        {
             name: "style",
             type: "int"
         },

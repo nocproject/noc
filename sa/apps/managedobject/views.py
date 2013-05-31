@@ -206,6 +206,9 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         ("CM", {
             "fields": ("is_configuration_managed", "repo_path")
         }),
+        ("L2", {
+            "fields": ("vc_domain", )
+        }),
         ("Rules", {
             "fields": ("config_filter_rule", "config_diff_filter_rule",
                        "config_validation_rule")
@@ -222,13 +225,13 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         })
     )
     list_display = ["name", object_status, alarms, profile,
-                    "object_profile", "vrf", "address",
+                    "object_profile", "vrf", "address", "vc_domain",
                     domain_activator,
                     "description", "repo_path", action_links]
     list_filter = ["is_managed", "is_configuration_managed",
                    "activator__shard", "activator",
                    "administrative_domain", "vrf", "profile_name",
-                   "object_profile"]
+                   "object_profile", "vc_domain"]
     search_fields = ["name", "address", "repo_path", "description"]
     object_class = ManagedObject
     actions = ["test_access", "bulk_change_activator",
