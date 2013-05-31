@@ -54,6 +54,10 @@ class ManagedObjectSelector(models.Model):
             null=True, blank=True)
     filter_activator = models.ForeignKey(Activator,
             verbose_name=_("Filter by Activator"), null=True, blank=True)
+    filter_vrf = models.ForeignKey("ip.VRF",
+            verbose_name=_("Filter by VRF"), null=True, blank=True)
+    filter_vc_domain = models.ForeignKey("vc.VCDomain",
+            verbose_name=_("Filter by VC Domain"), null=True, blank=True)
     filter_user = models.CharField(_("Filter by User (REGEXP)"),
             max_length=256, null=True, blank=True)
     filter_remote_path = models.CharField(_("Filter by Remote Path (REGEXP)"),
@@ -111,6 +115,12 @@ class ManagedObjectSelector(models.Model):
         # Filter by activator
         if self.filter_activator:
             q &= Q(activator=self.filter_activator)
+        # Filter by VRF
+        if self.filter_vrf:
+            q &= Q(vrf=self.filter_vrf)
+        # Filter by VC domain
+        if self.filter_vc_domain:
+            q &= Q(vrf=self.filter_vc_domain)
         # Filter by username
         if self.filter_user:
             q &= Q(user__regex=self.filter_user)

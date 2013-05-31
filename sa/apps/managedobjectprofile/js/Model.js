@@ -140,6 +140,21 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 86400
         },
         {
+            name: "enable_vlan_discovery",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "vlan_discovery_min_interval",
+            type: "int",
+            defaultValue: 600
+        },
+        {
+            name: "vlan_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
             name: "enable_mac_discovery",
             type: "boolean",
             defaultValue: true

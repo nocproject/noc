@@ -12,8 +12,7 @@ Ext.define("NOC.vc.vcdomain.Application", {
     requires: [
         "NOC.main.style.LookupField",
         "NOC.vc.vcdomain.Model",
-        "NOC.vc.vctype.LookupField",
-        "NOC.sa.managedobjectselector.LookupField"
+        "NOC.vc.vctype.LookupField"
     ],
     search: true,
     rowClassField: "row_class",
@@ -39,12 +38,6 @@ Ext.define("NOC.vc.vcdomain.Application", {
             text: "Bind filter",
             dataIndex: "enable_vc_bind_filter",
             renderer: noc_renderBool
-        },
-
-        {
-            text: "Selector",
-            dataIndex: "selector",
-            renderer: NOC.render.Lookup("selector")
         },
 
         {
@@ -81,15 +74,6 @@ Ext.define("NOC.vc.vcdomain.Application", {
             name: "enable_vc_bind_filter",
             xtype: "checkboxfield",
             boxLabel: "Enable VC Bind filter"
-        },
-        {
-            name: "selector",
-            xtype: "sa.managedobjectselector.LookupField",
-            fieldLabel: "Selector",
-            allowBlank: true,
-            query: {
-                is_enabled: true
-            }
         },
         {
             name: "style",

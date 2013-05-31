@@ -74,6 +74,9 @@ class ManagedObject(models.Model):
             blank=True, null=True, max_length=64)
     snmp_rw = models.CharField(_("RW Community"),
             blank=True, null=True, max_length=64)
+    #
+    vc_domain = models.ForeignKey(
+        "vc.VCDomain", verbose_name="VC Domain", null=True, blank=True)
     # CM
     is_configuration_managed = models.BooleanField(_("Is Configuration Managed?"),
             default=True)
@@ -459,3 +462,4 @@ from reducetask import ReduceTask, reduce_object_script
 from useraccess import UserAccess
 from groupaccess import GroupAccess
 from noc.lib.scheduler.utils import refresh_schedule
+#from noc.vc.models.vcdomain import VCDomain
