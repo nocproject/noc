@@ -185,7 +185,7 @@ class Peer(models.Model):
         :returns: Peer instance or None
         """
         try:
-            data = list(Peer.object.filter().extra(
+            data = list(Peer.objects.filter().extra(
                 where=[
                     "host(remote_ip)=% OR host(remote_backup_ip)=%s"
                 ],
