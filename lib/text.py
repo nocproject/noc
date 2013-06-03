@@ -267,6 +267,7 @@ def split_alnum(s):
 
 rx_notspace = re.compile(r"^\S+")
 
+
 def find_indented(s):
     """
     Parses following text structure:
@@ -296,4 +297,21 @@ def find_indented(s):
             cr += [l]
     if len(cr) > 1:
         r += ["\n".join(cr)]
+    return r
+
+
+def parse_kv(kmap, data, sep=":"):
+    """
+    :param kmap: text -> dict mapping
+    :param data:
+    :return: dict
+    """
+    r = {}
+    for line in data.splitlines():
+        if sep not in line:
+            continue
+        k, v = line.strip().split(sep, 1)
+        k = k.strip().lower()
+        if k in kmap:
+            r[kmap[k]] = v.strip()
     return r
