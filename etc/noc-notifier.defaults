@@ -43,3 +43,15 @@ queue_size = 5000
 time_to_live = 10800
 retry_interval = 60
 prefix = /var/log/noc/messages/
+
+##
+## XMPP/Jabber plugin
+##
+[xmpp]
+enabled = false
+instances = 1
+queue_size = 100
+address =
+port =
+jid = user@example.com
+password = pass
