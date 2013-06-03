@@ -27,11 +27,11 @@ class Script(NOCScript):
         raise self.NotSupportedError()
 
     rx_iface_sep = re.compile(
-        r"^(\S+)\s+has\s+\d+\s+neighbors", re.MULTILINE
+        r"^(\S+)\s+has\s+\d+\s+neighbors?", re.MULTILINE
     )
 
     rx_neighbor_split = re.compile(
-        r"^Neighbor index\s*:\s+\d+",
+        r"^Neighbor",
         re.MULTILINE
     )
 
@@ -71,11 +71,17 @@ class Script(NOCScript):
             for ndata in self.rx_neighbor_split.split(data)[1:]:
                 n = parse_kv({
                     "chassis type": "remote_chassis_id_subtype",
+                    "chassisidsubtype": "remote_chassis_id_subtype",
                     "chassis id": "remote_chassis_id",
+                    "chassisid": "remote_chassis_id",
                     "port id type": "remote_port_subtype",
+                    "portidsubtype": "remote_port_subtype",
                     "port id": "remote_port",
+                    "portid": "remote_port",
                     "system capabilities enabled": "remote_capabilities",
-                    "system name": "remote_system_name"
+                    "syscapenabled": "remote_capabilities",
+                    "system name": "remote_system_name",
+                    "sysname": "remote_system_name"
                 }, ndata)
                 # Convert chassis id
                 n["remote_chassis_id_subtype"] = self.CHASSIS_TYPES[n["remote_chassis_id_subtype"].lower()]
