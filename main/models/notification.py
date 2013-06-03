@@ -11,8 +11,16 @@ import datetime
 ## Django models
 from django.db import models
 
-NOTIFICATION_METHOD_CHOICES = [("mail", "Email"), ("file", "File")]
-USER_NOTIFICATION_METHOD_CHOICES = [("mail", "Email")]
+NOTIFICATION_METHOD_CHOICES = [
+    ("mail", "mail"),
+    ("file", "file"),
+    ("xmpp", "xmpp")
+]
+
+USER_NOTIFICATION_METHOD_CHOICES = [
+    ("mail", "mail"),
+    ("xmpp", "xmpp")
+]
 
 
 class Notification(models.Model):
