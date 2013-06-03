@@ -416,6 +416,7 @@ Ext.define("NOC.core.ModelApplication", {
                 bodyPadding: 4,
                 autoScroll: true,
                 defaults: {
+                    anchor: "100%",
                     enableKeyEvents: true,
                     listeners: {
                         specialkey: {
