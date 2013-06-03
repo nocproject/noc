@@ -98,7 +98,7 @@ update-rc.d nginx enable
 ##
 cd /opt || error_exit "cd /opt failed"
 info "Fetching NOC"
-hg clone http://hg.nocproject.org/noc noc
+hg clone https://bitbucket.org/nocproject/noc noc || error_exit "Unable to pull NOC distribution"
 if [ "$1" != "--no-bootstrap" ]; then
     info "Running bootstrap.sh"
     /opt/noc/share/vagrant/x86_64/Debian/7.0/bootstrap.sh
