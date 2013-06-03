@@ -93,7 +93,8 @@ class Script(NOCScript):
                     n["remote_port"] = MACAddressParameter().clean(n["remote_port"])
                 # Process capabilities
                 caps = 0
-                for c in n.get("remote_capabilities", "").split(","):
+                cs = n.get("remote_capabilities", "").replace(",", " ")
+                for c in cs.split():
                     caps |= self.CAPS[c.strip()]
                 n["remote_capabilities"] = caps
                 neighbors += [n]
