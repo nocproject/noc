@@ -49,7 +49,7 @@ class VCApplication(ExtModelApplication):
     }
 
     def get_vc_domain_objects(self, vc_domain):
-        return managedobjectselector_object_ids.get(vc_domain.selector)
+        return vc_domain.managedobject_set.all()
 
     def lookup_vcfilter(self, q, name, value):
         """
@@ -123,12 +123,9 @@ class VCApplication(ExtModelApplication):
         """
         vc = self.get_object_or_404(VC, id=int(vc_id))
         l1 = vc.l1
-                # Check VC domain has selector
-        if not vc.vc_domain.selector:
-            return [{"untagged": [], "tagged": [], "l3": []}]
-        # Managed objects in selector
-        objects = set(vc.vc_domain.selector.managed_objects.values_list("id",
-                                                                    flat=True))
+        # Managed objects in VC domain
+        objects = set(vc.vc_domain.managedobject_set.values_list(
+            "id", flat=True))
         # Find untagged interfaces
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
