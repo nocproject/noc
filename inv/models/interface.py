@@ -13,6 +13,9 @@ from interfaceprofile import InterfaceProfile
 from noc.sa.models import ManagedObject
 from noc.sa.interfaces import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.main.models.resourcestate import ResourceState
+from noc.project.models.project import Project
+
 
 INTERFACE_TYPES = (IGetInterfaces.returns
                    .element.attrs["interfaces"]
@@ -51,6 +54,9 @@ class Interface(Document):
         default=InterfaceProfile.get_default_profile)
     # profile locked on manual user change
     profile_locked = BooleanField(required=False, default=False)
+    #
+    project = ForeignKeyField(Project)
+    state = ForeignKeyField(ResourceState)
 
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)

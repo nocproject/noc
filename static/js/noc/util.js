@@ -69,12 +69,8 @@ NOC.render.Clickable = function(value) {
 NOC.render.ClickableLookup = function(name) {
     var l = name + "__label";
     return function(value, meta, record) {
-        if(value) {
-            return "<a href='#' class='noc-clickable-cell' title='Click to change...'>"
-                + record.get(l) + "</a>";
-        } else {
-            return "";
-        }
+        var v = value ? record.get(l) : "...";
+        return "<a href='#' class='noc-clickable-cell' title='Click to change...'>" + v + "</a>";
     };
 };
 

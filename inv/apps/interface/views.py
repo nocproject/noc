@@ -10,8 +10,10 @@
 from noc.lib.app import ExtApplication, view
 from noc.sa.models import ManagedObject
 from noc.inv.models import Interface, SubInterface, InterfaceProfile, Q
-from noc.sa.interfaces import StringParameter, ListOfParameter,\
-    DocumentParameter
+from noc.sa.interfaces import (StringParameter, ListOfParameter,
+    DocumentParameter, ModelParameter)
+from noc.main.models.resourcestate import ResourceState
+from noc.project.models.project import Project
 from noc.lib.text import split_alnum
 
 
@@ -87,6 +89,7 @@ class InterfaceAppplication(ExtApplication):
             return self.response_forbidden("Permission denied")
         # Physical interfaces
         # @todo: proper ordering
+        default_state = ResourceState.get_default()
         style_cache = {}  ## profile_id -> css_style
         l1 = [
             {
@@ -101,6 +104,10 @@ class InterfaceAppplication(ExtApplication):
                 "profile": str(i.profile.id) if i.profile else None,
                 "profile__label": unicode(i.profile) if i.profile else None,
                 "enabled_protocols": i.enabled_protocols,
+                "project": i.project.id if i.project else None,
+                "project__label": unicode(i.project) if i.project else None,
+                "state": i.state.id if i.state else default_state.id,
+                "state__label": unicode(i.state if i.state else default_state),
                 "row_class": get_style(i)
             } for i in
               Interface.objects.filter(managed_object=o.id,
@@ -214,5 +221,33 @@ class InterfaceAppplication(ExtApplication):
         if i.profile != profile:
             i.profile = profile
             i.profile_locked = True
+            i.save()
+        return True
+
+    @view(url="^l1/(?P<iface_id>[0-9a-f]{24})/change_state/$",
+        validate={
+            "state": ModelParameter(ResourceState)
+        },
+        method=["POST"], access="profile", api=True)
+    def api_change_profile(self, request, iface_id, state):
+        i = Interface.objects.filter(id=iface_id).first()
+        if not i:
+            return self.response_not_found()
+        if i.state != state:
+            i.state = state
+            i.save()
+        return True
+
+    @view(url="^l1/(?P<iface_id>[0-9a-f]{24})/change_project/$",
+        validate={
+            "project": ModelParameter(ResourceState)
+        },
+        method=["POST"], access="profile", api=True)
+    def api_change_profile(self, request, iface_id, project):
+        i = Interface.objects.filter(id=iface_id).first()
+        if not i:
+            return self.response_not_found()
+        if i.project != project:
+            i.project = project
             i.save()
         return True

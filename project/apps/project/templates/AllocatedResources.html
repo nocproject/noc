@@ -78,4 +78,13 @@
         <td style="width: 100px">{{state__label}}</td>
     </tr>
     {{/each}}
+    {{#if interface.length}}
+    <tr><th colspan="2"><b>Interfaces</b></th></tr>
+    {{#each interface}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+    {{/if}}
 </table>

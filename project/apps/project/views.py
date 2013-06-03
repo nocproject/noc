@@ -9,6 +9,8 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.project.models import Project
+from noc.inv.models.interface import Interface
+from noc.main.models.resourcestate import ResourceState
 
 
 class ProjectApplication(ExtModelApplication):
@@ -24,13 +26,18 @@ class ProjectApplication(ExtModelApplication):
           api=True)
     def api_resources(self, request, id):
         def f(o):
+            if hasattr(o, "state") and o.state:
+                state = o.state
+            else:
+                state = default_state
             return {
-                "id": o.id,
+                "id": str(o.id),
                 "label": unicode(o),
-                "state_id": o.state.id if hasattr(o, "state") else None,
-                "state__label": o.state.name if hasattr(o, "state") else None
+                "state_id": state.id,
+                "state__label": state.name
             }
         project = self.get_object_or_404(Project, id=id)
+        default_state = ResourceState.get_default()
         r = {
             "vc": [f(o) for o in project.vc_set.all()],
             "dnszone": [f(o) for o in project.dnszone_set.all()],
@@ -40,5 +47,6 @@ class ProjectApplication(ExtModelApplication):
             "as": [f(o) for o in project.as_set.all()],
             "asset": [f(o) for o in project.asset_set.all()],
             "peer": [f(o) for o in project.peer_set.all()],
+            "interface": [f(o) for o in Interface.objects.filter(project=project)]
         }
         return r
