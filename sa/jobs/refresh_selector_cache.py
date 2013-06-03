@@ -32,7 +32,7 @@ class RefreshSelectorCacheJob(IntervalJob):
                     {
                         "object": o.id,
                         "selector": s.id,
-                        "vc_domain": o.vc_domain
+                        "vc_domain": o.vc_domain.id
                     }
                 ]
         # Write temporary cache
