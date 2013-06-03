@@ -25,17 +25,23 @@ class XMPPClient(sleekxmpp.ClientXMPP):
         "More work?"
     ]
 
-    def __init__(self, channel, jid, password):
+    def __init__(self, channel, jid, password, ignore_cert=True):
         self.channel = channel
         super(XMPPClient, self).__init__(jid, password)
         self.add_event_handler("session_start", self.on_start)
         self.add_event_handler("message", self.on_message)
+        if ignore_cert:
+            self.add_event_handler("ssl_invalid_cert",
+                                   self.on_ssl_invalid_cert)
         self.register_plugin("xep_0030")  # Service discovery
         self.register_plugin("xep_0199")  # Ping
 
-    def on_start(self):
+    def on_start(self, event):
         self.send_presence()
         self.get_roster()
+
+    def on_ssl_invalid_cert(self, cert):
+        pass
 
     def on_message(self, msg):
         if msg["type"] in ("normal", "chat"):
@@ -57,7 +63,8 @@ class XMPPNotificationChannel(NotificationChannel):
         self.client = XMPPClient(
             self,
             self.config.get("xmpp", "jid"),
-            self.config.get("xmpp", "password")
+            self.config.get("xmpp", "password"),
+            self.config.getboolean("xmpp", "ignore_cert_error")
         )
         a = self.config.get("xmpp", "address")
         p = self.config.get("xmpp", "port")
