@@ -55,3 +55,4 @@ address =
 port =
 jid = user@example.com
 password = pass
+ignore_cert_error = false
