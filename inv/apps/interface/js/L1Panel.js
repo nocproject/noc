@@ -76,6 +76,18 @@ Ext.define("NOC.inv.interface.L1Panel", {
                             onClick: me.onChangeProfile
                         },
                         {
+                            text: "Project",
+                            dataIndex: "project",
+                            renderer: NOC.render.ClickableLookup("project"),
+                            onClick: me.onChangeProject
+                        },
+                        {
+                            text: "State",
+                            dataIndex: "state",
+                            renderer: NOC.render.ClickableLookup("state"),
+                            onClick: me.onChangeState
+                        },
+                        {
                             text: "Protocols",
                             dataIndex: "enabled_protocols"
                         },
@@ -166,6 +178,22 @@ Ext.define("NOC.inv.interface.L1Panel", {
     onChangeProfile: function(record) {
         var me = this;
         Ext.create("NOC.inv.interface.ChangeInterfaceProfileForm", {
+            app: me,
+            record: record
+        });
+    },
+    //
+    onChangeProject: function(record) {
+        var me = this;
+        Ext.create("NOC.inv.interface.ChangeInterfaceProjectForm", {
+            app: me,
+            record: record
+        });
+    },
+    //
+    onChangeState: function(record) {
+        var me = this;
+        Ext.create("NOC.inv.interface.ChangeInterfaceStateForm", {
             app: me,
             record: record
         });

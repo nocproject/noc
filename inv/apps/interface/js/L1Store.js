@@ -47,6 +47,22 @@ Ext.define("NOC.inv.interface.L1Store", {
             type: "string"
         },
         {
+            name: "project",
+            type: "int"
+        },
+        {
+            name: "project__label",
+            type: "string"
+        },
+        {
+            name: "state",
+            type: "int"
+        },
+        {
+            name: "state__label",
+            type: "string"
+        },
+        {
             name: "enabled_protocols",
             type: "auto"
         },
