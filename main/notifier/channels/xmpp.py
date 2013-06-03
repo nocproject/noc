@@ -68,6 +68,7 @@ class XMPPNotificationChannel(NotificationChannel):
         if not self.client.connect(address):
             self.client = None
         self.starting = False
+        self.client.process(block=False)
 
     def on_shutdown(self):
         if self.client:
@@ -76,7 +77,8 @@ class XMPPNotificationChannel(NotificationChannel):
     def send(self, to, subject, body, link=None):
         # Check client is ready
         if not self.client:
-            self.on_start()
+            if not self.starting:
+                self.on_start()
             return False
         self.info("Sending '%s' to %s" % (subject, to))
         self.client.send_message(mto=to, mbody=body)
