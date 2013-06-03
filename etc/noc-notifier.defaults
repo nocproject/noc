@@ -22,8 +22,8 @@ queue_check_interval = 3
 ##
 [mail]
 enabled = false
-queue_size = 5
-time_to_live = 10800
+instances = 4
+queue_size = 8
 retry_interval = 60
 smtp_server = 127.0.0.1
 smtp_port = 25
@@ -38,6 +38,7 @@ command =
 ##
 [file]
 enabled = false
+instances = 1
 queue_size = 5000
 time_to_live = 10800
 retry_interval = 60

@@ -8,5 +8,5 @@
 ##----------------------------------------------------------------------
 
 if __name__ == "__main__":
-    from noc.main.notifier import Notifier
+    from noc.main.notifier.daemon import Notifier
     Notifier().process_command()

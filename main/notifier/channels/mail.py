@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-##  SMTP Mail plugin
+## SMTP Mail notification channel
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -15,18 +15,18 @@ from email.mime.text import MIMEText
 from email.header import Header
 import email.utils
 ## NOC modules
-from noc.main.notify import Notify as NotifyBase
+from base import NotificationChannel
 from noc.lib.validators import is_email
 
 
-class Notify(NotifyBase):
+class MailNotificationChannel(NotificationChannel):
     name = "mail"
 
-    def send_message(self, params, subject, body, link=None):
-        use_sendmail = bool(self.config.get(self.name, "command").strip())
+    def send(self, to, subject, body, link=None):
+        use_sendmail = bool(self.config.get(self.name, "command"))
         # Check params
-        if not is_email(params):
-            self.error("Invalid email: %s" % params)
+        if not is_email(to):
+            self.error("Invalid email: %s" % to)
             return True
         # Prepare message
         if link:
@@ -34,7 +34,7 @@ class Notify(NotifyBase):
         from_address = self.config.get(self.name, "from_address")
         message = MIMEText(body, _charset="utf-8")
         message["From"] = from_address
-        message["To"] = params
+        message["To"] = to
         message["Date"] = email.utils.formatdate()
         message["Subject"] = Header(subject, "utf-8")
         msg = message.as_string()
@@ -59,15 +59,21 @@ class Notify(NotifyBase):
             self.debug("Connecting %s" % self.config.get(self.name,
                 "smtp_server"))
             try:
-                smtp.connect(self.config.get(self.name, "smtp_server"),
-                    self.config.getint(self.name, "smtp_port"))
+                smtp.connect(
+                    self.config.get(self.name, "smtp_server"),
+                    self.config.getint(self.name, "smtp_port")
+                )
             except socket.error, why:
                 self.error("SMTP error: %s" % str(why))
                 return False
             smtp.ehlo(self.config.get(self.name, "helo_hostname"))
             # Enforce TLS when required
             if self.config.getboolean(self.name, "use_tls"):
-                smtp.starttls()
+                try:
+                    smtp.starttls()
+                except smtplib.SMTPException, why:
+                    self.error("STARTTLS failed: %s" % why)
+                    return False
                 smtp.ehlo(self.config.get(self.name, "helo_hostname"))
             # Authenticate when necessary
             smtp_user = self.config.get(self.name, "smtp_user")
@@ -81,7 +87,8 @@ class Notify(NotifyBase):
                     return False
                 # Send mail
             try:
-                smtp.sendmail(from_address, [params], msg)
+                self.debug("Sending")
+                smtp.sendmail(from_address, [to], msg)
             except smtplib.SMTPSenderRefused, why:
                 self.error("Sender refused: %s" % str(why))
                 return False
@@ -91,4 +98,5 @@ class Notify(NotifyBase):
             except smtplib.SMTPDataError, why:
                 self.error("Data error: %s" % str(why))
                 return False
+            self.debug("Sent")
         return True
