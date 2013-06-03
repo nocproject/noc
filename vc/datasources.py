@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## VC module datasources
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -30,10 +30,7 @@ class VCDS(DataSource):
         :param managed_object:
         :return:
         """
-        for d in VCDomain.objects.filter(selector__isnull=False):
-            if managed_object in d.selector:
-                return d
-        return None
+        return managed_object.vc_domain
 
     @property
     def vc_domain(self):
