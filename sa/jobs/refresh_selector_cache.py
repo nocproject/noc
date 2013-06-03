@@ -23,11 +23,6 @@ class RefreshSelectorCacheJob(IntervalJob):
     threaded = True
 
     def handler(self, *args, **kwargs):
-        # Build selector -> vc domain mapping
-        self.info("Building VC Domain mappings")
-        vcd_map = dict((d.selector.id, d.id) for d in
-            VCDomain.objects.filter(selector__isnull=False)
-                .only("id", "selector"))
         # Build new cache
         self.info("Building cache")
         r = []
@@ -37,7 +32,7 @@ class RefreshSelectorCacheJob(IntervalJob):
                     {
                         "object": o.id,
                         "selector": s.id,
-                        "vc_domain": vcd_map.get(s.id)
+                        "vc_domain": o.vc_domain
                     }
                 ]
         # Write temporary cache
