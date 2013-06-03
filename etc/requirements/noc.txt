@@ -9,7 +9,8 @@ Django==1.4.1
 South==0.7.3
 coverage==3.6
 protobuf==2.5.0
-pyasn1==0.1.2
+pyasn1==0.1.7
+pyasn1-modules==0.0.5
 pysnmp==4.2.1
 python-creole==0.2.4
 docutils==0.7
