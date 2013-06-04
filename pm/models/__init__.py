@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## view Test
+## Performance management models
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ApplicationTestCase
-from django.utils import simplejson as json
 
-class viewTestCase(ApplicationTestCase):
-    pass
+from pmdb import PMDatabase
+from pmstorage import PMStorage
