@@ -19,6 +19,16 @@ class Script(noc.sa.script.Script):
     rx_line2 = re.compile(
         r"^(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+"
         r"(?P<interfaces>.*)$")  # Catalyst 3500XL
+    ignored_interfaces = (
+        "router", "switch", "stby-switch", "yes", "no", "-", "cpu"
+    )
+
+    def is_ignored_interface(self, i):
+        if i.lower() in self.ignored_interfaces:
+            return True
+        if i.startswith("flood to vlan"):
+            return True
+        return False
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac address-table"
@@ -52,9 +62,10 @@ class Script(noc.sa.script.Script):
                 interfaces = [
                     i.strip() for i in match.group("interfaces").split(",")
                 ]
-                interfaces = [i for i in interfaces if i.lower() not in (
-                    "router", "switch", "stby-switch", "yes", "no", "-", "cpu"
-                    )]
+                interfaces = [
+                    i for i in interfaces
+                    if i not in self.is_ignored_interface(i)
+                ]
                 if not interfaces:
                     continue
                 m_type = {"dynamic": "D",
