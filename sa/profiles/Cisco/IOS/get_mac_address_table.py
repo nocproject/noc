@@ -64,7 +64,7 @@ class Script(noc.sa.script.Script):
                 ]
                 interfaces = [
                     i for i in interfaces
-                    if i not in self.is_ignored_interface(i)
+                    if not self.is_ignored_interface(i)
                 ]
                 if not interfaces:
                     continue
