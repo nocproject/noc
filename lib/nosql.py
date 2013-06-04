@@ -277,6 +277,22 @@ class Sequence(object):
         return self.format % s["value"]
 
 
+class IntSequence(object):
+    FIELD = "v"
+    def __init__(self, name):
+        self.name = name
+        self.isequences = get_db().noc.isequences
+        self.isequences.insert({"_id": self.name, self.FIELD: 0L})
+
+    def next(self):
+        s = self.isequences.find_and_modify(
+            query={"_id": self.name},
+            update={"$inc": {self.FIELD: 1}},
+            new=True
+        )
+        return s[self.FIELD]
+
+
 def create_test_db(verbosity, autoclobber):
     connect(**connection_args)
 
