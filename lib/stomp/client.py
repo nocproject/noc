@@ -28,7 +28,10 @@ class STOMPClient(object):
         self.port = port
         self.login = login
         self.passcode = passcode
-        self.factory = factory or SocketFactory(write_delay=False)
+        if factory is None:
+            self.factory = SocketFactory(write_delay=False)
+        else:
+            self.factory = factory
         self.factory_thread = None
         self.client_id = client_id
         self.socket = None
@@ -76,12 +79,12 @@ class STOMPClient(object):
         :return:
         """
         self.connected.set()
+        if self.destinations:
+            self.refresh_subscriptions()
         if self.current_frame:
             command, message, body = self.current_frame
             self.current_frame = None
             self.send_frame(command, message, body)
-        if self.destinations:
-            self.refresh_subscriptions()
 
     def start(self):
         """
@@ -114,6 +117,8 @@ class STOMPClient(object):
         Initialize connection attempt
         :return:
         """
+        if self.socket is not None:
+            return
         self.debug("Starting connection")
         self.connecting = True
         self.socket = self.factory.connect_tcp(self.host, self.port,
@@ -127,7 +132,8 @@ class STOMPClient(object):
                 # Save current frame
                 # Send when ready
                 self.current_frame = (command, headers, body)
-                self.start_connection()
+                if self.socket is None:
+                    self.start_connection()
                 return
             else:
                 self.connected.wait()
@@ -139,11 +145,14 @@ class STOMPClient(object):
         self.debug("subscribe %s (id=%s)" % (destination, sid))
         self.callbacks[sid] = callback
         self.destinations[destination] = (sid, ack)
-        self.send_frame("SUBSCRIBE", {
-            "destination": destination,
-            "ack": ack,
-            "id": sid
-        })
+        if self.socket is not None:
+            self.send_frame("SUBSCRIBE", {
+                "destination": destination,
+                "ack": ack,
+                "id": sid
+            })
+        else:
+            self.start_connection()
 
     def unsubscribe(self, destination):
         sid, _ = self.destinations[destination]
