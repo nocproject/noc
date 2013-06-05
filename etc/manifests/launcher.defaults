@@ -7,5 +7,6 @@ lib/__init__.py
 lib/updateclient.py
 main/__init__.py
 main/launcher.py
+scripts/install-pth.py
 scripts/noc-launcher.py
 settings.py
