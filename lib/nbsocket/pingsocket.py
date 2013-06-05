@@ -122,6 +122,9 @@ class PingSocket(Socket):
             s.register_miss()
         return False
 
+    def on_error(self, exc):
+        self.error("Failed to create ping socket. Check process permissions")
+
 
 class Ping4Socket(PingSocket):
     """
