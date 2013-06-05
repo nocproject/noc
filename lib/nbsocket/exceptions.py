@@ -94,6 +94,7 @@ class AddressInUse(SocketError):
 ## Used to populate SOCKET_ERROR_TO_EXCEP
 ##
 SOCKET_ERRORS = [
+    ("EPERM", AccessError),
     ("EPROTONOSUPPORT", ProtocolNotSupportedError),
     ("EACCESS", AccessError),
     ("EMFILE", NoFilesError),
