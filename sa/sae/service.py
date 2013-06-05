@@ -13,10 +13,9 @@ import datetime
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import Activator, ManagedObject
 from noc.fm.models import IgnoreEventRules
-from noc.pm.models import TimeSeries
-from noc.sa.rpc import get_nonce, get_digest, PROTOCOL_NAME, PROTOCOL_VERSION,\
-                       PUBLIC_KEYS, CIPHERS, MACS, COMPRESSIONS, KEY_EXCHANGES
-from noc.lib.fileutils import read_file
+from noc.sa.rpc import (get_nonce, get_digest, PROTOCOL_NAME,
+                        PROTOCOL_VERSION, PUBLIC_KEYS, CIPHERS, MACS,
+                        COMPRESSIONS, KEY_EXCHANGES)
 from noc.lib.ip import IP
 
 
@@ -262,31 +261,6 @@ class Service(SAEService):
             managed_object=mo
         )
         done(controller, EventResponse())
-
-    def pm_data(self, controller, request, done):
-        """
-        Handle RPC pm_data request
-        """
-        if not controller.stream.is_authenticated:
-            done(controller, error=Error(code=ERR_AUTH_REQUIRED,
-                                         text="Authentication required"))
-            return
-        for d in request.result:
-            timestamp = datetime.datetime.fromtimestamp(d.timestamp)
-            self.sae.write_event([
-                    ("source",      "system"),
-                    ("type",        "pm probe"),
-                    ("probe_name",  d.probe_name),
-                    ("probe_type",  d.probe_type),
-                    ("service",     d.service),
-                    ("result",      d.result),
-                    ("message",     d.message),
-                ],
-                timestamp=timestamp)
-        for d in request.data:
-            value = d.value if not d.is_null else None
-            TimeSeries.register(d.name, d.timestamp, value)
-        done(controller, PMDataResponse())
 
     def object_status(self, controller, request, done):
         """
