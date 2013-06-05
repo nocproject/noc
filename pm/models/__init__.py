@@ -6,5 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from pmdb import PMDatabase
-from pmstorage import PMStorage
+from db import PMDatabase
+from storage import PMStorage
+from ts import PMTS
