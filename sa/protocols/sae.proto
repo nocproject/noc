@@ -266,34 +266,6 @@ message PingCheckResponse {
     }
     repeated PingStatusItem status = 1;
 }
-//
-// Performance management data
-//
-message PMDataRequest {
-    enum PMResultCode {
-        PR_OK   = 0;
-        PR_WARN = 1;
-        PR_FAIL = 2;
-    }
-    message PMResult {
-        required string       probe_name = 1;
-        required string       probe_type = 2;
-        required int32        timestamp  = 3;
-        required string       service    = 4;
-        required PMResultCode result     = 5;
-        required string       message    = 6;
-    }
-    message PMData {
-        required string name   = 1;
-        required int32  timestamp = 2;
-        required bool   is_null   = 3;
-        required double value     = 4;
-    }
-    repeated PMResult result = 1;
-    repeated PMData   data   = 2;
-}
-
-message PMDataResponse {}
 
 message StatusRequest {}
 
@@ -331,7 +303,6 @@ service SAEService {
     rpc refresh_object_mappings (RefreshObjectMappingsRequest) returns (RefreshObjectMappingsResponse);
     rpc object_mappings  (ObjectMappingsRequest)  returns (ObjectMappingsResponse);
     rpc event            (EventRequest)           returns (EventResponse);
-    rpc pm_data          (PMDataRequest)          returns (PMDataResponse);
     rpc object_status    (ObjectStatusRequest)    returns (ObjectStatusResponse);
     rpc get_status       (StatusRequest)          returns (StatusResponse);
     rpc ping_check       (PingCheckRequest)       returns (PingCheckResponse);
