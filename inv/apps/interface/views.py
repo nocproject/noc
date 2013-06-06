@@ -229,7 +229,7 @@ class InterfaceAppplication(ExtApplication):
             "state": ModelParameter(ResourceState)
         },
         method=["POST"], access="profile", api=True)
-    def api_change_profile(self, request, iface_id, state):
+    def api_change_state(self, request, iface_id, state):
         i = Interface.objects.filter(id=iface_id).first()
         if not i:
             return self.response_not_found()
@@ -243,7 +243,7 @@ class InterfaceAppplication(ExtApplication):
             "project": ModelParameter(ResourceState)
         },
         method=["POST"], access="profile", api=True)
-    def api_change_profile(self, request, iface_id, project):
+    def api_change_project(self, request, iface_id, project):
         i = Interface.objects.filter(id=iface_id).first()
         if not i:
             return self.response_not_found()
