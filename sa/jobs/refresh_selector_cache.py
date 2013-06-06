@@ -12,7 +12,6 @@ import datetime
 from noc.lib.nosql import get_db
 from noc.lib.scheduler.intervaljob import IntervalJob
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.vc.models.vcdomain import VCDomain
 
 
 class RefreshSelectorCacheJob(IntervalJob):
@@ -28,11 +27,12 @@ class RefreshSelectorCacheJob(IntervalJob):
         r = []
         for s in ManagedObjectSelector.objects.filter(is_enabled=True):
             for o in s.managed_objects:
+                d = o.vc_domain.id if o.vc_domain else None
                 r += [
                     {
                         "object": o.id,
                         "selector": s.id,
-                        "vc_domain": o.vc_domain.id
+                        "vc_domain": d
                     }
                 ]
         # Write temporary cache
