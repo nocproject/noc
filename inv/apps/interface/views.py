@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## inv.interface application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -240,7 +240,7 @@ class InterfaceAppplication(ExtApplication):
 
     @view(url="^l1/(?P<iface_id>[0-9a-f]{24})/change_project/$",
         validate={
-            "project": ModelParameter(ResourceState)
+            "project": ModelParameter(Project, required=False)
         },
         method=["POST"], access="profile", api=True)
     def api_change_project(self, request, iface_id, project):
