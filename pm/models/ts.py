@@ -13,6 +13,7 @@ import time
 from noc.lib.nosql import (Document, StringField, IntField,
                            PlainReferenceField, IntSequence)
 from storage import PMStorage
+from check import PMCheck
 
 
 ## TS id
@@ -31,8 +32,7 @@ class PMTS(Document):
     ts_id = IntField(primary_key=True, default=seq_ts.next)
     name = StringField(unique=True)
     storage = PlainReferenceField(PMStorage)
-    description = StringField()
-    # type =
+    check = PlainReferenceField(PMCheck)
 
     def __unicode__(self):
         return self.name
