@@ -55,7 +55,7 @@ class PMStorage(Document):
         c = getattr(self, "_pmcraw", None)
         if c:
             return c
-        cn = self.name + ".raw"
+        cn = self.collection + ".raw"
         db = self.db.get_database()
         c = db[cn]
         self._pmcraw = c
