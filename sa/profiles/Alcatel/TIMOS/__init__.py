@@ -18,6 +18,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_username = "[Ll]ogin: "
     pattern_password = "[Pp]assword: "
     command_disable_pager = "environment no more"
+    command_exit="logout"
     pattern_prompt = r"^\S+?#"
     config_volatile = [r"^# Finished.*$", r"^# Generated.*$"]
     pattern_more = r"^Press any key to continue.*$"
