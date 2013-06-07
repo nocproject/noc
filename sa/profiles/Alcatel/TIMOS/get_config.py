@@ -11,12 +11,32 @@
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetConfig
 
-
 class Script(NOCScript):
-    name = "Alcatel.TIMOS.get_config"
-    implements = [IGetConfig]
-
+    TIMEOUT=850
+    name="Alcatel.TIMOS.get_config"
+    implements=[IGetConfig]
     def execute(self):
-        config = self.cli("admin display")
-        config = self.strip_first_lines(config, 6)
-        return self.cleaned_config(config)
+	configs=[]
+
+	conf={}
+	conf['name']="admin display"
+        conf['config']=self.cli("admin display")
+        conf['config']=self.strip_first_lines(conf['config'],6)
+	conf['config']=self.cleaned_config(conf['config'])
+	configs.append(conf)
+
+        conf={}
+        conf['name']="show bof"
+	conf['config']=self.cli("show bof")
+        conf['config']=self.cleaned_config(conf['config'])
+        configs.append(conf)
+
+        conf={}
+        conf['name']="li"
+	conf['config']=self.cli("configure li")
+	conf['config']=self.cli("info")
+        conf['config']=self.cleaned_config(conf['config'])
+        configs.append(conf)
+
+        return configs
+
