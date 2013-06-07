@@ -24,7 +24,10 @@ class Channel(object):
         self.daemon.die("[%s] %s" % (self.channel, msg))
 
     def info(self, msg):
-        logging.info("[%s] %s" % (self.channel ,msg))
+        logging.info("[%s] %s" % (self.channel, msg))
+
+    def error(self, msg):
+        logging.error("Error: [%s] %s" % (self.channel, msg))
 
     def init(self):
         self.daemon.subscribe(self.root + self.name + "/",
