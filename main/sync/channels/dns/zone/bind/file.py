@@ -9,6 +9,7 @@
 ## Python modules
 from __future__ import with_statement
 import os
+import errno
 import re
 import subprocess
 ## NOC modules
@@ -174,8 +175,12 @@ class BINDFileChannel(Channel):
         zf = ZoneFile(object, data["records"]).get_text()
         path = self.get_zone_path(object)
         self.info("Updating %s (%d)" % (object, serial))
-        with open(path, "w") as f:
-            f.write(zf)
+        try:
+            with open(path, "w") as f:
+                f.write(zf)
+        except IOError as e:
+            self.error("Can't write file because of: %s" %
+                        os.strerror(e.errno))
         self.update_manifest(mf, object, serial)
 
     def reload(self):
@@ -187,7 +192,7 @@ class BINDFileChannel(Channel):
         self.info("Running `%s`" % cmd)
         r = subprocess.call(cmd, shell=True)
         if r:
-            self.info("Failed to run `%s`: exit code %d" % (cmd, r))
+            self.error("Failed to run `%s`: exit code %d" % (cmd, r))
         else:
             self.info("OK")
 
@@ -205,6 +210,6 @@ class BINDFileChannel(Channel):
         self.info("Running `%s`" % cmd)
         r = subprocess.call(cmd, shell=True)
         if r:
-            self.info("Failed to run `%s`: exit code %d" % (cmd, r))
+            self.error("Failed to run `%s`: exit code %d" % (cmd, r))
         else:
             self.info("OK")
