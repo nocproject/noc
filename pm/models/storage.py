@@ -31,8 +31,8 @@ class PMStorage(Document):
     db = PlainReferenceField(PMDatabase)
     # Collection prefix
     collection = StringField()
-    # Store unaggregated data `raw_window` seconds
-    raw_window = IntField()
+    # Store unaggregated data `raw_retention` seconds
+    raw_retention = IntField(default=86400)
 
     TIME_SERIES_ID = "s"
     VALUE = "v"
