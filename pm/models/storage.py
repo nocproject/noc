@@ -39,6 +39,9 @@ class PMStorage(Document):
 
     CHUNK = 1000
 
+    def __unicode__(self):
+        return self.name
+
     def prepare(self):
         """
         Initialize collection and prepare indexes

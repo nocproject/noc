@@ -9,4 +9,5 @@
 from db import PMDatabase
 from storage import PMStorage
 from probe import PMProbe
+from check import PMCheck
 from ts import PMTS
