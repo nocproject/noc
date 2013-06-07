@@ -38,6 +38,8 @@ class ExtDocApplication(ExtApplication):
             elif isinstance(f, ForeignKeyField):
                 self.clean_fields[f.name] = ModelParameter(
                     f.document_type, required=f.required)
+            if f.primary_key:
+                self.pk = name
         #
         if not self.query_fields:
             self.query_fields = ["%s__%s" % (n, self.query_condition)

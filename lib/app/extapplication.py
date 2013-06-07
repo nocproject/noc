@@ -50,6 +50,7 @@ class ExtApplication(Application):
         super(ExtApplication, self).__init__(*args, **kwargs)
         self.document_root = os.path.join(self.module, "apps", self.app)
         self.row_limit = self.config.getint("main", "json_row_limit")
+        self.pk = "id"
 
     @property
     def js_app_class(self):
@@ -167,7 +168,7 @@ class ExtApplication(Application):
             if fav_items is None:
                 fav_items = self.get_favorite_items(request.user)
             for r in out:
-                r[self.fav_status] = r["id"] in fav_items
+                r[self.fav_status] = r[self.pk] in fav_items
         if format == "ext":
             out = {
                 "total": total,
