@@ -39,7 +39,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceProjectForm", {
                             xtype: "project.project.LookupField",
                             name: "project",
                             fieldLabel: "Project",
-                            allowBlank: false
+                            allowBlank: true
                         }
                     ],
                     buttonAlign: "center",
