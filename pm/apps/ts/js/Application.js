@@ -50,5 +50,14 @@ Ext.define("NOC.pm.ts.Application", {
             fieldLabel: "Storage",
             xtype: "pm.storage.LookupField"
         }
-    ]
+    ],
+    //
+    onPreview: function(record) {
+        var me = this;
+        Ext.create("NOC.pm.ts.GraphPreview", {
+            title: Ext.String.format("{0} {1}", record.get("check__label"), record.get("name")),
+            app: me,
+            ts: record.get(me.idField)
+        });
+    }
 });
