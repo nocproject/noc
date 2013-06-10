@@ -14,6 +14,7 @@ Ext.define("NOC.pm.ts.Application", {
         "NOC.pm.check.LookupField"
     ],
     model: "NOC.pm.ts.Model",
+    idField: "ts_id",
     columns: [
         {
             text: "Check",
