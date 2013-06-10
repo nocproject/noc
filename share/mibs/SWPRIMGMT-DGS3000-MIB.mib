@@ -1,0 +1,24 @@
+SWPRIMGMT-DGS3000-MIB	DEFINITIONS ::= BEGIN
+	IMPORTS
+		MODULE-IDENTITY			FROM SNMPv2-SMI
+		dlink-products,dlink-mgmt	FROM DLINK-ID-REC-MIB;
+	
+	dlink-dgs3000SeriesProd OBJECT IDENTIFIER ::= {dlink-products 133}
+	dgs-3000-10tc			OBJECT IDENTIFIER ::= { dlink-dgs3000SeriesProd 1 } 
+	dgs-3000-26tc			OBJECT IDENTIFIER ::= { dlink-dgs3000SeriesProd 2 }
+--	dgs-3000-26sc			OBJECT IDENTIFIER ::= { dlink-dgs3000SeriesProd 3 }
+    
+	dgs-3000-10-tc		OBJECT IDENTIFIER ::= {dgs-3000-10tc 1}
+	dgs-3000-26-tc		OBJECT IDENTIFIER ::= {dgs-3000-26tc 1}
+--	dgs-3000-26-sc		OBJECT IDENTIFIER ::= {dgs-3000-26sc 1}
+		
+	dgs3000SeriesProd	OBJECT IDENTIFIER ::= {dlink-mgmt 133} 
+	dgs3000-10tc		OBJECT IDENTIFIER ::= { dgs3000SeriesProd 1 } 
+	dgs3000-26tc		OBJECT IDENTIFIER ::= { dgs3000SeriesProd 2 }
+--	dgs3000-26sc		OBJECT IDENTIFIER ::= { dgs3000SeriesProd 3 }
+
+	dgs3000-10-tc		OBJECT IDENTIFIER ::= {dgs3000-10tc 1}
+	dgs3000-26-tc		OBJECT IDENTIFIER ::= {dgs3000-26tc 1}
+--	dgs3000-26-sc		OBJECT IDENTIFIER ::= {dgs3000-26sc 1}
+		
+END
