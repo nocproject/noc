@@ -192,6 +192,12 @@ Ext.define("NOC.dns.dnszone.Application", {
                     xtype: "textfield",
                     allowBlank: false
                 }
+            },
+            {
+                text: "Tags",
+                dataIndex: "tags",
+                width: 100,
+                editor: "tagsfield"
             }
         ]
     }],

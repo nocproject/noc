@@ -1,0 +1,43 @@
+[
+    {
+        "name": "HP | 1905 | Unknown | Ignore #1 (SYSLOG)",
+        "description": "Mar 19 17:28:35 2013 Podval [LLDP]/5/REMCHG RemInserts : 11,RemDeletes : 2,RemDrops : 0,RemAgeouts : 5",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^HP\\.1905$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "\\[LLDP\\]/5/REMCHG RemInserts : \\d+,RemDeletes : \\d+,RemDrops : \\d+,RemAgeouts : \\d+$"
+            }
+        ]
+    },
+
+    {
+        "name": "HP | 1905 | Unknown | Ignore #2 (SYSLOG)",
+        "description": "Mar 19 15:44:40 2013 Podval [LLDP]/5/REMCHG RemInserts : 7,RemDeletes : 2,RemDrops : 0,RemAgeouts : 2",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^HP\\.1905$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "\\[LLDP\\]/5/REMCHG RemInserts : \\d+,RemDeletes : \\d+,RemDrops : \\d+,RemAgeouts : \\d+$"
+            }
+        ]
+    }
+]
