@@ -9,7 +9,7 @@
 ## Python modules
 import random
 ## NOC modules
-from base import BaseCheck
+from noc.pm.pmprobe.checks.base import BaseCheck
 from noc.sa.interfaces.base import IntParameter
 
 
@@ -34,6 +34,8 @@ class TestCheck(BaseCheck):
         "bool"
     ]
 
+    form = "NOC.pm.check.test.TestCheckForm"
+
     def handle(self):
         i = random.randint(self.config["min"], self.config["max"])
         f = random.random() * (self.config["max"] - self.config["min"]) + self.config["min"]
@@ -43,17 +45,3 @@ class TestCheck(BaseCheck):
             "float": f,
             "bool": b
         }
-
-    def get_form(self):
-        return [
-            {
-                "xtype": "numberfield",
-                "name": "min",
-                "allowBlank": "false"
-            },
-            {
-                "xtype": "numberfield",
-                "name": "max",
-                "allowBlank": "false"
-            }
-        ]

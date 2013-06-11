@@ -22,6 +22,8 @@ class BaseCheck(object):
     parameters = {}
     # Name of derived time series
     time_series = []
+    # JS path to form class
+    form = None
 
     def __init__(self, daemon, id, config, ts_map):
         self.daemon = daemon
@@ -76,20 +78,16 @@ class BaseCheck(object):
         """
         return {}
 
-    def get_form(self):
-        """
-
-        :return:
-        """
-        return []
-
 
 class CheckRegistry(dict):
     def register_all(self):
-        for f in os.listdir("pm/pmprobe/checks/"):
-            if not f.endswith(".py") or f == "base.py":
+        prefix = "pm/pmprobe/checks/"
+        for f in os.listdir(prefix):
+            pp = os.path.join(prefix, f)
+            if (not os.path.isdir(pp) or
+                    not os.path.isfile(os.path.join(pp, "check.py"))):
                 continue
-            mn = "noc.pm.pmprobe.checks.%s" % f[:-3]
+            mn = "noc.pm.pmprobe.checks.%s.check" % f
             m = __import__(mn, {}, {}, "*")
             for on in dir(m):
                 o = getattr(m, on)
