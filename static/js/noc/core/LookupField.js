@@ -79,7 +79,8 @@ Ext.define("NOC.core.LookupField", {
                     scope: me,
                     callback: function(records, operation, success) {
                         if(success && records.length > 0) {
-                            this.setValue(records[0]);
+                            me.setValue(records[0]);
+                            me.fireEvent("select", me, [records[0]]);
                         }
                     }
                 });
