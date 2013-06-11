@@ -20,9 +20,9 @@ class Script(NOCScript):
     implements = [IGetVersion]
 
     rx_sys = re.compile(r"System Type\s+:\s+(?P<platform>.+?)$",
-        re.MULTILINE | re.DOTALL)
+                        re.MULTILINE | re.DOTALL)
     rx_ver = re.compile(r"System Version\s+:\s+(?P<version>.+?)$",
-        re.MULTILINE | re.DOTALL)
+                        re.MULTILINE | re.DOTALL)
 
     def execute(self):
         v = self.cli("show system information")
