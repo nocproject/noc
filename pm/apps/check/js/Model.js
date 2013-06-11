@@ -49,6 +49,10 @@ Ext.define("NOC.pm.check.Model", {
         {
             name: "check",
             type: "string"
+        },
+        {
+            name: "config",
+            type: "auto"
         }
     ]
 });
