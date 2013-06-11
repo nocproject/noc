@@ -5,8 +5,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "BGP Peer {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} state changed: {% if from_state %}{{from_state}} -> {% else %} to {% endif %}{{to_state}}",
-                "body_template": "BGP Peer {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} state changed: {% if from_state %}{{from_state}} -> {% else %} to {% endif %}{{to_state}}",
+                "subject_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} state changed: {% if from_state %}{{from_state}} -> {% else %} to {% endif %}{{to_state}}",
+                "body_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} state changed: {% if from_state %}{{from_state}} -> {% else %} to {% endif %}{{to_state}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -69,15 +69,15 @@
 
         ]
     },
-    
+
     {
         "name": "Network | BGP | Prefix Limit Exceeded",
         "description": "BGP Prefix Limit Exceeded",
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "BGP Peer {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} prefix limit exceeded",
-                "body_template": "BGP Peer {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} prefix limit exceeded",
+                "subject_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} prefix limit exceeded",
+                "body_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} prefix limit exceeded",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -111,15 +111,15 @@
             }
         ]
     },
-    
+
     {
         "name": "Network | BGP | Established",
         "description": "BGP Session Established",
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "BGP Session established {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
-                "body_template": "BGP Session established {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
+                "subject_template": "BGP Session established {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
+                "body_template": "BGP Session established {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -168,8 +168,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "BGP Session down {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
-                "body_template": "BGP Session down {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
+                "subject_template": "BGP Session down {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
+                "body_template": "BGP Session down {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -210,8 +210,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "BGP Backward transition {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
-                "body_template": "BGP Backward transition {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
+                "subject_template": "BGP Backward transition {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
+                "body_template": "BGP Backward transition {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
