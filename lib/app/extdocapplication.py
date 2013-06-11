@@ -131,7 +131,7 @@ class ExtDocApplication(ExtApplication):
                         v = str(v.id)
                     else:
                         v = str(v)
-                elif type(v) not in (str, unicode, int, long, bool):
+                elif type(v) not in (str, unicode, int, long, bool, dict):
                     if hasattr(v, "id"):
                         v = v.id
                     else:
