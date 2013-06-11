@@ -14,6 +14,7 @@ Ext.define("NOC.pm.ts.Application", {
         "NOC.pm.check.LookupField"
     ],
     model: "NOC.pm.ts.Model",
+    idField: "ts_id",
     columns: [
         {
             text: "Check",
@@ -49,5 +50,14 @@ Ext.define("NOC.pm.ts.Application", {
             fieldLabel: "Storage",
             xtype: "pm.storage.LookupField"
         }
-    ]
+    ],
+    //
+    onPreview: function(record) {
+        var me = this;
+        Ext.create("NOC.pm.ts.GraphPreview", {
+            title: Ext.String.format("{0} {1}", record.get("check__label"), record.get("name")),
+            app: me,
+            ts: record.get(me.idField)
+        });
+    }
 });

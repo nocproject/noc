@@ -23,6 +23,7 @@ Ext.define("NOC.core.ModelApplication", {
     changeTitle: "Change {0}",
     rowClassField: undefined,
     actions: undefined,
+    idField: "id",
 
     initComponent: function() {
         var me = this;
@@ -438,7 +439,7 @@ Ext.define("NOC.core.ModelApplication", {
                     },
                     {
                         xtype: "hiddenfield",
-                        name: "id"
+                        name: me.idField
                     }].concat(me.fields).concat(me.noc.cust_form_fields || []).concat(formInlines),
                 tbar: me.applyPermissions(formToolbar),
                 listeners: {
@@ -531,9 +532,9 @@ Ext.define("NOC.core.ModelApplication", {
             scope: me,
             success: function() {
                 var me = this,
-                    parent = record.get("id");
+                    parent = record.get(me.idField);
                 if(!parent && rIndex != null) {
-                    parent = me.store.getAt(rIndex).get("id");
+                    parent = me.store.getAt(rIndex).get(me.idField);
                 }
                 me.saveInlines(parent, me.inlineStores);
             },
@@ -619,7 +620,7 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this;
         me.currentRecord = record;
         me.setFormTitle(me.changeTitle);
-        me.toolbarIdLabel.setText("ID: " + me.currentRecord.get("id"));
+        me.toolbarIdLabel.setText("ID: " + me.currentRecord.get(me.idField));
         // Show edit form
         me.toggle();
         // Load records

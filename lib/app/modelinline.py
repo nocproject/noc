@@ -262,8 +262,7 @@ class ModelInline(object):
                 continue  # Restrict to selected fields
             if f.name == "tags":
                 # Send tags as a list
-                r[f.name] = [x for x in
-                             getattr(o, f.name).split(",") if x]
+                r[f.name] = getattr(o, f.name)
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
                 if (v is not None and
