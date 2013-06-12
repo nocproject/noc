@@ -11,6 +11,8 @@ import inspect
 import os
 import time
 import random
+## NOC modules
+from noc.sa.interfaces.base import DictParameter
 
 
 class BaseCheck(object):
@@ -20,7 +22,8 @@ class BaseCheck(object):
     description = None
     # DictParameter instance to validate output
     parameters = {}
-    # Name of derived time series
+    # List of TS instances
+    # For auto-created time series
     time_series = []
     # JS path to form class
     form = None
@@ -28,12 +31,13 @@ class BaseCheck(object):
     def __init__(self, daemon, id, config, ts_map):
         self.daemon = daemon
         self.id = id
-        self.config = config
+        self.config = None
         self.new_config = None
         self.interval = None
         self.t0 = None
         self.label = "%s-%s" % (self.name, id)
         self.ts_map = ts_map
+        self.set_config(config)
 
     def set_config(self, config):
         """
@@ -41,7 +45,8 @@ class BaseCheck(object):
         :param config:
         :return:
         """
-        self.new_config = config
+        # @todo: Disable check on validation error
+        self.new_config = DictParameter(attrs=self.parameters).clean(config)
 
     def apply_config(self):
         """
@@ -101,5 +106,25 @@ class CheckRegistry(dict):
     def choices(self):
         return [(x, x) for x in sorted(self)]
 
+
+class TS(object):
+    type = None
+
+    def __init__(self, name):
+        self.name = name
+
+
+class Gauge(TS):
+    type = "G"
+
+
+class Counter(TS):
+    type = "C"
+
+
+class Derive(TS):
+    type = "D"
+
+## Load check registry
 check_registry = CheckRegistry()
 check_registry.register_all()
