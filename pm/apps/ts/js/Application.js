@@ -11,7 +11,8 @@ Ext.define("NOC.pm.ts.Application", {
     uses: [
         "NOC.pm.pmts.Model",
         "NOC.pm.storage.LookupField",
-        "NOC.pm.check.LookupField"
+        "NOC.pm.check.LookupField",
+        "NOC.pm.ts.TSTypeField"
     ],
     model: "NOC.pm.ts.Model",
     idField: "ts_id",
@@ -28,10 +29,26 @@ Ext.define("NOC.pm.ts.Application", {
             width: 150
         },
         {
+            text: "Act.",
+            dataIndex: "is_active",
+            width: 50,
+            renderer: NOC.render.Bool
+        },
+        {
             text: "Storage",
             dataIndex: "storage",
             renderer: NOC.render.Lookup("storage"),
-            flex: 1
+            width: 150
+        },
+        {
+            text: "Type",
+            dataIndex: "type",
+            width: 75,
+            renderer: NOC.render.Choices({
+                G: "Gauge",
+                C: "Counter",
+                D: "Derive"
+            })
         }
     ],
     fields: [
@@ -46,9 +63,19 @@ Ext.define("NOC.pm.ts.Application", {
             xtype: "textfield"
         },
         {
+            name: "is_active",
+            boxLabel: "Active",
+            xtype: "checkboxfield"
+        },
+        {
             name: "storage",
             fieldLabel: "Storage",
             xtype: "pm.storage.LookupField"
+        },
+        {
+            name: "type",
+            fieldLabel: "Type",
+            xtype: "pm.ts.TSTypeField"
         }
     ],
     //

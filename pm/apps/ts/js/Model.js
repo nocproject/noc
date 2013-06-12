@@ -40,6 +40,14 @@ Ext.define("NOC.pm.ts.Model", {
             name: "check__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "is_active",
+            type: "boolean"
+        },
+        {
+            name: "type",
+            type: "string"
         }
     ]
 });

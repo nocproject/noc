@@ -18,6 +18,10 @@ from noc.pm.models.probe import PMProbe
 from noc.pm.models.check import PMCheck
 
 
+MAX32 = 0xFFFFFFFFL
+MAX64 = 0xFFFFFFFFFFFFFFFFL
+
+
 class PMWriterDaemon(Daemon):
     daemon_name = "noc-pmwriter"
 
@@ -25,6 +29,8 @@ class PMWriterDaemon(Daemon):
         self.stomp_client = None
         self.storages = {}
         self.ts = {}  # ts_id -> PMTS
+        # Last measures for COUNTER and DERIVE types
+        self.last_measure = {}  # ts_id -> (timestamp, value)
         super(PMWriterDaemon, self).__init__(*args, **kwargs)
 
     def load_config(self):
@@ -67,6 +73,17 @@ class PMWriterDaemon(Daemon):
         for ts_id, timestamp, value in body:
             ts = self.ts.get(ts_id)
             if ts is not None:
+                # Check time series is enabled
+                if not ts.is_active:
+                    continue  # Ignore inactive time series
+                # Convert value
+                if ts.type == "C":
+                    value = self.convert_counter(ts, timestamp, value)
+                elif ts.type == "D":
+                    value = self.convert_derive(ts, timestamp, value)
+                if value is None:
+                    continue  # Skip round
+                # Spool data for bulk save
                 spool[ts.storage.id] += [(ts_id, timestamp, value)]
         # Write data
         for storage_id in spool:
@@ -93,3 +110,34 @@ class PMWriterDaemon(Daemon):
                 c["ts"][ts.name] = ts.id
             cfg += [c]
         self.stomp_client.send(cfg, "/queue/pm/config/%s/" % probe_name)
+
+    def get_last_measure(self, ts):
+        if ts.id not in self.last_measure:
+            # Not in cache, fetch from database
+            last_timestamp, last_value = ts.last_measure
+            self.last_measure[ts.id] = (last_timestamp, last_value)
+        return self.last_measure[ts.id]
+
+    def convert_counter(self, ts, timestamp, value):
+        last_timestamp, last_value = self.get_last_measure(ts)
+        # Update last measure
+        self.last_measure[ts.id] = (timestamp, value)
+        if last_timestamp is None:
+            # No data yet, save last measure and skip the round
+            return None
+        else:
+            if value < last_value:
+                # Counter wrapping adjustment
+                mc = MAX64 if last_value >= MAX32 else MAX32
+                last_value -= mc
+            return (value - last_value) / (timestamp - last_timestamp)
+
+    def convert_derive(self, ts, timestamp, value):
+        last_timestamp, last_value = self.get_last_measure(ts)
+        # Update last measure
+        self.last_measure[ts.id] = (timestamp, value)
+        if last_timestamp is None:
+            # No data yet, save last measure and skip the round
+            return None
+        else:
+            return (value - last_value) / (timestamp - last_timestamp)
