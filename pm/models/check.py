@@ -42,10 +42,11 @@ class PMCheck(Document):
         from ts import PMTS
         super(PMCheck, self).save(*args, **kwargs)
         # Create time series
-        for name in self.handler.time_series:
-            if not PMTS.objects.filter(check=self, name=name).first():
+        for t in self.handler.time_series:
+            if not PMTS.objects.filter(check=self, name=t.name).first():
                 PMTS(
-                    name=name,
+                    name=t.name,
                     storage=self.storage,
-                    check=self
+                    check=self,
+                    type=t.type
                 ).save()

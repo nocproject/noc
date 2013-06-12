@@ -9,7 +9,7 @@
 ## Python modules
 import random
 ## NOC modules
-from noc.pm.pmprobe.checks.base import BaseCheck
+from noc.pm.pmprobe.checks.base import BaseCheck, Gauge
 from noc.sa.interfaces.base import IntParameter
 
 
@@ -25,13 +25,13 @@ class TestCheck(BaseCheck):
 
     parameters = {
         "min": IntParameter(),
-        "max": IntParameter
+        "max": IntParameter()
     }
 
     time_series = [
-        "int",
-        "float",
-        "bool"
+        Gauge("int"),
+        Gauge("float"),
+        Gauge("bool")
     ]
 
     form = "NOC.pm.check.test.TestCheckForm"

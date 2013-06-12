@@ -11,7 +11,8 @@ import datetime
 import time
 ## NOC Modules
 from noc.lib.nosql import (Document, StringField, IntField,
-                           PlainReferenceField, IntSequence)
+                           BooleanField, PlainReferenceField,
+                           IntSequence)
 from storage import PMStorage
 from check import PMCheck
 
@@ -31,8 +32,17 @@ class PMTS(Document):
 
     ts_id = IntField(primary_key=True, default=seq_ts.next)
     name = StringField(unique=True)
+    is_active = BooleanField(default=True)
     storage = PlainReferenceField(PMStorage)
     check = PlainReferenceField(PMCheck)
+    type = StringField(
+        default="G",
+        choices=[
+            ("G", "GAUGE"),
+            ("C", "COUNTER"),
+            ("D", "DERIVE")
+        ]
+    )
 
     def __unicode__(self):
         return self.name
@@ -48,3 +58,11 @@ class PMTS(Document):
         if isinstance(t1, datetime.datetime):
             t1 = time.mktime(t1.timetuple())
         return self.storage.iwindow(t0, t1, self.ts_id)
+
+    @property
+    def last_measure(self):
+        """
+        Returns
+        :return: timestamp, value
+        """
+        return self.storage.get_last_measure(self.ts_is)
