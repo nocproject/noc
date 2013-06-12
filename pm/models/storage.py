@@ -115,3 +115,16 @@ class PMStorage(Document):
                 self.object_id_to_timestamp(doc["_id"]),
                 doc[self.VALUE]
             )
+
+    def get_last_measure(self, ts_id):
+        """
+        Returns last timeseries measure
+        :param ts_id:
+        :return:
+        """
+        c = self.get_raw_collection()
+        d = c.filter({self.TIME_SERIES_ID: ts_id}, sort=-1).first()
+        if d:
+            return self.object_id_to_timestamp(d["_id"]), d[self.VALUE]
+        else:
+            return None, None
