@@ -88,6 +88,12 @@ NOC.render.Date = function(val) {
     return '' + y + '-' + (m<=9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
 };
 
+NOC.render.Choices = function(choices) {
+    return function(value) {
+        return choices[value];
+    }
+};
+
 //
 // Run new Map/Reduce task
 // Usage:
