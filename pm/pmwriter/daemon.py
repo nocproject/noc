@@ -58,6 +58,8 @@ class PMWriterDaemon(Daemon):
         self.stomp_client.start()
         self.stomp_client.subscribe("/queue/pm/data/", self.on_data)
         self.stomp_client.subscribe("/queue/pm/config/", self.on_config)
+        self.stomp_client.subscribe("/queue/pm/check/change/",
+                                    self.on_check_change)
         self.stomp_client.wait()
 
     def on_data(self, destination, body):
@@ -92,6 +94,24 @@ class PMWriterDaemon(Daemon):
         for storage_id in spool:
             self.storages[storage_id].register(spool[storage_id])
 
+    def get_check_config(self, check):
+        """
+        Serialize check to STOMP-transportable config
+        :param check:
+        :return:
+        """
+        c = {
+            "id": str(check.id),
+            "check": check.check,
+            "interval": check.interval,
+            "config": check.config,
+            "ts": {}
+        }
+        for ts in PMTS.objects.filter(check=check):
+            self.ts[ts.id] = ts
+            c["ts"][ts.name] = ts.id
+        return c
+
     def on_config(self, destination, body):
         probe_name = body["probe"]
         probe = PMProbe.objects.filter(
@@ -99,20 +119,23 @@ class PMWriterDaemon(Daemon):
         if not probe:
             logging.error("Invalid probe: '%s'" % probe_name)
             return
-        cfg = []
-        for check in PMCheck.objects.filter(probe=probe):
-            c = {
-                "id": str(check.id),
-                "check": check.check,
-                "interval": check.interval,
-                "config": check.config,
-                "ts": {}
-            }
-            for ts in PMTS.objects.filter(check=check):
-                self.ts[ts.id] = ts
-                c["ts"][ts.name] = ts.id
-            cfg += [c]
+        cfg = [self.get_check_config(c)
+               for c in PMCheck.objects.filter(probe=probe)]
         self.stomp_client.send(cfg, "/queue/pm/config/%s/" % probe_name)
+
+    def on_check_change(self, destination, body):
+        check_id = body["check"]
+        check = PMCheck.objects.filter(id=check_id).first()
+        if check:
+            cfg = [self.get_check_config(check)]
+            self.stomp_client.send(
+                cfg,
+                "/queue/pm/config/%s/" % check.probe.name
+            )
+        else:
+            # Delete check
+            # @todo: !!!
+            pass
 
     def get_last_measure(self, ts):
         if ts.id not in self.last_measure:
