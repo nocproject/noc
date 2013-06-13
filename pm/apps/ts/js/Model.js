@@ -48,6 +48,16 @@ Ext.define("NOC.pm.ts.Model", {
         {
             name: "type",
             type: "string"
+        },
+        {
+            name: "last_timestamp",
+            type: "int",
+            persist: false
+        },
+        {
+            name: "last_value",
+            type: "auto",
+            persist: false
         }
     ]
 });

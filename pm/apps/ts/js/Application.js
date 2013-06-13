@@ -49,6 +49,18 @@ Ext.define("NOC.pm.ts.Application", {
                 C: "Counter",
                 D: "Derive"
             })
+        },
+        {
+            text: "Last time",
+            dataIndex: "last_timestamp",
+            width: 100,
+            renderer: NOC.render.Timestamp
+        },
+        {
+            text: "Last value",
+            dataIndex: "last_value",
+            width: 100,
+            align: "right"
         }
     ],
     fields: [
