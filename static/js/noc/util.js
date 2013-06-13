@@ -95,10 +95,13 @@ NOC.render.Choices = function(choices) {
 };
 
 NOC.render.Timestamp = function(val) {
+    if(!val) {
+        return "";
+    }
     var d = new Date(val * 1000),
-        m = d.getMonth() + 1,
         y = d.getFullYear(),
-        D = d.getDay(),
+        m = d.getMonth() + 1,
+        D = d.getDate(),
         h = d.getHours(),
         M = d.getMinutes(),
         s = d.getSeconds(),
