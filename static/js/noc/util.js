@@ -94,6 +94,21 @@ NOC.render.Choices = function(choices) {
     }
 };
 
+NOC.render.Timestamp = function(val) {
+    var d = new Date(val * 1000),
+        m = d.getMonth() + 1,
+        y = d.getFullYear(),
+        D = d.getDay(),
+        h = d.getHours(),
+        M = d.getMinutes(),
+        s = d.getSeconds(),
+        f = function(v) {
+            return v <= 9 ? '0' + v : v;
+        }
+    return "" + y + "-" + f(m) + "-" + f(D) + " " +
+        f(h) + ":" + f(M) + ":" + f(s);
+}
+
 //
 // Run new Map/Reduce task
 // Usage:
