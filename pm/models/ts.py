@@ -65,4 +65,4 @@ class PMTS(Document):
         Returns
         :return: timestamp, value
         """
-        return self.storage.get_last_measure(self.ts_is)
+        return self.storage.get_last_measure(self.ts_id)

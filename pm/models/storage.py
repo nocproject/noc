@@ -123,8 +123,8 @@ class PMStorage(Document):
         :return:
         """
         c = self.get_raw_collection()
-        d = c.filter({self.TIME_SERIES_ID: ts_id}, sort=-1).first()
+        d = list(c.find({self.TIME_SERIES_ID: ts_id}).sort([("_id", -1)]).limit(1))
         if d:
-            return self.object_id_to_timestamp(d["_id"]), d[self.VALUE]
+            return self.object_id_to_timestamp(d[0]["_id"]), d[0][self.VALUE]
         else:
             return None, None
