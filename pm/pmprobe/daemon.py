@@ -119,11 +119,16 @@ class PMProbeDaemon(Daemon):
         # Run check
         timestamp = int(time.time())
         try:
-            r = check.map_result(check.handle())
-            # Spool data
-            with self.data_lock:
-                for ts in r:
-                    self.data += [(ts, timestamp, r[ts])]
+            r = check.handle()
+            if r is None:
+                # Check failed
+                check.error("Failed to collect result")
+            else:
+                r = check.map_result(r)
+                # Spool data
+                with self.data_lock:
+                    for ts in r:
+                        self.data += [(ts, timestamp, r[ts])]
         except:
             error_report()
         logging.debug("Check completed: %s" % check.label)
