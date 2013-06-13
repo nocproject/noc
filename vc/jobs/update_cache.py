@@ -15,6 +15,7 @@ from noc.vc.models import VC
 class UpdateCacheJob(AutoIntervalJob):
     name = "vc.update_cache"
     interval = 300
+    threaded = True
 
     def handler(self):
         for vc in VC.objects.all():
