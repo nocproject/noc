@@ -21,6 +21,16 @@ class PMTSApplication(ExtDocApplication):
     menu = "Time Series"
     model = PMTS
 
+    def field_last_timestamp(self, o):
+        if not hasattr(o, "_last_measure"):
+            o._last_measure = o.last_measure
+        return o._last_measure[0]
+
+    def field_last_value(self, o):
+        if not hasattr(o, "_last_measure"):
+            o._last_measure = o.last_measure
+        return o._last_measure[1]
+
     @view(url="^data/", method=["GET"], api=True, access="data")
     def api_data(self, request):
         """
