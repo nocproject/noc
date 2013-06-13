@@ -13,6 +13,7 @@ from noc.lib.nosql import (Document, StringField, DictField,
 from probe import PMProbe
 from storage import PMStorage
 from noc.pm.pmprobe.checks.base import check_registry
+from noc.lib.scheduler.utils import sliding_job
 
 
 class PMCheck(Document):
@@ -50,3 +51,9 @@ class PMCheck(Document):
                     check=self,
                     type=t.type
                 ).save()
+        # Notify changes
+        self.touch(self.id)
+
+    @classmethod
+    def touch(cls, id):
+        sliding_job("main.jobs", "pm.touch_check", key=id)
