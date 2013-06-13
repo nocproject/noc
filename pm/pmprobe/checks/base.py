@@ -11,6 +11,7 @@ import inspect
 import os
 import time
 import random
+import logging
 ## NOC modules
 from noc.sa.interfaces.base import DictParameter
 
@@ -82,6 +83,15 @@ class BaseCheck(object):
         :return:
         """
         return {}
+
+    def debug(self, msg):
+        logging.debug("[%s] %s" % (self.label, msg))
+
+    def info(self, msg):
+        logging.info("[%s] %s" % (self.label, msg))
+
+    def error(self, msg):
+        logging.error("[%s] %s" % (self.label, msg))
 
 
 class CheckRegistry(dict):
