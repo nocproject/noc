@@ -72,9 +72,12 @@ class PMWriterDaemon(Daemon):
         spool = defaultdict(list)
         for ts_id, timestamp, value in body:
             ts = self.ts.get(ts_id)
-            if ts is not None:
+            if ts is None:
+                logging.error("Unknown time series id %s" % ts_id)
+            else:
                 # Check time series is enabled
                 if not ts.is_active:
+                    logging.debug("Ignore inactive time series %s" % ts)
                     continue  # Ignore inactive time series
                 # Convert value
                 if ts.type == "C":
