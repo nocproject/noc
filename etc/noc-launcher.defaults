@@ -89,3 +89,15 @@ enabled = false
 user = noc
 group =
 config = etc/noc-sync.conf
+
+[noc-pmwriter]
+enabled = true
+user = noc
+group =
+config = etc/noc-pmwriter.conf
+
+[noc-pmprobe]
+enabled = true
+user = noc
+group =
+config = etc/noc-pmprobe.conf

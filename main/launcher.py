@@ -146,7 +146,7 @@ class Launcher(Daemon):
     DAEMONS = ["stomp", "scheduler", "wf",
                "web", "sae", "activator",
                "classifier", "correlator",
-               "notifier", "probe",
+               "notifier", "pmwriter", "pmprobe",
                "discovery", "sync"]
 
     def __init__(self):
