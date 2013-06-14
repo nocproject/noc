@@ -50,7 +50,7 @@ class PMTSApplication(ExtDocApplication):
         """
         t = int(time.time())
         end = int(request.GET.get("end", t))
-        begin = int(request.GET.get("begin", end - 300))
+        begin = int(request.GET.get("begin", end - 3600))
         data = {}
         for ts in [int(x) for x in request.GET.getlist("ts")]:
             t = PMTS.objects.filter(ts_id=ts).first()
