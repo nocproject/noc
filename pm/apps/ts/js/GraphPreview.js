@@ -22,6 +22,15 @@ Ext.define("NOC.pm.ts.GraphPreview", {
             fields: ["timestamp", "value"],
             data: []
         });
+
+        me.scaleStore = Ext.create("Ext.data.Store", {
+            fields: ["scale", "label"],
+            data: [
+                {scale: 3600, label: "1h"},
+                {scale: 3600 * 3, label: "3h"},
+                {scale: 3600 * 12, label: "12h"},
+            ]
+        });
         Ext.apply(me, {
             items: [
                 {
@@ -44,7 +53,8 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                             fields: ["timestamp"],
                             position: "bottom",
                             dateFormat: "H:i",
-                            grid: true
+                            grid: true,
+                            step: [Ext.Date.MINUTE, 5]
                         }
                     ],
                     series: [
@@ -58,7 +68,6 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                                 width: 200,
                                 height: 40,
                                 renderer: function(storeItem, item) {
-                                    console.log(arguments);
                                     this.setTitle(
                                         Ext.String.format("Time: {0}<br/>Value: {1}",
                                             Ext.Date.format(storeItem.get("timestamp"), "Y-m-d H:i:s"),
@@ -77,24 +86,55 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                     dock: "bottom",
                     items: [
                         {
-                            text: "Time machine here!"
+                            xtype: "button",
+                            width: 20,
+                            text: "&#9664;"
+                        },
+                        {
+                            xtype: "slider",
+                            minValue: 0,
+                            maxValue: 100,
+                            increment: 10,
+                            flex: 1
+                        },
+                        {
+                            xtype: "button",
+                            width: 20,
+                            text: "&#9654;"
+                        },
+                        {
+                            xtype: "combobox",
+                            width: 50,
+                            queryMode: "local",
+                            displayField: "label",
+                            valueField: "scale",
+                            store: me.scaleStore,
+                            allowBlank: false,
+                            value: 3600
                         }
                     ]
                 }
             ]
         });
+        //
         me.callParent();
-        me.loadData();
+        //
+        me.chart = me.items.get(0);
+        me.timeAxis = me.chart.axes.get(1);
+        me.loadData(3600);
     },
     //
-    loadData: function() {
-        var me = this;
+    loadData: function(scale, end) {
+        var me = this,
+            e = ((end || new Date()).getTime() / 1000) >> 0,
+            b = e - scale;
+
         Ext.Ajax.request({
             url: "/pm/ts/data/",
             params: {
                 ts: me.ts,
-                begin: 1371074031,
-                end: 1371125036
+                begin: b,
+                end: e
             },
             method: "GET",
             scope: me,
@@ -106,7 +146,14 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                             value: v[1]
                         }
                     });
+                // Switch interval
+                me.timeAxis.fromDate = new Date(b * 1000);
+                me.timeAxis.toDate = new Date(e * 1000);
+                // Submit data to chart
                 me.store.loadRawData(r);
+            },
+            failure: function(response) {
+                NOC.error("Failed to get data");
             }
         });
     }
