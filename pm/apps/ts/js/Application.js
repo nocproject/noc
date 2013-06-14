@@ -8,8 +8,7 @@ console.debug("Defining NOC.pm.ts.Application");
 
 Ext.define("NOC.pm.ts.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
-        "NOC.pm.pmts.Model",
+    requires: [
         "NOC.pm.storage.LookupField",
         "NOC.pm.check.LookupField",
         "NOC.pm.ts.TSTypeField"

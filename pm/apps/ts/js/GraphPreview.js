@@ -14,6 +14,7 @@ Ext.define("NOC.pm.ts.GraphPreview", {
     height: 400,
     autoShow: true,
     layout: "fit",
+    maximizable: true,
 
     initComponent: function() {
         var me = this;
@@ -25,27 +26,58 @@ Ext.define("NOC.pm.ts.GraphPreview", {
             items: [
                 {
                     xtype: "chart",
+                    animate: true,
                     store: me.store,
+                    legend: {
+                        position: "bottom"
+                    },
                     axes: [
                         {
                             type: "Numeric",
                             fields: ["value"],
                             position: "right",
-                            title: "Value",
-                            minimum: 0
+                            minimum: 0,
+                            grid: true
                         },
                         {
                             type: "Time",
+                            fields: ["timestamp"],
                             position: "bottom",
-                            dateFormat: "ga",
-                            title: "Time"
+                            dateFormat: "H:i",
+                            grid: true
                         }
                     ],
                     series: [
                         {
-                            type: "area",
+                            type: "line",
+                            axis: ["bottom", "right"],
                             xField: "timestamp",
-                            yField: "value"
+                            yField: "value",
+                            tips: {
+                                trackMouse: true,
+                                width: 200,
+                                height: 40,
+                                renderer: function(storeItem, item) {
+                                    console.log(arguments);
+                                    this.setTitle(
+                                        Ext.String.format("Time: {0}<br/>Value: {1}",
+                                            Ext.Date.format(storeItem.get("timestamp"), "Y-m-d H:i:s"),
+                                            storeItem.get("value")
+                                        )
+                                    );
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            dockedItems: [
+                {
+                    xtype: "toolbar",
+                    dock: "bottom",
+                    items: [
+                        {
+                            text: "Time machine here!"
                         }
                     ]
                 }
@@ -60,7 +92,9 @@ Ext.define("NOC.pm.ts.GraphPreview", {
         Ext.Ajax.request({
             url: "/pm/ts/data/",
             params: {
-                ts: me.ts
+                ts: me.ts,
+                begin: 1371074031,
+                end: 1371125036
             },
             method: "GET",
             scope: me,
@@ -72,7 +106,6 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                             value: v[1]
                         }
                     });
-                console.log(r);
                 me.store.loadRawData(r);
             }
         });
