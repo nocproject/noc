@@ -24,11 +24,14 @@ Ext.define("NOC.pm.ts.GraphPreview", {
         });
 
         me.scaleStore = Ext.create("Ext.data.Store", {
-            fields: ["scale", "label"],
+            fields: ["scale", "label", "step"],
             data: [
-                {scale: 3600, label: "1h"},
-                {scale: 3600 * 3, label: "3h"},
-                {scale: 3600 * 12, label: "12h"},
+                {scale: 3600, label: "1h", step: [Ext.Date.MINUTE, 5]},
+                {scale: 3600 * 3, label: "3h", step: [Ext.Date.MINUTE, 10]},
+                {scale: 3600 * 12, label: "12h", step: [Ext.Date.MINUTE, 15]},
+                {scale: 3600 * 24, label: "1d", step: [Ext.Date.MINUTE, 30]},
+                {scale: 3600 * 24 * 7, label: "7d", step: [Ext.Date.HOUR, 1]},
+                {scale: 3600 * 24 * 30, label: "30d", step: [Ext.Date.HOUR, 3]},
             ]
         });
         Ext.apply(me, {
@@ -110,7 +113,13 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                             valueField: "scale",
                             store: me.scaleStore,
                             allowBlank: false,
-                            value: 3600
+                            value: 3600,
+                            listeners: {
+                                select: {
+                                    scope: me,
+                                    fn: me.onScale
+                                }
+                            }
                         }
                     ]
                 }
@@ -156,5 +165,12 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                 NOC.error("Failed to get data");
             }
         });
+    },
+    //
+    onScale: function(combo, records, opts) {
+        var me = this,
+            r = records[0];
+        me.timeAxis.step = r.get("step");
+        me.loadData(r.get("scale"));
     }
 });
