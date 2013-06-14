@@ -56,9 +56,11 @@ class PMTSApplication(ExtDocApplication):
             t = PMTS.objects.filter(ts_id=ts).first()
             if not t:
                 continue
-            data[ts] = [(timestamp, value)
-                          for _, timestamp, value
-                          in t  .iwindow(begin, end)]
+            data[ts] = [
+                (timestamp, value)
+                for _, timestamp, value
+                in t.iwindow(begin, end)
+            ]
         return {
             "begin": begin,
             "end": end,
