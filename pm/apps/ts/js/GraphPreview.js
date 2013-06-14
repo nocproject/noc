@@ -17,21 +17,56 @@ Ext.define("NOC.pm.ts.GraphPreview", {
     maximizable: true,
 
     initComponent: function() {
-        var me = this;
+        var me = this,
+            storeFields = ["timestamp"],
+            axisFields = [],
+            series = [];
+        // Determine store fields
+        me.tsList = [];
+        for(var i in me.ts) {
+            me.tsList.push(i);
+            storeFields.push("v" + i);
+            axisFields.push("v" + i);
+            series.push(
+                {
+                    type: "line",
+                    axis: ["bottom", "right"],
+                    xField: "timestamp",
+                    yField: "v" + i,
+                    title: me.ts[i],
+                    tips: {
+                        trackMouse: true,
+                        width: 200,
+                        height: 40,
+                        renderer: (function(n) {
+                            return function(storeItem, item) {
+                                this.setTitle(
+                                    Ext.String.format("Time: {0}<br/>Value: {1}",
+                                        Ext.Date.format(storeItem.get("timestamp"), "Y-m-d H:i:s"),
+                                        storeItem.get(n)
+                                    )
+                                );
+                            }
+                        })("v" + i)
+                    }
+                }
+            );
+        }
+
         me.store = Ext.create("Ext.data.Store", {
-            fields: ["timestamp", "value"],
+            fields: storeFields,
             data: []
         });
 
         me.scaleStore = Ext.create("Ext.data.Store", {
-            fields: ["scale", "label", "step"],
+            fields: ["scale", "label", "step", "dateFormat"],
             data: [
-                {scale: 3600, label: "1h", step: [Ext.Date.MINUTE, 5]},
-                {scale: 3600 * 3, label: "3h", step: [Ext.Date.MINUTE, 10]},
-                {scale: 3600 * 12, label: "12h", step: [Ext.Date.MINUTE, 15]},
-                {scale: 3600 * 24, label: "1d", step: [Ext.Date.MINUTE, 30]},
-                {scale: 3600 * 24 * 7, label: "7d", step: [Ext.Date.HOUR, 1]},
-                {scale: 3600 * 24 * 30, label: "30d", step: [Ext.Date.HOUR, 3]},
+                {scale: 3600, label: "1h", step: [Ext.Date.MINUTE, 5], dateFormat: "H:i"},
+                {scale: 3600 * 3, label: "3h", step: [Ext.Date.MINUTE, 10], dateFormat: "H:i"},
+                {scale: 3600 * 12, label: "12h", step: [Ext.Date.MINUTE, 15], dateFormat: "H:i"},
+                {scale: 3600 * 24, label: "1d", step: [Ext.Date.MINUTE, 30], dateFormat: "H:i"},
+                {scale: 3600 * 24 * 7, label: "7d", step: [Ext.Date.HOUR, 1], dateFormat: "H:i"},
+                {scale: 3600 * 24 * 30, label: "30d", step: [Ext.Date.HOUR, 3], dateFormat: "H:i"},
             ]
         });
         Ext.apply(me, {
@@ -46,9 +81,8 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                     axes: [
                         {
                             type: "Numeric",
-                            fields: ["value"],
+                            fields: axisFields,
                             position: "right",
-                            minimum: 0,
                             grid: true
                         },
                         {
@@ -60,27 +94,7 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                             step: [Ext.Date.MINUTE, 5]
                         }
                     ],
-                    series: [
-                        {
-                            type: "line",
-                            axis: ["bottom", "right"],
-                            xField: "timestamp",
-                            yField: "value",
-                            tips: {
-                                trackMouse: true,
-                                width: 200,
-                                height: 40,
-                                renderer: function(storeItem, item) {
-                                    this.setTitle(
-                                        Ext.String.format("Time: {0}<br/>Value: {1}",
-                                            Ext.Date.format(storeItem.get("timestamp"), "Y-m-d H:i:s"),
-                                            storeItem.get("value")
-                                        )
-                                    );
-                                }
-                            }
-                        }
-                    ]
+                    series: series
                 }
             ],
             dockedItems: [
@@ -141,7 +155,7 @@ Ext.define("NOC.pm.ts.GraphPreview", {
         Ext.Ajax.request({
             url: "/pm/ts/data/",
             params: {
-                ts: me.ts,
+                ts: me.tsList,
                 begin: b,
                 end: e
             },
@@ -149,12 +163,16 @@ Ext.define("NOC.pm.ts.GraphPreview", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText),
-                    r = data.data[me.ts].map(function(v) {
-                        return {
-                            timestamp: new Date(v[0] * 1000),
-                            value: v[1]
-                        }
-                    });
+                    r = [];
+                for(var ts in data.data) {
+                    var tsdata = data.data[ts];
+                    for(var i in tsdata) {
+                        var v = tsdata[i],
+                            x = {timestamp: new Date(v[0] * 1000)};
+                        x["v" + ts] = v[1];
+                        r.push(x);
+                    }
+                }
                 // Switch interval
                 me.timeAxis.fromDate = new Date(b * 1000);
                 me.timeAxis.toDate = new Date(e * 1000);

@@ -91,11 +91,13 @@ Ext.define("NOC.pm.ts.Application", {
     ],
     //
     onPreview: function(record) {
-        var me = this;
+        var me = this,
+            ts = {};
+        ts[record.get(me.idField)] = record.get("check__label") + " " + record.get("name");
         Ext.create("NOC.pm.ts.GraphPreview", {
             title: Ext.String.format("{0} {1}", record.get("check__label"), record.get("name")),
             app: me,
-            ts: record.get(me.idField)
+            ts: ts
         });
     }
 });
