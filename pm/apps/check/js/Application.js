@@ -41,6 +41,11 @@ Ext.define("NOC.pm.check.Application", {
             width: 150
         },
         {
+            text: "Check",
+            dataIndex: "check",
+            width: 150
+        },
+        {
             text: "Interval",
             dataIndex: "interval",
             width: 75
