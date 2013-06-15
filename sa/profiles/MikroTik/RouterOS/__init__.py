@@ -19,9 +19,10 @@ class Profile(noc.sa.profiles.Profile):
     name = "MikroTik.RouterOS"
     supported_schemes = [TELNET, SSH]
     command_submit = "\r"
-    pattern_prompt = r"\[(?P<prompt>.+?@.+?)\] > "
+    pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] > "
     pattern_more = [
         ("Please press \"Enter\" to continue!", "\n"),
+        (r"\[Q quit\|D dump\|down\]", " ")
     ]
     pattern_syntax_error = r"bad command name"
     config_volatile = [r"^#.*?$", r"^\s?"]
