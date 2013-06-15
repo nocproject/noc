@@ -15,6 +15,7 @@ Ext.define("NOC.pm.ts.GraphPreview", {
     autoShow: true,
     layout: "fit",
     maximizable: true,
+    baseTime: null,
 
     initComponent: function() {
         var me = this,
@@ -37,11 +38,12 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                     tips: {
                         trackMouse: true,
                         width: 200,
-                        height: 40,
+                        height: 50,
                         renderer: (function(n) {
                             return function(storeItem, item) {
                                 this.setTitle(
-                                    Ext.String.format("Time: {0}<br/>Value: {1}",
+                                    Ext.String.format("<u>{0}</u><br/>Time: {1}<br/>Value: {2}",
+                                        me.ts[i],
                                         Ext.Date.format(storeItem.get("timestamp"), "Y-m-d H:i:s"),
                                         storeItem.get(n)
                                     )
@@ -62,11 +64,11 @@ Ext.define("NOC.pm.ts.GraphPreview", {
             fields: ["scale", "label", "step", "dateFormat"],
             data: [
                 {scale: 3600, label: "1h", step: [Ext.Date.MINUTE, 5], dateFormat: "H:i"},
-                {scale: 3600 * 3, label: "3h", step: [Ext.Date.MINUTE, 10], dateFormat: "H:i"},
-                {scale: 3600 * 12, label: "12h", step: [Ext.Date.MINUTE, 15], dateFormat: "H:i"},
-                {scale: 3600 * 24, label: "1d", step: [Ext.Date.MINUTE, 30], dateFormat: "H:i"},
-                {scale: 3600 * 24 * 7, label: "7d", step: [Ext.Date.HOUR, 1], dateFormat: "H:i"},
-                {scale: 3600 * 24 * 30, label: "30d", step: [Ext.Date.HOUR, 3], dateFormat: "H:i"},
+                {scale: 3600 * 3, label: "3h", step: [Ext.Date.MINUTE, 15], dateFormat: "H:i"},
+                {scale: 3600 * 12, label: "12h", step: [Ext.Date.HOUR, 1], dateFormat: "H:i"},
+                {scale: 3600 * 24, label: "1d", step: [Ext.Date.HOUR, 2], dateFormat: "H:i"},
+                {scale: 3600 * 24 * 7, label: "7d", step: [Ext.Date.HOUR, 12], dateFormat: "H:i"},
+                {scale: 3600 * 24 * 30, label: "30d", step: [Ext.Date.DAY, 2], dateFormat: "H:i"},
             ]
         });
         Ext.apply(me, {
