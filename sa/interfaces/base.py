@@ -676,8 +676,15 @@ class DictParameter(Parameter):
                 try:
                     out_value[a_name] = attr.clean(in_value[a_name])
                 except InterfaceTypeError, why:
-                    self.raise_error(value,
-                                     "Invalid value for '%s': %s" % (a_name, why))
+                    if not in_value[a_name] and not attr.required:
+                        if attr.default:
+                            out_value[a_name] = attr.default
+                        else:
+                            pass
+                    else:
+                        self.raise_error(
+                            value,
+                            "Invalid value for '%s': %s" % (a_name, why))
                 del in_value[a_name]
         for k, v in in_value.items():
             out_value[k] = v
