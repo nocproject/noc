@@ -15,7 +15,7 @@ Ext.define("NOC.pm.ts.GraphPreview", {
     autoShow: true,
     layout: "fit",
     maximizable: true,
-    baseTime: null,
+    baseTime: null,  // refresh to current time
 
     initComponent: function() {
         var me = this,
@@ -96,7 +96,14 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                             step: [Ext.Date.MINUTE, 5]
                         }
                     ],
-                    series: series
+                    series: series,
+                    mask: "horizontal",
+                    listeners: {
+                        select: {
+                            scope: me,
+                            fn: me.onSelect
+                        }
+                    }
                 }
             ],
             dockedItems: [
@@ -191,6 +198,13 @@ Ext.define("NOC.pm.ts.GraphPreview", {
         var me = this,
             r = records[0];
         me.timeAxis.step = r.get("step");
-        me.loadData(r.get("scale"));
+        me.chart.restoreZoom();
+        me.loadData(r.get("scale"), me.baseTime);
+    },
+    //
+    onSelect: function(chart, selection) {
+        var me = this;
+        chart.setZoom(selection);
+        chart.mask.hide();
     }
 });
