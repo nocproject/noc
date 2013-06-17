@@ -64,7 +64,7 @@ Ext.define("NOC.pm.check.Application", {
         var me = this;
         // Passed by get_launch_info
         me.checkForms = me.noc.check_forms;
-        me.configFieldset = Ext.create("Ext.form.FieldSet", {
+        me.configPanel = Ext.create("Ext.container.Container", {
             title: "Configuration"
         });
         me.configForm = null;
@@ -113,7 +113,16 @@ Ext.define("NOC.pm.check.Application", {
                     allowBlank: false,
                     defaultValue: 60
                 },
-                me.configFieldset
+                {
+                    xtype: "container",
+                    html: "Configuration:",
+                    height: 20,
+                    style: {
+                        "font-weight": "bold",
+                        "text-decoration": "underline"
+                    }
+                },
+                me.configPanel
             ]
         });
         me.callParent();
@@ -145,6 +154,7 @@ Ext.define("NOC.pm.check.Application", {
             defaults: {
                 anchor: "100%"
             },
+            border: false,
             listeners: {
                 beforeadd: function(me, field) {
                     // Change label style for required fields
@@ -160,8 +170,8 @@ Ext.define("NOC.pm.check.Application", {
                 }
             }
         });
-        me.configFieldset.removeAll();
-        me.configFieldset.add(me.configForm);
+        me.configPanel.removeAll();
+        me.configPanel.add(me.configForm);
         if(oldValues) {
             me.configForm.getForm().setValues(oldValues);
         }
