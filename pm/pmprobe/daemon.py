@@ -63,7 +63,8 @@ class PMProbeDaemon(Daemon):
             self.on_config)
         self.stomp_client.send({"probe": self.probe_name},
                                "/queue/pm/config/")
-        self.queue_runner_thread.join()
+        while self.queue_runner_thread.is_alive():
+            self.queue_runner_thread.join(1)
 
     def on_config(self, destination, body):
         with self.queue_lock:
