@@ -93,6 +93,9 @@ class BaseCheck(object):
     def error(self, msg):
         logging.error("[%s] %s" % (self.label, msg))
 
+    def get_factory(self):
+        return self.daemon.stomp_client.factory
+
 
 class CheckRegistry(dict):
     def register_all(self):
