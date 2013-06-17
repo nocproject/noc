@@ -194,8 +194,8 @@ class STOMPClient(object):
 
     def wait(self):
         """Wait until factory completes"""
-        if self.factory_thread:
-            self.factory_thread.join()
+        while self.factory_thread.is_alive():
+            self.factory_thread.join(1)
 
     def refresh_subscriptions(self):
         """
