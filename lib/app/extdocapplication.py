@@ -23,11 +23,10 @@ class ExtDocApplication(ExtApplication):
     query_fields = []  # Use all unique fields by default
     query_condition = "startswith"
     int_query_fields = []  # Integer fields for exact match
-    pk_field_name = None  # Set by constructor
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
-        self.pk_field_name = "id"  # @todo: detect properly
+        self.pk = "id"  # @todo: detect properly
         # Prepare field converters
         self.clean_fields = {}  # name -> Parameter
         for name, f in self.model._fields.items():
@@ -162,8 +161,8 @@ class ExtDocApplication(ExtApplication):
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError, why:
             return self.response(str(why), status=self.BAD_REQUEST)
-        if "id" in attrs:
-            del attrs["id"]
+        if self.pk in attrs:
+            del attrs[self.pk]
         try:
             self.queryset(request).get(**attrs)
             return self.response(status=self.CONFLICT)
@@ -182,14 +181,14 @@ class ExtDocApplication(ExtApplication):
                 r = self.instance_to_dict(o)
             return self.response(r, status=self.CREATED)
 
-    @view(method=["GET"], url="^(?P<id>[0-9a-f]{24})/?$",
+    @view(method=["GET"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
           access="read", api=True)
     def api_read(self, request, id):
         """
         Returns dict with object's fields and values
         """
         try:
-            o = self.queryset(request).get(id=id)
+            o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
         only = request.GET.get(self.only_param)
@@ -198,7 +197,7 @@ class ExtDocApplication(ExtApplication):
         return self.response(self.instance_to_dict(o, fields=only),
             status=self.OK)
 
-    @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24})/?$",
+    @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
           access="update", api=True)
     def api_update(self, request, id):
         try:
@@ -206,19 +205,20 @@ class ExtDocApplication(ExtApplication):
         except ValueError, why:
             return self.response(str(why), status=self.BAD_REQUEST)
         try:
-            o = self.queryset(request).get(id=id)
+            o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
         for k, v in attrs.items():
-            setattr(o, k, v)
+            if k != self.pk:
+                setattr(o, k, v)
         o.save()
         return self.response(status=self.OK)
 
-    @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24})/?$",
+    @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
           access="delete", api=True)
     def api_delete(self, request, id):
         try:
-            o = self.queryset(request).get(id=id)
+            o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
         o.delete()
