@@ -20,6 +20,7 @@ class PMTSApplication(ExtDocApplication):
     title = "Time Series"
     menu = "Time Series"
     model = PMTS
+    query_fields = ["name", "check__name"]
 
     def field_last_timestamp(self, o):
         if not hasattr(o, "_last_measure"):
