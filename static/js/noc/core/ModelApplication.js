@@ -212,6 +212,11 @@ Ext.define("NOC.core.ModelApplication", {
                     width: 40,
                     sortable: false,
                     items: rowItems
+                },
+                {
+                    text: "ID",
+                    dataIndex: me.idField,
+                    hidden: true
                 }
             ].concat(me.columns).concat(cust_columns),
             border: false,
@@ -805,7 +810,7 @@ Ext.define("NOC.core.ModelApplication", {
     onFavItem: function(grid, rowIndex, colIndex) {
         var me = this,
             r = me.store.getAt(rowIndex),
-            id = r.get("id"),
+            id = r.get(me.idField),
             action = r.get("fav_status") ? "reset" : "set",
             url = me.base_url + "favorites/item/" + id + "/" + action + "/";
 
@@ -832,7 +837,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Do not load store on new record
         if(!me.currentRecord || !me.inlineStores.length)
             return;
-        var parentId = me.currentRecord.get("id");
+        var parentId = me.currentRecord.get(self.idField);
         Ext.each(me.inlineStores, function(istore) {
             istore.setParent(parentId);
             istore.load();
@@ -849,7 +854,7 @@ Ext.define("NOC.core.ModelApplication", {
     onAction: function(menu, item, e) {
         var me = this,
             records = me.grid.getSelectionModel().getSelection().map(function(o) {
-                return o.get("id")
+                return o.get(me.idField)
             });
         if(item.form) {
             me.showActionForm(item, records);
