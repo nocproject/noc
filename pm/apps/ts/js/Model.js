@@ -9,12 +9,9 @@ console.debug("Defining NOC.pm.ts.Model");
 Ext.define("NOC.pm.ts.Model", {
     extend: "Ext.data.Model",
     rest_url: "/pm/ts/",
+    idProperty: "ts_id",
 
     fields: [
-        {
-            name: "id",
-            type: "string"
-        },
         {
             name: "ts_id",
             type: "int"
