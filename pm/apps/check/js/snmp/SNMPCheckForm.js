@@ -1,12 +1,12 @@
 //---------------------------------------------------------------------
-// TCPCheckForm
+// SNMPCheckForm
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2013 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.pm.check.tcp.TCPCheckForm");
+console.debug("Defining NOC.pm.check.snmp.SNMPCheckForm");
 
-Ext.define("NOC.pm.check.tcp.TCPCheckForm", {
+Ext.define("NOC.pm.check.snmp.SNMPCheckForm", {
     extend: "Ext.form.Panel",
     items: [
         {
@@ -19,6 +19,19 @@ Ext.define("NOC.pm.check.tcp.TCPCheckForm", {
             name: "port",
             fieldLabel: "Port",
             xtype: "numberfield",
+            allowBlank: false,
+            value: 161
+        },
+        {
+            name: "community",
+            fieldLabel: "Community",
+            xtype: "textfield",
+            allowBlank: false
+        },
+        {
+            name: "oid",
+            fieldLabel: "OID",
+            xtype: "textfield",
             allowBlank: false
         },
         {
@@ -27,23 +40,6 @@ Ext.define("NOC.pm.check.tcp.TCPCheckForm", {
             xtype: "numberfield",
             allowBlank: false,
             value: 10
-        },
-        {
-            name: "request",
-            fieldLabel: "Request",
-            xtype: "textarea",
-            allowBlank: true
-        },
-        {
-            name: "response",
-            fieldLabel: "Response",
-            xtype: "textfield",
-            allowBlank: true
-        },
-        {
-            name: "wait_close",
-            boxLabel: "Wait Until Socket Close",
-            xtype: "checkboxfield"
         }
     ]
 });
