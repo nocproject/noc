@@ -43,6 +43,7 @@ Ext.define("NOC.core.ModelStore", {
             fields: fields,  // Removed by superclass constructor
             defaultValues: defaultValues,
             implicitModel: true,
+            storeId: config.model,
             proxy: Ext.create("Ext.data.RestProxy", {
                 url: model.rest_url,
                 pageParam: "__page",
