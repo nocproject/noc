@@ -37,14 +37,7 @@ Ext.define("NOC.core.ModelStore", {
             }
         ]);
 
-        Ext.apply(config, {
-            // model: config.model,
-            model: null,
-            fields: fields,  // Removed by superclass constructor
-            defaultValues: defaultValues,
-            implicitModel: true,
-            storeId: config.model,
-            proxy: Ext.create("Ext.data.RestProxy", {
+        var proxy = Ext.create("Ext.data.RestProxy", {
                 url: model.rest_url,
                 pageParam: "__page",
                 startParam: "__start",
@@ -69,6 +62,20 @@ Ext.define("NOC.core.ModelStore", {
                     }
                 }
             }),
+            modelName = config.model + "-sm",
+            sModel = Ext.define(modelName, {
+                extend: "Ext.data.Model",
+                fields: fields,
+                proxy: proxy,
+                idProperty: model.idProperty
+            });
+
+        Ext.apply(config, {
+            // model: config.model,
+            model: sModel,
+            defaultValues: defaultValues,
+            storeId: config.model,
+            proxy: proxy,
             listeners: {
                 write: {
                     scope: me,
@@ -79,6 +86,7 @@ Ext.define("NOC.core.ModelStore", {
         });
         //me.syncConfig = {};
         me.callParent([config]);
+        console.log(me);
     },
 
     setFilterParams: function(config) {
