@@ -16,5 +16,5 @@ python-creole==0.2.4
 docutils==0.7
 Pygments==1.2.2
 mongoengine==0.6.20
-tornado==3.0.1
+tornado==3.1
 sleekxmpp==1.1.11
