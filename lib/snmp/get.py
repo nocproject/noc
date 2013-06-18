@@ -8,8 +8,9 @@
 
 ## Python modules
 import random
+from collections import namedtuple
 ## NOC modules
-from ber import BEREncoder
+from ber import BEREncoder, BERDecoder
 
 
 def get_pdu(community, oids, request_id=None):
@@ -44,4 +45,19 @@ def get_pdu(community, oids, request_id=None):
         pdu
     ])
 
+GetResponse = namedtuple("GetResponse", ["community", "request_id",
+                                         "error_status", "error_index",
+                                         "varbinds"])
 
+
+def parse_get_response(pdu):
+    d = BERDecoder()
+    data = d.parse_sequence(pdu)[0]
+    pdu = data[2]
+    return GetResponse(
+        community=data[1],
+        request_id=pdu[0],
+        error_status=pdu[1],
+        error_index=pdu[2],
+        varbinds=pdu[3]
+    )
