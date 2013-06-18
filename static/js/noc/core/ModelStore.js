@@ -70,6 +70,7 @@ Ext.define("NOC.core.ModelStore", {
                 idProperty: model.idProperty
             });
 
+        me.idProperty = model.idProperty;
         Ext.apply(config, {
             // model: config.model,
             model: sModel,

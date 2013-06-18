@@ -40,6 +40,7 @@ Ext.define("NOC.core.ModelApplication", {
             autoLoad: false,
             pageSize: 1  // Increased by AutoSize plugin
         });
+        me.idField = me.store.idProperty;
         // Setup Grid toolbar
         var gridToolbar = [];
         gridToolbar = gridToolbar.concat([
