@@ -686,8 +686,8 @@ Ext.define("NOC.core.ModelApplication", {
             return;
         }
         var v = me.form.getFieldValues();
-        if(!me.currentRecord && v.id)
-            v.id = null;
+        if(!me.currentRecord && v[me.idField])
+            v[me.idField] = null;
         // Fetch comboboxes labels
         me.form.getFields().each(function(field) {
             if(Ext.isDefined(field.getLookupData))
