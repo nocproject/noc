@@ -219,6 +219,7 @@ class BERDecoder(object):
             # CHARACTER STRING	P/C	29	1D
             # BMPString	P/C	30	1E
             # (use long-form)	-	31	1F
+            0x80: parse_sequence,  # implicit constructed
         }
     }
 
@@ -227,15 +228,9 @@ class BEREncoder(object):
     def encode_tlv(self, tag, primitive, data):
         r = []
         # Encode tag
-        if tag > 0x1f:
-            # High-tag number format
-            # @todo: Implement
-            raise NotImplementedError()
-        else:
-            # Low tag format
-            t = tag
-            t |= 0 if primitive else 0x20
-            r += [chr(t)]
+        t = tag
+        t |= 0 if primitive else 0x20
+        r += [chr(t)]
         # Encode length
         l = len(data)
         if l < 0x80:
@@ -267,6 +262,11 @@ class BEREncoder(object):
         if isinstance(data, (list, tuple)):
             data = "".join(data)
         return self.encode_tlv(16, False, data)
+
+    def encode_implicit_constructed(self, data):
+        if isinstance(data, (list, tuple)):
+            data = "".join(data)
+        return self.encode_tlv(0x80, False, data)
 
     def encode_int(self, data):
         """
