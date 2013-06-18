@@ -14,7 +14,7 @@ Ext.define("NOC.pm.ts.Application", {
         "NOC.pm.ts.TSTypeField"
     ],
     model: "NOC.pm.ts.Model",
-    idField: "ts_id",
+    search: true,
     columns: [
         {
             text: "Check",
