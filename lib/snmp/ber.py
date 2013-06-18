@@ -122,6 +122,10 @@ class BERDecoder(object):
         return None
 
     def parse_p_oid(self, msg):
+        """
+        >>> BERDecoder().parse_p_oid("+\\x06\\x01\\x02\\x01\\x01\\x05\\x00")
+        "1.3.6.1.2.1.1.5.0"
+        """
         def parse_octet(msg):
             n = 0
             r = 0
@@ -217,6 +221,119 @@ class BERDecoder(object):
             # (use long-form)	-	31	1F
         }
     }
+
+
+class BEREncoder(object):
+    def encode_tlv(self, tag, primitive, data):
+        r = []
+        # Encode tag
+        if tag > 0x1f:
+            # High-tag number format
+            # @todo: Implement
+            raise NotImplementedError()
+        else:
+            # Low tag format
+            t = tag
+            t |= 0 if primitive else 0x20
+            r += [chr(t)]
+        # Encode length
+        l = len(data)
+        if l < 0x80:
+            # Short form
+            r += [chr(l)]
+        else:
+            # Long form
+            # @todo: Implement
+            raise NotImplementedError()
+        # Put rest of data
+        r += [data]
+        return "".join(r)
+
+    def encode_octet_string(self, data):
+        """
+        >>> BEREncoder().encode_octet_string("test")
+        '\\x04\\x04test'
+        >>> BEREncoder().encode_octet_string("public")
+        '\\x04\\x06public'
+        >>> BEREncoder().encode_octet_string("")
+        '\\x04\\x00'
+
+        :param data:
+        :return:
+        """
+        return self.encode_tlv(4, True, data)
+
+    def encode_sequence(self, data):
+        if isinstance(data, (list, tuple)):
+            data = "".join(data)
+        return self.encode_tlv(16, False, data)
+
+    def encode_int(self, data):
+        """
+        >>> BEREncoder().encode_int(0)
+        '\\x02\\x01\\x00'
+        >>> BEREncoder().encode_int(1)
+        '\\x02\\x01\\x01'
+        >>> BEREncoder().encode_int(127)
+        '\\x02\\x01\\x7f'
+        >>> BEREncoder().encode_int(128)
+        '\\x02\\x02\\x00\\x80'
+        >>> BEREncoder().encode_int(256)
+        '\\x02\\x02\\x01\\x00'
+        >>> BEREncoder().encode_int(-128)
+        '\\x02\\x01\\x80'
+        >>> BEREncoder().encode_int(-129)
+        '\\02\\x01\\xff\\7f'
+        """
+        r = []
+        if data > 0:
+            while data:
+                r += [chr(data & 0xFF)]
+                data >>= 8
+            r.reverse()
+            if ord(r[0]) & 0x80:
+                r = ["\x00"] + r
+        elif data < 0:
+            # Write negative number
+            d = -data
+            m = 1
+            while d:
+                d >>= 8
+                m <<= 8
+            data = m + data
+            while data:
+                r += [chr(data & 0xFF)]
+                data >>= 8
+            r.reverse()
+            r[0] = chr(ord(r[0]) | 0x80)
+        else:
+            r = ["\x00"]
+        return self.encode_tlv(2, True, "".join(r))
+
+    def encode_null(self):
+        return self.encode_tlv(5, True, "")
+
+    def encode_oid(self, data):
+        """
+        >>> BEREncoder().encode_oid("1.3.6.1.2.1.1.5.0")
+        '\\x06\\x08+\\x06\\x01\\x02\\x01\\x01\\x05\\x00'
+        :param data:
+        :return:
+        """
+        d = [int(x) for x in data.split(".")]
+        r = [chr(d[0] * 40 + d[1])]
+        for v in d[2:]:
+            if not v:
+                r += ["\x00"]
+            else:
+                rr = []
+                while v:
+                    rr += [(v & 0x7f) | 0x80]
+                    v >>= 7
+                rr.reverse()
+                rr[-1] &= 0x7f
+                r += [chr(x) for x in rr]
+        return self.encode_tlv(6, True, "".join(r))
 
 
 def decode(msg):
