@@ -24,6 +24,7 @@ Ext.define("NOC.core.ModelApplication", {
     rowClassField: undefined,
     actions: undefined,
     idField: "id",
+    previewIcon: "icon_magnifier",
 
     initComponent: function() {
         var me = this;
@@ -189,7 +190,7 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.onPreview) {
             rowItems = rowItems.concat([
                 {
-                    iconCls: "icon_magnifier",
+                    iconCls: me.previewIcon,
                     tooltip: "Preview",
                     scope: me,
                     handler: function(grid, rowIndex, colIndex) {

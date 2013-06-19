@@ -15,6 +15,7 @@ Ext.define("NOC.pm.ts.Application", {
     ],
     model: "NOC.pm.ts.Model",
     search: true,
+    previewIcon: "icon_chart_curve",
     columns: [
         {
             text: "Check",
