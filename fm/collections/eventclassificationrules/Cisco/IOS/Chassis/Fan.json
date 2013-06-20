@@ -297,6 +297,33 @@
     },
 
     {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Failed #10 (SYSLOG)",
+        "description": "%PLATFORM_ENV-1-FAN: Faulty fan detected",
+        "event_class__name": "Chassis | Fan | Fan Failed",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "name",
+                "value": "Chassis Fan"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PLATFORM_ENV-1-FAN: Faulty fan detected"
+            }
+        ]
+    },
+
+    {
         "name": "Cisco | IOS | Chassis | Fan | Fan Removed #1 (SYSLOG)",
         "description": "%C7600_ENV-SP-4-FANCOUNTFAILED: Required number of fan trays is not present",
         "event_class__name": "Chassis | Fan | Fan Removed",
