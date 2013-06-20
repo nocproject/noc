@@ -9,7 +9,7 @@
 ## Python modules
 import threading
 ## NOC modules
-from noc.pm.pmprobe.checks.base import BaseCheck, Counter, Gauge
+from noc.pm.pmprobe.checks.base import BaseCheck, Counter, Gauge, Derive
 from noc.sa.interfaces.base import (StringParameter, IntParameter,
                                     OIDParameter)
 from noc.pm.pmprobe.checks.snmpgetsocket import SNMPGetSocket
@@ -27,19 +27,26 @@ class SNMPCheck(BaseCheck):
         "port": IntParameter(required=False, default=161),
         "community": StringParameter(required=False),
         "oid": StringParameter(required=False),
-        "timeout": IntParameter(required=False, default=10)
+        "timeout": IntParameter(required=False, default=10),
+        "type": StringParameter(choices=["C", "G", "D"])
     }
 
-    time_series = [
-        Gauge("value")
-    ]
-
     form = "NOC.pm.check.snmp.SNMPCheckForm"
+
+    t_map = {
+        "G": Gauge,
+        "C": Counter,
+        "D": Derive
+    }
 
     def __init__(self, *args, **kwargs):
         self.ready_event = threading.Event()
         self.result = {}
         super(SNMPCheck, self).__init__(*args, **kwargs)
+
+    @classmethod
+    def get_time_series(cls, config):
+        return [cls.t_map[config["type"]]("value")]
 
     def handle(self):
         self.ready_event.clear()

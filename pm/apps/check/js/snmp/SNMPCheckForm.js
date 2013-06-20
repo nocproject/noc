@@ -8,7 +8,16 @@ console.debug("Defining NOC.pm.check.snmp.SNMPCheckForm");
 
 Ext.define("NOC.pm.check.snmp.SNMPCheckForm", {
     extend: "Ext.form.Panel",
+    uses: [
+        "NOC.pm.ts.TSTypeField"
+    ],
     items: [
+        {
+            name: "type",
+            fieldLabel: "Type",
+            xtype: "pm.ts.TSTypeField",
+            allowBlank: false
+        },
         {
             name: "address",
             fieldLabel: "Address",
