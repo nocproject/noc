@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## EdgeCore.ES.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 from collections import defaultdict
@@ -275,10 +274,11 @@ class Script(NOCScript):
                     "admin_status": stat_[current],
                     "oper_status": stat_[current],
                     "enabled_afi": enabled_afi,
-                    "tagged_vlans": tagged_[current],
-                    "untagged_vlan": untagged_[current],
+                    "tagged_vlans": tagged_.get(current, []),
                     "mac": mac_[current],
                 }
+                if current in untagged_:
+                    sub["untagged_vlan"] = untagged_[current]
                 if current in lldp:
                     ifaces[current]["enabled_protocols"] += ["LLDP"]
                 if current in descr_:
@@ -323,7 +323,6 @@ class Script(NOCScript):
 
         # Get VRFs and "default" VRF interfaces
         r = []
-        seen = set()
         vpns = [{
             "name": "default",
             "type": "ip",
