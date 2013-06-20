@@ -258,6 +258,48 @@
     },
 
     {
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Inserted #3 (SYSLOG)",
+        "description": "%TRANSCEIVER-DFC2-6-INSERTED: transceiver module inserted in TenGigabitEthernet2/0/0",
+        "event_class__name": "Chassis | Hardware | Module | Module Inserted",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%TRANSCEIVER-DFC\\d+-6-INSERTED: [Tt]ransceiver module inserted in \\D+(?P<module>\\d+)/(?P<interface>\\S+)"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Removed #3 (SYSLOG)",
+        "description": "%TRANSCEIVER-DFC2-6-REMOVED: Transceiver module removed from TenGigabitEthernet2/0/0",
+        "event_class__name": "Chassis | Hardware | Module | Module Removed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%TRANSCEIVER-DFC\\d+-6-REMOVED: [Tt]ransceiver module removed from \\D+(?P<module>\\d+)/(?P<interface>\\S+)"
+            }
+        ]
+    },
+
+    {
         "name": "Cisco | IOS | Chassis | Hardware | Hardware Port Error #1 (SYSLOG)",
         "description": "%HARDWARE-3-PORTNUM_ERROR: port number 1 is invalid.",
         "event_class__name": "Chassis | Hardware | Hardware Port Error",
