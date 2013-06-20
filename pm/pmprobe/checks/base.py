@@ -40,6 +40,22 @@ class BaseCheck(object):
         self.ts_map = ts_map
         self.set_config(config)
 
+    @classmethod
+    def cleaned_config(cls, config):
+        return DictParameter(attrs=cls.parameters).clean(config)
+
+    @classmethod
+    def get_time_series(cls, config):
+        """
+        Return check's time series.
+        Can be used to dynamically generate list of time series
+        according check settings
+        :param cls:
+        :param config:
+        :return:
+        """
+        return cls.time_series
+
     def set_config(self, config):
         """
         Replace current config after handle() return
@@ -47,7 +63,7 @@ class BaseCheck(object):
         :return:
         """
         # @todo: Disable check on validation error
-        self.new_config = DictParameter(attrs=self.parameters).clean(config)
+        self.new_config = self.cleaned_config(config)
 
     def apply_config(self):
         """
