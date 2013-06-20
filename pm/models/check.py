@@ -44,7 +44,13 @@ class PMCheck(Document):
         super(PMCheck, self).save(*args, **kwargs)
         # Create time series
         for t in self.handler.get_time_series(self.config):
-            if not PMTS.objects.filter(check=self, name=t.name).first():
+            ts = PMTS.objects.filter(check=self, name=t.name).first()
+            if ts:
+                if t.type != ts.type:
+                    # Fix broken time series type
+                    ts.type = t.type
+                    ts.save()
+            else:
                 PMTS(
                     name=t.name,
                     storage=self.storage,
