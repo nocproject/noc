@@ -104,8 +104,8 @@ class BERDecoder(object):
             v = (v << 8) + ord(c)
         if ord(msg[0]) & 0x80:
             # Negative number
-            m = 2 ** (8 * len(msg))
-            v = -(m - v)
+            m = 1 << (8 * len(msg))
+            v -= m
         return v
 
     def parse_p_bitstring(self, msg):
