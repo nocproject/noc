@@ -6,6 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import math
+
 
 class DecodeError(Exception):
     pass
@@ -247,6 +250,11 @@ class BERDecoder(object):
 
 
 class BEREncoder(object):
+    INF = float("inf")
+    NINF = float("-inf")
+    NAN = float("nan")
+    MZERO = float("-0")
+
     def encode_tlv(self, tag, primitive, data):
         r = []
         # Encode tag
@@ -330,6 +338,45 @@ class BEREncoder(object):
             r = int_to_list(comp - data)
             r[0] |= 0x80
         return self.encode_tlv(2, True, "".join(chr(x) for x in r))
+
+    def encode_real(self, data):
+        """
+        >>> BEREncoder().encode_real(float("+inf"))
+        '\\t\\x01@'
+        >>> BEREncoder().encode_real(float("-inf"))
+        '\\t\\x01A'
+        >>> BEREncoder().encode_real(float("nan"))
+        '\\t\\x01B'
+        >>> BEREncoder().encode_real(float("-0"))
+        '\\t\\x01C'
+        >>> BEREncoder().encode_real(float("1"))
+        '\\t\\x080x031E+0'
+        >>> BEREncoder().encode_real(float("1.5"))
+        '\\t\\t0x0315E-1'
+
+        :param data:
+        :return:
+        """
+        if data == self.INF:
+            return self.encode_tlv(9, True, "\x40")
+        elif data == self.NINF:
+            return self.encode_tlv(9, True, "\x41")
+        elif math.isnan(data):
+            return self.encode_tlv(9, True, "\x42")
+        elif data == self.MZERO:
+            return self.encode_tlv(9, True, "\x43")
+        # Normalize
+        e = 0
+        m = data
+        while int(m) != m:
+            e -= 1
+            m *= 10
+        m = int(m)
+        while m and m % 10 == 0:
+            m /= 10
+            e += 1
+        return self.encode_tlv(
+            9, True, "0x03%dE%s%d" % (m, "" if e else "+", e))
 
     def encode_null(self):
         return self.encode_tlv(5, True, "")
