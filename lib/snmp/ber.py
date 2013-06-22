@@ -305,32 +305,31 @@ class BEREncoder(object):
         >>> BEREncoder().encode_int(-128)
         '\\x02\\x01\\x80'
         >>> BEREncoder().encode_int(-129)
-        '\\02\\x01\\xff\\7f'
+        '\\x02\\x02\\xff\\x7f'
         """
-        r = []
-        if data > 0:
-            while data:
-                r += [chr(data & 0xFF)]
-                data >>= 8
+        def int_to_list(s):
+            if not s:
+                return [0]
+            r = []
+            while s:
+                r += [s & 0xFF]
+                s >>= 8
             r.reverse()
-            if ord(r[0]) & 0x80:
-                r = ["\x00"] + r
+            return r
+
+        if data >= 0:
+            r = int_to_list(data)
+            if r[0] & 0x80:
+                r.insert(0, 0)
         elif data < 0:
-            # Write negative number
-            d = -data
-            m = 1
-            while d:
-                d >>= 8
-                m <<= 8
-            data = m + data
-            while data:
-                r += [chr(data & 0xFF)]
-                data >>= 8
-            r.reverse()
-            r[0] = chr(ord(r[0]) | 0x80)
-        else:
-            r = ["\x00"]
-        return self.encode_tlv(2, True, "".join(r))
+            data = -data
+            l = len(int_to_list(data))
+            comp = 1 << (l * 8 - 1)
+            if comp < data:
+                comp <<= 8
+            r = int_to_list(comp - data)
+            r[0] |= 0x80
+        return self.encode_tlv(2, True, "".join(chr(x) for x in r))
 
     def encode_null(self):
         return self.encode_tlv(5, True, "")
@@ -339,6 +338,7 @@ class BEREncoder(object):
         """
         >>> BEREncoder().encode_oid("1.3.6.1.2.1.1.5.0")
         '\\x06\\x08+\\x06\\x01\\x02\\x01\\x01\\x05\\x00'
+
         :param data:
         :return:
         """
