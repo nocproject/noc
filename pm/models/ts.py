@@ -9,10 +9,10 @@
 ## Python modules
 import datetime
 import time
+## Third-party modules
+from mongoengine import fields
 ## NOC Modules
-from noc.lib.nosql import (Document, StringField, IntField,
-                           BooleanField, PlainReferenceField,
-                           IntSequence)
+from noc.lib.nosql import Document, PlainReferenceField, IntSequence
 from storage import PMStorage
 from check import PMCheck
 
@@ -30,12 +30,12 @@ class PMTS(Document):
         "allow_inheritance": False
     }
 
-    ts_id = IntField(primary_key=True, default=seq_ts.next)
-    name = StringField(unique=True)
-    is_active = BooleanField(default=True)
+    ts_id = fields.IntField(primary_key=True, default=seq_ts.next)
+    name = fields.StringField(unique=True, unique_with="ts_id")
+    is_active = fields.BooleanField(default=True)
     storage = PlainReferenceField(PMStorage)
     check = PlainReferenceField(PMCheck)
-    type = StringField(
+    type = fields.StringField(
         default="G",
         choices=[
             ("G", "GAUGE"),
