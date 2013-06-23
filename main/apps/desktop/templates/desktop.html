@@ -17,7 +17,7 @@
         <link rel="stylesheet" type="text/css" href="/main/style/css/" />
         <link rel="stylesheet" type="text/css" href="/static/css/mxgraph/common.css" />
         <!-- JS -->
-        <script type="text/javascript" src="/static/js/handlebars.js"></script>
+        <script type="text/javascript" src="/static/pkg/handlebars/handlebars{% if setup.debug_js %}-debug{% endif %}.js"></script>
         <script type="text/javascript" src="/static/js/logging.js"></script>
         <script type="text/javascript" src="/static/js/noc/jsloader.js"></script>
         <script type="text/javascript" src="/static/js/ext-all{% if setup.debug_js %}-debug{% endif %}.js"></script>
