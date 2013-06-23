@@ -11,7 +11,6 @@ import types,cPickle
 from django.contrib.admin.widgets import AdminTextInputWidget
 from south.modelsinspector import add_introspection_rules
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.widgets import ColorPickerWidget
 from noc.lib.text import ranges_to_list, list_to_ranges
 ##
 ## CIDRField maps to PostgreSQL CIDR
@@ -290,11 +289,7 @@ class ColorField(models.Field):
             return int(value, 16)
         else:
             return value
-    
-    def formfield(self,**kwargs):
-        kwargs["widget"]=ColorPickerWidget
-        return super(ColorField, self).formfield(**kwargs)
-    
+
 
 ##
 add_introspection_rules([],["^noc\.lib\.fields\."])
