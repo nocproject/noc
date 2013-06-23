@@ -7,17 +7,12 @@
 console.debug("Defining NOC.core.RepoPreview");
 
 Ext.define("NOC.core.RepoPreview", {
-    extend: "Ext.Window",
-    autoShow: true,
-    closable: true,
-    maximizable: true,
-    modal: true,
+    extend: "Ext.panel.Panel",
     msg: "",
     layout: "fit",
-    padding: 4,
-    width: 800,
-    height: 600,
     syntax: null,
+    app: null,
+    restUrl: null,
 
     initComponent: function() {
         var me = this;
@@ -49,7 +44,7 @@ Ext.define("NOC.core.RepoPreview", {
         });
 
         me.diffCombo = Ext.create("Ext.form.ComboBox", {
-            fieldLabel: "Compare with",
+            fieldLabel: "Compare",
             disabled: true,
             labelWidth: 75,
             width: 300,
@@ -80,16 +75,35 @@ Ext.define("NOC.core.RepoPreview", {
                 xtype: "toolbar",
                 dock: "top",
                 items: [
+                    {
+                        itemId: "close",
+                        text: "Close",
+                        iconCls: "icon_arrow_undo",
+                        scope: me,
+                        handler: me.onClose
+                    },
                     me.revCombo,
                     me.diffCombo
                 ]
             }],
             items: [{
                 xtype: "container",
-                autoScroll: true
+                autoScroll: true,
+                padding: 4
             }]
         });
         me.callParent();
+        //
+        me.urlTemplate = Handlebars.compile(me.restUrl);
+        me.titleTemplate = Handlebars.compile(me.previewName);
+    },
+    //
+    preview: function(record) {
+        var me = this;
+        me.currentRecord = record;
+        me.rootUrl = Ext.String.format(me.restUrl, record.get("id"));
+        me.rootUrl = me.urlTemplate(record.data);
+        me.setTitle(me.titleTemplate(record.data));
         me.requestText();
         me.requestRevisions();
     },
@@ -174,5 +188,10 @@ Ext.define("NOC.core.RepoPreview", {
             me.revCombo.getValue(),
             me.diffCombo.getValue()
         );
+    },
+    //
+    onClose: function() {
+        var me = this;
+        me.app.showGrid();
     }
 });
