@@ -536,24 +536,32 @@ Ext.define("NOC.core.ModelApplication", {
         me._registeredItems = items;
         return itemId;
     },
+    //
+    showItem: function(index) {
+        var me = this;
+        if(index === null || index === undefined) {
+            return undefined;
+        }
+        me.getLayout().setActiveItem(index);
+        return me.items.items[index];
+    },
     // Show grid
     showGrid: function() {
         var me = this;
-        me.getLayout().setActiveItem(me.ITEM_GRID);
+        me.showItem(me.ITEM_GRID);
     },
     // Show Form
     showForm: function() {
         var me = this;
-        me.getLayout().setActiveItem(me.ITEM_FORM);
+        me.showItem(me.ITEM_FORM);
     },
     //
     showPreview: function(record) {
-        var me = this;
-        if(me.ITEM_PREVIEW === null) {
-            return;
+        var me = this,
+            item = me.showItem(me.ITEM_PREVIEW);
+        if(item !== undefined) {
+            item.preview(record);
         }
-        me.getLayout().setActiveItem(me.ITEM_PREVIEW);
-        me.items.items[me.ITEM_PREVIEW].preview(record);
     },
     // Save changed data
     saveRecord: function(data) {
