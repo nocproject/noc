@@ -25,10 +25,7 @@ Ext.define("NOC.core.ModelApplication", {
     actions: undefined,
     idField: "id",
     previewIcon: "icon_magnifier",
-    ITEM_GRID: 0,
-    ITEM_FORM: 1,
-    ITEM_CUSTOM: 2,
-    activeItem: 0,
+    _registeredItems: null,
     //
     initComponent: function() {
         var me = this;
@@ -260,6 +257,7 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             }
         };
+        me.ITEM_GRID = me.registerItem(gridPanel);
         // Form
         var formToolbar = [
             {
@@ -323,13 +321,14 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             ]);
         }
-        me.toolbarIdLabel = Ext.create("Ext.toolbar.TextItem", {
-            text: "ID:"
+        me.toolbarIdField = Ext.create("Ext.form.field.Display", {
+            fieldLabel: "ID",
+            labelWidth: 15
         })
         formToolbar = formToolbar.concat(me.formToolbar);
         formToolbar = formToolbar.concat([
             "->",
-            me.toolbarIdLabel
+            me.toolbarIdField
         ]);
 
         // Prepare inlines grid
@@ -469,11 +468,13 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             }
         };
-
+        me.ITEM_FORM = me.registerItem(formPanel);
+        console.log(me);
         Ext.apply(me, {
-            items: [gridPanel, formPanel]
+            items: me._registeredItems,
+            activeItem: me.ITEM_GRID
         });
-
+        me._registeredItems = null;
         // Initialize component
         me.callParent(arguments);
         me.currentRecord = null;
@@ -503,11 +504,20 @@ Ext.define("NOC.core.ModelApplication", {
         // Finally, load the store
         me.store.load();
     },
-    //
+    // Register new item and return id
+    registerItem: function(item) {
+        var me = this,
+            items = me._registeredItems || [],
+            itemId = items.push(item) - 1;
+        me._registeredItems = items;
+        return itemId;
+    },
+    // Show grid
     showGrid: function() {
         var me = this;
         me.getLayout().setActiveItem(0);
     },
+    // Show Form
     showForm: function() {
         var me = this;
         me.getLayout().setActiveItem(1);
@@ -607,7 +617,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.currentRecord = null;
         me.resetInlines();
         me.setFormTitle(me.createTitle);
-        me.toolbarIdLabel.setText("NEW");
+        me.toolbarIdField.setValue("NEW");
         me.showForm();
         // Focus on first field
         me.focusOnFirstField();
@@ -624,7 +634,7 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this;
         me.currentRecord = record;
         me.setFormTitle(me.changeTitle);
-        me.toolbarIdLabel.setText("ID: " + me.currentRecord.get(me.idField));
+        me.toolbarIdField.setValue(me.currentRecord.get(me.idField));
         // Show edit form
         me.showForm();
         // Load records
