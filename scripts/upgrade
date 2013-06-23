@@ -161,7 +161,7 @@ PIP_ARGS="-r etc/requirements/noc.txt"
 if [ "$INSTALL_DEBUG" = "yes" ]; then
     PIP_ARGS="$PIP_ARGS -r etc/requirements/debug.txt"
 fi
-if [ -f etc/requirements/local.txt" ]; then
+if [ -f "etc/requirements/local.txt" ]; then
     PIP_ARGS="$PIP_ARGS -r etc/requirements/local.txt"
 fi
 if [ ! -z "$PIP_FIND_LINKS" ]; then

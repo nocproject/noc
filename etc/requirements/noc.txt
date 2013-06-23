@@ -19,3 +19,4 @@ mongoengine==0.6.20
 tornado==3.1
 sleekxmpp==1.1.11
 noc-pkg-handlebars==1.0.0
+noc-pkg-shjs==0.6
