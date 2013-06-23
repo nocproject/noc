@@ -11,7 +11,7 @@
         <!-- CSS -->
         <link rel="stylesheet" type="text/css" id="theme" href="{{theme_css}}" />
         <link rel="stylesheet" type="text/css" href="/static/css/icons.css" />
-        <link rel="stylesheet" type="text/css" href="/static/css/sh_style.min.css" />
+        <link rel="stylesheet" type="text/css" href="/static/pkg/shjs/sh_style{% if setup.debug_js %}-debug{% endif %}.css" />
         <link rel="stylesheet" type="text/css" href="/static/css/noc-extjs.css" />
         <link rel="stylesheet" type="text/css" href="/static/css/noc/ux.css" />
         <link rel="stylesheet" type="text/css" href="/main/style/css/" />
@@ -21,7 +21,7 @@
         <script type="text/javascript" src="/static/js/logging.js"></script>
         <script type="text/javascript" src="/static/js/noc/jsloader.js"></script>
         <script type="text/javascript" src="/static/js/ext-all{% if setup.debug_js %}-debug{% endif %}.js"></script>
-        <script type="text/javascript" src="/static/js/sh_main.min.js"></script>
+        <script type="text/javascript" src="/static/pkg/shjs/sh_main{% if setup.debug_js %}-debug{% endif %}.js"></script>
         <script type="text/javascript" src="/static/js/noc/util.js"></script>
         <script type="text/javascript" src="/static/js/noc/override.js"></script>
         <!-- page specific -->
