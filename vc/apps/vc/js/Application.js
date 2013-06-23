@@ -14,7 +14,8 @@ Ext.define("NOC.vc.vc.Application", {
         "NOC.main.style.LookupField",
         "NOC.main.resourcestate.LookupField",
         "NOC.project.project.LookupField",
-        "NOC.vc.vcdomain.LookupField"
+        "NOC.vc.vcdomain.LookupField",
+        "NOC.vc.vc.templates.VCInterfaces"
     ],
     model: "NOC.vc.vc.Model",
     search: true,
@@ -238,7 +239,13 @@ Ext.define("NOC.vc.vc.Application", {
                 }
             ]
         });
-
+        me.ITEM_VC_INTERFACES = me.registerItem(
+            Ext.create("NOC.core.TemplatePreview", {
+                app: me,
+                previewName: "Interfaces in VC {{name}} ({{vc_domain__label}} VLAN {{l1}})",
+                template: me.templates.VCInterfaces
+            })
+        );
         me.callParent();
     },
     onFirstNewRecord: function() {
@@ -322,11 +329,8 @@ Ext.define("NOC.vc.vc.Application", {
                 if(!r.tagged && !r.untagged && !r.l3) {
                     NOC.info("No interfaces found");
                 } else {
-                    Ext.create("NOC.vc.vc.VCInterfaces", {
-                        app: me,
-                        vc: record.data,
-                        interfaces: r
-                    });
+                    var item = me.showItem(me.ITEM_VC_INTERFACES);
+                    item.preview(record, {interfaces: r});
                 }
             },
             failure: function() {

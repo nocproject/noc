@@ -1,0 +1,41 @@
+<table class="noc-report">
+<!-- Untagged interfaces -->
+{{#if interfaces.untagged}}
+    <tr><th colspan="2">Untagged interfaces</th>
+    {{#each interfaces.untagged}}
+    <tr>
+        <td>{{this.managed_object_name}}</td>
+        <td>
+            {{#each this.interfaces}}{{this.name}}{{/each}}
+        </td>
+    </tr>
+    {{/each}}
+{{/if}}
+<!-- Tagged interfaces -->
+{{#if interfaces.tagged}}
+    <tr><th colspan="2">Tagged interfaces</th>
+    {{#each interfaces.tagged}}
+    <tr>
+        <td>{{this.managed_object_name}}</td>
+        <td>
+            {{#each this.interfaces}}{{this.name}}{{/each}}
+        </td>
+    </tr>
+    {{/each}}
+{{/if}}
+<!-- L3 interfaces -->
+{{#if interfaces.l3}}
+    <tr><th colspan="2">L3 interfaces</th>
+    {{#each interfaces.l3}}
+    <tr>
+        <td>{{this.managed_object_name}}</td>
+        <td>
+            {{#each this.interfaces}}
+                {{this.ipv4_addresses}}
+                {{this.ipv6_addresses}}
+            {{/each}}
+        </td>
+    </tr>
+    {{/each}}
+{{/if}}
+</table>
