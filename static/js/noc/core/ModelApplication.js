@@ -12,7 +12,7 @@ Ext.define("NOC.core.ModelApplication", {
         "NOC.core.ModelStore",
         "NOC.core.InlineModelStore"
     ],
-    layout: "fit",
+    layout: "card",
     search: false,
     filters: null,
     gridToolbar: [],  // Additional grid toolbar buttons
@@ -25,7 +25,11 @@ Ext.define("NOC.core.ModelApplication", {
     actions: undefined,
     idField: "id",
     previewIcon: "icon_magnifier",
-
+    ITEM_GRID: 0,
+    ITEM_FORM: 1,
+    ITEM_CUSTOM: 2,
+    activeItem: 0,
+    //
     initComponent: function() {
         var me = this;
         // set base_url
@@ -499,21 +503,14 @@ Ext.define("NOC.core.ModelApplication", {
         // Finally, load the store
         me.store.load();
     },
-    // Toggle Grid/Form
-    toggle: function() {
-        // swap items. Because 'fit' layout accept only 1 item
+    //
+    showGrid: function() {
         var me = this;
-        me.items.items = [me.items.last(), me.items.first()];
-        me.items.last().hide();
-        me.items.first().show();
-        // Apply changes to form toolbar
-        if(me.items.first().itemId === "form") {
-            // Switched to form
-            // console.log("Switched to form");
-        }
-        // Layout
-        me.doLayout();
-        me.doComponentLayout();
+        me.getLayout().setActiveItem(0);
+    },
+    showForm: function() {
+        var me = this;
+        me.getLayout().setActiveItem(1);
     },
     // Save changed data
     saveRecord: function(data) {
@@ -578,7 +575,7 @@ Ext.define("NOC.core.ModelApplication", {
             });
         } else {
             // Save completed
-            me.toggle();
+            me.showGrid();
             me.reloadStore();
         }
     },
@@ -611,7 +608,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.resetInlines();
         me.setFormTitle(me.createTitle);
         me.toolbarIdLabel.setText("NEW");
-        me.toggle();
+        me.showForm();
         // Focus on first field
         me.focusOnFirstField();
         // Activate delete button
@@ -629,7 +626,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.setFormTitle(me.changeTitle);
         me.toolbarIdLabel.setText("ID: " + me.currentRecord.get(me.idField));
         // Show edit form
-        me.toggle();
+        me.showForm();
         // Load records
         me.form.loadRecord(record);
         me.loadInlines();
@@ -649,7 +646,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.store.remove(me.currentRecord);
         me.currentRecord = null;
         me.store.sync();
-        me.toggle();
+        me.showGrid();
     },
     // Reload store with current query
     reloadStore: function() {
@@ -773,7 +770,7 @@ Ext.define("NOC.core.ModelApplication", {
     // "close" button pressed
     onClose: function() {
         var me = this;
-        me.toggle();
+        me.showGrid();
         me.reloadStore();
     },
     // "clone" button pressed
@@ -839,7 +836,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Do not load store on new record
         if(!me.currentRecord || !me.inlineStores.length)
             return;
-        var parentId = me.currentRecord.get(self.idField);
+        var parentId = me.currentRecord.get(me.idField);
         Ext.each(me.inlineStores, function(istore) {
             istore.setParent(parentId);
             istore.load();
