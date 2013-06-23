@@ -157,11 +157,21 @@ fi
 info "Updating python libraries"
 PIP_REQUIREMENTS=etc/requirements/noc.txt
 PIP_FLAG=local/.pip
-if [ $PIP_REQUIREMENTS -nt $PIP_FLAG ]; then
-    ./bin/pip install --upgrade -r etc/requirements/noc.txt || error_exit "$LINENO: Cannot update python libraries"
-else
-    ./bin/pip install -r etc/requirements/noc.txt || error_exit "$LINENO: Cannot update python libraries"
+PIP_ARGS="-r etc/requirements/noc.txt"
+if [ "$INSTALL_DEBUG" = "yes" ]; then
+    PIP_ARGS="$PIP_ARGS -r etc/requirements/debug.txt"
 fi
+if [ -f etc/requirements/local.txt" ]; then
+    PIP_ARGS="$PIP_ARGS -r etc/requirements/local.txt"
+fi
+if [ ! -z "$PIP_FIND_LINKS" ]; then
+    PIP_ARGS="$PIP_ARGS --find-links $PIP_FIND_LINKS"
+fi
+if [ $PIP_REQUIREMENTS -nt $PIP_FLAG ]; then
+    PIP_ARGS="$PIP_ARGS --upgrade"
+fi
+
+./bin/pip install $PIP_ARGS || error_exit "$LINENO: Cannot update python libraries"
 touch $PIP_FLAG
 ##
 ## Install noc.pth
