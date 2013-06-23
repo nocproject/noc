@@ -29,7 +29,7 @@ NOC_GROUP=
 # REPO:
 # Hg repo to pull updates
 #
-REPO=http://hg.nocproject.org/noc
+REPO=https://bitbucket.org/nocproject/noc
 
 #
 # FOLLOW:
@@ -83,3 +83,12 @@ MONGO_USER=noc
 MONGO_PASSWORD=noc
 MONGO_HOST=
 MONGO_PORT=
+#
+# Additional index to search noc-pkg-* packages
+#
+PIP_FIND_LINKS=http://cdn.nocproject.org/pkg/simple/
+#
+# Install debugging versions of JS packages
+#
+# INSTALL_DEBUG=yes
+INSTALL_DEBUG=no
