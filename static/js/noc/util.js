@@ -394,3 +394,13 @@ Ext.apply(Ext.form.field.VTypes, {
     ASorASSETText: "Not valid AS or ASSET, must be in form AS3505, AS-SET, AS-MEGA-SET or AS3245:AS-TEST",
     ASorASSETMask: /[A-Z0-9-:]/i
 });
+//
+// Handlebars helpers
+//
+Handlebars.registerHelper("debug", function(opt) {
+  console.log("Current context: ", this);
+
+  if (arguments.length > 1) {
+    console.log("Value:", opt);
+  }
+});
