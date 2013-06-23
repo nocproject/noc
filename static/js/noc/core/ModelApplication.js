@@ -26,6 +26,7 @@ Ext.define("NOC.core.ModelApplication", {
     idField: "id",
     previewIcon: "icon_magnifier",
     _registeredItems: null,
+    preview: null,
     //
     initComponent: function() {
         var me = this;
@@ -188,6 +189,7 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             }
         ];
+        // @todo: Replace with preview api
         if(me.onPreview) {
             rowItems = rowItems.concat([
                 {
@@ -197,6 +199,28 @@ Ext.define("NOC.core.ModelApplication", {
                     handler: function(grid, rowIndex, colIndex) {
                         var me = this;
                         me.onPreview(me.store.getAt(rowIndex));
+                    }
+                }
+            ]);
+        }
+        if(me.preview) {
+            // @todo: Detect panel instances
+            var config = {
+                app: me,
+                xtype: "Ext.panel.Panel"
+            };
+            Ext.apply(config, me.preview);
+            me.ITEM_PREVIEW = me.registerItem(
+                Ext.create(config.xtype, config)
+            );
+            rowItems = rowItems.concat([
+                {
+                    iconCls: me.previewIcon,
+                    tooltip: "Preview",
+                    scope: me,
+                    handler: function(grid, rowIndex, colIndex) {
+                        var me = this;
+                        me.showPreview(me.store.getAt(rowIndex));
                     }
                 }
             ]);
@@ -469,7 +493,7 @@ Ext.define("NOC.core.ModelApplication", {
             }
         };
         me.ITEM_FORM = me.registerItem(formPanel);
-        console.log(me);
+        //
         Ext.apply(me, {
             items: me._registeredItems,
             activeItem: me.ITEM_GRID
@@ -515,12 +539,21 @@ Ext.define("NOC.core.ModelApplication", {
     // Show grid
     showGrid: function() {
         var me = this;
-        me.getLayout().setActiveItem(0);
+        me.getLayout().setActiveItem(me.ITEM_GRID);
     },
     // Show Form
     showForm: function() {
         var me = this;
-        me.getLayout().setActiveItem(1);
+        me.getLayout().setActiveItem(me.ITEM_FORM);
+    },
+    //
+    showPreview: function(record) {
+        var me = this;
+        if(me.ITEM_PREVIEW === null) {
+            return;
+        }
+        me.getLayout().setActiveItem(me.ITEM_PREVIEW);
+        me.items.items[me.ITEM_PREVIEW].preview(record);
     },
     // Save changed data
     saveRecord: function(data) {

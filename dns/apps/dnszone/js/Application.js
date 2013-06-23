@@ -201,8 +201,14 @@ Ext.define("NOC.dns.dnszone.Application", {
             }
         ]
     }],
+    preview: {
+        xtype: "NOC.core.RepoPreview",
+        syntax: "bind",
+        previewName: "Zone: {{name}}",
+        restUrl: "/dns/dnszone/{{id}}/repo/zone/"
+    },
     //
-    onPreview: function(record) {
+    _onPreview: function(record) {
         var me = this;
         Ext.create("NOC.core.RepoPreview", {
             title: Ext.String.format("Preview zone: {0}", record.get("name")),

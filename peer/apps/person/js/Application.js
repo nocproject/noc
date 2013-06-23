@@ -113,30 +113,10 @@ Ext.define("NOC.peer.person.Application", {
             lookup: "peer.rir"
         }
     ],
-    //
-    initComponent: function() {
-        var me = this;
-        Ext.apply(me, {
-            formToolbar: [
-                "-",
-                {
-                    text: "View",
-                    iconCls: "icon_magnifier",
-                    // hasAccess:
-                    scope: me,
-                    handler: me.onViewRPSL
-                }
-            ]
-        });
-        me.callParent();
-    },
-    //
-    onViewRPSL: function() {
-        var me = this;
-        Ext.create("NOC.core.RepoPreview", {
-            title: Ext.String.format("Preview person RPSL: {0}", me.currentRecord.get("nic_hdl")),
-            rootUrl: "/peer/person/" + me.currentRecord.get("id") + "/repo/rpsl/",
-            syntax: "rpsl"
-        });
+    preview: {
+        xtype: "NOC.core.RepoPreview",
+        syntax: "rpsl",
+        previewName: "Person RPSL: {{nic_hdl}}",
+        restUrl: "/peer/person/{{id}}/repo/rpsl/"
     }
 });
