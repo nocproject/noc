@@ -22,3 +22,4 @@ noc-pkg-handlebars==1.0.0
 noc-pkg-shjs==0.6
 noc-pkg-famfamfam-silk==1.3
 noc-pkg-silk-companion1==1.0
+noc-pkg-extjs==4.0.7
