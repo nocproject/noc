@@ -140,9 +140,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         // Load mxGraph JS library
         mxLanguage = "en";
         mxLoadStylesheets = false;  // window scope
-        mxImageBasePath = "/static/img/mxgraph/";
+        mxImageBasePath = "/static/pkg/mxgraph/images/";
         mxLoadResources = false;
-        load_scripts(["/static/js/mxClient.min.js"], me,
+        load_scripts(["/static/pkg/mxgraph/mxClient.js"], me,
             me.onLoadJS);
         me.maximize();
     },
