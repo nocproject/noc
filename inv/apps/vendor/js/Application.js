@@ -20,14 +20,14 @@ Ext.define("NOC.inv.vendor.Application", {
         {
             text: "Builtin",
             dataIndex: "is_builtin",
-            renderer: noc_renderBool,
+            renderer: NOC.render.Bool,
             width: 50
         },
         {
             text: "Site",
             dataIndex: "site",
             flex: true,
-            renderer: noc_renderURL
+            renderer: NOC.render.URL
         }
     ],
     fields: [

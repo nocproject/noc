@@ -31,13 +31,13 @@ Ext.define("NOC.vc.vcdomain.Application", {
         {
             text: "Provisioning",
             dataIndex: "enable_provisioning",
-            renderer: noc_renderBool
+            renderer: NOC.render.Bool
         },
 
         {
             text: "Bind filter",
             dataIndex: "enable_vc_bind_filter",
-            renderer: noc_renderBool
+            renderer: NOC.render.Bool
         },
 
         {
