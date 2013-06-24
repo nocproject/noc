@@ -25,7 +25,7 @@ Ext.define("NOC.main.language.Application", {
         {
             text: "Active",
             dataIndex: "is_active",
-            renderer: noc_renderBool
+            renderer: NOC.render.Bool
         }
     ],
     

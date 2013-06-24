@@ -24,7 +24,7 @@ Ext.define("NOC.sa.mrtconfig.Application", {
         {
             text: "Active",
             dataIndex: "is_active",
-            renderer: noc_renderBool,
+            renderer: NOC.render.Bool,
             width: 70
         },
 

@@ -19,7 +19,7 @@ Ext.define("NOC.main.shard.Application", {
             text: "Active",
             dataIndex: "is_active",
             width: 50,
-            renderer: noc_renderBool
+            renderer: NOC.render.Bool
         },
         {
             text: "Description",

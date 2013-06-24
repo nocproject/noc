@@ -25,7 +25,7 @@ Ext.define("NOC.fm.mibpreference.Application", {
         {
             text: "Builtin",
             dataIndex: "is_builtin",
-            renderer: noc_renderBool,
+            renderer: NOC.render.Bool,
             width: 50
         }
     ],

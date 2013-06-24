@@ -17,27 +17,27 @@ _noc_bool_img = {
 };
 
 //
-// noc_renderBool(v)
+// NOC.render.Bool(v)
 //     Grid field renderer for boolean values
 //     Displays icons depending on true/false status
 //
-function noc_renderBool(v) {
+NOC.render.Bool = function(v) {
     return _noc_bool_img[v];
 }
 
 //
-// noc_renderURL(v)
+// NOC.render.URL(v)
 //      Grid field renderer for URLs
 //
-function noc_renderURL(v) {
+NOC.render.URL = function(v) {
     return "<a href =' " + v + "' target='_'>" + v + "</a>";
 }
 
 //
-// noc_renderTags(v)
+// NOC.render.Tags(v)
 //      Grid field renderer for tags
 //
-function noc_renderTags(v) {
+NOC.render.Tags = function(v) {
     if(v) {
         return v.map(function(x) {
             return "<span class='x-boxselect-item'>" + x + "</span>";
@@ -46,10 +46,6 @@ function noc_renderTags(v) {
         return "";
     }
 }
-
-NOC.render.Bool = noc_renderBool;
-NOC.render.URL = noc_renderURL;
-NOC.render.Tags = noc_renderTags;
 
 NOC.render.Lookup = function(name) {
     var l = name + "__label";
