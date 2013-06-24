@@ -8,6 +8,7 @@
 
 ## NOC modules
 import datetime
+import warnings
 ## Django modules
 from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
 from django.http import HttpResponse
@@ -42,10 +43,19 @@ class DesktopApplication(ExtApplication):
                     config.has_option("themes", ck) and
                     config.has_option("themes", ek) and
                     config.getboolean("themes", ek)):
+                    css = config.get("themes", ck).strip()
+                    if css.startswith("/static/resources/css"):
+                        css = css.replace(
+                            "/static/resources/css",
+                            "/static/pkg/extjs/resources/css"
+                        )
+                        warnings.warn(
+                            "Deprecated theme's css path. "
+                            "Change noc.conf:[themes]/%s to %s" % (ck, css))
                     self.themes[theme_id] = {
                         "id": theme_id,
                         "name": config.get("themes", nk).strip(),
-                        "css": config.get("themes", ck).strip()
+                        "css": css
                     }
         # Login restrictions
         self.restrict_to_group = self.get_group(
