@@ -172,12 +172,12 @@ Ext.define("NOC.main.desktop.Controller", {
     // Change current theme
     changeTheme: function(theme) {
         var me = this;
-        if(theme == "default")
+        if(theme == "default" || theme == "blue")
             theme = "ext-all.css";
         else
             theme = "ext-all-" + theme + ".css";
         Ext.util.CSS.swapStyleSheet("theme",
-            "/static/resources/css/" + theme);
+            "/static/pkg/extjs/resources/css/" + theme);
     },
     // Update menu
     updateMenu: function() {
