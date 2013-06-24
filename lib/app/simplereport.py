@@ -366,9 +366,9 @@ class TableColumn(ReportNode):
         Display boolean field
         """
         if f:
-            return SafeString("<img src='/static/img/fam/silk/tick.png' />")
+            return SafeString("<img src='/static/pkg/famfamfam-silk/tick.png' />")
         else:
-            return SafeString("<img src='/static/img/fam/silk/cross.png' />")
+            return SafeString("<img src='/static/pkg/famfamfam-silk/cross.png' />")
 
     def f_integer(self, f):
         """
