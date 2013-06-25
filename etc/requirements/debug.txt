@@ -1,3 +1,4 @@
 noc-pkg-handlebars-debug==1.0.0
 noc-pkg-shjs-debug==0.6
 noc-pkg-extjs-debug==4.0.7
+noc-pkg-mxgraph-debug==1.10.4.2
