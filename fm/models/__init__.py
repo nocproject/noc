@@ -643,19 +643,7 @@ class AlarmTrigger(models.Model):
     def __unicode__(self):
         return "%s <<<%s>>>" % (self.alarm_class_re, self.condition)
 
-
-class Enumeration(nosql.Document):
-    meta = {
-        "collection": "noc.enumerations",
-        "allow_inheritance": False
-    }
-
-    name = nosql.StringField(unique=True)
-    is_builtin = nosql.BooleanField(default=False)
-    values = nosql.DictField()  # value -> [possible combinations]
-
-    def __unicode__(self):
-        return self.name
+from enumeration import Enumeration
 
 ##
 ## Event/Alarm text decoder
