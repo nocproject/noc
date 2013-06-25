@@ -147,7 +147,7 @@ Ext.define("NOC.gis.map.Application", {
                     break;
             }
         }
-        urls.push("/static/js/ol/OpenLayers.js");
+        urls.push("/static/pkg/openlayers/OpenLayers.js");
         load_scripts(urls, this, function() {this.create_map(layers);});
     },
     //
