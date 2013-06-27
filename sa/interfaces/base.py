@@ -222,6 +222,20 @@ class StringParameter(Parameter):
         if self.choices and value not in self.choices:
             self.raise_error(value)
         return value
+
+
+class UnicodeParameter(StringParameter):
+    def clean(self, value):
+        if value is None and self.default is not None:
+            return self.default
+        try:
+            value = unicode(value)
+        except:
+            self.raise_error(value)
+        if self.choices and value not in self.choices:
+            self.raise_error(value)
+        return value
+
 ##
 ##
 ##
