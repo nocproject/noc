@@ -29,3 +29,4 @@ class Profile(noc.sa.profiles.Profile):
     convert_mac = noc.sa.profiles.Profile.convert_mac_to_cisco
     convert_interface_name = noc.sa.profiles.Profile.convert_interface_name_cisco
     config_volatile = [r"^ntp clock-period .*?^"]
+    telnet_naws = "\x7f\x7f\x7f\x7f"

@@ -74,6 +74,11 @@ class TelnetProtocol(Protocol):
         super(TelnetProtocol, self).__init__(parent, callback)
         self.iac_seq = ""
         self.sb_seq = None
+        self.naws = "\xff\xff\xff\xff"
+
+    def set_options(self, naws=None):
+        if naws is not None:
+            self.naws = naws
 
     def write_iac(self, msg):
         self.parent.out_buffer += msg
@@ -111,7 +116,7 @@ class TelnetProtocol(Protocol):
         self.iac_response(r, opt)
         # Process NAWS
         if cmd == DO and opt == "\x1f":  # NAWS
-            self.sb_response("\x1f", "\x7f\x7f\x7f\x7f")  # NAWS FF FF FF FF
+            self.sb_response("\x1f", self.naws)
 
     def parse_pdu(self):
         def tc(s):

@@ -147,6 +147,8 @@ class Profile(object):
     # False - send password at once
     # True - send password by characters
     telnet_slow_send_password = False
+    # Telnet NAWS negotiation
+    telnet_naws = "\xff\xff\xff\xff"
     # Does the equipment supports bitlength netmasks
     # or netmask should be converted to traditional formats
     requires_netmask_conversion = False
