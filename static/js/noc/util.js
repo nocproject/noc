@@ -78,10 +78,14 @@ NOC.render.Date = function(val) {
     if(!val) {
         return "";
     }
-    var d = val.getDate(),
-        m = val.getMonth() + 1,
-        y = val.getFullYear();
-    return '' + y + '-' + (m<=9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+    return Ext.Date.format(val, "Y-m-d")
+};
+
+NOC.render.DateTime = function(val) {
+    if(!val) {
+        return "";
+    }
+    return Ext.Date.format(val, "Y-m-d H:i:s")
 };
 
 NOC.render.Choices = function(choices) {
