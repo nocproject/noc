@@ -131,6 +131,8 @@ class EventApplication(ExtApplication):
         mo = event.managed_object
         d["managed_object_address"] = mo.address
         d["managed_object_profile"] = mo.profile_name
+        d["managed_object_platform"] = mo.platform
+        d["managed_object_version"] = mo.get_attr("version")
         # Log
         if event.log:
             dd["log"] = [
