@@ -18,8 +18,7 @@ Ext.define("NOC.fm.event.EventPanel", {
 
     initComponent: function() {
         var me = this,
-            lw = 50,
-            xo = 5;
+            lw = 50;
 
         me.eventField = Ext.create("Ext.form.DisplayField", {
             fieldLabel: "Event",
@@ -48,6 +47,9 @@ Ext.define("NOC.fm.event.EventPanel", {
                 type: "vbox",
                 align: "stretch",
                 pack: "start"
+            },
+            defaults: {
+                labelClsExtra: "noc-label-required"
             },
             items: [
                 me.eventField,
