@@ -18,9 +18,12 @@ Ext.define("NOC.fm.event.Application", {
         N: "New", A: "Active",
         F: "Failed", S: "Archived"
     },
+    pollingInterval: 30000,
+    //
     initComponent: function() {
         var me = this;
-        me.currentQuery = {status: "A"}
+        me.currentQuery = {status: "A"};
+        me.pollingTaskHandler = Ext.bind(me.pollingTask, me);
         me.store = Ext.create("NOC.core.ModelStore", {
             model: "NOC.fm.event.Model",
             autoLoad: false,
@@ -176,6 +179,8 @@ Ext.define("NOC.fm.event.Application", {
         me.callParent();
         //
         me.reloadStore();
+        //
+        me.startPolling();
     },
     //
     reloadStore: function() {
@@ -217,11 +222,31 @@ Ext.define("NOC.fm.event.Application", {
         var me = this;
         me.getLayout().setActiveItem(0);
         me.reloadStore();
+        me.startPolling();
     },
     //
     onSelectEvent: function(grid, record, item, index) {
         var me = this;
+        me.stopPolling();
         me.getLayout().setActiveItem(1);
         me.eventPanel.showEvent(record.get("id"));
+    },
+    //
+    pollingTask: function() {
+        var me = this;
+        me.reloadStore();
+    },
+    //
+    startPolling: function() {
+        var me = this;
+        me.pollingTaskId = Ext.TaskManager.start({
+            run: me.pollingTaskHandler,
+            interval: me.pollingInterval
+        });
+    },
+    //
+    stopPolling: function() {
+        var me = this;
+        Ext.TaskManager.stop(me.pollingTaskId);
     }
 });
