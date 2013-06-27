@@ -188,11 +188,23 @@ Ext.define("NOC.fm.event.EventPanel", {
     //
     updateData: function(data) {
         var me = this,
-            oldId = me.data ? me.data.id : undefined;
+            oldId = me.data ? me.data.id : undefined,
+            o = [];
         me.data = data;
         //
-        me.eventField.setValue("" + me.data.id + ":" + me.data.subject);
-        me.objectField.setValue(me.data.managed_object__label);
+        me.eventField.setValue("" + me.data.id + "; " + me.data.subject);
+        // Managed object details
+        if(me.data.managed_object_address) {
+            o.push(me.data.managed_object_address);
+        }
+        o.push(me.data.managed_object_profile);
+        if(me.data.managed_object_platform) {
+            o.push(me.data.managed_object_platform);
+        }
+        if(me.data.managed_object_version) {
+            o.push(me.data.managed_object_version);
+        }
+        me.objectField.setValue(me.data.managed_object__label + " (" + o.join(", ") + ")");
         me.eventClassField.setValue(me.data.event_class__label);
         me.timeField.setValue(
             me.data.timestamp + " [" + NOC.render.Choices(me.app.STATUS_MAP)(me.data.status) + "]"
