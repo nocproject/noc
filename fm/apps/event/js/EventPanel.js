@@ -10,9 +10,52 @@ Ext.define("NOC.fm.event.EventPanel", {
     extend: "Ext.panel.Panel",
     app: null,
     autoScroll: true,
+    layout: {
+        type: "vbox",
+        pack: "start",
+        align: "stretch"
+    },
 
     initComponent: function() {
-        var me = this;
+        var me = this,
+            lw = 50,
+            xo = 5;
+
+        me.eventField = Ext.create("Ext.form.DisplayField", {
+            fieldLabel: "Event",
+            labelWidth: lw
+        });
+
+        me.objectField = Ext.create("Ext.form.DisplayField", {
+            fieldLabel: "Object",
+            labelWidth: lw
+        });
+
+        me.eventClassField = Ext.create("Ext.form.DisplayField", {
+            fieldLabel: "Class",
+            labelWidth: lw
+        });
+
+        me.timeField = Ext.create("Ext.form.DisplayField", {
+            fieldLabel: "Time",
+            labelWidth: lw
+        });
+
+        me.topPanel = Ext.create("Ext.panel.Panel", {
+            height: 98,
+            bodyPadding: 4,
+            layout: {
+                type: "vbox",
+                align: "stretch",
+                pack: "start"
+            },
+            items: [
+                me.eventField,
+                me.objectField,
+                me.eventClassField,
+                me.timeField
+            ]
+        });
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
             title: "Overview"
@@ -86,6 +129,7 @@ Ext.define("NOC.fm.event.EventPanel", {
         });
 
         me.tabPanel = Ext.create("Ext.tab.Panel", {
+            flex: 1,
             items: [
                 me.overviewPanel,
                 me.helpPanel,
@@ -111,6 +155,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 }
             ],
             items: [
+                me.topPanel,
                 me.tabPanel
             ]
         });
@@ -145,9 +190,14 @@ Ext.define("NOC.fm.event.EventPanel", {
         var me = this,
             oldId = me.data ? me.data.id : undefined;
         me.data = data;
-        me.setTitle(
-            Ext.String.format("Event {0}: {1}", data.id, data.subject)
+        //
+        me.eventField.setValue("" + me.data.id + ":" + me.data.subject);
+        me.objectField.setValue(me.data.managed_object__label);
+        me.eventClassField.setValue(me.data.event_class__label);
+        me.timeField.setValue(
+            me.data.timestamp + " [" + NOC.render.Choices(me.app.STATUS_MAP)(me.data.status) + "]"
         );
+        //
         me.updatePanel(me.overviewPanel, me.app.templates.Overview,
             data.subject, data);
         me.updatePanel(me.helpPanel, me.app.templates.Help,
