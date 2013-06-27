@@ -1,278 +1,155 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## FM event application
+## fm.event application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django import forms
-from django.forms.widgets import HiddenInput, DateTimeInput
-from django.utils.dateformat import DateFormat
-from django.http import Http404
-from django.db.models import Q
+## Third-party modules
+from mongoengine.queryset import Q
 ## NOC modules
-from noc.lib.widgets import AutoCompleteTextInput, lookup, TreePopupField
-from noc.lib.app import Application, HasPerm, view
-from noc.lib.escape import json_escape, fm_escape
-from noc.fm.models import *
-from noc.sa.models import ManagedObject
-from noc.main.models import Checkpoint
-from noc.inv.models import Interface
+from noc.lib.app import ExtApplication, view
+from noc.fm.models.newevent import NewEvent
+from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.archivedevent import ArchivedEvent
+from noc.fm.models.failedevent import FailedEvent
+from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models import get_alarm, get_event
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.interfaces.base import ModelParameter, UnicodeParameter
 
 
-class EventAppplication(Application):
+class EventApplication(ExtApplication):
     """
-    Event manager
+    fm.event application
     """
     title = "Events"
-    ## Amount of events per page
-    PAGE_SIZE = 50  # @todo: move to application config
+    menu = "Events"
+    icon = "icon_find"
 
-    def get_event_or_404(self, event_id):
-        """
-        Return event or raise 404
-        """
-        e = get_event(event_id)
-        if e:
-            return e
-        raise Http404("Event not found: %s" % event_id)
+    model_map = {
+        "N": NewEvent,
+        "A": ActiveEvent,
+        "F": FailedEvent,
+        "S": ArchivedEvent
+    }
 
-    class EventSearchForm(Application.Form):
-        """
-        Event filter form
-        """
-        page = forms.IntegerField(required=False, min_value=0, widget=HiddenInput)
-        from_time = forms.DateTimeField(label="From time",
-                                        required=False,
-                                        input_formats=["%d.%m.%Y %H:%M:%S"],
-                                        widget=DateTimeInput(format="%d.%m.%Y %H:%M:%S"))
-        to_time = forms.DateTimeField(label="To time",
-                                      required=False,
-                                      input_formats=["%d.%m.%Y %H:%M:%S"])
-        managed_object = forms.CharField(label="Managed Object",
-                                         required=False,
-                                         widget=AutoCompleteTextInput("sa:managedobject:lookup1"))
-        status = forms.ChoiceField(label="Status",
-                                   required=False,
-                                   choices=[("N", "New"),
-                                            ("F", "Failed"),
-                                            ("A", "Active"),
-                                            ("S", "Archived")])
-        event_class = TreePopupField(label="Event Class",
-                                     required=False,
-                                     document=EventClass,
-                                     title="Select Event Class",
-                                     lookup="/fm/eventclass/popup/")
+    clean_fields = {
+        "managed_object": ModelParameter(ManagedObject)
+    }
+    ignored_params = ["status", "_dc"]
 
-    @view(url=r"^$", url_name="index", menu="Events", access=HasPerm("view"))
-    def view_index(self, request):
-        """
-        Display event list and search form
-        """
-        initial = {"status": "A"}
-        form = self.EventSearchForm(initial=initial)
-        return self.render(request, "index.html", form=form)
+    def cleaned_query(self, q):
+        q = q.copy()
+        for p in self.ignored_params:
+            if p in q:
+                del q[p]
+        for p in (
+            self.limit_param, self.page_param, self.start_param,
+            self.format_param, self.sort_param, self.query_param,
+            self.only_param):
+            if p in q:
+                del q[p]
+        # Normalize parameters
+        for p in q:
+            if p in self.clean_fields:
+                q[p] = self.clean_fields[p].clean(q[p])
+        return q
 
-    @view(url="^(?P<event_id>[0-9a-f]{24})/$", url_name="event",
-          access=HasPerm("view"))
-    def view_event(self, request, event_id):
-        """
-        Display event
-        """
-        event = self.get_event_or_404(event_id)
-        u_lang = request.session["django_language"]
-        interface = None
-        if event.status in ("A", "S"):
-            subject = event.get_translated_subject(u_lang)
-            body = event.get_translated_body(u_lang)
-            symptoms = event.get_translated_symptoms(u_lang)
-            probable_causes = event.get_translated_probable_causes(u_lang)
-            recommended_actions = event.get_translated_recommended_actions(u_lang)
-            alarms = [get_alarm(a) for a in event.alarms]
-            alarms = [(a.id, a.alarm_class.name, a.timestamp, a.display_duration,
-                       a.get_translated_subject(u_lang))
-                for a in alarms if a]
-            n_alarms = len(alarms)
-            if "interface" in event.vars:
-                iface = Interface.objects.filter(
-                    managed_object=event.managed_object.id,
-                    name=event.vars["interface"]
-                ).first()
-                if iface:
-                    interface = event.vars["interface"]
-                    if iface.description:
-                        interface += " (%s)" % iface.description
-                    if iface.profile:
-                        interface += " [%s]" % iface.profile.name
+    def instance_to_dict(self, o, fields=None):
+        row_class = None
+        if o.status in ("A", "S"):
+            subject = o.get_translated_subject("en")
+            repeats = o.repeats
+            duration = o.duration
+            n_alarms = len(o.alarms)
+            if n_alarms:
+                severity = 0
+                for a in o.alarms:
+                    alarm = get_alarm(a)
+                    if alarm:
+                        severity = max(severity, alarm.severity)
+                s = AlarmSeverity.get_severity(severity)
+                row_class = s.style.css_class_name
         else:
-            subject = ""
-            body = ""
-            symptoms = ""
-            probable_causes = ""
-            recommended_actions = ""
-            alarms = None
-            n_alarms = 0
-        return self.render(request, "event.html", e=event,
-                           subject=subject,
-                           body=body,
-                           symptoms=symptoms,
-                           probable_causes=probable_causes,
-                           recommended_actions=recommended_actions,
-                           alarms=alarms,
-                           n_alarms=n_alarms,
-                           interface=interface
-        )
+            subject = None
+            repeats = None
+            duration = None
+            n_alarms = None
+        return {
+            "id": str(o.id),
+            "status": o.status,
+            "managed_object": o.managed_object.id,
+            "managed_object__label": o.managed_object.name,
+            "event_class": str(o.event_class.id),
+            "event_class__label": o.event_class.name,
+            "timestamp": o.timestamp.isoformat(),
+            "subject": subject,
+            "repeats": repeats,
+            "duration": duration,
+            "alarms": n_alarms,
+            "row_class": row_class
+        }
 
-    @view(url="^(?P<event_id>[0-9a-f]{24})/reclassify/$", url_name="reclassify",
-          access=HasPerm("change"))
-    def view_reclassify(self, request, event_id):
+    def queryset(self, request, query=None):
         """
-        Mark event as new
+        Filter records for lookup
         """
-        event = self.get_event_or_404(event_id)
-        if event.status not in ("A", "C", "F"):
-            return self.response_forbidden("Invalid event state for requested action")
-        event.mark_as_new("Event reclassification has been requested by user %s" % request.user.username)
-        self.message_user(request, "Event has been reclassified")
-        return self.response_redirect_to_referrer(request)
+        status = request.GET.get("status", "A")
+        if status not in self.model_map:
+            raise Exception("Invalid status")
+        model = self.model_map[status]
+        return model.objects.all()
 
-    class MessageForm(Application.Form):
-        message = forms.CharField()
+    @view(url=r"^$", access="launch", method=["GET"], api=True)
+    def api_list(self, request):
+        return self.list_data(request, self.instance_to_dict)
 
-    @view(url="^(?P<event_id>[0-9a-f]{24})/message/$", url_name="message",
-          access=HasPerm("change"))
-    def view_message(self, request, event_id):
-        """
-        Submit new message to event
-        """
-        event = self.get_event_or_404(event_id)
-        if request.POST:
-            form = self.MessageForm(request.POST)
-            if form.is_valid():
-                event.log_message("%s: %s" % (request.user.username,
-                                              form.cleaned_data["message"]))
-                self.message_user(request, "Message posted")
-                return self.response_redirect_to_referrer(request)
-        self.message_user(request, "Message posting failed")
-        return self.response_redirect_to_referrer(request)
+    @view(url=r"^(?P<id>[a-z0-9]{24})/", method=["GET"], api=True,
+          access="launch")
+    def api_event(self, request, id):
+        event = get_event(id)
+        if not event:
+            self.response_not_found()
+        lang = "en"
+        d = self.instance_to_dict(event)
+        dd = dict((v, None) for v in (
+            "body", "symptoms", "probable_causes",
+            "recommended_actions", "log",
+            "vars", "resolved_vars", "raw_vars"
+        ))
+        if event.status in ("A", "S"):
+            dd["body"] = event.get_translated_body(lang)
+            dd["symptoms"] = event.get_translated_symptoms(lang)
+            dd["probable_causes"] = event.get_translated_probable_causes(lang)
+            dd["recommended_actions"] = event.get_translated_recommended_actions(lang)
+            dd["vars"] = sorted(event.vars.items())
+            dd["resolved_vars"] = sorted(event.resolved_vars.items())
+            dd["raw_vars"] = sorted(event.raw_vars.items())
+        # Managed object properties
+        mo = event.managed_object
+        d["managed_object_address"] = mo.address
+        d["managed_object_profile"] = mo.profile_name
+        # Log
+        if event.log:
+            dd["log"] = [
+                {
+                    "timestamp": l.timestamp.isoformat(),
+                    "from_status": l.from_status,
+                    "to_status": l.to_status,
+                    "message": l.message
+                } for l in event.log
+            ]
+        #
+        d.update(dd)
+        return d
 
-    @view(url=r"^events/$", url_name="events", access=HasPerm("view"))
-    def view_events(self, request):
-        """
-        Return JSON list of selected events.
-        Returned structure is dict of:
-            count:
-            page:
-            pages:
-            events: [list_of_events]
-        """
-        datetime_format = self.config.get("main", "datetime_format")
-        page = 0
-        # Process request
-        if request.GET:
-            form = self.EventSearchForm(request.GET)
-            if form.is_valid():
-                status = form.cleaned_data["status"]
-                # Select event collection
-                events = {
-                    "N": NewEvent,
-                    "A": ActiveEvent,
-                    "F": FailedEvent,
-                    "S": ArchivedEvent
-                }[status].objects
-                ## Apply additional restriction
-                if form.cleaned_data["page"]:
-                    page = form.cleaned_data["page"] - 1
-                if form.cleaned_data["from_time"]:
-                    events = events.filter(timestamp__gte=form.cleaned_data["from_time"])
-                if form.cleaned_data["to_time"]:
-                    events = events.filter(timestamp__lte=form.cleaned_data["to_time"])
-                if form.cleaned_data["managed_object"]:
-                    try:
-                        mo = ManagedObject.objects.get(name=form.cleaned_data["managed_object"])
-                        events = events.filter(managed_object=mo.id)
-                    except ManagedObject.DoesNotExist:
-                        pass
-                if status in ("A", "C") and "event_class" in form.cleaned_data and form.cleaned_data["event_class"]:
-                    events = events.filter(event_class=form.cleaned_data["event_class"].id)
-            else:
-                return self.render_json({"error": str(form.errors)})
-        lr = self.PAGE_SIZE * page
-        rr = self.PAGE_SIZE * (page + 1)
-        data = []
-        
-        count = events.count()
-        u_lang = request.session["django_language"]
-        
-        events = list(events.order_by("-id")[lr:rr])
-        checkpoints = []
-        if events:
-            # Get visible checkpoints
-            min_time = events[-1].timestamp
-            max_time = events[0].timestamp
-            q = Q(user=request.user) | Q(private=False)
-            cpq = Checkpoint.objects.filter(timestamp__gte=min_time,
-                                            timestamp__lte=max_time)
-            checkpoints = list(cpq.filter(q).order_by("-id"))
-        
-        for e in events:
-            # Insert checkpoints
-            while checkpoints and checkpoints[0].timestamp > e.timestamp:
-                cp = checkpoints.pop(0)
-                data += [[cp.id, cp.user.username if cp.user else None,
-                         DateFormat(cp.timestamp).format(datetime_format),
-                         cp.comment]]
-            # Insert event
-            if e.status in ("A", "S"):
-                subject = e.get_translated_subject(u_lang)
-                event_class = e.event_class.name
-            else:
-                subject = ""
-                event_class = ""
-            data += [[
-                str(e.id),
-                e.managed_object.name,
-                DateFormat(e.timestamp).format(datetime_format),
-                e.status,
-                event_class,
-                subject
-            ]]
-        return self.render_json({
-            "count" : count,
-            "page"  : page,
-            "pages" : count / self.PAGE_SIZE + (1 if count % self.PAGE_SIZE else 0),
-            "events": data
-            })
-    
-    @view(url="^(?P<event_id>[0-9a-f]{24})/to_json/$", url_name="to_json",
-          access=HasPerm("view"))
-    def view_to_json(self, request, event_id):
-        """
-        Display event's beef
-        """
-        event = self.get_event_or_404(event_id)
-        vars = event.raw_vars
-        keys = []
-        lkeys = vars.keys()
-        for k in ("source", "profile", "1.3.6.1.6.3.1.1.4.1.0"):
-            if k in vars:
-                keys += [k]
-                lkeys.remove(k)
-        keys += sorted(lkeys)
-        r = ["["]
-        r += ["    {"]
-        r += ["        \"profile\": \"%s\"," % json_escape(event.managed_object.profile_name)]
-        r += ["        \"raw_vars\": {"]
-        x = []
-        for k in keys:
-            if k in ("collector",):
-                continue
-            x += ["            \"%s\": \"%s\"" % (json_escape(k),
-                                                  json_escape(vars[k]))]
-        r += [",\n".join(x)]
-        r += ["        }"]
-        r += ["    }"]
-        r += ["]"]
-        return self.render_plain_text("\n".join(r))
+    @view(url=r"^(?P<id>[a-z0-9]{24})/post/", method=["POST"], api=True,
+          access="launch", validate={"msg": UnicodeParameter()})
+    def api_post(self, request, id, msg):
+        event = get_event(id)
+        if not event:
+            self.response_not_found()
+        event.log_message("%s: %s" % (request.user.username, msg))
+        return True
