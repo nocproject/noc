@@ -30,6 +30,7 @@ class CLITelnetSocket(CLI, ConnectedTCPSocket):
         ConnectedTCPSocket.__init__(self, self.script.activator.factory,
                                     self.script.access_profile.address,
                                     self.script.access_profile.port or 23)
+        self.protocol.set_options(naws=self.script.profile.telnet_naws)
 
     def write(self, s):
         if type(s) == unicode:
