@@ -60,7 +60,9 @@ class Command(BaseCommand):
         "DateTimeField": "auto",
         "GeoPointField": "auto",
         "URLField": "string",
-        "PlainReferenceField": "string"
+        "PlainReferenceField": "string",
+        "RawDictField": "auto",
+        "ListField": "auto"
     }
     # Document -> Ext type widgets
     document_ext_widget = {
@@ -70,7 +72,9 @@ class Command(BaseCommand):
         "DateTimeField": "textfield",
         "GeoPointField": "geofield",
         "URLField": "textfield",
-        "PlainReferenceField": "textfield"
+        "PlainReferenceField": "textfield",
+        "RawDictField": "textfield",
+        "ListField": "textfield"
     }
 
     def compact(self, s):
