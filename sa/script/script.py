@@ -353,7 +353,7 @@ class Script(threading.Thread):
         if chars:
             m += chars * 50
         m += "\n"
-        m += msg + "\n"
+        m += str(msg) + "\n"
         with open(self.log_cli_sessions_path, "a") as f:
             f.write(m)
 
