@@ -4,7 +4,7 @@
     <tr><th colspan="2">Untagged interfaces</th>
     {{#each interfaces.untagged}}
     <tr>
-        <td>{{this.managed_object_name}}</td>
+        <td style="width: 200px">{{this.managed_object_name}}</td>
         <td>
             {{#each this.interfaces}}{{this.name}}{{/each}}
         </td>
@@ -16,7 +16,7 @@
     <tr><th colspan="2">Tagged interfaces</th>
     {{#each interfaces.tagged}}
     <tr>
-        <td>{{this.managed_object_name}}</td>
+        <td style="width: 200px">{{this.managed_object_name}}</td>
         <td>
             {{#each this.interfaces}}{{this.name}}{{/each}}
         </td>
@@ -28,7 +28,7 @@
     <tr><th colspan="2">L3 interfaces</th>
     {{#each interfaces.l3}}
     <tr>
-        <td>{{this.managed_object_name}}</td>
+        <td style="width: 200px">{{this.managed_object_name}}</td>
         <td>
             {{#each this.interfaces}}
                 {{this.ipv4_addresses}}
