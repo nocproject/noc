@@ -25,3 +25,19 @@ pre.sh_sourceCode {
 .noc-tp {
     padding: 4px;
 }
+
+.noc-tp TABLE {
+    border: 1px solid black;
+    padding: 4px;
+    font-family: tahoma, arial, verdana, sans-serif;
+    font-size: 12px;
+}
+
+.noc-tp TABLE TH, .noc-tp TABLE TD {
+    padding: 4px;
+    border: 1px solid black;
+}
+
+.noc-tp TABLE TH {
+    font-weight: bold;
+}
