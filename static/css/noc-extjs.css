@@ -21,3 +21,7 @@ pre.sh_sourceCode {
 .sh_address {
     color: darkgreen;
 }
+/**/
+.noc-tp {
+    padding: 4px;
+}
