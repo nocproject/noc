@@ -184,7 +184,7 @@ Ext.define("NOC.fm.event.EventPanel", {
         panel.setDisabled(!enabled);
         panel.setVisible(enabled);
         if(enabled) {
-            panel.update(template(data));
+            panel.update("<div class='noc-tp'>" + template(data) + "</div>");
         }
     },
     //
