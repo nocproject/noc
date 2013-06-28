@@ -48,7 +48,7 @@ Ext.define("NOC.core.TemplatePreview", {
             Ext.apply(context, extra);
         }
         me.setTitle(me.titleTemplate(context));
-        me.items.first().update(me.template(context));
+        me.items.first().update("<div class='noc-tp'>" + me.template(context) + "</div>");
     },
     //
     onClose: function() {
