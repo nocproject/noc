@@ -21,7 +21,7 @@ class Profile(noc.sa.profiles.Profile):
         (r"[Cc]ontinue?\S+", "y\n\r")
     ]
     pattern_prompt = r"^[<#\[]\S+?[>#\]]"
-    pattern_syntax_error = r"Error: "
+    pattern_syntax_error = r"^Error: "
     command_more = " "
     config_volatile = ["^%.*?$"]
     command_disable_pager = "screen-length 0 temporary"
