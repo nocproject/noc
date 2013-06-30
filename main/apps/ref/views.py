@@ -15,6 +15,7 @@ from noc.sa.models import profile_registry
 from noc.lib.stencil import stencil_registry
 from noc.pm.pmprobe.checks.base import check_registry
 from noc import settings
+from noc.main.models.notification import USER_NOTIFICATION_METHOD_CHOICES
 
 
 class RefAppplication(ExtApplication):
@@ -105,6 +106,11 @@ class RefAppplication(ExtApplication):
             } for t in themes],
             key=lambda x: x["label"].lower()
         )
+
+    def build_unotificationmethod(self):
+        return sorted(({"id": s[0], "label": s[1]}
+                       for s in USER_NOTIFICATION_METHOD_CHOICES),
+                      key=lambda x: x["label"])
 
     @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
