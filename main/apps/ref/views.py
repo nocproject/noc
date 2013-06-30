@@ -89,6 +89,23 @@ class RefAppplication(ExtApplication):
             for l in settings.LANGUAGES
         )
 
+    def build_theme(self):
+        """
+        UI Themes
+        :return:
+        """
+        conf = settings.config
+        themes = [t[:-5] for t in conf.options("themes")
+                  if (t.endswith(".name") and
+                      conf.getboolean("themes", "%s.enabled" % t[:-5]))]
+        return sorted([
+            {
+                "id": t,
+                "label": conf.get("themes", "%s.name" % t)
+            } for t in themes],
+            key=lambda x: x["label"].lower()
+        )
+
     @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
         if ref not in self.refs:
