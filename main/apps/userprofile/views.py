@@ -22,6 +22,9 @@ class UserProfileApplication(ExtApplication):
     main.userprofile application
     """
     title = "User Profile"
+    implied_permissions = {
+        "launch": ["main:timepattern:lookup"]
+    }
 
     @view(url="^$", method=["GET"], access=PermitLogged(), api=True)
     def api_get(self, request):
