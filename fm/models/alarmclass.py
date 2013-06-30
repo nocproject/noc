@@ -8,6 +8,8 @@
 
 ## Python modules
 import hashlib
+## Third-party modules
+from mongoengine import fields
 ## NOC modules
 import noc.lib.nosql as nosql
 from alarmseverity import AlarmSeverity
@@ -16,6 +18,7 @@ from datasource import DataSource
 from alarmrootcausecondition import AlarmRootCauseCondition
 from alarmclasscategory import AlarmClassCategory
 from alarmclassjob import AlarmClassJob
+from noc.lib.escape import json_escape as q
 
 
 class AlarmClass(nosql.Document):
@@ -26,22 +29,23 @@ class AlarmClass(nosql.Document):
         "collection": "noc.alarmclasses",
         "allow_inheritance": False
     }
-    name = nosql.StringField(required=True, unique=True)
-    is_builtin = nosql.BooleanField(default=False)
-    description = nosql.StringField(required=False)
+
+    name = fields.StringField(required=True, unique=True)
+    is_builtin = fields.BooleanField(default=False)
+    description = fields.StringField(required=False)
     # Create or not create separate Alarm
     # if is_unique is True and there is active alarm
     # Do not create separate alarm if is_unique set
-    is_unique = nosql.BooleanField(default=False)
+    is_unique = fields.BooleanField(default=False)
     # List of var names to be used as discriminator key
-    discriminator = nosql.ListField(nosql.StringField())
+    discriminator = fields.ListField(nosql.StringField())
     # Can alarm status be cleared by user
-    user_clearable = nosql.BooleanField(default=True)
+    user_clearable = fields.BooleanField(default=True)
     # Default alarm severity
     default_severity = nosql.PlainReferenceField(AlarmSeverity)
     #
-    datasources = nosql.ListField(nosql.EmbeddedDocumentField(DataSource))
-    vars = nosql.ListField(nosql.EmbeddedDocumentField(AlarmClassVar))
+    datasources = fields.ListField(fields.EmbeddedDocumentField(DataSource))
+    vars = fields.ListField(fields.EmbeddedDocumentField(AlarmClassVar))
     # Text messages
     # alarm_class.text -> locale -> {
     #     "subject_template" -> <template>
@@ -50,19 +54,19 @@ class AlarmClass(nosql.Document):
     #     "probable_causes" -> <text>
     #     "recommended_actions" -> <text>
     # }
-    text = nosql.DictField(required=True)
+    text = fields.DictField(required=True)
     # Flap detection
-    flap_condition = nosql.StringField(
+    flap_condition = fields.StringField(
         required=False,
         choices=[("none", "none"), ("count", "count")],
         default=None)
-    flap_window = nosql.IntField(required=False, default=0)
-    flap_threshold = nosql.FloatField(required=False, default=0)
+    flap_window = fields.IntField(required=False, default=0)
+    flap_threshold = fields.FloatField(required=False, default=0)
     # RCA
-    root_cause = nosql.ListField(
-        nosql.EmbeddedDocumentField(AlarmRootCauseCondition))
-    # Job descriptioons
-    jobs = nosql.ListField(nosql.EmbeddedDocumentField(AlarmClassJob))
+    root_cause = fields.ListField(
+        fields.EmbeddedDocumentField(AlarmRootCauseCondition))
+    # Job descriptions
+    jobs = fields.ListField(fields.EmbeddedDocumentField(AlarmClassJob))
     #
     category = nosql.ObjectIdField()
 
@@ -90,3 +94,62 @@ class AlarmClass(nosql.Document):
             return hashlib.sha1("\x00".join(ds)).hexdigest()
         else:
             return hashlib.sha1("").hexdigest()
+
+    @property
+    def json(self):
+        c = self
+        r = ["["]
+        r += ["    {"]
+        r += ["        \"name\": \"%s\"," % q(c.name)]
+        r += ["        \"desciption\": \"%s\"," % q(c.description)]
+        r += ["        \"is_unique\": %s," % q(c.is_unique)]
+        if c.is_unique and c.discriminator:
+            r += ["        \"discriminator\": [%s]," % ", ".join(["\"%s\"" % q(d) for d in c.discriminator])]
+        r += ["        \"user_clearable\": %s," % q(c.user_clearable)]
+        r += ["        \"default_severity__name\": \"%s\"," % q(c.default_severity.name)]
+        # datasources
+        if c.datasources:
+            r += ["        \"datasources\": ["]
+            jds = []
+            for ds in c.datasources:
+                x = []
+                x += ["                \"name\": \"%s\"" % q(ds.name)]
+                x += ["                \"datasource\": \"%s\"" % q(ds.datasource)]
+                ss = []
+                for k in sorted(ds.search):
+                    ss += ["                    \"%s\": \"%s\"" % (q(k), q(ds.search[k]))]
+                x += ["                \"search\": {\n%s\n                }" % (",\n".join(ss))]
+                jds += ["            {\n%s\n            }" % ",\n".join(x)]
+            r += [",\n\n".join(jds)]
+            r += ["        ]"]
+        # vars
+        vars = []
+        for v in c.vars:
+            vd = ["            {"]
+            vd += ["                \"name\": \"%s\"," % q(v.name)]
+            vd += ["                \"description\": \"%s\"" % q(v.description)]
+            if v.default:
+                vd += ["                \"default\": \"%s\"" % q(v.default)]
+            vd += ["            }"]
+            vars += ["\n".join(vd)]
+        r += ["        \"vars \": ["]
+        r += [",\n\n".join(vars)]
+        r += ["        ],"]
+        # text
+        r += ["        \"text\": {"]
+        t = []
+        for lang in c.text:
+            l = ["            \"%s\": {" % lang]
+            ll = []
+            for v in ["subject_template", "body_template", "symptoms",
+                      "probable_causes", "recommended_actions"]:
+                if v in c.text[lang]:
+                    ll += ["                \"%s\": \"%s\"" % (v, q(c.text[lang][v]))]
+            l += [",\n".join(ll)]
+            l += ["            }"]
+            t += ["\n".join(l)]
+        r += [",\n\n".join(t)]
+        r += ["        }"]
+        r += ["    }"]
+        r += ["]"]
+        return "\n".join(r)
