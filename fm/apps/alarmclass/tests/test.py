@@ -1,12 +1,29 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## eventclass Test
+## fm.alarmclass unittes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase
-from django.utils import simplejson as json
 
-class eventclassTestCase(ModelApplicationTestCase):
-    pass
+## NOC modules
+from noc.lib.test import RestModelTestCase, unittest
+
+
+@unittest.skip("Not ready")
+class AlarmClassTestCase(RestModelTestCase):
+    app = "fm.alarmclass"
+
+    scenario = [
+        {
+            "GET": {
+                # key: value
+            },
+            "POST": {
+                # key: value
+            },
+            "PUT": {
+                # key: value
+            }
+        }
+    ]
