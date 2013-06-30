@@ -10,7 +10,7 @@ comment start ";"
 include "number.lang"
 include "address.lang"
 
-keyword = "@|IN|SOA|A|NS"
+keyword = "@|IN|SOA|A|NS|CNAME|MX|PTR|SRV"
 
 preproc = '^[[:blank:]]*(\$.*)'
 
