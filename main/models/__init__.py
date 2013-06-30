@@ -681,81 +681,8 @@ class SystemNotification(models.Model):
         if n:
             n.notify(subject=subject, body=body, link=link)
 
-
-class UserProfileManager(models.Manager):
-    """
-    @todo: remove
-    User Profile Manager
-    Leave only current user's profile
-    """
-    def get_query_set(self):
-        user = get_user()
-        if user:
-            # Create profile when necessary
-            try:
-                p = super(UserProfileManager, self).get_query_set().get(user=user)
-            except UserProfile.DoesNotExist:
-                UserProfile(user=user).save()
-            return super(UserProfileManager, self).get_query_set().filter(user=user)
-        else:
-            return super(UserProfileManager, self).get_query_set()
-
-
-class UserProfile(models.Model):
-    """
-    User profile
-    """
-    class Meta:
-        verbose_name = "User Profile"
-        verbose_name_plural = "User Profiles"
-
-    user = models.ForeignKey(User, unique=True)
-    # User data
-    preferred_language = models.CharField("Preferred Language", max_length=16,
-                                          null=True, blank=True,
-                                          default=settings.LANGUAGE_CODE,
-                                          choices=settings.LANGUAGES)
-    theme = models.CharField("Theme", max_length=32, null=True, blank=True)
-    #
-    objects = UserProfileManager()
-
-    def __unicode__(self):
-        return "%s's Profile" % self.user.username
-
-    def save(self, **kwargs):
-        user = get_user()
-        if user and self.user != user:
-            raise Exception("Invalid user")
-        super(UserProfile, self).save(**kwargs)
-
-    @property
-    def contacts(self):
-        return [(c.time_pattern, c.notification_method, c.params)
-            for c in self.userprofilecontact_set.all()]
-
-    @property
-    def active_contacts(self):
-        """
-        Get list of currently active contacts
-
-        :returns: List of (method, params)
-        """
-        now = datetime.datetime.now()
-        return [(c.notification_method, c.params)
-            for c in self.contacts if c.time_pattern.match(now)]
-
-
-class UserProfileContact(models.Model):
-    class Meta:
-        verbose_name = "User Profile Contact"
-        verbose_name_plural = "User Profile Contacts"
-        unique_together = [("user_profile", "time_pattern",
-                            "notification_method", "params")]
-    user_profile = models.ForeignKey(UserProfile, verbose_name="User Profile")
-    time_pattern = models.ForeignKey(TimePattern, verbose_name="Time Pattern")
-    notification_method = models.CharField("Method", max_length=16,
-                                    choices=USER_NOTIFICATION_METHOD_CHOICES)
-    params = models.CharField("Params", max_length=256)
+from userprofile import UserProfile, UserProfileManager
+from userprofilecontact import UserProfileContact
 
 
 ##
