@@ -14,6 +14,7 @@ from mongoengine.document import EmbeddedDocument, Document
 ## NOC modules
 from noc.lib import nosql
 from alarmclass import AlarmClass
+from noc.lib.escape import json_escape as q
 
 
 class EventClassVar(EmbeddedDocument):
@@ -241,6 +242,62 @@ class EventClass(Document):
     @property
     def conditional_pyrule_name(self):
         return ("fm_dc_" + rulename_quote(self.name)).lower()
+
+    @property
+    def json(self):
+        c = self
+        r = ["["]
+        r += ["    {"]
+        r += ["        \"name\": \"%s\"," % q(c.name)]
+        r += ["        \"desciption\": \"%s\"," % q(c.description)]
+        r += ["        \"action\": \"%s\"," % q(c.action)]
+        # vars
+        vars = []
+        for v in c.vars:
+            vd = ["            {"]
+            vd += ["                \"name\": \"%s\"," % q(v.name)]
+            vd += ["                \"description\": \"%s\"," % q(v.description)]
+            vd += ["                \"type\": \"%s\"," % q(v.type)]
+            vd += ["                \"required\": %s," % q(v.required)]
+            vd += ["            }"]
+            vars += ["\n".join(vd)]
+        r += ["        \"vars \": ["]
+        r += [",\n\n".join(vars)]
+        r += ["        ],"]
+        # text
+        r += ["        \"text\": {"]
+        t = []
+        for lang in c.text:
+            l = ["            \"%s\": {" % lang]
+            ll = []
+            for v in ["subject_template", "body_template", "symptoms",
+                      "probable_causes", "recommended_actions"]:
+                if v in c.text[lang]:
+                    ll += ["                \"%s\": \"%s\"" % (v, q(c.text[lang][v]))]
+            l += [",\n".join(ll)]
+            l += ["            }"]
+            t += ["\n".join(l)]
+        r += [",\n\n".join(t)]
+        # Disposition rules
+        if c.disposition:
+            r += ["        },"]
+            r += ["        \"disposition\": ["]
+            l = []
+            for d in c.disposition:
+                ll = ["            {"]
+                lll = ["                \"name\": \"%s\"" % q(d.name)]
+                lll += ["                \"condition\": \"%s\"" % q(d.condition)]
+                lll += ["                \"action\": \"%s\"" % q(d.action)]
+                if d.alarm_class:
+                    lll += ["                \"alarm_class__name\": \"%s\"" % q(d.alarm_class.name)]
+                ll += [",\n".join(lll)]
+                ll += ["            }"]
+                l += ["\n".join(ll)]
+            r += [",\n".join(l)]
+            r += ["        ]"]
+        r += ["    }"]
+        r += ["]"]
+        return "\n".join(r)
 
 rx_rule_name_quote = re.compile("[^a-zA-Z0-9]+")
 

@@ -70,6 +70,14 @@ Ext.define("NOC.fm.event.Application", {
             }
         });
 
+        /*
+        me.eventClassCombo = Ext.create("NOC.fm.eventclass.LookupField", {
+            fieldLabel: "Class",
+            labelWidth: 40,
+            width: 200
+        });
+        */
+
         me.gridPanel = Ext.create("Ext.grid.Panel", {
             store: me.store,
             features: [{
@@ -86,7 +94,8 @@ Ext.define("NOC.fm.event.Application", {
                     dock: "top",
                     items: [
                         me.typeCombo,
-                        me.objectCombo
+                        me.objectCombo,
+                        // me.eventClassCombo
                     ]
                 },
                 {
