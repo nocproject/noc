@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## userprofile Test
+## main.userprofile unittests
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase
 
-class userprofileTestCase(ModelApplicationTestCase):
+## NOC modules
+from noc.lib.test import AjaxTestCase
+
+
+class userprofileTestCase(AjaxTestCase):
     pass

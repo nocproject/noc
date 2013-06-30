@@ -281,9 +281,8 @@ Ext.define("NOC.main.desktop.Controller", {
     // Show user profile panel
     onUserProfile: function() {
         var me = this;
-        me.launchTab("NOC.main.desktop.IFramePanel",
-                        "User Profile",
-                        {url: "/main/userprofile/profile/"});
+        me.launchTab("NOC.main.userprofile.Application",
+            "User Profile", {});
     },
     // Setup idle timeout
     setIdleTimeout: function(timeout) {

@@ -1,78 +1,90 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## UserProfile Manager
+## main.userprofile application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.contrib import admin
 ## NOC modules
-from noc.lib.app import ModelApplication, PermitLogged, Deny, view
-from noc.main.models import UserProfile, UserProfileContact
-from noc import settings
+from noc.lib.app import ExtApplication, view, PermitLogged
+from noc.main.models import UserProfile
+from noc.sa.interfaces.base import (StringParameter, ListOfParameter,
+                                    DictParameter, ModelParameter)
+from noc.settings import LANGUAGES
+from noc.main.models.timepattern import TimePattern
+from noc.main.models.notification import USER_NOTIFICATION_METHOD_CHOICES
+from noc.main.models.userprofilecontact import UserProfileContact
 
-##
-## UserProfile Contact Inline
-##
-class UserProfileContactAdmin(admin.TabularInline):
-    extra = 5
-    model = UserProfileContact
-##
-## User profile admin
-##
-class UserProfileAdmin(admin.ModelAdmin):
-    inlines = [UserProfileContactAdmin]
-    fieldsets = (
-        (None, {
-            "fields": ("preferred_language", "theme"),
-        }),
-    )
-##
-## UserProfile application
-##
-class UserProfileApplication(ModelApplication):
-    model = UserProfile
-    model_admin = UserProfileAdmin
-    ##
-    ## Edit profile
-    ##
-    @view(method=["GET", "POST"], url=r"^profile/$", access=PermitLogged())
-    def view_change(self, request, form_url="", extra_context=None):
-        def setup_language():
-            # Change session language
-            lang = settings.LANGUAGE_CODE
-            profile = request.user.get_profile()
-            if profile and profile.preferred_language:
-                lang = profile.preferred_language
-            request.session["django_language"] = lang
 
-        def response_change(*args):
-            setup_language()
-            self.message_user(request, "User Profile changed successfully")
-            return self.response_redirect("")
+class UserProfileApplication(ExtApplication):
+    """
+    main.userprofile application
+    """
+    title = "User Profile"
 
+    @view(url="^$", method=["GET"], access=PermitLogged(), api=True)
+    def api_get(self, request):
         user = request.user
-        # Create profile if not exists yet
         try:
             profile = user.get_profile()
-        except:
+            language = profile.preferred_language
+            theme = profile.theme
+            contacts = [
+                {
+                    "time_pattern": c.time_pattern.id,
+                    "time_pattern__label": c.time_pattern.name,
+                    "notification_method": c.notification_method,
+                    "params": c.params
+                }
+                for c in profile.userprofilecontact_set.all()
+            ]
+        except UserProfile.DoesNotExist:
+            language = None
+            theme = None
+            contacts = []
+        return {
+            "username": user.username,
+            "name": (" ".join(
+                [x for x in (user.first_name, user.last_name) if x]
+            )).strip(),
+            "email": user.email,
+            "preferred_language": language,
+            "theme": theme,
+            "contacts": contacts
+        }
+
+    @view(url="^$", method=["POST"], access=PermitLogged(), api=True,
+          validate={
+              "preferred_language": StringParameter(choices=[x[0] for x in LANGUAGES]),
+              "theme": StringParameter(),
+              "contacts": ListOfParameter(
+                  element=DictParameter(attrs={
+                      "time_pattern": ModelParameter(TimePattern),
+                      "notification_method": StringParameter(choices=[x[0] for x in USER_NOTIFICATION_METHOD_CHOICES]),
+                      "params": StringParameter()
+                  })
+              )
+          })
+    def api_save(self, request, preferred_language, theme, contacts):
+        user = request.user
+        try:
+            profile = user.get_profile()
+        except UserProfile.DoesNotExist:
             profile = UserProfile(user=user)
-            profile.save()
-        self.admin.response_change = response_change
-        r = self.admin.change_view(request, str(profile.id),
-            form_url, self.get_context(extra_context))
-        setup_language()
-        return r
-
-    def has_delete_permission(self, request, obj=None):
-        """Disable delete"""
-        return False
-
-    def has_add_permission(self, request):
-        """Disable add"""
-        return False
-
-    def has_change_permission(self, request, obj=None):
+        profile.preferred_language = preferred_language
+        profile.theme = theme
+        profile.save()
+        # Setup contacts
+        for c in profile.userprofilecontact_set.all():
+            c.delete()
+        for c in contacts:
+            UserProfileContact(
+                user_profile=profile,
+                time_pattern=c["time_pattern"],
+                notification_method=c["notification_method"],
+                params=c["params"]
+            ).save()
+        # Setup language
+        request.session["django_lang"] = preferred_language
         return True
