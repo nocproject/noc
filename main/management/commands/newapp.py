@@ -57,24 +57,30 @@ class Command(BaseCommand):
         "StringField": "string",
         "BooleanField": "boolean",
         "IntField": "int",
+        "FloatField": "float",
         "DateTimeField": "auto",
         "GeoPointField": "auto",
         "URLField": "string",
         "PlainReferenceField": "string",
+        "DictField": "auto",
         "RawDictField": "auto",
-        "ListField": "auto"
+        "ListField": "auto",
+        "ObjectIdField": "string"
     }
     # Document -> Ext type widgets
     document_ext_widget = {
         "StringField": "textfield",
         "BooleanField": "checkboxfield",
         "IntField": "numberfield",
+        "FloatField": "numberfield",
         "DateTimeField": "textfield",
         "GeoPointField": "geofield",
         "URLField": "textfield",
         "PlainReferenceField": "textfield",
+        "DictField": "textfield",
         "RawDictField": "textfield",
-        "ListField": "textfield"
+        "ListField": "textfield",
+        "ObjectIdField": "textfield"
     }
 
     def compact(self, s):
