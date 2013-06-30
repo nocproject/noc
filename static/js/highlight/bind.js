@@ -19,7 +19,7 @@ sh_languages['bind'] = [
       -1
     ],
     [
-      /@|IN|SOA|A|NS/g,
+      /@|IN|SOA|A|NS|CNAME|MX|PTR|SRV/g,
       'sh_keyword',
       -1
     ],
