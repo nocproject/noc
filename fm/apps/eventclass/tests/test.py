@@ -1,13 +1,29 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## eventclass Test
+## fm.eventclass unittes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase, unittest
+
+## NOC modules
+from noc.lib.test import RestModelTestCase, unittest
 
 
-@unittest.skip("Skipped")
-class eventclassTestCase(ModelApplicationTestCase):
-    pass
+@unittest.skip("Not ready")
+class EventClassTestCase(RestModelTestCase):
+    app = "fm.eventclass"
+
+    scenario = [
+        {
+            "GET": {
+                # key: value
+            },
+            "POST": {
+                # key: value
+            },
+            "PUT": {
+                # key: value
+            }
+        }
+    ]
