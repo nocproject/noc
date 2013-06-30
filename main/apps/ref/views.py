@@ -14,6 +14,7 @@ from noc.sa.interfaces import interface_registry
 from noc.sa.models import profile_registry
 from noc.lib.stencil import stencil_registry
 from noc.pm.pmprobe.checks.base import check_registry
+from noc import settings
 
 
 class RefAppplication(ExtApplication):
@@ -77,6 +78,16 @@ class RefAppplication(ExtApplication):
         """
         return sorted(({"id": s[0], "label": s[1]} for s in check_registry.choices),
             key=lambda x: x["label"])
+
+    def build_ulanguage(self):
+        """
+        User languages
+        :return:
+        """
+        return sorted(
+            {"id": l[0], "label": l[1]}
+            for l in settings.LANGUAGES
+        )
 
     @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
