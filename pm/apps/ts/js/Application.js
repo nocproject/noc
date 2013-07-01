@@ -91,14 +91,18 @@ Ext.define("NOC.pm.ts.Application", {
         }
     ],
     //
+    initComponent: function() {
+        var me = this;
+        me.graphPanel = Ext.create("NOC.pm.ts.GraphPreview", {app: me});
+        me.ITEM_GRAPH = me.registerItem(me.graphPanel);
+        me.callParent();
+    },
+    //
     onPreview: function(record) {
         var me = this,
             ts = {};
         ts[record.get(me.idField)] = record.get("check__label") + " " + record.get("name");
-        Ext.create("NOC.pm.ts.GraphPreview", {
-            title: Ext.String.format("{0} {1}", record.get("check__label"), record.get("name")),
-            app: me,
-            ts: ts
-        });
+        me.showItem(me.ITEM_GRAPH);
+        me.graphPanel.setTS(ts);
     }
 });

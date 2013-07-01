@@ -25,3 +25,5 @@ noc-pkg-silk-companion1==1.0
 noc-pkg-extjs==4.0.7
 noc-pkg-mxgraph==1.10.4.2
 noc-pkg-openlayers==2.13
+noc-pkg-cubism==1.2.2
+noc-pkg-d3==3.2.2

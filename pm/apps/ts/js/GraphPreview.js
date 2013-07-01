@@ -7,204 +7,110 @@
 console.debug("Defining NOC.pm.ts.GraphPreview");
 
 Ext.define("NOC.pm.ts.GraphPreview", {
-    extend: "Ext.Window",
-    ts: undefined,
-    app: undefined,
-    width: 600,
-    height: 400,
-    autoShow: true,
+    extend: "Ext.panel.Panel",
     layout: "fit",
-    maximizable: true,
-    baseTime: null,  // refresh to current time
+    app: null,
+    items: [
+        {
+            xtype: "container"
+        }
+    ],
 
     initComponent: function() {
-        var me = this,
-            storeFields = ["timestamp"],
-            axisFields = [],
-            series = [];
-        // Determine store fields
-        me.tsList = [];
-        for(var i in me.ts) {
-            me.tsList.push(i);
-            storeFields.push("v" + i);
-            axisFields.push("v" + i);
-            series.push(
-                {
-                    type: "line",
-                    axis: ["bottom", "right"],
-                    xField: "timestamp",
-                    yField: "v" + i,
-                    title: me.ts[i],
-                    tips: {
-                        trackMouse: true,
-                        width: 200,
-                        height: 50,
-                        renderer: (function(n) {
-                            return function(storeItem, item) {
-                                this.setTitle(
-                                    Ext.String.format("<u>{0}</u><br/>Time: {1}<br/>Value: {2}",
-                                        me.ts[i],
-                                        Ext.Date.format(storeItem.get("timestamp"), "Y-m-d H:i:s"),
-                                        storeItem.get(n)
-                                    )
-                                );
-                            }
-                        })("v" + i)
-                    }
-                }
-            );
-        }
-
-        me.store = Ext.create("Ext.data.Store", {
-            fields: storeFields,
-            data: []
-        });
-
-        me.scaleStore = Ext.create("Ext.data.Store", {
-            fields: ["scale", "label", "step", "dateFormat"],
-            data: [
-                {scale: 3600, label: "1h", step: [Ext.Date.MINUTE, 5], dateFormat: "H:i"},
-                {scale: 3600 * 3, label: "3h", step: [Ext.Date.MINUTE, 15], dateFormat: "H:i"},
-                {scale: 3600 * 12, label: "12h", step: [Ext.Date.HOUR, 1], dateFormat: "H:i"},
-                {scale: 3600 * 24, label: "1d", step: [Ext.Date.HOUR, 2], dateFormat: "H:i"},
-                {scale: 3600 * 24 * 7, label: "7d", step: [Ext.Date.HOUR, 12], dateFormat: "H:i"},
-                {scale: 3600 * 24 * 30, label: "30d", step: [Ext.Date.DAY, 2], dateFormat: "H:i"},
-            ]
-        });
+        var me = this;
         Ext.apply(me, {
-            items: [
-                {
-                    xtype: "chart",
-                    animate: true,
-                    store: me.store,
-                    legend: {
-                        position: "bottom"
-                    },
-                    axes: [
-                        {
-                            type: "Numeric",
-                            fields: axisFields,
-                            position: "right",
-                            grid: true
-                        },
-                        {
-                            type: "Time",
-                            fields: ["timestamp"],
-                            position: "bottom",
-                            dateFormat: "H:i",
-                            grid: true,
-                            step: [Ext.Date.MINUTE, 5]
-                        }
-                    ],
-                    series: series,
-                    mask: "horizontal",
-                    listeners: {
-                        select: {
-                            scope: me,
-                            fn: me.onSelect
-                        }
-                    }
-                }
-            ],
             dockedItems: [
                 {
                     xtype: "toolbar",
-                    dock: "bottom",
+                    dock: "top",
                     items: [
                         {
-                            xtype: "button",
-                            width: 20,
-                            text: "&#9664;"
-                        },
-                        {
-                            xtype: "slider",
-                            minValue: 0,
-                            maxValue: 100,
-                            increment: 10,
-                            flex: 1
-                        },
-                        {
-                            xtype: "button",
-                            width: 20,
-                            text: "&#9654;"
-                        },
-                        {
-                            xtype: "combobox",
-                            width: 50,
-                            queryMode: "local",
-                            displayField: "label",
-                            valueField: "scale",
-                            store: me.scaleStore,
-                            allowBlank: false,
-                            value: 3600,
-                            listeners: {
-                                select: {
-                                    scope: me,
-                                    fn: me.onScale
-                                }
-                            }
+                            text: "Close",
+                            iconCls: "icon_arrow_undo",
+                            scope: me,
+                            handler: me.onClose
                         }
                     ]
                 }
             ]
         });
-        //
         me.callParent();
-        //
-        me.chart = me.items.get(0);
-        me.timeAxis = me.chart.axes.get(1);
-        me.loadData(3600);
     },
-    //
-    loadData: function(scale, end) {
-        var me = this,
-            e = ((end || new Date()).getTime() / 1000) >> 0,
-            b = e - scale;
 
-        Ext.Ajax.request({
-            url: "/pm/ts/data/",
-            params: {
-                ts: me.tsList,
-                begin: b,
-                end: e
-            },
-            method: "GET",
-            scope: me,
-            success: function(response) {
-                var data = Ext.decode(response.responseText),
-                    r = [];
-                for(var ts in data.data) {
-                    var tsdata = data.data[ts];
-                    for(var i in tsdata) {
-                        var v = tsdata[i],
-                            x = {timestamp: new Date(v[0] * 1000)};
-                        x["v" + ts] = v[1];
-                        r.push(x);
-                    }
-                }
-                // Switch interval
-                me.timeAxis.fromDate = new Date(b * 1000);
-                me.timeAxis.toDate = new Date(e * 1000);
-                // Submit data to chart
-                me.store.loadRawData(r);
-            },
-            failure: function(response) {
-                NOC.error("Failed to get data");
-            }
+    setTS: function(tses) {
+        var me = this,
+            cId = "#" + me.items.first().id,  // Container id
+            dataGetters;
+        me.tses = tses;
+        // Cubism context
+        me.context = cubism.context().step(1000).size(600);
+        // Build data getters closure
+        dataGetters = Ext.Object.getKeys(tses)
+            .map(Ext.bind(me.getRequest, me));
+        // Axis
+        d3.select(cId)
+            .data(["top", "bottom"])
+            .enter()
+            .append("div")
+            .attr("class", function(d) {
+                return d + " axis";
+            })
+            .each(function(d) {
+                d3.select(this).call(
+                    me.context.axis()
+                        .ticks(12)
+                        .orient(d)
+                );
+            });
+        // Rule
+        d3.select("body")
+            .append("div")
+            .attr("class", "rule")
+            .call(me.context.rule());
+        // Horizon bar
+        d3.select(cId).selectAll(".horizon")
+            .data(dataGetters)
+            .enter()
+            .insert("div", ".bottom")
+            .attr("class", "horizon")
+            .call(
+                me.context.horizon().extent([-10, 10])
+            );
+        //
+        me.context.on("focus", function(i) {
+            d3.selectAll(".value")
+                .style("right",
+                    i == null ? null : me.context.size() - i + "px"
+                );
         });
     },
-    //
-    onScale: function(combo, records, opts) {
-        var me = this,
-            r = records[0];
-        me.timeAxis.step = r.get("step");
-        me.chart.restoreZoom();
-        me.loadData(r.get("scale"), me.baseTime);
+
+    getRequest: function(ts) {
+        var me = this;
+        return me.context.metric(function(start, stop, step, callback) {
+            // Convert start/stop to ms
+            start = +start;
+            stop = +stop;
+            Ext.Ajax.request({
+                url: "/pm/ts/step/" + ts + "/",
+                method: "GET",
+                params: {
+                    start: start / 1000,
+                    stop: stop / 1000,
+                    step: step / 1000
+                },
+                success: function(response) {
+                    var data = Ext.decode(response.responseText);
+                    callback(null, data);
+                },
+                failure: function() {}
+            });
+        }, me.tses[ts]);
     },
     //
-    onSelect: function(chart, selection) {
+    onClose: function() {
         var me = this;
-        chart.setZoom(selection);
-        chart.mask.hide();
+        me.context.stop();
+        me.app.showGrid();
     }
 });
