@@ -23,7 +23,7 @@ class Profile(NOCProfile):
         (r"^ --More-- $", " ")
         ]
     pattern_unpriveleged_prompt = r"^\S+>"
-    pattern_syntax_error = r" % Unrecognized command, and error detected at '\^' marker.|% Ambiguous command:"
+    pattern_syntax_error = r"% (Unrecognized command, and error|Invalid input) detected at '\^' marker.|% Ambiguous command:"
 #    command_disable_pager = "terminal datadump"
     command_super = "enable"
     command_enter_config = "configure"

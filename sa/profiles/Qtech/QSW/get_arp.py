@@ -22,6 +22,10 @@ class Script(noc.sa.script.Script):
         r"^(?P<ip>\S+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+)\s+(?P<type>\S+)\s+(?P<status>\S+)",
         re.MULTILINE)
 
+    rx_line1 = re.compile(
+        r"^(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<port>\S+)\s+(?P<flag>Dynamic|Static)\s+(?P<age>\d+)",
+        re.MULTILINE)
+
     def execute(self):
         r = []
         # Try SNMP first
@@ -48,7 +52,14 @@ class Script(noc.sa.script.Script):
         """
 
         # Fallback to CLI
-        for match in self.rx_line.finditer(self.cli("show arp all", cached=True)):
+        try:
+            v = self.cli("show arp all", cached=True)
+            rx_iter = self.rx_line
+        except self.CLISyntaxError:
+            v = self.cli("show arp", cached=True)
+            rx_iter = self.rx_line1
+
+        for match in rx_iter.finditer(v):
             mac = match.group("mac")
             if mac.lower() == "incomplete":
                 r.append({
@@ -60,6 +71,6 @@ class Script(noc.sa.script.Script):
                 r.append({
                     "ip": match.group("ip"),
                     "mac": match.group("mac"),
-                    "interface": match.group("interface")
+                    "interface": match.group("port")
                     })
         return r
