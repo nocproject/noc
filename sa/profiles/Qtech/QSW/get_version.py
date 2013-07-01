@@ -28,15 +28,15 @@ class Script(NOCScript):
         r"^product serial number\s+:\s+(?P<serial>\S+)$", re.MULTILINE)
 
     rx_plat1 = re.compile(
-        r"^\S+(?P<platform>QSW-\S+) Device, Compiled on", re.MULTILINE)
+        r"^\s+(?P<platform>QSW-\S+) Device, Compiled on", re.MULTILINE)
     rx_soft1 = re.compile(
-        r"^\S+SoftWare Version (?P<version>\d\S+)$", re.MULTILINE)
+        r"^\s+SoftWare Version (?P<version>\d\S+)$", re.MULTILINE)
     rx_bootprom1 = re.compile(
-        r"^\S+BootRom Version (?P<bootprom>\d\S+)$", re.MULTILINE)
+        r"^\s+BootRom Version (?P<bootprom>\d\S+)$", re.MULTILINE)
     rx_hardware1 = re.compile(
-        r"^\S+HardWare Version(?P<hardware>\d\S+)$", re.MULTILINE)
+        r"^\s+HardWare Version (?P<hardware>\d\S+)$", re.MULTILINE)
     rx_serial1 = re.compile(
-        r"^\S+Device serial number(?P<serial>\d\S+)$", re.MULTILINE)
+        r"^\s+Device serial number (?P<serial>\d\S+)$", re.MULTILINE)
 
 
     def execute(self):
@@ -80,8 +80,8 @@ class Script(NOCScript):
             hardware = self.re_search(self.rx_hardware, ver)
             serial = self.re_search(self.rx_serial, ver)
         else:
-            platform = self.re_search(self.rx_plat1, ver)
-            version = self.re_search(self.rx_soft1, ver)
+            platform = self.re_search(self.rx_plat1, ver).group("platform")
+            version = self.re_search(self.rx_soft1, ver).group("version")
             bootprom = self.re_search(self.rx_bootprom1, ver)
             hardware = self.re_search(self.rx_hardware1, ver)
             serial = self.re_search(self.rx_serial1, ver)
