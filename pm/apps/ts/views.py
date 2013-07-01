@@ -8,6 +8,7 @@
 
 ## Python modules
 import time
+from collections import defaultdict
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.pm.models.ts import PMTS
@@ -67,3 +68,18 @@ class PMTSApplication(ExtDocApplication):
             "end": end,
             "data": data
         }
+
+    @view(url="^step/(?P<ts>\d+)/$", method=["GET"],
+          api=True, access="data")
+    def api_step(self, request, ts):
+        t = self.get_object_or_404(PMTS, ts_id=int(ts))
+        start = int(request.GET.get("start"))
+        stop = int(request.GET.get("stop"))
+        step = int(request.GET.get("step"))
+        # Collect values
+        v = defaultdict(list)
+        for ts_id, timestamp, value in t.iwindow(start, stop):
+            v[timestamp // step] += [value]
+        # @todo: Interpolate missed values
+        r = [3] * ((stop - start) // step)
+        return r
