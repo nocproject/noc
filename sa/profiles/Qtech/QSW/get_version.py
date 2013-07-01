@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Qtech.QSW.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -26,6 +26,18 @@ class Script(NOCScript):
         r"^hardware version\s+:\s+V+(?P<hardware>\S+)$", re.MULTILINE)
     rx_serial = re.compile(
         r"^product serial number\s+:\s+(?P<serial>\S+)$", re.MULTILINE)
+
+    rx_plat1 = re.compile(
+        r"^\S+(?P<platform>QSW-\S+) Device, Compiled on", re.MULTILINE)
+    rx_soft1 = re.compile(
+        r"^\S+SoftWare Version (?P<version>\d\S+)$", re.MULTILINE)
+    rx_bootprom1 = re.compile(
+        r"^\S+BootRom Version (?P<bootprom>\d\S+)$", re.MULTILINE)
+    rx_hardware1 = re.compile(
+        r"^\S+HardWare Version(?P<hardware>\d\S+)$", re.MULTILINE)
+    rx_serial1 = re.compile(
+        r"^\S+Device serial number(?P<serial>\d\S+)$", re.MULTILINE)
+
 
     def execute(self):
         # Try SNMP first
@@ -61,11 +73,18 @@ class Script(NOCScript):
         # Fallback to CLI
         ver = self.cli("show version", cached=True)
         match = self.re_search(self.rx_plat_ver, ver)
-        platform = match.group("platform")
-        version = match.group("version")
-        bootprom = self.re_search(self.rx_bootprom, ver)
-        hardware = self.re_search(self.rx_hardware, ver)
-        serial = self.re_search(self.rx_serial, ver)
+        if match:
+            platform = match.group("platform")
+            version = match.group("version")
+            bootprom = self.re_search(self.rx_bootprom, ver)
+            hardware = self.re_search(self.rx_hardware, ver)
+            serial = self.re_search(self.rx_serial, ver)
+        else:
+            platform = self.re_search(self.rx_plat1, ver)
+            version = self.re_search(self.rx_soft1, ver)
+            bootprom = self.re_search(self.rx_bootprom1, ver)
+            hardware = self.re_search(self.rx_hardware1, ver)
+            serial = self.re_search(self.rx_serial1, ver)
 
         return {
                 "vendor": "Qtech",
