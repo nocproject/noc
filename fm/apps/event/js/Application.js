@@ -70,13 +70,16 @@ Ext.define("NOC.fm.event.Application", {
             }
         });
 
-        /*
         me.eventClassCombo = Ext.create("NOC.fm.eventclass.LookupField", {
             fieldLabel: "Class",
             labelWidth: 40,
-            width: 200
+            width: 300,
+            listeners: {
+                scope: me,
+                select: me.onSelectClass,
+                clear: me.onClearClass
+            }
         });
-        */
 
         me.gridPanel = Ext.create("Ext.grid.Panel", {
             store: me.store,
@@ -95,7 +98,7 @@ Ext.define("NOC.fm.event.Application", {
                     items: [
                         me.typeCombo,
                         me.objectCombo,
-                        // me.eventClassCombo
+                        me.eventClassCombo
                     ]
                 },
                 {
@@ -214,6 +217,18 @@ Ext.define("NOC.fm.event.Application", {
     onClearObject: function() {
         var me = this;
         delete me.currentQuery.managed_object;
+        me.reloadStore();
+    },
+    //
+    onSelectClass: function(combo, records, opts) {
+        var me = this;
+        me.currentQuery.event_class = records[0].get("id");
+        me.reloadStore();
+    },
+    //
+    onClearClass: function() {
+        var me = this;
+        delete me.currentQuery.event_class;
         me.reloadStore();
     },
     // Return Grid's row classes
