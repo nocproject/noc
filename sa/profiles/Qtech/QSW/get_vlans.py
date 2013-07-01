@@ -21,6 +21,10 @@ class Script(NOCScript):
         r"^(VLAN name\s+:\s*(?P<vlanname>\S+).|)VLAN ID\s+:\s*(?P<vlanid>\d+)$",
         re.DOTALL|re.MULTILINE)
 
+    rx_vlan1 = re.compile(
+        r"^(?P<vlanid>\d+)\s+(?P<vlanname>\S+)\s+(Static|Dynamic)\s+ENET",
+        re.DOTALL|re.MULTILINE)
+
     def execute(self):
         r = []
         # Try snmp first
@@ -44,7 +48,8 @@ class Script(NOCScript):
         """
 
         # Fallback to CLI
-        for match in self.rx_vlan.finditer(self.cli("show vlan")):
+        v = self.cli("show vlan")
+        for match in self.rx_vlan.finditer(v):
             vlan_id = match.group('vlanid')
             name = match.group('vlanname')
             if not name:
@@ -53,4 +58,15 @@ class Script(NOCScript):
                 "vlan_id": int(vlan_id),
                 "name": name
             })
+        if r == []:
+            for match in self.rx_vlan1.finditer(v):
+                vlan_id = match.group('vlanid')
+                name = match.group('vlanname')
+                if not name:
+                    name = "vlan-" + vlan_id
+                r.append({
+                    "vlan_id": int(vlan_id),
+                    "name": name
+                })
+
         return r

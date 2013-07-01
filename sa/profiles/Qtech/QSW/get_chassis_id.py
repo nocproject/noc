@@ -13,6 +13,9 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetChassisID
 
 rx_mac = re.compile(r"^MAC address\s+:\s+(?P<mac>\S+)$", re.MULTILINE)
+rx_mac1 = re.compile(
+    r"^\d+\s+(?P<mac>\S+)\s+STATIC\s+System\s+CPU$", re.MULTILINE)
+
 
 class Script(NOCScript):
     name = "Qtech.QSW.get_chassis_id"
@@ -34,6 +37,9 @@ class Script(NOCScript):
 
         # Fallback to CLI
         match = rx_mac.search(self.cli("show version", cached=True))
+        if not match:
+            v = self.cli("show mac-address-table static")
+            match = rx_mac1.search(v)
         mac = match.group("mac")
         return {
             "first_chassis_mac": mac,

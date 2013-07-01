@@ -19,10 +19,11 @@ class Profile(NOCProfile):
     pattern_password = r"^Password(\(1-16 chars\)|):"
     pattern_more = [
         (r"^\.\.\.\.press ENTER to next line, CTRL_C to break, other key to next page\.\.\.\.", "\n"),
-        (r"^Startup config in flash will be updated, are you sure\(y/n\)\? \[n\]", "y")
+        (r"^Startup config in flash will be updated, are you sure\(y/n\)\? \[n\]", "y"),
+        (r"^ --More-- $", " ")
         ]
     pattern_unpriveleged_prompt = r"^\S+>"
-    pattern_syntax_error = r" % Unrecognized command, and error detected at '\^' marker."
+    pattern_syntax_error = r" % Unrecognized command, and error detected at '\^' marker.|% Ambiguous command:"
 #    command_disable_pager = "terminal datadump"
     command_super = "enable"
     command_enter_config = "configure"

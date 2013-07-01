@@ -20,6 +20,9 @@ class Script(noc.sa.script.Script):
     rx_line = re.compile(
         r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)",
         re.MULTILINE)
+    rx_line1 = re.compile(
+        r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+\S+\s+(?P<interfaces>\S+)",
+        re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
@@ -79,28 +82,39 @@ class Script(noc.sa.script.Script):
 
         # Fallback to CLI
         cmd = "show mac"
+        cmd1 = "show mac-address-table"
         if mac is not None:
             cmd += " %s" % self.profile.convert_mac(mac)
+            cmd1 += " %s" % self.profile.convert_mac(mac)
         if interface is not None and mac is None:
             interface = interface[1:]
             cmd += " interface ethernet %s" % interface
+            cmd1 += " interface ethernet %s" % interface
         if vlan is not None:
             cmd += " vlan %s" % vlan
-        for match in self.rx_line.finditer(self.cli(cmd)):
-                interfaces = match.group("interfaces")
-                if interfaces == '0':
-                    continue
-                elif interfaces[0] != 'e' and interfaces[:3] != 'cpu':
-                    interfaces = 'e' + interfaces
-                r.append({
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [interfaces],
-                    "type": {
-                        "dynamic": "D",
-                        "static": "S",
-                        "permanent": "S",
-                        "self": "S"
-                        }[match.group("type").lower()],
-                    })
+            cmd1 += " vlan %s" % vlan
+        try:
+            v = self.cli(cmd)
+            rx_iter = self.rx_line
+        except:
+            v = self.cli(cmd1)
+            rx_iter = self.rx_line1
+        for match in rx_iter.finditer(v):
+            interfaces = match.group("interfaces")
+            if interfaces == '0':
+                continue
+            elif interfaces[0].lower() != 'e' \
+            and interfaces[:3].lower() != 'cpu':
+                interfaces = 'e' + interfaces
+            r.append({
+                "vlan_id": match.group("vlan_id"),
+                "mac": match.group("mac"),
+                "interfaces": [interfaces],
+                "type": {
+                    "dynamic": "D",
+                    "static": "S",
+                    "permanent": "S",
+                    "self": "S"
+                }[match.group("type").lower()],
+            })
         return r
