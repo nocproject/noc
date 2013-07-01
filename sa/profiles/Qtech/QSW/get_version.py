@@ -72,7 +72,7 @@ class Script(NOCScript):
 
         # Fallback to CLI
         ver = self.cli("show version", cached=True)
-        match = self.re_search(self.rx_plat_ver, ver)
+        match = self.rx_plat_ver.search(ver)
         if match:
             platform = match.group("platform")
             version = match.group("version")
