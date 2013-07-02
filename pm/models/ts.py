@@ -66,3 +66,9 @@ class PMTS(Document):
         :return: timestamp, value
         """
         return self.storage.get_last_measure(self.ts_id)
+
+    def get_last_before(self, timestamp):
+        return self.storage.get_last_before(self.ts_id, timestamp)
+
+    def get_first_after(self, timestamp):
+        return self.storage.get_first_after(self.ts_id, timestamp)
