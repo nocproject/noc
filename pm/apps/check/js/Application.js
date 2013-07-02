@@ -16,6 +16,7 @@ Ext.define("NOC.pm.check.Application", {
     ],
     model: "NOC.pm.check.Model",
     search: true,
+    previewIcon: "icon_chart_curve",
     columns: [
         {
             text: "Name",
@@ -62,6 +63,9 @@ Ext.define("NOC.pm.check.Application", {
 
     initComponent: function() {
         var me = this;
+        //
+        me.graphPanel = Ext.create("NOC.pm.ts.GraphPreview", {app: me});
+        me.ITEM_GRAPH = me.registerItem(me.graphPanel);
         // Passed by get_launch_info
         me.checkForms = me.noc.check_forms;
         me.configPanel = Ext.create("Ext.container.Container", {
@@ -175,5 +179,23 @@ Ext.define("NOC.pm.check.Application", {
         if(oldValues) {
             me.configForm.getForm().setValues(oldValues);
         }
+    },
+    //
+    onPreview: function(record) {
+        var me = this;
+
+        Ext.Ajax.request({
+            url: "/pm/check/" + record.get("id") + "/ts/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                me.showItem(me.ITEM_GRAPH);
+                me.graphPanel.setTS(data);
+            },
+            failure: function() {
+                NOC.error("Failed to get data");
+            }
+        });
     }
 });
