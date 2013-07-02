@@ -36,6 +36,7 @@ class PMStorage(Document):
 
     TIME_SERIES_ID = "s"
     VALUE = "v"
+    TIMESTAMP = "ts_id"
 
     CHUNK = 1000
 
@@ -124,6 +125,44 @@ class PMStorage(Document):
         """
         c = self.get_raw_collection()
         d = list(c.find({self.TIME_SERIES_ID: ts_id}).sort([("_id", -1)]).limit(1))
+        if d:
+            return self.object_id_to_timestamp(d[0]["_id"]), d[0][self.VALUE]
+        else:
+            return None, None
+
+    def get_last_before(self, ts_id, timestamp):
+        """
+        Returns last measure before timestamp
+        :param ts_id:
+        :param timestamp:
+        :return: timestamp, value
+        """
+        c = self.get_raw_collection()
+        d = list(c.find({
+            self.TIME_SERIES_ID: ts_id,
+            self.TIMESTAMP: {
+                "$lt": self.get_object_id(timestamp, 0xFFFFFFFF)
+            }
+        }).sort([("_id", -1)]).limit(1))
+        if d:
+            return self.object_id_to_timestamp(d[0]["_id"]), d[0][self.VALUE]
+        else:
+            return None, None
+
+    def get_first_after(self, ts_id, timestamp):
+        """
+        Returns first measure after timestamp
+        :param ts_id:
+        :param timestamp:
+        :return: timestamp, value
+        """
+        c = self.get_raw_collection()
+        d = list(c.find({
+            self.TIME_SERIES_ID: ts_id,
+            self.TIMESTAMP: {
+                "$gt": self.get_object_id(timestamp, 0)
+            }
+        }).sort([("_id", 1)]).limit(1))
         if d:
             return self.object_id_to_timestamp(d[0]["_id"]), d[0][self.VALUE]
         else:
