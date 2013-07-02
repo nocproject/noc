@@ -43,7 +43,7 @@ Ext.define("NOC.pm.ts.GraphPreview", {
             dataGetters;
         me.tses = tses;
         // Cubism context
-        me.context = cubism.context().step(1000).size(600);
+        me.context = cubism.context().step(5000).size(600);
         // Build data getters closure
         dataGetters = Ext.Object.getKeys(tses)
             .map(Ext.bind(me.getRequest, me));
@@ -74,7 +74,7 @@ Ext.define("NOC.pm.ts.GraphPreview", {
             .insert("div", ".bottom")
             .attr("class", "horizon")
             .call(
-                me.context.horizon().extent([-10, 10])
+                me.context.horizon() //.extent([-10, 10])
             );
         //
         me.context.on("focus", function(i) {
@@ -101,7 +101,9 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                 },
                 success: function(response) {
                     var data = Ext.decode(response.responseText);
-                    callback(null, data);
+                    callback(null, data.map(function(v) {
+                        return v === null ? NaN : v;
+                    }));
                 },
                 failure: function() {}
             });
