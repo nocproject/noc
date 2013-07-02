@@ -15,6 +15,7 @@ from noc.sa.interfaces import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
+from noc.vc.models.vcdomain import VCDomain
 
 
 INTERFACE_TYPES = (IGetInterfaces.returns
@@ -57,6 +58,7 @@ class Interface(Document):
     #
     project = ForeignKeyField(Project)
     state = ForeignKeyField(ResourceState)
+    vc_domain = ForeignKeyField(VCDomain)
 
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)

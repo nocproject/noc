@@ -14,6 +14,7 @@ from noc.sa.interfaces import (StringParameter, ListOfParameter,
     DocumentParameter, ModelParameter)
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
+from noc.vc.models.vcdomain import VCDomain
 from noc.lib.text import split_alnum
 
 
@@ -108,6 +109,8 @@ class InterfaceAppplication(ExtApplication):
                 "project__label": unicode(i.project) if i.project else None,
                 "state": i.state.id if i.state else default_state.id,
                 "state__label": unicode(i.state if i.state else default_state),
+                "vc_domain": i.vc_domain.id if i.vc_domain else None,
+                "vc_domain__label": unicode(i.vc_domain) if i.vc_domain else None,
                 "row_class": get_style(i)
             } for i in
               Interface.objects.filter(managed_object=o.id,
@@ -249,5 +252,19 @@ class InterfaceAppplication(ExtApplication):
             return self.response_not_found()
         if i.project != project:
             i.project = project
+            i.save()
+        return True
+
+    @view(url="^l1/(?P<iface_id>[0-9a-f]{24})/change_vc_domain/$",
+        validate={
+            "vc_domain": ModelParameter(VCDomain, required=False)
+        },
+        method=["POST"], access="profile", api=True)
+    def api_change_project(self, request, iface_id, vc_domain):
+        i = Interface.objects.filter(id=iface_id).first()
+        if not i:
+            return self.response_not_found()
+        if i.vc_domain != vc_domain:
+            i.vc_domain = vc_domain
             i.save()
         return True

@@ -88,6 +88,12 @@ Ext.define("NOC.inv.interface.L1Panel", {
                             onClick: me.onChangeState
                         },
                         {
+                            text: "VC Domain",
+                            dataIndex: "vc_domain",
+                            renderer: NOC.render.ClickableLookup("vc_domain"),
+                            onClick: me.onChangeVCDomain
+                        },
+                        {
                             text: "Protocols",
                             dataIndex: "enabled_protocols"
                         },
@@ -186,6 +192,14 @@ Ext.define("NOC.inv.interface.L1Panel", {
     onChangeProject: function(record) {
         var me = this;
         Ext.create("NOC.inv.interface.ChangeInterfaceProjectForm", {
+            app: me,
+            record: record
+        });
+    },
+    //
+    onChangeVCDomain: function(record) {
+        var me = this;
+        Ext.create("NOC.inv.interface.ChangeInterfaceVCDomainForm", {
             app: me,
             record: record
         });

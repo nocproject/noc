@@ -55,6 +55,14 @@ Ext.define("NOC.inv.interface.L1Store", {
             type: "string"
         },
         {
+            name: "vc_domain",
+            type: "int"
+        },
+        {
+            name: "vc_domain__label",
+            type: "string"
+        },
+        {
             name: "state",
             type: "int"
         },
