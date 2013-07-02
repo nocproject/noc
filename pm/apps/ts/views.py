@@ -9,6 +9,7 @@
 ## Python modules
 import time
 from collections import defaultdict
+import bisect
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.pm.models.ts import PMTS
@@ -80,6 +81,20 @@ class PMTSApplication(ExtDocApplication):
         v = defaultdict(list)
         for ts_id, timestamp, value in t.iwindow(start, stop):
             v[timestamp // step] += [value]
-        # @todo: Interpolate missed values
-        r = [3] * ((stop - start) // step)
-        return r
+        # Interpolate values
+        r = {}
+        for i in v:
+            # Average
+            r[i] = float(reduce(lambda x, y: x + y, v[i])) / len(v[i])
+        result = []
+        e = stop // step
+        i = start // step
+        lv = None
+        while i <= e:
+            if i in r:
+                result += [r[i]]
+                lv = r[i]
+            else:
+                result += [lv]
+            i += 1
+        return result
