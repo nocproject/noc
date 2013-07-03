@@ -83,8 +83,8 @@ Ext.define("NOC.pm.ts.GraphPreview", {
         //
         me.context.on("focus", function(i) {
             d3.selectAll(".value")
-                .style("right",
-                    i == null ? null : me.context.size() - i + "px"
+                .style("left",
+                    i === null ? null : Math.min(i + 4, me.context.size() - 48) + "px"
                 );
         });
     },
