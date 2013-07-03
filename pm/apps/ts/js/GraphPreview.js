@@ -16,6 +16,7 @@ Ext.define("NOC.pm.ts.GraphPreview", {
         }
     ],
     autoScroll: true,
+    graphHeight: 120,
 
     initComponent: function() {
         var me = this;
@@ -30,6 +31,19 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                             iconCls: "icon_arrow_undo",
                             scope: me,
                             handler: me.onClose
+                        },
+                        "|",
+                        {
+                            iconCls: "icon_arrow_in",
+                            tooltip: "Shorter charts",
+                            scope: me,
+                            handler: me.onShorter
+                        },
+                        {
+                            iconCls: "icon_arrow_out",
+                            tooltip: "Taller charts",
+                            scope: me,
+                            handler: me.onTaller
                         }
                     ]
                 }
@@ -45,19 +59,20 @@ Ext.define("NOC.pm.ts.GraphPreview", {
         me.tses = tses;
         // Cubism context
         me.context = cubism.context().step(5000).size(600);
+        me.graphContainer = d3.select(cId);
         // Build data getters closure
         dataGetters = Ext.Object.getKeys(tses)
             .map(Ext.bind(me.getRequest, me));
 
-        d3.select(cId).selectAll(".horizon").call(function(div) {
+        me.graphContainer.selectAll(".horizon").call(function(div) {
             // Horizon bar
             div.data(dataGetters)
             .enter()
             .insert("div", ".bottom-horizon")
             .attr("class", "horizon")
             .call(
-                me.context.horizon() //.extent([-10, 10])
-                .height(120)
+                me.context.horizon()
+                .height(me.graphHeight)
             );
 
             // Axis
@@ -87,6 +102,7 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                     i === null ? null : Math.min(i + 4, me.context.size() - 48) + "px"
                 );
         });
+        me.setGraphHeight(25);
     },
 
     getRequest: function(ts) {
@@ -118,5 +134,21 @@ Ext.define("NOC.pm.ts.GraphPreview", {
         var me = this;
         me.context.stop();
         me.app.showGrid();
+    },
+    //
+    setGraphHeight: function(h) {
+        var me = this;
+        me.graphHeight = h;
+        me.context.horizon().height(h);
+    },
+    //
+    onShorter: function() {
+        var me = this;
+        me.setGraphHeight(Math.round(me.graphHeight * 0.618));
+    },
+    //
+    onTaller: function() {
+        var me = this;
+        me.setGraphHeight(Math.round(me.graphHeight * 1.618));
     }
 });
