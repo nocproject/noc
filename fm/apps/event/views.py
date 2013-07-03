@@ -18,6 +18,7 @@ from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models import get_alarm, get_event
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import ModelParameter, UnicodeParameter
+from noc.lib.escape import json_escape
 
 
 class EventApplication(ExtApplication):
@@ -106,7 +107,7 @@ class EventApplication(ExtApplication):
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/", method=["GET"], api=True,
+    @view(url=r"^(?P<id>[a-z0-9]{24})/$", method=["GET"], api=True,
           access="launch")
     def api_event(self, request, id):
         event = get_event(id)
@@ -155,3 +156,23 @@ class EventApplication(ExtApplication):
             self.response_not_found()
         event.log_message("%s: %s" % (request.user.username, msg))
         return True
+
+    @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True,
+          access="launch")
+    def api_json(self, request, id):
+        event = get_event(id)
+        if not event:
+            self.response_not_found()
+        r = ["["]
+        r += ["    {"]
+        r += ["        \"profile\": \"%s\"," % json_escape(event.managed_object.profile_name)]
+        r += ["        \"raw_vars\": {"]
+        rr = []
+        for k in event.raw_vars:
+            rr += ["            \"%s\": \"%s\"" % (
+                json_escape(k), json_escape(str(event.raw_vars[k])))]
+        r += [",\n".join(rr)]
+        r += ["        }"]
+        r += ["    }"]
+        r += ["]"]
+        return "\n".join(r)

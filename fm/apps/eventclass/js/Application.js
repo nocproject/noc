@@ -31,35 +31,64 @@ Ext.define("NOC.fm.eventclass.Application", {
             flex: 1
         }
     ],
-    fields: [
-        {
-            name: "name",
-            xtype: "textfield",
-            fieldLabel: "Name",
-            allowBlank: false
-        },
-        {
-            name: "is_builtin",
-            xtype: "checkboxfield",
-            boxLabel: "Builtin"
-        },
-        {
-            name: "description",
-            xtype: "textarea",
-            fieldLabel: "Description"
-        }
-    ],
     filters: [
         {
             title: "By Builtin",
             name: "is_builtin",
+            ftype: "boolean"
+        },
+        {
+            title: "By Link Event",
+            name: "link_event",
             ftype: "boolean"
         }
     ],
     //
     initComponent: function() {
         var me = this;
+
+        me.actionStore = Ext.create("Ext.data.Store", {
+            fields: ["id", "label"],
+            data: [
+                {id: "D", label: "Drop"},
+                {id: "L", label: "Log"},
+                {id: "A", label: "Archive"}
+            ]
+        });
         Ext.apply(me, {
+            fields: [
+                {
+                    name: "name",
+                    xtype: "textfield",
+                    fieldLabel: "Name",
+                    allowBlank: false
+                },
+                {
+                    name: "is_builtin",
+                    xtype: "checkboxfield",
+                    boxLabel: "Builtin"
+                },
+                {
+                    name: "description",
+                    xtype: "textarea",
+                    fieldLabel: "Description"
+                },
+                {
+                    name: "action",
+                    xtype: "combobox",
+                    fieldLabel: "Action",
+                    allowBlank: false,
+                    store: me.actionStore,
+                    queryMode: "local",
+                    displayField: "label",
+                    valueField: "id"
+                },
+                {
+                    name: "link_event",
+                    xtype: "checkboxfield",
+                    boxLabel: "Link Event"
+                }
+            ],
             formToolbar: [
                 {
                     text: "JSON",
