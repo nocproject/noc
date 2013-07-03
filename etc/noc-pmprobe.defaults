@@ -26,3 +26,17 @@ name = default
 [update]
 name = probe
 enabled = false
+
+[thread_pool]
+# Allocate threads on start
+start_threads = 5
+# Maximum amount of threads
+max_threads = 100
+# Keep spare idle threads
+min_spare = 5
+# Limit amount of spare idle threads
+# Must be greater than min_spare
+max_spare = 10
+# Task queue backlog
+# max_threads by default
+backlog = 0
