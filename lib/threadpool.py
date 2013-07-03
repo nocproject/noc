@@ -9,7 +9,7 @@
 ## Python modules
 from __future__ import with_statement
 from Queue import Queue, Empty
-from threading import Thread, Lock
+from threading import Thread, Lock, Event
 import time
 import ctypes
 ## NOC modules
@@ -25,44 +25,47 @@ class Worker(Thread):
         super(Worker, self).__init__(*args, **kwargs)
         self.pool = pool
         self.queue = queue
-        self.to_shutdown = False
         self.title = "Starting"
         self.start_time = 0
         self.cancelled = False
         self.can_cancel = False
+        self.is_idle = True
 
     def run(self):
-        while not self.to_shutdown:
+        while True:
             # Get task from queue
             try:
-                title, f, args, kwargs = self.queue.get(block=True, timeout=1)
+                task = self.queue.get(block=True, timeout=1)
             except Empty:
                 continue
+            if task is None:
+                break  # Shutdown
+            title, f, args, kwargs = task
             # Run job
-            self.pool.change_worker_status(self, True)
             self.title = title
             self.start_time = time.time()
             try:
                 self.can_cancel = True
-                r = f(*args, **kwargs)
+                self.is_idle = False
+                f(*args, **kwargs)
                 self.can_cancel = False
+            except CancelledError:
+                break
             except:
                 self.can_cancel = False
                 if not self.cancelled:
                     error_report()
-            if not self.to_shutdown:
-                self.pool.change_worker_status(self, False)
-        self.pool.on_worker_complete(self)
-
-    def shutdown(self):
-        self.to_shutdown = True
+            self.queue.task_done()
+            self.is_idle = True
+        # Shutdown
+        self.queue.task_done()
+        self.pool.thread_done(self)
 
     def cancel(self):
         """
         Forcefully kill thread
         :return:
         """
-        self.shutdown()
         self.cancelled = True
         if not self.isAlive():
             return  # Already dead
@@ -97,120 +100,86 @@ class Pool(object):
         self.max_spare = max_spare
         self.backlog = backlog
         self.t_lock = Lock()
-        self.idle_threads = set()
-        self.active_threads = set()
-        self.stopping_threads = set()
+        self.threads = set()
         self.queue = Queue(backlog)
         self.stopping = False
+        self.stopped = Event()
         self.reschedule_threads()
 
     def reschedule_threads(self):
-        start = []
-        stop = []
+        if self.stopping:
+            return
         with self.t_lock:
-            # Run additional threads if below min_spare
-            while (not self.stopping and
-                   (len(self.idle_threads) +
-                    len(self.active_threads) +
-                    len(self.stopping_threads) < self.max_threads) and
-                   len(self.idle_threads) < self.min_spare):
+            # Idle threads
+            n_idle = sum(1 for t in self.threads
+                         if t.is_alive() and t.is_idle)
+            # Total threads
+            n = len(self.threads)
+            # Run spare threads
+            while n_idle < self.min_spare and n < self.max_threads:
                 w = Worker(self, self.queue)
-                self.idle_threads.add(w)
-                start += [w]
-            # Stop excessive threads
-            while len(self.idle_threads) > self.max_spare:
-                w = self.idle_threads.pop()
-                self.stopping_threads.add(w)
-                stop += [w]
-        # Shutdown threads
-        for w in stop:
-            w.shutdown()
-        # Run threads
-        for w in start:
-            w.start()
+                self.threads.add(w)
+                n_idle += 1
+                n += 1
+                w.start()
+            # Shutdown spare threads
+            while n_idle > self.max_spare:
+                self.queue.put(None)
+                n_idle -= 1
+                n -= 1
 
-    def change_worker_status(self, worker, status):
-        """
-        :param worker:
-        :param status:
-        :return:
-        """
+    def thread_done(self, t):
         with self.t_lock:
-            if status:
-                # Worker became active
-                self.idle_threads.remove(worker)
-                self.active_threads.add(worker)
-            else:
-                # Worker became idle
-                self.active_threads.remove(worker)
-                self.idle_threads.add(worker)
-        self.reschedule_threads()
-
-    def on_worker_complete(self, worker):
-        """
-        :param worker:
-        :return:
-        """
-        with self.t_lock:
-            if worker in self.idle_threads:
-                self.idle_threads.remove(worker)
-            if worker in self.active_threads:
-                self.active_threads.remove(worker)
-            if worker in self.stopping_threads:
-                self.stopping_threads.remove(worker)
+            if t in self.threads:
+                self.threads.remove(t)
+            if self.stopping and not len(self.threads):
+                self.stopped.set()
         self.reschedule_threads()
 
     def get_status(self):
         s = []
         t = time.time()
         with self.t_lock:
-            for w in self.active_threads:
-                s += [{
-                    "id": w.ident,
-                    "status": "ACTIVE",
-                    "title": w.title,
-                    "start": w.start_time,
-                    "duration": t - w.start_time
-                }]
-            for w in self.idle_threads:
-                s += [{
-                    "id": w.ident,
-                    "status": "IDLE"
-                }]
-            for w in self.stopping_threads:
-                s += [{
-                    "id": w.ident,
-                    "status": "STOP"
-                }]
+            for w in self.threads:
+                if w.is_idle:
+                    s += [{
+                        "id": w.ident,
+                        "status": "IDLE"
+                    }]
+                else:
+                    s += [{
+                        "id": w.ident,
+                        "status": "RUN",
+                        "title": w.title,
+                        "start": w.start_time,
+                        "duration": t - w.start_time
+                    }]
         return s
 
     def stop(self, timeout=None):
+        self.stopping = True
         with self.t_lock:
-            self.stopping = True
-            for w in self.idle_threads:
-                w.shutdown()
-            for w in self.active_threads:
-                w.shutdown()
-            self.stopping_threads |= self.idle_threads
-            self.stopping_threads |= self.active_threads
-            self.stopping_threads = set()
-            self.active_threads = set()
-        # Wait for completion
-        t0 = time.time()
-        while self.stopping_threads:
-            time.sleep(1)
-            if self.timeout is not None and time.time() - t0 > timeout:
-                break
-        # Cancel forcefully
-        for i in range(3):
-            with self.t_lock:
-                if not self.stopping_threads:
-                    break
-                for w in self.stopping_threads:
-                    w.cancel()
-            time.sleep(3)
+            n = len(self.threads)
+            if not n:
+                return  # Stopped
+            for i in range(n):
+                self.queue.put(None)  # Send shutdown signals
+        # Wait 3 seconds to clean stop
+        self.stopped.wait(3)
+        if self.stopped.is_set():
+            return
+        # Forcefully cancel
+        with self.t_lock:
+            for t in self.threads:
+                if t.is_alive():
+                    t.cancel()
+        time.sleep(3)
 
     def run(self, title, target, args=(), kwargs={}):
+        if self.stopping:
+            return
+        # @todo: Limit rescheduling
+        self.reschedule_threads()
         # Block, timeout
         self.queue.put((title, target, args, kwargs))
 
