@@ -4,7 +4,7 @@
 
 .axis {
   font: 10px sans-serif;
-  position: fixed;
+  position: relative;
   pointer-events: none;
   z-index: 2;
 }
@@ -39,7 +39,6 @@
   background-image: -webkit-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
   background-image: -ms-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
   bottom: 0px;
-  padding: 24px 0 0 0;
 }
 
 .horizon {
