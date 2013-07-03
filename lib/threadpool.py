@@ -85,7 +85,7 @@ class Worker(Thread):
 
 class Pool(object):
     def __init__(self, start_threads=1, max_threads=10,
-                 min_spare=1, max_spare=1, backlog=1):
+                 min_spare=1, max_spare=1, backlog=0):
         if min_spare > max_spare:
             raise ValueError("min_spare (%d) must not be greater"
                              " than max_spare (%d)" % (min_spare,
@@ -98,7 +98,7 @@ class Pool(object):
         self.max_threads = max_threads
         self.min_spare = min_spare
         self.max_spare = max_spare
-        self.backlog = backlog
+        self.backlog = backlog if backlog else max_threads
         self.t_lock = Lock()
         self.threads = set()
         self.queue = Queue(backlog)
@@ -156,7 +156,7 @@ class Pool(object):
                     }]
         return s
 
-    def stop(self, timeout=None):
+    def stop(self, timeout=3):
         self.stopping = True
         with self.t_lock:
             n = len(self.threads)
@@ -164,8 +164,8 @@ class Pool(object):
                 return  # Stopped
             for i in range(n):
                 self.queue.put(None)  # Send shutdown signals
-        # Wait 3 seconds to clean stop
-        self.stopped.wait(3)
+        # Wait for clean stop
+        self.stopped.wait(timeout)
         if self.stopped.is_set():
             return
         # Forcefully cancel
@@ -173,7 +173,7 @@ class Pool(object):
             for t in self.threads:
                 if t.is_alive():
                     t.cancel()
-        time.sleep(3)
+        time.sleep(timeout)
 
     def run(self, title, target, args=(), kwargs={}):
         if self.stopping:
