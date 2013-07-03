@@ -25,7 +25,6 @@ Ext.define("NOC.core.ModelApplication", {
     actions: undefined,
     idField: "id",
     previewIcon: "icon_magnifier",
-    _registeredItems: null,
     preview: null,
     //
     initComponent: function() {
@@ -495,10 +494,9 @@ Ext.define("NOC.core.ModelApplication", {
         me.ITEM_FORM = me.registerItem(formPanel);
         //
         Ext.apply(me, {
-            items: me._registeredItems,
+            items: me.getRegisteredItems(),
             activeItem: me.ITEM_GRID
         });
-        me._registeredItems = null;
         // Initialize component
         me.callParent(arguments);
         me.currentRecord = null;
@@ -527,23 +525,6 @@ Ext.define("NOC.core.ModelApplication", {
         }
         // Finally, load the store
         me.store.load();
-    },
-    // Register new item and return id
-    registerItem: function(item) {
-        var me = this,
-            items = me._registeredItems || [],
-            itemId = items.push(item) - 1;
-        me._registeredItems = items;
-        return itemId;
-    },
-    //
-    showItem: function(index) {
-        var me = this;
-        if(index === null || index === undefined) {
-            return undefined;
-        }
-        me.getLayout().setActiveItem(index);
-        return me.items.items[index];
     },
     // Show grid
     showGrid: function() {

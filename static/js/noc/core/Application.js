@@ -23,6 +23,7 @@ Ext.define("NOC.core.Application", {
         }
         me.appTitle = options.title;
         me.noc = options.noc;
+        me._registeredItems = [];
         me.callParent(options);
     },
     hasPermission: function(name) {
@@ -38,5 +39,27 @@ Ext.define("NOC.core.Application", {
             }
         });
         return items;
+    },
+    // Register new item and return id
+    registerItem: function(item) {
+        var me = this,
+            items = me._registeredItems,
+            itemId = items.push(item) - 1;
+        me._registeredItems = items;
+        return itemId;
+    },
+    //
+    showItem: function(index) {
+        var me = this;
+        if(index === null || index === undefined) {
+            return undefined;
+        }
+        me.getLayout().setActiveItem(index);
+        return me.items.items[index];
+    },
+    //
+    getRegisteredItems: function() {
+        var me = this;
+        return me._registeredItems;
     }
 });
