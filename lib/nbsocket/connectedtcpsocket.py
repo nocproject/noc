@@ -46,7 +46,8 @@ class ConnectedTCPSocket(TCPSocket):
             self.socket.bind((self.local_address, 0))
         self.debug("Connecting %s:%s" % (self.address, self.port))
         e = self.socket.connect_ex((self.address, self.port))
-        if e in (ETIMEDOUT, ECONNREFUSED, ENETUNREACH):
+        if e in (ETIMEDOUT, ECONNREFUSED, ENETUNREACH,
+                 EHOSTUNREACH, ENETDOWN):
             self.on_conn_refused()
             self.close()
             return
