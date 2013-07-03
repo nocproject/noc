@@ -15,6 +15,7 @@ Ext.define("NOC.pm.ts.GraphPreview", {
             xtype: "container"
         }
     ],
+    autoScroll: true,
 
     initComponent: function() {
         var me = this;
@@ -47,10 +48,20 @@ Ext.define("NOC.pm.ts.GraphPreview", {
         // Build data getters closure
         dataGetters = Ext.Object.getKeys(tses)
             .map(Ext.bind(me.getRequest, me));
-        // Axis
-        d3.select(cId)
-            .data(["top", "bottom"])
+
+        d3.select(cId).selectAll(".horizon").call(function(div) {
+            // Horizon bar
+            div.data(dataGetters)
             .enter()
+            .insert("div", ".bottom-horizon")
+            .attr("class", "horizon")
+            .call(
+                me.context.horizon() //.extent([-10, 10])
+                .height(120)
+            );
+
+            // Axis
+            div.data(["bottom-horizon"]).enter()
             .append("div")
             .attr("class", function(d) {
                 return d + " axis";
@@ -62,20 +73,13 @@ Ext.define("NOC.pm.ts.GraphPreview", {
                         .orient(d)
                 );
             });
-        // Rule
-        d3.select("body")
+
+            // Axis
+            div.data(dataGetters)
             .append("div")
             .attr("class", "rule")
             .call(me.context.rule());
-        // Horizon bar
-        d3.select(cId).selectAll(".horizon")
-            .data(dataGetters)
-            .enter()
-            .insert("div", ".bottom")
-            .attr("class", "horizon")
-            .call(
-                me.context.horizon() //.extent([-10, 10])
-            );
+        });
         //
         me.context.on("focus", function(i) {
             d3.selectAll(".value")
