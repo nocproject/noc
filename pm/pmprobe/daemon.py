@@ -44,7 +44,13 @@ class PMProbeDaemon(Daemon):
 
     def run(self):
         # Prepare thread pool
-        self.thread_pool = Pool()
+        self.thread_pool = Pool(
+            start_threads=self.config.getint("thread_pool", "start_threads"),
+            min_spare=self.config.getint("thread_pool", "min_spare"),
+            max_spare=self.config.getint("thread_pool", "max_spare"),
+            max_threads=self.config.getint("thread_pool", "max_threads"),
+            backlog=self.config.getint("thread_pool", "backlog")
+        )
         # Start queue runner
         self.queue_runner_thread = Thread(target=self.queue_runner)
         self.queue_runner_thread.daemon = True
