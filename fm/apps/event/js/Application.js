@@ -182,15 +182,18 @@ Ext.define("NOC.fm.event.Application", {
             app: me
         });
         //
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: "/fm/event/{{id}}/json/",
+            previewName: "Event: {{id}}"
+        });
+        me.ITEM_GRID = me.registerItem(me.gridPanel);
+        me.ITEM_FORM = me.registerItem(me.eventPanel);
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
         Ext.apply(me, {
-            items: [
-                me.gridPanel,
-                me.eventPanel
-            ]
+            items: me.getRegisteredItems()
         });
         me.callParent();
-        //
-        me.reloadStore();
         //
         me.startPolling();
     },
@@ -199,7 +202,7 @@ Ext.define("NOC.fm.event.Application", {
         var me = this;
         if(me.currentQuery)
             me.store.setFilterParams(me.currentQuery);
-        me.store.load();
+        me.store.loadPage(me.store.currentPage);
     },
     //
     onSelectType: function(combo, records, opts) {
@@ -272,5 +275,10 @@ Ext.define("NOC.fm.event.Application", {
     stopPolling: function() {
         var me = this;
         Ext.TaskManager.stop(me.pollingTaskId);
+    },
+    //
+    showForm: function() {
+        var me = this;
+        me.showItem(me.ITEM_FORM);
     }
 });

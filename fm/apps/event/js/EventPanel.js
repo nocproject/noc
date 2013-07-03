@@ -152,6 +152,13 @@ Ext.define("NOC.fm.event.EventPanel", {
                             iconCls: "icon_arrow_undo",
                             scope: me,
                             handler: me.onClose
+                        },
+                        "|",
+                        {
+                            text: "JSON",
+                            iconCls: "icon_page",
+                            scope: me,
+                            handler: me.onJSON
                         }
                     ]
                 }
@@ -161,6 +168,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 me.tabPanel
             ]
         });
+
         me.callParent();
     },
     //
@@ -266,6 +274,14 @@ Ext.define("NOC.fm.event.EventPanel", {
             failure: function() {
                 NOC.error("Failed to post message");
             }
+        });
+    },
+    //
+    onJSON: function() {
+        var me = this;
+        me.app.showItem(me.app.ITEM_JSON);
+        me.app.jsonPanel.preview({
+            data: me.data
         });
     }
 });
