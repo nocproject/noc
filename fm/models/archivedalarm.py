@@ -32,6 +32,9 @@ class ArchivedAlarm(nosql.Document):
     severity = nosql.IntField(required=True)
     vars = nosql.DictField()
     log = nosql.ListField(nosql.EmbeddedDocumentField(AlarmLog))
+    #
+    opening_event = nosql.ObjectIdField(required=False)
+    closing_event = nosql.ObjectIdField(required=False)
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = nosql.ObjectIdField(required=False)
