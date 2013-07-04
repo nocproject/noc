@@ -219,7 +219,7 @@ class Correlator(Daemon):
             ]
         )
         a.save()
-        a.contribute_event(e)
+        a.contribute_event(e, open=True)
         logging.debug("%s: Event %s(%s) raises alarm %s (%s): %r" % (
             r.u_name, str(e.id), e.event_class.name,
             str(a.id), r.alarm_class.name, a.vars))
@@ -256,6 +256,7 @@ class Correlator(Daemon):
                 logging.debug("%s: Event %s(%s) clears alarm %s(%s)" % (
                     r.u_name, str(e.id), e.event_class.name,
                     str(a.id), a.alarm_class.name))
+                a.contribute_event(e, close=True)
                 a.clear_alarm("Cleared by disposition rule '%s'" % r.u_name)
 
     def get_delayed_event(self, r, e):

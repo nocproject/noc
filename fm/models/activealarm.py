@@ -40,6 +40,8 @@ class ActiveAlarm(nosql.Document):
     log = nosql.ListField(nosql.EmbeddedDocumentField(AlarmLog))
     # Responsible person
     owner = nosql.ForeignKeyField(User, required=False)
+    #
+    opening_event = nosql.ObjectIdField(required=False)
     # List of subscribers
     subscribers = nosql.ListField(nosql.ForeignKeyField(User))
     #
@@ -85,7 +87,7 @@ class ActiveAlarm(nosql.Document):
                      message=message)]
         self.save()
 
-    def contribute_event(self, e):
+    def contribute_event(self, e, open=False, close=False):
         # Update timestamp
         if e.timestamp < self.timestamp:
             self.timestamp = e.timestamp
@@ -95,6 +97,12 @@ class ActiveAlarm(nosql.Document):
         if self.id not in e.alarms:
             e.alarms += [self.id]
             e.save()
+        if open:
+            self.opening_event = e.id
+        if close:
+            self.closing_event = e.id
+        if open or close:
+            self.save()
 
     def clear_alarm(self, message):
         ts = datetime.datetime.now()
@@ -108,7 +116,8 @@ class ActiveAlarm(nosql.Document):
                           severity=self.severity,
                           vars=self.vars,
                           log=log,
-                          root=self.root
+                          root=self.root,
+                          opening_event=self.opening_event
                           )
         a.save()
         # @todo: Clear related correlator jobs
