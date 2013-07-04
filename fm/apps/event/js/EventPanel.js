@@ -67,15 +67,18 @@ Ext.define("NOC.fm.event.EventPanel", {
         });
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
-            title: "Overview"
+            title: "Overview",
+            autoScroll: true
         });
 
         me.helpPanel = Ext.create("Ext.panel.Panel", {
-            title: "Help"
+            title: "Help",
+            autoScroll: true
         });
 
         me.dataPanel = Ext.create("Ext.panel.Panel", {
-            title: "Data"
+            title: "Data",
+            autoScroll: true
         });
 
         me.logStore = Ext.create("Ext.data.Store", {
@@ -103,6 +106,7 @@ Ext.define("NOC.fm.event.EventPanel", {
         me.logPanel = Ext.create("Ext.grid.Panel", {
             title: "Log",
             store: me.logStore,
+            autoScroll: true,
             columns: [
                 {
                     dataIndex: "timestamp",
@@ -151,6 +155,7 @@ Ext.define("NOC.fm.event.EventPanel", {
         me.alarmsPanel = Ext.create("Ext.grid.Panel", {
             title: "Alarms",
             store: me.alarmsStore,
+            autoScroll: true,
             columns: [
                 {
                     dataIndex: "id",
