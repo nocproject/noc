@@ -136,14 +136,73 @@ Ext.define("NOC.fm.event.EventPanel", {
                 }
             ]
         });
-
+        // Alarms
+        me.alarmsStore = Ext.create("Ext.data.Store", {
+            fields: [
+                {
+                    name: "timestamp",
+                    type: "date"
+                },
+                "id", "status", "role", "alarm_class",
+                "alarm_class__label", "subject"
+            ],
+            data: []
+        });
+        me.alarmsPanel = Ext.create("Ext.grid.Panel", {
+            title: "Alarms",
+            store: me.alarmsStore,
+            columns: [
+                {
+                    dataIndex: "id",
+                    text: "ID",
+                    width: 200
+                },
+                {
+                    dataIndex: "timestamp",
+                    text: "Time",
+                    renderer: NOC.render.DateTime,
+                    width: 120
+                },
+                {
+                    dataIndex: "role",
+                    text: "Event Role",
+                    renderer: NOC.render.Choices({
+                        O: "Opening",
+                        C: "Closing"
+                    }),
+                    width: 70
+                },
+                {
+                    dataIndex: "status",
+                    text: "Alrm Status",
+                    renderer: NOC.render.Choices({
+                        A: "Active",
+                        C: "Closed"
+                    }),
+                    width: 70
+                },
+                {
+                    dataIndex: "alarm_class",
+                    text: "Class",
+                    renderer: NOC.render.Lookup("alarm_class"),
+                    width: 250
+                },
+                {
+                    dataIndex: "subject",
+                    text: "Subject",
+                    flex: 1
+                }
+            ]
+        });
+        //
         me.tabPanel = Ext.create("Ext.tab.Panel", {
             flex: 1,
             items: [
                 me.overviewPanel,
                 me.helpPanel,
                 me.dataPanel,
-                me.logPanel
+                me.logPanel,
+                me.alarmsPanel
             ]
         });
 
@@ -258,6 +317,8 @@ Ext.define("NOC.fm.event.EventPanel", {
                 || (data.resolved_vars && data.resolved_vars.length),
             data);
         me.logStore.loadData(data.log || []);
+        me.alarmsPanel.setDisabled(!data.alarms || !data.alarms.length);
+        me.alarmsStore.loadData(data.alarms || []);
         //
         me.reclassifyButton.setDisabled(
             data.status == "N" || data.status === "F"
