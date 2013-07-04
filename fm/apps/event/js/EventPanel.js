@@ -153,6 +153,12 @@ Ext.define("NOC.fm.event.EventPanel", {
                             scope: me,
                             handler: me.onClose
                         },
+                        {
+                            text: "Refresh",
+                            iconCls: Ext.baseCSSPrefix + "tbar-loading",
+                            scope: me,
+                            handler: me.onRefresh
+                        },
                         "|",
                         {
                             text: "JSON",
@@ -283,5 +289,10 @@ Ext.define("NOC.fm.event.EventPanel", {
         me.app.jsonPanel.preview({
             data: me.data
         });
+    },
+    //
+    onRefresh: function() {
+        var me = this;
+        me.showEvent(me.data.id);
     }
 });
