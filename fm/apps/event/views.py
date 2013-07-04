@@ -146,6 +146,29 @@ class EventApplication(ExtApplication):
             ]
         #
         d.update(dd)
+        # Get alarms
+        if event.status in ("A", "S"):
+            alarms = []
+            for a_id in event.alarms:
+                a = get_alarm(a_id)
+                if not a:
+                    continue
+                if a.opening_event == event.id:
+                    role = "O"
+                elif a.closing_event == event.id:
+                    role = "C"
+                else:
+                    role = ""
+                alarms += [{
+                    "id": str(a.id),
+                    "status": a.status,
+                    "alarm_class": str(a.alarm_class.id),
+                    "alarm_class__label": a.alarm_class.name,
+                    "subject": a.get_translated_subject(lang),
+                    "role": role,
+                    "timestamp": a.timestamp.isoformat()
+                }]
+            d["alarms"] = alarms
         return d
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/post/", method=["POST"], api=True,
