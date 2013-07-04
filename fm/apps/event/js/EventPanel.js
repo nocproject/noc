@@ -20,7 +20,14 @@ Ext.define("NOC.fm.event.EventPanel", {
         var me = this,
             lw = 50;
 
-        me.eventField = Ext.create("Ext.form.DisplayField", {
+        me.eventIdField = Ext.create("Ext.form.DisplayField", {
+            fieldLabel: "ID",
+            labelWidth: 20,
+            width: 190,
+            labelClsExtra: "noc-label-required"
+        });
+
+        me.subjectField = Ext.create("Ext.form.DisplayField", {
             fieldLabel: "Event",
             labelWidth: lw
         });
@@ -52,7 +59,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 labelClsExtra: "noc-label-required"
             },
             items: [
-                me.eventField,
+                me.subjectField,
                 me.objectField,
                 me.eventClassField,
                 me.timeField
@@ -159,13 +166,15 @@ Ext.define("NOC.fm.event.EventPanel", {
                             scope: me,
                             handler: me.onRefresh
                         },
-                        "|",
+                        "-",
                         {
                             text: "JSON",
                             iconCls: "icon_page",
                             scope: me,
                             handler: me.onJSON
-                        }
+                        },
+                        "->",
+                        me.eventIdField
                     ]
                 }
             ],
@@ -208,7 +217,9 @@ Ext.define("NOC.fm.event.EventPanel", {
             o = [];
         me.data = data;
         //
-        me.eventField.setValue("" + me.data.id + "; " + me.data.subject);
+        me.eventIdField.setValue(me.data.id);
+        //
+        me.subjectField.setValue(me.data.subject);
         // Managed object details
         if(me.data.managed_object_address) {
             o.push(me.data.managed_object_address);
