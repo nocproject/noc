@@ -42,6 +42,7 @@ class ActiveAlarm(nosql.Document):
     owner = nosql.ForeignKeyField(User, required=False)
     #
     opening_event = nosql.ObjectIdField(required=False)
+    closing_event = nosql.ObjectIdField(required=False)
     # List of subscribers
     subscribers = nosql.ListField(nosql.ForeignKeyField(User))
     #
@@ -117,7 +118,8 @@ class ActiveAlarm(nosql.Document):
                           vars=self.vars,
                           log=log,
                           root=self.root,
-                          opening_event=self.opening_event
+                          opening_event=self.opening_event,
+                          closing_event=self.closing_event
                           )
         a.save()
         # @todo: Clear related correlator jobs
