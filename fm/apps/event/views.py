@@ -83,8 +83,8 @@ class EventApplication(ExtApplication):
             "status": o.status,
             "managed_object": o.managed_object.id,
             "managed_object__label": o.managed_object.name,
-            "event_class": str(o.event_class.id),
-            "event_class__label": o.event_class.name,
+            "event_class": str(o.event_class.id) if o.status in ("A", "S") else None,
+            "event_class__label": o.event_class.name if o.status in ("A", "S") else None,
             "timestamp": o.timestamp.isoformat(),
             "subject": subject,
             "repeats": repeats,
@@ -127,7 +127,7 @@ class EventApplication(ExtApplication):
             dd["recommended_actions"] = event.get_translated_recommended_actions(lang)
             dd["vars"] = sorted(event.vars.items())
             dd["resolved_vars"] = sorted(event.resolved_vars.items())
-            dd["raw_vars"] = sorted(event.raw_vars.items())
+        dd["raw_vars"] = sorted(event.raw_vars.items())
         # Managed object properties
         mo = event.managed_object
         d["managed_object_address"] = mo.address
@@ -176,3 +176,17 @@ class EventApplication(ExtApplication):
         r += ["    }"]
         r += ["]"]
         return "\n".join(r)
+
+    @view(url=r"^(?P<id>[a-z0-9]{24})/reclassify/$",
+          method=["POST"], api=True, access="launch")
+    def api_reclassify(self, request, id):
+        event = get_event(id)
+        if not event:
+            self.response_not_found()
+        if event.status == "N":
+            return False
+        event.mark_as_new(
+            "Event reclassification has been requested "
+            "by user %s" % request.user.username
+        )
+        return True

@@ -147,6 +147,12 @@ Ext.define("NOC.fm.event.EventPanel", {
             ]
         });
 
+        me.reclassifyButton = Ext.create("Ext.button.Button", {
+            text: "Reclassify",
+            iconCls: "icon_arrow_rotate_clockwise",
+            scope: me,
+            handler: me.onReclassify
+        });
 
         Ext.apply(me, {
             dockedItems: [
@@ -166,6 +172,8 @@ Ext.define("NOC.fm.event.EventPanel", {
                             scope: me,
                             handler: me.onRefresh
                         },
+                        "-",
+                        me.reclassifyButton,
                         "-",
                         {
                             text: "JSON",
@@ -219,7 +227,12 @@ Ext.define("NOC.fm.event.EventPanel", {
         //
         me.eventIdField.setValue(me.data.id);
         //
-        me.subjectField.setValue(me.data.subject);
+        me.subjectField.setValue(
+            Ext.String.format("{0} [{1}]",
+                me.data.subject ? me.data.subject : "Unclassified event",
+                me.app.STATUS_MAP[me.data.status]
+            )
+        );
         // Managed object details
         if(me.data.managed_object_address) {
             o.push(me.data.managed_object_address);
@@ -233,17 +246,23 @@ Ext.define("NOC.fm.event.EventPanel", {
         }
         me.objectField.setValue(me.data.managed_object__label + " (" + o.join(", ") + ")");
         me.eventClassField.setValue(me.data.event_class__label);
-        me.timeField.setValue(
-            me.data.timestamp + " [" + NOC.render.Choices(me.app.STATUS_MAP)(me.data.status) + "]"
-        );
+        me.timeField.setValue(me.data.timestamp);
         //
         me.updatePanel(me.overviewPanel, me.app.templates.Overview,
             data.subject, data);
         me.updatePanel(me.helpPanel, me.app.templates.Help,
             data.symptoms, data);
         me.updatePanel(me.dataPanel, me.app.templates.Data,
-            data.vars.length || data.raw_vars.length || data.resolved_vars.length, data);
+            (data.vars && data.vars.length)
+                || (data.raw_vars && data.raw_vars.length)
+                || (data.resolved_vars && data.resolved_vars.length),
+            data);
         me.logStore.loadData(data.log || []);
+        //
+        me.reclassifyButton.setDisabled(
+            data.status == "N" || data.status === "F"
+        );
+        //
         if(oldId !== me.data.id) {
             me.messageField.setValue("");
             me.tabPanel.setActiveTab(0);
@@ -305,5 +324,20 @@ Ext.define("NOC.fm.event.EventPanel", {
     onRefresh: function() {
         var me = this;
         me.showEvent(me.data.id);
+    },
+    //
+    onReclassify: function() {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/fm/event/" + me.data.id + "/reclassify/",
+            method: "POST",
+            scope: me,
+            success: function(response) {
+                me.showEvent(me.data.id);
+            },
+            failure: function() {
+                NOC.error("Failed to reclassify");
+            }
+        });
     }
 });
