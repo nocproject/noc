@@ -200,6 +200,12 @@ Ext.define("NOC.fm.event.EventPanel", {
             ]
         });
         //
+        me.tracebackPanel = Ext.create("Ext.panel.Panel", {
+            title: "Traceback",
+            autoScroll: true,
+            bodyPadding: 4
+        });
+        //
         me.tabPanel = Ext.create("Ext.tab.Panel", {
             flex: 1,
             items: [
@@ -207,7 +213,8 @@ Ext.define("NOC.fm.event.EventPanel", {
                 me.helpPanel,
                 me.dataPanel,
                 me.logPanel,
-                me.alarmsPanel
+                me.alarmsPanel,
+                me.tracebackPanel
             ]
         });
 
@@ -324,6 +331,8 @@ Ext.define("NOC.fm.event.EventPanel", {
         me.logStore.loadData(data.log || []);
         me.alarmsPanel.setDisabled(!data.alarms || !data.alarms.length);
         me.alarmsStore.loadData(data.alarms || []);
+        me.updatePanel(me.tracebackPanel, me.app.templates.Traceback,
+            data.traceback, data);
         //
         me.reclassifyButton.setDisabled(
             data.status == "N" || data.status === "F"
