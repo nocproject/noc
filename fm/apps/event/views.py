@@ -169,6 +169,9 @@ class EventApplication(ExtApplication):
                     "timestamp": a.timestamp.isoformat()
                 }]
             d["alarms"] = alarms
+        # Fetch traceback
+        if "traceback" in event.raw_vars:
+            d["traceback"] = event.raw_vars["traceback"]
         return d
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/post/", method=["POST"], api=True,
