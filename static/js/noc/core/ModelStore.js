@@ -87,7 +87,6 @@ Ext.define("NOC.core.ModelStore", {
         });
         //me.syncConfig = {};
         me.callParent([config]);
-        console.log(me);
     },
 
     setFilterParams: function(config) {
