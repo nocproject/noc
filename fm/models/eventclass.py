@@ -151,6 +151,18 @@ class EventSuppressionRule(EmbeddedDocument):
         )
 
 
+class EventPlugin(EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+
+    name = fields.StringField()
+    config = fields.DictField(default={})
+
+    def __unicode__(self):
+        return self.name
+
+
 class EventClassCategory(nosql.Document):
     meta = {
         "collection": "noc.eventclasscategories",
@@ -216,6 +228,8 @@ class EventClass(Document):
     # True if event processing is regulated by
     # Interface Profile.link_events setting
     link_event = fields.BooleanField(default=False)
+    # Plugin settings
+    plugins = fields.ListField(fields.EmbeddedDocumentField(EventPlugin))
     #
     category = fields.ObjectIdField()
 

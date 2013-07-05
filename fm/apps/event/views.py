@@ -6,8 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Third-party modules
-from mongoengine.queryset import Q
+## Python modules
+import os
+import inspect
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.fm.models.newevent import NewEvent
@@ -40,6 +41,25 @@ class EventApplication(ExtApplication):
         "managed_object": ModelParameter(ManagedObject)
     }
     ignored_params = ["status", "_dc"]
+
+    def __init__(self, *args, **kwargs):
+        ExtApplication.__init__(self, *args, **kwargs)
+        from plugins.base import EventPlugin
+        # Load plugins
+        self.plugins = {}
+        for f in os.listdir("fm/apps/event/plugins/"):
+            if (not f.endswith(".py") or
+                        f == "base.py" or f.startswith("_")):
+                continue
+            mn = "noc.fm.apps.event.plugins.%s" % f[:-3]
+            m = __import__(mn, {}, {}, "*")
+            for on in dir(m):
+                o = getattr(m, on)
+                if (inspect.isclass(o) and
+                        issubclass(o, EventPlugin) and
+                        o.__module__.startswith(mn)):
+                    assert o.name
+                    self.plugins[o.name] = o(self)
 
     def cleaned_query(self, q):
         q = q.copy()
@@ -169,9 +189,19 @@ class EventApplication(ExtApplication):
                     "timestamp": a.timestamp.isoformat()
                 }]
             d["alarms"] = alarms
-        # Fetch traceback
-        if "traceback" in event.raw_vars:
-            d["traceback"] = event.raw_vars["traceback"]
+        # Apply plugins
+        if event.status in ("A", "S") and event.event_class.plugins:
+            plugins = []
+            for p in event.event_class.plugins:
+                if p.name in self.plugins:
+                    plugin = self.plugins[p.name]
+                    dd = plugin.get_data(event, p.config)
+                    if "plugins" in dd:
+                        plugins += dd["plugins"]
+                        del dd["plugins"]
+                    d.update(dd)
+            if plugins:
+                d["plugins"] = plugins
         return d
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/post/", method=["POST"], api=True,
