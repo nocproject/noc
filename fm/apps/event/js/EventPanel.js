@@ -200,12 +200,6 @@ Ext.define("NOC.fm.event.EventPanel", {
             ]
         });
         //
-        me.tracebackPanel = Ext.create("Ext.panel.Panel", {
-            title: "Traceback",
-            autoScroll: true,
-            bodyPadding: 4
-        });
-        //
         me.tabPanel = Ext.create("Ext.tab.Panel", {
             flex: 1,
             items: [
@@ -213,8 +207,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 me.helpPanel,
                 me.dataPanel,
                 me.logPanel,
-                me.alarmsPanel,
-                me.tracebackPanel
+                me.alarmsPanel
             ]
         });
 
@@ -263,6 +256,7 @@ Ext.define("NOC.fm.event.EventPanel", {
             ]
         });
 
+        me.plugins = [];
         me.callParent();
     },
     //
@@ -331,8 +325,6 @@ Ext.define("NOC.fm.event.EventPanel", {
         me.logStore.loadData(data.log || []);
         me.alarmsPanel.setDisabled(!data.alarms || !data.alarms.length);
         me.alarmsStore.loadData(data.alarms || []);
-        me.updatePanel(me.tracebackPanel, me.app.templates.Traceback,
-            data.traceback, data);
         //
         me.reclassifyButton.setDisabled(
             data.status == "N" || data.status === "F"
@@ -340,12 +332,41 @@ Ext.define("NOC.fm.event.EventPanel", {
         //
         if(oldId !== me.data.id) {
             me.messageField.setValue("");
-            me.tabPanel.setActiveTab(0);
+            // @todo: Fix, doesn't work
+            me.tabPanel.setActiveTab(me.overviewPanel);
+        }
+        // Install plugins
+        if(data.plugins && !me.plugins.length) {
+            Ext.each(data.plugins, function(v) {
+                var cls = v[0],
+                    config = {
+                        app: me.app
+                    },
+                    p;
+                Ext.apply(config, v[1]);
+                p = Ext.create(cls, config);
+                me.plugins.push(p);
+                me.tabPanel.add(p);
+            });
+        }
+        // Update plugins content
+        if(me.plugins.length) {
+            Ext.each(me.plugins, function(p) {
+                p.updateData(data);
+            });
         }
     },
     //
     onClose: function() {
         var me = this;
+        // Remove plugins
+        if(me.plugins.length) {
+            Ext.each(me.plugins, function(p) {
+                me.tabPanel.remove(p);
+            });
+            me.plugins = [];
+        }
+        //
         me.app.showGrid();
     },
     //

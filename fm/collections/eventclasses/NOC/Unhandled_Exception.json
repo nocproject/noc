@@ -37,6 +37,11 @@
                 "type": "int",
                 "required": false
             }
+        ],
+        "plugins": [
+            {
+                "name": "traceback"
+            }
         ]
     }
 ]
