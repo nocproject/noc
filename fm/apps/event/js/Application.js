@@ -11,8 +11,7 @@ Ext.define("NOC.fm.event.Application", {
     requires: [
         "NOC.fm.event.templates.Overview",
         "NOC.fm.event.templates.Help",
-        "NOC.fm.event.templates.Data",
-        "NOC.fm.event.templates.Traceback"
+        "NOC.fm.event.templates.Data"
     ],
     layout: "card",
     STATUS_MAP: {
