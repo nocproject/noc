@@ -18,7 +18,8 @@ from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models import get_alarm, get_event
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces.base import ModelParameter, UnicodeParameter
+from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
+                                    DateTimeParameter)
 from noc.lib.escape import json_escape
 
 
@@ -38,7 +39,8 @@ class EventApplication(ExtApplication):
     }
 
     clean_fields = {
-        "managed_object": ModelParameter(ManagedObject)
+        "managed_object": ModelParameter(ManagedObject),
+        "timestamp": DateTimeParameter()
     }
     ignored_params = ["status", "_dc"]
 
@@ -74,8 +76,9 @@ class EventApplication(ExtApplication):
                 del q[p]
         # Normalize parameters
         for p in q:
-            if p in self.clean_fields:
-                q[p] = self.clean_fields[p].clean(q[p])
+            qp = p.split("__")[0]
+            if qp in self.clean_fields:
+                q[p] = self.clean_fields[qp].form_clean(q[p])
         return q
 
     def instance_to_dict(self, o, fields=None):
