@@ -54,7 +54,7 @@ Ext.define("NOC.fm.event.Application", {
             listeners: {
                 select: {
                     scope: me,
-                    fn: me.onSelectType
+                    fn: me.onChangeFilter
                 }
             }
         });
@@ -65,8 +65,8 @@ Ext.define("NOC.fm.event.Application", {
             width: 200,
             listeners: {
                 scope: me,
-                select: me.onSelectObject,
-                clear: me.onClearObject
+                select: me.onChangeFilter,
+                clear: me.onChangeFilter
             }
         });
 
@@ -76,8 +76,30 @@ Ext.define("NOC.fm.event.Application", {
             width: 300,
             listeners: {
                 scope: me,
-                select: me.onSelectClass,
-                clear: me.onClearClass
+                select: me.onChangeFilter,
+                clear: me.onChangeFilter
+            }
+        });
+
+        me.fromDateField = Ext.create("Ext.form.field.Date", {
+            fieldLabel: "From",
+            labelWidth: 35,
+            format: "d.m.Y",
+            width: 130,
+            listeners: {
+                scope: me,
+                select: me.onChangeFilter
+            }
+        });
+
+        me.toDateField = Ext.create("Ext.form.field.Date", {
+            fieldLabel: "To",
+            labelWidth: 25,
+            format: "d.m.Y",
+            width: 120,
+            listeners: {
+                scope: me,
+                select: me.onChangeFilter
             }
         });
 
@@ -98,7 +120,9 @@ Ext.define("NOC.fm.event.Application", {
                     items: [
                         me.typeCombo,
                         me.objectCombo,
-                        me.eventClassCombo
+                        me.eventClassCombo,
+                        me.fromDateField,
+                        me.toDateField
                     ]
                 },
                 {
@@ -202,36 +226,30 @@ Ext.define("NOC.fm.event.Application", {
         var me = this;
         if(me.currentQuery)
             me.store.setFilterParams(me.currentQuery);
-        me.store.loadPage(me.store.currentPage);
+        me.store.load();
     },
     //
-    onSelectType: function(combo, records, opts) {
-        var me = this;
-        me.currentQuery.status = records[0].get("id");
-        me.reloadStore();
-    },
-    //
-    onSelectObject: function(combo, records, opts) {
-        var me = this;
-        me.currentQuery.managed_object = records[0].get("id");
-        me.reloadStore();
-    },
-    //
-    onClearObject: function() {
-        var me = this;
-        delete me.currentQuery.managed_object;
-        me.reloadStore();
-    },
-    //
-    onSelectClass: function(combo, records, opts) {
-        var me = this;
-        me.currentQuery.event_class = records[0].get("id");
-        me.reloadStore();
-    },
-    //
-    onClearClass: function() {
-        var me = this;
-        delete me.currentQuery.event_class;
+    onChangeFilter: function() {
+        var me = this,
+            q = {},
+            setIf = function(k, v) {
+                if(v) {
+                    q[k] = v;
+                }
+            }
+
+        // Status
+        q.status = me.typeCombo.getValue();
+        // Object
+        setIf("managed_object", me.objectCombo.getValue());
+        // Class
+        setIf("event_class", me.eventClassCombo.getValue());
+        // From Date
+        setIf("timestamp__gte", me.fromDateField.getValue());
+        // To Date
+        setIf("timestamp__lte", me.toDateField.getValue());
+        //
+        me.currentQuery = q;
         me.reloadStore();
     },
     // Return Grid's row classes
@@ -261,7 +279,7 @@ Ext.define("NOC.fm.event.Application", {
     //
     pollingTask: function() {
         var me = this;
-        me.reloadStore();
+        me.store.load();
     },
     //
     startPolling: function() {
