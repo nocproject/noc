@@ -18,6 +18,7 @@ from datasource import DataSource
 from alarmrootcausecondition import AlarmRootCauseCondition
 from alarmclasscategory import AlarmClassCategory
 from alarmclassjob import AlarmClassJob
+from alarmplugin import AlarmPlugin
 from noc.lib.escape import json_escape as q
 
 
@@ -67,6 +68,8 @@ class AlarmClass(nosql.Document):
         fields.EmbeddedDocumentField(AlarmRootCauseCondition))
     # Job descriptions
     jobs = fields.ListField(fields.EmbeddedDocumentField(AlarmClassJob))
+        # Plugin settings
+    plugins = fields.ListField(fields.EmbeddedDocumentField(AlarmPlugin))
     #
     category = nosql.ObjectIdField()
 
