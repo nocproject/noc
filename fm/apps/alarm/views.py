@@ -20,7 +20,7 @@ from noc.fm.models import get_alarm, get_event
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models import User
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
-                                    DateTimeParameter)
+                                    DateTimeParameter, StringParameter)
 
 
 class AlarmApplication(ExtApplication):
@@ -29,7 +29,7 @@ class AlarmApplication(ExtApplication):
     """
     title = "Alarm"
     menu = "Alarms"
-    icon = "icon_exclamation"
+    icon = "icon_error"
 
     model_map = {
         "A": ActiveAlarm,
@@ -222,7 +222,7 @@ class AlarmApplication(ExtApplication):
                     "managed_object": a.managed_object.id,
                     "managed_object__label": a.managed_object.name,
                     "timestamp": a.timestamp.isoformat(),
-                    "iconCls": "icon_exclamation",
+                    "iconCls": "icon_error",
                     "row_class": s.style.css_class_name
                 }
                 nc = self.get_nested_alarms(a)
@@ -273,4 +273,15 @@ class AlarmApplication(ExtApplication):
         alarm = get_alarm(id)
         if alarm.status == "A":
             alarm.clear_alarm("Cleared by %s" % request.user)
+        return True
+
+    @view(url=r"^(?P<id>[a-z0-9]{24})/set_root/", method=["POST"],
+          api=True, access="launch",
+          validate={"root": StringParameter()})
+    def api_set_root(self, request, id, root):
+        alarm = get_alarm(id)
+        r = get_alarm(root)
+        if not r:
+            return self.response_not_found()
+        alarm.set_root(r)
         return True

@@ -247,6 +247,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
 
         me.clearButton = Ext.create("Ext.Button", {
             text: "Clear",
+            iconCls: "icon_pill",
             scope: me,
             handler: me.onClear
         });
@@ -257,6 +258,13 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             iconCls: "icon_star_grey",
             scope: me,
             handler: me.onWatch
+        });
+
+        me.setRootButton = Ext.create("Ext.Button", {
+            text: "Set Root Cause",
+            iconCls: "icon_attach",
+            scope: me,
+            handler: me.onSetRoot
         });
 
         Ext.apply(me, {
@@ -280,6 +288,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                         "-",
                         me.clearButton,
                         me.watchButton,
+                        me.setRootButton,
                         "->",
                         me.alarmIdField
                     ]
@@ -368,6 +377,8 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         me.clearButton.setDisabled(me.data.status !== "A");
         me.watchButton.setDisabled(me.data.status !== "A");
         me.setWatchers(me.data.subscribers || []);
+        //
+        me.setRootButton.setDisabled(me.data.status !== "A");
         // Install plugins
         if(data.plugins && !me.plugins.length) {
             Ext.each(data.plugins, function(v) {
@@ -510,5 +521,31 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             }
         })
 
+    },
+    //
+    onSetRoot: function() {
+        var me = this;
+        Ext.Msg.prompt(
+            "Set root cause",
+            "Please enter root cause alarm id",
+            function(btn, text) {
+                if(btn == "ok") {
+                    // @todo: Check alarm id
+                    Ext.Ajax.request({
+                        url: "/fm/alarm/" + me.data.id + "/set_root/",
+                        method: "POST",
+                        jsonData: {
+                            root: text
+                        },
+                        success: function() {
+                            me.onRefresh();
+                        },
+                        failure: function() {
+                            NOC.error("Failed to set root cause");
+                        }
+                    });
+                }
+            }
+        );
     }
 });
