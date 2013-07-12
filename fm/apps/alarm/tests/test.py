@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## event Test
+## fm.alarm unittests
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ApplicationTestCase
-from django.utils import simplejson as json
 
-class eventTestCase(ApplicationTestCase):
+## NOC modules
+from noc.lib.test import AjaxTestCase
+
+
+class alarmTestCase(AjaxTestCase):
     pass

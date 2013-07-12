@@ -1,332 +1,276 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## FM Alarm Manager
+## fm.alarm application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django import forms
-from django.forms.widgets import HiddenInput, DateTimeInput
-from django.utils.dateformat import DateFormat
-from django.http import Http404
+## Python modules
+import os
+import inspect
 ## NOC modules
-from noc.lib.widgets import AutoCompleteTextInput, lookup, TreePopupField
-from noc.lib.app import Application, HasPerm, view
-from noc.fm.models import *
-from noc.sa.models import ManagedObject
-from noc.inv.models import Interface
+from noc.lib.app import ExtApplication, view
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.archivedevent import ArchivedEvent
+from noc.fm.models import get_alarm, get_event
+from noc.sa.models.managedobject import ManagedObject
+from noc.main.models import User
+from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
+                                    DateTimeParameter)
 
 
-class AlarmManagedApplication(Application):
+class AlarmApplication(ExtApplication):
     """
-    Alarm manager
+    fm.alarm application
     """
-    title = "Alarms"
-    ## Amount of events per page
-    PAGE_SIZE = 50  # @todo: move to application config
+    title = "Alarm"
+    menu = "Alarms"
+    icon = "icon_exclamation"
 
-    def get_event_or_404(self, event_id):
-        """
-        Return event or raise 404
-        """
-        e = get_event(event_id)
-        if e:
-            return e
-        raise Http404("Event not found: %s" % event_id)
-    
-    def get_alarm_or_404(self, alarm_id):
-        """
-        Return alarm or raise 404
-        """
-        a = get_alarm(alarm_id)
-        if a:
-            return a
-        raise Http404("Alarm not found: %s" % alarm_id)
+    model_map = {
+        "A": ActiveAlarm,
+        "C": ArchivedAlarm
+    }
 
-    class AlarmSearchForm(Application.Form):
-        """
-        Alarm form
-        """
-        page = forms.IntegerField(required=False, min_value=0, widget=HiddenInput)
-        from_time = forms.DateTimeField(label="From time",
-                                        required=False,
-                                        input_formats=["%d.%m.%Y %H:%M:%S"],
-                                        widget=DateTimeInput(format="%d.%m.%Y %H:%M:%S"))
-        to_time = forms.DateTimeField(label="To time",
-                                      required=False,
-                                      input_formats=["%d.%m.%Y %H:%M:%S"])
-        managed_object = forms.CharField(label="Managed Object",
-                                         required=False,
-                                         widget=AutoCompleteTextInput("sa:managedobject:lookup1"))
-        status = forms.ChoiceField(label="Status",
-                                   required=False,
-                                   choices=[("A", "Active"),
-                                            ("U", "Unassigned"),
-                                            ("O", "Own"),
-                                            ("C", "Closed")])
-        alarm_class = TreePopupField(label="Alarm Class",
-                                     required=False,
-                                     document=AlarmClass,
-                                     title="Select Alarm Class",
-                                     lookup="/fm/alarmclass/popup/")
-        order_by = forms.ChoiceField(label="Order by",
-                                     required=False,
-                                     choices=[
-                                            ("-id", "Timestamp"),
-                                            ("-severity", "Severity")
-                                        ])
+    clean_fields = {
+        "managed_object": ModelParameter(ManagedObject),
+        "timestamp": DateTimeParameter()
+    }
 
-    @view(url=r"^$", url_name="index", menu="Alarms", access=HasPerm("view"))
-    def view_index(self, request):
-        """
-        Display alarm list and search form
-        """
-        initial = {"status": "A", "order_by": "-severity"}
-        form = self.AlarmSearchForm(initial=initial)
-        return self.render(request, "index.html", form=form)
+    ignored_params = ["status", "_dc"]
 
-    @view(url="^(?P<alarm_id>[0-9a-f]{24})/$", url_name="alarm",
-          access=HasPerm("view"))
-    def view_alarm(self, request, alarm_id):
+    def __init__(self, *args, **kwargs):
+        ExtApplication.__init__(self, *args, **kwargs)
+        from plugins.base import AlarmPlugin
+        # Load plugins
+        self.plugins = {}
+        for f in os.listdir("fm/apps/alarm/plugins/"):
+            if (not f.endswith(".py") or
+                    f == "base.py" or
+                    f.startswith("_")):
+                continue
+            mn = "noc.fm.apps.alarm.plugins.%s" % f[:-3]
+            m = __import__(mn, {}, {}, "*")
+            for on in dir(m):
+                o = getattr(m, on)
+                if (inspect.isclass(o) and
+                        issubclass(o, AlarmPlugin) and
+                        o.__module__.startswith(mn)):
+                    assert o.name
+                    self.plugins[o.name] = o(self)
+
+    def cleaned_query(self, q):
+        q = q.copy()
+        for p in self.ignored_params:
+            if p in q:
+                del q[p]
+        for p in (
+            self.limit_param, self.page_param, self.start_param,
+            self.format_param, self.sort_param, self.query_param,
+            self.only_param):
+            if p in q:
+                del q[p]
+        # Normalize parameters
+        for p in q:
+            qp = p.split("__")[0]
+            if qp in self.clean_fields:
+                q[p] = self.clean_fields[qp].form_clean(q[p])
+        return q
+
+    def instance_to_dict(self, o, fields=None):
+        lang = "en"
+        s = AlarmSeverity.get_severity(o.severity)
+        n_events = (ActiveEvent.objects.filter(alarms=o.id).count() +
+                    ArchivedEvent.objects.filter(alarms=o.id).count())
+        return {
+            "id": str(o.id),
+            "status": o.status,
+            "managed_object": o.managed_object.id,
+            "managed_object__label": o.managed_object.name,
+            "alarm_class": str(o.alarm_class.id),
+            "alarm_class__label": o.alarm_class.name,
+            "timestamp": o.timestamp.isoformat(),
+            "subject": o.get_translated_subject(lang),
+            "events": n_events,
+            "row_class": s.style.css_class_name
+        }
+
+    def queryset(self, request, query=None):
         """
-        Display alarm
+        Filter records for lookup
         """
-        def get_chilren(root, level=0):
-            children = []
-            for a in ActiveAlarm.objects.filter(root=root.id):
-                children += [(level, a, a.get_translated_subject(u_lang))]
-                children += get_chilren(a, level + 1)
-            for a in ArchivedAlarm.objects.filter(root=root.id):
-                children += [(level, a, a.get_translated_subject(u_lang))]
-                children += get_chilren(a, level + 1)
-            return children
-        
-        alarm = self.get_alarm_or_404(alarm_id)
-        root = get_alarm(alarm.root) if alarm.root else None
-        u_lang = request.session["django_language"]
-        subject = alarm.get_translated_subject(u_lang)
-        body = alarm.get_translated_body(u_lang)
-        symptoms = alarm.get_translated_symptoms(u_lang)
-        probable_causes = alarm.get_translated_probable_causes(u_lang)
-        recommended_actions = alarm.get_translated_recommended_actions(u_lang)
-        can_clear = alarm.alarm_class.user_clearable
-        events = (list(ArchivedEvent.objects.filter(alarms=alarm.id)) +
-                  list(ActiveEvent.objects.filter(alarms=alarm.id)))
-        events = [(e.id, e.event_class.name,
-                   e.timestamp, e.get_translated_subject(u_lang))
-                  for e in events]
-        severity = AlarmSeverity.get_severity(alarm.severity)
+        status = request.GET.get("status", "A")
+        if status not in self.model_map:
+            raise Exception("Invalid status")
+        model = self.model_map[status]
+        return model.objects.all()
+
+    @view(url=r"^$", access="launch", method=["GET"], api=True)
+    def api_list(self, request):
+        return self.list_data(request, self.instance_to_dict)
+
+    @view(url=r"^(?P<id>[a-z0-9]{24})/$", method=["GET"], api=True,
+          access="launch")
+    def api_alarm(self, request, id):
+        alarm = get_alarm(id)
+        if not alarm:
+            self.response_not_found()
         user = request.user
-        is_owner = alarm.status == "A" and alarm.is_owner(user)
-        is_subscribed = alarm.status == "A" and alarm.is_subscribed(user)
-        is_unassigned = alarm.status == "A" and alarm.is_unassigned
-        severities = AlarmSeverity.objects.order_by("severity")
+        lang = "en"
+        d = self.instance_to_dict(alarm)
+        d["body"] = alarm.get_translated_body(lang)
+        d["symptoms"] = alarm.get_translated_symptoms(lang)
+        d["probable_causes"] = alarm.get_translated_probable_causes(lang)
+        d["recommended_actions"] = alarm.get_translated_recommended_actions(lang)
+        d["vars"] = sorted(alarm.vars.items())
+        # Managed object properties
+        mo = alarm.managed_object
+        d["managed_object_address"] = mo.address
+        d["managed_object_profile"] = mo.profile_name
+        d["managed_object_platform"] = mo.platform
+        d["managed_object_version"] = mo.get_attr("version")
+        # Log
+        if alarm.log:
+            d["log"] = [
+                {
+                    "timestamp": l.timestamp.isoformat(),
+                    "from_status": l.from_status,
+                    "to_status": l.to_status,
+                    "message": l.message
+                } for l in alarm.log
+            ]
+        # Events
+        events = []
+        for ec in ActiveEvent, ArchivedEvent:
+            for e in ec.objects.filter(alarms=alarm.id):
+                events += [{
+                    "id": str(e.id),
+                    "event_class": str(e.event_class.id),
+                    "event_class__label": e.event_class.name,
+                    "timestamp": e.timestamp.isoformat(),
+                    "status": e.status,
+                    "managed_object": e.managed_object.id,
+                    "managed_object__label": e.managed_object.name,
+                    "subject": e.get_translated_subject(lang)
+                }]
+        if events:
+            d["events"] = events
+        # Alarms
+        children = self.get_nested_alarms(alarm)
+        if children:
+            d["alarms"] = {
+                "expanded": True,
+                "children": children
+            }
+        # Subscribers
         if alarm.status == "A":
-            subscribers = User.objects.filter(id__in=alarm.subscribers).order_by("username")
+            d["subscribers"] = self.get_alarm_subscribers(alarm)
+            d["is_subscribed"] = user in alarm.subscribers
+        # Apply plugins
+        if alarm.alarm_class.plugins:
+            plugins = []
+            for p in alarm.alarm_class.plugins:
+                if p.name in self.plugins:
+                    plugin = self.plugins[p.name]
+                    dd = plugin.get_data(alarm, p.config)
+                    if "plugins" in dd:
+                        plugins += dd["plugins"]
+                        del dd["plugins"]
+                    d.update(dd)
+            if plugins:
+                d["plugins"] = plugins
+        return d
+
+    def get_alarm_subscribers(self, alarm):
+        """
+        JSON-serializable subscribers
+        :param alarm:
+        :return:
+        """
+        subscribers = []
+        for u in alarm.subscribers:
+            try:
+                u = User.objects.get(id=u)
+                subscribers += [{
+                    "id": u.id,
+                    "name": " ".join([u.first_name, u.last_name]),
+                    "login": u.username
+                }]
+            except User.DoesNotExist:
+                pass
+        return subscribers
+
+    def get_nested_alarms(self, alarm):
+        """
+        Return nested alarms as a part of NodeInterface
+        :param alarm:
+        :return:
+        """
+        children = []
+        for ac in (ActiveAlarm, ArchivedAlarm):
+            for a in ac.objects.filter(root=alarm.id):
+                s = AlarmSeverity.get_severity(a.severity)
+                c = {
+                    "id": str(a.id),
+                    "subject": a.get_translated_subject("en"),
+                    "alarm_class": str(a.alarm_class.id),
+                    "alarm_class__label": a.alarm_class.name,
+                    "managed_object": a.managed_object.id,
+                    "managed_object__label": a.managed_object.name,
+                    "timestamp": a.timestamp.isoformat(),
+                    "iconCls": "icon_exclamation",
+                    "row_class": s.style.css_class_name
+                }
+                nc = self.get_nested_alarms(a)
+                if nc:
+                    c["children"] = nc
+                    c["expanded"] = True
+                else:
+                    c["leaf"] = True
+                children += [c]
+        return children
+
+    @view(url=r"^(?P<id>[a-z0-9]{24})/post/", method=["POST"], api=True,
+          access="launch", validate={"msg": UnicodeParameter()})
+    def api_post(self, request, id, msg):
+        alarm = get_alarm(id)
+        if not alarm:
+            self.response_not_found()
+        alarm.log_message("%s: %s" % (request.user.username, msg))
+        return True
+
+    @view(url=r"^(?P<id>[a-z0-9]{24})/subscribe/", method=["POST"],
+          api=True, access="launch")
+    def api_subscribe(self, request, id):
+        alarm = get_alarm(id)
+        if not alarm:
+            return self.response_not_found()
+        if alarm.status == "A":
+            alarm.subscribe(request.user)
+            return self.get_alarm_subscribers(alarm)
         else:
-            subscribers = []
-        children = get_chilren(alarm)  # (level, alarm, subject)
-        interface = None
-        if "interface" in alarm.vars:
-            iface = Interface.objects.filter(
-                managed_object=alarm.managed_object.id,
-                name=alarm.vars["interface"]
-            ).first()
-            if iface:
-                interface = alarm.vars["interface"]
-                if iface.description:
-                    interface += " (%s)" % iface.description
-                if iface.profile:
-                    interface += " [%s]" % iface.profile.name
+            return []
 
-        
-        return self.render(request, "alarm.html",
-                           a=alarm,
-                           root=root,
-                           subject=subject,
-                           body=body,
-                           symptoms=symptoms,
-                           probable_causes=probable_causes,
-                           recommended_actions=recommended_actions,
-                           can_clear=can_clear,
-                           events=events,
-                           n_events=len(events),
-                           severity=severity,
-                           is_owner=is_owner,
-                           is_subscribed=is_subscribed,
-                           is_unassigned=is_unassigned,
-                           severities=severities,
-                           subscribers=subscribers,
-                           children=children,
-                           n_children=len(children),
-                           interface=interface
-                          )
+    @view(url=r"^(?P<id>[a-z0-9]{24})/unsubscribe/", method=["POST"],
+          api=True, access="launch")
+    def api_unsubscribe(self, request, id):
+        alarm = get_alarm(id)
+        if not alarm:
+            return self.response_not_found()
+        if alarm.status == "A":
+            alarm.unsubscribe(request.user)
+            return self.get_alarm_subscribers(alarm)
+        else:
+            return []
 
-    class MessageForm(Application.Form):
-        message = forms.CharField()
-
-    @view(url="^(?P<alarm_id>[0-9a-f]{24})/message/$", url_name="message",
-          access=HasPerm("change"))
-    def view_message(self, request, alarm_id):
-        """
-        Submit new message to event
-        """
-        alarm = self.get_alarm_or_404(alarm_id)
-        if request.POST:
-            form = self.MessageForm(request.POST)
-            if form.is_valid():
-                alarm.log_message("%s: %s" % (request.user.username,
-                                              form.cleaned_data["message"]))
-                self.message_user(request, "Message posted")
-                return self.response_redirect_to_referrer(request)
-        self.message_user(request, "Message posting failed")
-        return self.response_redirect_to_referrer(request)
-
-    @view(url=r"^alarms/$", url_name="alarms", access=HasPerm("view"))
-    def view_alarms(self, request):
-        """
-        Return JSON list of selected events.
-        Returned structure is dict of:
-            count:
-            page:
-            pages:
-            alarms: [list_of_alarms]
-        """
-        datetime_format = self.config.get("main", "datetime_format")
-        page = 0
-        # Process request
-        if request.GET:
-            form = self.AlarmSearchForm(request.GET)
-            if form.is_valid():
-                status = form.cleaned_data["status"]
-                # Select alarms collection
-                alarms = {
-                    "A": ActiveAlarm,
-                    "U": ActiveAlarm,
-                    "O": ActiveAlarm,
-                    "C": ArchivedAlarm
-                }[status].objects.filter(root__exists=False)
-                #if status == "U":
-                #    alarms = alarms.filter(owner__isnull=True)
-                if status == "O":
-                    alarms = alarms.filter(owner=request.user.id)
-                elif status == "U":
-                    alarms = alarms.filter(owner=None)
-                ## Apply additional restriction
-                if form.cleaned_data["page"]:
-                    page = form.cleaned_data["page"] - 1
-                if form.cleaned_data["from_time"]:
-                    alarms = alarms.filter(timestamp__gte=form.cleaned_data["from_time"])
-                if form.cleaned_data["to_time"]:
-                    alarms = alarms.filter(timestamp__lte=form.cleaned_data["to_time"])
-                if form.cleaned_data["managed_object"]:
-                    try:
-                        mo = ManagedObject.objects.get(name=form.cleaned_data["managed_object"])
-                        alarms = alarms.filter(managed_object=mo.id)
-                    except ManagedObject.DoesNotExist:
-                        pass
-                if form.cleaned_data["order_by"]:
-                    alarms = alarms.order_by(form.cleaned_data["order_by"])
-            else:
-                return self.render_json({"error": str(form.errors)})
-        lr = self.PAGE_SIZE * page
-        rr = self.PAGE_SIZE * (page + 1)
-        data = []
-        count = alarms.count()
-        u_lang = request.session["django_language"]
-        for a in alarms[lr:rr]:
-            subject = a.get_translated_subject(u_lang)
-            alarm_class = a.alarm_class.name
-            severity = AlarmSeverity.get_severity(a.severity)
-            data += [[
-                a.effective_style.css_class_name,
-                str(a.id),
-                a.managed_object.name,
-                DateFormat(a.timestamp).format(datetime_format),
-                a.display_duration,
-                a.status,
-                a.owner.username if a.status == "A" and a.owner else "-",
-                alarm_class,
-                "%s (%s)" % (severity.name, a.severity),
-                subject
-            ]]
-        return self.render_json({
-            "count" : count,
-            "page"  : page,
-            "pages" : count / self.PAGE_SIZE + (1 if count % self.PAGE_SIZE else 0),
-            "alarms": data
-            })
-    
-    @view(url="^css/$", url_name="css", access=HasPerm("view"))
-    def view_css(self, request):
-        text = "\n\n".join([s.css for s in Style.objects.all()])
-        return self.render_plain_text(text, mimetype="text/css")
-
-    @view(url="^(?P<alarm_id>[0-9a-f]{24})/take/$", url_name="take",
-          access=HasPerm("change"))
-    def view_take(self, request, alarm_id):
-        a = self.get_alarm_or_404(alarm_id)
-        if a.status == "A":
-            a.change_owner(request.user)
-            self.message_user(request, "Alarm has been taken")
-        return self.response_redirect_to_referrer(request)
-
-    @view(url="^(?P<alarm_id>[0-9a-f]{24})/subscribe/$", url_name="subscribe",
-          access=HasPerm("change"))
-    def view_subscribe(self, request, alarm_id):
-        a = self.get_alarm_or_404(alarm_id)
-        if a.status == "A":
-            a.subscribe(request.user)
-            self.message_user(request, "You have been subscribed to alarm")
-        return self.response_redirect_to_referrer(request)
-
-    @view(url="^(?P<alarm_id>[0-9a-f]{24})/unsubscribe/$", url_name="unsubscribe",
-          access=HasPerm("change"))
-    def view_unsubscribe(self, request, alarm_id):
-        a = self.get_alarm_or_404(alarm_id)
-        if a.status == "A":
-            a.unsubscribe(request.user)
-            self.message_user(request, "You have been unsubscribed from alarm")
-        return self.response_redirect_to_referrer(request)
-
-    @view(url="^(?P<alarm_id>[0-9a-f]{24})/change_severity/$",
-          url_name="change_severity", access=HasPerm("change"))
-    def view_change_priority(self, request, alarm_id):
-        a = self.get_alarm_or_404(alarm_id)
-        if a.status == "A" and a.owner and a.owner.id == request.user.id and request.GET:
-            if "delta" in request.GET:
-                delta = int(request.GET.get("delta", 0))
-                if delta < -1000 or delta > 1000:
-                    delta = 0
-                a.change_severity(user=request.user, delta=delta)
-                self.message_user(request, "Alarm severity has been changed")
-            elif "severity" in request.GET:
-                s = AlarmSeverity.objects.filter(id=request.GET["severity"]).first()
-                if s:
-                    a.change_severity(user=request.user, severity=s)
-                    self.message_user(request, "Alarm severity has been changed")
-        return self.response_redirect_to_referrer(request)
-
-    @view(url="^(?P<alarm_id>[0-9a-f]{24})/clear/$", url_name="clear",
-          access=HasPerm("change"))
-    def view_clear(self, request, alarm_id):
-        a = self.get_alarm_or_404(alarm_id)
-        a.clear_alarm("Cleared by %s" % request.user)
-        return self.response_redirect_to_referrer(request)
-
-    @view(url="^(?P<alarm_id>[0-9a-f]{24})/change_root/$",
-          url_name="change_root", access=HasPerm("change"))
-    def view_change_root(self, request, alarm_id):
-        a = self.get_alarm_or_404(alarm_id)
-        if request.POST and "root" in request.POST:
-            root = request.POST["root"]
-            print root
-            r = get_alarm(root)
-            if r:
-                a.set_root(r)
-                self.message_user(request, "Root cause has been set")
-            else:
-                self.message_user(request, "Alarm #%s is not found" % root)
-        return self.response_redirect_to_referrer(request)
+    @view(url=r"^(?P<id>[a-z0-9]{24})/clear/", method=["POST"],
+          api=True, access="launch")
+    def api_clear(self, request, id):
+        alarm = get_alarm(id)
+        if alarm.status == "A":
+            alarm.clear_alarm("Cleared by %s" % request.user)
+        return True
