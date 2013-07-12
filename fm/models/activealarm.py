@@ -82,11 +82,12 @@ class ActiveAlarm(nosql.Document):
                 "%s has changed severity to %s" % (user, severity.name))
         self.save()
 
-    def log_message(self, message):
+    def log_message(self, message, to_save=True):
         self.log += [AlarmLog(timestamp=datetime.datetime.now(),
                      from_status=self.status, to_status=self.status,
                      message=message)]
-        self.save()
+        if to_save:
+            self.save()
 
     def contribute_event(self, e, open=False, close=False):
         # Update timestamp
@@ -172,12 +173,20 @@ class ActiveAlarm(nosql.Document):
         """
         if user.id not in self.subscribers:
             self.subscribers += [user.id]
+            self.log_message("%s(%s) has been subscribed" % (
+                (" ".join([user.first_name, user.last_name]),
+                 user.username)
+            ), to_save=False)
             self.save()
 
     def unsubscribe(self, user):
         if self.is_subscribed(user):
             self.subscribers = [u.id for u in self.subscribers
                                 if u != user.id]
+            self.log_message("%s(%s) has been unsubscribed" % (
+                (" ".join([user.first_name, user.last_name]),
+                 user.username)
+            ), to_save=False)
             self.save()
 
     def is_owner(self, user):
@@ -224,10 +233,11 @@ class ActiveAlarm(nosql.Document):
             raise Exception("Cannot set self as root cause")
         # Detect loop
         root = root_alarm
-        while root:
+        while root and root.root:
             root = root.root
             if root == self.id:
                 return
+            root = get_alarm(root)
         # Set root
         self.root = root_alarm.id
         self.log_message(
@@ -239,3 +249,4 @@ class ActiveAlarm(nosql.Document):
 
 ## Avoid circular references
 from archivedalarm import ArchivedAlarm
+from utils import get_alarm
