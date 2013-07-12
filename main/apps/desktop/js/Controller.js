@@ -84,6 +84,7 @@ Ext.define("NOC.main.desktop.Controller", {
                 }
                 if(!display_name)
                     display_name = settings.username;
+                NOC.username = settings.username;
                 Ext.getCmp("header").set_user_name(display_name);
                 // Activate/deactivate change credentials menu
                 Ext.getCmp("header").getComponent("user_display_name").menu
