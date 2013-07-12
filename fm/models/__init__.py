@@ -323,28 +323,7 @@ from enumeration import Enumeration
 ## Event/Alarm text decoder
 ##
 from translation import get_translated_template, get_translated_text
-
-
-def get_event(event_id):
-        """
-        Get event by event_id
-        """
-        for ec in (ActiveEvent, ArchivedEvent, FailedEvent, NewEvent):
-            e = ec.objects.filter(id=event_id).first()
-            if e:
-                return e
-        return None
-
-
-def get_alarm(alarm_id):
-        """
-        Get alarm by alarm_id
-        """
-        for ac in (ActiveAlarm, ArchivedAlarm):
-            a = ac.objects.filter(id=alarm_id).first()
-            if a:
-                return a
-        return None
+from utils import get_alarm, get_event
 
 
 def get_object_status(managed_object):
