@@ -187,7 +187,7 @@ class Peer(models.Model):
         try:
             data = list(Peer.objects.filter().extra(
                 where=[
-                    "host(remote_ip)=% OR host(remote_backup_ip)=%s"
+                    "host(remote_ip)=%s OR host(remote_backup_ip)=%s"
                 ],
                 params=[address, address]
             ))
