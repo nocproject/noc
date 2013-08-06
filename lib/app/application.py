@@ -24,6 +24,7 @@ from django.utils.html import escape
 from django.template import loader
 from django import forms
 from django.utils.datastructures import SortedDict
+from django.utils.timezone import get_current_timezone
 ## NOC modules
 from access import HasPerm, Permit, Deny
 from site import site
@@ -31,6 +32,8 @@ from noc.lib.forms import NOCForm
 from noc import settings
 from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces import DictParameter
+
+TZ = get_current_timezone()
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
@@ -540,6 +543,19 @@ class Application(object):
         :return:
         """
         return FormErrorsContext(form)
+
+    def to_json(self, v):
+        """
+        Convert custom types to json string
+        :param v:
+        :return:
+        """
+        if v is None:
+            return None
+        elif isinstance(v, datetime.datetime):
+            return v.replace(tzinfo=TZ).isoformat()
+        else:
+            raise Exception("Invalid to_json type")
 
     def check_mrt_access(self, request, name):
         mc = self.mrt_config[name]

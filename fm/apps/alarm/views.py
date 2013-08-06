@@ -93,7 +93,7 @@ class AlarmApplication(ExtApplication):
             "managed_object__label": o.managed_object.name,
             "alarm_class": str(o.alarm_class.id),
             "alarm_class__label": o.alarm_class.name,
-            "timestamp": o.timestamp.isoformat(),
+            "timestamp": self.to_json(o.timestamp),
             "subject": o.get_translated_subject(lang),
             "events": n_events,
             "row_class": s.style.css_class_name
@@ -137,7 +137,7 @@ class AlarmApplication(ExtApplication):
         if alarm.log:
             d["log"] = [
                 {
-                    "timestamp": l.timestamp.isoformat(),
+                    "timestamp": self.to_json(l.timestamp),
                     "from_status": l.from_status,
                     "to_status": l.to_status,
                     "message": l.message
@@ -151,7 +151,7 @@ class AlarmApplication(ExtApplication):
                     "id": str(e.id),
                     "event_class": str(e.event_class.id),
                     "event_class__label": e.event_class.name,
-                    "timestamp": e.timestamp.isoformat(),
+                    "timestamp": self.to_json(e.timestamp),
                     "status": e.status,
                     "managed_object": e.managed_object.id,
                     "managed_object__label": e.managed_object.name,
@@ -221,7 +221,7 @@ class AlarmApplication(ExtApplication):
                     "alarm_class__label": a.alarm_class.name,
                     "managed_object": a.managed_object.id,
                     "managed_object__label": a.managed_object.name,
-                    "timestamp": a.timestamp.isoformat(),
+                    "timestamp": self.to_json(a.timestamp),
                     "iconCls": "icon_error",
                     "row_class": s.style.css_class_name
                 }

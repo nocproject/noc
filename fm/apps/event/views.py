@@ -108,7 +108,7 @@ class EventApplication(ExtApplication):
             "managed_object__label": o.managed_object.name,
             "event_class": str(o.event_class.id) if o.status in ("A", "S") else None,
             "event_class__label": o.event_class.name if o.status in ("A", "S") else None,
-            "timestamp": o.timestamp.isoformat(),
+            "timestamp": self.to_json(o.timestamp),
             "subject": subject,
             "repeats": repeats,
             "duration": duration,
@@ -161,7 +161,7 @@ class EventApplication(ExtApplication):
         if event.log:
             dd["log"] = [
                 {
-                    "timestamp": l.timestamp.isoformat(),
+                    "timestamp": self.to_json(l.timestamp),
                     "from_status": l.from_status,
                     "to_status": l.to_status,
                     "message": l.message
@@ -189,7 +189,7 @@ class EventApplication(ExtApplication):
                     "alarm_class__label": a.alarm_class.name,
                     "subject": a.get_translated_subject(lang),
                     "role": role,
-                    "timestamp": a.timestamp.isoformat()
+                    "timestamp": self.to_json(a.timestamp)
                 }]
             d["alarms"] = alarms
         # Apply plugins
