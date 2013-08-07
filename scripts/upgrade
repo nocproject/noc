@@ -131,7 +131,7 @@ if [ "$FOLLOW" != "none" ]; then
     else
         HG=`which hg`
     fi
-    $HG pull -r $FOLLOW -u $REPO || error_exit "$LINENO: Failed to pull repo"
+    $HG pull -r $BRANCH -u $REPO || error_exit "$LINENO: Failed to pull repo"
 fi
 ##
 ## Check virtualenv is enabled and set up
