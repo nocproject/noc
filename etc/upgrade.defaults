@@ -32,16 +32,16 @@ NOC_GROUP=
 REPO=https://bitbucket.org/nocproject/noc
 
 #
-# FOLLOW:
-# Tag to pull from repo
-# Possible values
-# none - disable pull
-# tip - fetch last revision
-# release - fetch last release
-# rXXXX - fetch revision XXXX
-# XXXXX - fetch tag XXXXX
+# BRANCH:
+# Branch to follow
+# Possible values are:
+# default - production releases
+# develop - stable development branch
+# release/<version> - pre-release testing branch
+# feature/<name> - feature development branch
+# hotfix/<version> - hotfix development branch
 #
-FOLLOW=tip
+BRANCH=default
 
 #
 # LOCAL_REPO:
