@@ -79,6 +79,12 @@ class AlarmApplication(ExtApplication):
             qp = p.split("__")[0]
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].form_clean(q[p])
+        #
+        if "collapse" in q:
+            c = q["collapse"]
+            del q["collapse"]
+            if c != "0":
+                q["root__exists"] = True
         return q
 
     def instance_to_dict(self, o, fields=None):

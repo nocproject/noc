@@ -30,7 +30,8 @@ Ext.define("NOC.fm.alarm.Application", {
             pageSize: 1,
             customFields: [],
             filterParams: {
-                status: "A"
+                status: "A",
+                collapse: 1
             }
         });
 
@@ -101,6 +102,14 @@ Ext.define("NOC.fm.alarm.Application", {
             }
         });
 
+        me.expandButton = Ext.create("Ext.button.Button", {
+            text: "Expand",
+            tooltip: "Show/collapse children alarms",
+            enableToggle: true,
+            scope: me,
+            handler: me.onChangeFilter
+        });
+
         me.gridPanel = Ext.create("Ext.grid.Panel", {
             store: me.store,
             features: [{
@@ -120,7 +129,8 @@ Ext.define("NOC.fm.alarm.Application", {
                         me.objectCombo,
                         me.alarmClassCombo,
                         me.fromDateField,
-                        me.toDateField
+                        me.toDateField,
+                        me.expandButton
                     ]
                 },
                 {
@@ -228,7 +238,10 @@ Ext.define("NOC.fm.alarm.Application", {
         setIf("timestamp__gte", me.fromDateField.getValue());
         // To Date
         setIf("timestamp__lte", me.toDateField.getValue());
-        //
+        // Expand
+        if(!me.expandButton.pressed) {
+            q.collapse = 1;
+        }
         me.currentQuery = q;
         me.reloadStore();
     },
