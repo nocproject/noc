@@ -205,6 +205,12 @@ class EventApplication(ExtApplication):
                     d.update(dd)
             if plugins:
                 d["plugins"] = plugins
+        elif event.status == "F":
+            # Enable traceback plugin for failed events
+            d["traceback"] = event.traceback
+            d["plugins"] = [
+                ("NOC.fm.event.plugins.Traceback", {})
+            ]
         return d
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/post/", method=["POST"], api=True,
