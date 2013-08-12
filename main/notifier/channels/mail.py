@@ -35,7 +35,7 @@ class MailNotificationChannel(NotificationChannel):
         message = MIMEText(body, _charset="utf-8")
         message["From"] = from_address
         message["To"] = to
-        message["Date"] = email.utils.formatdate()
+        message["Date"] = email.utils.formatdate(localtime=True)
         message["Subject"] = Header(subject, "utf-8")
         msg = message.as_string()
         self.debug(msg)
