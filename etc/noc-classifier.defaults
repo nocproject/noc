@@ -17,3 +17,6 @@ heartbeat= false
 # Interface profile name to use as default, when
 # event interface is not found in inventory
 default_interface_profile =
+# Interval in seconds to find duplicated events
+# 0 - disable deduplication
+deduplication_window = 3

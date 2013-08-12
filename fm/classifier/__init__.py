@@ -430,7 +430,9 @@ CR_SUPPRESSED = 2
 CR_UNKNOWN = 3
 CR_CLASSIFIED = 4
 CR_DISPOSED = 5
-CR = ["failed", "deleted", "suppressed", "unknown", "classified", "disposed"]
+CR_DUPLICATED = 6
+CR = ["failed", "deleted", "suppressed",
+      "unknown", "classified", "disposed", "duplicated"]
 
 
 class Classifier(Daemon):
@@ -451,6 +453,7 @@ class Classifier(Daemon):
         self.enumerations = {}  # name -> value -> enumerated
         self.suppression = {}  # event_class_id -> (condition, suppress)
         self.dump_clone = False
+        self.deduplication_window = 0
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         Daemon.__init__(self)
@@ -468,6 +471,8 @@ class Classifier(Daemon):
         self.dump_clone = (self.options.dump is not None and
                            "clone" in self.options.dump)
         super(Classifier, self).load_config()
+        self.deduplication_window = self.config.getint(
+            "classifier", "deduplication_window")
         self.load_enumerations()
         self.load_rules()
         self.load_triggers()
@@ -918,6 +923,18 @@ class Classifier(Daemon):
                     msg = "Event %s has been marked as not disposable by default interface" % event.id
                 logging.info(msg)
                 disposable = False
+        # Deduplication
+        if self.deduplication_window:
+            de = self.find_duplicated_event(event, event_class, vars)
+            if de:
+                logging.debug(
+                    "Event %s duplicates event %s. Discarding",
+                    event.id, de.id)
+                de.log_message(
+                    "Duplicated event %s has been discarded" % event.id
+                )
+                event.delete()
+                return CR_DUPLICATED
         # Suppress repeats
         if event_class.id in self.suppression:
             suppress, name, nearest = self.to_suppress(event, event_class,
@@ -975,6 +992,21 @@ class Classifier(Daemon):
         else:
             return CR_CLASSIFIED
 
+    def find_duplicated_event(self, event, event_class, vars):
+        """
+        Returns duplicated event if exists
+        """
+        t0 = event.timestamp - datetime.timedelta(seconds=self.deduplication_window)
+        q = {
+            "managed_object": event.managed_object.id,
+            "timestamp__gte": t0,
+            "timestamp__lte": event.timestamp,
+            "event_class": event_class.id
+        }
+        for v in vars:
+            q["vars__%s" % v] = vars[v]
+        return ActiveEvent.objects.filter(**q).first()
+
     def run(self):
         """
         Main daemon loop
@@ -986,8 +1018,11 @@ class Classifier(Daemon):
         # on previous versions of classifier
         self.retry_failed_events()
         logging.info("Ready to process events")
-        st = {CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
-              CR_UNKNOWN: 0, CR_CLASSIFIED: 0, CR_DISPOSED: 0}
+        st = {
+            CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
+            CR_UNKNOWN: 0, CR_CLASSIFIED: 0, CR_DISPOSED: 0,
+            CR_DUPLICATED:0
+        }
         # Enter main loop
         while True:
             n = 0  # Number of events processed
