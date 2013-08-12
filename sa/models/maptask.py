@@ -26,11 +26,17 @@ class MapTask(models.Model):
         db_table = "sa_maptask"
         app_label = "sa"
 
-    task = models.ForeignKey(ReduceTask, verbose_name=_("Task"),
-                             null=True, blank=True)
+    task = models.ForeignKey(
+        ReduceTask,
+        verbose_name=_("Task"),
+        null=True, blank=True,
+        on_delete=models.CASCADE
+    )
     managed_object = models.ForeignKey(
         ManagedObject,
-        verbose_name=_("Managed Object"))
+        verbose_name=_("Managed Object"),
+        on_delete=models.CASCADE
+    )
     map_script = models.CharField(_("Script"), max_length=256)
     script_params = PickledField(_("Params"), null=True, blank=True)
     next_try = models.DateTimeField(_("Next Try"))
