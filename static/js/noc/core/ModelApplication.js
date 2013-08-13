@@ -66,7 +66,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "create",
                 text: "Add",
-                iconCls: "icon_add",
+                glyph: 0xf067,
                 tooltip: "Add new record",
                 hasAccess: NOC.hasPermission("create"),
                 scope: me,
@@ -283,7 +283,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "save",
                 text: "Save",
-                iconCls: "icon_disk",
+                glyph: 0xf0c7,
                 // formBind: true,
                 // disabled: true,
                 scope: me,
@@ -293,7 +293,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "close",
                 text: "Close",
-                iconCls: "icon_arrow_undo",
+                glyph: 0xf060,
                 scope: me,
                 handler: me.onClose
             },
@@ -301,7 +301,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                itemId: "reset",
                text: "Reset",
-               iconCls: "icon_cancel",
+               glyph: 0xf014,
                disabled: true,
                scope: me,
                handler: me.onReset
