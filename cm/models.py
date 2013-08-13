@@ -33,7 +33,7 @@ vcs_registry.register_all()
 
 #
 OBJECT_TYPES = ["config", "dns", "prefix-list", "rpsl"]
-OBJECT_TYPE_CHOICES = [(x, x) for x in OBJECT_TYPES]
+OBJECT_TYPE_CHOICES = [(x, x) for x in OBJECT_TYPES if x != "config"]
 
 
 class ObjectNotify(models.Model):
@@ -428,6 +428,29 @@ class Config(Object):
             now = datetime.datetime.now()
             return self.last_pull is None or (now - self.last_pull).days >= 2
         return False
+
+    def on_object_changed(self):
+        """
+        Temporary stub to use ObjectNotification
+        :return:
+        """
+        revs = self.revisions
+        is_new = len(revs) == 1
+        diff = None
+        if not is_new:
+            diff = self.notification_diff(revs[1], revs[0])
+            if not diff:
+                # No significant difference to notify
+                return
+        self.managed_object.event(
+            self.managed_object.EV_CONFIG_CHANGED,
+            {
+                "object": self.managed_object,
+                "is_new": is_new,
+                "config": self.data,
+                "diff": diff
+            }
+        )
 
 
 class PrefixList(Object):
