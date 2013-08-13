@@ -309,7 +309,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                itemId: "delete",
                text: "Delete",
-               glyph: 0xf056,
+               glyph: 0xf00d,
                disabled: true,
                hasAccess: NOC.hasPermission("delete"),
                scope: me,
