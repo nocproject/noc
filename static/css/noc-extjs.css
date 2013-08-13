@@ -7,11 +7,6 @@
     width: 15px;
 }
 
-/* Selectable grid */
-.x-selectable, .x-selectable * {
-    -khtml-user-select: text !important;
-    -moz-user-select: text !important;
-}
 /* Syntax highlight */
 /* Override default */
 pre.sh_sourceCode {

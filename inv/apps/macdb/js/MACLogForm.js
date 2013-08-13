@@ -29,9 +29,6 @@ Ext.define("NOC.inv.macdb.MACLogForm", {
                     xtype: "gridpanel",
                     itemId: "grid",
                     store: me.store,
-                    features: [
-                        {ftype: "selectable", id: "selectable"}
-                    ],
                     autoScroll: true,
                     layout: "fit",
                     columns: [

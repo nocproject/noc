@@ -105,10 +105,6 @@ Ext.define("NOC.fm.event.Application", {
 
         me.gridPanel = Ext.create("Ext.grid.Panel", {
             store: me.store,
-            features: [{
-                ftype: "selectable",
-                id: "selectable"
-            }],
             border: false,
             stateful: true,
             stateId: "fm.event-grid",
