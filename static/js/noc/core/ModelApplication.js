@@ -309,7 +309,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                itemId: "delete",
                text: "Delete",
-               iconCls: "icon_delete",
+               glyph: 0xf056,
                disabled: true,
                hasAccess: NOC.hasPermission("delete"),
                scope: me,
@@ -319,7 +319,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "clone",
                 text: "Clone",
-                iconCls: "icon_page_copy",
+                glyph: 0xf0c5,
                 disabled: true,
                 hasAccess: NOC.hasPermission("create"),
                 scope: me,
