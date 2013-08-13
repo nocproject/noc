@@ -20,7 +20,7 @@
             align: "middle"
         },
         border: false,
-        bodyCls: Ext.baseCSSPrefix + 'tab-bar',
+        // bodyCls: Ext.baseCSSPrefix + 'toolbar',
         bodyPadding: _padding,
         height: _header_height,
         maxHeight: _header_height,
