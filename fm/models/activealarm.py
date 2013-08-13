@@ -125,6 +125,16 @@ class ActiveAlarm(nosql.Document):
         a.save()
         # @todo: Clear related correlator jobs
         self.delete()
+        # Send notifications
+        if not a.root:
+            a.managed_object.event(a.managed_object.EV_ALARM_CLEARED, {
+                "alarm": a,
+                "subject": a.get_translated_subject("en"),
+                "body": a.get_translated_body("en"),
+                "symptoms": a.get_translated_symptoms("en"),
+                "recommended_actions": a.get_translated_recommended_actions("en"),
+                "probable_causes": a.get_translated_probable_causes("en")
+            })
         return a
 
     def get_template_vars(self):
