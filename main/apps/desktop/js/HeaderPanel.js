@@ -62,33 +62,34 @@
                 itemId: "user_display_name",
                 text: "Anonymous",
                 scale: "small",
-                iconCls: "icon_user",
+                // iconCls: "icon_user",
+                glyph: NOC.glyph.user,
                 hidden: true,
                 menu: [
                     {
                         id: "header_menu_toggle",
                         text: "Collapse all panels",
-                        iconCls: "icon_arrow_out"
+                        glyph: NOC.glyph.expand
                     },
                     "-",
                     {
                         id: "header_menu_userprofile",
                         text: "User profile ...",
                         disabled: true,
-                        iconCls: "icon_user_edit"
+                        glyph: NOC.glyph.cog
                     },
                     {
                         id: "header_menu_change_password",
                         itemId: Ext.getCmp("header"),
                         text: "Change password ...",
                         disabled: true,
-                        iconCls: "icon_user_green"
+                        glyph: NOC.glyph.lock
                     },
                     "-",
                     {
                         id: "header_menu_logout",
                         text: "Logout",
-                        iconCls: "icon_door_out"
+                        glyph: NOC.glyph.off
                     }
                 ]
             },
