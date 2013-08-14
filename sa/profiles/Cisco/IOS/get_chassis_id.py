@@ -2,16 +2,16 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOS.get_chassis_id
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetChassisID
+from noc.lib.mac import MAC
 
 
 class Script(NOCScript):
@@ -22,8 +22,10 @@ class Script(NOCScript):
     ##
     ## Catalyst 2960/3560/3750/3120 on IOS SE
     ## Catalyst 2950 on IOS EA
+    ## Single chassis mac
     ##
-    rx_small_cat = re.compile(r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
+    rx_small_cat = re.compile(
+        r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
     @NOCScript.match(version__regex=r"SE|EA")
@@ -31,10 +33,10 @@ class Script(NOCScript):
         v = self.cli("show version")
         match = self.re_search(self.rx_small_cat, v)
         base = match.group("id")
-        return {
+        return [{
             "first_chassis_mac": base,
             "last_chassis_mac": base
-        }
+        }]
 
     ##
     ## Cisco Catalyst 4000/4500 Series
@@ -51,27 +53,26 @@ class Script(NOCScript):
         match = self.re_search(self.rx_cat4000, v)
         base = match.group("id")
         count = int(match.group("count"))
-        l = int(base[7:].replace(".", ""), 16) + count
-        last = "%s%02x.%04x" % (base[:7], l >> 16, l & 0xffff)
-        return {
+        return [{
             "first_chassis_mac": base,
-            "last_chassis_mac": last
-        }
+            "last_chassis_mac": MAC(base).shift(count - 1)
+        }]
 
     ##
     ## Cisco Catalyst 6500 Series or Cisco router 7600 Series
     ##
-    rx_cat6000 = re.compile(r"chassis MAC addresses:.+from\s+(?P<from_id>\S+)\s+to\s+(?P<to_id>\S+)",
+    rx_cat6000 = re.compile(
+        r"chassis MAC addresses:.+from\s+(?P<from_id>\S+)\s+to\s+(?P<to_id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
     @NOCScript.match(version__regex=r"S[XR]")
     def execute_cat6000(self):
         v = self.cli("show catalyst6000 chassis-mac-addresses")
         match = self.re_search(self.rx_cat6000, v)
-        return {
+        return [{
             "first_chassis_mac": match.group("from_id"),
             "last_chassis_mac": match.group("to_id")
-        }
+        }]
 
     ##
     ## Other
