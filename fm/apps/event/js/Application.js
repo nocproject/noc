@@ -190,6 +190,7 @@ Ext.define("NOC.fm.event.Application", {
                 }
             },
             viewConfig: {
+                enableTextSelection: true,
                 getRowClass: Ext.bind(me.getRowClass, me)
                 /* listeners: {
                     scope: me,

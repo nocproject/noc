@@ -262,6 +262,7 @@ Ext.define("NOC.core.ModelApplication", {
             ],
             rbar: grid_rbar,
             viewConfig: {
+                enableTextSelection: true,
                 getRowClass: Ext.bind(me.getRowClass, me),
                 listeners: {
                     scope: me,
