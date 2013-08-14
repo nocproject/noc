@@ -207,6 +207,8 @@ class LinkDiscoveryJob(MODiscoveryJob):
         """
         # Caches
         self.neighbor_by_mac_cache = {}  # mac -> object
+        self.own_mac_cache = {}  # mac -> true | false
+        self.own_macs = None  # [(first_mac, last_mac), ...]
         # Fetch existing links
         self.submited = set()  # (local_iface, remote_object, remote_iface)
         self.load_existing_links(object)
@@ -261,3 +263,33 @@ class LinkDiscoveryJob(MODiscoveryJob):
             o = DiscoveryID.objects.find_object(mac=mac)
             self.neighbor_by_mac_cache[mac] = o
         return o
+
+    def is_own_mac(self, mac):
+        """
+        Check the MAC belongs to object
+        :param mac:
+        :return:
+        """
+        if self.own_macs is None:
+            r = DiscoveryID.macs_for_object(self.object)
+            if not r:
+                self.own_macs = []
+                return False
+        if self.own_macs:
+            mr = self.own_mac_cache.get(mac)
+            if mr is None:
+                mr = False
+                for f, t in self.own_macs:
+                    if f <= mac <= t:
+                        mr = True
+                        break
+                self.own_mac_cache[mac] = mr
+            return mr
+        else:
+            return False
+
+
+        r = self.own_mac_cache.get(mac)
+        if r is None:
+            r = DiscoveryID.objects
+        return r
