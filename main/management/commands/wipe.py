@@ -98,6 +98,7 @@ class Command(BaseCommand):
         :return: None
         """
         from noc.sa.models import ManagedObjectAttribute
+        from noc.sa.models.maptask import MapTask
         from noc.inv.models import (ForwardingInstance,
                                    Interface, SubInterface, Link,
                                    MACDB)
@@ -157,6 +158,9 @@ class Command(BaseCommand):
             for a in Address.objects.filter(managed_object=o):
                 a.managed_object = None
                 a.save()
+        # Delete active map tasks
+        with self.log("Deleting map tasks"):
+            MapTask.objects.filter(managed_object=o).delete()
         # Delete Managed Object's attributes
         with self.log("Deleting object's attributes"):
             ManagedObjectAttribute.objects.filter(managed_object=o).delete()
