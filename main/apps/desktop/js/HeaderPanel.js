@@ -21,6 +21,10 @@
         },
         border: false,
         // bodyCls: Ext.baseCSSPrefix + 'toolbar',
+        bodyStyle: {
+            "background-color": NOC.settings.branding_background_color,
+            "color": NOC.settings.branding_color
+        },
         bodyPadding: _padding,
         height: _header_height,
         maxHeight: _header_height,
@@ -28,7 +32,7 @@
         collapsible: true,
         animCollapse: true,
         collapseMode: "mini",
-        split: true,
+        //split: true,
         preventHeader: true,
         items: [
             Ext.create("Ext.Img",{
@@ -38,7 +42,7 @@
             }),
             {
                 xtype: "container",
-                html: "NOC:&nbsp;",
+                html: "&nbsp;NOC| ",
                 style: {
                     fontSize: "18px",
                     fontWeight: "bold"
