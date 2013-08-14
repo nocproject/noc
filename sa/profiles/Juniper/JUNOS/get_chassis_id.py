@@ -30,6 +30,6 @@ class Script(NOCScript):
         return [
             {
                 "first_chassis_mac": mac,
-                "last_chassis_mac": MAC(mac).shift(int(count))
+                "last_chassis_mac": MAC(mac).shift(int(count) - 1)
             } for mac, count in self.rx_range.findall(v)
         ]
