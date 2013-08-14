@@ -605,15 +605,18 @@ class ListOfParameter(ListParameter):
     ...
     InterfaceTypeError: IntParameter: 'x'
     """
-    def __init__(self, element, required=True, default=None):
+    def __init__(self, element, required=True, default=None, convert=False):
         self.element = element
         self.is_list = type(element) in (list, tuple)
+        self.convert = convert
         super(ListOfParameter, self).__init__(required=required,
                                               default=default)
     
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
+        if self.convert and not isinstance(value, (list, tuple)):
+            value = [value]
         v = super(ListOfParameter, self).clean(value)
         if self.is_list:
             return [[e.clean(vv) for e, vv in zip(self.element, v)] for v in value]
@@ -758,10 +761,14 @@ class DictListParameter(ListOfParameter):
     [{'1': 2}, {'2': 3, '4': 1}]
     >>> DictListParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean([{"i":10,"s":"ten"},{"i":"5","s":"five"}])
     [{'i': 10, 's': 'ten'}, {'i': 5, 's': 'five'}]
+    >>> DictListParameter(attrs={"i":IntParameter(),"s":StringParameter()},convert=True).clean({"i":"10","s":"ten"})
+    [{'i': 10, 's': 'ten'}]
     """
-    def __init__(self, required=True, default=None, attrs=None):
-        super(DictListParameter, self).__init__(element=DictParameter(attrs=attrs),
-                                           required=required, default=default)
+    def __init__(self, required=True, default=None,
+                 attrs=None, convert=False):
+        super(DictListParameter, self).__init__(
+            element=DictParameter(attrs=attrs),
+            required=required, default=default, convert=convert)
 
 
 class DateTimeParameter(StringParameter):
@@ -1228,20 +1235,20 @@ class DocumentParameter(Parameter):
 class TagsParameter(Parameter):
     """
     >>> TagsParameter().clean([1, 2, "tags"])
-    ['1', '2', 'tags']
+    [u'1', u'2', u'tags']
     >>> TagsParameter().clean([1, 2, "tags "])
-    ['1', '2', 'tags']
+    [u'1', u'2', u'tags']
     >>> TagsParameter().clean("1,2,tags")
-    ['1', '2', 'tags']
+    [u'1', u'2', u'tags']
     >>> TagsParameter().clean("1 , 2,  tags")
-    ['1', '2', 'tags']
+    [u'1', u'2', u'tags']
     """
     def clean(self, value):
         if type(value) in (list, tuple):
             v = [unicode(v).strip() for v in value]
             return [x for x in v if x]
         elif isinstance(value, basestring):
-            v = [x.strip() for x in value.split(",")]
+            v = [unicode(x.strip()) for x in value.split(",")]
             return [x for x in v if x]
         else:
             self.raise_error("Invalid tags: %s" % value)
