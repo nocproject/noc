@@ -130,7 +130,7 @@ class MAC(str):
         'AA:BB:CC:DD:F0:00'
         >>>MAC("AA:BB:CC:DD:EE:FF").shift(4096)
         'AA:BB:CC:DD:FE:FF'
-        
+
         :param count:
         :return:
         """
