@@ -301,7 +301,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                itemId: "reset",
                text: "Reset",
-               glyph: 0xf014,
+               glyph: 0xf0e2,
                disabled: true,
                scope: me,
                handler: me.onReset
