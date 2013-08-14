@@ -87,3 +87,16 @@ class DiscoveryID(Document):
             if r:
                 return ManagedObject.objects.get(id=r["object"])
         return None
+
+    @classmethod
+    def macs_for_object(cls, object):
+        """
+        Get MAC addresses for object
+        :param cls:
+        :param object:
+        :return: list of (fist_mac, last_mac)
+        """
+        o = cls.objects.filter(object=object.id)
+        if not o or not o.chassis_mac:
+            return None
+        return [(r.first_mac, r.last_mac) for r in o.chassis_mac]
