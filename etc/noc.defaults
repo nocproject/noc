@@ -188,6 +188,9 @@ logo_height = 24
 favicon_url = /static/img/logo_24x24_deep_azure.png
 # Default theme
 default_theme = gray
+# Top panel colors
+branding_background_color = #c0c0c0
+branding_color = #000
 
 #
 # UI themes
