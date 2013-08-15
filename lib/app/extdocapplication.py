@@ -108,6 +108,9 @@ class ExtDocApplication(ExtApplication):
         for p in q:
             if p in self.clean_fields:
                 q[p] = self.clean_fields[p].clean(q[p])
+        # @todo: correct __ lookups
+        if any(p for p in q if p.endswith("__referred")):
+            del q[p]
         return q
 
     def instance_to_dict(self, o, fields=None):

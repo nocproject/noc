@@ -18,3 +18,4 @@ class EventClassificationRuleApplication(ExtDocApplication):
     title = "Classification Rule"
     menu = "Setup | Classification Rules"
     model = EventClassificationRule
+    query_condition = "icontains"
