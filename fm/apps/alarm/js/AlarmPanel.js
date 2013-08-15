@@ -247,7 +247,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
 
         me.clearButton = Ext.create("Ext.Button", {
             text: "Clear",
-            iconCls: "icon_pill",
+            glyph: NOC.glyph.eraser,
             scope: me,
             handler: me.onClear
         });
@@ -255,14 +255,14 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         me.watchButton = Ext.create("Ext.Button", {
             text: "Watch",
             enableToggle: true,
-            iconCls: "icon_star_grey",
+            glyph: NOC.glyph.star,
             scope: me,
             handler: me.onWatch
         });
 
         me.setRootButton = Ext.create("Ext.Button", {
             text: "Set Root Cause",
-            iconCls: "icon_attach",
+            glyph: NOC.glyph.paper_clip,
             scope: me,
             handler: me.onSetRoot
         });
@@ -275,13 +275,13 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                     items: [
                         {
                             text: "Close",
-                            iconCls: "icon_arrow_undo",
+                            glyph: NOC.glyph.arrow_left,
                             scope: me,
                             handler: me.onClose
                         },
                         {
                             text: "Refresh",
-                            iconCls: Ext.baseCSSPrefix + "tbar-loading",
+                            glyph: NOC.glyph.refresh,
                             scope: me,
                             handler: me.onRefresh
                         },
