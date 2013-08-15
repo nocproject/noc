@@ -84,7 +84,7 @@ class AlarmApplication(ExtApplication):
             c = q["collapse"]
             del q["collapse"]
             if c != "0":
-                q["root__exists"] = True
+                q["root__exists"] = False
         return q
 
     def instance_to_dict(self, o, fields=None):
