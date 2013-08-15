@@ -67,18 +67,18 @@ Ext.define("NOC.fm.classificationrule.Application", {
             fieldLabel: "Event Class",
             allowBlank: false
         }
-    ]/*,
+    ],
     filters: [
         {
             title: "Builtin",
             name: "is_builtin",
-            ftype: "bool"
-        }
+            ftype: "boolean"
+        },
         {
             title: "By Event Class",
             name: "event_class",
             ftype: "lookup",
             lookup: "fm.eventclass"
         }
-    ]*/
+    ]
 });
