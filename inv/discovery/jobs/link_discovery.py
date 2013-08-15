@@ -260,7 +260,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
         o = self.neighbor_by_mac_cache.get(mac)
         if not o:
             # Find in discovery cache
-            o = DiscoveryID.objects.find_object(mac=mac)
+            o = DiscoveryID.find_object(mac=mac)
             self.neighbor_by_mac_cache[mac] = o
         return o
 
