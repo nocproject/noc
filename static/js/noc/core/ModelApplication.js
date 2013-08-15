@@ -66,7 +66,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "create",
                 text: "Add",
-                iconCls: "icon_add",
+                glyph: NOC.glyph.plus,
                 tooltip: "Add new record",
                 hasAccess: NOC.hasPermission("create"),
                 scope: me,
@@ -229,9 +229,6 @@ Ext.define("NOC.core.ModelApplication", {
             xtype: "gridpanel",
             itemId: "grid",
             store: me.store,
-            features: [
-                {ftype: "selectable", id: "selectable"}
-            ],
             columns: [
                 {
                     xtype: "actioncolumn",
@@ -265,6 +262,7 @@ Ext.define("NOC.core.ModelApplication", {
             ],
             rbar: grid_rbar,
             viewConfig: {
+                enableTextSelection: true,
                 getRowClass: Ext.bind(me.getRowClass, me),
                 listeners: {
                     scope: me,
@@ -286,7 +284,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "save",
                 text: "Save",
-                iconCls: "icon_disk",
+                glyph: NOC.glyph.save,
                 // formBind: true,
                 // disabled: true,
                 scope: me,
@@ -296,7 +294,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "close",
                 text: "Close",
-                iconCls: "icon_arrow_undo",
+                glyph: NOC.glyph.arrow_left,
                 scope: me,
                 handler: me.onClose
             },
@@ -304,7 +302,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                itemId: "reset",
                text: "Reset",
-               iconCls: "icon_cancel",
+               glyph: NOC.glyph.undo,
                disabled: true,
                scope: me,
                handler: me.onReset
@@ -312,7 +310,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                itemId: "delete",
                text: "Delete",
-               iconCls: "icon_delete",
+               glyph: NOC.glyph.remove,
                disabled: true,
                hasAccess: NOC.hasPermission("delete"),
                scope: me,
@@ -322,7 +320,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "clone",
                 text: "Clone",
-                iconCls: "icon_page_copy",
+                glyph: NOC.glyph.copy,
                 disabled: true,
                 hasAccess: NOC.hasPermission("create"),
                 scope: me,
