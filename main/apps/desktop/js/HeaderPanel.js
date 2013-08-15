@@ -20,7 +20,11 @@
             align: "middle"
         },
         border: false,
-        bodyCls: Ext.baseCSSPrefix + 'tab-bar',
+        // bodyCls: Ext.baseCSSPrefix + 'toolbar',
+        bodyStyle: {
+            "background-color": NOC.settings.branding_background_color,
+            "color": NOC.settings.branding_color
+        },
         bodyPadding: _padding,
         height: _header_height,
         maxHeight: _header_height,
@@ -28,7 +32,7 @@
         collapsible: true,
         animCollapse: true,
         collapseMode: "mini",
-        split: true,
+        //split: true,
         preventHeader: true,
         items: [
             Ext.create("Ext.Img",{
@@ -38,7 +42,7 @@
             }),
             {
                 xtype: "container",
-                html: "NOC:&nbsp;",
+                html: "&nbsp;NOC| ",
                 style: {
                     fontSize: "18px",
                     fontWeight: "bold"
@@ -62,33 +66,34 @@
                 itemId: "user_display_name",
                 text: "Anonymous",
                 scale: "small",
-                iconCls: "icon_user",
+                // iconCls: "icon_user",
+                glyph: NOC.glyph.user,
                 hidden: true,
                 menu: [
                     {
                         id: "header_menu_toggle",
                         text: "Collapse all panels",
-                        iconCls: "icon_arrow_out"
+                        glyph: NOC.glyph.expand
                     },
                     "-",
                     {
                         id: "header_menu_userprofile",
                         text: "User profile ...",
                         disabled: true,
-                        iconCls: "icon_user_edit"
+                        glyph: NOC.glyph.cog
                     },
                     {
                         id: "header_menu_change_password",
                         itemId: Ext.getCmp("header"),
                         text: "Change password ...",
                         disabled: true,
-                        iconCls: "icon_user_green"
+                        glyph: NOC.glyph.lock
                     },
                     "-",
                     {
                         id: "header_menu_logout",
                         text: "Logout",
-                        iconCls: "icon_door_out"
+                        glyph: NOC.glyph.off
                     }
                 ]
             },

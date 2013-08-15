@@ -230,7 +230,6 @@ Ext.define("NOC.main.desktop.Controller", {
         var me = this;
         Ext.getCmp("header").collapse(Ext.Component.DIRECTION_TOP);
         Ext.getCmp("nav").collapse(Ext.Component.DIRECTION_LEFT);
-        Ext.getCmp("status").collapse(Ext.Component.DIRECTION_BOTTOM);
     },
     // Search text entered
     onSearch: function(value) {

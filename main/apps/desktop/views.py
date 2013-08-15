@@ -104,6 +104,8 @@ class DesktopApplication(ExtApplication):
             "logo_url": config.get("customization", "logo_url"),
             "logo_width": config.get("customization", "logo_width"),
             "logo_height": config.get("customization", "logo_height"),
+            "branding_color": config.get("customization", "branding_color"),
+            "branding_background_color": config.get("customization", "branding_background_color"),
             "favicon_url": favicon_url,
             "favicon_mime": favicon_mime,
             "debug_js": config.getboolean("main", "debug_js")

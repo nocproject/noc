@@ -11,7 +11,6 @@ Ext.define("NOC.main.desktop.Viewport", {
     layout: "border",
     items: [
         Ext.create("NOC.main.desktop.HeaderPanel"),
-        Ext.create("NOC.main.desktop.StatusPanel"),
         Ext.create("NOC.main.desktop.NavPanel"),
         Ext.create("NOC.main.desktop.WorkplacePanel")
     ]
