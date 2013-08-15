@@ -188,11 +188,18 @@ logo_height = 24
 favicon_url = /static/img/logo_24x24_deep_azure.png
 # Default theme
 default_theme = gray
+# Top panel colors
+branding_background_color = #c0c0c0
+branding_color = #000
 
 #
 # UI themes
 #
 [themes]
+neptune.name = Neptune
+neptune.css = /static/pkg/extjs/resources/css/ext-all-neptune.css
+neptune.enabled = true
+
 blue.name = Blue
 blue.css = /static/pkg/extjs/resources/css/ext-all.css
 blue.enabled = true

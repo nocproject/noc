@@ -9,7 +9,7 @@ console.debug("Defining NOC.main.desktop.Controller");
 Ext.define("NOC.main.desktop.Controller", {
     extend: "Ext.app.Controller",
     require: ["NOC.core.StateProvider"],
-    views: ["NOC.main.desktop.Viewport"],
+    //views: ["NOC.main.desktop.Viewport"],
 
     onLaunch: function() {
         var me = this;
@@ -230,7 +230,6 @@ Ext.define("NOC.main.desktop.Controller", {
         var me = this;
         Ext.getCmp("header").collapse(Ext.Component.DIRECTION_TOP);
         Ext.getCmp("nav").collapse(Ext.Component.DIRECTION_LEFT);
-        Ext.getCmp("status").collapse(Ext.Component.DIRECTION_BOTTOM);
     },
     // Search text entered
     onSearch: function(value) {
