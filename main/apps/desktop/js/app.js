@@ -15,7 +15,14 @@ Ext.application({
         console.log("Initializing history API");
         Ext.History.init();
         console.log("NOC application starting");
-        Ext.create("NOC.main.desktop.Viewport");
+        Ext.create("Ext.Viewport", {
+            layout: "border",
+            items: [
+                Ext.create("NOC.main.desktop.HeaderPanel"),
+                Ext.create("NOC.main.desktop.NavPanel"),
+                Ext.create("NOC.main.desktop.WorkplacePanel")
+            ]
+        });
         console.log("NOC application ready");
         NOC.run = me.controllers.first().launchTab;
     }
