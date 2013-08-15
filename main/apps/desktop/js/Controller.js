@@ -9,7 +9,7 @@ console.debug("Defining NOC.main.desktop.Controller");
 Ext.define("NOC.main.desktop.Controller", {
     extend: "Ext.app.Controller",
     require: ["NOC.core.StateProvider"],
-    views: ["NOC.main.desktop.Viewport"],
+    //views: ["NOC.main.desktop.Viewport"],
 
     onLaunch: function() {
         var me = this;
