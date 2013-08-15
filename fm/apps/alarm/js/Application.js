@@ -106,6 +106,7 @@ Ext.define("NOC.fm.alarm.Application", {
             text: "Expand",
             tooltip: "Show/collapse children alarms",
             enableToggle: true,
+            glyph: NOC.glyph.expand,
             scope: me,
             handler: me.onChangeFilter
         });
