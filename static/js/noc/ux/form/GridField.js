@@ -67,7 +67,6 @@ Ext.define("Ext.ux.form.GridField", {
     getValue: function() {
         var me = this,
             records = [];
-        console.log("getValue", me.store.data, me.fields);
         me.store.each(function(r) {
             var d = {};
             Ext.each(me.fields, function(f) {
@@ -80,7 +79,6 @@ Ext.define("Ext.ux.form.GridField", {
 
     setValue: function(v) {
         var me = this;
-        console.log("setValue", v);
         v = v || [];
         me.store.loadData(v);
     },
