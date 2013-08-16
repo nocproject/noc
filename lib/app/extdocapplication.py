@@ -11,9 +11,11 @@ from django.http import HttpResponse
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.nosql import (StringField, BooleanField, GeoPointField,
-                           ForeignKeyField, PlainReferenceField, Q)
+                           ForeignKeyField, PlainReferenceField,
+                           ListField, Q, EmbeddedDocumentField)
 from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
-                               ModelParameter)
+                               ModelParameter, ListOfParameter,
+                               EmbeddedDocumentParameter)
 from noc.lib.validators import is_int
 
 
@@ -37,6 +39,10 @@ class ExtDocApplication(ExtApplication):
             elif isinstance(f, ForeignKeyField):
                 self.clean_fields[f.name] = ModelParameter(
                     f.document_type, required=f.required)
+            elif isinstance(f, ListField):
+                if isinstance(f.field, EmbeddedDocumentField):
+                    self.clean_fields[f.name] = ListOfParameter(
+                        element=EmbeddedDocumentParameter(f.field.document_type))
             if f.primary_key:
                 self.pk = name
         #
@@ -133,6 +139,8 @@ class ExtDocApplication(ExtApplication):
                         v = str(v.id)
                     else:
                         v = str(v)
+                elif isinstance(f, ListField):
+                    v = f.to_mongo(getattr(o, f.name))
                 elif type(v) not in (str, unicode, int, long, bool, dict):
                     if hasattr(v, "id"):
                         v = v.id
