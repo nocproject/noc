@@ -15,7 +15,7 @@ class IGetDiscoveryID(Interface):
         "chassis_mac": DictListParameter(attrs={
             "first_chassis_mac": MACAddressParameter(required=False),
             "last_chassis_mac": MACAddressParameter(required=False)
-        }, convert=True),
+        }, convert=True, required=False),
         # FQDN
         "hostname": StringParameter(required=False),
         # Router ID/Loopback address
