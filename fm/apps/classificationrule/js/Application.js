@@ -10,7 +10,8 @@ Ext.define("NOC.fm.classificationrule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.fm.classificationrule.Model",
-        "NOC.fm.eventclass.LookupField"
+        "NOC.fm.eventclass.LookupField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.fm.classificationrule.Model",
     search: true,
@@ -66,6 +67,26 @@ Ext.define("NOC.fm.classificationrule.Application", {
             name: "event_class",
             fieldLabel: "Event Class",
             allowBlank: false
+        },
+        {
+            xtype: "gridfield",
+            name: "patterns",
+            fieldLabel: "Patterns",
+            allowBlank: false,
+            columns: [
+                {
+                    text: "Key RE",
+                    dataIndex: "key_re",
+                    flex: 1,
+                    editor: "textfield"
+                },
+                {
+                    text: "Value RE",
+                    dataIndex: "value_re",
+                    flex: 1,
+                    editor: "textfield"
+                }
+            ]
         }
     ],
     filters: [
