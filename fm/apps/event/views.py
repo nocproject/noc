@@ -9,6 +9,7 @@
 ## Python modules
 import os
 import inspect
+import re
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.fm.models.newevent import NewEvent
@@ -222,15 +223,26 @@ class EventApplication(ExtApplication):
         event.log_message("%s: %s" % (request.user.username, msg))
         return True
 
+    rx_parse_log = re.compile("^Classified as '(.+)'$")
+
     @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True,
           access="launch")
     def api_json(self, request, id):
         event = get_event(id)
         if not event:
             self.response_not_found()
+        # Get event class
+        e_class = None
+        if event.status in ("A", "S"):
+            for l in event.log:
+                match = self.rx_parse_log.match(l.message)
+                if match:
+                    e_class = match.group(1)
         r = ["["]
         r += ["    {"]
         r += ["        \"profile\": \"%s\"," % json_escape(event.managed_object.profile_name)]
+        if e_class:
+            r += ["        \"event_class__name\": \"%s\"" % e_class]
         r += ["        \"raw_vars\": {"]
         rr = []
         for k in event.raw_vars:
