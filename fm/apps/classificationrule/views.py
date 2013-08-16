@@ -19,3 +19,9 @@ class EventClassificationRuleApplication(ExtDocApplication):
     menu = "Setup | Classification Rules"
     model = EventClassificationRule
     query_condition = "icontains"
+
+    @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True,
+          access="read")
+    def api_json(self, request, id):
+        rule = self.get_object_or_404(EventClassificationRule, id=id)
+        return rule.to_json()
