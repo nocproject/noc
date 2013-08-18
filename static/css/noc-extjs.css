@@ -36,3 +36,8 @@ pre.sh_sourceCode {
 .noc-tp TABLE TH {
     font-weight: bold;
 }
+
+TABLE {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
