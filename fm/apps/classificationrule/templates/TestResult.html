@@ -1,0 +1,44 @@
+<b>Result:</b> {{#if result}}Matched{{else}}Not matched{{/if}}<br/>
+<b>Fetched variables:</b><br/>
+<table border="1">
+    <thead>
+        <th>Name</th>
+        <th>Value</th>
+    </thead>
+    <tbody>
+    {{#each vars}}
+        <tr>
+            <td><b>{{this}}</b></td>
+            <td>{{this}}</td>
+        </tr>
+    {{/each}}
+    </tbody>
+</table>
+<b>Patterns:</b><br/>
+<table border="1">
+    <tr>
+        <th colspan="2">Key</th>
+        <th colspan="2">Value</th>
+        <th rowspan="2">Vars</th>
+    </tr>
+    <tr>
+        <th>Key</th>
+        <th>Key Pattern</th>
+        <th>Value</th>
+        <th>Value Pattern</th>
+    </tr>
+    {{#each patterns}}
+    <tr>
+        <td>{{key}}</td>
+        <td>{{key_re}}</td>
+        <td>{{value}}</td>
+        <td>{{value_re}}</td>
+        <td>{{vars}}</td>
+    </tr>
+    {{/each}}
+</table>
+<br/>
+<div style='border: 1px dotted #808080'>
+    <b>Subject:</b> {{ subject }}<br/>
+    {{body}}
+</div>
