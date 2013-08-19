@@ -24,7 +24,7 @@ Ext.define("NOC.core.TemplatePreview", {
                     {
                         itemId: "close",
                         text: "Close",
-                        iconCls: "icon_arrow_undo",
+                        glyph: NOC.glyph.arrow_left,
                         scope: me,
                         handler: me.onClose
                     }
