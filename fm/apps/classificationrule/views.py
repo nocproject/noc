@@ -12,6 +12,7 @@ import re
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models import EventClassificationRule
 from noc.fm.models.eventclass import EventClass
+from noc.fm.models.mib import MIB
 from noc.lib.validators import is_objectid
 from noc.fm.models import get_event
 from noc.fm.models.translation import get_translated_template
@@ -65,6 +66,9 @@ class EventClassificationRuleApplication(ExtDocApplication):
                     data = e["raw_vars"]
                     if "profile" in e:
                         data["profile"] = e["profile"]
+            if data.get("source") == "SNMP Trap":
+                # Resolve MIBs
+                data.update(MIB.resolve_vars(data))
         # Check event class
         if "event_class" in q:
             event_class = self.get_object_or_404(EventClass,
@@ -112,6 +116,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
                             vars.update(v)
                             # Save patterns
                             s_patterns += [{
+                                "status": True,
                                 "key": k,
                                 "value": data[k],
                                 "key_re": pk.pattern,
@@ -124,6 +129,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
                 if not matched:
                     i_patterns = [
                         {
+                            "status": False,
                             "key": None,
                             "value": None,
                             "key_re": pk.pattern,

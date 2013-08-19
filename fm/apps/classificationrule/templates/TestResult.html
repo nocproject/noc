@@ -23,6 +23,7 @@
 <b>Patterns:</b><br/>
 <table border="1">
     <tr>
+        <th rowspan="2"</th>
         <th colspan="2">Key</th>
         <th colspan="2">Value</th>
         <th rowspan="2">Vars</th>
@@ -35,6 +36,7 @@
     </tr>
     {{#each patterns}}
     <tr>
+        <td>{{#if status}}<i class='icon-ok'></i>{{else}}<i class='icon-warning-sign'></i>{{/if}}</td>
         <td>{{key}}</td>
         <td>{{key_re}}</td>
         <td>{{value}}</td>
