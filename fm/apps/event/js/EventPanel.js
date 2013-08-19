@@ -245,6 +245,12 @@ Ext.define("NOC.fm.event.EventPanel", {
                             scope: me,
                             handler: me.onJSON
                         },
+                        {
+                            text: "Create Rule",
+                            glyph: NOC.glyph.file_text,
+                            scope: me,
+                            handler: me.onCreateRule
+                        },
                         "->",
                         me.eventIdField
                     ]
@@ -435,5 +441,19 @@ Ext.define("NOC.fm.event.EventPanel", {
                 NOC.error("Failed to reclassify");
             }
         });
+    },
+    //
+    onCreateRule: function() {
+        var me = this;
+        NOC.run(
+            "NOC.fm.classificationrule.Application",
+            "Classification Rule",
+            {
+                cmd: {
+                    cmd: "from_event",
+                    id: me.data.id
+                }
+            }
+        );
     }
 });
