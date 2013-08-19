@@ -81,6 +81,5 @@ Ext.define("NOC.fm.classificationrule.TestForm", {
         var me = this,
             item = me.app.showItem(me.app.ITEM_TEST_RESULT);
         item.preview({data: data});
-        console.log(data);
     }
 });
