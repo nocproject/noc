@@ -20,16 +20,23 @@ class Script(NOCScript):
     implements = [IGetChassisID]
 
     rx_range = re.compile(
-        "Public base address\s+(?P<mac>\S+)\s+"
-        "Public count\s+(?P<count>\d+)",
+        "(?P<type>Public|Private) base address\s+(?P<mac>\S+)\s+"
+        "(?P=type) count\s+(?P<count>\d+)",
         re.DOTALL | re.IGNORECASE
     )
 
     def execute(self):
-        v = self.cli("show chassis mac-addresses")
+        v = self.cli("show chassis mac-addresses", file="/tmp/l")
+        macs = []
+        for f, t in [(mac, MAC(mac).shift(int(count) - 1))
+                for _, mac, count in self.rx_range.findall(v)]:
+            if macs and MAC(f).shift(-1) == macs[-1][1]:
+                macs[-1][1] = t
+            else:
+                macs += [[f, t]]
         return [
             {
-                "first_chassis_mac": mac,
-                "last_chassis_mac": MAC(mac).shift(int(count) - 1)
-            } for mac, count in self.rx_range.findall(v)
+                "first_chassis_mac": f,
+                "last_chassis_mac": t
+            } for f, t in macs
         ]
