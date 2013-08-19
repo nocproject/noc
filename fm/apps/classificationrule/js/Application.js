@@ -121,7 +121,8 @@ Ext.define("NOC.fm.classificationrule.Application", {
         me.testResultPanel = Ext.create("NOC.core.TemplatePreview", {
             app: me,
             previewName: "Rule Test Result",
-            template: me.templates.TestResult
+            template: me.templates.TestResult,
+            onCloseItem: "ITEM_FORM"
         });
         me.ITEM_TEST_RESULT = me.registerItem(me.testResultPanel);
         //

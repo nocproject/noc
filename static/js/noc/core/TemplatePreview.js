@@ -53,9 +53,19 @@ Ext.define("NOC.core.TemplatePreview", {
     },
     //
     onClose: function() {
-        var me = this;
-        me.app.showItem(
-            me.onCloseItem === null ? me.app.ITEM_GRID : me.onCloseItem
-        );
+        var me = this,
+            idx;
+
+        if(me.onCloseItem === null) {
+            idx = me.app.ITEM_GRID;
+        } else {
+            if(Ext.isString(me.onCloseItem)) {
+                idx = me.app[me.onCloseItem];
+            } else {
+                idx = me.onCloseItem;
+            }
+        }
+        console.log(idx);
+        me.app.showItem(idx);
     }
 });
