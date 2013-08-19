@@ -14,6 +14,7 @@ from noc.fm.models import EventClassificationRule
 from noc.fm.models.eventclass import EventClass
 from noc.lib.validators import is_objectid
 from noc.fm.models import get_event
+from noc.fm.models.translation import get_translated_template
 
 
 class EventClassificationRuleApplication(ExtDocApplication):
@@ -110,7 +111,8 @@ class EventClassificationRuleApplication(ExtDocApplication):
                                 "value": data[k],
                                 "key_re": pk.pattern,
                                 "value_re": pv.pattern,
-                                "vars": v
+                                "vars": [{"key": k, "value": v[k]}
+                                         for k in v]
                             }]
                             matched = True
                             break
@@ -129,8 +131,11 @@ class EventClassificationRuleApplication(ExtDocApplication):
             r_patterns = s_patterns + i_patterns
         # @todo: Fill event class template
         if event_class:
-            subject = "XXX"
-            body = "YYY"
+            lang = "en"
+            subject = get_translated_template(
+                lang, event_class.text, "subject_template", vars)
+            body = get_translated_template(
+                lang, event_class.text, "body_template", vars)
         # Check expression
         r = {
             "result": result
@@ -138,7 +143,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
         if errors:
             r["errors"] = errors
         if vars:
-            r["vars"] = vars
+            r["vars"] = [{"key": k, "value": vars[k]} for k in vars]
         if r_patterns:
             r["patterns"] = r_patterns
         if subject:
