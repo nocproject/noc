@@ -26,7 +26,7 @@ class Script(NOCScript):
     )
 
     def execute(self):
-        v = self.cli("show chassis mac-addresses", file="/tmp/l")
+        v = self.cli("show chassis mac-addresses")
         macs = []
         for f, t in [(mac, MAC(mac).shift(int(count) - 1))
                 for _, mac, count in self.rx_range.findall(v)]:
