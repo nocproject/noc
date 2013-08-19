@@ -44,6 +44,8 @@ class EventClassificationRuleApplication(ExtDocApplication):
         required_vars = set()
         r_patterns = []
         event_class = None
+        subject = None
+        body = None
         if "data" in q:
             if is_objectid(q["data"]):
                 event = get_event(q["data"])
@@ -67,7 +69,10 @@ class EventClassificationRuleApplication(ExtDocApplication):
         if "event_class" in q:
             event_class = self.get_object_or_404(EventClass,
                                                  id=q["event_class"])
-            # @todo: Get required vars
+            for v in event_class.vars:
+                if v.required:
+                    required_vars.add(v.name)
+                    vars[v.name] = "MISSED!"
         # Check patterns
         if "patterns" in q:
             for p in q["patterns"]:
@@ -129,7 +134,11 @@ class EventClassificationRuleApplication(ExtDocApplication):
             if s_patterns and not i_patterns:
                 result = True
             r_patterns = s_patterns + i_patterns
-        # @todo: Fill event class template
+        # Check required variables
+        for rv in required_vars:
+            if rv not in vars:
+                errors += ["Missed required variable: %s" % rv]
+        # Fill event class template
         if event_class:
             lang = "en"
             subject = get_translated_template(
