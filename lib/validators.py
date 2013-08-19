@@ -21,6 +21,7 @@ rx_mimetype = re.compile(r"^[a-zA-Z0-9\-]+/[a-zA-Z0-9\-]+$")
 rx_email = re.compile(r"^[a-z0-9._\-]+@([a-z0-9\-]+\.)+[a-z0-9\-]+$",
                       re.IGNORECASE)
 rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
+rx_objectid = re.compile(r"^[0-9a-f]{24}$")
 
 
 ##
@@ -414,6 +415,16 @@ def is_mimetype(v):
     False
     """
     return rx_mimetype.match(v) is not None
+
+
+def is_objectid(v):
+    """
+    Check value is mongodb's ObjectId
+
+    :param v:
+    :return:
+    """
+    return rx_objectid.match(v) is not None
 
 
 def generic_validator(check, error_message):
