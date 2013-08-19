@@ -12,6 +12,7 @@ Ext.define("NOC.core.TemplatePreview", {
     app: null,
     template: null,
     previewName: null,
+    onCloseItem: null,
 
     initComponent: function() {
         var me = this;
@@ -53,6 +54,8 @@ Ext.define("NOC.core.TemplatePreview", {
     //
     onClose: function() {
         var me = this;
-        me.app.showGrid();
+        me.app.showItem(
+            me.onCloseItem === null ? me.app.ITEM_GRID : me.onCloseItem
+        );
     }
 });
