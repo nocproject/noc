@@ -1,4 +1,10 @@
-<b>Result:</b> {{#if result}}Matched{{else}}Not matched{{/if}}<br/>
+{{#if errors}}
+<i class="icon-warning-sign"></i><b>Errors:</b><br/>
+{{#each errors}}
+{{this}}<br/>
+{{/each}}
+{{/if}}
+<b>Result:</b> {{#if result}}<i class="icon-ok"></i>Matched{{else}}<i class="icon-warning-sign"></i>Not matched{{/if}}<br/>
 <b>Fetched variables:</b><br/>
 <table border="1">
     <thead>
@@ -8,8 +14,8 @@
     <tbody>
     {{#each vars}}
         <tr>
-            <td><b>{{this}}</b></td>
-            <td>{{this}}</td>
+            <td><b>{{key}}</b></td>
+            <td>{{value}}</td>
         </tr>
     {{/each}}
     </tbody>
@@ -33,7 +39,13 @@
         <td>{{key_re}}</td>
         <td>{{value}}</td>
         <td>{{value_re}}</td>
-        <td>{{vars}}</td>
+        <td>
+            {{#if vars}}
+                {{#each vars}}
+                <b>{{key}}:</b> {{value}}<br/>
+                {{/each}}
+            {{/if}}
+        </td>
     </tr>
     {{/each}}
 </table>
