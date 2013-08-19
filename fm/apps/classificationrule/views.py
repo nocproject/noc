@@ -13,7 +13,7 @@ from noc.lib.app import ExtDocApplication, view
 from noc.fm.models import EventClassificationRule
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
-from noc.lib.validators import is_objectid
+from noc.lib.validators import is_objectid, is_oid
 from noc.fm.models import get_event
 from noc.fm.models.translation import get_translated_template
 
@@ -166,3 +166,49 @@ class EventClassificationRuleApplication(ExtDocApplication):
         if body:
             r["body"] = body
         return r
+
+    @view(url="^from_event/(?P<event_id>[0-9a-f]{24})/$",
+          method=["GET"], access="create", api=True)
+    def api_from_event(self, request, event_id):
+        """
+        Create classification rule from event
+        :param request:
+        :param event_id:
+        :return:
+        """
+        event = get_event(event_id)
+        if not event:
+            self.response_not_found()
+        event_name = event.managed_object.profile_name.split(".")
+        event_name += [x.strip() for x in event.event_class.name.split("|")]
+        event_name = " | ".join(event_name)
+        if event.raw_vars["source"] == "syslog":
+            event_name += " (SYSLOG)"
+        elif event.raw_vars["source"] == "SNMP Trap":
+            event_name += " (SNMP)"
+        data = {
+            "name": event_name,
+            "preference": 1000
+            }
+        if event.raw_vars["source"] == "syslog":
+            data["description"] = event.raw_vars["message"]
+        elif (event.raw_vars["source"] == "SNMP Trap" and
+              "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
+            data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
+        patterns = {}
+        for k in event.raw_vars:
+            if k not in ("collector", "facility", "severity"):
+                patterns[k] = event.raw_vars[k]
+        if hasattr(event, "resolved_vars"):
+            for k in event.resolved_vars:
+                if k not in (
+                    "RFC1213-MIB::sysUpTime.0",
+                    "SNMPv2-MIB::sysUpTime.0") and not is_oid(k):
+                    patterns[k] = event.resolved_vars[k]
+        data["patterns"] = [
+            {
+                "key_re": k,
+                "value_re": patterns[k]
+            } for k in patterns
+        ]
+        return data
