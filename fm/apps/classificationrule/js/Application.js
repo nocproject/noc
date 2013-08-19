@@ -11,7 +11,8 @@ Ext.define("NOC.fm.classificationrule.Application", {
     requires: [
         "NOC.fm.classificationrule.Model",
         "NOC.fm.eventclass.LookupField",
-        "Ext.ux.form.GridField"
+        "Ext.ux.form.GridField",
+        "NOC.fm.classificationrule.templates.TestResult"
     ],
     model: "NOC.fm.classificationrule.Model",
     search: true,
@@ -112,6 +113,18 @@ Ext.define("NOC.fm.classificationrule.Application", {
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
         //
+        me.testForm = Ext.create("NOC.fm.classificationrule.TestForm", {
+            app: me
+        });
+        me.ITEM_TEST_FORM = me.registerItem(me.testForm);
+        //
+        me.testResultPanel = Ext.create("NOC.core.TemplatePreview", {
+            app: me,
+            previewName: "Rule Test Result",
+            template: me.templates.TestResult
+        });
+        me.ITEM_TEST_RESULT = me.registerItem(me.testResultPanel);
+        //
         Ext.apply(me, {
             formToolbar: [
                 {
@@ -121,6 +134,14 @@ Ext.define("NOC.fm.classificationrule.Application", {
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
+                },
+                {
+                    text: "Test",
+                    glyph: NOC.glyph.question_sign,
+                    tooltip: "Test rule",
+                    hasAccess: NOC.hasPermission("test"),
+                    scope: me,
+                    handler: me.onTest
                 }
             ]
         });
@@ -131,5 +152,15 @@ Ext.define("NOC.fm.classificationrule.Application", {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
+    },
+    //
+    onTest: function() {
+        var me = this;
+        me.showItem(me.ITEM_TEST_FORM);
+    },
+    //
+    getPatterns: function() {
+        var me = this;
+        return me.form.getFieldValues().patterns;
     }
 });
