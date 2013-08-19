@@ -22,7 +22,9 @@ from mibpreference import MIBPreference
 from mibalias import MIBAlias
 from syntaxalias import SyntaxAlias
 from oidalias import OIDAlias
-
+from noc.lib.validators import is_oid
+from noc.lib.escape import fm_unescape, fm_escape
+from noc.lib.snmputils import render_tc
 
 ## Regular expression patterns
 rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
@@ -366,6 +368,78 @@ class MIB(nosql.Document):
             o.name = ba
             o.aliases = [a for a in o.aliases if a != ba]
             o.save()
+
+    @classmethod
+    def resolve_vars(cls, vars):
+        """
+        Resolve FM key -> value dict according to MIBs
+
+        :param cls:
+        :param vars:
+        :return:
+        """
+        r = {}
+        for k in vars:
+            if not is_oid(k):
+                # Nothing to resolve
+                continue
+            v = fm_unescape(vars[k])
+            rk, syntax = cls.get_name_and_syntax(k)
+            rv = v
+            if syntax:
+                # Format value according to syntax
+                if syntax["base_type"] == "Enumeration":
+                    # Expand enumerated type
+                    try:
+                        rv = syntax["enum_map"][str(v)]
+                    except KeyError:
+                        pass
+                elif syntax["base_type"] == "Bits":
+                    # @todo: Fix ugly hack
+                    if v.startswith("="):
+                        xv = int(v[1:], 16)
+                    else:
+                        xv = 0
+                        for c in v:
+                            xv = (xv << 8) + ord(c)
+                    # Decode
+                    b_map = syntax.get("enum_map", {})
+                    b = []
+                    n = 0
+                    while xv:
+                        if xv & 1:
+                            x = str(n)
+                            if x in b_map:
+                                b = [b_map[x]] + b
+                            else:
+                                b = ["%X" % (1 << n)]
+                        n += 1
+                        xv >>= 1
+                    rv = "(%s)" % ",".join(b)
+                else:
+                    # Render according to TC
+                    rv = render_tc(
+                        v,
+                        syntax["base_type"],
+                        syntax.get("display_hint", None)
+                    )
+                    try:
+                        unicode(rv, "utf8")
+                    except:
+                        # Escape invalid UTF8
+                        rv = fm_escape(rv)
+            else:
+                try:
+                    unicode(rv, "utf8")
+                except:
+                    # escape invalid UTF8
+                    rv = fm_escape(rv)
+            if is_oid(v):
+                # Resolve OID in value
+                rv = MIB.get_name(v)
+            if rk != k or rv != v:
+                r[rk] = rv
+        return r
 
 
 ## Avoid circular references
