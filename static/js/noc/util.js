@@ -404,3 +404,9 @@ Handlebars.registerHelper("debug", function(opt) {
     console.log("Value:", opt);
   }
 });
+
+Handlebars.registerHelper("join", function(context, block) {
+    return context.map(function(v) {
+        return block.fn(v);
+    }).join(", ");
+});
