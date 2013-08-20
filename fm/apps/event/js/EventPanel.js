@@ -445,15 +445,6 @@ Ext.define("NOC.fm.event.EventPanel", {
     //
     onCreateRule: function() {
         var me = this;
-        NOC.run(
-            "NOC.fm.classificationrule.Application",
-            "Classification Rule",
-            {
-                cmd: {
-                    cmd: "from_event",
-                    id: me.data.id
-                }
-            }
-        );
+        NOC.launch("fm.classificationrule", "from_event", {id: me.data.id});
     }
 });

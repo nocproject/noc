@@ -147,21 +147,6 @@ Ext.define("NOC.fm.classificationrule.Application", {
             ]
         });
         me.callParent();
-        if(me.noc.cmd && me.noc.cmd.cmd == "from_event") {
-            Ext.Ajax.request({
-                url: "/fm/classificationrule/from_event/" + me.noc.cmd.id + "/",
-                method: "GET",
-                scope: me,
-                success: function(response) {
-                    var me = this,
-                        data = Ext.decode(response.responseText);
-                    me.onNewRecord(data);
-                },
-                failure: function() {
-                    NOC.error("Failed to create rule from event");
-                }
-            });
-        }
     },
 
     onJSON: function() {
@@ -178,5 +163,22 @@ Ext.define("NOC.fm.classificationrule.Application", {
     getPatterns: function() {
         var me = this;
         return me.form.getFieldValues().patterns;
+    },
+    //
+    onCmd_from_event: function(data) {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/fm/classificationrule/from_event/" + data.id + "/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var me = this,
+                    data = Ext.decode(response.responseText);
+                me.onNewRecord(data);
+            },
+            failure: function() {
+                NOC.error("Failed to create rule from event");
+            }
+        });
     }
 });
