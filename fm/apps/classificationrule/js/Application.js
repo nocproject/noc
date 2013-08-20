@@ -41,55 +41,6 @@ Ext.define("NOC.fm.classificationrule.Application", {
             width: 50
         }
     ],
-    fields: [
-        {
-            xtype: "textfield",
-            name: "name",
-            fieldLabel: "Name",
-            allowBlank: false
-        },
-        {
-            xtype: "textarea",
-            name: "description",
-            fieldLabel: "Description",
-            allowBlank: true
-        },
-        {
-            xtype: "numberfield",
-            name: "preference",
-            fieldLabel: "Preference",
-            allowBlank: false,
-            defaultValue: 1000,
-            minValue: 0,
-            maxValue: 10000
-        },
-        {
-            xtype: "fm.eventclass.LookupField",
-            name: "event_class",
-            fieldLabel: "Event Class",
-            allowBlank: false
-        },
-        {
-            xtype: "gridfield",
-            name: "patterns",
-            fieldLabel: "Patterns",
-            allowBlank: false,
-            columns: [
-                {
-                    text: "Key RE",
-                    dataIndex: "key_re",
-                    flex: 1,
-                    editor: "textfield"
-                },
-                {
-                    text: "Value RE",
-                    dataIndex: "value_re",
-                    flex: 1,
-                    editor: "textfield"
-                }
-            ]
-        }
-    ],
     filters: [
         {
             title: "Builtin",
@@ -127,6 +78,61 @@ Ext.define("NOC.fm.classificationrule.Application", {
         me.ITEM_TEST_RESULT = me.registerItem(me.testResultPanel);
         //
         Ext.apply(me, {
+            fields: [
+                {
+                    xtype: "textfield",
+                    name: "name",
+                    fieldLabel: "Name",
+                    allowBlank: false
+                },
+                {
+                    xtype: "textarea",
+                    name: "description",
+                    fieldLabel: "Description",
+                    allowBlank: true
+                },
+                {
+                    xtype: "numberfield",
+                    name: "preference",
+                    fieldLabel: "Preference",
+                    allowBlank: false,
+                    defaultValue: 1000,
+                    minValue: 0,
+                    maxValue: 10000
+                },
+                {
+                    xtype: "fm.eventclass.LookupField",
+                    name: "event_class",
+                    fieldLabel: "Event Class",
+                    allowBlank: false,
+                    listeners: {
+                        select: {
+                            scope: me,
+                            fn: me.onSelectEventClass
+                        }
+                    }
+                },
+                {
+                    xtype: "gridfield",
+                    name: "patterns",
+                    fieldLabel: "Patterns",
+                    allowBlank: false,
+                    columns: [
+                        {
+                            text: "Key RE",
+                            dataIndex: "key_re",
+                            flex: 1,
+                            editor: "textfield"
+                        },
+                        {
+                            text: "Value RE",
+                            dataIndex: "value_re",
+                            flex: 1,
+                            editor: "textfield"
+                        }
+                    ]
+                }
+            ],
             formToolbar: [
                 {
                     text: "JSON",
@@ -180,5 +186,17 @@ Ext.define("NOC.fm.classificationrule.Application", {
                 NOC.error("Failed to create rule from event");
             }
         });
+    },
+    //
+    onSelectEventClass: function(combo, records, opts) {
+        var me = this;
+        if(!me.currentRecord) {
+            var name = records[0].get("label"),
+                f = me.form.findField("name"),
+                v = f.getValue();
+            if(v.match(/<name>/)) {
+                f.setValue(v.replace("<name>", name));
+            }
+        }
     }
 });
