@@ -179,13 +179,11 @@ class EventClassificationRuleApplication(ExtDocApplication):
         event = get_event(event_id)
         if not event:
             self.response_not_found()
-        event_name = event.managed_object.profile_name.split(".")
-        event_name += [x.strip() for x in event.event_class.name.split("|")]
-        event_name = " | ".join(event_name)
+        event_name = " | ".join(event.managed_object.profile_name.split(".")) + " | <name> "
         if event.raw_vars["source"] == "syslog":
-            event_name += " (SYSLOG)"
+            event_name += "(SYSLOG)"
         elif event.raw_vars["source"] == "SNMP Trap":
-            event_name += " (SNMP)"
+            event_name += "(SNMP)"
         data = {
             "name": event_name,
             "preference": 1000
