@@ -24,6 +24,8 @@ Ext.application({
             ]
         });
         console.log("NOC application ready");
-        NOC.run = me.controllers.first().launchTab;
+        var controller = me.controllers.first();
+        NOC.run = controller.launchTab;
+        NOC.launch = Ext.bind(controller.launchApp, controller);
     }
 });
