@@ -11,7 +11,8 @@ Ext.define("NOC.fm.alarm.Application", {
     requires: [
         "NOC.fm.alarm.templates.Overview",
         "NOC.fm.alarm.templates.Help",
-        "NOC.fm.alarm.templates.Data"
+        "NOC.fm.alarm.templates.Data",
+        "NOC.fm.alarm.templates.SummaryPanel"
     ],
     layout: "card",
     STATUS_MAP: {
@@ -163,6 +164,12 @@ Ext.define("NOC.fm.alarm.Application", {
                     renderer: NOC.render.Lookup("managed_object")
                 },
                 {
+                    text: "Severity",
+                    dataIndex: "severity",
+                    width: 70,
+                    renderer: NOC.render.Lookup("severity")
+                },
+                {
                     text: "Class",
                     dataIndex: "alarm_class",
                     width: 300,
@@ -172,6 +179,12 @@ Ext.define("NOC.fm.alarm.Application", {
                     text: "Subject",
                     dataIndex: "subject",
                     flex: 1
+                },
+                {
+                    text: "Duration",
+                    dataIndex: "duration",
+                    width: 30,
+                    align: "right"
                 },
                 {
                     text: "Events",
