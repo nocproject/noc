@@ -11,9 +11,10 @@ Ext.namespace("NOC", "NOC.render");
 // Setup
 //
 _noc_bool_img = {
-    true: "<img src='/static/pkg/famfamfam-silk/tick.png' />",
-    false: "<img src='/static/pkg/famfamfam-silk/cross.png' />",
-    null: "<img src='/static/pkg/famfamfam-silk/bullet_black.png' />"
+    //true: "<img src='/static/pkg/famfamfam-silk/tick.png' />",
+    true: "<i class='icon-ok'></i>",
+    false: "<i class='icon-remove'></i>",
+    null: "<i class='icon-circle-blank'></i>",
 };
 
 //
