@@ -140,7 +140,7 @@ class ExtDocApplication(ExtApplication):
                     else:
                         v = str(v)
                 elif isinstance(f, ListField):
-                    v = f.to_mongo(getattr(o, f.name))
+                    v = [self.instance_to_dict(f) for f in v]
                 elif type(v) not in (str, unicode, int, long, bool, dict):
                     if hasattr(v, "id"):
                         v = v.id
