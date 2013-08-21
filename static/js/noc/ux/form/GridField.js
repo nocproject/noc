@@ -7,11 +7,11 @@
 // See LICENSE for details
 //---------------------------------------------------
 Ext.define("Ext.ux.form.GridField", {
-    extend: "Ext.form.field.Base",
+    extend: "Ext.form.FieldContainer",
+    mixins: {
+        field: 'Ext.form.field.Field'
+    },
     alias: "widget.gridfield",
-    fieldSubTpl: "<div class='noc-gridfield'></div>",
-    width: 500,
-    height: 200,
     columns: [],
 
     initComponent: function() {
@@ -24,17 +24,10 @@ Ext.define("Ext.ux.form.GridField", {
             fields: me.fields,
             data: []
         });
-        me.callParent();
-    },
 
-    onRender: function(ct, position) {
-        var me = this;
-        me.callParent([ct, position]);
         me.grid = Ext.create("Ext.grid.Panel", {
+            layout: "fit",
             store: me.store,
-            width: me.width,
-            height: me.height,
-            renderTo: Ext.query(".noc-gridfield", this.el.dom)[0],
             columns: me.columns,
             plugins: [
                 Ext.create("Ext.grid.plugin.RowEditing", {
@@ -62,6 +55,13 @@ Ext.define("Ext.ux.form.GridField", {
                 }
             ]
         });
+
+        Ext.apply(me, {
+            items: [
+                me.grid
+            ]
+        });
+        me.callParent();
     },
 
     getValue: function() {
@@ -79,9 +79,15 @@ Ext.define("Ext.ux.form.GridField", {
 
     setValue: function(v) {
         var me = this;
-        v = v || [];
+        if(v === undefined || v === "") {
+            v = [];
+        } else {
+            v = v || [];
+        }
         me.store.loadData(v);
+        return me.mixins.field.setValue.call(me, v);
     },
+
     //
     onAdd: function() {
         var me = this,
