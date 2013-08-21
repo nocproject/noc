@@ -143,7 +143,9 @@ class ExtDocApplication(ExtApplication):
                     else:
                         v = str(v)
                 elif isinstance(f, ListField):
-                    v = [self.instance_to_dict(f) for f in v]
+                    if (hasattr(f, "field") and
+                            isinstance(f.field, EmbeddedDocumentField)):
+                        v = [self.instance_to_dict(vv) for vv in v]
                 elif type(v) not in (str, unicode, int, long, bool, dict):
                     if hasattr(v, "id"):
                         v = v.id
