@@ -575,14 +575,14 @@ Ext.define("NOC.core.ModelApplication", {
                 me.saveInlines(parent, me.inlineStores);
             },
             failure: function(response, op, status) {
+                var me = this;
                 if(record.phantom) {
                     // Remove from store
                     me.store.remove(record);
                 } else {
                     record.setDirty();
                 }
-                this.showOpError("save", op, status);
-                console.log(response.responseText);
+                me.showOpError("save", op, status);
             }
         });
     },
@@ -628,11 +628,10 @@ Ext.define("NOC.core.ModelApplication", {
     // New record. Hide grid and open form
     newRecord: function(defaults) {
         var me = this,
-            defaultValues = me.store.defaultValues,
             fv = {};
         me.form.reset();
         // Calculate form field values
-        Ext.merge(fv, defaultValues);
+        Ext.merge(fv, me.store.defaultValues);
         Ext.merge(fv, defaults || {});
         me.form.setValues(fv);
         //
@@ -722,8 +721,9 @@ Ext.define("NOC.core.ModelApplication", {
             return;
         }
         var v = me.form.getFieldValues();
-        if(!me.currentRecord && v[me.idField])
-            v[me.idField] = null;
+        if(!me.currentRecord && v[me.idField] !== undefined) {
+            delete v[me.idField];
+        }
         // Fetch comboboxes labels
         me.form.getFields().each(function(field) {
             if(Ext.isDefined(field.getLookupData))
