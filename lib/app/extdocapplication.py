@@ -50,6 +50,9 @@ class ExtDocApplication(ExtApplication):
             self.query_fields = ["%s__%s" % (n, self.query_condition)
                                  for n, f in self.model._fields.items()
                                  if f.unique and isinstance(f, StringField)]
+        self.unique_fields = [
+            n for n, f in self.model._fields.items() if f.unique
+        ]
         # Find field_* and populate custom fields
         self.custom_fields = {}
         for fn in [n for n in dir(self) if n.startswith("field_")]:
@@ -174,13 +177,17 @@ class ExtDocApplication(ExtApplication):
             return self.response(str(why), status=self.BAD_REQUEST)
         if self.pk in attrs:
             del attrs[self.pk]
-        try:
-            self.queryset(request).get(**attrs)
-            return self.response(status=self.CONFLICT)
-        except self.model.MultipleObjectsReturned:
-            return self.response(status=self.CONFLICT)
-        except self.model.DoesNotExist:
-            o = self.model(**attrs)
+        # Check for duplicates
+        if self.unique_fields:
+            q = dict((k, attrs[k])
+                     for k in self.unique_fields if k in attrs)
+            if q:
+                if self.queryset(request).filter(**q).first():
+                    return self.response(status=self.CONFLICT)
+            o = self.model()
+            for k, v in attrs.items():
+                if k != self.pk and "__" not in k:
+                    setattr(o, k, v)
             o.save()
             format = request.GET.get(self.format_param)
             if format == "ext":
@@ -219,8 +226,9 @@ class ExtDocApplication(ExtApplication):
             o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
+        # @todo: Check for duplicates
         for k, v in attrs.items():
-            if k != self.pk:
+            if k != self.pk and "__" not in k:
                 setattr(o, k, v)
         o.save()
         return self.response(status=self.OK)

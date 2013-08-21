@@ -46,7 +46,8 @@ Ext.define("NOC.fm.classificationrule.Model", {
         },
         {
             name: "event_class__label",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "datasources",
