@@ -180,7 +180,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
             success: function(response) {
                 var me = this,
                     data = Ext.decode(response.responseText);
-                me.onNewRecord(data);
+                me.newRecord(data);
             },
             failure: function() {
                 NOC.error("Failed to create rule from event");

@@ -624,16 +624,16 @@ Ext.define("NOC.core.ModelApplication", {
         me.form.getFields().items[1].focus(false, 100);
     },
     // New record. Hide grid and open form
-    onNewRecord: function(defaults) {
+    newRecord: function(defaults) {
         var me = this,
-            defaultValues = me.store.defaultValues;
+            defaultValues = me.store.defaultValues,
+            fv = {};
         me.form.reset();
-        if(defaultValues) {
-            me.form.setValues(defaultValues);
-        }
-        if(defaults) {
-            me.form.setValues(defaults);
-        }
+        // Calculate form field values
+        Ext.merge(fv, defaultValues);
+        Ext.merge(fv, defaults || {});
+        me.form.setValues(fv);
+        //
         me.currentRecord = null;
         me.resetInlines();
         me.setFormTitle(me.createTitle);
@@ -648,6 +648,11 @@ Ext.define("NOC.core.ModelApplication", {
         me.cloneButton.setDisabled(true);
         // Disable custom form toolbar
         me.activateCustomFormToolbar(false);
+    },
+    //
+    onNewRecord: function() {
+        var me = this;
+        me.newRecord();
     },
     // Edit record. Hide grid and open form
     editRecord: function(record) {
