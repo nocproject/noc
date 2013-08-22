@@ -138,6 +138,7 @@ if [ $BRANCH != "none" ]; then
         info "Switching to branch $BRANCH"
         $HG update -c $BRANCH || error_exit "$LINENO: Failed to update to branch $BRANCH"
     fi
+    ./scripts/compile || error_exit "$LINENO: Failed to compile bytecode"
 fi
 ##
 ## Check virtualenv is enabled and set up
