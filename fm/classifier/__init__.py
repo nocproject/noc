@@ -27,8 +27,7 @@ import noc.inv.models
 from noc.sa.models import profile_registry, ManagedObject
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
-from noc.lib.snmputils import render_tc
-from noc.lib.escape import fm_unescape, fm_escape
+from noc.lib.escape import fm_unescape
 from noc.sa.interfaces.base import (IPv4Parameter, IPv6Parameter,
                                     IPParameter, IPv4PrefixParameter,
                                     IPv6PrefixParameter, PrefixParameter,
@@ -430,7 +429,9 @@ CR_SUPPRESSED = 2
 CR_UNKNOWN = 3
 CR_CLASSIFIED = 4
 CR_DISPOSED = 5
-CR = ["failed", "deleted", "suppressed", "unknown", "classified", "disposed"]
+CR_DUPLICATED = 6
+CR = ["failed", "deleted", "suppressed",
+      "unknown", "classified", "disposed", "duplicated"]
 
 
 class Classifier(Daemon):
@@ -451,6 +452,7 @@ class Classifier(Daemon):
         self.enumerations = {}  # name -> value -> enumerated
         self.suppression = {}  # event_class_id -> (condition, suppress)
         self.dump_clone = False
+        self.deduplication_window = 0
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         Daemon.__init__(self)
@@ -468,6 +470,8 @@ class Classifier(Daemon):
         self.dump_clone = (self.options.dump is not None and
                            "clone" in self.options.dump)
         super(Classifier, self).load_config()
+        self.deduplication_window = self.config.getint(
+            "classifier", "deduplication_window")
         self.load_enumerations()
         self.load_rules()
         self.load_triggers()
@@ -709,81 +713,6 @@ class Classifier(Daemon):
             traceback = "\n".join(r)
         event.mark_as_failed(version=self.version, traceback=traceback)
 
-    def is_oid(self, v):
-        """
-        Check value is SNMP OID
-        """
-        return self.rx_oid.match(v) is not None
-
-    def format_snmp_trap_vars(self, event):
-        """
-        Try to resolve SNMP Trap variables according to MIBs
-
-        :param event: event
-        :type event: NewEvent
-        :returns: Resolved variables
-        :rtype: dict
-        """
-        r = {}
-        for k, v in event.raw_vars.items():
-            if not self.is_oid(k):
-                # Nothing to resolve
-                continue
-            v = fm_unescape(v)
-            rk, syntax = MIB.get_name_and_syntax(k)
-            rv = v
-            if syntax:
-                # Format value according to syntax
-                if syntax["base_type"] == "Enumeration":
-                    # Expand enumerated type
-                    try:
-                        rv = syntax["enum_map"][str(v)]
-                    except KeyError:
-                        pass
-                elif syntax["base_type"] == "Bits":
-                    # @todo: Fix ugly hack
-                    if v.startswith("="):
-                        xv = int(v[1:], 16)
-                    else:
-                        xv = 0
-                        for c in v:
-                            xv = (xv << 8) + ord(c)
-                    # Decode
-                    b_map = syntax.get("enum_map", {})
-                    b = []
-                    n = 0
-                    while xv:
-                        if xv & 1:
-                            x = str(n)
-                            if x in b_map:
-                                b = [b_map[x]] + b
-                            else:
-                                b = ["%X" % (1 << n)]
-                        n += 1
-                        xv >>= 1
-                    rv = "(%s)" % ",".join(b)
-                else:
-                    # Render according to TC
-                    rv = render_tc(v, syntax["base_type"],
-                                   syntax.get("display_hint", None))
-                    try:
-                        unicode(rv, "utf8")
-                    except:
-                        # Escape invalid UTF8
-                        rv = fm_escape(rv)
-            else:
-                try:
-                    unicode(rv, "utf8")
-                except:
-                    # escape invalid UTF8
-                    rv = fm_escape(rv)
-            if self.is_oid(v):
-                # Resolve OID in value
-                rv = MIB.get_name(v)
-            if rk != k or rv != v:
-                r[rk] = rv
-        return r
-
     def find_matching_rule(self, event, vars):
         """
         Find first matching classification rule
@@ -873,7 +802,7 @@ class Classifier(Daemon):
         }
         # For SNMP traps format values according to MIB definitions
         if event.source == "SNMP Trap":
-            resolved_vars.update(self.format_snmp_trap_vars(event))
+            resolved_vars.update(MIB.resolve_vars(event.raw_vars))
         # Find matched event class
         c_vars = event.raw_vars.copy()
         c_vars.update(dict([(k, fm_unescape(v)) for k, v in resolved_vars.items()]))
@@ -918,6 +847,18 @@ class Classifier(Daemon):
                     msg = "Event %s has been marked as not disposable by default interface" % event.id
                 logging.info(msg)
                 disposable = False
+        # Deduplication
+        if self.deduplication_window:
+            de = self.find_duplicated_event(event, event_class, vars)
+            if de:
+                logging.debug(
+                    "Event %s duplicates event %s. Discarding",
+                    event.id, de.id)
+                de.log_message(
+                    "Duplicated event %s has been discarded" % event.id
+                )
+                event.delete()
+                return CR_DUPLICATED
         # Suppress repeats
         if event_class.id in self.suppression:
             suppress, name, nearest = self.to_suppress(event, event_class,
@@ -975,6 +916,21 @@ class Classifier(Daemon):
         else:
             return CR_CLASSIFIED
 
+    def find_duplicated_event(self, event, event_class, vars):
+        """
+        Returns duplicated event if exists
+        """
+        t0 = event.timestamp - datetime.timedelta(seconds=self.deduplication_window)
+        q = {
+            "managed_object": event.managed_object.id,
+            "timestamp__gte": t0,
+            "timestamp__lte": event.timestamp,
+            "event_class": event_class.id
+        }
+        for v in vars:
+            q["vars__%s" % v] = vars[v]
+        return ActiveEvent.objects.filter(**q).first()
+
     def run(self):
         """
         Main daemon loop
@@ -986,8 +942,11 @@ class Classifier(Daemon):
         # on previous versions of classifier
         self.retry_failed_events()
         logging.info("Ready to process events")
-        st = {CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
-              CR_UNKNOWN: 0, CR_CLASSIFIED: 0, CR_DISPOSED: 0}
+        st = {
+            CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
+            CR_UNKNOWN: 0, CR_CLASSIFIED: 0, CR_DISPOSED: 0,
+            CR_DUPLICATED:0
+        }
         # Enter main loop
         while True:
             n = 0  # Number of events processed

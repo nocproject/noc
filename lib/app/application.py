@@ -630,5 +630,10 @@ class Application(object):
             "result": r
         }
 
+    @view(url="^launch_info/$", method=["GET"],
+          access="launch", api=True)
+    def api_launch_info(self, request):
+        return self.get_launch_info(request)
+
     # name -> {access: ..., map_script: ..., timeout: ...}
     mrt_config = {}

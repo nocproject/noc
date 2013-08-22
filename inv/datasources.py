@@ -14,11 +14,24 @@ from noc.inv.models import *
 class InterfaceDS(DataSource):
     _name = "inv.InterfaceDS"
 
-    def __init__(self, managed_object, interface):
-        self._interface = Interface.objects.filter(
-            managed_object=managed_object.id,
-            name=managed_object.profile.convert_interface_name(interface)
-        ).first()
+    def __init__(self, managed_object, interface=None, ifindex=None):
+        if not interface and not ifindex:
+            self._interface = None
+            return
+        q = {
+            "managed_object": managed_object.id
+        }
+        if interface:
+            q["name"] = managed_object.profile.convert_interface_name(interface)
+        if ifindex:
+            q["ifindex"] = int(ifindex)
+        self._interface = Interface.objects.filter(**q).first()
+
+    @property
+    def name(self):
+        if not self._interface:
+            return None
+        return self._interface.name
 
     @property
     def description(self):
