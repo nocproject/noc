@@ -20,8 +20,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
     },
 
     initComponent: function() {
-        var me = this,
-            lw = 60;
+        var me = this;
 
         me.alarmIdField = Ext.create("Ext.form.DisplayField", {
             fieldLabel: "ID",
@@ -30,49 +29,15 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             labelClsExtra: "noc-label-required"
         });
 
-        me.subjectField = Ext.create("Ext.form.DisplayField", {
-            fieldLabel: "Alarm",
-            labelWidth: lw
-        });
-
-        me.objectField = Ext.create("Ext.form.DisplayField", {
-            fieldLabel: "Object",
-            labelWidth: lw
-        });
-
-        me.alarmClassField = Ext.create("Ext.form.DisplayField", {
-            fieldLabel: "Class",
-            labelWidth: lw
-        });
-
-        me.timeField = Ext.create("Ext.form.DisplayField", {
-            fieldLabel: "Time",
-            labelWidth: lw
-        });
-
-        me.watchersField = Ext.create("Ext.form.DisplayField", {
-            fieldLabel: "Watchers",
-            labelWidth: lw
-        });
-
         me.topPanel = Ext.create("Ext.panel.Panel", {
-            height: 120,
+            height: 100,
             bodyPadding: 4,
-            layout: {
-                type: "vbox",
-                align: "stretch",
-                pack: "start"
-            },
-            defaults: {
-                labelClsExtra: "noc-label-required"
-            },
-            items: [
-                me.subjectField,
-                me.objectField,
-                me.alarmClassField,
-                me.timeField,
-                me.watchersField
-            ]
+            layout: "fit",
+            items: [{
+                xtype: "container",
+                autoScroll: true,
+                padding: 4
+            }]
         });
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
@@ -247,7 +212,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
 
         me.clearButton = Ext.create("Ext.Button", {
             text: "Clear",
-            iconCls: "icon_pill",
+            glyph: NOC.glyph.eraser,
             scope: me,
             handler: me.onClear
         });
@@ -255,14 +220,14 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         me.watchButton = Ext.create("Ext.Button", {
             text: "Watch",
             enableToggle: true,
-            iconCls: "icon_star_grey",
+            glyph: NOC.glyph.star,
             scope: me,
             handler: me.onWatch
         });
 
         me.setRootButton = Ext.create("Ext.Button", {
             text: "Set Root Cause",
-            iconCls: "icon_attach",
+            glyph: NOC.glyph.paper_clip,
             scope: me,
             handler: me.onSetRoot
         });
@@ -275,13 +240,13 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                     items: [
                         {
                             text: "Close",
-                            iconCls: "icon_arrow_undo",
+                            glyph: NOC.glyph.arrow_left,
                             scope: me,
                             handler: me.onClose
                         },
                         {
                             text: "Refresh",
-                            iconCls: Ext.baseCSSPrefix + "tbar-loading",
+                            glyph: NOC.glyph.refresh,
                             scope: me,
                             handler: me.onRefresh
                         },
@@ -335,27 +300,9 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         me.data = data;
         //
         me.alarmIdField.setValue(me.data.id);
-        //
-        me.subjectField.setValue(
-            Ext.String.format("{0} [{1}]",
-                me.data.subject,
-                me.app.STATUS_MAP[me.data.status]
-            )
+        me.topPanel.items.first().update(
+            me.app.templates.SummaryPanel(me.data)
         );
-        // Managed object details
-        if(me.data.managed_object_address) {
-            o.push(me.data.managed_object_address);
-        }
-        o.push(me.data.managed_object_profile);
-        if(me.data.managed_object_platform) {
-            o.push(me.data.managed_object_platform);
-        }
-        if(me.data.managed_object_version) {
-            o.push(me.data.managed_object_version);
-        }
-        me.objectField.setValue(me.data.managed_object__label + " (" + o.join(", ") + ")");
-        me.alarmClassField.setValue(me.data.alarm_class__label);
-        me.timeField.setValue(me.data.timestamp);
         //
         me.updatePanel(me.overviewPanel, me.app.templates.Overview,
             data.subject, data);
@@ -473,7 +420,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                 }
                 return v.name + " (" + v.login + ")";
             }).join(", ");
-        me.watchersField.setValue(msg);
+        // me.watchersField.setValue(msg);
         me.watchButton.setIconCls(
             is_watcher? "icon_star" : "icon_star_grey"
         );

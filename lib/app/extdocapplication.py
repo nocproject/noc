@@ -11,9 +11,11 @@ from django.http import HttpResponse
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.nosql import (StringField, BooleanField, GeoPointField,
-                           ForeignKeyField, PlainReferenceField, Q)
+                           ForeignKeyField, PlainReferenceField,
+                           ListField, Q, EmbeddedDocumentField)
 from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
-                               ModelParameter)
+                               ModelParameter, ListOfParameter,
+                               EmbeddedDocumentParameter)
 from noc.lib.validators import is_int
 
 
@@ -37,6 +39,10 @@ class ExtDocApplication(ExtApplication):
             elif isinstance(f, ForeignKeyField):
                 self.clean_fields[f.name] = ModelParameter(
                     f.document_type, required=f.required)
+            elif isinstance(f, ListField):
+                if isinstance(f.field, EmbeddedDocumentField):
+                    self.clean_fields[f.name] = ListOfParameter(
+                        element=EmbeddedDocumentParameter(f.field.document_type))
             if f.primary_key:
                 self.pk = name
         #
@@ -44,6 +50,9 @@ class ExtDocApplication(ExtApplication):
             self.query_fields = ["%s__%s" % (n, self.query_condition)
                                  for n, f in self.model._fields.items()
                                  if f.unique and isinstance(f, StringField)]
+        self.unique_fields = [
+            n for n, f in self.model._fields.items() if f.unique
+        ]
         # Find field_* and populate custom fields
         self.custom_fields = {}
         for fn in [n for n in dir(self) if n.startswith("field_")]:
@@ -108,6 +117,9 @@ class ExtDocApplication(ExtApplication):
         for p in q:
             if p in self.clean_fields:
                 q[p] = self.clean_fields[p].clean(q[p])
+        # @todo: correct __ lookups
+        if any(p for p in q if p.endswith("__referred")):
+            del q[p]
         return q
 
     def instance_to_dict(self, o, fields=None):
@@ -130,6 +142,10 @@ class ExtDocApplication(ExtApplication):
                         v = str(v.id)
                     else:
                         v = str(v)
+                elif isinstance(f, ListField):
+                    if (hasattr(f, "field") and
+                            isinstance(f.field, EmbeddedDocumentField)):
+                        v = [self.instance_to_dict(vv) for vv in v]
                 elif type(v) not in (str, unicode, int, long, bool, dict):
                     if hasattr(v, "id"):
                         v = v.id
@@ -163,23 +179,27 @@ class ExtDocApplication(ExtApplication):
             return self.response(str(why), status=self.BAD_REQUEST)
         if self.pk in attrs:
             del attrs[self.pk]
-        try:
-            self.queryset(request).get(**attrs)
-            return self.response(status=self.CONFLICT)
-        except self.model.MultipleObjectsReturned:
-            return self.response(status=self.CONFLICT)
-        except self.model.DoesNotExist:
-            o = self.model(**attrs)
-            o.save()
-            format = request.GET.get(self.format_param)
-            if format == "ext":
-                r = {
-                    "success": True,
-                    "data": self.instance_to_dict(o)
-                }
-            else:
-                r = self.instance_to_dict(o)
-            return self.response(r, status=self.CREATED)
+        # Check for duplicates
+        if self.unique_fields:
+            q = dict((k, attrs[k])
+                     for k in self.unique_fields if k in attrs)
+            if q:
+                if self.queryset(request).filter(**q).first():
+                    return self.response(status=self.CONFLICT)
+        o = self.model()
+        for k, v in attrs.items():
+            if k != self.pk and "__" not in k:
+                setattr(o, k, v)
+        o.save()
+        format = request.GET.get(self.format_param)
+        if format == "ext":
+            r = {
+                "success": True,
+                "data": self.instance_to_dict(o)
+            }
+        else:
+            r = self.instance_to_dict(o)
+        return self.response(r, status=self.CREATED)
 
     @view(method=["GET"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
           access="read", api=True)
@@ -208,8 +228,9 @@ class ExtDocApplication(ExtApplication):
             o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
+        # @todo: Check for duplicates
         for k, v in attrs.items():
-            if k != self.pk:
+            if k != self.pk and "__" not in k:
                 setattr(o, k, v)
         o.save()
         return self.response(status=self.OK)

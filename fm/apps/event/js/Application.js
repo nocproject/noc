@@ -105,10 +105,6 @@ Ext.define("NOC.fm.event.Application", {
 
         me.gridPanel = Ext.create("Ext.grid.Panel", {
             store: me.store,
-            features: [{
-                ftype: "selectable",
-                id: "selectable"
-            }],
             border: false,
             stateful: true,
             stateId: "fm.event-grid",
@@ -194,6 +190,7 @@ Ext.define("NOC.fm.event.Application", {
                 }
             },
             viewConfig: {
+                enableTextSelection: true,
                 getRowClass: Ext.bind(me.getRowClass, me)
                 /* listeners: {
                     scope: me,
