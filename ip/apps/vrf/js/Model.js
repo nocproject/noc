@@ -13,7 +13,7 @@ Ext.define("NOC.ip.vrf.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "name",

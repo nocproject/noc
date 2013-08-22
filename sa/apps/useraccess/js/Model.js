@@ -13,7 +13,7 @@ Ext.define("NOC.sa.useraccess.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "user",

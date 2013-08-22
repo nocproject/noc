@@ -13,7 +13,7 @@ Ext.define("NOC.main.dbtrigger.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "name",
