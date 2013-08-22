@@ -60,6 +60,19 @@ class ActiveAlarm(nosql.Document):
             self.last_update = self.timestamp
         return super(ActiveAlarm, self).save(*args, **kwargs)
 
+    def _change_root_severity(self):
+        """
+        Change root severity, when necessary
+        """
+        if not self.root:
+            return
+        root = get_alarm(self.root)
+        if root and root.severity < self.severity:
+            root.change_severity(self.severity)
+            root.log_message(
+                "Severity has been increased by child alarm %s" % self.id
+            )
+
     def change_severity(self, user="", delta=None, severity=None):
         """
         Change alarm severity
@@ -70,16 +83,17 @@ class ActiveAlarm(nosql.Document):
             self.severity = max(0, self.severity + delta)
             if delta > 0:
                 self.log_message(
-                    "%s has increased event severity by %s" % (
+                    "%s has increased alarm severity by %s" % (
                         user, delta))
             else:
                 self.log_message(
-                    "%s has decreased event severity by %s" % (
+                    "%s has decreased alarm severity by %s" % (
                         user, delta))
         elif severity:
             self.severity = severity.severity
             self.log_message(
                 "%s has changed severity to %s" % (user, severity.name))
+        self._change_root_severity()
         self.save()
 
     def log_message(self, message, to_save=True):
@@ -255,7 +269,7 @@ class ActiveAlarm(nosql.Document):
         # self.save()  Saved by log_message
         root_alarm.log_message(
             "Alarm %s has been marked as child" % self.id)
-
+        self._change_root_severity()
 
 ## Avoid circular references
 from archivedalarm import ArchivedAlarm

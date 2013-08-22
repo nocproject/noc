@@ -91,7 +91,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
             formToolbar: [
                 {
                     text: "JSON",
-                    iconCls: "icon_page",
+                    glyph: NOC.glyph.file,
                     tooltip: "View as JSON",
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,

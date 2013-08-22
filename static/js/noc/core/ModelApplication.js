@@ -66,7 +66,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "create",
                 text: "Add",
-                iconCls: "icon_add",
+                glyph: NOC.glyph.plus,
                 tooltip: "Add new record",
                 hasAccess: NOC.hasPermission("create"),
                 scope: me,
@@ -245,9 +245,6 @@ Ext.define("NOC.core.ModelApplication", {
             xtype: "gridpanel",
             itemId: "grid",
             store: me.store,
-            features: [
-                {ftype: "selectable", id: "selectable"}
-            ],
             columns: [
                 {
                     xtype: "actioncolumn",
@@ -281,6 +278,7 @@ Ext.define("NOC.core.ModelApplication", {
             ],
             rbar: grid_rbar,
             viewConfig: {
+                enableTextSelection: true,
                 getRowClass: Ext.bind(me.getRowClass, me),
                 listeners: {
                     scope: me,
@@ -302,7 +300,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "save",
                 text: "Save",
-                iconCls: "icon_disk",
+                glyph: NOC.glyph.save,
                 // formBind: true,
                 // disabled: true,
                 scope: me,
@@ -312,7 +310,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "close",
                 text: "Close",
-                iconCls: "icon_arrow_undo",
+                glyph: NOC.glyph.arrow_left,
                 scope: me,
                 handler: me.onClose
             },
@@ -320,7 +318,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                itemId: "reset",
                text: "Reset",
-               iconCls: "icon_cancel",
+               glyph: NOC.glyph.undo,
                disabled: true,
                scope: me,
                handler: me.onReset
@@ -328,7 +326,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                itemId: "delete",
                text: "Delete",
-               iconCls: "icon_delete",
+               glyph: NOC.glyph.remove,
                disabled: true,
                hasAccess: NOC.hasPermission("delete"),
                scope: me,
@@ -338,7 +336,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "clone",
                 text: "Clone",
-                iconCls: "icon_page_copy",
+                glyph: NOC.glyph.copy,
                 disabled: true,
                 hasAccess: NOC.hasPermission("create"),
                 scope: me,
@@ -496,12 +494,14 @@ Ext.define("NOC.core.ModelApplication", {
                         // Change label style for required fields
                         if(field.xtype == "fieldset") {
                             for(var key in field.items.items) {
-                                if (!field.items.items[key].allowBlank)
+                                if (!field.items.items[key].allowBlank) {
                                     field.items.items[key].labelClsExtra = "noc-label-required";
+                                }
                             }
                         } else {
-                            if(!field.allowBlank)
+                            if(!field.allowBlank) {
                                field.labelClsExtra = "noc-label-required";
+                            }
                         }
                     }
                 }
@@ -591,14 +591,14 @@ Ext.define("NOC.core.ModelApplication", {
                 me.saveInlines(parent, me.inlineStores);
             },
             failure: function(response, op, status) {
+                var me = this;
                 if(record.phantom) {
                     // Remove from store
                     me.store.remove(record);
                 } else {
                     record.setDirty();
                 }
-                this.showOpError("save", op, status);
-                console.log(response.responseText);
+                me.showOpError("save", op, status);
             }
         });
     },
@@ -642,16 +642,15 @@ Ext.define("NOC.core.ModelApplication", {
         me.form.getFields().items[1].focus(false, 100);
     },
     // New record. Hide grid and open form
-    onNewRecord: function(defaults) {
+    newRecord: function(defaults) {
         var me = this,
-            defaultValues = me.store.defaultValues;
+            fv = {};
         me.form.reset();
-        if(defaultValues) {
-            me.form.setValues(defaultValues);
-        }
-        if(defaults) {
-            me.form.setValues(defaults);
-        }
+        // Calculate form field values
+        Ext.merge(fv, me.store.defaultValues);
+        Ext.merge(fv, defaults || {});
+        me.form.setValues(fv);
+        //
         me.currentRecord = null;
         me.resetInlines();
         me.setFormTitle(me.createTitle);
@@ -666,6 +665,11 @@ Ext.define("NOC.core.ModelApplication", {
         me.cloneButton.setDisabled(true);
         // Disable custom form toolbar
         me.activateCustomFormToolbar(false);
+    },
+    //
+    onNewRecord: function() {
+        var me = this;
+        me.newRecord();
     },
     // Edit record. Hide grid and open form
     editRecord: function(record) {
@@ -733,8 +737,9 @@ Ext.define("NOC.core.ModelApplication", {
             return;
         }
         var v = me.form.getFieldValues();
-        if(!me.currentRecord && v[me.idField])
-            v[me.idField] = null;
+        if(!me.currentRecord && v[me.idField] !== undefined) {
+            delete v[me.idField];
+        }
         // Fetch comboboxes labels
         me.form.getFields().each(function(field) {
             if(Ext.isDefined(field.getLookupData))

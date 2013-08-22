@@ -79,6 +79,12 @@ class AlarmApplication(ExtApplication):
             qp = p.split("__")[0]
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].form_clean(q[p])
+        #
+        if "collapse" in q:
+            c = q["collapse"]
+            del q["collapse"]
+            if c != "0":
+                q["root__exists"] = False
         return q
 
     def instance_to_dict(self, o, fields=None):
@@ -91,11 +97,14 @@ class AlarmApplication(ExtApplication):
             "status": o.status,
             "managed_object": o.managed_object.id,
             "managed_object__label": o.managed_object.name,
+            "severity": s.severity,
+            "severity__label": s.name,
             "alarm_class": str(o.alarm_class.id),
             "alarm_class__label": o.alarm_class.name,
             "timestamp": self.to_json(o.timestamp),
             "subject": o.get_translated_subject(lang),
             "events": n_events,
+            "duration": o.duration,
             "row_class": s.style.css_class_name
         }
 
@@ -127,6 +136,11 @@ class AlarmApplication(ExtApplication):
         d["probable_causes"] = alarm.get_translated_probable_causes(lang)
         d["recommended_actions"] = alarm.get_translated_recommended_actions(lang)
         d["vars"] = sorted(alarm.vars.items())
+        d["status"] = alarm.status
+        d["status__label"] = {
+            "A": "Active",
+            "C": "Cleared"
+        }[alarm.status]
         # Managed object properties
         mo = alarm.managed_object
         d["managed_object_address"] = mo.address

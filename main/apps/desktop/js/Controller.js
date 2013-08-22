@@ -9,7 +9,7 @@ console.debug("Defining NOC.main.desktop.Controller");
 Ext.define("NOC.main.desktop.Controller", {
     extend: "Ext.app.Controller",
     require: ["NOC.core.StateProvider"],
-    views: ["NOC.main.desktop.Viewport"],
+    //views: ["NOC.main.desktop.Viewport"],
 
     onLaunch: function() {
         var me = this;
@@ -230,7 +230,6 @@ Ext.define("NOC.main.desktop.Controller", {
         var me = this;
         Ext.getCmp("header").collapse(Ext.Component.DIRECTION_TOP);
         Ext.getCmp("nav").collapse(Ext.Component.DIRECTION_LEFT);
-        Ext.getCmp("status").collapse(Ext.Component.DIRECTION_BOTTOM);
     },
     // Search text entered
     onSearch: function(value) {
@@ -328,7 +327,33 @@ Ext.define("NOC.main.desktop.Controller", {
     //
     onIdle: function() {
         var me = this;
-        console.log("Auto-logout");
         me.doLogout();
+    },
+    //
+    launchApp: function(app, cmd, data) {
+        var me = this,
+            url = "/" + app.replace(".", "/") + "/launch_info/";
+        Ext.Ajax.request({
+            url: url,
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var li = Ext.decode(response.responseText),
+                    params = {}
+                if(cmd) {
+                    params.cmd = Ext.merge({}, data);
+                    params.cmd.cmd = cmd;
+                }
+                Ext.merge(params, li.params);
+                me.launchTab(
+                    li.class,
+                    li.title,
+                    params
+                );
+            },
+            failure: function() {
+                NOC.error("Failed to launch application " + app);
+            }
+        });
     }
 });
