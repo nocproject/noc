@@ -13,7 +13,7 @@ Ext.define("NOC.dns.dnsserver.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "name",

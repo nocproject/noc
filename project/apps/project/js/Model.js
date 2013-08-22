@@ -13,7 +13,7 @@ Ext.define("NOC.project.project.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "code",
