@@ -30,7 +30,7 @@ Ext.define("Ext.ux.form.GridField", {
             store: me.store,
             columns: me.columns,
             plugins: [
-                Ext.create("Ext.grid.plugin.RowEditing", {
+                Ext.create("Ext.grid.plugin.CellEditing", {
                     clicksToEdit: 2
                 })
             ],
