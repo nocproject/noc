@@ -25,7 +25,7 @@ class Profile(NOCProfile):
     command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure terminal"
-    command_leave_config = "exit"
+    command_leave_config = "end"
     command_save_config = "copy running-config startup-config\n"
     pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{,20}?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
