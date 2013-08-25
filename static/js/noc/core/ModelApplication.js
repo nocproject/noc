@@ -30,9 +30,9 @@ Ext.define("NOC.core.ModelApplication", {
     initComponent: function() {
         var me = this;
         // set base_url
-        var n = this.self.getName().split("."),
-            app_name = n[1] + "." + n[2];
+        var n = this.self.getName().split(".");
         me.base_url = "/" + n[1] + "/" + n[2] + "/";
+        me.appName = n[1] + "." + n[2];
         // Variables
         me.currentQuery = {};
         // Create store
@@ -43,11 +43,30 @@ Ext.define("NOC.core.ModelApplication", {
             pageSize: 1  // Increased by AutoSize plugin
         });
         me.idField = me.store.idProperty;
-        // Setup Grid toolbar
+        me.ITEM_GRID = me.registerItem(me.createGrid());
+        me.ITEM_FORM = me.registerItem(me.createForm());
+        //
+        Ext.apply(me, {
+            items: me.getRegisteredItems(),
+            activeItem: me.ITEM_GRID
+        });
+        // Initialize component
+        me.callParent();
+        me.currentRecord = null;
+        // Process commands
+        if(me.noc.cmd && me.noc.cmd.cmd == "open") {
+            me.store.setFilterParams({id: me.noc.cmd.id});
+        }
+        // Finally, load the store
+        me.store.load();
+    },
+    //
+    createGrid: function() {
+        var me = this;
+                // Setup Grid toolbar
         var gridToolbar = [];
-        gridToolbar = gridToolbar.concat([
-            {
-                xtype: "textfield",
+
+        me.search_field = Ext.create("Ext.form.field.Text", {
                 name: "search_field",
                 itemId: "search_field",
                 emptyText: "Search...",
@@ -62,20 +81,22 @@ Ext.define("NOC.core.ModelApplication", {
                         buffer: 200
                     }
                 }
-            },
-            {
-                itemId: "create",
-                text: "Add",
-                glyph: NOC.glyph.plus,
-                tooltip: "Add new record",
-                hasAccess: NOC.hasPermission("create"),
-                scope: me,
-                handler: me.onNewRecord
-            }
-        ]);
+            });
+
+        me.create_button = Ext.create("Ext.button.Button", {
+            itemId: "create",
+            text: "Add",
+            glyph: NOC.glyph.plus,
+            tooltip: "Add new record",
+            hasAccess: NOC.hasPermission("create"),
+            scope: me,
+            handler: me.onNewRecord
+        });
+
+        gridToolbar.push(me.search_field, me.create_button);
         // admin actions
         if(me.actions) {
-            gridToolbar = gridToolbar.concat([{
+            me.action_menu = Ext.create("Ext.button.Button", {
                 iconCls: "icon_table_go",
                 tooltip: "Group actions",
                 hasAccess: NOC.hasPermission("update"),
@@ -99,7 +120,8 @@ Ext.define("NOC.core.ModelApplication", {
                         }
                     }
                 }
-            }]);
+            });
+            gridToolbar.push(me.action_menu);
         }
         gridToolbar = gridToolbar.concat(me.gridToolbar);
         // Initialize panels
@@ -138,7 +160,7 @@ Ext.define("NOC.core.ModelApplication", {
                         favorites: "NOC.core.modelfilter.Favorites"
                     }[f.ftype];
                     var fc = Ext.Object.merge(f, {
-                        referrer: app_name
+                        referrer: me.appName
                     });
                     var fg = Ext.create(ft, fc);
                     fg.handler = fh;
@@ -225,8 +247,7 @@ Ext.define("NOC.core.ModelApplication", {
             ]);
         }
 
-        var gridPanel = {
-            xtype: "gridpanel",
+        var gridPanel = Ext.create("Ext.grid.Panel", {
             itemId: "grid",
             store: me.store,
             columns: [
@@ -245,7 +266,7 @@ Ext.define("NOC.core.ModelApplication", {
             border: false,
             autoScroll: true,
             stateful: true,
-            stateId: app_name + "-grid",
+            stateId: me.appName + "-grid",
             plugins: [Ext.create("Ext.ux.grid.AutoSize")],
             selModel: selModel,
             dockedItems: [
@@ -277,55 +298,74 @@ Ext.define("NOC.core.ModelApplication", {
                     }
                 }
             }
-        };
-        me.ITEM_GRID = me.registerItem(gridPanel);
-        // Form
+        });
+        // Shortcuts
+        me.grid = gridPanel;
+        if(me.filters) {
+            me.filterPanel = me.grid.getComponent("filters");
+        }
+        return gridPanel;
+    },
+    //
+    createForm: function() {
+        var me = this;
+        //
+        me.saveButton = Ext.create("Ext.button.Button", {
+            itemId: "save",
+            text: "Save",
+            glyph: NOC.glyph.save,
+            // formBind: true,
+            // disabled: true,
+            scope: me,
+            // @todo: check access
+            handler: me.onSave
+        });
+        //
+        me.closeButton = Ext.create("Ext.button.Button", {
+            itemId: "close",
+            text: "Close",
+            glyph: NOC.glyph.arrow_left,
+            scope: me,
+            handler: me.onClose
+        });
+        //
+        me.resetButton = Ext.create("Ext.button.Button", {
+            itemId: "reset",
+            text: "Reset",
+            glyph: NOC.glyph.undo,
+            disabled: true,
+            scope: me,
+            handler: me.onReset
+        });
+        //
+        me.deleteButton = Ext.create("Ext.button.Button", {
+            itemId: "delete",
+            text: "Delete",
+            glyph: NOC.glyph.remove,
+            disabled: true,
+            hasAccess: NOC.hasPermission("delete"),
+            scope: me,
+            handler: me.onDelete
+        });
+        //
+        me.cloneButton = Ext.create("Ext.button.Button", {
+            itemId: "clone",
+            text: "Clone",
+            glyph: NOC.glyph.copy,
+            disabled: true,
+            hasAccess: NOC.hasPermission("create"),
+            scope: me,
+            handler: me.onClone
+        });
+        // Default toolbar items
         var formToolbar = [
-            {
-                itemId: "save",
-                text: "Save",
-                glyph: NOC.glyph.save,
-                // formBind: true,
-                // disabled: true,
-                scope: me,
-                // @todo: check access
-                handler: me.onSave
-            },
-            {
-                itemId: "close",
-                text: "Close",
-                glyph: NOC.glyph.arrow_left,
-                scope: me,
-                handler: me.onClose
-            },
+            me.saveButton,
+            me.closeButton,
             "-",
-            {
-               itemId: "reset",
-               text: "Reset",
-               glyph: NOC.glyph.undo,
-               disabled: true,
-               scope: me,
-               handler: me.onReset
-            },
-            {
-               itemId: "delete",
-               text: "Delete",
-               glyph: NOC.glyph.remove,
-               disabled: true,
-               hasAccess: NOC.hasPermission("delete"),
-               scope: me,
-               handler: me.onDelete
-            },
+            me.resetButton,
+            me.deleteButton,
             "-",
-            {
-                itemId: "clone",
-                text: "Clone",
-                glyph: NOC.glyph.copy,
-                disabled: true,
-                hasAccess: NOC.hasPermission("create"),
-                scope: me,
-                handler: me.onClone
-            }
+            me.cloneButton
         ];
         // Add View button
         if(me.onPreview) {
@@ -351,7 +391,6 @@ Ext.define("NOC.core.ModelApplication", {
             "->",
             me.toolbarIdField
         ]);
-
         // Prepare inlines grid
         var formInlines = [];
         me.inlineStores = [];
@@ -386,7 +425,7 @@ Ext.define("NOC.core.ModelApplication", {
                         tbar: [
                             {
                                 text: "Add",
-                                iconCls: "icon_add",
+                                glyph: NOC.glyph.plus,
                                 handler: function() {
                                     var grid = this.up("panel"),
                                         rowEditing = grid.plugins[0];
@@ -397,7 +436,7 @@ Ext.define("NOC.core.ModelApplication", {
                             },
                             {
                                 text: "Delete",
-                                iconCls: "icon_delete",
+                                glyph: NOC.glyph.remove,
                                 handler: function() {
                                     var grid = this.up("panel"),
                                         sm = grid.getSelectionModel(),
@@ -436,9 +475,31 @@ Ext.define("NOC.core.ModelApplication", {
                 formInlines = formInlines.concat(r);
                 me.inlineStores = me.inlineStores.concat(istore);
             }
+        };
+
+        me.formTitle = Ext.create("Ext.container.Container", {
+            html: "Title",
+            itemId: "form_title",
+            padding: 4,
+            style: {
+                fontWeight: "bold"
+            }
+        });
+
+        var formFields = [
+            me.formTitle,
+            {
+                xtype: "hiddenfield",
+                name: me.idField
+            }
+        ];
+        formFields = formFields.concat(me.fields);
+        if(me.noc.cust_form_fields) {
+            formFields = formFields.concat(me.noc.cust_form_fields);
         }
-        var formPanel = {
-            xtype: 'container',
+        formFields = formFields.concat(formInlines);
+
+        var formPanel = Ext.create("Ext.container.Container", {
             itemId: "form",
             layout: "fit",
             items: {
@@ -457,21 +518,7 @@ Ext.define("NOC.core.ModelApplication", {
                         }
                     }
                 },
-                items: [
-                    {
-                        xtype: "container",
-
-                        html: "Title",
-                        itemId: "form_title",
-                        padding: 4,
-                        style: {
-                            fontWeight: "bold"
-                        }
-                    },
-                    {
-                        xtype: "hiddenfield",
-                        name: me.idField
-                    }].concat(me.fields).concat(me.noc.cust_form_fields || []).concat(formInlines),
+                items: formFields,
                 tbar: me.applyPermissions(formToolbar),
                 listeners: {
                     beforeadd: function(me, field) {
@@ -490,41 +537,9 @@ Ext.define("NOC.core.ModelApplication", {
                     }
                 }
             }
-        };
-        me.ITEM_FORM = me.registerItem(formPanel);
-        //
-        Ext.apply(me, {
-            items: me.getRegisteredItems(),
-            activeItem: me.ITEM_GRID
         });
-        // Initialize component
-        me.callParent(arguments);
-        me.currentRecord = null;
-        // Create shortcuts
-        var grid = me.getComponent("grid"),
-            form = me.getComponent("form").items.first(),
-            gt = grid.dockedItems.items[1],
-            ft = form.dockedItems.first();
-        me.grid = grid;
-        me.form = form.getForm();
-        me.search_field = gt.getComponent("search_field");
-        me.actionMenu = gt.getComponent("action_menu");
-        me.create_button = gt.getComponent("create");
-        me.saveButton = ft.getComponent("save");
-        me.closeButton = ft.getComponent("close");
-        me.resetButton = ft.getComponent("reset");
-        me.deleteButton = ft.getComponent("delete");
-        me.cloneButton = ft.getComponent("clone");
-        me.formTitle = form.getComponent("form_title");
-        if(me.filters) {
-            me.filterPanel = me.grid.getComponent("filters");
-        }
-        // Process commands
-        if(me.noc.cmd && me.noc.cmd.cmd == "open") {
-            me.store.setFilterParams({id: me.noc.cmd.id});
-        }
-        // Finally, load the store
-        me.store.load();
+        me.form = formPanel.items.first().getForm();
+        return formPanel;
     },
     // Show grid
     showGrid: function() {
