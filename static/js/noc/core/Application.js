@@ -13,7 +13,6 @@ Ext.define("NOC.core.Application", {
 
     constructor: function(options) {
         var me = this;
-        console.log("OPT", options);
         // Initialize templates when exists
         me.appId = me.appId || options.noc.app_id;
         me.templates = NOC.templates[me.appId] || {};
