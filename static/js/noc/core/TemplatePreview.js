@@ -12,6 +12,7 @@ Ext.define("NOC.core.TemplatePreview", {
     app: null,
     template: null,
     previewName: null,
+    onCloseItem: null,
 
     initComponent: function() {
         var me = this;
@@ -24,7 +25,7 @@ Ext.define("NOC.core.TemplatePreview", {
                     {
                         itemId: "close",
                         text: "Close",
-                        iconCls: "icon_arrow_undo",
+                        glyph: NOC.glyph.arrow_left,
                         scope: me,
                         handler: me.onClose
                     }
@@ -52,7 +53,19 @@ Ext.define("NOC.core.TemplatePreview", {
     },
     //
     onClose: function() {
-        var me = this;
-        me.app.showGrid();
+        var me = this,
+            idx;
+
+        if(me.onCloseItem === null) {
+            idx = me.app.ITEM_GRID;
+        } else {
+            if(Ext.isString(me.onCloseItem)) {
+                idx = me.app[me.onCloseItem];
+            } else {
+                idx = me.onCloseItem;
+            }
+        }
+        console.log(idx);
+        me.app.showItem(idx);
     }
 });

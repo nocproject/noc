@@ -13,7 +13,7 @@ Ext.define("NOC.ip.prefixaccess.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "user",

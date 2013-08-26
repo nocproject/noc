@@ -57,6 +57,7 @@ class Script(NOCScript):
         "M-Ethernet": "management",
         "Ring-if": "physical",
         "Tunnel": "tunnel",
+        "Virtual-Template": None,
         "Vlanif": "SVI"
     }
 
@@ -175,6 +176,8 @@ class Script(NOCScript):
                     o_stat = False
                 match = self.rx_iftype.match(ifname)
                 iftype = self.types[match.group(1)]
+                if iftype is None:
+                    continue  # Skip ignored interfaces
                 iface = {
                     "name": ifname,
                     "admin_status": a_stat,

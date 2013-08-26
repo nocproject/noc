@@ -124,14 +124,21 @@ ensure_dir etc/ssh 700
 ##
 ## Pull repo
 ##
-if [ "$FOLLOW" != "none" ]; then
-    info "Pulling revision '$FOLLOW' from $REPO"
-    if [ -x ./bin/hg ]; then
-        HG=./bin/hg
+info "Pulling repo $REPO"
+if [ -x ./bin/hg ]; then
+    HG=./bin/hg
+else
+    HG=`which hg`
+fi
+if [ $BRANCH != "none" ]; then
+    $HG pull -u $REPO || error_exit "$LINENO: Failed to pull repo $REPO"
+    if [ `$HG branch` = "$BRANCH" ]; then
+        $HG update || error_exit "$LINENO: Failed to update repo"
     else
-        HG=`which hg`
+        info "Switching to branch $BRANCH"
+        $HG update -c $BRANCH || error_exit "$LINENO: Failed to update to branch $BRANCH"
     fi
-    $HG pull -r $BRANCH -u $REPO || error_exit "$LINENO: Failed to pull repo"
+    ./scripts/compile || error_exit "$LINENO: Failed to compile bytecode"
 fi
 ##
 ## Check virtualenv is enabled and set up
