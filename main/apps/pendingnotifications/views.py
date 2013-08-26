@@ -1,22 +1,20 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Pending Notifications
+## main.pendingnotifications application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.main.models import Notification
-##
-## Notification admin
-##
-class NotificationAdmin(admin.ModelAdmin):
-    list_display=["timestamp","notification_method","notification_params","subject","next_try"]
-##
-## Notification application
-##
-class NotificationApplication(ModelApplication):
-    model=Notification
-    model_admin=NotificationAdmin
-    menu="Pending Notifications"
+
+
+class NotificationApplication(ExtModelApplication):
+    """
+    Notification application
+    """
+    title = "Pending Notifications"
+    menu = "Pending Notifications"
+    model = Notification
