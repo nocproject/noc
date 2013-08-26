@@ -28,7 +28,7 @@ class Script(NOCScript):
         r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    @NOCScript.match(version__regex=r"SE|EA")
+    @NOCScript.match(version__regex=r"SE|EA|EZ")
     def execute_small_cat(self):
         v = self.cli("show version")
         match = self.re_search(self.rx_small_cat, v)
