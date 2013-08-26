@@ -13,7 +13,7 @@ Ext.define("NOC.main.mimetype.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
 
         {

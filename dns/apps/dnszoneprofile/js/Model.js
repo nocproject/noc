@@ -13,7 +13,7 @@ Ext.define("NOC.dns.dnszoneprofile.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "name",

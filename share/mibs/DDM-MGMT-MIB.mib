@@ -1,8 +1,8 @@
 -- -----------------------------------------------------------------------------
 -- MIB NAME : DDM-MGMT-MIB
 -- FILE NAME: DDM.mib
--- DATE     : 2009/04/30							
--- VERSION  : 1.02								
+-- DATE     : 2011/03/16							
+-- VERSION  : 1.03								
 -- PURPOSE  : To construct the MIB structure of DDM function for
 --            proprietary enterprise			
 -- -----------------------------------------------------------------------------
@@ -13,6 +13,13 @@
 --  [New Object]		
 --  [Modification]
 -- Notes: (Requested by who and which project)
+--
+-- Version 1.03, 2011/03/16, Valo Lee
+-- Description:
+-- [New Object]
+-- [1]Add swDdmPowerUnit in swDdmCtrl to show and configure TX/RX power global unit.
+-- [2]Add swDdmReloadThreshold in swDdmMgmt to reload ports' thresholds.
+-- Requested by Valo Lee for project DES3700.
 --
 -- Version 1.02, 2009/04/30, Strive Zhao
 -- Description:
@@ -51,7 +58,7 @@ IMPORTS
             FROM DLINK-ID-REC-MIB;
 
 swDdmMIB	MODULE-IDENTITY
-          LAST-UPDATED "0904300000Z"
+          LAST-UPDATED "201103160000Z"
           ORGANIZATION "D-Link Corp."
           CONTACT-INFO
                       "http://support.dlink.com"
@@ -89,6 +96,18 @@ swDdmLogState    OBJECT-TYPE
     DESCRIPTION
         "This object indicates the log action state."
         ::= {swDdmCtrl 2}
+	
+swDdmPowerUnit    OBJECT-TYPE
+    SYNTAX  INTEGER {
+                     mw(1),
+                     dbm(2)
+                    }
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+        "This object indicates the TX/RX power global unit."
+    DEFVAL{mw}
+        ::= {swDdmCtrl 3}
         
 -- --------------------------------------------------------------------------
 -- swDdmInfo
@@ -126,7 +145,7 @@ SwDdmStatusEntry ::=
 							DisplayString,
 				swDdmRxPower
 							DisplayString
-							}
+				}
 
 swDdmPort	OBJECT-TYPE
 		SYNTAX  INTEGER (1..65535)
@@ -207,19 +226,17 @@ swDdmThresholdMgmtEntry OBJECT-TYPE
 
 SwDdmThresholdMgmtEntry	::=
     SEQUENCE {
-          swDdmThresholdType
-                INTEGER,
-          swDdmHighAlarm
-  		DisplayString,
-			 		swDdmLowAlarm
-                DisplayString,
-          swDdmHighWarning
-  		DisplayString,
-          swDdmLowWarning
-                DisplayString
-        		}
-        		     
-
+              swDdmThresholdType
+                  INTEGER,
+              swDdmHighAlarm
+                  DisplayString,
+              swDdmLowAlarm
+                  DisplayString,
+              swDdmHighWarning
+                  DisplayString,
+              swDdmLowWarning
+                  DisplayString
+              }
         
 swDdmThresholdType	OBJECT-TYPE
 		SYNTAX	INTEGER{
@@ -361,6 +378,8 @@ SwDdmPortMgmtEntry ::=
           swDdmPortState
                 INTEGER,
           swDdmPortShutdown
+                INTEGER,
+          swDdmReloadThreshold
                 INTEGER
              }
 
@@ -389,6 +408,18 @@ swDdmPortShutdown OBJECT-TYPE
         on which the operating parameter exceeds the specified threshold.
         "
         ::= {swDdmPortMgmtEntry 2}
+
+swDdmReloadThreshold  OBJECT-TYPE
+    SYNTAX  INTEGER {
+                     other(1),
+                     start(2)
+                    }
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+        "This object reload the default threshold value for special ports."
+        ::= {swDdmPortMgmtEntry 3}     
+       		
 
 -- --------------------------------------------------------------------------
 -- swDdmNotify
