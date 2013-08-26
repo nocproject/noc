@@ -207,6 +207,8 @@ class LinkDiscoveryJob(MODiscoveryJob):
         """
         # Caches
         self.neighbor_by_mac_cache = {}  # mac -> object
+        self.own_mac_cache = {}  # mac -> true | false
+        self.own_macs = None  # [(first_mac, last_mac), ...]
         # Fetch existing links
         self.submited = set()  # (local_iface, remote_object, remote_iface)
         self.load_existing_links(object)
@@ -255,24 +257,39 @@ class LinkDiscoveryJob(MODiscoveryJob):
         :return:
         """
         # Use cached values
-        if mac in self.neighbor_by_mac_cache:
-            return self.neighbor_by_mac_cache[mac]
-        # Find in discovery cache
-        d = DiscoveryID.objects.filter(first_chassis_mac__lte=mac,
-            last_chassis_mac__gte=mac).first()
-        if d:
-            d = d.object
-        self.neighbor_by_mac_cache[mac] = d
-        return d
+        o = self.neighbor_by_mac_cache.get(mac)
+        if not o:
+            # Find in discovery cache
+            o = DiscoveryID.find_object(mac=mac)
+            self.neighbor_by_mac_cache[mac] = o
+        return o
 
-    def get_object_macs(self, object):
+    def is_own_mac(self, mac):
         """
-        Return object's MAC address interval
-        :param object:
+        Check the MAC belongs to object
+        :param mac:
         :return:
         """
-        d = DiscoveryID.objects.filter(object=object.id).first()
-        if d:
-            return d.first_chassis_mac, d.last_chassis_mac
+        if self.own_macs is None:
+            r = DiscoveryID.macs_for_object(self.object)
+            if not r:
+                self.own_macs = []
+                return False
+        if self.own_macs:
+            mr = self.own_mac_cache.get(mac)
+            if mr is None:
+                mr = False
+                for f, t in self.own_macs:
+                    if f <= mac <= t:
+                        mr = True
+                        break
+                self.own_mac_cache[mac] = mr
+            return mr
         else:
-            return None, None
+            return False
+
+
+        r = self.own_mac_cache.get(mac)
+        if r is None:
+            r = DiscoveryID.objects
+        return r
