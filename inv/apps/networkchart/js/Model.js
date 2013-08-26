@@ -13,7 +13,7 @@ Ext.define("NOC.inv.networkchart.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "name",

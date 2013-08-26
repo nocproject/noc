@@ -81,7 +81,7 @@
 }
 
 .noc-label-required {
-    font-weight: bold;
+    font-weight: bold !important;
 }
 
 /* Styles used by Ext.ux.form.ItemSelector */

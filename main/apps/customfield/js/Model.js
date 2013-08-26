@@ -13,7 +13,7 @@ Ext.define("NOC.main.customfield.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "table",

@@ -13,6 +13,7 @@ Ext.define("NOC.core.Application", {
 
     constructor: function(options) {
         var me = this;
+        console.log("OPT", options);
         // Initialize templates when exists
         me.appId = me.appId || options.noc.app_id;
         me.templates = NOC.templates[me.appId] || {};
@@ -26,6 +27,13 @@ Ext.define("NOC.core.Application", {
         me._registeredItems = [];
         me.callParent(options);
     },
+    //
+    initComponent: function() {
+        var me = this;
+        me.on("afterrender", me.processCommands, me);
+        me.callParent();
+    },
+    //
     hasPermission: function(name) {
         return this.permissions[name] === true;
     },
@@ -61,5 +69,15 @@ Ext.define("NOC.core.Application", {
     getRegisteredItems: function() {
         var me = this;
         return me._registeredItems;
+    },
+    //
+    processCommands: function() {
+        var me = this;
+        if(me.noc.cmd) {
+            var cmd = me["onCmd_" + me.noc.cmd.cmd];
+            if(cmd) {
+                cmd.call(me, me.noc.cmd);
+            }
+        }
     }
 });

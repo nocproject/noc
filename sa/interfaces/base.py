@@ -1225,6 +1225,23 @@ class DocumentParameter(Parameter):
         return v
 
 
+class EmbeddedDocumentParameter(Parameter):
+    def __init__(self, document, required=True):
+        super(EmbeddedDocumentParameter, self).__init__(
+            required=required)
+        self.document = document
+
+    def clean(self, value):
+        if not value:
+            if self.required:
+                self.raise_error("Value required")
+            else:
+                return None
+        if not isinstance(value, dict):
+            self.raise_error(value, "Value must be list dict")
+        return self.document(**value)
+
+
 class TagsParameter(Parameter):
     """
     >>> TagsParameter().clean([1, 2, "tags"])

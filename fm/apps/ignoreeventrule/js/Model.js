@@ -13,7 +13,7 @@ Ext.define("NOC.fm.ignoreeventrule.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "name",
