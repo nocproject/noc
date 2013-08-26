@@ -11,6 +11,8 @@ from link_discovery import LinkDiscoveryJob
 from noc.settings import config
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
+from noc.lib.validators import is_int
+from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
@@ -84,15 +86,46 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
         f = {
             3: self.get_remote_port_by_mac,   # macAddress(3)
             5: self.get_remote_port_by_name,  # interfaceName(5)
-            7: self.get_remote_port_by_name   # local(7)
+            7: self.get_remote_port_by_local   # local(7)
         }.get(remote_port_subtype)
         if f:
             return f(object, remote_port)
         else:
+            self.info(
+                "Unsupported remote port subtype "
+                "from %s. value=%s subtype=%s" % (
+                object, remote_port, remote_port_subtype))
             return None
 
     def get_remote_port_by_name(self, object, port):
         return object.profile.convert_interface_name(port)
+
+    def get_remote_port_by_local(self, object, port):
+        """
+        Try to guess remote port from free-form description
+        :param object:
+        :param port:
+        :return:
+        """
+        # Try ifindex
+        if is_int(port):
+            i = Interface.objects.filter(
+                managed_object=object.id, ifindex=int(port)).first()
+            if i:
+                return i.name
+        # Try interface name
+        try:
+            n_port = object.profile.convert_interface_name(port)
+            i = Interface.objects.filter(
+                managed_object=object.id, name=n_port).first()
+            if i:
+                return n_port
+        except InterfaceTypeError:
+            pass
+        # Unable to decode
+        self.info("Unable to decode local subtype port id %s at %s" % (
+            port, object))
+        return port
 
     def get_remote_port_by_mac(self, object, mac):
         i = Interface.objects.filter(managed_object=object.id,

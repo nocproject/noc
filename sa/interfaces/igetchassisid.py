@@ -2,17 +2,16 @@
 ##----------------------------------------------------------------------
 ## IGetChassisID
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from base import *
+
+from base import Interface, DictListParameter, MACAddressParameter
 
 
 class IGetChassisID(Interface):
-    returns = DictParameter(attrs={
+    returns = DictListParameter(attrs={
         "first_chassis_mac": MACAddressParameter(required=False),
         "last_chassis_mac": MACAddressParameter(required=False)
-    })
+    }, convert=True)
     template = "interfaces/igetchassisid.html"
