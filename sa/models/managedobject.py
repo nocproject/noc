@@ -430,6 +430,7 @@ class ManagedObject(models.Model):
             ("enable_bfd_discovery", "bfd_discovery", 5),
             ("enable_stp_discovery", "stp_discovery", 15),
             ("enable_cdp_discovery", "cdp_discovery", 5),
+            ("enable_oam_discovery", "oam_discovery", 7),
             ("enable_rep_discovery", "rep_discovery", 5),
             ("enable_ip_discovery", "ip_discovery", 20),
             ("enable_mac_discovery", "mac_discovery", 20)
