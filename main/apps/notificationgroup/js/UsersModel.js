@@ -14,7 +14,7 @@ Ext.define("NOC.main.notificationgroup.UsersModel", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "time_pattern",
