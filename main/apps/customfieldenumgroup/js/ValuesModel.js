@@ -14,7 +14,7 @@ Ext.define("NOC.main.customfieldenumgroup.ValuesModel", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "is_active",

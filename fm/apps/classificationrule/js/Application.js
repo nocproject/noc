@@ -122,13 +122,15 @@ Ext.define("NOC.fm.classificationrule.Application", {
                             text: "Key RE",
                             dataIndex: "key_re",
                             flex: 1,
-                            editor: "textfield"
+                            editor: "textfield",
+                            renderer: "htmlEncode"
                         },
                         {
                             text: "Value RE",
                             dataIndex: "value_re",
                             flex: 1,
-                            editor: "textfield"
+                            editor: "textfield",
+                            renderer: "htmlEncode"
                         }
                     ]
                 }
