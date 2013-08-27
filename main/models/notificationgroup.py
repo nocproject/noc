@@ -114,6 +114,12 @@ class NotificationGroup(models.Model):
         Send notification to a list of groups
         Prevent duplicated messages
         """
+        if not subject and not body:
+            return
+        if subject is None:
+            subject = ""
+        if body is None:
+            body = ""
         if not isinstance(subject, dict):
             subject = {LANGUAGE_CODE: subject}
         if not isinstance(body, dict):

@@ -1,0 +1,32 @@
+{% comment %}
+Notify when alarm cleared
+
+Context variables are:
+    * alarm - ActiveAlarm instance
+    * subject - Subject
+    * body - Alarm body
+    * symptoms - Alarm symptoms
+    * probable_causes - Probable causes
+    * recommended_actions - Recommended actions
+{% endcomment %}
+Subject: {{ alarm.managed_object }} alarm #{{ alarm.id }} has been cleared: {{ subject }}
+
+DURATION: {{ alarm.duration }}s
+
+{{ body }}
+
+{% if symptoms %}
+SYMPTOMS:
+{{ symptoms }}
+{% endif %}
+
+{% if probable_causes %}
+PROBABLE CAUSES:
+{{ probable_causes }}
+
+{% endif %}
+
+{% if recommended_actions %}
+RECOMMENDED ACTIONS:
+{{ recommended_actions }}
+{% endif %}

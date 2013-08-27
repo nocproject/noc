@@ -244,6 +244,16 @@ class Correlator(Daemon):
         if a.alarm_class.id in self.alarm_jobs:
             for job in self.alarm_jobs[r.alarm_class.id]:
                 job.submit(a)
+        # Notify about new alarm
+        if not a.root:
+            a.managed_object.event(a.managed_object.EV_ALARM_RISEN, {
+                "alarm": a,
+                "subject": a.get_translated_subject("en"),
+                "body": a.get_translated_body("en"),
+                "symptoms": a.get_translated_symptoms("en"),
+                "recommended_actions": a.get_translated_recommended_actions("en"),
+                "probable_causes": a.get_translated_probable_causes("en")
+            })
 
     def clear_alarm(self, r, e):
         if r.unique:
