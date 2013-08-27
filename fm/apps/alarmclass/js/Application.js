@@ -112,5 +112,9 @@ Ext.define("NOC.fm.alarmclass.Application", {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
+    },
+    //
+    onSave: function() {
+        NOC.info("Sorry! Not implemented still. Please apply changes to JSON files directly");
     }
 });

@@ -106,7 +106,8 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                     name=i["name"], type=i["type"], mac=i.get("mac"),
                     description=i.get("description"),
                     aggregated_interface=agg,
-                    enabled_protocols=i.get("enabled_protocols", [])
+                    enabled_protocols=i.get("enabled_protocols", []),
+                    ifindex=i.get("snmp_ifindex")
                 )
                 icache[i["name"]] = iface
                 # Submit subinterfaces

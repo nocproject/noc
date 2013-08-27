@@ -25,25 +25,22 @@ class REPLinkDiscoveryJob(LinkDiscoveryJob):
         "initial_submit_concurrency")
 
     def process_result(self, object, result):
-        first_mac, last_mac = self.get_object_macs(object)
-        if not first_mac or not last_mac:
-            return  # ID discovery is incomplete
         for segment in result:
             topology = segment["topology"]
             # Find own ports
             o = [i for i, p in enumerate(topology)
-                 if first_mac <= p["mac"] <= last_mac]
+                 if self.is_own_mac(p["mac"])]
             if not o:
                 continue  # Not found
             elif len(o) == 2:
                 f, s = o
                 L = len(topology)
                 if not topology[f]["edge_no_neighbor"]:
-                    self.submit_pair(object,
-                        topology[f], topology[(f - 1) % L])
+                    self.submit_pair(
+                        object, topology[f], topology[(f - 1) % L])
                 if not topology[s]["edge_no_neighbor"]:
-                    self.submit_pair(object,
-                        topology[s], topology[(s + 1) % L])
+                    self.submit_pair(
+                        object, topology[s], topology[(s + 1) % L])
             else:
                 # Something strange
                 self.error("Invalid REP discovery result: %r" % topology)
