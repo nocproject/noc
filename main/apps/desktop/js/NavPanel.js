@@ -18,7 +18,7 @@ Ext.define("NOC.main.desktop.NavPanel", {
     header: false,
     layout: "accordion",
     items: [
-        Ext.create("NOC.main.desktop.NavTree"),
-        Ext.create("NOC.main.desktop.Favorites")
+        Ext.create("NOC.main.desktop.NavTree")/*,
+        Ext.create("NOC.main.desktop.Favorites")*/
     ]
 });
