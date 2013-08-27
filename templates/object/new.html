@@ -1,0 +1,12 @@
+{% comment %}
+Notify about new managed object
+
+Context variables are:
+   * object - managed object instance
+{% endcomment %}
+Subject: New managed object: {{ object.name }}
+
+New managed object just has been created.
+Name: {{ object.name }}
+Address: {{ object.address }}
+Profile: {{ object.profile_name }}

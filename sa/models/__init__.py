@@ -25,6 +25,7 @@ from managedobjectprofile import ManagedObjectProfile
 from managedobject import ManagedObject, ManagedObjectAttribute
 from managedobjectselector import (ManagedObjectSelector,
                                    ManagedObjectSelectorByAttribute)
+from objectnotification import ObjectNotification
 from useraccess import UserAccess
 from groupaccess import GroupAccess
 from reducetask import ReduceTask
