@@ -109,6 +109,7 @@ class Script(NOCScript):
         # Get OSPF interfaces
         ospfs = self.get_ospfint()
 
+        mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
         status = self.cli("show interface status")
         config = self.cli("show interface configuration")
         descr = self.cli("show interface description")
@@ -135,7 +136,7 @@ class Script(NOCScript):
             if match:
                 iface["description"] = match.group("desc")
 
-            iface["mac"] = self.scripts.get_chassis_id()
+            iface["mac"] = mac
 
             # Portchannel member
             if ifname in portchannel_members:

@@ -29,9 +29,10 @@ class Script(NOCScript):
                                r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s+"
                                r"(?P<direction>\S+)\s+.+$",
                                re.MULTILINE)
-    rx_ipif = re.compile(r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
-                            r"Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
-                            r"\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
+    rx_ipif = re.compile(
+        r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
+        r"Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
+        r"\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
 
     # @todo: vlan trunking, STP, CTP aka LBD
 
@@ -109,7 +110,7 @@ class Script(NOCScript):
             interfaces += [iface]
 
         # Get mac
-        mac = self.scripts.get_chassis_id()["first_chassis_mac"]
+        mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
 
         # Get switchports
         for swp in self.scripts.get_switchport():
