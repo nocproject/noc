@@ -237,11 +237,11 @@ class BERDecoder(object):
         # SNMP application types
         64: {
             True: {
-                0: 0,  # IpAddress
+                # 0: ,  # IpAddress
                 1: parse_int,  # Counter32
                 2: parse_int,  # Gauge32
-                3: 0,  # TimeTicks
-                4: 0,  # Opaque
+                3: parse_int,  # TimeTicks
+                # 4: 0,  # Opaque
                 6: parse_int   # Counter64
             },
             False: {}
