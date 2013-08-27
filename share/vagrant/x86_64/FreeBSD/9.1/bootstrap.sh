@@ -8,7 +8,9 @@
 ##----------------------------------------------------------------------
 
 PROGNAME=`basename $0`
-DIST=/opt/noc/share/vagrant/x86_64/FreeBSD/9.1
+PREFIX=/usr/local
+DIST=$PREFIX/noc/share/vagrant/x86_64/FreeBSD/9.1
+
 if [ "$1" = "--test" ]; then
     TEST=0
     echo "Running in the test mode...."
@@ -23,7 +25,7 @@ error_exit ( ) {
 }
 
 START_DIR=$PWD
-cd /opt/noc || error_exit "No NOC distribution found"
+cd $PREFIX/noc || error_exit "No NOC distribution found"
 hg in
 if [ $? -eq 0 ]; then
     # Changes found
@@ -37,24 +39,22 @@ fi
 # Put upgrade.conf in place
 cp $DIST/files/upgrade.conf etc/upgrade.conf || error_exit "Cannot copy upgrade.conf"
 # Put nginx.conf in place
-rm -f /etc/nginx/sites-enabled/default
-cp $DIST/files/nginx.conf /etc/nginx/sites-available/noc.conf || error_exit "Cannot copy nginx config"
-if [ ! -h /etc/nginx/sites-enabled/noc.conf ]; then
-    ln -s /etc/nginx/sites-available/noc.conf /etc/nginx/sites-enabled/noc.conf || error_exit "Cannot set up nginx config"
-fi
+mv -f $PREFIX/etc/nginx/nginx.conf $PREFIX/etc/nginx/nginx.conf.old
+cp $DIST/files/nginx.conf $PREFIX/etc/nginx/ || error_exit "Cannot copy nginx config"
 # Put init script
-cp $DIST/files/noc-launcher /etc/rc.d/ || error_exit "Cannot install init file"
+cp $PREFIX/noc/share/FreeBSD/rc.d/noc $PREFIX/etc/rc.d/ || error_exit "Cannot install init file"
+chmod -f 555 $PREFIX/etc/rc.d/noc
 #
 if [ $TEST -eq 0 ]; then
     echo "Stopping all NOC processes"
-    /etc/rc.d/noc-launcher stop
+    $PREFIX/etc/rc.d/noc stop
 fi
 # Run NOC's upgrade process
 ./scripts/upgrade || error_exit "Failed to upgrade NOC"
 # Set up configs
 ./scripts/set-conf.py etc/noc-launcher.conf noc-activator user root
-./scripts/set-conf.py etc/noc-activator.conf activator listen_traps eth0
-./scripts/set-conf.py etc/noc-activator.conf activator listen_syslog eth0
+./scripts/set-conf.py etc/noc-activator.conf activator listen_traps 0.0.0.0
+./scripts/set-conf.py etc/noc-activator.conf activator listen_syslog 0.0.0.0
 ./scripts/set-conf.py etc/noc-activator.conf activator name default
 ./scripts/set-conf.py etc/noc-activator.conf activator secret thenocproject
 su - postgres -c "psql noc" << __EOF__
@@ -65,7 +65,7 @@ __EOF__
 [ $? -ne 0 ] && error_exit "Failed to set activator password"
 if [ $TEST -eq 1 ]; then
     # Run nginx
-    /etc/rc.d/nginx restart
+    $PREFIX/etc/rc.d/nginx restart
     # Run NOC
-    /etc/rc.d/noc-launcher start
+    $PREFIX/etc/rc.d/noc start
 fi
