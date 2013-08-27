@@ -178,8 +178,9 @@ Ext.define("NOC.fm.event.Application", {
                 {
                     text: "Dur.",
                     dataIndex: "duration",
-                    width: 30,
-                    align: "right"
+                    width: 70,
+                    align: "right",
+                    renderer: NOC.render.Duration
                 }
             ],
             selModel: Ext.create("Ext.selection.CheckboxModel"),
