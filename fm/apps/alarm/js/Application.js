@@ -183,8 +183,9 @@ Ext.define("NOC.fm.alarm.Application", {
                 {
                     text: "Duration",
                     dataIndex: "duration",
-                    width: 30,
-                    align: "right"
+                    width: 70,
+                    align: "right",
+                    renderer: NOC.render.Duration
                 },
                 {
                     text: "Events",
