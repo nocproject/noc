@@ -115,3 +115,36 @@ class MAC(str):
         """
         r = self.lower().replace(":", "")
         return "%s.%s.%s" % (r[:4], r[4:8], r[8:])
+
+    def shift(self, count):
+        """
+        Return shifted MAC address
+
+        >>> MAC("AA:BB:CC:DD:EE:FF").shift(0)
+        'AA:BB:CC:DD:EE:FF'
+        >>> MAC("AA:BB:CC:DD:EE:FF").shift(1)
+        'AA:BB:CC:DD:EF:00'
+        >>> MAC("AA:BB:CC:DD:EE:FF").shift(256)
+        'AA:BB:CC:DD:EF:FF'
+        >>> MAC("AA:BB:CC:DD:EE:FF").shift(257)
+        'AA:BB:CC:DD:F0:00'
+        >>>MAC("AA:BB:CC:DD:EE:FF").shift(4096)
+        'AA:BB:CC:DD:FE:FF'
+
+        :param count:
+        :return:
+        """
+        # Convert to 64-bit integer
+        v = 0L
+        for o in [int(x, 16) for x in self.split(":")]:
+            v <<= 8
+            v += o
+        # Shift count addresses
+        v += count
+        # Convert back to MAC
+        r = []
+        for i in range(6):
+            r += ["%02X" % (v & 0xFF)]
+            v >>= 8
+        r.reverse()
+        return ":".join(r)

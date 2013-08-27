@@ -422,6 +422,7 @@ class ManagedObject(models.Model):
         op = self.object_profile
         for attr, job, duration in [
             ("enable_version_inventory", "version_inventory", 5),
+            ("enable_id_discovery", "id_discovery", 10),
             ("enable_config_polling", "config_discovery", 20),
             ("enable_interface_discovery", "interface_discovery", 20),
             ("enable_vlan_discovery", "vlan_discovery", 7),

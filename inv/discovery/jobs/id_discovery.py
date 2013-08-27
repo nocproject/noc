@@ -28,15 +28,19 @@ class IDDiscoveryJob(MODiscoveryJob):
         :param result:
         :return:
         """
-        self.info("Identity found: Chassis MAC = %s-%s, hostname = %s, router-id = %s" % (
-            result.get("first_chassis_mac"),
-            result.get("last_chassis_mac"),
+        cm = result.get("chassis_mac")
+        if cm:
+            cm = ", ".join(
+                "%s - %s" % (m["first_chassis_mac"], m["last_chassis_mac"])
+                for m in cm
+            )
+        self.info("Identity found: Chassis MACs = %s, hostname = %s, router-id = %s" % (
+            cm,
             result.get("hostname"),
             result.get("router_id")
         ))
         DiscoveryID.submit(object=object,
-            first_chassis_mac=result.get("first_chassis_mac"),
-            last_chassis_mac=result.get("last_chassis_mac"),
+            chassis_mac=result.get("chassis_mac"),
             hostname=result.get("hostname"),
             router_id=result.get("router_id")
         )
