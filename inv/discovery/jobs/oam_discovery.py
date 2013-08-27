@@ -32,7 +32,7 @@ class OAMLinkDiscoveryJob(LinkDiscoveryJob):
         remote_macs = defaultdict(list)  # remote mac -> local iface
         for n in result:
             if "L" in n["caps"]:
-                remote_macs[n["remote_mac"]] += [n["interfaces"]]
+                remote_macs[n["remote_mac"]] += [n["interface"]]
         # Resolve links
         for rmac in remote_macs:
             if len(remote_macs[rmac]) == 1:
