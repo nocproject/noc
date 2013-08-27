@@ -43,7 +43,7 @@ class STPLinkDiscoveryJob(LinkDiscoveryJob):
                 elif iface["role"] in ("root", "alternate"):
                     # ROOT and ALTERNATE ports are pending check candidates
                     # Get remote object by bridge id
-                    remote_object = self.get_neighbor(
+                    remote_object = self.get_neighbor_by_mac(
                         iface["designated_bridge_id"])
                     if not remote_object:
                         continue
@@ -66,20 +66,3 @@ class STPLinkDiscoveryJob(LinkDiscoveryJob):
                 else:
                     self.debug("Designated port %s is not found in %s" % (
                         local_port_id, ", ".join(self.desg_port_id.keys())))
-
-    def get_neighbor(self, bridge_id):
-        """
-        Find neighbor by bridge id
-        :param bridge_id:
-        :return:
-        """
-        # Get cached
-        n = self.n_cache.get(bridge_id)
-        if n:
-            return n
-        n = DiscoveryID.objects.filter(first_chassis_mac__lte=bridge_id,
-            last_chassis_mac__gte=bridge_id).first()
-        if n:
-            n = n.object
-        self.n_cache[bridge_id] = n
-        return n

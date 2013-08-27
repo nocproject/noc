@@ -90,6 +90,10 @@ class Script(NOCScript):
             match = self.rx_phy_description.search(phy)
             if match:
                 iface["description"] = match.group("description")
+            # Get ifindex
+            match = self.rx_phy_ifindex.search(phy)
+            if match:
+                iface["snmp_ifindex"] = match.group("ifindex")
             # Get MAC
             mac = None
             match = self.rx_phy_mac.search(phy)
