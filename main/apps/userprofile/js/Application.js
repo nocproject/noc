@@ -82,7 +82,7 @@ Ext.define("NOC.main.userprofile.Application", {
                     items: [
                         {
                             text: "Add",
-                            iconCls: "icon_add",
+                            glyph: NOC.glyph.plus,
                             handler: function() {
                                 var grid = this.up("panel"),
                                     rowEditing = grid.plugins[0];
@@ -93,7 +93,7 @@ Ext.define("NOC.main.userprofile.Application", {
                         },
                         {
                             text: "Delete",
-                            iconCls: "icon_delete",
+                            glyph: NOC.glyph.remove,
                             handler: function() {
                                 var grid = this.up("panel"),
                                     sm = grid.getSelectionModel(),
@@ -146,7 +146,7 @@ Ext.define("NOC.main.userprofile.Application", {
                     dock: "top",
                     items: [
                         {
-                            iconCls: "icon_disk",
+                            glyph: NOC.glyph.save,
                             text: "Save",
                             scope: me,
                             handler: me.onSave
