@@ -5,9 +5,14 @@
     <tr><td><b>Object</b></td><td>{{object.name}}</td></tr>
     <tr><td><b>Address</b></td><td>{{object.address}}</td></tr>
     <tr><td><b>Profile</b></td><td>{{object.profile_name}}</td></tr>
-    <tr><td><b>Chassis ID MAC</b></td><td>&nbsp;</td></tr>
-    <tr><td align=right><b>from:</b></td><td>{{result.first_chassis_mac}}</td></tr>
-    <tr><td align=right><b>to:</b></td><td>{{result.last_chassis_mac}}</td></tr>
+    <tr>
+        <td><b>Chassis ID MAC</b></td>
+        <td>
+            {% for m in result %}
+                {{ m.first_chassis_mac }} - {{ m.last_chassis_mac }}<br/>
+            {% endfor %}
+        </td>
+    </tr>
 </table>
 {% else %}
 No data!!!
