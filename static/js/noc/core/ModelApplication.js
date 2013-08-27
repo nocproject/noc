@@ -76,7 +76,7 @@ Ext.define("NOC.core.ModelApplication", {
         // admin actions
         if(me.actions) {
             gridToolbar = gridToolbar.concat([{
-                iconCls: "icon_table_go",
+                glyph: NOC.glyph.download,
                 tooltip: "Group actions",
                 hasAccess: NOC.hasPermission("update"),
                 itemId: "action_menu",
@@ -386,7 +386,7 @@ Ext.define("NOC.core.ModelApplication", {
                         tbar: [
                             {
                                 text: "Add",
-                                iconCls: "icon_add",
+                                glyph: NOC.glyph.plus,
                                 handler: function() {
                                     var grid = this.up("panel"),
                                         rowEditing = grid.plugins[0];
@@ -397,7 +397,7 @@ Ext.define("NOC.core.ModelApplication", {
                             },
                             {
                                 text: "Delete",
-                                iconCls: "icon_delete",
+                                glyph: NOC.glyph.remove,
                                 handler: function() {
                                     var grid = this.up("panel"),
                                         sm = grid.getSelectionModel(),
