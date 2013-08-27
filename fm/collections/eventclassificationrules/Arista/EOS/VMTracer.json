@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter #1 (SYSLOG)",
+        "description": "Aug 27 19:45:35 arista1 VmTracer: %VMWAREVI-3-CONNECT_FAILED: Failed to connect to vCenter. Invalid username and password. (message repeated 2 times in 91.0168 secs)",
+        "event_class__name": "Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^profile$",
+                "value_re": "^Arista\\.EOS$"
+            },
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%VMWAREVI-3-CONNECT_FAILED: Failed to connect to vCenter. (?P<reason>.+?)\\. \\("
+            }
+        ]
+    }
+]
