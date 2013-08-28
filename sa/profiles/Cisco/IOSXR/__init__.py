@@ -40,7 +40,10 @@ class Profile(NOCProfile):
         match = self.rx_interface_name.match(s)
         if not match:
             raise InterfaceTypeError("Invalid interface '%s'" % s)
-        return "%s%s" % (match.group(1)[:2], match.group(2))
+        t = match.group(1)[:2]
+        if t.lower() == "Bu":
+            t = "BE"
+        return "%s%s" % (t, match.group(2))
 
     def generate_prefix_list(self, name, pl):
         """
