@@ -20,7 +20,7 @@ class OAMLinkDiscoveryJob(LinkDiscoveryJob):
     """
     name = "oam_discovery"
     map_task = "get_oam_status"
-    method = "rep"
+    method = "oam"
     ignored = not config.getboolean("oam_discovery", "enabled")
     initial_submit_interval = config.getint("oam_discovery",
         "initial_submit_interval")
