@@ -208,6 +208,7 @@ class BERDecoder(object):
                 # CHARACTER STRING	P/C	29	1D
                 # BMPString	P/C	30	1E
                 # (use long-form)	-	31	1F
+                0x80: parse_null,  # missed instance?
             },
             # Constructed types
             False: {
