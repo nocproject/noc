@@ -29,8 +29,8 @@ class Migration:
                 db.execute("""
                 INSERT INTO sa_managedobjectselector(name)
                 VALUES(%s)
-                """, n)
-                sid = db.execute("SELECT id FROM sa_managedobjectselector WHERE name=%s", n)[0][0]
+                """, [n])
+                sid = db.execute("SELECT id FROM sa_managedobjectselector WHERE name=%s", [n])[0][0]
                 selectors[None] = sid
             if domain not in selectors:
                 # Create selector for domain
