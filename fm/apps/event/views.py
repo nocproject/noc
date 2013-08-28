@@ -223,7 +223,7 @@ class EventApplication(ExtApplication):
         event.log_message("%s: %s" % (request.user.username, msg))
         return True
 
-    rx_parse_log = re.compile("^Classified as '(.+)'$")
+    rx_parse_log = re.compile("^Classified as '(.+?)'.+$")
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True,
           access="launch")
