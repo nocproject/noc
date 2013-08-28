@@ -24,6 +24,14 @@ class Migration:
             FROM cm_objectnotify
             WHERE type='config'
             """):
+            if domain is None and domain not in selectors:
+                n = "~~~ALL~~~"
+                db.execute("""
+                INSERT INTO sa_managedobjectselector(name)
+                VALUES(%s)
+                """, n)
+                sid = db.execute("SELECT id FROM sa_managedobjectselector WHERE name=%s", n)[0][0]
+                selectors[None] = sid
             if domain not in selectors:
                 # Create selector for domain
                 domain_name = db.execute(
