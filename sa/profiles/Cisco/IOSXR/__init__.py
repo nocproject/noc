@@ -22,6 +22,7 @@ class Profile(NOCProfile):
     pattern_syntax_error = r"% Invalid input detected at"
     command_disable_pager = "terminal length 0"
     command_super = "enable"
+    command_exit = "exit"
     pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
     convert_mac = NOCProfile.convert_mac_to_cisco
