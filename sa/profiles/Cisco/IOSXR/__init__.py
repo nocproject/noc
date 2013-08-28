@@ -28,19 +28,19 @@ class Profile(NOCProfile):
     convert_mac = NOCProfile.convert_mac_to_cisco
 
     rx_interface_name = re.compile(
-        r"^(?P<type>[a-z\-]+)\s*(?P<number>\d+(/\d+)*(?:\.\d+)?(?:(?:/RS?P\d+)?/CPU\d+(?:/\d+)*)?)$",
+        r"^(?P<type>[a-z\-]+)\s*(?P<number>\d+(?:/\d+)*(?:\.\d+)?(?:(?:/RS?P\d+)?/CPU\d+(?:/\d+)*)?)$",
         re.IGNORECASE)
 
     def convert_interface_name(self, s):
         """
         MgmtEth0/1/CPU0/0
         GigabitEthernet0/2/0/0.1000
+        Te0/0/1/3
         """
         match = self.rx_interface_name.match(s)
         if not match:
             raise InterfaceTypeError("Invalid interface '%s'" % s)
-        return s
-
+        return "%s%s" % (match.group(1)[:2], match.group(2))
 
     def generate_prefix_list(self, name, pl):
         """
