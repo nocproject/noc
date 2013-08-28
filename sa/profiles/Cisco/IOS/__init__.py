@@ -26,6 +26,7 @@ class Profile(NOCProfile):
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"
+    command_exit = "exit"
     command_save_config = "copy running-config startup-config\n"
     pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{,20}?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
