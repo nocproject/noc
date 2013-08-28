@@ -242,7 +242,7 @@ class EventApplication(ExtApplication):
         r += ["    {"]
         r += ["        \"profile\": \"%s\"," % json_escape(event.managed_object.profile_name)]
         if e_class:
-            r += ["        \"event_class__name\": \"%s\"" % e_class]
+            r += ["        \"event_class__name\": \"%s\"," % e_class]
         r += ["        \"raw_vars\": {"]
         rr = []
         for k in event.raw_vars:
