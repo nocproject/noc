@@ -438,19 +438,19 @@ class ManagedObject(models.Model):
     def run_discovery(self, delta=0):
         op = self.object_profile
         for attr, job, duration in [
-            ("enable_version_inventory", "version_inventory", 5),
-            ("enable_id_discovery", "id_discovery", 10),
-            ("enable_config_polling", "config_discovery", 20),
-            ("enable_interface_discovery", "interface_discovery", 20),
-            ("enable_vlan_discovery", "vlan_discovery", 7),
-            ("enable_lldp_discovery", "lldp_discovery", 5),
-            ("enable_bfd_discovery", "bfd_discovery", 5),
-            ("enable_stp_discovery", "stp_discovery", 15),
-            ("enable_cdp_discovery", "cdp_discovery", 5),
-            ("enable_oam_discovery", "oam_discovery", 7),
-            ("enable_rep_discovery", "rep_discovery", 5),
-            ("enable_ip_discovery", "ip_discovery", 20),
-            ("enable_mac_discovery", "mac_discovery", 20)
+            ("enable_version_inventory", "version_inventory", 1),
+            ("enable_id_discovery", "id_discovery", 1),
+            ("enable_config_polling", "config_discovery", 1),
+            ("enable_interface_discovery", "interface_discovery", 1),
+            ("enable_vlan_discovery", "vlan_discovery", 1),
+            ("enable_lldp_discovery", "lldp_discovery", 1),
+            ("enable_bfd_discovery", "bfd_discovery", 1),
+            ("enable_stp_discovery", "stp_discovery", 1),
+            ("enable_cdp_discovery", "cdp_discovery", 1),
+            ("enable_oam_discovery", "oam_discovery", 1),
+            ("enable_rep_discovery", "rep_discovery", 1),
+            ("enable_ip_discovery", "ip_discovery", 1),
+            ("enable_mac_discovery", "mac_discovery", 1)
         ]:
             if getattr(op, attr):
                 refresh_schedule(
