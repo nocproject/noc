@@ -287,9 +287,3 @@ class LinkDiscoveryJob(MODiscoveryJob):
             return mr
         else:
             return False
-
-
-        r = self.own_mac_cache.get(mac)
-        if r is None:
-            r = DiscoveryID.objects
-        return r

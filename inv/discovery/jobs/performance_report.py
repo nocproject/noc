@@ -17,6 +17,10 @@ class PerformanceReportJob(IntervalJob):
     name = "performance_report"
 
     def handler(self):
+        rc = self.scheduler.get_running_count()
+        rr = ", ".join("%s: %s" % (g, rc[g]) for g in rc)
         ru = resource.getrusage(resource.RUSAGE_SELF)
-        logging.info("CPU(U/S): %s/%s MEM(RSS): %s" % (ru.ru_utime, ru.ru_stime, ru.ru_maxrss))
+        self.scheduler.info("CPU(U/S): %s/%s MEM(RSS): %s" % (ru.ru_utime, ru.ru_stime, ru.ru_maxrss))
+        if rc:
+            self.scheduler.info("RUNNING GROUPS: %s" % rr)
         return True

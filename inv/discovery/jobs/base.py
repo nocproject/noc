@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Basic Managed Object-based discovery
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -90,3 +90,6 @@ class MODiscoveryJob(IntervalJob):
 
     def get_interval(self):
         return self.get_submit_interval(self.object)
+
+    def get_group(self):
+        return "discovery-%s" % self.key
