@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from mongoengine.queryset import DoesNotExist
 ## NOC modules
 from noc.lib.nosql import (Document, EmbeddedDocument,
                            StringField, ListField,
@@ -96,7 +98,10 @@ class DiscoveryID(Document):
         :param object:
         :return: list of (fist_mac, last_mac)
         """
-        o = cls.objects.filter(object=object.id)
+        try:
+            o = cls.objects.get(object=object.id)
+        except DoesNotExist:
+            return []
         if not o or not o.chassis_mac:
             return None
         return [(r.first_mac, r.last_mac) for r in o.chassis_mac]
