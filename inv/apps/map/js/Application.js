@@ -49,7 +49,7 @@ Ext.define("NOC.inv.map.Application", {
             }
         });
         me.saveButton = Ext.create("Ext.button.Button", {
-            iconCls: "icon_disk",
+            glyph: NOC.glyph.save,
             text: "Save",
             tooltip: "Save changes",
             disabled: true,
@@ -57,7 +57,7 @@ Ext.define("NOC.inv.map.Application", {
             handler: me.onSave
         });
         me.reloadButton = Ext.create("Ext.button.Button", {
-            iconCls: "icon_arrow_refresh",
+            glyph: NOC.glyph.refresh,
             text: "Reload",
             tooltip: "Reload map",
             disabled: true,
@@ -66,14 +66,14 @@ Ext.define("NOC.inv.map.Application", {
         });
         me.zoomInButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom In",
-            iconCls: "icon_magnifier_zoom_in",
+            glyph: NOC.glyph.zoom_in,
             scope: me,
             handler: me.onZoomIn,
             disabled: true
         });
         me.zoomOutButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom Out",
-            iconCls: "icon_magifier_zoom_out",
+            glyph: NOC.glyph.zoom_out,
             scope: me,
             handler: me.onZoomOut,
             disabled: true
@@ -143,7 +143,7 @@ Ext.define("NOC.inv.map.Application", {
                             },
                             {
                                 text: "Top",
-                                iconCls: "icon_arrow_up",
+                                glyph: NOC.glyph.arrow_up,
                                 itemId: "n",
                                 listeners: {
                                     scope: me,
@@ -161,7 +161,7 @@ Ext.define("NOC.inv.map.Application", {
                             },
                             {
                                 text: "Right",
-                                iconCls: "icon_arrow_right",
+                                glyph: NOC.glyph.arrow_right,
                                 itemId: "e",
                                 listeners: {
                                     scope: me,
@@ -179,7 +179,7 @@ Ext.define("NOC.inv.map.Application", {
                             },
                             {
                                 text: "Bottom",
-                                iconCls: "icon_arrow_down",
+                                glyph: NOC.glyph.arrow_down,
                                 itemId: "s",
                                 listeners: {
                                     scope: me,
@@ -197,7 +197,7 @@ Ext.define("NOC.inv.map.Application", {
                             },
                             {
                                 text: "Left",
-                                iconCls: "icon_arrow_left",
+                                glyph: NOC.glyph.arrow_left,
                                 itemId: "w",
                                 listeners: {
                                     scope: me,
