@@ -246,6 +246,8 @@ class EventApplication(ExtApplication):
         r += ["        \"raw_vars\": {"]
         rr = []
         for k in event.raw_vars:
+            if k in ("collector", "severity", "facility"):
+                continue
             rr += ["            \"%s\": \"%s\"" % (
                 json_escape(k), json_escape(str(event.raw_vars[k])))]
         r += [",\n".join(rr)]
