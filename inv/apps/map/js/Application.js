@@ -504,14 +504,13 @@ Ext.define("NOC.inv.map.Application", {
         var me = this;
         if(cell != null) {
             var m = null;
-            console.log(evt);
             if(cell.isVertex()) {
                 m = me.nodeContextMenu;
             } else {
                 m = me.edgeContextMenu;
             }
             if(m) {
-                m.setPosition(evt.pageX, evt.pageY);
+                // m.setPosition(evt.pageX, evt.pageY);
                 m.show();
             }
         }
