@@ -299,10 +299,20 @@ Ext.define("NOC.inv.map.Application", {
             me.graph.setPanning(true);
             me.graph.setTooltips(true);
             me.graph.foldingEnabled = false;
+            // Custom edge style
+            mxEdgeStyle.NOCEdgeStyle = function(state, source, target, points, result) {
+                if (source != null && target != null) {
+                    var isSourceLeft = (source.x < target.x) ? 1 : -1;
+                    var pt1 = new mxPoint(source.getCenterX() + isSourceLeft * (source.width/2+5), source.getCenterY());
+                    var pt2 = new mxPoint(target.getCenterX() - isSourceLeft * (target.width/2+5), target.getCenterY());
+                    result.push(pt1);
+                    result.push(pt2);
+                }
+            };
             // Set styles
             var ss = me.graph.getStylesheet(),
                 edgeStyle = ss.getDefaultEdgeStyle();
-            // edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+            edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.NOCEdgeStyle;
             delete edgeStyle.endArrow;
             /*
             var vertexStyle = ss.getDefaultVertexStyle();
