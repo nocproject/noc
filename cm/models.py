@@ -359,6 +359,7 @@ class Config(Object):
                 managed_object__in=ManagedObject.user_objects(user))
 
     def get_notification_groups(self, immediately=False, delayed=False):
+        # @todo: Remove method
         q = Q(type=self.repo_name)
         if immediately:
             q &= Q(notify_immediately=True)
@@ -374,7 +375,7 @@ class Config(Object):
             [n.notification_group for n in ObjectNotify.objects.filter(q)])
 
     def write(self, data):
-        if type(data) == types.ListType:
+        if isinstance(data, list):
             # Convert list to plain text
             r = []
             for d in sorted(data, lambda x, y: cmp(x["name"], y["name"])):
@@ -391,11 +392,13 @@ class Config(Object):
                 managed_object=self.managed_object, config=data)
             if warnings:
                 # There are some warnings. Notify responsible persons
-                NotificationGroup.group_notify(
-                    groups=self.get_notification_groups(immediately=True),
-                    subject="NOC: Warnings in '%s' config" % str(self),
-                    body="Following warnings have been found in the '%s' config:\n\n%s\n" % (
-                    str(self), "\n".join(warnings)))
+                self.managed_object.event(
+                    self.managed_object.EV_CONFIG_POLICY_VIOLATION,
+                    {
+                        "object": self.managed_object,
+                        "warnings": warnings
+                    }
+                )
         # Save to the repo
         super(Config, self).write(data)
 
