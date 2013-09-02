@@ -52,7 +52,8 @@ class SelectorCache(Document):
                         "vc_domain": d
                     }
                 ]
-        cls._get_collection().insert(r)
+        if r:
+            cls._get_collection().insert(r)
 
 ##
 from managedobjectselector import ManagedObjectSelector
