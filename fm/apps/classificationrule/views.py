@@ -124,10 +124,21 @@ class EventClassificationRuleApplication(ExtDocApplication):
                                 "vars": [{"key": k, "value": v[k]}
                                          for k in v]
                             }]
-                            matched = True
-                            break
+                        else:
+                            i_patterns += [
+                                {
+                                    "status": False,
+                                    "key": k,
+                                    "value": data[k],
+                                    "key_re": pk.pattern,
+                                    "value_re": pv.pattern,
+                                    "vars": {}
+                                }
+                            ]
+                        matched = True
+                        break
                 if not matched:
-                    i_patterns = [
+                    i_patterns += [
                         {
                             "status": False,
                             "key": None,
