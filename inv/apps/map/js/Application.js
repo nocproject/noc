@@ -111,8 +111,19 @@ Ext.define("NOC.inv.map.Application", {
             }]
         });
         me.graph = undefined;
-        // Context menus
+        //
+        me.callParent();
+    },
+    //
+    afterRender: function() {
+        var me = this;
+        me.callParent();
+        //
+        me.mapPanel = me.items.first();
+        me.mapDom = me.mapPanel.el.dom;
+                // Context menus
         me.nodeContextMenu = Ext.create("Ext.menu.Menu", {
+            renderTo: me.mapDom,
             items: [
                 {
                     text: "Fold",
@@ -217,6 +228,7 @@ Ext.define("NOC.inv.map.Application", {
             ]
         });
         me.edgeContextMenu = Ext.create("Ext.menu.Menu", {
+            renderTo: me.mapDom,
             items: [
                 {
                     text: "Line Style",
@@ -243,12 +255,6 @@ Ext.define("NOC.inv.map.Application", {
                 }
             ]
         });
-        me.callParent();
-    },
-    //
-    afterRender: function() {
-        var me = this;
-        me.callParent();
         // Load mxGraph JS library
         mxLanguage = "en";
         mxLoadStylesheets = false;  // window scope
@@ -289,9 +295,8 @@ Ext.define("NOC.inv.map.Application", {
             me.graph.removeCells(me.graph.getChildVertices(me.graph.getDefaultParent()), true);
         } else {
             // Create Graph
-            var c = me.items.first().el.dom;
-            mxEvent.disableContextMenu(c); // Disable default context menu
-            me.graph = new mxGraph(c);
+            mxEvent.disableContextMenu(me.mapDom); // Disable default context menu
+            me.graph = new mxGraph(me.mapDom);
             me.graph.disconnectOnMove = false;
             // me.graph.foldingEnabled = false;
             me.graph.cellsResizable = false;
@@ -520,7 +525,8 @@ Ext.define("NOC.inv.map.Application", {
                 m = me.edgeContextMenu;
             }
             if(m) {
-                // m.setPosition(evt.pageX, evt.pageY);
+                var xy = me.mapPanel.getXY();
+                m.setPosition(evt.pageX - xy[0], evt.pageY - xy[1]);
                 m.show();
             }
         }
