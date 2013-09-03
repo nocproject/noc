@@ -138,7 +138,8 @@ Ext.define("NOC.fm.event.Application", {
                     text: "Status",
                     dataIndex: "status",
                     width: 50,
-                    renderer: NOC.render.Choices(me.STATUS_MAP)
+                    renderer: NOC.render.Choices(me.STATUS_MAP),
+                    hidden: true
                 },
                 {
                     text: "Time",
