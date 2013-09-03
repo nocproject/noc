@@ -389,14 +389,18 @@ class Daemon(object):
         """
         pidfile = self.config.get("main", "pidfile")
         if os.path.exists(pidfile):
-            f = open(pidfile)
-            pid = int(f.read().strip())
-            f.close()
-            logging.info("Stopping %s pid=%s" % (self.daemon_name, pid))
-            try:
-                os.kill(pid, signal.SIGTERM)
-            except:
-                pass
+            with open(pidfile) as f:
+                data = f.read().strip()
+                if data:
+                    pid = int(data)
+                else:
+                    pid = None
+            if pid is not None:
+                logging.info("Stopping %s pid=%s" % (self.daemon_name, pid))
+                try:
+                    os.kill(pid, signal.SIGTERM)
+                except:
+                    pass
 
     def launch(self):
         """
