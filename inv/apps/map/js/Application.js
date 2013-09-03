@@ -39,6 +39,7 @@ Ext.define("NOC.inv.map.Application", {
         me.chartCombo = Ext.create("NOC.inv.networkchart.LookupField", {
             fieldLabel: "Chart",
             labelWidth: 30,
+            minWidth: 280,
             name: "chart",
             allowBlank: true,
             disabled: true,
