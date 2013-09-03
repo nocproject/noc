@@ -22,7 +22,7 @@ class MACApplication(ExtDocApplication):
     menu = "Mac DB"
     model = MACDB
 
-    query_fields = ["mac", "interface", "managed_object"]
+    query_fields = ["mac"]
     query_condition = "icontains"
     int_query_fields = ["vlan"]
 
