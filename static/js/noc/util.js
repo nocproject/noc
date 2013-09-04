@@ -426,6 +426,15 @@ Ext.apply(Ext.form.field.VTypes, {
     ASorASSETMask: /[A-Z0-9-:]/i
 });
 //
+// Override grid column state ids
+//
+Ext.override(Ext.grid.column.Column, {
+    getStateId: function() {
+        return this.stateId || this.dataIndex || this.headerId;
+    }
+});
+
+//
 // Handlebars helpers
 //
 Handlebars.registerHelper("debug", function(opt) {

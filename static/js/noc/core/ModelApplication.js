@@ -250,7 +250,8 @@ Ext.define("NOC.core.ModelApplication", {
                     xtype: "actioncolumn",
                     width: 40,
                     sortable: false,
-                    items: rowItems
+                    items: rowItems,
+                    stateId: "rowaction"
                 },
                 {
                     text: "ID",
