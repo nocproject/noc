@@ -60,6 +60,11 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             hidden: true,
             menu: [
                 {
+                    id: "header_menu_about",
+                    text: "About NOC",
+                    glyph: NOC.glyph.question_sign
+                },
+                {
                     id: "header_menu_toggle",
                     text: "Collapse all panels",
                     glyph: NOC.glyph.expand
