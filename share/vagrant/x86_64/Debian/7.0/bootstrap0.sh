@@ -26,7 +26,18 @@ aptinstall ( ) {
     info "Installing $1"
     apt-get install -y $1 || error_exit "Failed to install $1"
 }
-
+##
+## Check locale settings
+##
+locale -a 2>&1 | grep -c locale: > /dev/null
+if [ $? -eq 0 ]; then
+    info "Invalid locale settings!"
+    info "Please fix locale settings:"
+    info "> apt-get install locales"
+    info "> dpkg-reconfigure locales"
+    info "Terminating"
+    exit 1
+fi
 ##
 ## Update base system
 ##
