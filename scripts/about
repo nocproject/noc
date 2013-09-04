@@ -17,34 +17,14 @@ import subprocess
 ## Third-party modules
 import pymongo
 ## NOC modules
-sys.path = [".", ".."] + sys.path
 import settings
+from noc.lib.version import get_version
 
 if hasattr(subprocess, "check_output"):
     check_output = subprocess.check_output
 else:
     def check_output(args):
         return subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
-
-def get_version():
-    """
-    Returns NOC version
-    :return:
-    """
-    with open("VERSION") as f:
-        v = f.read().split("\n")[0].strip()
-    try:
-        from mercurial import ui, localrepo
-        
-        try:
-            lr = localrepo.localrepository(ui.ui(), path=".")
-            rev = lr.changelog.rev(lr.changelog.tip())
-            v += "r%s" % rev
-        except:
-            pass
-    except ImportError:
-        pass
-    return v
 
 
 def get_pg_version():
