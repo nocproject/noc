@@ -457,3 +457,11 @@ class DesktopApplication(ExtApplication):
                 "launch_info": self.site.apps[fa].get_launch_info(request)
             } for fa in favapps
         ]
+
+    @view(url="^about/", method=["GET"], access=True, api=True)
+    def api_about(self, request):
+        return {
+            "version": get_version(),
+            "installation": config.get("customization",
+                                       "installation_name")
+        }
