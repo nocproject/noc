@@ -143,7 +143,6 @@ fi
 ## Pull repo
 ##
 info "Pulling repo $REPO"
-UPDATED=no
 if [ -x ./bin/hg ]; then
     HG=./bin/hg
 else
@@ -157,7 +156,6 @@ if [ $BRANCH != "none" ]; then
         info "Switching to branch $BRANCH"
         $HG update -c $BRANCH || error_exit "$LINENO: Failed to update to branch $BRANCH"
     fi
-    UPDATED=yes
 fi
 ##
 ## Update required python modules
@@ -189,9 +187,7 @@ info "Installing noc.pth"
 ##
 ## Compile bytecode
 ##
-if [ $UPDATED == "yes" ]; then
-    ./scripts/compile || error_exit "$LINENO: Failed to compile bytecode"
-fi
+./scripts/compile || error_exit "$LINENO: Failed to compile bytecode"
 ##
 ## Check for hanging .pyc files
 ##
