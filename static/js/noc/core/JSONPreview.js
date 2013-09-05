@@ -25,7 +25,7 @@ Ext.define("NOC.core.JSONPreview", {
                     {
                         itemId: "close",
                         text: "Close",
-                        iconCls: "icon_arrow_undo",
+                        glyph: NOC.glyph.arrow_left,
                         scope: me,
                         handler: me.onClose
                     }
@@ -53,7 +53,7 @@ Ext.define("NOC.core.JSONPreview", {
             scope: me,
             success: function(response) {
                 var json = Ext.decode(response.responseText);
-                me.items.first().update("<pre>" + json + "</pre>");
+                me.items.first().update("<pre>" + Ext.util.Format.htmlEncode(json) + "</pre>");
                 //NOC.SyntaxHighlight.highlight(me.items.first(),
                 //    json, "json");
             },

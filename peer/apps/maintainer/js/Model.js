@@ -13,7 +13,7 @@ Ext.define("NOC.peer.maintainer.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "maintainer",

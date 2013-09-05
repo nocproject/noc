@@ -31,6 +31,8 @@ Ext.define("NOC.inv.map.SelectIconForm", {
                             xtype: "main.ref.stencil.LookupField",
                             name: "shape",
                             fieldLabel: "Shape",
+                            labelWidth: 40,
+                            minWidth: 300,
                             allowBlank: false
                         }
                     ]
@@ -40,7 +42,7 @@ Ext.define("NOC.inv.map.SelectIconForm", {
                 {
                     text: "Set",
                     itemId: "set",
-                    iconCls: "icon_add",
+                    glyph: NOC.glyph.ok,
                     scope: me,
                     /*formBind: true,
                     disabled: true,*/

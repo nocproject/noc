@@ -10,25 +10,14 @@
     font-size: 14px;
 }
 
-.welcome_body UL {
-    list-style-type: square;
-}
-
-.welcome_body UL LI {
-    padding-left: 20px;
-}
-
-.welcome_body a:visited {
+.welcome_body a:visited, .welcome_body a {
     color: black;
+    text-decoration: none;
 }
 
-.welcome_body a {
-    color: black;
-}
-
-.welcome_follow {
-    height: 40px;
-    padding: 4px 4px 4px 8px;
+.welcome_body a:hover {
+    color: #808080;
+    text-decoration: underline;
 }
 
 #welcome-logo {
@@ -36,28 +25,32 @@
     float: left;
     margin: 4px;
 }
+
+.welcome_body h2 {
+    font-size: 10pt;
+}
 </style>
 <div class="welcome_title">Welcome to the NOC Project!</div>
 <div class="welcome_body">
-<img id="welcome-logo" src="/static/img/logo_azure.svg" width="32" height="32"/>
+<img id="welcome-logo" src="/static/img/logo_black.svg" width="32" height="32"/>
 <a href="http://nocproject.org">NOC</a> is an Operation Support System (OSS)
 for telecom companies, service providers, and enterprise Network Operation Centers
 (<a href="http://en.wikipedia.org/wiki/Network_operations_center">NOC</a>).<br/>
 NOC is open source and released under the terms of <a href="http://kb.nocproject.org/display/SITE/License">BSD LICENSE</a>.
 Read <a href="http://kb.nocproject.org/display/SITE/About">more...</a><br/><br/>
 
-<h2>Getting started</h2>
-<ul>
-    <li><a href="http://kb.nocproject.org/display/SITE/Registration">Join the Project</a></li>
-    <li><a href="http://nocproject.org/">Official site</a></li>
-    <li><a href="http://kb.nocproject.org/display/DOC/Home">Online documentation</a></li>
-    <li><a href="http://kb.nocproject.org/display/FAQ/Home">FAQ</a></li>
-    <li><a href="http://bt.nocproject.org/">Issue Tracker</a></li>
-    <li>IRC: <a href="http://redmine.nocproject.org/projects/noc/irclog/">#nocproject.org at irc.freenode.net</a></li>
-    <li><a href="http://www.linkedin.com/company/nocproject-org">NOC at linkedin.com</a></li>
-</ul>
-</div>
-<div class="welcome_follow">
-<a href="http://www.linkedin.com/company/nocproject-org?trk=fc_badge"><img src="/main/welcome/img/linkedin_follow.png" locale="en" alt="nocproject.org on LinkedIn"></a>
-<a href="http://www.twitter.com/nocproject_org"><img src="/main/welcome/img/twitter_follow.png" alt="Follow NOC on Twitter"/></a>
+<h2>Getting started:</h2>
+<i class="icon-hand-right"></i> <a href="http://kb.nocproject.org/display/SITE/Registration">Join the Project</a><br/>
+<i class="icon-desktop"></i> <a href="http://nocproject.org/">Official site</a><br/>
+<i class="icon-book"></i> <a href="http://kb.nocproject.org/display/DOC/Home">Online documentation</a><br/>
+<i class="icon-question-sign"></i> <a href="http://kb.nocproject.org/display/FAQ/Home">FAQ</a><br/>
+<i class="icon-bug"></i> <a href="http://bt.nocproject.org/">Issue Tracker</a><br/>
+
+<h2>Follow us:</h2>
+    <i class="icon-bullhorn"></i> <a href="http://static.nocproject.org/irclog/">#nocproject.org at irc.freenode.net</a><br/>
+    <i class="icon-linkedin"></i> <a href=http://www.linkedin.com/company/nocproject-org?trk=fc_badge">LinkedIn</a><br/>
+    <i class="icon-twitter"></i> <a href="http://www.twitter.com/nocproject_org">Twitter</a><br/>
+    <i class="icon-bitbucket"></i> <a href="https://bitbucket.org/nocproject/noc">Bitbucket</a><br/>
+    <i class="icon-youtube"></i> <a href="http://www.youtube.com/user/thenocproject">YouTube</a><br/>
+    <i class="icon-info-sign"></i> <a href="http://ohloh.net/p/noc/">Ohloh</a>
 </div>

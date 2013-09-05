@@ -37,7 +37,7 @@ UL.rules, UL.rules LI {
     <tr class="category"><td colspan="6">{{c}}</td></tr>
     {% else %}
     <tr class="item {% cycle "row1" "row2" %}" >
-        <td class="offset">{{c.name}}</td>
+        <td>{{c.name}}</td>
         <td>{{c.description}}</td>
         <td>
             {% if c.action == "D" %}Drop{% endif %}

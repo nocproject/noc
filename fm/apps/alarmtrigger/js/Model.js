@@ -13,7 +13,7 @@ Ext.define("NOC.fm.alarmtrigger.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "name",

@@ -13,7 +13,7 @@ Ext.define("NOC.vc.vcbindfilter.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "vc_domain",

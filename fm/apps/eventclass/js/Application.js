@@ -92,7 +92,7 @@ Ext.define("NOC.fm.eventclass.Application", {
             formToolbar: [
                 {
                     text: "JSON",
-                    iconCls: "icon_page",
+                    glyph: NOC.glyph.file,
                     tooltip: "View as JSON",
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
@@ -113,5 +113,9 @@ Ext.define("NOC.fm.eventclass.Application", {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
+    },
+    //
+    onSave: function() {
+        NOC.info("Sorry! Not implemented still. Please apply changes to JSON files directly");
     }
 });

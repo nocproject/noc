@@ -36,7 +36,7 @@ info "Syncronizing database"
 ./noc syncdb --noinput || error_exit "$LINENO: syncdb failed"
 # Migrate database
 info "Migrating database"
-./noc migrate || error_exit "$LINENO: migrate failed"
+./noc migrate --ignore-ghost-migrations || error_exit "$LINENO: migrate failed"
 # Set up permissions
 info "Setting up permissions"
 ./noc sync-perm || error_exit "$LINENO: sync-perm failed"

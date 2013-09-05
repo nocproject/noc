@@ -14,7 +14,7 @@ Ext.define("NOC.main.timepattern.TermModel", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "term",

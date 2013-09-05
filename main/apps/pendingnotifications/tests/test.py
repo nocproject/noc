@@ -1,11 +1,29 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## pendingnotifications Test
+## main.pendingnotifications unittes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase
 
-class pendingnotificationsTestCase(ModelApplicationTestCase):
-    pass
+## NOC modules
+from noc.lib.test import RestModelTestCase, unittest
+
+
+@unittest.skip("Not ready")
+class NotificationTestCase(RestModelTestCase):
+    app = "main.pendingnotifications"
+
+    scenario = [
+        {
+            "GET": {
+                # key: value
+            },
+            "POST": {
+                # key: value
+            },
+            "PUT": {
+                # key: value
+            }
+        }
+    ]

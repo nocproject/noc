@@ -15,10 +15,10 @@ Ext.define("NOC.main.desktop.NavPanel", {
     animCollapse: true,
     collapseMode: "mini",
     split: true,
-    preventHeader: true,
+    header: false,
     layout: "accordion",
     items: [
-        Ext.create("NOC.main.desktop.NavTree"),
-        Ext.create("NOC.main.desktop.Favorites")
+        Ext.create("NOC.main.desktop.NavTree")/*,
+        Ext.create("NOC.main.desktop.Favorites")*/
     ]
 });

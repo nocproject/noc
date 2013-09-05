@@ -184,13 +184,13 @@ class Peer(models.Model):
         :type address: Str
         :returns: Peer instance or None
         """
-        try:
-            data = list(Peer.objects.filter().extra(
-                where=[
-                    "host(remote_ip)=%s OR host(remote_backup_ip)=%s"
-                ],
-                params=[address, address]
-            ))
+        data = list(Peer.objects.filter().extra(
+            where=[
+                "host(remote_ip)=%s OR host(remote_backup_ip)=%s"
+            ],
+            params=[address, address]
+        ))
+        if data:
             return data[0]
-        except Peer.DoesNotExist:
+        else:
             return None

@@ -1,0 +1,24 @@
+#!./bin/python
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Compile python bytecode
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import py_compile
+import subprocess
+
+
+def compile():
+    f = subprocess.Popen(["./bin/hg", "locate"], stdout=subprocess.PIPE)
+    for l in f.stdout:
+        l = l.strip()
+        if l.endswith(".py") and "/templates/" not in l:
+            py_compile.compile(l)
+
+if __name__ == "__main__":
+    print "Updating bytecode"
+    compile()

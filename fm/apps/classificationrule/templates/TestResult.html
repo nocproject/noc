@@ -1,0 +1,60 @@
+{{#if errors}}
+<i class="icon-warning-sign"></i><b>Errors:</b><br/>
+{{#each errors}}
+{{this}}<br/>
+{{/each}}
+{{/if}}
+<b>Result:</b> {{#if result}}<i class="icon-ok"></i> Matched{{else}}<i class="icon-warning-sign"></i> Not matched{{/if}}<br/>
+<br/>
+<b>Fetched variables:</b><br/>
+<table border="1">
+    <thead>
+        <th>Name</th>
+        <th>Value</th>
+    </thead>
+    <tbody>
+    {{#each vars}}
+        <tr>
+            <td><b>{{key}}</b></td>
+            <td>{{value}}</td>
+        </tr>
+    {{/each}}
+    </tbody>
+</table>
+<br/>
+<b>Patterns:</b><br/>
+<table border="1">
+    <tr>
+        <th rowspan="2"</th>
+        <th colspan="2">Key</th>
+        <th colspan="2">Value</th>
+        <th rowspan="2">Vars</th>
+    </tr>
+    <tr>
+        <th>Key</th>
+        <th>Key Pattern</th>
+        <th>Value</th>
+        <th>Value Pattern</th>
+    </tr>
+    {{#each patterns}}
+    <tr>
+        <td>{{#if status}}<i class='icon-ok'></i>{{else}}<i class='icon-warning-sign'></i>{{/if}}</td>
+        <td>{{key}}</td>
+        <td>{{key_re}}</td>
+        <td>{{value}}</td>
+        <td>{{value_re}}</td>
+        <td>
+            {{#if vars}}
+                {{#each vars}}
+                <b>{{key}}:</b> {{value}}<br/>
+                {{/each}}
+            {{/if}}
+        </td>
+    </tr>
+    {{/each}}
+</table>
+<br/>
+<div style='border: 1px dotted #808080'>
+    <b>Subject:</b> {{ subject }}<br/>
+    {{body}}
+</div>

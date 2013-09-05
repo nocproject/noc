@@ -14,6 +14,7 @@ from noc.lib.nbsocket import ListenUDPSocket
 from noc.sa.activator.event_collector import EventCollector
 from noc.lib.escape import fm_escape
 from noc.lib.snmp.trap import decode_trap
+from noc.lib.snmp.ber import DecodeError
 
 
 class TrapCollector(ListenUDPSocket, EventCollector):
@@ -44,7 +45,12 @@ class TrapCollector(ListenUDPSocket, EventCollector):
             return
         if self.log_traps:
             self.info("SNMP TRAP: %r" % whole_msg)
-        community, varbinds = decode_trap(whole_msg)
+        try:
+            community, varbinds = decode_trap(whole_msg)
+        except DecodeError, why:
+            self.error("Failed to decode trap: %r" % whole_msg)
+            self.error("Decoder error: %s" % why)
+            return
         # @todo: Check trap community
         body = {
             "source":"SNMP Trap",

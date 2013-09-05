@@ -247,7 +247,7 @@ class Script(NOCScript):
         #
 
         # Get L2 interfaces
-        mac = self.scripts.get_chassis_id()
+        mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
         status = self.cli("show interface")
         for match in self.rx_status.finditer(status):
             ifname = match.group("interface")

@@ -17,6 +17,8 @@ class ListenUDPSocket(Socket):
     UDP Listener. Wait for UDP packet on specified address and port
     and call .on_read() for each packet received.
     """
+    CLOSE_ON_ERROR = False
+
     def __init__(self, factory, address, port):
         """
         :param factory: SocketFactory

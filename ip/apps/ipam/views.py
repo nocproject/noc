@@ -475,6 +475,7 @@ class IPAMAppplication(Application):
                         check_ipv4_prefix(prefix)
                     else:
                         check_ipv6_prefix(prefix)
+                    prefix = prefix.lower()
                     # Check permissions
                     if not PrefixAccess.user_can_change(request.user, vrf, afi,
                                                         prefix):

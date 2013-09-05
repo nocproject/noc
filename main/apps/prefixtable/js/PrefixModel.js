@@ -14,7 +14,7 @@ Ext.define("NOC.main.prefixtable.PrefixModel", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "afi",

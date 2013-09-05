@@ -13,7 +13,7 @@ Ext.define("NOC.main.customfieldenumgroup.Model", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "name",

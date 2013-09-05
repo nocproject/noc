@@ -22,22 +22,21 @@ class Script(noc.sa.script.Script):
     rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*"
                                 "Active\s+:(?P<admin>(Yes|No)).*$",
                                 re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_ipif = re.compile(r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
-                         "Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
-                         "\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
+    rx_ipif = re.compile(
+        r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
+        r"Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
+        r"\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
 
     def execute(self):
         interfaces = []
         # Get portchannes
         portchannel_members = {}  # member -> (portchannel, type)
-        """
-        with self.cached():
-            for pc in self.scripts.get_portchannel():
-                i = pc["interface"]
-                t = pc["type"] == "L"
-                for m in pc["members"]:
-                    portchannel_members[m] = (i, t)
-        """
+        # with self.cached():
+        #    for pc in self.scripts.get_portchannel():
+        #        i = pc["interface"]
+        #        t = pc["type"] == "L"
+        #        for m in pc["members"]:
+        #            portchannel_members[m] = (i, t)
         if self.snmp and self.access_profile.snmp_ro:
             try:
                 admin_status = {}
@@ -51,8 +50,6 @@ class Script(noc.sa.script.Script):
             except self.snmp.TimeOutError:
                 pass
 
-        # Get mac
-#        mac = self.scripts.get_chassis_id()
         # Get switchports
         for swp in self.scripts.get_switchport():
             admin = admin_status[swp["interface"]]
