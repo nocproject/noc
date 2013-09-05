@@ -122,6 +122,24 @@ ensure_dir etc/ssh 700
 [ -z "$BACKUP" ] || ensure_dir $BACKUP 750
 [ -z "$LOG" ] || ensure_dir $LOG 750
 ##
+## Check virtualenv is enabled and set up
+##
+info "Checking virtualenv"
+if [ ! -x ./bin/python ]; then
+    info "vitualenv is not configured. Trying to set up"
+    # Check virtualenv is available
+    which virtualenv
+    if [ $? -ne 0 ]; then
+        error_exit "$LINENO: virtualenv is not installed.\nPlease install virtualenv:\n > pip install virtualenv\nand run $0 again"
+    fi
+    # Initialize virtualenv
+    info "Setting up virtualenv"
+    virtualenv $PWD --no-site-packages
+    if [ $? -ne 0 ]; then
+        error_exit "$LINENO: Cannot setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
+    fi
+fi
+##
 ## Pull repo
 ##
 info "Pulling repo $REPO"
@@ -139,24 +157,6 @@ if [ $BRANCH != "none" ]; then
         $HG update -c $BRANCH || error_exit "$LINENO: Failed to update to branch $BRANCH"
     fi
     ./scripts/compile || error_exit "$LINENO: Failed to compile bytecode"
-fi
-##
-## Check virtualenv is enabled and set up
-##
-info "Checking virtualenv"
-if [ ! -x ./bin/python ]; then
-    info "vitualenv is not configured. Trying to set up"
-    # Check virtualenv is available
-    which virtualenv
-    if [ $? -ne 0 ]; then
-        error_exit "$LINENO: virtualenv is not installed.\nPlease install virtualenv:\n > pip install virtualenv\nand run $0 again"
-    fi
-    # Initialize virtualenv
-    info "Setting up virtualenv"
-    virtualenv $PWD --no-site-packages
-    if [ $? -ne 0 ]; then
-        error_exit "$LINENO: Cannot setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
-    fi
 fi
 ##
 ## Update required python modules
