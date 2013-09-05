@@ -1,6 +1,6 @@
 #!/bin/sh
 ##----------------------------------------------------------------------
-## Ubuntu 12.4 bootstrap0.sh
+## Ubuntu 12.04 bootstrap0.sh
 ## Initialize system and install all prerequisites to NOC
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2013 The NOC Project
@@ -42,9 +42,9 @@ fi
 ## Update base system
 ##
 info "Updating base system"
-apt-get update || die "Failed to run: apt-get: update"
-apt-get upgrade || die "Failed to run: apt-get upgrade"
-apt-get dist-upgrade || die "Failed to run: apt-get dist-upgrade"
+apt-get update || error_exit "Failed to run: apt-get: update"
+apt-get upgrade || error_exit "Failed to run: apt-get upgrade"
+apt-get dist-upgrade || error_exit "Failed to run: apt-get dist-upgrade"
 ##
 ## Create NOC user and group
 ##
@@ -113,4 +113,13 @@ hg clone https://bitbucket.org/nocproject/noc noc || error_exit "Unable to pull 
 if [ "$1" != "--no-bootstrap" ]; then
     info "Running bootstrap.sh"
     /opt/noc/share/vagrant/x86_64/Ubuntu/12.04/bootstrap.sh
+    sleep 3
+    echo
+    info "NOC has been installed successfully"
+    # Get current IP address
+    IP=`ip addr show eth0 | grep "global eth0" | awk '{print $2}' | awk -F/ '{print $1}'`
+    info "Follow to the NOC web interface"
+    info "http://$IP/"
+    info "User: admin"
+    info "Password: admin"
 fi
