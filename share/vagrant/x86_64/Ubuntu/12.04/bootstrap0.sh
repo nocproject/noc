@@ -42,9 +42,9 @@ fi
 ## Update base system
 ##
 info "Updating base system"
-apt-get update || error_exit "Failed to run: apt-get: update"
-apt-get upgrade || error_exit "Failed to run: apt-get upgrade"
-apt-get dist-upgrade || error_exit "Failed to run: apt-get dist-upgrade"
+apt-get update -y || error_exit "Failed to run: apt-get: update"
+apt-get upgrade -y || error_exit "Failed to run: apt-get upgrade"
+apt-get dist-upgrade -y || error_exit "Failed to run: apt-get dist-upgrade"
 ##
 ## Create NOC user and group
 ##
