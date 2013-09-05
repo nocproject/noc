@@ -122,25 +122,6 @@ ensure_dir etc/ssh 700
 [ -z "$BACKUP" ] || ensure_dir $BACKUP 750
 [ -z "$LOG" ] || ensure_dir $LOG 750
 ##
-## Pull repo
-##
-info "Pulling repo $REPO"
-if [ -x ./bin/hg ]; then
-    HG=./bin/hg
-else
-    HG=`which hg`
-fi
-if [ $BRANCH != "none" ]; then
-    $HG pull -u $REPO || error_exit "$LINENO: Failed to pull repo $REPO"
-    if [ `$HG branch` = "$BRANCH" ]; then
-        $HG update || error_exit "$LINENO: Failed to update repo"
-    else
-        info "Switching to branch $BRANCH"
-        $HG update -c $BRANCH || error_exit "$LINENO: Failed to update to branch $BRANCH"
-    fi
-    ./scripts/compile || error_exit "$LINENO: Failed to compile bytecode"
-fi
-##
 ## Check virtualenv is enabled and set up
 ##
 info "Checking virtualenv"
@@ -156,6 +137,24 @@ if [ ! -x ./bin/python ]; then
     virtualenv $PWD --no-site-packages
     if [ $? -ne 0 ]; then
         error_exit "$LINENO: Cannot setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
+    fi
+fi
+##
+## Pull repo
+##
+info "Pulling repo $REPO"
+if [ -x ./bin/hg ]; then
+    HG=./bin/hg
+else
+    HG=`which hg`
+fi
+if [ $BRANCH != "none" ]; then
+    $HG pull -u $REPO || error_exit "$LINENO: Failed to pull repo $REPO"
+    if [ `$HG branch` = "$BRANCH" ]; then
+        $HG update || error_exit "$LINENO: Failed to update repo"
+    else
+        info "Switching to branch $BRANCH"
+        $HG update -c $BRANCH || error_exit "$LINENO: Failed to update to branch $BRANCH"
     fi
 fi
 ##
@@ -185,6 +184,10 @@ touch $PIP_FLAG
 ##
 info "Installing noc.pth"
 ./scripts/install-pth.py || error_exit "$LINENO: Cannot install noc.pth"
+##
+## Compile bytecode
+##
+./scripts/compile || error_exit "$LINENO: Failed to compile bytecode"
 ##
 ## Check for hanging .pyc files
 ##
