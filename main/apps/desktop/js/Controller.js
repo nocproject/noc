@@ -25,6 +25,9 @@ Ext.define("NOC.main.desktop.Controller", {
                 itemclick: me.onNavLaunch
             },
             // Header events
+            "#header_menu_about": {
+                click: me.onAbout
+            },
             "#header_menu_toggle": {
                 click: me.onPanelsToggle
             },
@@ -224,6 +227,25 @@ Ext.define("NOC.main.desktop.Controller", {
             tab.menu_node = node;
             tab.desktop_controller = me;
         }
+    },
+    // About
+    onAbout: function() {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/main/desktop/about/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                Ext.create("NOC.main.desktop.About", {
+                    version: data.version,
+                    installation: data.installation
+                });
+            },
+            failure: function() {
+                NOC.error("Failed to get data");
+            }
+        });
     },
     // Toggle panels
     onPanelsToggle: function() {

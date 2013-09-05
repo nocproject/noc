@@ -526,8 +526,7 @@ Ext.define("NOC.inv.map.Application", {
                 m = me.edgeContextMenu;
             }
             if(m) {
-                var xy = me.mapPanel.getXY();
-                m.setPosition(evt.pageX - xy[0], evt.pageY - xy[1]);
+                m.setLocalXY(evt.layerX, evt.layerY);
                 m.show();
             }
         }

@@ -20,7 +20,7 @@ class Script(NOCScript):
 
     rx_ver = re.compile(
         r"^Cisco IOS XR Software, Version\s+(?P<version>\S+)\[\S+\].+"
-        r"cisco\s+(?P<platform>\S+)( Series)? \(\S+\) processor with \d+",
+        r"cisco\s+(?P<platform>\S+)(?: Series)? \([^)]+\) processor with \d+",
         re.MULTILINE | re.DOTALL
     )
     rx_snmp_ver = re.compile(r"Cisco IOS XR Software \(Cisco (?P<platform>\S+)\s+\w+\).+\s+Version\s+(?P<version>\S+)\[\S+\]")
