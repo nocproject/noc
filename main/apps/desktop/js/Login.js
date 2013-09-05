@@ -63,7 +63,7 @@ Ext.define("NOC.main.desktop.Login", {
                         {
                             text: "Login",
                             itemId: "login",
-                            glyph: NOC.glyph.check,
+                            glyph: NOC.glyph.signin,
                             disabled: true,
                             formBind: true,
                             handler: function() {
