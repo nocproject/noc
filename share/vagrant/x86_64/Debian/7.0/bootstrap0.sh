@@ -112,5 +112,12 @@ info "Fetching NOC"
 hg clone https://bitbucket.org/nocproject/noc noc || error_exit "Unable to pull NOC distribution"
 if [ "$1" != "--no-bootstrap" ]; then
     info "Running bootstrap.sh"
-    /opt/noc/share/vagrant/x86_64/Debian/7.0/bootstrap.sh
+    /opt/noc/share/vagrant/x86_64/Debian/7.0/bootstrap.sh || error_exit "Failed to complete bootstrap"
+    info "NOC has been installed successfully"
+    # Get current IP address
+    IP=`ip addr show eth0 | grep "global eth0" | awk '{print $2}' | awk -F/ '{print $1}'`
+    info "Follow to the NOC web interface"
+    info "http://$IP/"
+    info "User: admin"
+    info "Password: admin"
 fi
