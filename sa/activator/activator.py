@@ -48,62 +48,63 @@ class Activator(Daemon, FSM):
     STATES = {
         ## Starting stage. Activator is idle, all servers are down
         "IDLE": {
-                "timeout" : "CONNECT",
-                "close"   : "IDLE",
-                },
+            "timeout": "CONNECT",
+            "close": "IDLE",
+        },
         ## Beginning TCP connection
-        "CONNECT" : {
-                "timeout" : "IDLE",
-                "refused" : "IDLE",
-                "close"   : "IDLE",
-                "connect" : "CONNECTED",
-                },
+        "CONNECT": {
+            "timeout": "IDLE",
+            "refused": "IDLE",
+            "close": "IDLE",
+            "connect": "CONNECTED",
+        },
         ## TCP connection established
-        "CONNECTED" : {
-                "timeout" : "IDLE",
-                "close"   : "IDLE",
-                "setup"   : "SETUP",
-                "error"   : "IDLE",
+        "CONNECTED": {
+            "timeout": "IDLE",
+            "close": "IDLE",
+            "setup": "SETUP",
+            "error": "IDLE",
         },
         ## Protocol version negotiated
         ## Crypto algorithms setup
-        "SETUP" : {
-                "timeout" : "IDLE",
-                "close"   : "IDLE",
-                "error"   : "IDLE",
-                "kex"     : "KEX",
-                "plaintext" : "REGISTER"
+        "SETUP": {
+            "timeout": "IDLE",
+            "close": "IDLE",
+            "error": "IDLE",
+            "kex": "KEX",
+            "plaintext": "REGISTER"
         },
         ## Key exchange
         "KEX": {
-                "timeout" : "IDLE",
-                "close"   : "IDLE",
-                "error"   : "IDLE",
-                "register": "REGISTER"
+            "timeout": "IDLE",
+            "close": "IDLE",
+            "error": "IDLE",
+            "register": "REGISTER"
         },
         ## Start registration
         "REGISTER": {
-            "timeout" : "IDLE",
-            "close"   : "IDLE",
-            "error"   : "IDLE",
-            "registred" : "REGISTRED"
+            "timeout": "IDLE",
+            "close": "IDLE",
+            "error": "IDLE",
+            "registred": "REGISTRED"
         },
             
-        "REGISTRED" : {
-                "timeout" : "IDLE",
-                "auth"    : "AUTHENTICATED",
-                "close"   : "IDLE",
-                "error"   : "IDLE",
+        "REGISTRED": {
+            "timeout": "IDLE",
+            "auth": "AUTHENTICATED",
+            "close": "IDLE",
+            "error": "IDLE",
         },
-        "AUTHENTICATED" : {
-                "caps"    : "CAPS",
-                "close"   : "IDLE",
+        "AUTHENTICATED": {
+            "caps": "CAPS",
+            "close": "IDLE",
         },
-        "CAPS" : {
-                "establish" : "ESTABLISHED",
+        "CAPS": {
+            "establish": "ESTABLISHED",
+            "close": "IDLE",
         },
-        "ESTABLISHED" : {
-                "close"   : "IDLE",
+        "ESTABLISHED": {
+            "close": "IDLE",
         }
     }
 
