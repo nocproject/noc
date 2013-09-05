@@ -24,7 +24,7 @@ Ext.define("NOC.core.ModelStore", {
         for(var i=0; i < fields.length; i++) {
             var field = fields[i],
                 dv = field.defaultValue;
-            if(dv != undefined) {
+            if(dv !== undefined && dv !== "") {
                 defaultValues[field.name] = dv;
             }
         }
@@ -85,7 +85,6 @@ Ext.define("NOC.core.ModelStore", {
             },
             syncConfig: {}
         });
-        //me.syncConfig = {};
         me.callParent([config]);
     },
 
@@ -134,8 +133,10 @@ Ext.define("NOC.core.ModelStore", {
     },
     onSyncException: function(proxy, response, op, opts) {
         var me = this,
-            status = Ext.decode(response.responseText);
-        status.status = response.status;
+            status = {
+                status: response.status,
+                message: response.responseText
+            };
         Ext.callback(me.syncConfig.failure,
             me.syncConfig.scope || me, [response, op, status]);
     }

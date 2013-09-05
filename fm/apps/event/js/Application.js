@@ -105,10 +105,6 @@ Ext.define("NOC.fm.event.Application", {
 
         me.gridPanel = Ext.create("Ext.grid.Panel", {
             store: me.store,
-            features: [{
-                ftype: "selectable",
-                id: "selectable"
-            }],
             border: false,
             stateful: true,
             stateId: "fm.event-grid",
@@ -142,7 +138,8 @@ Ext.define("NOC.fm.event.Application", {
                     text: "Status",
                     dataIndex: "status",
                     width: 50,
-                    renderer: NOC.render.Choices(me.STATUS_MAP)
+                    renderer: NOC.render.Choices(me.STATUS_MAP),
+                    hidden: true
                 },
                 {
                     text: "Time",
@@ -182,8 +179,9 @@ Ext.define("NOC.fm.event.Application", {
                 {
                     text: "Dur.",
                     dataIndex: "duration",
-                    width: 30,
-                    align: "right"
+                    width: 70,
+                    align: "right",
+                    renderer: NOC.render.Duration
                 }
             ],
             selModel: Ext.create("Ext.selection.CheckboxModel"),
@@ -194,6 +192,7 @@ Ext.define("NOC.fm.event.Application", {
                 }
             },
             viewConfig: {
+                enableTextSelection: true,
                 getRowClass: Ext.bind(me.getRowClass, me)
                 /* listeners: {
                     scope: me,

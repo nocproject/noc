@@ -2,17 +2,28 @@
 ##----------------------------------------------------------------------
 ## Discovery id
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import datetime
+## Third-party modules
+from mongoengine.queryset import DoesNotExist
 ## NOC modules
-from noc.lib.nosql import (Document,
-                           StringField, DateTimeField,
-                           ForeignKeyField)
+from noc.lib.nosql import (Document, EmbeddedDocument,
+                           StringField, ListField,
+                           ForeignKeyField, EmbeddedDocumentField)
 from noc.sa.models.managedobject import ManagedObject
+
+
+class MACRange(EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    first_mac = StringField()
+    last_mac = StringField()
+
+    def __unicode__(self):
+        return u"%s - %s" % (self.first_mac, self.last_mac)
 
 
 class DiscoveryID(Document):
@@ -25,8 +36,7 @@ class DiscoveryID(Document):
         "indexes": ["object", "hostname", "udld_id"]
     }
     object = ForeignKeyField(ManagedObject)
-    first_chassis_mac = StringField()
-    last_chassis_mac = StringField()
+    chassis_mac = ListField(EmbeddedDocumentField(MACRange))
     hostname = StringField()
     router_id = StringField()
     udld_id = StringField()  # UDLD local identifier
@@ -35,16 +45,63 @@ class DiscoveryID(Document):
         return self.object.name
 
     @classmethod
-    def submit(cls, object, first_chassis_mac=None,
-        last_chassis_mac=None, hostname=None, router_id=None):
+    def submit(cls, object, chassis_mac=None,
+               hostname=None, router_id=None):
+        if chassis_mac:
+            chassis_mac = [
+                MACRange(
+                    first_mac=r["first_chassis_mac"],
+                    last_mac=r["last_chassis_mac"]
+                ) for r in chassis_mac
+            ]
         o = cls.objects.filter(object=object.id).first()
         if o:
-            o.first_chassis_mac = first_chassis_mac
-            o.last_chassis_mac = last_chassis_mac
+            o.chassis_mac = chassis_mac
             o.hostname = hostname
             o.router_id = router_id
             o.save()
         else:
-            cls(object=object, first_chassis_mac=first_chassis_mac,
-                last_chassis_mac=last_chassis_mac, hostname=hostname,
-                router_id=router_id).save()
+            cls(object=object, chassis_mac=chassis_mac,
+                hostname=hostname, router_id=router_id).save()
+
+    @classmethod
+    def find_object(cls, mac=None):
+        """
+        Find managed object
+        :param cls:
+        :return: Managed object instance or None
+        """
+        c = cls._get_collection()
+        # Find by mac
+        if mac:
+            r = c.find_one({
+                "chassis_mac": {
+                    "$elemMatch": {
+                        "first_mac": {
+                            "$lte": mac
+                        },
+                        "last_mac": {
+                            "$gte": mac
+                        }
+                    }
+                }
+            })
+            if r:
+                return ManagedObject.objects.get(id=r["object"])
+        return None
+
+    @classmethod
+    def macs_for_object(cls, object):
+        """
+        Get MAC addresses for object
+        :param cls:
+        :param object:
+        :return: list of (fist_mac, last_mac)
+        """
+        try:
+            o = cls.objects.get(object=object.id)
+        except DoesNotExist:
+            return []
+        if not o or not o.chassis_mac:
+            return None
+        return [(r.first_mac, r.last_mac) for r in o.chassis_mac]

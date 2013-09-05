@@ -7,11 +7,6 @@
     width: 15px;
 }
 
-/* Selectable grid */
-.x-selectable, .x-selectable * {
-    -khtml-user-select: text !important;
-    -moz-user-select: text !important;
-}
 /* Syntax highlight */
 /* Override default */
 pre.sh_sourceCode {
@@ -30,7 +25,7 @@ pre.sh_sourceCode {
     border: 1px solid black;
     padding: 4px;
     font-family: tahoma, arial, verdana, sans-serif;
-    font-size: 12px;
+    font-size: 8pt;
 }
 
 .noc-tp TABLE TH, .noc-tp TABLE TD {
@@ -40,4 +35,10 @@ pre.sh_sourceCode {
 
 .noc-tp TABLE TH {
     font-weight: bold;
+    background-color:#e0e0e0;
+}
+
+TABLE {
+    border-collapse: collapse;
+    border-spacing: 0;
 }

@@ -213,7 +213,7 @@ Ext.define("NOC.fm.event.EventPanel", {
 
         me.reclassifyButton = Ext.create("Ext.button.Button", {
             text: "Reclassify",
-            iconCls: "icon_arrow_rotate_clockwise",
+            glyph: NOC.glyph.repeat,
             scope: me,
             handler: me.onReclassify
         });
@@ -226,13 +226,13 @@ Ext.define("NOC.fm.event.EventPanel", {
                     items: [
                         {
                             text: "Close",
-                            iconCls: "icon_arrow_undo",
+                            glyph: NOC.glyph.arrow_left,
                             scope: me,
                             handler: me.onClose
                         },
                         {
                             text: "Refresh",
-                            iconCls: Ext.baseCSSPrefix + "tbar-loading",
+                            glyph: NOC.glyph.refresh,
                             scope: me,
                             handler: me.onRefresh
                         },
@@ -241,9 +241,15 @@ Ext.define("NOC.fm.event.EventPanel", {
                         "-",
                         {
                             text: "JSON",
-                            iconCls: "icon_page",
+                            glyph: NOC.glyph.file,
                             scope: me,
                             handler: me.onJSON
+                        },
+                        {
+                            text: "Create Rule",
+                            glyph: NOC.glyph.file_text,
+                            scope: me,
+                            handler: me.onCreateRule
                         },
                         "->",
                         me.eventIdField
@@ -435,5 +441,10 @@ Ext.define("NOC.fm.event.EventPanel", {
                 NOC.error("Failed to reclassify");
             }
         });
+    },
+    //
+    onCreateRule: function() {
+        var me = this;
+        NOC.launch("fm.classificationrule", "from_event", {id: me.data.id});
     }
 });

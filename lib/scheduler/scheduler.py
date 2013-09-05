@@ -2,18 +2,18 @@
 ##----------------------------------------------------------------------
 ## Scheduler Job Class
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 import os
 import logging
 import time
 import datetime
 import inspect
 import threading
+from collections import defaultdict
 ## NOC modules
 from error import JobExists
 from job import Job
@@ -58,6 +58,8 @@ class Scheduler(object):
         self.initial_submit_next_check = {}  # job class -> timestamp
         self.max_threads = max_threads
         self.preserve_order = preserve_order
+        self.running_lock = threading.Lock()
+        self.running_count = defaultdict(int)  # Group -> Count
 
     def ensure_indexes(self):
         if self.preserve_order:
@@ -270,6 +272,12 @@ class Scheduler(object):
         self._complete_job(job, s, tb)
 
     def _complete_job(self, job, status, tb):
+        group = job.get_group()
+        if group is not None:
+            with self.running_lock:
+                self.running_count[group] -= 1
+                if not self.running_count[group]:
+                    del self.running_count[group]
         on_complete = job.on_complete
         t = job.get_schedule(status)
         if t is None:
@@ -341,7 +349,6 @@ class Scheduler(object):
         }
         if self.ignored:
             q[self.ATTR_CLASS] = {"$nin": self.ignored}
-        # @todo: Exclude throttled job classes
         # Get remaining pending tasks
         qs = self.collection.find(q)
         if self.preserve_order:
@@ -368,8 +375,14 @@ class Scheduler(object):
                 job.started = time.time()
                 self._complete_job(job, job.S_LATE, None)
                 continue
-            self.run_job(job)
-            n += 1
+            # Check for group limits
+            group = job.get_group()
+            if self.can_run(job):
+                if group is not None:
+                    with self.running_lock:
+                        self.running_count[group] += 1
+                self.run_job(job)
+                n += 1
         return n
 
     def run(self):
@@ -398,6 +411,13 @@ class Scheduler(object):
     def cleanup(self):
         if self.cleanup_callback:
             self.cleanup_callback()
+
+    def get_running_count(self):
+        with self.running_lock:
+            return self.running_count.copy()
+
+    def can_run(self, job):
+        return True
 
 ## Avoid circular reference
 from noc.sa.models.reducetask import ReduceTask

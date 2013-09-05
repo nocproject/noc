@@ -75,7 +75,7 @@ class IPReport(Report):
             self.locked_ranges[vrf] = [
                 (f.from_address, f.to_address)
                 for f in AddressRange.objects.filter(
-                    vrf=vrf).filter(q)]
+                    vrf=vrf, is_active=True).filter(q)]
         # Try to find range
         # @todo: binary search
         for from_address, to_address in self.locked_ranges[vrf]:

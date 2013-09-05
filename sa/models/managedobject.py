@@ -20,6 +20,7 @@ from managedobjectprofile import ManagedObjectProfile
 from activator import Activator
 from objectstatus import ObjectStatus
 from noc.main.models import PyRule
+from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.profiles import profile_registry
 from noc.lib.search import SearchResult
 from noc.lib.fields import INETField, TagsField
@@ -115,6 +116,18 @@ class ManagedObject(models.Model):
 
     # Use special filter for profile
     profile_name.existing_choices_filter = True
+
+    # Event ids
+    EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
+    EV_ALARM_RISEN = "alarm_risen"  # New alarm risen
+    EV_ALARM_CLEARED = "alarm_cleared"  # Alarm cleared
+    EV_ALARM_COMMENTED = "alarm_commented"  # Alarm commented
+    EV_NEW = "new"  # New object created
+    EV_DELETED = "deleted"  # Object deleted
+    EV_VERSION_CHANGED = "version_changed"  # Version changed
+    EV_INTERFACE_CHANGED = "interface_changed"  # Interface configuration changed
+    EV_SCRIPT_FAILED = "script_failed"  # Script error
+    EV_CONFIG_POLICY_VIOLATION = "config_policy_violation"  # Policy violations found
 
     ## object.scripts. ...
     class ScriptsProxy(object):
@@ -232,6 +245,10 @@ class ManagedObject(models.Model):
             (old and self.trap_source_ip != old.trap_source_ip) or
             (old and self.activator.id != old.activator.id)):
             self.sae_refresh_event_filter()
+        # Notify new object
+        if old is None:
+            SelectorCache.rebuild_for_object(self)
+            self.event(self.EV_NEW, {"object": self})
         # @todo: will be removed with GridVCS
         # Process config
         try:
@@ -421,22 +438,41 @@ class ManagedObject(models.Model):
     def run_discovery(self, delta=0):
         op = self.object_profile
         for attr, job, duration in [
-            ("enable_version_inventory", "version_inventory", 5),
-            ("enable_config_polling", "config_discovery", 20),
-            ("enable_interface_discovery", "interface_discovery", 20),
-            ("enable_vlan_discovery", "vlan_discovery", 7),
-            ("enable_lldp_discovery", "lldp_discovery", 5),
-            ("enable_bfd_discovery", "bfd_discovery", 5),
-            ("enable_stp_discovery", "stp_discovery", 15),
-            ("enable_cdp_discovery", "cdp_discovery", 5),
-            ("enable_rep_discovery", "rep_discovery", 5),
-            ("enable_ip_discovery", "ip_discovery", 20),
-            ("enable_mac_discovery", "mac_discovery", 20)
+            ("enable_version_inventory", "version_inventory", 1),
+            ("enable_id_discovery", "id_discovery", 1),
+            ("enable_config_polling", "config_discovery", 1),
+            ("enable_interface_discovery", "interface_discovery", 1),
+            ("enable_vlan_discovery", "vlan_discovery", 1),
+            ("enable_lldp_discovery", "lldp_discovery", 1),
+            ("enable_bfd_discovery", "bfd_discovery", 1),
+            ("enable_stp_discovery", "stp_discovery", 1),
+            ("enable_cdp_discovery", "cdp_discovery", 1),
+            ("enable_oam_discovery", "oam_discovery", 1),
+            ("enable_rep_discovery", "rep_discovery", 1),
+            ("enable_ip_discovery", "ip_discovery", 1),
+            ("enable_mac_discovery", "mac_discovery", 1)
         ]:
             if getattr(op, attr):
                 refresh_schedule(
                     "inv.discovery", job, self.id, delta=delta)
                 delta += duration
+
+    def event(self, event_id, data=None):
+        # Get cached selectors
+        selectors = SelectorCache.get_object_selectors(self)
+        # Find notification groups
+        groups = set()
+        for o in ObjectNotification.objects.filter(**{
+            event_id: True,
+            "selector__in": selectors}):
+            groups.add(o.notification_group)
+        if not groups:
+            return  # Nothing to notify
+        # Render message
+        subject, body = ObjectNotification.render_message(event_id, data)
+        # Send notification
+        NotificationGroup.group_notify(
+            groups, subject=subject, body=body)
 
 
 class ManagedObjectAttribute(models.Model):
@@ -464,3 +500,5 @@ from useraccess import UserAccess
 from groupaccess import GroupAccess
 from noc.lib.scheduler.utils import refresh_schedule
 #from noc.vc.models.vcdomain import VCDomain
+from objectnotification import ObjectNotification
+from selectorcache import SelectorCache

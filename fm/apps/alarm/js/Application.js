@@ -11,7 +11,8 @@ Ext.define("NOC.fm.alarm.Application", {
     requires: [
         "NOC.fm.alarm.templates.Overview",
         "NOC.fm.alarm.templates.Help",
-        "NOC.fm.alarm.templates.Data"
+        "NOC.fm.alarm.templates.Data",
+        "NOC.fm.alarm.templates.SummaryPanel"
     ],
     layout: "card",
     STATUS_MAP: {
@@ -30,7 +31,8 @@ Ext.define("NOC.fm.alarm.Application", {
             pageSize: 1,
             customFields: [],
             filterParams: {
-                status: "A"
+                status: "A",
+                collapse: 1
             }
         });
 
@@ -101,12 +103,17 @@ Ext.define("NOC.fm.alarm.Application", {
             }
         });
 
+        me.expandButton = Ext.create("Ext.button.Button", {
+            text: "Expand",
+            tooltip: "Show/collapse children alarms",
+            enableToggle: true,
+            glyph: NOC.glyph.expand,
+            scope: me,
+            handler: me.onChangeFilter
+        });
+
         me.gridPanel = Ext.create("Ext.grid.Panel", {
             store: me.store,
-            features: [{
-                ftype: "selectable",
-                id: "selectable"
-            }],
             border: false,
             stateful: true,
             stateId: "fm.alarm-grid",
@@ -120,7 +127,8 @@ Ext.define("NOC.fm.alarm.Application", {
                         me.objectCombo,
                         me.alarmClassCombo,
                         me.fromDateField,
-                        me.toDateField
+                        me.toDateField,
+                        me.expandButton
                     ]
                 },
                 {
@@ -156,6 +164,12 @@ Ext.define("NOC.fm.alarm.Application", {
                     renderer: NOC.render.Lookup("managed_object")
                 },
                 {
+                    text: "Severity",
+                    dataIndex: "severity",
+                    width: 70,
+                    renderer: NOC.render.Lookup("severity")
+                },
+                {
                     text: "Class",
                     dataIndex: "alarm_class",
                     width: 300,
@@ -165,6 +179,13 @@ Ext.define("NOC.fm.alarm.Application", {
                     text: "Subject",
                     dataIndex: "subject",
                     flex: 1
+                },
+                {
+                    text: "Duration",
+                    dataIndex: "duration",
+                    width: 70,
+                    align: "right",
+                    renderer: NOC.render.Duration
                 },
                 {
                     text: "Events",
@@ -181,6 +202,7 @@ Ext.define("NOC.fm.alarm.Application", {
                 }
             },
             viewConfig: {
+                enableTextSelection: true,
                 getRowClass: Ext.bind(me.getRowClass, me)
                 /* listeners: {
                     scope: me,
@@ -228,7 +250,10 @@ Ext.define("NOC.fm.alarm.Application", {
         setIf("timestamp__gte", me.fromDateField.getValue());
         // To Date
         setIf("timestamp__lte", me.toDateField.getValue());
-        //
+        // Expand
+        if(!me.expandButton.pressed) {
+            q.collapse = 1;
+        }
         me.currentQuery = q;
         me.reloadStore();
     },

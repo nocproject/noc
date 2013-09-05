@@ -187,6 +187,7 @@ class IGetInterfaces(Interface):
                 ]), required=False),
             "description": StringParameter(required=False),
             "mac": MACAddressParameter(required=False),
+            "snmp_ifindex": IntParameter(required=False),
             "subinterfaces": ListOfParameter(element=DictParameter(attrs={
                 "name": InterfaceNameParameter(),
                 "admin_status": BooleanParameter(default=False),
