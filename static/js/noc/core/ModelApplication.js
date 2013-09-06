@@ -653,7 +653,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.currentRecord = null;
         me.resetInlines();
         me.setFormTitle(me.createTitle);
-        me.toolbarIdField.setValue("NEW");
+        me.setFormId("NEW");
         me.showForm();
         // Focus on first field
         me.focusOnFirstField();
@@ -675,7 +675,7 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this;
         me.currentRecord = record;
         me.setFormTitle(me.changeTitle);
-        me.toolbarIdField.setValue(me.currentRecord.get(me.idField));
+        me.setFormId(me.currentRecord.get(me.idField));
         // Show edit form
         me.showForm();
         // Load records
@@ -785,7 +785,16 @@ Ext.define("NOC.core.ModelApplication", {
     // Set form title
     setFormTitle: function(tpl) {
         var me = this;
-        me.formTitle.update(Ext.String.format(tpl, me.appTitle));
+        if(me.formTitle) {
+            me.formTitle.update(Ext.String.format(tpl, me.appTitle));
+        }
+    },
+    //
+    setFormId: function(id) {
+        var me = this;
+        if(me.toolbarIdField) {
+            me.toolbarIdField.setValue(id);
+        }
     },
     //
     activateCustomFormToolbar: function(status) {
@@ -830,6 +839,7 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this;
         me.currentRecord = null;  // Mark record as new
         me.setFormTitle(me.createTitle);
+        me.setFormId("CLONE");
         me.cloneButton.setDisabled(true);
     },
     // Return Grid's row classes
