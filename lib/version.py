@@ -25,6 +25,9 @@ def get_version():
     # Get base version
     with open("VERSION") as f:
         v = f.read().split()[0].strip()
+    import os
+    if not os.path.isdir('.hg'):
+        return v
     # Get branch
     from mercurial import ui, localrepo
     repo = localrepo.localrepository(ui.ui(), path=".")
