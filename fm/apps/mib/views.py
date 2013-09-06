@@ -11,6 +11,7 @@ from noc.lib.app import ExtDocApplication, view
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.fm.models.syntaxalias import SyntaxAlias
+from noc.lib.fileutils import temporary_file
 
 
 class MIBApplication(ExtDocApplication):
@@ -101,3 +102,30 @@ class MIBApplication(ExtDocApplication):
             s += ["", "Effective syntax:"]
             s += syntax_descr(sa)
         return "\n".join(s)
+
+    @view(url="^upload/", method=["POST"], access="create", api=True)
+    def api_upload(self, request):
+        left = {}  # name -> data
+        for f in request.FILES:
+            left[f] = request.FILES[f]
+        errors = {}
+        while len(left):
+            n = len(left)
+            for name in left.keys():
+                with temporary_file(left[name].read()) as path:
+                    try:
+                        MIB.load(path)
+                        del left[name]
+                        if name in errors:
+                            del errors[name]
+                    except MIB.MIBRequiredException, x:
+                        errors[name] = "%s requires MIBs %s" % (
+                            x.mib, x.requires_mib)
+            if len(left) == n:
+                # Failed to upload anything, stopping
+                break
+        r = {
+            "success": len(left) == 0,
+            "errors": errors
+        }
+        return r
