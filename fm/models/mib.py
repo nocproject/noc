@@ -46,6 +46,8 @@ class MIB(nosql.Document):
     # Compiled MIB version
     version = nosql.IntField(required=False, default=0)
 
+    MIBRequiredException = MIBRequiredException
+
     def __unicode__(self):
         return self.name
 
