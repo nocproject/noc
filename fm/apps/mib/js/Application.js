@@ -120,5 +120,12 @@ Ext.define("NOC.fm.mib.Application", {
                 NOC.error("Failed to get data");
             }
         });
+    },
+    //
+    onNewRecord: function() {
+        var me = this;
+        Ext.create("NOC.fm.mib.MIBUpload", {
+            app: me
+        });
     }
 });
