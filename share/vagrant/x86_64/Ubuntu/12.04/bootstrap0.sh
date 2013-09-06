@@ -112,7 +112,7 @@ info "Fetching NOC"
 hg clone https://bitbucket.org/nocproject/noc noc || error_exit "Unable to pull NOC distribution"
 if [ "$1" != "--no-bootstrap" ]; then
     info "Running bootstrap.sh"
-    /opt/noc/share/vagrant/x86_64/Ubuntu/12.04/bootstrap.sh
+    /opt/noc/share/vagrant/x86_64/Ubuntu/12.04/bootstrap.sh || error_exit "Failed to complete bootstrap"
     sleep 3
     echo
     info "NOC has been installed successfully"
