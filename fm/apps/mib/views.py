@@ -10,6 +10,7 @@
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
+from noc.fm.models.syntaxalias import SyntaxAlias
 
 
 class MIBApplication(ExtDocApplication):
@@ -68,8 +69,35 @@ class MIBApplication(ExtDocApplication):
                 "oid": d.oid,
                 "name": d.name,
                 "path": [int(x) for x in d.oid.split(".")],
-                "leaf": True
+                "leaf": True,
+                "description": d.description,
+                "syntax": self.get_syntax(d)
             }
             insert_tree(data, ds)
         fix_tree(data)
         return data
+
+    def get_syntax(self, x):
+        def syntax_descr(syntax):
+            if not syntax:
+                return []
+            s = []
+            s += [syntax["base_type"]]
+            if "display_hint" in syntax:
+                s += ["display-hint: %s" % syntax["display_hint"]]
+            if (syntax["base_type"] in ("Enumeration", "Bits") and
+                "enum_map" in syntax):
+                # Display enumeration
+                for k in sorted(syntax["enum_map"],
+                                key=lambda x: int(x)):
+                    s += ["%s -> %s" % (k, syntax["enum_map"][k])]
+            return s
+
+        s = []
+        sa = SyntaxAlias.rewrite(x.name, x.syntax)
+        if x.syntax:
+            s += syntax_descr(x.syntax)
+        if sa != x.syntax:
+            s += ["", "Effective syntax:"]
+            s += syntax_descr(sa)
+        return "\n".join(s)
