@@ -6,6 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
+
 ## Version cache
 _version = None
 
@@ -25,8 +28,7 @@ def get_version():
     # Get base version
     with open("VERSION") as f:
         v = f.read().split()[0].strip()
-    import os
-    if not os.path.isdir('.hg'):
+    if not os.path.isdir(".hg"):
         return v
     # Get branch
     from mercurial import ui, localrepo
