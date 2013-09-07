@@ -24,6 +24,12 @@ Ext.define("NOC.fm.mib.Application", {
         }
     ],
 
+    preview: {
+        xtype: "NOC.core.Preview",
+        previewName: "MIB: {{name}}",
+        restUrl: "/fm/mib/{{id}}/text/"
+    },
+
     createForm: function() {
         var me = this;
         //
@@ -37,6 +43,13 @@ Ext.define("NOC.fm.mib.Application", {
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.showGrid
+        });
+        //
+        me.previewButton = Ext.create("Ext.button.Button", {
+            text: "View",
+            glyph: NOC.glyph.file,
+            scope: me,
+            handler: me.onPreview
         });
         //
         me.treeStore = Ext.create("Ext.data.TreeStore", {
