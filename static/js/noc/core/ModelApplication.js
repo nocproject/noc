@@ -63,7 +63,7 @@ Ext.define("NOC.core.ModelApplication", {
     //
     createGrid: function() {
         var me = this;
-                // Setup Grid toolbar
+        // Setup Grid toolbar
         var gridToolbar = [];
 
         me.search_field = Ext.create("Ext.form.field.Text", {
