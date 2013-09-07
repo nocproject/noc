@@ -59,7 +59,7 @@ class ManagedObject(models.Model):
     # Access
     scheme = models.IntegerField(_("Scheme"), choices=scheme_choices)
     address = models.CharField(_("Address"), max_length=64)
-    port = models.PositiveIntegerField(_("Port"), blank=True, null=True)
+    port = models.IntegerField(_("Port"), blank=True, null=True)
     user = models.CharField(_("User"), max_length=32, blank=True, null=True)
     password = models.CharField(_("Password"),
             max_length=32, blank=True, null=True)
