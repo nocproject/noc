@@ -46,8 +46,22 @@ class MIB(nosql.Document):
     # Compiled MIB version
     version = nosql.IntField(required=False, default=0)
 
+    MIBRequiredException = MIBRequiredException
+
     def __unicode__(self):
         return self.name
+
+    def get_text(self):
+        """
+        Returns MIB text
+        :return:
+        """
+        for d in ["local/share/mibs", "share/mibs"]:
+            path = os.path.join(d, self.name + ".mib")
+            if os.path.isfile(path):
+                with open(path) as f:
+                    return f.read()
+        return ""
 
     @classmethod
     def parse_syntax(cls, syntax):
