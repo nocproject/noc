@@ -129,3 +129,9 @@ class MIBApplication(ExtDocApplication):
             "errors": errors
         }
         return r
+
+    @view(url="^(?P<id>[0-9a-f]{24})/text/$", method=["GET"],
+          access="launch", api=True)
+    def api_text(self, request, id):
+        mib = self.get_object_or_404(MIB, id=id)
+        return mib.get_text()
