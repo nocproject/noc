@@ -3,7 +3,7 @@
 ## Syslog Collector
 ## (RFC3164)
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -34,6 +34,8 @@ class SyslogCollector(ListenUDPSocket, EventCollector):
         if not object:
             # Ignore events from unknown sources
             return
+        # Convert msg to valid UTF8
+        msg = unicode(msg, "utf8", "ignore").encode("utf8")
         # Parse priority
         priority = 0
         if msg.startswith("<"):
@@ -49,10 +51,10 @@ class SyslogCollector(ListenUDPSocket, EventCollector):
         ts = int(time.time())
         #
         body = {
-            "source"   : "syslog",
+            "source": "syslog",
             "collector": self.collector_signature,
-            "facility" : priority >> 3,
-            "severity" : priority & 7,
-            "message"  : msg
+            "facility": priority >> 3,
+            "severity": priority & 7,
+            "message": msg
         }
         self.process_event(ts, object, body)

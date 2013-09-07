@@ -111,7 +111,37 @@ NOC.render.Timestamp = function(val) {
         }
     return "" + y + "-" + f(m) + "-" + f(D) + " " +
         f(h) + ":" + f(M) + ":" + f(s);
-}
+};
+
+NOC.render.Duration = function(val) {
+    var f = function(v) {
+        return v <= 9 ? '0' + v : v;
+    };
+
+    if(!val) {
+        return "";
+    }
+    val = +val;
+    if(isNaN(val)) {
+        return "";
+    }
+    if(val < 60) {
+        // XXs
+        return "" + val + "s";
+    }
+    if(val < 86400) {
+        // HH:MM:SS
+        var h = Math.floor(val / 3600),
+            m = Math.floor((val - h * 3600) / 60),
+            s = val - h * 3600 - m * 60;
+
+        return f(h) + ":" + f(m) + ":" + f(s);
+    }
+    // DDd HHh
+    var d = Math.floor(val / 86400),
+        h = Math.floor((val - d * 86400) / 3600);
+    return "" + d + "d " + f(h) + "h";
+};
 
 //
 // Run new Map/Reduce task
@@ -396,6 +426,15 @@ Ext.apply(Ext.form.field.VTypes, {
     ASorASSETMask: /[A-Z0-9-:]/i
 });
 //
+// Override grid column state ids
+//
+Ext.override(Ext.grid.column.Column, {
+    getStateId: function() {
+        return this.stateId || this.dataIndex || this.headerId;
+    }
+});
+
+//
 // Handlebars helpers
 //
 Handlebars.registerHelper("debug", function(opt) {
@@ -411,3 +450,5 @@ Handlebars.registerHelper("join", function(context, block) {
         return block.fn(v);
     }).join(", ");
 });
+
+Handlebars.registerHelper("formatDuration", NOC.render.Duration);

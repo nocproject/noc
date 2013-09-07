@@ -8,17 +8,15 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 import os
 import sys
-import csv
 import platform
 import subprocess
 ## Third-party modules
 import pymongo
 ## NOC modules
-sys.path = [".", ".."] + sys.path
 import settings
+from noc.lib.version import get_version
 
 if hasattr(subprocess, "check_output"):
     check_output = subprocess.check_output
@@ -26,25 +24,11 @@ else:
     def check_output(args):
         return subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
 
-def get_version():
-    """
-    Returns NOC version
-    :return:
-    """
-    with open("VERSION") as f:
-        v = f.read().split("\n")[0].strip()
-    try:
-        from mercurial import ui, localrepo
-        
-        try:
-            lr = localrepo.localrepository(ui.ui(), path=".")
-            rev = lr.changelog.rev(lr.changelog.tip())
-            v += "r%s" % rev
-        except:
-            pass
-    except ImportError:
-        pass
-    return v
+
+def get_branch():
+    from mercurial import ui, localrepo
+    repo = localrepo.localrepository(ui.ui(), path=".")
+    return repo.dirstate.branch()
 
 
 def get_pg_version():
@@ -97,16 +81,16 @@ def get_python_packages():
 def about():
     versions = [
         ["NOC", get_version()],
+        ["Branch", get_branch()],
         ["OS", " ".join(os.uname())]
     ]
     os_brand = get_brand()
     if os_brand:
         versions += [["OS Brand", os_brand]]
     versions += [
-        ["Python", sys.version],
+        ["Python", sys.version.split()[0]],
         ["PostgreSQL", get_pg_version()],
-        ["MongoDB", get_mongo_version()],
-        ["Python Path", ":".join(sys.path)]
+        ["MongoDB", get_mongo_version()]
     ]
     versions += get_python_packages()
     for c, v in versions:

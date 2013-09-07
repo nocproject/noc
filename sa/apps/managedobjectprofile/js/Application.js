@@ -112,6 +112,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             renderer: NOC.render.Bool
         },
         {
+            text: "OAM",
+            dataIndex: "enable_oam_discovery",
+            width: 50,
+            renderer: NOC.render.Bool
+        },
+        {
             text: "IPAM",
             dataIndex: "sync_ipam",
             width: 50,
@@ -492,6 +498,26 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 },
                 {
                     name: "udld_discovery_max_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                // UDLD
+                {
+                    xtype: "label",
+                    text: "OAM discovery"
+                },
+                {
+                    name: "enable_oam_discovery",
+                    xtype: "checkboxfield",
+                    allowBlank: false
+                },
+                {
+                    name: "oam_discovery_min_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                {
+                    name: "oam_discovery_max_interval",
                     xtype: "numberfield",
                     allowBlank: false
                 }

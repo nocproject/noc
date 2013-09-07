@@ -55,16 +55,15 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
                 {
                     text: "Close",
                     itemId: "close",
-                    iconCls: "icon_cross",
+                    glyph: NOC.glyph.remove,
                     handler: function() {
                         this.up("window").close();
                     }
                 },
-
                 {
                     text: "Reset",
                     itemId: "reset",
-                    iconCls: "icon_cancel",
+                    glyph: NOC.glyph.undo,
                     handler: function() {
                         this.up("window").down("form").getForm().reset();
                     }
@@ -73,7 +72,7 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
                 {
                     text: "Change",
                     itemId: "change",
-                    iconCls: "icon_user_edit",
+                    glyph: NOC.glyph.save,
                     // disabled: true,
                     // formBind: true,  @todo: Fix
                     handler: function() {

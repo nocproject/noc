@@ -1,6 +1,6 @@
 <table border="0">
     {{#if vars.length}}
-        <tr><td colspan="2"><b>Event Variables</b></td></tr>
+        <tr><th colspan="2">Event Variables</th></tr>
         {{#each vars}}
         <tr>
             <td><b>{{this.[0]}}</b></td>
@@ -9,7 +9,7 @@
         {{/each}}
     {{/if}}
     {{#if resolved_vars.length}}
-        <tr><td colspan="2"><b>Resolved Variables</b></td></tr>
+        <tr><th colspan="2">Resolved Variables</th></tr>
         {{#each resolved_vars}}
         <tr>
             <td><b>{{this.[0]}}</b></td>
@@ -18,7 +18,7 @@
         {{/each}}
     {{/if}}
     {{#if raw_vars.length}}
-        <tr><td colspan="2"><b>Raw Variables</b></td></tr>
+        <tr><th colspan="2">Raw Variables</th></tr>
         {{#each raw_vars}}
         <tr>
             <td><b>{{this.[0]}}</b></td>

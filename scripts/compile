@@ -8,7 +8,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import compileall
+import py_compile
 import subprocess
 
 
@@ -17,7 +17,7 @@ def compile():
     for l in f.stdout:
         l = l.strip()
         if l.endswith(".py") and "/templates/" not in l:
-            compileall.compile_file(l)
+            py_compile.compile(l)
 
 if __name__ == "__main__":
     print "Updating bytecode"

@@ -12,6 +12,9 @@ SW3700PRIMGMT-MIB    DEFINITIONS ::= BEGIN
     	dgs3700         OBJECT IDENTIFIER ::= { dlink-Dgs3700Series 1 }
     	dgs3712		OBJECT IDENTIFIER ::= { dgs3700 1 }
 	dgs3712g	OBJECT IDENTIFIER ::= { dgs3700 2 }
+	dgs3710		OBJECT IDENTIFIER ::= { dgs3700 3 }
+	dgs3710s	OBJECT IDENTIFIER ::= { dgs3700 4 }
+	dgs3712c	OBJECT IDENTIFIER ::= { dgs3700 5 }
 
 -- DGS3700 series Product
  

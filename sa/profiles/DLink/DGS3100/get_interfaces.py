@@ -160,6 +160,7 @@ class Script(NOCScript):
                 i["enabled_protocols"] += ["LLDP"]
             interfaces += [i]
 
+        mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
         ipif = self.cli("show ipif")
         for match in self.rx_ipif.finditer(ipif):
             admin_status = match.group("admin_state") == "Enabled"
@@ -186,7 +187,6 @@ class Script(NOCScript):
                 if vlan_name == v['vlan_name']:
                     i['subinterfaces'][0]["vlan_ids"] = [v['vlan_id']]
                     break
-            ids = self.scripts.get_chassis_id()
-            i['subinterfaces'][0]["mac"] = ids["first_chassis_mac"]
+            i['subinterfaces'][0]["mac"] = mac
             interfaces += [i]
         return [{"interfaces": interfaces}]

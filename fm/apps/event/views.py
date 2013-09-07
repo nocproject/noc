@@ -223,7 +223,7 @@ class EventApplication(ExtApplication):
         event.log_message("%s: %s" % (request.user.username, msg))
         return True
 
-    rx_parse_log = re.compile("^Classified as '(.+)'$")
+    rx_parse_log = re.compile("^Classified as '(.+?)'.+$")
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True,
           access="launch")
@@ -242,10 +242,12 @@ class EventApplication(ExtApplication):
         r += ["    {"]
         r += ["        \"profile\": \"%s\"," % json_escape(event.managed_object.profile_name)]
         if e_class:
-            r += ["        \"event_class__name\": \"%s\"" % e_class]
+            r += ["        \"event_class__name\": \"%s\"," % e_class]
         r += ["        \"raw_vars\": {"]
         rr = []
         for k in event.raw_vars:
+            if k in ("collector", "severity", "facility"):
+                continue
             rr += ["            \"%s\": \"%s\"" % (
                 json_escape(k), json_escape(str(event.raw_vars[k])))]
         r += [",\n".join(rr)]

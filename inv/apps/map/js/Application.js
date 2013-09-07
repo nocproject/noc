@@ -39,6 +39,7 @@ Ext.define("NOC.inv.map.Application", {
         me.chartCombo = Ext.create("NOC.inv.networkchart.LookupField", {
             fieldLabel: "Chart",
             labelWidth: 30,
+            minWidth: 280,
             name: "chart",
             allowBlank: true,
             disabled: true,
@@ -49,7 +50,7 @@ Ext.define("NOC.inv.map.Application", {
             }
         });
         me.saveButton = Ext.create("Ext.button.Button", {
-            iconCls: "icon_disk",
+            glyph: NOC.glyph.save,
             text: "Save",
             tooltip: "Save changes",
             disabled: true,
@@ -57,7 +58,7 @@ Ext.define("NOC.inv.map.Application", {
             handler: me.onSave
         });
         me.reloadButton = Ext.create("Ext.button.Button", {
-            iconCls: "icon_arrow_refresh",
+            glyph: NOC.glyph.refresh,
             text: "Reload",
             tooltip: "Reload map",
             disabled: true,
@@ -66,14 +67,14 @@ Ext.define("NOC.inv.map.Application", {
         });
         me.zoomInButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom In",
-            iconCls: "icon_magnifier_zoom_in",
+            glyph: NOC.glyph.zoom_in,
             scope: me,
             handler: me.onZoomIn,
             disabled: true
         });
         me.zoomOutButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom Out",
-            iconCls: "icon_magifier_zoom_out",
+            glyph: NOC.glyph.zoom_out,
             scope: me,
             handler: me.onZoomOut,
             disabled: true
@@ -111,8 +112,19 @@ Ext.define("NOC.inv.map.Application", {
             }]
         });
         me.graph = undefined;
-        // Context menus
+        //
+        me.callParent();
+    },
+    //
+    afterRender: function() {
+        var me = this;
+        me.callParent();
+        //
+        me.mapPanel = me.items.first();
+        me.mapDom = me.mapPanel.el.dom;
+                // Context menus
         me.nodeContextMenu = Ext.create("Ext.menu.Menu", {
+            renderTo: me.mapDom,
             items: [
                 {
                     text: "Fold",
@@ -143,7 +155,7 @@ Ext.define("NOC.inv.map.Application", {
                             },
                             {
                                 text: "Top",
-                                iconCls: "icon_arrow_up",
+                                glyph: NOC.glyph.arrow_up,
                                 itemId: "n",
                                 listeners: {
                                     scope: me,
@@ -161,7 +173,7 @@ Ext.define("NOC.inv.map.Application", {
                             },
                             {
                                 text: "Right",
-                                iconCls: "icon_arrow_right",
+                                glyph: NOC.glyph.arrow_right,
                                 itemId: "e",
                                 listeners: {
                                     scope: me,
@@ -179,7 +191,7 @@ Ext.define("NOC.inv.map.Application", {
                             },
                             {
                                 text: "Bottom",
-                                iconCls: "icon_arrow_down",
+                                glyph: NOC.glyph.arrow_down,
                                 itemId: "s",
                                 listeners: {
                                     scope: me,
@@ -197,7 +209,7 @@ Ext.define("NOC.inv.map.Application", {
                             },
                             {
                                 text: "Left",
-                                iconCls: "icon_arrow_left",
+                                glyph: NOC.glyph.arrow_left,
                                 itemId: "w",
                                 listeners: {
                                     scope: me,
@@ -217,6 +229,7 @@ Ext.define("NOC.inv.map.Application", {
             ]
         });
         me.edgeContextMenu = Ext.create("Ext.menu.Menu", {
+            renderTo: me.mapDom,
             items: [
                 {
                     text: "Line Style",
@@ -243,12 +256,6 @@ Ext.define("NOC.inv.map.Application", {
                 }
             ]
         });
-        me.callParent();
-    },
-    //
-    afterRender: function() {
-        var me = this;
-        me.callParent();
         // Load mxGraph JS library
         mxLanguage = "en";
         mxLoadStylesheets = false;  // window scope
@@ -289,9 +296,8 @@ Ext.define("NOC.inv.map.Application", {
             me.graph.removeCells(me.graph.getChildVertices(me.graph.getDefaultParent()), true);
         } else {
             // Create Graph
-            var c = me.items.first().el.dom;
-            mxEvent.disableContextMenu(c); // Disable default context menu
-            me.graph = new mxGraph(c);
+            mxEvent.disableContextMenu(me.mapDom); // Disable default context menu
+            me.graph = new mxGraph(me.mapDom);
             me.graph.disconnectOnMove = false;
             // me.graph.foldingEnabled = false;
             me.graph.cellsResizable = false;
@@ -299,10 +305,20 @@ Ext.define("NOC.inv.map.Application", {
             me.graph.setPanning(true);
             me.graph.setTooltips(true);
             me.graph.foldingEnabled = false;
+            // Custom edge style
+            mxEdgeStyle.NOCEdgeStyle = function(state, source, target, points, result) {
+                if (source != null && target != null) {
+                    var isSourceLeft = (source.x < target.x) ? 1 : -1;
+                    var pt1 = new mxPoint(source.getCenterX() + isSourceLeft * (source.width/2+5), source.getCenterY());
+                    var pt2 = new mxPoint(target.getCenterX() - isSourceLeft * (target.width/2+5), target.getCenterY());
+                    result.push(pt1);
+                    result.push(pt2);
+                }
+            };
             // Set styles
             var ss = me.graph.getStylesheet(),
                 edgeStyle = ss.getDefaultEdgeStyle();
-            // edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+            edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.NOCEdgeStyle;
             delete edgeStyle.endArrow;
             /*
             var vertexStyle = ss.getDefaultVertexStyle();
@@ -504,14 +520,13 @@ Ext.define("NOC.inv.map.Application", {
         var me = this;
         if(cell != null) {
             var m = null;
-            console.log(evt);
             if(cell.isVertex()) {
                 m = me.nodeContextMenu;
             } else {
                 m = me.edgeContextMenu;
             }
             if(m) {
-                m.setPosition(evt.pageX, evt.pageY);
+                m.setLocalXY(evt.layerX, evt.layerY);
                 m.show();
             }
         }

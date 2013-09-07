@@ -1,0 +1,16 @@
+{% comment %}
+Configuration changed notification
+
+Context variables are
+ * object -- managed object instance
+ * is_new -- True, if new config, False - otherwise
+ * config -- Full config
+ * diff -- unified diff, if is_new is false
+{% endcomment %}
+Subject: {% if is_new %}New config for {{ object.name }}{% else %}{{ object.name }} config has been changed{% endif %}
+
+{% if is_new %}
+{{config|safe}}
+{% else %}
+{{diff|safe}}
+{% endif %}

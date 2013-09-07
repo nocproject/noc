@@ -56,7 +56,8 @@ class Script(NOCScript):
                         "lrn": "learning",
                         "??": "learning",
                         "fwd": "forwarding",
-                        "lis": "listen"
+                        "lis": "listen",
+                        "lbk": "loopback"
                     }[R[2].lower()],  # @todo: refine states
                 }
         return ports

@@ -131,6 +131,10 @@ class BERDecoder(object):
     def parse_null(self, msg):
         return None
 
+    def parse_a_ipaddress(self, msg):
+        return "%d.%d.%d.%d" % (
+            ord(msg[0]), ord(msg[1]), ord(msg[2]), ord(msg[3]))
+
     def parse_p_oid(self, msg):
         """
         >>> BERDecoder().parse_p_oid("+\\x06\\x01\\x02\\x01\\x01\\x05\\x00")
@@ -204,6 +208,7 @@ class BERDecoder(object):
                 # CHARACTER STRING	P/C	29	1D
                 # BMPString	P/C	30	1E
                 # (use long-form)	-	31	1F
+                0x80: parse_null,  # missed instance?
             },
             # Constructed types
             False: {
@@ -237,11 +242,11 @@ class BERDecoder(object):
         # SNMP application types
         64: {
             True: {
-                0: 0,  # IpAddress
+                0: parse_a_ipaddress,  # IpAddress
                 1: parse_int,  # Counter32
                 2: parse_int,  # Gauge32
-                3: 0,  # TimeTicks
-                4: 0,  # Opaque
+                3: parse_int,  # TimeTicks
+                # 4: 0,  # Opaque
                 6: parse_int   # Counter64
             },
             False: {}

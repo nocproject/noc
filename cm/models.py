@@ -33,7 +33,7 @@ vcs_registry.register_all()
 
 #
 OBJECT_TYPES = ["config", "dns", "prefix-list", "rpsl"]
-OBJECT_TYPE_CHOICES = [(x, x) for x in OBJECT_TYPES]
+OBJECT_TYPE_CHOICES = [(x, x) for x in OBJECT_TYPES if x != "config"]
 
 
 class ObjectNotify(models.Model):
@@ -359,6 +359,7 @@ class Config(Object):
                 managed_object__in=ManagedObject.user_objects(user))
 
     def get_notification_groups(self, immediately=False, delayed=False):
+        # @todo: Remove method
         q = Q(type=self.repo_name)
         if immediately:
             q &= Q(notify_immediately=True)
@@ -374,7 +375,7 @@ class Config(Object):
             [n.notification_group for n in ObjectNotify.objects.filter(q)])
 
     def write(self, data):
-        if type(data) == types.ListType:
+        if isinstance(data, list):
             # Convert list to plain text
             r = []
             for d in sorted(data, lambda x, y: cmp(x["name"], y["name"])):
@@ -391,11 +392,13 @@ class Config(Object):
                 managed_object=self.managed_object, config=data)
             if warnings:
                 # There are some warnings. Notify responsible persons
-                NotificationGroup.group_notify(
-                    groups=self.get_notification_groups(immediately=True),
-                    subject="NOC: Warnings in '%s' config" % str(self),
-                    body="Following warnings have been found in the '%s' config:\n\n%s\n" % (
-                    str(self), "\n".join(warnings)))
+                self.managed_object.event(
+                    self.managed_object.EV_CONFIG_POLICY_VIOLATION,
+                    {
+                        "object": self.managed_object,
+                        "warnings": warnings
+                    }
+                )
         # Save to the repo
         super(Config, self).write(data)
 
@@ -428,6 +431,29 @@ class Config(Object):
             now = datetime.datetime.now()
             return self.last_pull is None or (now - self.last_pull).days >= 2
         return False
+
+    def on_object_changed(self):
+        """
+        Temporary stub to use ObjectNotification
+        :return:
+        """
+        revs = self.revisions
+        is_new = len(revs) == 1
+        diff = None
+        if not is_new:
+            diff = self.notification_diff(revs[1], revs[0])
+            if not diff:
+                # No significant difference to notify
+                return
+        self.managed_object.event(
+            self.managed_object.EV_CONFIG_CHANGED,
+            {
+                "object": self.managed_object,
+                "is_new": is_new,
+                "config": self.data,
+                "diff": diff
+            }
+        )
 
 
 class PrefixList(Object):
