@@ -60,8 +60,7 @@ Ext.define("NOC.fm.mib.Application", {
             }
         });
         //
-        return {
-            xtype: "treepanel",
+        return Ext.create("Ext.tree.Panel", {
             store: me.treeStore,
             rootVisible: true,
             useArrows: true,
@@ -101,7 +100,7 @@ Ext.define("NOC.fm.mib.Application", {
                     me.toolbarIdField
                 ]
             }]
-        }
+        });
     },
     //
     editRecord: function(record) {
@@ -114,7 +113,9 @@ Ext.define("NOC.fm.mib.Application", {
     },
     //
     showForm: function() {
-        var me = this;
+        var me = this,
+            form = me.getRegisteredItems()[me.ITEM_FORM];
+        form.setTitle("MIB: " + me.currentRecord.get("name"));
         me.callParent();
         me.loadMIB();
     },
