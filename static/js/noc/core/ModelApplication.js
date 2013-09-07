@@ -247,6 +247,21 @@ Ext.define("NOC.core.ModelApplication", {
             ]);
         }
 
+        var gridColumns = me.columns.concat(cust_columns);
+        // Set up tooltips
+        Ext.each(gridColumns, function(c) {
+            if(!c.listeners) {
+                c.listeners = {};
+            }
+            c.listeners.afterrender = function() {
+                Ext.create("Ext.ToolTip", {
+                    target: this.getEl(),
+                    anchor: "top",
+                    trackMouse: true,
+                    html: this.tooltip || this.text
+                });
+            }
+        });
         var gridPanel = Ext.create("Ext.grid.Panel", {
             itemId: "grid",
             store: me.store,
@@ -263,7 +278,7 @@ Ext.define("NOC.core.ModelApplication", {
                     dataIndex: me.idField,
                     hidden: true
                 }
-            ].concat(me.columns).concat(cust_columns),
+            ].concat(gridColumns),
             border: false,
             autoScroll: true,
             stateful: true,
