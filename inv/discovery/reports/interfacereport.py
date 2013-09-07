@@ -125,7 +125,9 @@ class InterfaceReport(Report):
     def submit_interface(self, name, type,
                          mac=None, description=None,
                          aggregated_interface=None,
-                         enabled_protocols=None):
+                         enabled_protocols=None,
+                         ifindex=None
+                         ):
         enabled_protocols = enabled_protocols or []
         iface = Interface.objects.filter(
             managed_object=self.object.id, name=name).first()
@@ -136,7 +138,8 @@ class InterfaceReport(Report):
                 "mac": mac,
                 "description": description,
                 "aggregated_interface": aggregated_interface,
-                "enabled_protocols": enabled_protocols
+                "enabled_protocols": enabled_protocols,
+                "ifindex": ifindex
             })
             self.log_changes("Interface '%s' has been changed" % name,
                 changes)
@@ -150,7 +153,8 @@ class InterfaceReport(Report):
                 mac=mac,
                 description=description,
                 aggregated_interface=aggregated_interface,
-                enabled_protocols=enabled_protocols
+                enabled_protocols=enabled_protocols,
+                ifindex=ifindex
             )
             iface.save()
         return iface

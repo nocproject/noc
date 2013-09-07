@@ -2,11 +2,20 @@
 // Create console.* stub if missed
 //
 if (!window.console) {
-    console = {
-        log: function(message) {},
-        debug: function(message) {},
-        info: function(message) {},
-        warn: function(message) {},
-        error: function(message) {alert(message);}
-    }
+    window.console = {};
+}
+if(!window.console.log) {
+    window.console.log = function() {};
+}
+if(!window.console.debug) {
+    window.console.debug = function() {};
+}
+if(!window.console.info) {
+    window.console.info = function() {};
+}
+if(!window.console.warn) {
+    window.console.warn = function() {};
+}
+if(!window.console.error) {
+    window.console.error = function() {};
 }

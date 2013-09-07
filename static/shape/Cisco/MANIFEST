@@ -4,7 +4,7 @@ router.svg,Router,47.5,32.5
 workgroup_switch.svg,Workgroup Switch,62.5,32.5
 broadband_router_d.svg,BRAS,47.5,47.5
 pbx.svg,PBX,37.5,37.5
-phone.svg,IP Phone,40,30
+phone.svg,IP Phone #1,40,30
 pix.svg,PIX,47.5,32.5
 radio_tower.svg,Radio Tower,23.75,62.5
 satellite_dish.svg,Satellite,61.25,45
@@ -18,4 +18,20 @@ wireless_router.svg,Wireless Router,47.5,47.5
 workstation.svg,Workstation,46.25,47.5
 crs.svg,Carrier Routing System,48.75,47.5
 intelliswitch_stack.svg,Switch Stack,40.0125,42.3
-
+ata.svg,ATA,60.9875,30.6125
+cable_modem.svg,Cable modem,44.4,22.2
+dslam.svg,DSLAM,28.42,31.5
+file_server.svg,File Server,26.237,34.674
+firewall.svg,Firewall,18.875,41.4
+generic_gateway.svg,Generic Gateway,46.487,52.025
+generic_softswitch.svg,Generic Softswitch,30.425,45.5875
+ip_phone.svg,IP Phone #2,54.025,29.5
+ip_telephony_router.svg,IP Telephony Router,46.475,40.85
+iptv_broadcast_server.svg,IPTV Broadcast Server,47.1375,31.325
+RF_modem.svg,RF Modem,48.462,25.1
+Set_top_box.svg,Set Top Box,68.512,25.8
+sip_proxy_server.svg,SIP Proxy Server,27.125,42.125
+standard_host.svg,Standart Host,26.4125,37.287
+ups.svg,UPS,47.875,31.8625
+voice_gateway.svg,Voice Gateway,33.4625,33.7874
+wireless_router.svg,Wireless Router,46.4875,45.825

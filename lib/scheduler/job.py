@@ -54,6 +54,8 @@ class Job(object):
     S_DEFERRED = "D"
     S_LATE = "L"
 
+    group = None
+
     def __init__(self, scheduler, key=None, data=None, schedule=None):
         self.scheduler = scheduler
         self.key = key
@@ -201,3 +203,6 @@ class Job(object):
         j = (job_name, key)
         if j not in self.on_complete:
             self.on_complete += [j]
+
+    def get_group(self):
+        return self.group

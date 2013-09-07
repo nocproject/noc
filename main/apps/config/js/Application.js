@@ -50,16 +50,19 @@ Ext.define("NOC.main.config.Application", {
                 },
                 {
                     text: "Key",
-                    dataIndex: "key"
+                    dataIndex: "key",
+                    width: 300
                 },
                 {
                     text: "Default",
-                    dataIndex: "default"
+                    dataIndex: "default",
+                    flex: 1
                 },
                 {
                     text: "Value",
                     dataIndex: "value",
-                    editor: "textfield"
+                    editor: "textfield",
+                    flex: 1
                 }
             ],
             tbar: [
@@ -68,6 +71,7 @@ Ext.define("NOC.main.config.Application", {
                     xtype: "combobox",
                     name: "config",
                     itemId: "config",
+                    width: 150,
                     emptyText: "Select Config ...",
                     store: me.configListStore,
                     queryMode: "local",
@@ -99,7 +103,7 @@ Ext.define("NOC.main.config.Application", {
                     itemId: "save",
                     name: "save",
                     text: "Save",
-                    iconCls: "icon_disk",
+                    glyph: NOC.glyph.save,
                     disabled: true,
                     scope: me,
                     handler: me.onSave

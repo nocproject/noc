@@ -22,3 +22,10 @@ class DiscoveryScheduler(Scheduler):
         self.register_all(
             os.path.join("inv", "discovery", "jobs"),
             exclude=["base.py"])
+
+    def can_run(self, job):
+        group = job.get_group()
+        if group is not None:
+            with self.running_lock:
+                return group not in self.running_count
+        return True

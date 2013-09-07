@@ -187,7 +187,7 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     itemId: "create_first",
                     text: "Add First Free",
-                    iconCls: "icon_application_form_add",
+                    glyph: NOC.glyph.plus_sign,
                     tooltip: "Add first free VC",
                     hasAccess: NOC.hasPermission("create"),
                     scope: me,
@@ -196,7 +196,7 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     itemId: "import",
                     text: "Import",
-                    iconCls: "icon_door_in",
+                    glyph: NOC.glyph.level_down,
                     tooltip: "Import VCs",
                     hasAccess: NOC.hasPermission("import"),
                     menu: {
@@ -206,7 +206,7 @@ Ext.define("NOC.vc.vc.Application", {
                             {
                                 text: "VLANs From Switch",
                                 itemId: "vlans_from_switch",
-                                iconCls: "icon_arrow_right"
+                                glyph: NOC.glyph.level_down,
                             }
                         ],
                         listeners: {

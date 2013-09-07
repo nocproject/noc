@@ -19,13 +19,16 @@ class ReportForm(forms.Form):
     vrf = forms.ModelChoiceField(
         label=_("VRF"),
         queryset=VRF.objects.filter(
-            state__is_provisioned=True).order_by("name"))
+            state__is_provisioned=True).order_by("name")
+        )
     afi = forms.ChoiceField(label=_("Address Family"),
                             choices=[("4", _("IPv4")), ("6", _("IPv6"))])
     prefix = forms.CharField(label=_("Prefix"))
 
     def clean_prefix(self):
-        vrf = self.cleaned_data["vrf"]
+        vrf = self.cleaned_data.get("vrf")
+        if not vrf:
+            raise ValidationError(_("VRF Required"))
         afi = self.cleaned_data["afi"]
         prefix = self.cleaned_data.get("prefix", "").strip()
         if afi == "4":

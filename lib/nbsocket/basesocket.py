@@ -21,6 +21,7 @@ class Socket(object):
     """
     TTL = None  # maximum time to live in seconds
     READ_CHUNK = 65536  # @todo: configuration parameter
+    CLOSE_ON_ERROR = True  # Call .close() from .on_error()
 
     def __init__(self, factory, socket=None):
         self.factory = factory
@@ -122,7 +123,8 @@ class Socket(object):
         :param exc: SocketException
         """
         self.error(exc.message)
-        self.close()
+        if self.CLOSE_ON_ERROR:
+            self.close()
 
     def close(self):
         """

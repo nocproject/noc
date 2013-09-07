@@ -53,7 +53,7 @@ Ext.define("NOC.core.JSONPreview", {
             scope: me,
             success: function(response) {
                 var json = Ext.decode(response.responseText);
-                me.items.first().update("<pre>" + json + "</pre>");
+                me.items.first().update("<pre>" + Ext.util.Format.htmlEncode(json) + "</pre>");
                 //NOC.SyntaxHighlight.highlight(me.items.first(),
                 //    json, "json");
             },

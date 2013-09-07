@@ -1,6 +1,6 @@
 #!/bin/sh
 ##----------------------------------------------------------------------
-## Ubuntu 12.4 bootstrap0.sh
+## Ubuntu 12.04 bootstrap0.sh
 ## Initialize system and install all prerequisites to NOC
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2013 The NOC Project
@@ -26,14 +26,25 @@ aptinstall ( ) {
     info "Installing $1"
     apt-get install -y $1 || error_exit "Failed to install $1"
 }
-
+##
+## Check locale settings
+##
+locale -a 2>&1 | grep -c locale: > /dev/null
+if [ $? -eq 0 ]; then
+    info "Invalid locale settings!"
+    info "Please fix locale settings:"
+    info "> apt-get install locales"
+    info "> dpkg-reconfigure locales"
+    info "Terminating"
+    exit 1
+fi
 ##
 ## Update base system
 ##
 info "Updating base system"
-apt-get update || die "Failed to run: apt-get: update"
-apt-get upgrade || die "Failed to run: apt-get upgrade"
-apt-get dist-upgrade || die "Failed to run: apt-get dist-upgrade"
+apt-get update -y || error_exit "Failed to run: apt-get: update"
+apt-get upgrade -y || error_exit "Failed to run: apt-get upgrade"
+apt-get dist-upgrade -y || error_exit "Failed to run: apt-get dist-upgrade"
 ##
 ## Create NOC user and group
 ##
@@ -101,5 +112,14 @@ info "Fetching NOC"
 hg clone https://bitbucket.org/nocproject/noc noc || error_exit "Unable to pull NOC distribution"
 if [ "$1" != "--no-bootstrap" ]; then
     info "Running bootstrap.sh"
-    /opt/noc/share/vagrant/x86_64/Ubuntu/12.04/bootstrap.sh
+    /opt/noc/share/vagrant/x86_64/Ubuntu/12.04/bootstrap.sh || error_exit "Failed to complete bootstrap"
+    sleep 3
+    echo
+    info "NOC has been installed successfully"
+    # Get current IP address
+    IP=`ip addr show eth0 | grep "global eth0" | awk '{print $2}' | awk -F/ '{print $1}'`
+    info "Follow to the NOC web interface"
+    info "http://$IP/"
+    info "User: admin"
+    info "Password: admin"
 fi

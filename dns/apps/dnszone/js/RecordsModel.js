@@ -14,7 +14,7 @@ Ext.define("NOC.dns.dnszone.RecordsModel", {
     fields: [
         {
             name: "id",
-            type: "int"
+            type: "string"
         },
         {
             name: "name",

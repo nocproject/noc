@@ -1,0 +1,12 @@
+{% comment %}
+Configuration policy violation detected
+
+Context variables are
+ * object -- managed object instance
+ * warnings -- list of warnings
+{% endcomment %}
+Subject: Configration policy violation at {{object.name}}
+
+{% for w in warnings %}
+{{forloop.counter}}. {{w}}
+{% endfor %}
