@@ -30,7 +30,7 @@ Ext.define("NOC.core.ModelApplication", {
     initComponent: function() {
         var me = this;
         // set base_url
-        var n = this.self.getName().split(".");
+        var n = me.self.getName().split(".");
         me.base_url = "/" + n[1] + "/" + n[2] + "/";
         me.appName = n[1] + "." + n[2];
         // Variables
@@ -97,7 +97,7 @@ Ext.define("NOC.core.ModelApplication", {
         // admin actions
         if(me.actions) {
             me.action_menu = Ext.create("Ext.button.Button", {
-                iconCls: "icon_table_go",
+                glyph: NOC.glyph.download,
                 tooltip: "Group actions",
                 hasAccess: NOC.hasPermission("update"),
                 itemId: "action_menu",
@@ -255,7 +255,8 @@ Ext.define("NOC.core.ModelApplication", {
                     xtype: "actioncolumn",
                     width: 40,
                     sortable: false,
-                    items: rowItems
+                    items: rowItems,
+                    stateId: "rowaction"
                 },
                 {
                     text: "ID",
