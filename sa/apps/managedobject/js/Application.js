@@ -25,6 +25,7 @@ Ext.define("NOC.sa.managedobject.Application", {
     model: "NOC.sa.managedobject.Model",
     search: true,
     rowClassField: "row_class",
+
     columns: [
         {
             text: "Name",
@@ -51,6 +52,12 @@ Ext.define("NOC.sa.managedobject.Application", {
             renderer: NOC.render.Lookup("object_profile")
         },
         {
+            text: "Adm. Domain",
+            dataIndex: "administrative_domain",
+            renderer: NOC.render.Lookup("administrative_domain"),
+            width: 120
+        },
+        {
             text: "VRF",
             dataIndex: "vrf",
             renderer: NOC.render.Lookup("vrf")
@@ -75,207 +82,237 @@ Ext.define("NOC.sa.managedobject.Application", {
             renderer: NOC.render.Tags
         }
     ],
-    fields: [
-        {
-            name: "name",
-            xtype: "textfield",
-            fieldLabel: "Name",
-            allowBlank: false
-        },
-        {
-            name: "is_managed",
-            xtype: "checkboxfield",
-            boxLabel: "Is Managed?",
-            allowBlank: false
-        },
-        {
-            name: "description",
-            xtype: "textfield",
-            fieldLabel: "Description",
-            allowBlank: true
-        },
-        {
-            name: "object_profile",
-            xtype: "sa.managedobjectprofile.LookupField",
-            fieldLabel: "Object Profile",
-            allowBlank: false
-        },
-        {
-            name: "shape",
-            xtype: "main.ref.stencil.LookupField",
-            fieldLabel: "Shape",
-            allowBlank: true
-        },
-        {
-            xtype: "fieldset",
-            title: "Location",
-            layout: "hbox",
-            defaults: {
-                labelAlign: "top",
-                padding: 4
-            },
-            items: [
+    //
+    initComponent: function() {
+        var me = this;
+
+        me.configPreviewButton = Ext.create("Ext.button.Button", {
+            text: "Config",
+            glyph: NOC.glyph.file,
+            scope: me,
+            handler: me.onConfigPreview
+        });
+
+        me.interfacesButton = Ext.create("Ext.button.Button", {
+            text: "Interfaces"
+        });
+
+        Ext.apply(me, {
+            fields: [
                 {
-                    name: "administrative_domain",
-                    xtype: "sa.administrativedomain.LookupField",
-                    fieldLabel: "Administrative Domain",
-                    width: 200,
-                    allowBlank: false
-                },
-                {
-                    name: "activator",
-                    xtype: "sa.activator.LookupField",
-                    fieldLabel: "Activator",
-                    width: 100,
-                    allowBlank: false
-                },
-                {
-                    name: "vrf",
-                    xtype: "ip.vrf.LookupField",
-                    fieldLabel: "VRF",
-                    allowBlank: true
-                },
-                {
-                    name: "vc_domain",
-                    xtype: "vc.vcdomain.LookupField",
-                    fieldLabel: "VC Domain",
-                    allowBlank: true
-                }
-            ]
-        },
-        {
-            xtype: "fieldset",
-            title: "Access",
-            items: [
-                {
-                    name: "profile_name",
-                    xtype: "main.ref.profile.LookupField",
-                    fieldLabel: "SA Profile",
-                    allowBlank: false
-                },
-                {
-                    name: "scheme",
-                    xtype: "sa.managedobject.SchemeLookupField",
-                    fieldLabel: "Scheme",
-                    allowBlank: false
-                },
-                {
-                    name: "address",
+                    name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Address",
+                    fieldLabel: "Name",
                     allowBlank: false
                 },
                 {
-                    name: "port",
+                    name: "is_managed",
+                    xtype: "checkboxfield",
+                    boxLabel: "Is Managed?",
+                    allowBlank: false
+                },
+                {
+                    name: "description",
+                    xtype: "textfield",
+                    fieldLabel: "Description",
+                    allowBlank: true
+                },
+                {
+                    name: "object_profile",
+                    xtype: "sa.managedobjectprofile.LookupField",
+                    fieldLabel: "Object Profile",
+                    allowBlank: false
+                },
+                {
+                    name: "shape",
+                    xtype: "main.ref.stencil.LookupField",
+                    fieldLabel: "Shape",
+                    allowBlank: true
+                },
+                {
+                    xtype: "fieldset",
+                    title: "Location",
+                    layout: "hbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "administrative_domain",
+                            xtype: "sa.administrativedomain.LookupField",
+                            fieldLabel: "Administrative Domain",
+                            width: 200,
+                            allowBlank: false
+                        },
+                        {
+                            name: "activator",
+                            xtype: "sa.activator.LookupField",
+                            fieldLabel: "Activator",
+                            width: 100,
+                            allowBlank: false
+                        },
+                        {
+                            name: "vrf",
+                            xtype: "ip.vrf.LookupField",
+                            fieldLabel: "VRF",
+                            allowBlank: true
+                        },
+                        {
+                            name: "vc_domain",
+                            xtype: "vc.vcdomain.LookupField",
+                            fieldLabel: "VC Domain",
+                            allowBlank: true
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: "Access",
+                    items: [
+                        {
+                            name: "profile_name",
+                            xtype: "main.ref.profile.LookupField",
+                            fieldLabel: "SA Profile",
+                            allowBlank: false
+                        },
+                        {
+                            name: "scheme",
+                            xtype: "sa.managedobject.SchemeLookupField",
+                            fieldLabel: "Scheme",
+                            allowBlank: false
+                        },
+                        {
+                            name: "address",
+                            xtype: "textfield",
+                            fieldLabel: "Address",
+                            allowBlank: false
+                        },
+                        {
+                            name: "port",
+                            xtype: "numberfield",
+                            fieldLabel: "Port",
+                            allowBlank: true
+                        },
+                        {
+                            name: "user",
+                            xtype: "textfield",
+                            fieldLabel: "User",
+                            allowBlank: true
+                        },
+                        {
+                            name: "password",
+                            xtype: "textfield",
+                            fieldLabel: "Password",
+                            allowBlank: true,
+                            inputType: "password"
+                        },
+                        {
+                            name: "super_password",
+                            xtype: "textfield",
+                            fieldLabel: "Super Password",
+                            allowBlank: true,
+                            inputType: "password"
+                        },
+                        {
+                            name: "remote_path",
+                            xtype: "textfield",
+                            fieldLabel: "Path",
+                            allowBlank: true
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: "SNMP",
+                    layout: "hbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "trap_source_ip",
+                            xtype: "textfield",
+                            fieldLabel: "Trap Source IP",
+                            allowBlank: true
+                        },
+                        {
+                            name: "trap_community",
+                            xtype: "textfield",
+                            fieldLabel: "Trap Community",
+                            allowBlank: true
+                        },
+                        {
+                            name: "snmp_ro",
+                            xtype: "textfield",
+                            fieldLabel: "RO Community",
+                            allowBlank: true
+                        },
+                        {
+                            name: "snmp_rw",
+                            xtype: "textfield",
+                            fieldLabel: "RW Community",
+                            allowBlank: true
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: "Rules",
+                    layout: "hbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "config_filter_rule",
+                            xtype: "main.pyrule.LookupField",
+                            fieldLabel: "Config Filter pyRule",
+                            allowBlank: true
+                        },
+                        {
+                            name: "config_diff_filter_rule",
+                            xtype: "main.pyrule.LookupField",
+                            fieldLabel: "Config Diff Filter Rule",
+                            allowBlank: true
+                        },
+                        {
+                            name: "config_validation_rule",
+                            xtype: "main.pyrule.LookupField",
+                            fieldLabel: "Config Validation pyRule",
+                            allowBlank: true
+                        }
+                    ]
+                },
+                {
+                    name: "max_scripts",
                     xtype: "numberfield",
-                    fieldLabel: "Port",
+                    fieldLabel: "Max. Scripts",
                     allowBlank: true
                 },
                 {
-                    name: "user",
-                    xtype: "textfield",
-                    fieldLabel: "User",
-                    allowBlank: true
-                },
-                {
-                    name: "password",
-                    xtype: "textfield",
-                    fieldLabel: "Password",
-                    allowBlank: true,
-                    inputType: "password"
-                },
-                {
-                    name: "super_password",
-                    xtype: "textfield",
-                    fieldLabel: "Super Password",
-                    allowBlank: true,
-                    inputType: "password"
-                },
-                {
-                    name: "remote_path",
-                    xtype: "textfield",
-                    fieldLabel: "Path",
+                    name: "tags",
+                    xtype: "tagsfield",
+                    fieldLabel: "Tags",
                     allowBlank: true
                 }
+            ],
+            formToolbar: [
+                me.configPreviewButton,
+                me.interfacesButton
             ]
-        },
-        {
-            xtype: "fieldset",
-            title: "SNMP",
-            layout: "hbox",
-            defaults: {
-                labelAlign: "top",
-                padding: 4
-            },
-            items: [
-                {
-                    name: "trap_source_ip",
-                    xtype: "textfield",
-                    fieldLabel: "Trap Source IP",
-                    allowBlank: true
-                },
-                {
-                    name: "trap_community",
-                    xtype: "textfield",
-                    fieldLabel: "Trap Community",
-                    allowBlank: true
-                },
-                {
-                    name: "snmp_ro",
-                    xtype: "textfield",
-                    fieldLabel: "RO Community",
-                    allowBlank: true
-                },
-                {
-                    name: "snmp_rw",
-                    xtype: "textfield",
-                    fieldLabel: "RW Community",
-                    allowBlank: true
-                }
-            ]
-        },
-        {
-            xtype: "fieldset",
-            title: "Rules",
-            layout: "hbox",
-            defaults: {
-                labelAlign: "top",
-                padding: 4
-            },
-            items: [
-                {
-                    name: "config_filter_rule",
-                    xtype: "main.pyrule.LookupField",
-                    fieldLabel: "Config Filter pyRule",
-                    allowBlank: true
-                },
-                {
-                    name: "config_diff_filter_rule",
-                    xtype: "main.pyrule.LookupField",
-                    fieldLabel: "Config Diff Filter Rule",
-                    allowBlank: true
-                },
-                {
-                    name: "config_validation_rule",
-                    xtype: "main.pyrule.LookupField",
-                    fieldLabel: "Config Validation pyRule",
-                    allowBlank: true
-                }
-            ]
-        },
-        {
-            name: "max_scripts",
-            xtype: "numberfield",
-            fieldLabel: "Max. Scripts",
-            allowBlank: true
-        },
-        {
-            name: "tags",
-            xtype: "tagsfield",
-            fieldLabel: "Tags",
-            allowBlank: true
-        }
-    ],
+        });
+        // Config item
+        me.configPanel = Ext.create("NOC.core.RepoPreview", {
+            app: me,
+            previewName: "{{name}} config",
+            restUrl: "/sa/managedobject/{{id}}/repo/cfg/"
+        });
+        me.ITEM_CONFIG = me.registerItem(me.configPanel);
+        me.callParent();
+    },
     filters: [
         // @todo: By SA Profile
         {
@@ -283,6 +320,12 @@ Ext.define("NOC.sa.managedobject.Application", {
             name: "object_profile",
             ftype: "lookup",
             lookup: "sa.managedobjectprofile"
+        },
+        {
+            title: "By Adm. Domain",
+            name: "administrative_domain",
+            ftype: "lookup",
+            lookup: "sa.administrativedomain"
         },
         {
             title: "By Activator",
@@ -315,5 +358,11 @@ Ext.define("NOC.sa.managedobject.Application", {
                 }
             ]
         }
-    ]
+    ],
+    // Config preview button pressed
+    onConfigPreview: function() {
+        var me = this;
+        me.showItem(me.ITEM_CONFIG);
+        me.configPanel.preview(me.currentRecord);
+    }
 });

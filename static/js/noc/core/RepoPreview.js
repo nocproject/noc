@@ -10,7 +10,7 @@ Ext.define("NOC.core.RepoPreview", {
     extend: "Ext.panel.Panel",
     msg: "",
     layout: "fit",
-    syntax: null,
+    syntax: "text",
     app: null,
     restUrl: null,
 

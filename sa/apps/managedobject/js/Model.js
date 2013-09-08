@@ -113,15 +113,6 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
-            name: "is_configuration_managed",
-            type: "boolean",
-            defaultValue: true
-        },
-        {
-            name: "repo_path",
-            type: "string"
-        },
-        {
             name: "vrf",
             type: "int"
         },

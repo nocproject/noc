@@ -20,8 +20,10 @@ class ManagedObjectApplication(ExtModelApplication):
     title = "Managed Objects"
     menu = "Managed Objects"
     model = ManagedObject
+    query_condition = "icontains"
+    # Inlines
     attrs = ModelInline(ManagedObjectAttribute)
-    # zone = RepoInline("config")
+    cfg = RepoInline("config")
 
     def field_platform(self, o):
         return o.platform
