@@ -29,7 +29,7 @@ class ConfigDiscoveryJob(MODiscoveryJob):
         :return:
         """
         if self.to_save:
-            object.config.write(result)
+            object.save_config(result)
         return True
 
     @classmethod
