@@ -10,7 +10,7 @@ Ext.define("NOC.core.RepoPreview", {
     extend: "Ext.panel.Panel",
     msg: "",
     layout: "fit",
-    syntax: "text",
+    syntax: null,
     app: null,
     restUrl: null,
 
@@ -20,7 +20,7 @@ Ext.define("NOC.core.RepoPreview", {
         me.revCombo = Ext.create("Ext.form.ComboBox", {
             fieldLabel: "Version",
             labelWidth: 45,
-            width: 300,
+            width: 400,
             queryMode: "local",
             displayField: "ts",
             valueField: "id",
@@ -47,7 +47,7 @@ Ext.define("NOC.core.RepoPreview", {
             fieldLabel: "Compare",
             disabled: true,
             labelWidth: 75,
-            width: 300,
+            width: 400,
             queryMode: "local",
             displayField: "ts",
             valueField: "id",
@@ -173,7 +173,11 @@ Ext.define("NOC.core.RepoPreview", {
     renderText: function(text, syntax) {
         var me = this;
         syntax = syntax || me.syntax;
-        NOC.SyntaxHighlight.highlight(me.items.first(), text, syntax);
+        if(syntax) {
+            NOC.SyntaxHighlight.highlight(me.items.first(), text, syntax);
+        } else {
+            me.items.first().update("<pre class='sh_sourcecode'>" + text + "</pre>");
+        }
     },
     //
     onSelectRev: function(combo, records, eOpts) {
