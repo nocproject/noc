@@ -304,13 +304,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.interfacesButton
             ]
         });
-        // Config item
-        me.configPanel = Ext.create("NOC.core.RepoPreview", {
-            app: me,
-            previewName: "{{name}} config",
-            restUrl: "/sa/managedobject/{{id}}/repo/cfg/"
-        });
-        me.ITEM_CONFIG = me.registerItem(me.configPanel);
         me.callParent();
     },
     filters: [
@@ -359,10 +352,10 @@ Ext.define("NOC.sa.managedobject.Application", {
             ]
         }
     ],
-    // Config preview button pressed
-    onConfigPreview: function() {
-        var me = this;
-        me.showItem(me.ITEM_CONFIG);
-        me.configPanel.preview(me.currentRecord);
+    //
+    preview: {
+        xtype: "NOC.core.RepoPreview",
+        previewName: "{{name}} config",
+        restUrl: "/sa/managedobject/{{id}}/repo/cfg/"
     }
 });
