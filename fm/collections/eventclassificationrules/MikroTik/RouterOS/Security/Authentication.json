@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "account user (?P<user>.+?) logged in from (?P<ip>\\S+) via (ssh|telnet|winbox)$"
+                "value_re": "account user (?P<user>.+?) logged in from (?P<ip>\\S+) via (ssh|telnet|winbox|ftp|api)$"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "account user (?P<user>.+?) logged out from (?P<ip>\\S+) via (ssh|telnet|winbox)$"
+                "value_re": "account user (?P<user>.+?) logged out from (?P<ip>\\S+) via (ssh|telnet|winbox|ftp|api)$"
             }
         ]
     },
@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "critical login failure for user (?P<user>.+?) from (?P<ip>\\S+) via (ssh|telnet|winbox)"
+                "value_re": "critical login failure for user (?P<user>.+?) from (?P<ip>\\S+) via (ssh|telnet|winbox|ftp|api)"
             }
         ]
     }
