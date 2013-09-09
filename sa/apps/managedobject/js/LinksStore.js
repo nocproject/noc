@@ -37,6 +37,18 @@ Ext.define("NOC.sa.managedobject.LinksStore", {
         {
             name: "discovery_method",
             type: "string"
+        },
+        {
+            name: "commited",
+            type: "boolean"
+        },
+        {
+            name: "local_description",
+            type: "string"
+        },
+        {
+            name: "remote_description",
+            type: "string"
         }
     ],
     data: []
