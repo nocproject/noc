@@ -90,7 +90,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             text: "Config",
             glyph: NOC.glyph.file,
             scope: me,
-            handler: function() {me.showPreview(me.currentRecord)}
+            handler: me.onConfig
         });
 
         me.consoleButton = Ext.create("Ext.button.Button", {
@@ -137,6 +137,14 @@ Ext.define("NOC.sa.managedobject.Application", {
             scope: me,
             handler: me.onInterfaces
         });
+
+        me.ITEM_CONFIG = me.registerItem(
+            Ext.create("NOC.core.RepoPreview", {
+                app: me,
+                previewName: "{{name}} config",
+                restUrl: "/sa/managedobject/{{id}}/repo/cfg/"
+            })
+        );
 
         me.ITEM_LINKS = me.registerItem(
             Ext.create("NOC.sa.managedobject.LinksPanel", {
@@ -410,10 +418,9 @@ Ext.define("NOC.sa.managedobject.Application", {
         }
     ],
     //
-    preview: {
-        xtype: "NOC.core.RepoPreview",
-        previewName: "{{name}} config",
-        restUrl: "/sa/managedobject/{{id}}/repo/cfg/"
+    onConfig: function() {
+        var me = this;
+        me.showItem(me.ITEM_CONFIG).preview(me.currentRecord);
     },
     //
     onInterfaces: function() {

@@ -13,6 +13,8 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
     initComponent: function() {
         var me = this;
 
+        me.currentLink = null;
+
         me.closeButton = Ext.create("Ext.button.Button", {
             text: "Close",
             glyph: NOC.glyph.arrow_left,
@@ -29,12 +31,14 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
 
         me.approveButton = Ext.create("Ext.button.Button", {
             text: "Approve",
+            glyph: NOC.glyph.ok_circle,
             disabled: true,
             scope: me,
             handler: me.onApproveLink
         });
         me.rejectButton = Ext.create("Ext.button.Button", {
             text: "Reject",
+            glyph: NOC.glyph.remove_circle,
             disabled: true,
             scope: me,
             handler: me.onRejectLink
@@ -129,22 +133,84 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
     },
     //
     onApproveLink: function() {
-
+        var me = this,
+            li = me.currentRecord.get("name") + ":" + me.currentLink.get("local_interface__label"),
+            ri = me.currentLink.get("remote_object__label") + ":" + me.currentLink.get("remote_interface__label");
+        Ext.Msg.show({
+            title: "Approve link?",
+            msg: "Would you like to approve link " + li + " -- " + ri + " manually?",
+            icon: Ext.Msg.QUESTION,
+            buttons: Ext.Msg.YESNO,
+            fn: function(btn) {
+                if(btn == "yes") {
+                    Ext.Ajax.request({
+                        url: "/sa/managedobject/link/approve/",
+                        method: "POST",
+                        jsonData: {
+                            link: me.currentLink.get("id")
+                        },
+                        scope: me,
+                        success: function(response) {
+                            var data = Ext.decode(response.responseText);
+                            if(data.success) {
+                                NOC.info("Link has been approved");
+                            } else {
+                                NOC.error("Failed to approve link: " + data.error);
+                            }
+                            me.onRefresh();
+                        },
+                        failure: function() {
+                            NOC.error("Failed to approve link");
+                        }
+                    });
+                }
+            }
+        });
     },
     //
     onRejectLink: function() {
-
+        var me = this,
+            li = me.currentRecord.get("name") + ":" + me.currentLink.get("local_interface__label"),
+            ri = me.currentLink.get("remote_object__label") + ":" + me.currentLink.get("remote_interface__label");
+        Ext.Msg.show({
+            title: "Reject link?",
+            msg: "Would you like to reject link " + li + " -- " + ri + "?",
+            icon: Ext.Msg.QUESTION,
+            buttons: Ext.Msg.YESNO,
+            fn: function(btn) {
+                if(btn == "yes") {
+                    Ext.Ajax.request({
+                        url: "/sa/managedobject/link/reject/",
+                        method: "POST",
+                        jsonData: {
+                            link: me.currentLink.get("id")
+                        },
+                        scope: me,
+                        success: function(response) {
+                            NOC.info("Link has been rejected");
+                            me.onRefresh();
+                        },
+                        failure: function() {
+                            NOC.error("Failed to reject link");
+                        }
+                    });
+                }
+            }
+        });
     },
     //
     onGridSelect: function(grid, record, index, opt) {
         var me = this,
             commited = record.get("commited");
+        me.currentLink = record;
         me.approveButton.setDisabled(commited);
         me.rejectButton.setDisabled(commited);
     },
     //
     onRefresh: function() {
         var me = this;
+        me.approveButton.setDisabled(true);
+        me.rejectButton.setDisabled(true);
         me.preview(me.currentRecord);
     }
 });

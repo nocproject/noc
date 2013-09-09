@@ -11,6 +11,10 @@ Ext.define("NOC.sa.managedobject.LinksStore", {
     model: null,
     fields: [
         {
+            name: "id",
+            type: "string"
+        },
+        {
             name: "local_interface",
             type: "string"
         },
