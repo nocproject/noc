@@ -90,11 +90,52 @@ Ext.define("NOC.sa.managedobject.Application", {
             text: "Config",
             glyph: NOC.glyph.file,
             scope: me,
-            handler: me.onConfigPreview
+            handler: function() {me.showPreview(me.currentRecord)}
+        });
+
+        me.consoleButton = Ext.create("Ext.button.Button", {
+            text: "Console",
+            glyph: NOC.glyph.terminal,
+            disabled: true,
+            scope: me,
+            handler: me.onInterfaces
+        });
+
+        me.scriptsButton = Ext.create("Ext.button.Button", {
+            text: "Scripts",
+            glyph: NOC.glyph.play,
+            disabled: true,
+            scope: me,
+            handler: me.onInterfaces
         });
 
         me.interfacesButton = Ext.create("Ext.button.Button", {
-            text: "Interfaces"
+            text: "Interfaces",
+            disabled: true,
+            scope: me,
+            handler: me.onInterfaces
+        });
+
+        me.linksButton = Ext.create("Ext.button.Button", {
+            text: "Links",
+            disabled: true,
+            scope: me,
+            handler: me.onInterfaces
+        });
+
+        me.discoveryButton = Ext.create("Ext.button.Button", {
+            text: "Discovery",
+            disabled: true,
+            scope: me,
+            handler: me.onInterfaces
+        });
+
+        me.alarmsButton = Ext.create("Ext.button.Button", {
+            text: "Alarms",
+            glyph: NOC.glyph.warning_sign,
+            disabled: true,
+            scope: me,
+            handler: me.onInterfaces
         });
 
         Ext.apply(me, {
@@ -300,8 +341,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                 }
             ],
             formToolbar: [
+                me.consoleButton,
+                me.scriptsButton,
                 me.configPreviewButton,
-                me.interfacesButton
+                me.interfacesButton,
+                me.linksButton,
+                me.discoveryButton,
+                me.alarmsButton
             ]
         });
         me.callParent();
@@ -357,5 +403,9 @@ Ext.define("NOC.sa.managedobject.Application", {
         xtype: "NOC.core.RepoPreview",
         previewName: "{{name}} config",
         restUrl: "/sa/managedobject/{{id}}/repo/cfg/"
+    },
+    //
+    onInterfaces: function() {
+        var me = this;
     }
 });
