@@ -21,6 +21,14 @@ Ext.define("NOC.core.Application", {
         for(var p in options.noc.permissions) {
             me.permissions[options.noc.permissions[p]] = true;
         }
+        // Fix custom fields regex
+        if(options.noc.cust_form_fields) {
+            Ext.iterate(options.noc.cust_form_fields, function(obj) {
+                if(obj.regex) {
+                    obj.regex = new RegExp(obj.regex);
+                }
+            });
+        }
         me.appTitle = options.title;
         me.noc = options.noc;
         me._registeredItems = [];
