@@ -355,6 +355,11 @@ Ext.define("NOC.sa.managedobject.Application", {
     filters: [
         // @todo: By SA Profile
         {
+            title: "By Managed",
+            name: "is_managed",
+            ftype: "boolean"
+        },
+        {
             title: "By Obj. Profile",
             name: "object_profile",
             ftype: "lookup",
