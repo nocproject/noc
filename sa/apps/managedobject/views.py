@@ -15,6 +15,7 @@ from noc.inv.models.pendinglinkcheck import PendingLinkCheck
 from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
 from mongoengine.queryset import Q as MQ
+from noc.lib.serialize import json_decode
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -35,7 +36,7 @@ class ManagedObjectApplication(ExtModelApplication):
     def field_row_class(self, o):
         return o.object_profile.style.css_class_name if o.object_profile.style else ""
 
-    @view(url="^(?P<id>\d+)/links/", method=["GET"],
+    @view(url="^(?P<id>\d+)/links/$", method=["GET"],
           access="read", api=True)
     def api_links(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -94,3 +95,44 @@ class ManagedObjectApplication(ExtModelApplication):
                 "remote_description": ri.description
             }]
         return result
+
+    @view(url="^link/approve/$", method=["POST"],
+          access="link", api=True)
+    def api_link_approve(self, request):
+        d = json_decode(request.raw_post_data)
+        plc = self.get_object_or_404(PendingLinkCheck, id=d.get("link"))
+        li = Interface.objects.filter(
+            managed_object=plc.local_object.id,
+            name=plc.local_interface
+            ).first()
+        if not li:
+            return {
+                "success": False,
+                "error": "Interface not found: %s:%s" % (
+                    plc.local_object.name, plc.local_interface)
+            }
+        ri = Interface.objects.filter(
+            managed_object=plc.remote_object.id,
+            name=plc.remote_interface
+            ).first()
+        if not ri:
+            return {
+                "success": False,
+                "error": "Interface not found: %s:%s" % (
+                    plc.remote_object.name, plc.remote_interface)
+            }
+        li.link_ptp(ri, method=plc.method + "+manual")
+        plc.delete()
+        return {
+            "success": True
+        }
+
+    @view(url="^link/reject/$", method=["POST"],
+          access="link", api=True)
+    def api_link_reject(self, request):
+        d = json_decode(request.raw_post_data)
+        plc = self.get_object_or_404(PendingLinkCheck, id=d.get("link"))
+        plc.delete()
+        return {
+            "success": True
+        }
