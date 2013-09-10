@@ -58,8 +58,11 @@ Ext.define("NOC.core.Application", {
     // Register new item and return id
     registerItem: function(item) {
         var me = this,
-            items = me._registeredItems,
-            itemId = items.push(item) - 1;
+            items = me._registeredItems;
+        if(Ext.isString(item)) {
+            item = Ext.create(item, {app: me});
+        }
+        var itemId = items.push(item) - 1;
         me._registeredItems = items;
         return itemId;
     },
@@ -71,6 +74,12 @@ Ext.define("NOC.core.Application", {
         }
         me.getLayout().setActiveItem(index);
         return me.items.items[index];
+    },
+    //
+    previewItem: function(index, record) {
+        var me = this,
+            back = me.getLayout().getActiveItem();
+        me.showItem(index).preview(record, back);
     },
     //
     getRegisteredItems: function() {
