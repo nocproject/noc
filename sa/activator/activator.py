@@ -458,7 +458,7 @@ class Activator(Daemon, FSM):
         if self.get_state() == "ESTABLISHED":
             self.cancel_stale_scripts()
         # Run pending ping probes
-        if self.to_ping and self.get_state() == "ESTABLISHED":
+        if self.to_ping and self.get_state() == "ESTABLISHED" and bool(self.ping4_socket.socket):
             self.run_ping_checks()
         # Heartbeat when necessary
         if (self.heartbeat_enable and
