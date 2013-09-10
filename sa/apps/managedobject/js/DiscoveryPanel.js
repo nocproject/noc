@@ -186,8 +186,25 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
     },
     //
     onRunSelected: function() {
-        var me = this;
-        NOC.error("Not implemented");
+        var me = this,
+            records = me.grid.getSelectionModel().getSelection(),
+            names = records.map(function(r) {
+                return r.get("name");
+            });
+        Ext.Ajax.request({
+            url: "/sa/managedobject/" + me.currentRecord.get("id") + "/discovery/run/",
+            method: "POST",
+            scope: me,
+            jsonData: {
+                "names": names
+            },
+            success: function() {
+                me.onRefresh();
+            },
+            failure: function() {
+                NOC.error("Failed to run tasks");
+            }
+        });
     },
     //
     onGridSelection: function(selection, records) {
