@@ -35,18 +35,43 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
             autoScroll: true
         });
 
+        me.closeButton = Ext.create("Ext.button.Button", {
+            text: "Close",
+            glyph: NOC.glyph.arrow_left,
+            scope: me,
+            handler: me.onClose
+        });
+
+        me.clearButton = Ext.create("Ext.button.Button", {
+            text: "Clear",
+            glyph: NOC.glyph.eraser,
+            scope: me,
+            handler: me.clearBody
+        });
+
         Ext.apply(me, {
             items: [
                 me.consoleBody
             ],
-            dockedItems: {
-                xtype: "toolbar",
-                dock: "bottom",
-                items: [
-                    ">",
-                    me.cmdField
-                ]
-            }
+            dockedItems: [
+                {
+                    xtype: "toolbar",
+                    dock: "top",
+                    items: [
+                        me.closeButton,
+                        "-",
+                        me.clearButton
+                    ]
+                },
+                {
+                    xtype: "toolbar",
+                    dock: "bottom",
+                    items: [
+                        ">",
+                        me.cmdField
+                    ]
+                }
+            ]
         });
         me.callParent();
     },
@@ -55,7 +80,7 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         var me = this;
         me.currentRecord = record;
         me.setTitle(record.get("name") + " console");
-        me.consoleBody.update("<div class='banner'>Welcome to the " + record.get("name") + " console!</div>");
+        me.clearBody();
         me.prompt = record.get("name") + "&gt;&nbsp;"
         me.cmdField.focus();
     },
@@ -106,9 +131,13 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
             },
             scope: me,
             success: function(result) {
+                var t = "Timed out.";
+                if(result) {
+                    t = result[0].result[0];
+                }
                 me.consoleBody.update(
                     me.consoleBody.html + "<div class='result'>" +
-                        Ext.htmlEncode(result[0].result[0]) + "</div>");
+                        Ext.htmlEncode(t) + "</div>");
                 me.scrollDown();
                 me.cmdField.focus();
             },
@@ -122,5 +151,16 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         var me = this;
         // @todo: Fix, doesn't work
         me.consoleBody.scrollBy(0, Infinity, true);
+    },
+    //
+    clearBody: function() {
+        var me = this;
+        me.consoleBody.update("<div class='banner'>Welcome to the "
+            + me.currentRecord.get("name") + " console!</div>");
+    },
+    //
+    onClose: function() {
+        var me = this;
+        me.app.showForm();
     }
 });
