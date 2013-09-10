@@ -31,7 +31,8 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
             autoEl: {
                 tag: "pre",
                 cls: "noc-console"
-            }
+            },
+            autoScroll: true
         });
 
         Ext.apply(me, {
