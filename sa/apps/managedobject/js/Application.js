@@ -96,9 +96,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.consoleButton = Ext.create("Ext.button.Button", {
             text: "Console",
             glyph: NOC.glyph.terminal,
-            disabled: true,
             scope: me,
-            handler: me.onInterfaces
+            handler: me.onConsole
         });
 
         me.scriptsButton = Ext.create("Ext.button.Button", {
@@ -146,10 +145,12 @@ Ext.define("NOC.sa.managedobject.Application", {
             })
         );
 
+        me.ITEM_CONSOLE = me.registerItem(
+            Ext.create("NOC.sa.managedobject.ConsolePanel", {app: me})
+        );
+
         me.ITEM_LINKS = me.registerItem(
-            Ext.create("NOC.sa.managedobject.LinksPanel", {
-                app: me
-            })
+            Ext.create("NOC.sa.managedobject.LinksPanel", {app: me})
         );
 
         Ext.apply(me, {
@@ -417,6 +418,11 @@ Ext.define("NOC.sa.managedobject.Application", {
             ]
         }
     ],
+    //
+    onConsole: function() {
+        var me = this;
+        me.showItem(me.ITEM_CONSOLE).preview(me.currentRecord);
+    },
     //
     onConfig: function() {
         var me = this;

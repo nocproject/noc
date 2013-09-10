@@ -42,3 +42,21 @@ TABLE {
     border-collapse: collapse;
     border-spacing: 0;
 }
+
+.noc-console {
+    background-color: #303030;
+    color: #ffffff !important;
+}
+
+.noc-console .banner {
+    font-style: italic;
+}
+
+.noc-console .cmd {
+    font-weight: bold;
+    clear: both;
+    border-bottom: 1px dotted white;
+}
+
+.noc-console .result {
+}
