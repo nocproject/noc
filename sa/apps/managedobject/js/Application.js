@@ -93,13 +93,8 @@ Ext.define("NOC.sa.managedobject.Application", {
             Ext.create("NOC.sa.managedobject.ConsolePanel", {app: me})
         );
 
-        me.ITEM_INTERFACE = me.registerItem(
-            Ext.create("NOC.sa.managedobject.InterfacePanel", {app: me})
-        );
-
-        me.ITEM_LINKS = me.registerItem(
-            Ext.create("NOC.sa.managedobject.LinksPanel", {app: me})
-        );
+        me.ITEM_INTERFACE = me.registerItem("NOC.sa.managedobject.InterfacePanel");
+        me.ITEM_LINKS = me.registerItem("NOC.sa.managedobject.LinksPanel");
 
         me.ITEM_DISCOVERY = me.registerItem(
             Ext.create("NOC.sa.managedobject.DiscoveryPanel", {app: me})
@@ -456,12 +451,12 @@ Ext.define("NOC.sa.managedobject.Application", {
     //
     onInterfaces: function() {
         var me = this;
-        me.showItem(me.ITEM_INTERFACE).preview(me.currentRecord);
+        me.previewItem(me.ITEM_INTERFACE, me.currentRecord);
     },
     //
     onLinks: function() {
         var me = this;
-        me.showItem(me.ITEM_LINKS).preview(me.currentRecord);
+        me.previewItem(me.ITEM_LINKS, me.currentRecord);
     },
     //
     onDiscovery: function() {
@@ -471,13 +466,11 @@ Ext.define("NOC.sa.managedobject.Application", {
     //
     onInterfaceClick: function(record) {
         var me = this;
-        me.onEditRecord(record);
-        me.onInterfaces();
+        me.previewItem(me.ITEM_INTERFACE, record);
     },
     //
     onLinkClick: function(record) {
         var me = this;
-        me.onEditRecord(record);
-        me.onLinks();
+        me.previewItem(me.ITEM_LINKS, record);
     }
 });
