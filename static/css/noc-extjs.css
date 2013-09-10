@@ -60,3 +60,11 @@ TABLE {
 
 .noc-console .result {
 }
+
+.noc-inactive {
+    background-color: #808080;
+}
+
+.noc-fail {
+    background-color: #c05050;
+}
