@@ -77,9 +77,22 @@ Ext.define("NOC.sa.managedobject.Application", {
             flex: 1
         },
         {
+            text: "Interfaces",
+            dataIndex: "interface_count",
+            width: 50,
+            align: "right"
+        },
+        {
+            text: "Links",
+            dataIndex: "link_count",
+            width: 50,
+            align: "right"
+        },
+        {
             text: "Tags",
             dataIndex: "tags",
-            renderer: NOC.render.Tags
+            renderer: NOC.render.Tags,
+            width: 100
         }
     ],
     //
