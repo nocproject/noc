@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Pytohn modules
+from collections import defaultdict
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.sa.models import ManagedObject, ManagedObjectAttribute
@@ -40,19 +42,19 @@ class ManagedObjectApplication(ExtModelApplication):
     }
 
     DISCOVERY_METHODS = [
-        ("enable_version_inventory", "version_inventory"),
-        ("enable_id_discovery", "id_discovery"),
-        ("enable_config_polling", "config_discovery"),
-        ("enable_interface_discovery", "interface_discovery"),
-        ("enable_vlan_discovery", "vlan_discovery"),
-        ("enable_lldp_discovery", "lldp_discovery"),
-        ("enable_bfd_discovery", "bfd_discovery"),
-        ("enable_stp_discovery", "stp_discovery"),
-        ("enable_cdp_discovery", "cdp_discovery"),
-        ("enable_oam_discovery", "oam_discovery"),
-        ("enable_rep_discovery", "rep_discovery"),
-        ("enable_ip_discovery", "ip_discovery"),
-        ("enable_mac_discovery", "mac_discovery")
+        ("enable_version_inventory", "version_inventory", None),
+        ("enable_id_discovery", "id_discovery", None),
+        ("enable_config_polling", "config_discovery", None),
+        ("enable_interface_discovery", "interface_discovery", None),
+        ("enable_vlan_discovery", "vlan_discovery", None),
+        ("enable_lldp_discovery", "lldp_discovery", "lldp"),
+        ("enable_bfd_discovery", "bfd_discovery", "bfd"),
+        ("enable_stp_discovery", "stp_discovery", "stp"),
+        ("enable_cdp_discovery", "cdp_discovery", "cdp"),
+        ("enable_oam_discovery", "oam_discovery", "oam"),
+        ("enable_rep_discovery", "rep_discovery", "rep"),
+        ("enable_ip_discovery", "ip_discovery", None),
+        ("enable_mac_discovery", "mac_discovery", "mac")
     ]
 
     def field_platform(self, o):
@@ -176,8 +178,15 @@ class ManagedObjectApplication(ExtModelApplication):
                 return None
 
         o = self.get_object_or_404(ManagedObject, id=id)
+        link_count = defaultdict(int)
+        for link in Link.object_links(o):
+            m = link.discovery_method
+            if "+" in m:
+                m = m.split("+")[0]
+            link_count[m] += 1
         r = []
-        for cfg, name in self.DISCOVERY_METHODS:
+        print link_count
+        for cfg, name, method in self.DISCOVERY_METHODS:
             job = get_job("inv.discovery", name, o.id) or {}
             d = {
                 "name": name,
@@ -185,7 +194,8 @@ class ManagedObjectApplication(ExtModelApplication):
                 "status": job.get("s"),
                 "last_run": iso(job.get("last")),
                 "last_status": job.get("ls"),
-                "next_run": iso(job.get("ts"))
+                "next_run": iso(job.get("ts")),
+                "link_count": link_count[method]
             }
             r += [d]
         return r
@@ -196,7 +206,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=id)
         r = json_decode(request.raw_post_data).get("names", [])
         d = 0
-        for cfg, name in self.DISCOVERY_METHODS:
+        for cfg, name, method in self.DISCOVERY_METHODS:
             if getattr(o.object_profile, cfg):
                 if name in r:
                     refresh_schedule("inv.discovery",
