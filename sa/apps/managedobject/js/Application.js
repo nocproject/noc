@@ -110,7 +110,7 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.interfacesButton = Ext.create("Ext.button.Button", {
             text: "Interfaces",
-            disabled: true,
+            glyph: NOC.glyph.reorder,
             scope: me,
             handler: me.onInterfaces
         });
@@ -124,6 +124,7 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.discoveryButton = Ext.create("Ext.button.Button", {
             text: "Discovery",
+            glyph: NOC.glyph.search,
             scope: me,
             handler: me.onDiscovery
         });
@@ -146,6 +147,10 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.ITEM_CONSOLE = me.registerItem(
             Ext.create("NOC.sa.managedobject.ConsolePanel", {app: me})
+        );
+
+        me.ITEM_INTERFACE = me.registerItem(
+            Ext.create("NOC.sa.managedobject.InterfacePanel", {app: me})
         );
 
         me.ITEM_LINKS = me.registerItem(
@@ -434,6 +439,7 @@ Ext.define("NOC.sa.managedobject.Application", {
     //
     onInterfaces: function() {
         var me = this;
+        me.showItem(me.ITEM_INTERFACE).preview(me.currentRecord);
     },
     //
     onLinks: function() {
