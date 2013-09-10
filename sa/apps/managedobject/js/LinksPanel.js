@@ -7,20 +7,12 @@
 console.debug("Defining NOC.sa.managedobject.LinksPanel");
 
 Ext.define("NOC.sa.managedobject.LinksPanel", {
-    extend: "Ext.panel.Panel",
-    app: null,
+    extend: "NOC.core.ApplicationPanel",
 
     initComponent: function() {
         var me = this;
 
         me.currentLink = null;
-
-        me.closeButton = Ext.create("Ext.button.Button", {
-            text: "Close",
-            glyph: NOC.glyph.arrow_left,
-            scope: me,
-            handler: me.onClose
-        });
 
         me.refreshButton = Ext.create("Ext.button.Button", {
             text: "Refresh",
@@ -88,7 +80,7 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
-                        me.closeButton,
+                        me.getCloseButton(),
                         me.refreshButton,
                         "-",
                         me.approveButton,
@@ -109,9 +101,9 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
         me.callParent();
     },
 
-    preview: function(record) {
+    preview: function(record, backItem) {
         var me = this;
-        me.currentRecord = record;
+        me.callParent(arguments);
         Ext.Ajax.request({
             url: "/sa/managedobject/" + record.get("id") + "/links/",
             method: "GET",
@@ -125,11 +117,6 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
                 NOC.error("Failed to get data");
             }
         });
-    },
-    //
-    onClose: function() {
-        var me = this;
-        me.app.showForm();
     },
     //
     onApproveLink: function() {

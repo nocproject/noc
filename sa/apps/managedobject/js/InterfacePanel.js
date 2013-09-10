@@ -7,7 +7,7 @@
 console.debug("Defining NOC.sa.managedobject.InterfacePanel");
 
 Ext.define("NOC.sa.managedobject.InterfacePanel", {
-    extend: "Ext.panel.Panel",
+    extend: "NOC.core.ApplicationPanel",
     app: null,
     autoScroll: true,
 
@@ -15,13 +15,6 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
         var me = this;
 
         me.currentObject = null;
-        //
-        me.closeButton = Ext.create("Ext.button.Button", {
-            text: "Close",
-            glyph: NOC.glyph.arrow_left,
-            scope: me,
-            handler: me.onClose
-        });
 
         me.refreshButton = Ext.create("Ext.button.Button", {
             text: "Refresh",
@@ -84,7 +77,7 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
-                        me.closeButton,
+                        me.getCloseButton(),
                         me.refreshButton
                     ]
                 }
@@ -93,9 +86,9 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
         me.callParent();
     },
     //
-    preview: function(record) {
+    preview: function(record, backItem) {
         var me = this;
-        me.currentRecord = record;
+        me.callParent(arguments);
         me.setTitle(record.get("name") + " interfaces");
         Ext.Ajax.request({
             url: "/sa/managedobject/" + record.get("id") + "/interface/",
@@ -118,19 +111,12 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
                 me.l2Store.loadData(data.l2 || []);
                 me.l3Store.loadData(data.l3 || []);
                 //
-                me.searchField.setDisabled(false);
                 me.tabPanel.setActiveTab(0);
-                me.searchField.setValue("");
             },
             failure: function() {
                 NOC.error("Failed to load data");
             }
         });
-    },
-    //
-    onClose: function() {
-        var me = this;
-        me.app.showForm();
     },
     //
     onRefresh: function() {
