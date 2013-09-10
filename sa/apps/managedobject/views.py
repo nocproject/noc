@@ -30,6 +30,14 @@ class ManagedObjectApplication(ExtModelApplication):
     attrs = ModelInline(ManagedObjectAttribute)
     cfg = RepoInline("config")
 
+    mrt_config = {
+        "console": {
+            "access": "console",
+            "map_script": "commands",
+            "timeout": 60
+        }
+    }
+
     def field_platform(self, o):
         return o.platform
 
@@ -136,3 +144,7 @@ class ManagedObjectApplication(ExtModelApplication):
         return {
             "success": True
         }
+
+    def check_mrt_access(self, request, name):
+        # @todo: Check object's access
+        return super(ManagedObjectApplication, self).check_mrt_access(request, name)
