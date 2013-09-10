@@ -26,75 +26,6 @@ Ext.define("NOC.sa.managedobject.Application", {
     search: true,
     rowClassField: "row_class",
 
-    columns: [
-        {
-            text: "Name",
-            dataIndex: "name"
-        },
-        {
-            text: "Managed",
-            dataIndex: "is_managed",
-            width: 30,
-            renderer: NOC.render.Bool
-        },
-        {
-            text: "Platform",
-            dataIndex: "platform",
-            width: 150
-        },
-        {
-            text: "SA Profile",
-            dataIndex: "profile_name"
-        },
-        {
-            text: "Obj. Profile",
-            dataIndex: "object_profile",
-            renderer: NOC.render.Lookup("object_profile")
-        },
-        {
-            text: "Adm. Domain",
-            dataIndex: "administrative_domain",
-            renderer: NOC.render.Lookup("administrative_domain"),
-            width: 120
-        },
-        {
-            text: "VRF",
-            dataIndex: "vrf",
-            renderer: NOC.render.Lookup("vrf")
-        },
-        {
-            text: "Address",
-            dataIndex: "address"
-        },
-        {
-            text: "Activator",
-            dataIndex: "activator",
-            renderer: NOC.render.Lookup("activator")
-        },
-        {
-            text: "Description",
-            dataIndex: "description",
-            flex: 1
-        },
-        {
-            text: "Interfaces",
-            dataIndex: "interface_count",
-            width: 50,
-            align: "right"
-        },
-        {
-            text: "Links",
-            dataIndex: "link_count",
-            width: 50,
-            align: "right"
-        },
-        {
-            text: "Tags",
-            dataIndex: "tags",
-            renderer: NOC.render.Tags,
-            width: 100
-        }
-    ],
     //
     initComponent: function() {
         var me = this;
@@ -175,6 +106,79 @@ Ext.define("NOC.sa.managedobject.Application", {
         );
 
         Ext.apply(me, {
+            columns: [
+                {
+                    text: "Name",
+                    dataIndex: "name"
+                },
+                {
+                    text: "Managed",
+                    dataIndex: "is_managed",
+                    width: 30,
+                    renderer: NOC.render.Bool
+                },
+                {
+                    text: "Platform",
+                    dataIndex: "platform",
+                    width: 150
+                },
+                {
+                    text: "SA Profile",
+                    dataIndex: "profile_name"
+                },
+                {
+                    text: "Obj. Profile",
+                    dataIndex: "object_profile",
+                    renderer: NOC.render.Lookup("object_profile")
+                },
+                {
+                    text: "Adm. Domain",
+                    dataIndex: "administrative_domain",
+                    renderer: NOC.render.Lookup("administrative_domain"),
+                    width: 120
+                },
+                {
+                    text: "VRF",
+                    dataIndex: "vrf",
+                    renderer: NOC.render.Lookup("vrf")
+                },
+                {
+                    text: "Address",
+                    dataIndex: "address"
+                },
+                {
+                    text: "Activator",
+                    dataIndex: "activator",
+                    renderer: NOC.render.Lookup("activator")
+                },
+                {
+                    text: "Description",
+                    dataIndex: "description",
+                    flex: 1
+                },
+                {
+                    text: "Interfaces",
+                    dataIndex: "interface_count",
+                    width: 50,
+                    align: "right",
+                    renderer: NOC.render.Clickable,
+                    onClick: me.onInterfaceClick
+                },
+                {
+                    text: "Links",
+                    dataIndex: "link_count",
+                    width: 50,
+                    align: "right",
+                    renderer: NOC.render.Clickable,
+                    onClick: me.onLinkClick
+                },
+                {
+                    text: "Tags",
+                    dataIndex: "tags",
+                    renderer: NOC.render.Tags,
+                    width: 100
+                }
+            ],
             fields: [
                 {
                     name: "name",
@@ -463,5 +467,17 @@ Ext.define("NOC.sa.managedobject.Application", {
     onDiscovery: function() {
         var me = this;
         me.showItem(me.ITEM_DISCOVERY).preview(me.currentRecord);
+    },
+    //
+    onInterfaceClick: function(record) {
+        var me = this;
+        me.onEditRecord(record);
+        me.onInterfaces();
+    },
+    //
+    onLinkClick: function(record) {
+        var me = this;
+        me.onEditRecord(record);
+        me.onLinks();
     }
 });
