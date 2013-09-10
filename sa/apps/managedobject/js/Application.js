@@ -124,9 +124,8 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.discoveryButton = Ext.create("Ext.button.Button", {
             text: "Discovery",
-            disabled: true,
             scope: me,
-            handler: me.onInterfaces
+            handler: me.onDiscovery
         });
 
         me.alarmsButton = Ext.create("Ext.button.Button", {
@@ -151,6 +150,10 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.ITEM_LINKS = me.registerItem(
             Ext.create("NOC.sa.managedobject.LinksPanel", {app: me})
+        );
+
+        me.ITEM_DISCOVERY = me.registerItem(
+            Ext.create("NOC.sa.managedobject.DiscoveryPanel", {app: me})
         );
 
         Ext.apply(me, {
@@ -436,5 +439,10 @@ Ext.define("NOC.sa.managedobject.Application", {
     onLinks: function() {
         var me = this;
         me.showItem(me.ITEM_LINKS).preview(me.currentRecord);
+    },
+    //
+    onDiscovery: function() {
+        var me = this;
+        me.showItem(me.ITEM_DISCOVERY).preview(me.currentRecord);
     }
 });

@@ -16,6 +16,7 @@ from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
 from mongoengine.queryset import Q as MQ
 from noc.lib.serialize import json_decode
+from noc.lib.scheduler.utils import get_job
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -37,6 +38,22 @@ class ManagedObjectApplication(ExtModelApplication):
             "timeout": 60
         }
     }
+
+    DISCOVERY_METHODS = [
+        ("enable_version_inventory", "version_inventory"),
+        ("enable_id_discovery", "id_discovery"),
+        ("enable_config_polling", "config_discovery"),
+        ("enable_interface_discovery", "interface_discovery"),
+        ("enable_vlan_discovery", "vlan_discovery"),
+        ("enable_lldp_discovery", "lldp_discovery"),
+        ("enable_bfd_discovery", "bfd_discovery"),
+        ("enable_stp_discovery", "stp_discovery"),
+        ("enable_cdp_discovery", "cdp_discovery"),
+        ("enable_oam_discovery", "oam_discovery"),
+        ("enable_rep_discovery", "rep_discovery"),
+        ("enable_ip_discovery", "ip_discovery"),
+        ("enable_mac_discovery", "mac_discovery")
+    ]
 
     def field_platform(self, o):
         return o.platform
@@ -148,3 +165,27 @@ class ManagedObjectApplication(ExtModelApplication):
     def check_mrt_access(self, request, name):
         # @todo: Check object's access
         return super(ManagedObjectApplication, self).check_mrt_access(request, name)
+
+    @view(url="^(?P<id>\d+)/discovery/$", method=["GET"],
+          access="read", api=True)
+    def api_discovery(self, request, id):
+        def iso(t):
+            if t:
+                return t.replace(tzinfo=self.TZ).isoformat()
+            else:
+                return None
+
+        o = self.get_object_or_404(ManagedObject, id=id)
+        r = []
+        for cfg, name in self.DISCOVERY_METHODS:
+            job = get_job("inv.discovery", name, o.id) or {}
+            d = {
+                "name": name,
+                "enable_profile": getattr(o.object_profile, cfg),
+                "status": job.get("s"),
+                "last_run": iso(job.get("last")),
+                "last_status": job.get("ls"),
+                "next_run": iso(job.get("ts"))
+            }
+            r += [d]
+        return r
