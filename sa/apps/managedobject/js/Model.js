@@ -166,6 +166,16 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "interface_count",
+            type: "integer",
+            persist: false
+        },
+        {
+            name: "link_count",
+            type: "integer",
+            persist: false
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

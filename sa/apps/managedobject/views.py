@@ -66,6 +66,12 @@ class ManagedObjectApplication(ExtModelApplication):
     def field_row_class(self, o):
         return o.object_profile.style.css_class_name if o.object_profile.style else ""
 
+    def field_interface_count(self, o):
+        return Interface.objects.filter(managed_object=o.id).count()
+
+    def field_link_count(self, o):
+        return Link.object_links_count(o)
+
     @view(url="^(?P<id>\d+)/links/$", method=["GET"],
           access="read", api=True)
     def api_links(self, request, id):
