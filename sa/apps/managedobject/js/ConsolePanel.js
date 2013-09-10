@@ -97,11 +97,15 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
                 break;
             case e.UP:
                 if(me.cmdIndex !== null) {
+                    me.cmdIndex = Math.max(0, me.cmdIndex - 1);
                     field.setValue(me.cmdHistory[me.cmdIndex]);
                 }
                 break;
             case e.DOWN:
                 if(me.cmdIndex !== null) {
+                    me.cmdIndex = Math.min(
+                        me.cmdIndex + 1,
+                        me.cmdHistory.length - 1);
                     field.setValue(me.cmdHistory[me.cmdIndex]);
                 }
                 break;
@@ -115,8 +119,8 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         // Maintain history
         if(me.cmdHistory.length === 0 || me.cmdHistory[me.cmdHistory.length - 1] != cmd) {
             me.cmdHistory.push(cmd);
-            me.cmdIndex = me.cmdHistory.length - 1;
         }
+        me.cmdIndex = me.cmdHistory.length;
         // Display
         me.consoleBody.update(
             v + "<div class='cmd'>" + me.prompt + Ext.htmlEncode(cmd) + "</div>"
@@ -149,7 +153,6 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
     //
     scrollDown: function() {
         var me = this;
-        // @todo: Fix, doesn't work
         me.consoleBody.scrollBy(0, Infinity, true);
     },
     //
