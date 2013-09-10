@@ -16,7 +16,7 @@ from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
 from mongoengine.queryset import Q as MQ
 from noc.lib.serialize import json_decode
-from noc.lib.scheduler.utils import get_job
+from noc.lib.scheduler.utils import get_job, refresh_schedule
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -189,3 +189,19 @@ class ManagedObjectApplication(ExtModelApplication):
             }
             r += [d]
         return r
+
+    @view(url="^(?P<id>\d+)/discovery/run/$", method=["POST"],
+          access="read", api=True)
+    def api_run_discovery(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        r = json_decode(request.raw_post_data).get("names", [])
+        d = 0
+        for cfg, name in self.DISCOVERY_METHODS:
+            if getattr(o.object_profile, cfg):
+                if name in r:
+                    refresh_schedule("inv.discovery",
+                                     name, o.id, delta=d)
+                    d += 1
+        return {
+            "success": True
+        }
