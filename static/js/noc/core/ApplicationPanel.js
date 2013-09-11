@@ -13,9 +13,10 @@ Ext.define("NOC.core.ApplicationPanel", {
     currentRecord: undefined,
 
     preview: function(record, backItem) {
-        var me = this;
+        var me = this,
+            bi = backItem === undefined? me.backItem : backItem;
         me.currentRecord = record;
-        me.backItem = backItem;
+        me.backItem = bi;
     },
     //
     onClose: function() {
