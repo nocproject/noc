@@ -7,11 +7,10 @@
 console.debug("Defining NOC.core.RepoPreview");
 
 Ext.define("NOC.core.RepoPreview", {
-    extend: "Ext.panel.Panel",
+    extend: "NOC.core.ApplicationPanel",
     msg: "",
     layout: "fit",
     syntax: null,
-    app: null,
     restUrl: null,
 
     initComponent: function() {
@@ -113,10 +112,10 @@ Ext.define("NOC.core.RepoPreview", {
         me.titleTemplate = Handlebars.compile(me.previewName);
     },
     //
-    preview: function(record) {
+    preview: function(record, backItem) {
         var me = this;
-        me.currentRecord = record;
-        me.rootUrl = Ext.String.format(me.restUrl, record.get("id"));
+        me.callParent(arguments);
+        // me.rootUrl = Ext.String.format(me.restUrl, record.get("id"));
         me.rootUrl = me.urlTemplate(record.data);
         me.setTitle(me.titleTemplate(record.data));
         me.requestText();
@@ -207,10 +206,5 @@ Ext.define("NOC.core.RepoPreview", {
             me.revCombo.getValue(),
             me.diffCombo.getValue()
         );
-    },
-    //
-    onClose: function() {
-        var me = this;
-        me.app.showGrid();
     }
 });
