@@ -572,7 +572,7 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this,
             item = me.showItem(me.ITEM_PREVIEW);
         if(item !== undefined) {
-            item.preview(record);
+            item.preview(record, me.ITEM_GRID);
         }
     },
     // Save changed data
