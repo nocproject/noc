@@ -76,9 +76,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.alarmsButton = Ext.create("Ext.button.Button", {
             text: "Alarms",
             glyph: NOC.glyph.warning_sign,
-            disabled: true,
             scope: me,
-            handler: me.onInterfaces
+            handler: me.onAlarm
         });
 
         me.ITEM_CONFIG = me.registerItem(
@@ -99,6 +98,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.ITEM_DISCOVERY = me.registerItem(
             Ext.create("NOC.sa.managedobject.DiscoveryPanel", {app: me})
         );
+
+        me.ITEM_ALARM = me.registerItem("NOC.sa.managedobject.AlarmPanel");
 
         Ext.apply(me, {
             columns: [
@@ -474,6 +475,11 @@ Ext.define("NOC.sa.managedobject.Application", {
     onDiscovery: function() {
         var me = this;
         me.showItem(me.ITEM_DISCOVERY).preview(me.currentRecord);
+    },
+    //
+    onAlarm: function() {
+        var me = this;
+        me.previewItem(me.ITEM_ALARM, me.currentRecord);
     },
     //
     onInterfaceClick: function(record) {
