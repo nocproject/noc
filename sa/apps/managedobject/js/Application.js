@@ -459,7 +459,7 @@ Ext.define("NOC.sa.managedobject.Application", {
     //
     onConfig: function() {
         var me = this;
-        me.showItem(me.ITEM_CONFIG).preview(me.currentRecord);
+        me.previewItem(me.ITEM_CONFIG, me.currentRecord);
     },
     //
     onInterfaces: function() {
