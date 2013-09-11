@@ -97,7 +97,7 @@ class AlarmApplication(ExtApplication):
             "status": o.status,
             "managed_object": o.managed_object.id,
             "managed_object__label": o.managed_object.name,
-            "severity": s.severity,
+            "severity": o.severity,
             "severity__label": s.name,
             "alarm_class": str(o.alarm_class.id),
             "alarm_class__label": o.alarm_class.name,
