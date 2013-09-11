@@ -31,6 +31,10 @@ class AlarmApplication(ExtApplication):
     menu = "Alarms"
     icon = "icon_error"
 
+    implied_permissions = {
+        "launch": ["sa:managedobject:alarm"]
+    }
+
     model_map = {
         "A": ActiveAlarm,
         "C": ArchivedAlarm

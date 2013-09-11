@@ -490,5 +490,20 @@ Ext.define("NOC.sa.managedobject.Application", {
     onLinkClick: function(record) {
         var me = this;
         me.previewItem(me.ITEM_LINKS, record);
+    },
+    //
+    showForm: function() {
+        var me = this;
+        me.callParent();
+        // Change button's visibility
+        var disabled = !me.currentRecord;
+        me.consoleButton.setDisabled(disabled || !NOC.hasPermission("console") || !me.current.get("is_managed"));
+        me.scriptsButton.setDisabled(disabled || !NOC.hasPermission("script") || !me.current.get("is_managed"));
+        me.configPreviewButton.setDisabled(disabled);
+        me.interfacesButton.setDisabled(disabled);
+        me.linksButton.setDisabled(disabled);
+        me.discoveryButton.setDisabled(disabled || !me.current.get("is_managed"));
+        me.alarmsButton.setDisabled(disabled || !me.current.get("is_managed"));
+
     }
 });

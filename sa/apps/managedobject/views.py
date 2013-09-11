@@ -36,6 +36,8 @@ class ManagedObjectApplication(ExtModelApplication):
     attrs = ModelInline(ManagedObjectAttribute)
     cfg = RepoInline("config")
 
+    extra_permissions = ["alarm"]
+
     mrt_config = {
         "console": {
             "access": "console",
@@ -133,7 +135,7 @@ class ManagedObjectApplication(ExtModelApplication):
         return result
 
     @view(url="^link/approve/$", method=["POST"],
-          access="link", api=True)
+          access="change_link", api=True)
     def api_link_approve(self, request):
         d = json_decode(request.raw_post_data)
         plc = self.get_object_or_404(PendingLinkCheck, id=d.get("link"))
@@ -164,7 +166,7 @@ class ManagedObjectApplication(ExtModelApplication):
         }
 
     @view(url="^link/reject/$", method=["POST"],
-          access="link", api=True)
+          access="change_link", api=True)
     def api_link_reject(self, request):
         d = json_decode(request.raw_post_data)
         plc = self.get_object_or_404(PendingLinkCheck, id=d.get("link"))
@@ -210,7 +212,7 @@ class ManagedObjectApplication(ExtModelApplication):
         return r
 
     @view(url="^(?P<id>\d+)/discovery/run/$", method=["POST"],
-          access="read", api=True)
+          access="change_discovery", api=True)
     def api_run_discovery(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         r = json_decode(request.raw_post_data).get("names", [])
