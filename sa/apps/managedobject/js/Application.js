@@ -413,6 +413,18 @@ Ext.define("NOC.sa.managedobject.Application", {
             lookup: "sa.activator"
         },
         {
+            title: "By VRF",
+            name: "vrf",
+            ftype: "lookup",
+            lookup: "ip.vrf"
+        },
+        {
+            title: "By VC Domain",
+            name: "vc_domain",
+            ftype: "lookup",
+            lookup: "vc.vcdomain"
+        },
+        {
             title: "By Tags",
             name: "tags",
             ftype: "tag"
