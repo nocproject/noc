@@ -20,9 +20,9 @@ Ext.define("NOC.core.RepoPreview", {
         me.revCombo = Ext.create("Ext.form.ComboBox", {
             fieldLabel: "Version",
             labelWidth: 45,
-            width: 400,
+            width: 200,
             queryMode: "local",
-            displayField: "ts",
+            displayField: "ts_label",
             valueField: "id",
             store: Ext.create("Ext.data.Store", {
                 fields: [
@@ -33,6 +33,13 @@ Ext.define("NOC.core.RepoPreview", {
                     {
                         name: "ts",
                         type: "date"
+                    },
+                    {
+                        name: "ts_label",
+                        mapping: "ts",
+                        convert: function(v, record) {
+                            return NOC.render.DateTime(record.get("ts"));
+                        }
                     }
                 ],
                 data: []
@@ -46,10 +53,10 @@ Ext.define("NOC.core.RepoPreview", {
         me.diffCombo = Ext.create("Ext.form.ComboBox", {
             fieldLabel: "Compare",
             disabled: true,
-            labelWidth: 75,
-            width: 400,
+            labelWidth: 45,
+            width: 200,
             queryMode: "local",
-            displayField: "ts",
+            displayField: "ts_label",
             valueField: "id",
             store: Ext.create("Ext.data.Store", {
                 fields: [
@@ -60,6 +67,13 @@ Ext.define("NOC.core.RepoPreview", {
                     {
                         name: "ts",
                         type: "date"
+                    },
+                    {
+                        name: "ts_label",
+                        mapping: "ts",
+                        convert: function(v, record) {
+                            return NOC.render.DateTime(record.get("ts"));
+                        }
                     }
                 ],
                 data: []
@@ -82,6 +96,7 @@ Ext.define("NOC.core.RepoPreview", {
                         scope: me,
                         handler: me.onClose
                     },
+                    "-",
                     me.revCombo,
                     me.diffCombo
                 ]
