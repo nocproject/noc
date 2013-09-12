@@ -120,7 +120,7 @@ class ManagedObjectSelector(models.Model):
             q &= Q(vrf=self.filter_vrf)
         # Filter by VC domain
         if self.filter_vc_domain:
-            q &= Q(vrf=self.filter_vc_domain)
+            q &= Q(vc_domain=self.filter_vc_domain)
         # Filter by username
         if self.filter_user:
             q &= Q(user__regex=self.filter_user)
