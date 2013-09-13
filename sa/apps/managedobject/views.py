@@ -13,11 +13,14 @@ from noc.lib.app import ExtModelApplication, view
 from noc.sa.models import ManagedObject, ManagedObjectAttribute
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.pendinglinkcheck import PendingLinkCheck
 from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
 from noc.main.models.resourcestate import ResourceState
+from noc.project.models.project import Project
+from noc.vc.models.vcdomain import VCDomain
 from mongoengine.queryset import Q as MQ
 from noc.lib.serialize import json_decode
 from noc.lib.scheduler.utils import get_job, refresh_schedule
@@ -36,7 +39,7 @@ class ManagedObjectApplication(ExtModelApplication):
     attrs = ModelInline(ManagedObjectAttribute)
     cfg = RepoInline("config")
 
-    extra_permissions = ["alarm"]
+    extra_permissions = ["alarm", "change_interface"]
 
     mrt_config = {
         "console": {
@@ -350,4 +353,38 @@ class ManagedObjectApplication(ExtModelApplication):
             "lag": sorted_iname(lag),
             "l2": sorted_iname(l2),
             "l3": sorted_iname(l3)
+        }
+
+    @view(url="^(?P<id>\d+)/interface/$", method=["POST"],
+        access="change_interface", api=True)
+    def api_set_interface(self, request, id):
+        def get_or_none(c, v):
+            if not v:
+                return None
+            return c.objects.get(id=v)
+        o = self.get_object_or_404(ManagedObject, id=int(id))
+        d = json_decode(request.raw_post_data)
+        if "id" in d:
+            i = self.get_object_or_404(Interface, id=d["id"])
+            if i.managed_object.id != o.id:
+                return self.response_not_found()
+            # Set profile
+            if "profile" in d:
+                p = get_or_none(InterfaceProfile, d["profile"])
+                i.profile = p
+                if p:
+                    i.profile_locked = True
+            # Project
+            if "project" in d:
+                i.project = get_or_none(Project, d["project"])
+            # State
+            if "state" in d:
+                i.state = get_or_none(ResourceState, d["state"])
+            # VC Domain
+            if "vc_domain" in d:
+                i.vc_domain = get_or_none(VCDomain, d["vc_domain"])
+            #
+            i.save()
+        return {
+            "success": True
         }
