@@ -497,13 +497,13 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.callParent();
         // Change button's visibility
         var disabled = !me.currentRecord;
-        me.consoleButton.setDisabled(disabled || !NOC.hasPermission("console") || !me.current.get("is_managed"));
-        me.scriptsButton.setDisabled(disabled || !NOC.hasPermission("script") || !me.current.get("is_managed"));
+        me.consoleButton.setDisabled(disabled || !NOC.hasPermission("console") || !me.currentRecord.get("is_managed"));
+        me.scriptsButton.setDisabled(disabled || !NOC.hasPermission("script") || !me.currentRecord.get("is_managed"));
         me.configPreviewButton.setDisabled(disabled);
         me.interfacesButton.setDisabled(disabled);
         me.linksButton.setDisabled(disabled);
-        me.discoveryButton.setDisabled(disabled || !me.current.get("is_managed"));
-        me.alarmsButton.setDisabled(disabled || !me.current.get("is_managed"));
+        me.discoveryButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
+        me.alarmsButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
 
     }
 });
