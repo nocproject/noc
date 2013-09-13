@@ -96,7 +96,7 @@ Ext.define("NOC.core.ModelApplication", {
         gridToolbar.push(me.search_field, me.create_button);
         // admin actions
         if(me.actions) {
-            me.action_menu = Ext.create("Ext.button.Button", {
+            me.actionMenu = Ext.create("Ext.button.Button", {
                 glyph: NOC.glyph.download,
                 tooltip: "Group actions",
                 hasAccess: NOC.hasPermission("update"),
@@ -121,7 +121,7 @@ Ext.define("NOC.core.ModelApplication", {
                     }
                 }
             });
-            gridToolbar.push(me.action_menu);
+            gridToolbar.push(me.actionMenu);
         }
         gridToolbar = gridToolbar.concat(me.gridToolbar);
         // Initialize panels
