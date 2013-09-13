@@ -191,7 +191,6 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
     //
     getRowClass: function(record) {
         var me = this;
-        console.log(record.get("name"), record.get("enable_profile"));
         if(!record.get("enable_profile")) {
             return "noc-inactive";
         } else if(record.get("last_status") === "F") {
