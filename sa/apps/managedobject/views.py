@@ -72,7 +72,7 @@ class ManagedObjectApplication(ExtModelApplication):
         return o.object_profile.style.css_class_name if o.object_profile.style else ""
 
     def field_interface_count(self, o):
-        return Interface.objects.filter(managed_object=o.id).count()
+        return Interface.objects.filter(managed_object=o.id, type="physical").count()
 
     def field_link_count(self, o):
         return Link.object_links_count(o)
