@@ -6,8 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Pytohn modules
+## Python modules
 from collections import defaultdict
+## Django modules
+from django.http import HttpResponse
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.sa.models import ManagedObject, ManagedObjectAttribute
@@ -23,7 +25,8 @@ from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from mongoengine.queryset import Q as MQ
 from noc.lib.serialize import json_decode
-from noc.lib.scheduler.utils import get_job, refresh_schedule
+from noc.lib.scheduler.utils import (get_job, refresh_schedule,
+                                     submit_job)
 from noc.lib.text import split_alnum
 
 
@@ -388,3 +391,26 @@ class ManagedObjectApplication(ExtModelApplication):
         return {
             "success": True
         }
+
+    @view(method=["DELETE"], url="^(?P<id>\d+)/?$", access="delete", api=True)
+    def api_delete(self, request, id):
+        """
+        Override default method
+        :param request:
+        :param id:
+        :return:
+        """
+        try:
+            o = self.queryset(request).get(id=int(id))
+        except self.model.DoesNotExist:
+            return self.render_json({
+                "status": False,
+                "message": "Not found"
+            }, status=self.NOT_FOUND)
+        # Run sa.wipe_managed_object job instead
+        o.name = "wiping-%d" % o.id
+        o.is_managed = False
+        o.description = "Wiping! Do not touch!"
+        o.save()
+        submit_job("main.jobs", "sa.wipe_managedobject", key=o.id)
+        return HttpResponse(status=self.DELETED)
