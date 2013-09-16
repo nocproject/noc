@@ -254,42 +254,62 @@ Ext.define("NOC.sa.managedobject.Application", {
                             allowBlank: false
                         },
                         {
-                            name: "scheme",
-                            xtype: "sa.managedobject.SchemeLookupField",
-                            fieldLabel: "Scheme",
-                            allowBlank: false
+                            xtype: "container",
+                            layout: "hbox",
+                            defaults: {
+                                labelAlign: "top",
+                                padding: 4
+                            },
+                            items: [
+                                {
+                                    name: "scheme",
+                                    xtype: "sa.managedobject.SchemeLookupField",
+                                    fieldLabel: "Scheme",
+                                    allowBlank: false
+                                },
+                                {
+                                    name: "address",
+                                    xtype: "textfield",
+                                    fieldLabel: "Address",
+                                    allowBlank: false
+                                },
+                                {
+                                    name: "port",
+                                    xtype: "numberfield",
+                                    fieldLabel: "Port",
+                                    allowBlank: true
+                                }
+                            ]
                         },
                         {
-                            name: "address",
-                            xtype: "textfield",
-                            fieldLabel: "Address",
-                            allowBlank: false
-                        },
-                        {
-                            name: "port",
-                            xtype: "numberfield",
-                            fieldLabel: "Port",
-                            allowBlank: true
-                        },
-                        {
-                            name: "user",
-                            xtype: "textfield",
-                            fieldLabel: "User",
-                            allowBlank: true
-                        },
-                        {
-                            name: "password",
-                            xtype: "textfield",
-                            fieldLabel: "Password",
-                            allowBlank: true,
-                            inputType: "password"
-                        },
-                        {
-                            name: "super_password",
-                            xtype: "textfield",
-                            fieldLabel: "Super Password",
-                            allowBlank: true,
-                            inputType: "password"
+                            xtype: "container",
+                            layout: "hbox",
+                            defaults: {
+                                labelAlign: "top",
+                                padding: 4
+                            },
+                            items: [
+                                {
+                                    name: "user",
+                                    xtype: "textfield",
+                                    fieldLabel: "User",
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "password",
+                                    xtype: "textfield",
+                                    fieldLabel: "Password",
+                                    allowBlank: true,
+                                    inputType: "password"
+                                },
+                                {
+                                    name: "super_password",
+                                    xtype: "textfield",
+                                    fieldLabel: "Super Password",
+                                    allowBlank: true,
+                                    inputType: "password"
+                                }
+                            ]
                         },
                         {
                             name: "remote_path",
