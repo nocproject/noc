@@ -45,7 +45,8 @@ Ext.define("NOC.core.RepoPreview", {
             }),
             listeners: {
                 scope: me,
-                select: me.onSelectRev
+                select: me.onSelectRev,
+                specialkey: me.onRevSpecialKey
             }
         });
 
@@ -79,7 +80,8 @@ Ext.define("NOC.core.RepoPreview", {
             }),
             listeners: {
                 scope: me,
-                select: me.onSelectDiff
+                select: me.onSelectDiff,
+                specialkey: me.onDiffSpecialKey
             }
         });
 
@@ -187,11 +189,7 @@ Ext.define("NOC.core.RepoPreview", {
     renderText: function(text, syntax) {
         var me = this;
         syntax = syntax || me.syntax;
-        if(syntax) {
-            NOC.SyntaxHighlight.highlight(me.items.first(), text, syntax);
-        } else {
-            me.items.first().update("<pre class='sh_sourcecode'>" + text + "</pre>");
-        }
+        NOC.SyntaxHighlight.highlight(me.items.first(), text, syntax);
     },
     //
     onSelectRev: function(combo, records, eOpts) {
@@ -206,5 +204,19 @@ Ext.define("NOC.core.RepoPreview", {
             me.revCombo.getValue(),
             me.diffCombo.getValue()
         );
+    },
+    //
+    onRevSpecialKey: function(combo, evt, opts) {
+        var me = this;
+        if(evt.getKey() == evt.ESC) {
+            combo.clearValue();
+        }
+    },
+    //
+    onDiffSpecialKey: function(combo, evt, opts) {
+        var me = this;
+        if(evt.getKey() == evt.ESC) {
+            combo.clearValue();
+        }
     }
 });
