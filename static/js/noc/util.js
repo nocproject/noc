@@ -241,32 +241,46 @@ Ext.define("NOC.SyntaxHighlight", {
         }
     },
     highlight: function(el, text, lang) {
-        var me = this;
-        me.withLang(lang, function(l) {
-            var tags = sh_highlightString(text, l);
-            //
-            // Fill text nodes
-            var last = undefined;
-            for(var i in tags) {
-                var t = tags[i];
-                if(last) {
-                    last.end = t.pos;
+        var me = this,
+            html = "";
+        if(lang) {
+            me.withLang(lang, function(l) {
+                var tags = sh_highlightString(text, l);
+                //
+                // Fill text nodes
+                var last = undefined;
+                for(var i in tags) {
+                    var t = tags[i];
+                    if(last) {
+                        last.end = t.pos;
+                    }
+                    last = t;
                 }
-                last = t;
-            }
-            // Generate HTML
-            var html = tags.map(function(v) {
-                var t = text.substr(v.pos, v.end - v.pos);
-                if(v.node) {
-                    return "<span class='" + v.node.className + "'>" +
-                        t + "</span>";
-                } else {
-                    return t;
-                }
-            }).join("");
-            // Update element
-            el.update("<pre class='sh_sourcecode'>" + html + "</pre>");
-        });
+                // Generate HTML
+                var html = tags.map(function(v) {
+                    var t = text.substr(v.pos, v.end - v.pos);
+                    if(v.node) {
+                        return "<span class='" + v.node.className + "'>" +
+                            t + "</span>";
+                    } else {
+                        return t;
+                    }
+                }).join("");
+                // Update element
+            });
+        } else {
+            html = text;
+        }
+        var l = html.match(/\n/g).length,
+            out = [
+                "<pre class='sh_sourcecode'>",
+                "<div class='noc-numbers'>"
+            ];
+        for(var i = 1; i <= l; i++) {
+            out.push(i + "<br/>");
+        }
+        out = out.concat(["</div>", "<pre class='sh_sourcecode'>", html, "</pre>"]);
+        el.update(out.join(""));
     }
 });
 //

@@ -68,3 +68,12 @@ TABLE {
 .noc-fail {
     background-color: #c05050;
 }
+
+.noc-numbers {
+    float: left;
+    text-align: right;
+    background-color: #c0c0c0;
+    border-right: 1px solid white;
+    width: 30pt;
+    padding-right: 2pt;
+}
