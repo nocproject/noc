@@ -242,7 +242,23 @@ Ext.define("NOC.SyntaxHighlight", {
     },
     highlight: function(el, text, lang) {
         var me = this,
-            html = "";
+            showNumbers = lang != "diff",
+            updateEl = function(el, html) {
+                var out = [];
+                // Append line numbers, if required
+                if(showNumbers) {
+                    var l = html.match(/\n/g).length;
+                    out.push("<div class='noc-numbers'>");
+                    for(var i = 1; i <= l; i++) {
+                        out.push(i + "<br/>");
+                    }
+                    out.push("</div>");
+                }
+                // Append code
+                out = out.concat(["<pre class='sh_sourcecode'>", html, "</pre>"]);
+                // Update element
+                el.update(out.join(""));
+            };
         if(lang) {
             me.withLang(lang, function(l) {
                 var tags = sh_highlightString(text, l);
@@ -266,21 +282,11 @@ Ext.define("NOC.SyntaxHighlight", {
                         return t;
                     }
                 }).join("");
-                // Update element
+                updateEl(el, html);
             });
         } else {
-            html = text;
+            updateEl(el, text);
         }
-        var l = html.match(/\n/g).length,
-            out = [
-                "<pre class='sh_sourcecode'>",
-                "<div class='noc-numbers'>"
-            ];
-        for(var i = 1; i <= l; i++) {
-            out.push(i + "<br/>");
-        }
-        out = out.concat(["</div>", "<pre class='sh_sourcecode'>", html, "</pre>"]);
-        el.update(out.join(""));
     }
 });
 //
