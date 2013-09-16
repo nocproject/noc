@@ -453,6 +453,29 @@ Ext.override(Ext.grid.column.Column, {
         return this.stateId || this.dataIndex || this.headerId;
     }
 });
+//
+// Override form field labels
+//
+Ext.override(Ext.form.Panel, {
+    initComponent: function() {
+        var me = this,
+            applyLabelStyle = function(field) {
+                if((field.xtype == "fieldset") || (field.xtype == "container")) {
+                    Ext.each(field.items.items, function(f) {
+                        applyLabelStyle(f);
+                    });
+                } else {
+                    if(!field.allowBlank) {
+                        field.labelClsExtra = "noc-label-required";
+                    }
+                }
+            };
+        me.on("beforeadd", function(form, field) {
+            applyLabelStyle(field);
+        });
+        me.callParent();
+    }
+});
 
 //
 // Handlebars helpers
