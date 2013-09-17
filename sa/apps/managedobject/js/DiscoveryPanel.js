@@ -94,7 +94,9 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
                         W: "Wait",
                         R: "Run",
                         S: "Stop",
-                        F: "Fail"
+                        F: "Fail",
+                        true: "OK",
+                        false: "Fail"
                     })
                 },
                 {

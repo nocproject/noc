@@ -201,8 +201,15 @@ class ManagedObjectApplication(ExtModelApplication):
             if "+" in m:
                 m = m.split("+")[0]
             link_count[m] += 1
-        r = []
-        print link_count
+        r = [{
+            "name": "ping",
+            "enable_profile": o.object_profile.enable_ping,
+            "status": o.get_status(),
+            "last_run": None,
+            "last_status": None,
+            "next_run": None,
+            "link_count": None
+        }]
         for cfg, name, method in self.DISCOVERY_METHODS:
             job = get_job("inv.discovery", name, o.id) or {}
             d = {
