@@ -85,6 +85,29 @@ Ext.define("NOC.core.RepoPreview", {
             }
         });
 
+        me.nextDiffButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.arrow_up,
+            tooltip: "Next change",
+            disabled: true,
+            scope: me,
+            handler: me.onNextDiff
+        });
+
+        me.prevDiffButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.arrow_down,
+            tooltip: "Previous change",
+            disabled: true,
+            scope: me,
+            handler: me.onPrevDiff
+        });
+
+        me.swapRevButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.retweet,
+            tooltip: "Swap revisions",
+            scope: me,
+            handler: me.onSwapRev
+        });
+
         Ext.apply(me, {
             dockedItems: [{
                 xtype: "toolbar",
@@ -99,7 +122,10 @@ Ext.define("NOC.core.RepoPreview", {
                     },
                     "-",
                     me.revCombo,
-                    me.diffCombo
+                    me.swapRevButton,
+                    me.diffCombo,
+                    me.nextDiffButton,
+                    me.prevDiffButton
                 ]
             }],
             items: [{
@@ -149,6 +175,11 @@ Ext.define("NOC.core.RepoPreview", {
                 var data = Ext.decode(response.responseText);
                 me.revCombo.store.loadData(data);
                 me.diffCombo.store.loadData(data);
+                if(data.length > 0) {
+                    me.revCombo.select([me.revCombo.store.getAt(0)]);
+                }
+                me.nextDiffButton.setDisabled(true);
+                me.prevDiffButton.setDisabled(data.length === 0);
             },
             failure: function() {
                 NOC.error("Failed to get revisions");
@@ -198,12 +229,17 @@ Ext.define("NOC.core.RepoPreview", {
         me.diffCombo.setDisabled(false);
     },
     //
-    onSelectDiff: function(combo, records, eOpts) {
+    requestCurrentDiff: function() {
         var me = this;
         me.requestDiff(
             me.revCombo.getValue(),
             me.diffCombo.getValue()
         );
+    },
+    //
+    onSelectDiff: function(combo, records, eOpts) {
+        var me = this;
+        me.requestCurrentDiff();
     },
     //
     onRevSpecialKey: function(combo, evt, opts) {
@@ -219,5 +255,58 @@ Ext.define("NOC.core.RepoPreview", {
             combo.clearValue();
             me.onSelectRev(me.revCombo, [me.revCombo.picker.getSelectionModel().lastSelected]);
         }
+    },
+    // Returns current selection index or null
+    getRevIndex: function(combo) {
+        var me = this,
+            v = combo.getValue();
+        return combo.store.findExact("id", v);
+    },
+    //
+    setRevIndex: function(combo, index) {
+        var me = this;
+        combo.select([combo.store.getAt(index)]);
+    },
+    //
+    onPrevDiff: function() {
+        var me = this,
+            rIndex = me.getRevIndex(me.revCombo),
+            dIndex = me.getRevIndex(me.diffCombo);
+        if(rIndex === dIndex - 1) {
+            me.setRevIndex(me.revCombo, rIndex + 1);
+            dIndex = rIndex + 2;
+        } else {
+            dIndex = rIndex + 1;
+        }
+        me.setRevIndex(me.diffCombo, dIndex);
+        me.prevDiffButton.setDisabled(dIndex >= me.revCombo.store.data.length - 1);
+        me.nextDiffButton.setDisabled(false);
+        me.diffCombo.setDisabled(false);
+        me.requestCurrentDiff();
+    },
+    //
+    onNextDiff: function() {
+        var me = this,
+            rIndex = me.getRevIndex(me.revCombo),
+            dIndex = me.getRevIndex(me.diffCombo);
+        if(rIndex === dIndex - 1) {
+            rIndex -= 1;
+            me.setRevIndex(me.revCombo, rIndex);
+        }
+        dIndex = rIndex + 1;
+        me.setRevIndex(me.diffCombo, dIndex);
+        me.prevDiffButton.setDisabled(false);
+        me.nextDiffButton.setDisabled(rIndex <= 0);
+        me.diffCombo.setDisabled(false);
+        me.requestCurrentDiff();
+    },
+    //
+    onSwapRev: function() {
+        var me = this,
+            rIndex = me.getRevIndex(me.revCombo),
+            dIndex = me.getRevIndex(me.diffCombo);
+        me.setRevIndex(me.revCombo, dIndex);
+        me.setRevIndex(me.diffCombo, rIndex);
+        me.requestCurrentDiff();
     }
 });
