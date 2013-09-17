@@ -109,6 +109,33 @@ Ext.define("NOC.core.RepoPreview", {
             handler: me.onSwapRev
         });
 
+        me.lastDayButton = Ext.create("Ext.button.Button", {
+            text: "Day",
+            tooltip: "Last day's changes",
+            toogleGroup: "diffrange",
+            scope: me,
+            handler: me.onLastPressed,
+            diffRange: 1
+        });
+
+        me.lastWeekButton = Ext.create("Ext.button.Button", {
+            text: "Week",
+            tooltip: "Last week's changes",
+            toogleGroup: "diffrange",
+            scope: me,
+            handler: me.onLastPressed,
+            diffRange: 7
+        });
+
+        me.lastMonthButton = Ext.create("Ext.button.Button", {
+            text: "Month",
+            tooltip: "Last month's changes",
+            toogleGroup: "diffrange",
+            scope: me,
+            handler: me.onLastPressed,
+            diffRange: 30
+        });
+
         Ext.apply(me, {
             dockedItems: [{
                 xtype: "toolbar",
@@ -126,7 +153,11 @@ Ext.define("NOC.core.RepoPreview", {
                     me.swapRevButton,
                     me.diffCombo,
                     me.nextDiffButton,
-                    me.prevDiffButton
+                    me.prevDiffButton,
+                    "-",
+                    me.lastDayButton,
+                    me.lastWeekButton,
+                    me.lastMonthButton
                 ]
             }],
             items: [{
@@ -312,5 +343,24 @@ Ext.define("NOC.core.RepoPreview", {
         me.setRevIndex(me.revCombo, dIndex);
         me.setRevIndex(me.diffCombo, rIndex);
         me.requestCurrentDiff();
+    },
+    //
+    onLastPressed: function(button, evt) {
+        var me = this,
+            store = me.revCombo.store,
+            rl = store.data.length,
+            t0 = +store.getAt(0).get("ts"),
+            t1 = t0 - button.diffRange * 86400,
+            ct = t0,
+            idx;
+        for(idx = 1; idx < rl; idx++) {
+            var x = +store.getAt(idx).get("ts");
+            if(x < t1)
+                break;
+        }
+        me.setRevIndex(me.revCombo, 0);
+        me.diffCombo.setDisabled(false);
+        me.swapRevButton.setDisabled(false);
+        me.setRevIndex(me.diffCombo, idx - 1);
     }
 });
