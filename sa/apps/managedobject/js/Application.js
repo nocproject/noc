@@ -116,7 +116,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     text: "Platform",
                     dataIndex: "platform",
-                    width: 150
+                    width: 150,
+                    sortable: false
                 },
                 {
                     text: "SA Profile",
@@ -156,6 +157,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     text: "Interfaces",
                     dataIndex: "interface_count",
                     width: 50,
+                    sortable: false,
                     align: "right",
                     renderer: NOC.render.Clickable,
                     onClick: me.onInterfaceClick
@@ -164,6 +166,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     text: "Links",
                     dataIndex: "link_count",
                     width: 50,
+                    sortable: false,
                     align: "right",
                     renderer: NOC.render.Clickable,
                     onClick: me.onLinkClick
