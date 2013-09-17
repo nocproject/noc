@@ -217,6 +217,7 @@ Ext.define("NOC.core.RepoPreview", {
         var me = this;
         if(evt.getKey() == evt.ESC) {
             combo.clearValue();
+            me.onSelectRev(me.revCombo, [me.revCombo.picker.getSelectionModel().lastSelected]);
         }
     }
 });
