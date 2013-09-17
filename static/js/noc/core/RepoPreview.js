@@ -104,6 +104,7 @@ Ext.define("NOC.core.RepoPreview", {
         me.swapRevButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.retweet,
             tooltip: "Swap revisions",
+            disabled: true,
             scope: me,
             handler: me.onSwapRev
         });
@@ -227,6 +228,7 @@ Ext.define("NOC.core.RepoPreview", {
         var me = this;
         me.requestRevision(records[0].get("id"));
         me.diffCombo.setDisabled(false);
+        me.swapRevButton.setDisabled(false);
     },
     //
     requestCurrentDiff: function() {
@@ -282,6 +284,7 @@ Ext.define("NOC.core.RepoPreview", {
         me.prevDiffButton.setDisabled(dIndex >= me.revCombo.store.data.length - 1);
         me.nextDiffButton.setDisabled(false);
         me.diffCombo.setDisabled(false);
+        me.swapRevButton.setDisabled(false);
         me.requestCurrentDiff();
     },
     //
@@ -298,6 +301,7 @@ Ext.define("NOC.core.RepoPreview", {
         me.prevDiffButton.setDisabled(false);
         me.nextDiffButton.setDisabled(rIndex <= 0);
         me.diffCombo.setDisabled(false);
+        me.swapRevButton.setDisabled(false);
         me.requestCurrentDiff();
     },
     //
