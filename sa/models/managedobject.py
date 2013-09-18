@@ -476,6 +476,8 @@ class ManagedObject(models.Model):
                     managed_object=self, config=data)
             else:
                 new_data = data
+            if old_data == new_data:
+                return  # Nothing changed
             diff = "".join(difflib.unified_diff(
                 old_data.splitlines(True),
                 new_data.splitlines(True),
