@@ -348,19 +348,23 @@ Ext.define("NOC.core.RepoPreview", {
     onLastPressed: function(button, evt) {
         var me = this,
             store = me.revCombo.store,
-            rl = store.data.length,
-            t0 = +store.getAt(0).get("ts"),
-            t1 = t0 - button.diffRange * 86400,
-            ct = t0,
-            idx;
-        for(idx = 1; idx < rl; idx++) {
-            var x = +store.getAt(idx).get("ts");
-            if(x < t1)
+            rl = store.data.length - 1,
+            i0 = me.getRevIndex(me.revCombo),
+            t0 = i0 === 0 ? +(new Date()):+store.getAt(0).get("ts"),
+            t1 = t0 - button.diffRange * 86400000,
+            i1;
+        if(i0 === 0 && + +store.getAt(0).get("ts") <= t0) {
+            NOC.info("Nothing changed");
+            return;
+        }
+        for(i1 = i0 + 1; i1 < rl; i1 ++) {
+            if(+store.getAt(i1).get("ts") <= t1)
                 break;
         }
-        me.setRevIndex(me.revCombo, 0);
+        me.setRevIndex(me.revCombo, i0);
         me.diffCombo.setDisabled(false);
         me.swapRevButton.setDisabled(false);
-        me.setRevIndex(me.diffCombo, idx - 1);
+        me.setRevIndex(me.diffCombo, i1);
+        me.requestCurrentDiff();
     }
 });
