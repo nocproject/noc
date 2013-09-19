@@ -371,7 +371,7 @@ Ext.define("NOC.core.RepoPreview", {
             t0 = i0 === 0 ? +(new Date()):+store.getAt(0).get("ts"),
             t1 = t0 - button.diffRange * 86400000,
             i1;
-        if(i0 === 0 && + +store.getAt(0).get("ts") <= t0) {
+        if(i0 === 0 && +store.getAt(0).get("ts") <= t1) {
             NOC.info("Nothing changed");
             return;
         }
