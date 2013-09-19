@@ -219,6 +219,10 @@ Ext.define("NOC.fm.event.Application", {
         me.callParent();
         //
         me.startPolling();
+        if(me.noc.cmd && me.noc.cmd.cmd == "history") {
+            me.showEvent(me.noc.cmd.args[0]);
+        }
+
     },
     //
     reloadStore: function() {
