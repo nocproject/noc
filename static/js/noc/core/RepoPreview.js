@@ -85,6 +85,14 @@ Ext.define("NOC.core.RepoPreview", {
             }
         });
 
+        me.reloadButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.refresh,
+            text: "Reload",
+            tooltip: "Reload",
+            scope: me,
+            handler: me.onReload
+        });
+
         me.nextDiffButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.arrow_up,
             tooltip: "Next change",
@@ -148,6 +156,7 @@ Ext.define("NOC.core.RepoPreview", {
                         scope: me,
                         handler: me.onClose
                     },
+                    me.reloadButton,
                     "-",
                     me.revCombo,
                     me.swapRevButton,
@@ -183,15 +192,18 @@ Ext.define("NOC.core.RepoPreview", {
     },
     //
     requestText: function() {
-        var me = this;
+        var me = this,
+            mask = me.setLoading({msg: "Loading"});
         Ext.Ajax.request({
             url: me.rootUrl,
             method: "GET",
             scope: me,
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText));
+                mask.hide();
             },
             failure: function() {
+                mask.hide();
                 NOC.error("Failed to get text");
             }
         });
@@ -220,31 +232,37 @@ Ext.define("NOC.core.RepoPreview", {
     },
     //
     requestRevision: function(rev) {
-        var me = this;
+        var me = this,
+            mask = me.setLoading({msg: "Loading"});
         Ext.Ajax.request({
             url: me.rootUrl + rev + "/",
             method: "GET",
             scope: me,
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText));
+                mask.hide();
             },
             failure: function() {
                 NOC.error("Failed to get text");
+                mask.hide();
             }
         });
     },
     //
     requestDiff: function(rev1, rev2) {
-        var me = this;
+        var me = this,
+            mask = me.setLoading({msg: "Loading"});
         Ext.Ajax.request({
             url: me.rootUrl + rev1 + "/" + rev2 + "/",
             method: "GET",
             scope: me,
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText), "diff");
+                mask.hide();
             },
             failure: function() {
                 NOC.error("Failed to get diff");
+                mask.hide();
             }
         });
     },
@@ -366,5 +384,11 @@ Ext.define("NOC.core.RepoPreview", {
         me.swapRevButton.setDisabled(false);
         me.setRevIndex(me.diffCombo, i1);
         me.requestCurrentDiff();
+    },
+    //
+    onReload: function() {
+        var me = this;
+        me.requestText();
+        me.requestRevisions();
     }
 });
