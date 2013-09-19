@@ -32,6 +32,7 @@ Ext.define("NOC.core.Application", {
         me.appTitle = options.title;
         me.noc = options.noc;
         me._registeredItems = [];
+        me.currentHistoryHash = me.appId;
         me.callParent(options);
     },
     //
@@ -95,5 +96,16 @@ Ext.define("NOC.core.Application", {
                 cmd.call(me, me.noc.cmd);
             }
         }
+    },
+    //
+    getHistoryHash: function() {
+        var me = this;
+        return me.currentHistoryHash;
+    },
+    //
+    setHistoryHash: function() {
+        var me = this;
+        me.currentHistoryHash = [me.appId].concat([].slice.call(arguments, 0)).join("/");
+        Ext.History.setHash(me.currentHistoryHash);
     }
 });

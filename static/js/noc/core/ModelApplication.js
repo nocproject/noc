@@ -54,8 +54,16 @@ Ext.define("NOC.core.ModelApplication", {
         me.callParent();
         me.currentRecord = null;
         // Process commands
-        if(me.noc.cmd && me.noc.cmd.cmd == "open") {
-            me.store.setFilterParams({id: me.noc.cmd.id});
+        if(me.noc.cmd) {
+            switch(me.noc.cmd.cmd) {
+                case "open":
+                    me.store.setFilterParams({id: me.noc.cmd.id});
+                    break;
+                case "history":
+                    me.restoreHistory(me.noc.cmd.args);
+                    return;
+                    break;
+            }
         }
         // Finally, load the store
         me.store.load();
@@ -545,6 +553,7 @@ Ext.define("NOC.core.ModelApplication", {
     showGrid: function() {
         var me = this;
         me.showItem(me.ITEM_GRID);
+        me.setHistoryHash();
     },
     // Show Form
     showForm: function() {
@@ -690,6 +699,8 @@ Ext.define("NOC.core.ModelApplication", {
         me.cloneButton.setDisabled(!me.hasPermission("create"));
         // Enable custom form toolbar
         me.activateCustomFormToolbar(true);
+        //
+        me.setHistoryHash(me.currentRecord.get(me.idField));
     },
     // Delete record
     deleteRecord: function() {
@@ -990,5 +1001,19 @@ Ext.define("NOC.core.ModelApplication", {
     // onPreview: function(record)
     // to create item preview
     //
-    onPreview: undefined
+    onPreview: undefined,
+    //
+    restoreHistory: function(args) {
+        var me = this,
+            id = args[0];
+        me.store.load({
+            params: {id: args[0]},
+            scope: me,
+            callback: function(records, operation, success) {
+                if(success && records.length === 1) {
+                    me.onEditRecord(records[0]);
+                }
+            }
+        });
+    }
 });
