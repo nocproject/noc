@@ -110,7 +110,9 @@ Ext.define("NOC.main.desktop.Controller", {
             }
         });
         // Launch welcome application
-        me.launchTab("NOC.main.welcome.Application", "Welcome", {});
+        if(!Ext.History.getHash()) {
+            me.launchTab("NOC.main.welcome.Application", "Welcome", {});
+        }
     },
     // Show login window
     showLogin: function() {
