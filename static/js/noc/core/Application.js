@@ -79,8 +79,10 @@ Ext.define("NOC.core.Application", {
     //
     previewItem: function(index, record) {
         var me = this,
-            back = me.getLayout().getActiveItem();
-        me.showItem(index).preview(record, back);
+            back = me.getLayout().getActiveItem(),
+            item = me.showItem(index);
+        item.preview(record, back);
+        return item;
     },
     //
     getRegisteredItems: function() {

@@ -12,6 +12,7 @@ Ext.define("NOC.core.RepoPreview", {
     layout: "fit",
     syntax: null,
     restUrl: null,
+    historyHashPrefix: null,
 
     initComponent: function() {
         var me = this;
@@ -181,12 +182,19 @@ Ext.define("NOC.core.RepoPreview", {
         me.titleTemplate = Handlebars.compile(me.previewName);
     },
     //
-    preview: function(record, backItem) {
-        var me = this;
-        me.callParent(arguments);
-        // me.rootUrl = Ext.String.format(me.restUrl, record.get("id"));
+    startPreview: function(record, backItem) {
+        var me = this,
+            bi = backItem === undefined? me.backItem : backItem;
+        me.currentRecord = record;
+        me.backItem = bi;
+        // @todo: Replace to superclass call
         me.rootUrl = me.urlTemplate(record.data);
         me.setTitle(me.titleTemplate(record.data));
+    },
+    //
+    preview: function(record, backItem) {
+        var me = this;
+        me.startPreview(record, backItem);
         me.requestText();
         me.requestRevisions();
     },
@@ -201,6 +209,12 @@ Ext.define("NOC.core.RepoPreview", {
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText));
                 mask.hide();
+                if(me.historyHashPrefix) {
+                    me.app.setHistoryHash(
+                        me.currentRecord.get("id"),
+                        me.historyHashPrefix
+                    );
+                }
             },
             failure: function() {
                 mask.hide();
@@ -209,7 +223,7 @@ Ext.define("NOC.core.RepoPreview", {
         });
     },
     //
-    requestRevisions: function() {
+    requestRevisions: function(callback) {
         var me = this;
         Ext.Ajax.request({
             url: me.rootUrl + "revisions/",
@@ -224,6 +238,7 @@ Ext.define("NOC.core.RepoPreview", {
                 }
                 me.nextDiffButton.setDisabled(true);
                 me.prevDiffButton.setDisabled(data.length === 0);
+                Ext.callback(callback, me);
             },
             failure: function() {
                 NOC.error("Failed to get revisions");
@@ -241,6 +256,13 @@ Ext.define("NOC.core.RepoPreview", {
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText));
                 mask.hide();
+                if(me.historyHashPrefix) {
+                    me.app.setHistoryHash(
+                        me.currentRecord.get("id"),
+                        me.historyHashPrefix,
+                        rev
+                    );
+                }
             },
             failure: function() {
                 NOC.error("Failed to get text");
@@ -259,6 +281,14 @@ Ext.define("NOC.core.RepoPreview", {
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText), "diff");
                 mask.hide();
+                if(me.historyHashPrefix) {
+                    me.app.setHistoryHash(
+                        me.currentRecord.get("id"),
+                        me.historyHashPrefix,
+                        rev1,
+                        rev2
+                    );
+                }
             },
             failure: function() {
                 NOC.error("Failed to get diff");
@@ -283,8 +313,8 @@ Ext.define("NOC.core.RepoPreview", {
     requestCurrentDiff: function() {
         var me = this;
         me.requestDiff(
-            me.revCombo.getValue(),
-            me.diffCombo.getValue()
+            me.diffCombo.getValue(),
+            me.revCombo.getValue()
         );
     },
     //
@@ -390,5 +420,35 @@ Ext.define("NOC.core.RepoPreview", {
         var me = this;
         me.requestText();
         me.requestRevisions();
+    },
+    //
+    historyRevision: function(record, rev) {
+        var me = this;
+        me.startPreview(record);
+        me.requestRevisions(function() {
+            me.setRevIndex(
+                me.revCombo,
+                me.revCombo.store.findExact("id", rev)
+            );
+            me.diffCombo.setDisabled(false);
+        });
+        me.requestRevision(rev);
+    },
+    //
+    historyDiff: function(record, rev1, rev2) {
+        var me = this;
+        me.startPreview(record);
+        me.requestRevisions(function() {
+            me.diffCombo.setDisabled(false);
+            me.setRevIndex(
+                me.revCombo,
+                me.revCombo.store.findExact("id", rev2)
+            );
+            me.setRevIndex(
+                me.diffCombo,
+                me.diffCombo.store.findExact("id", rev1)
+            );
+        });
+        me.requestDiff(rev1, rev2);
     }
 });
