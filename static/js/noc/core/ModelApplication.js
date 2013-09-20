@@ -1003,17 +1003,28 @@ Ext.define("NOC.core.ModelApplication", {
     //
     onPreview: undefined,
     //
-    restoreHistory: function(args) {
-        var me = this,
-            id = args[0];
+    // Load record by id and call callback
+    // Callback is the function(record)
+    //
+    loadById: function(id, callback) {
+        var me = this;
         me.store.load({
-            params: {id: args[0]},
+            params: {id: id},
             scope: me,
             callback: function(records, operation, success) {
                 if(success && records.length === 1) {
-                    me.onEditRecord(records[0]);
+                    Ext.callback(callback, me, [records[0]]);
                 }
             }
         });
+    },
+    //
+    restoreHistory: function(args) {
+        var me = this;
+        if(args.length === 1) {
+            me.loadById(args[0], function(record) {
+                me.onEditRecord(record);
+            });
+        }
     }
 });

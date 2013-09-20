@@ -84,7 +84,8 @@ Ext.define("NOC.sa.managedobject.Application", {
             Ext.create("NOC.core.RepoPreview", {
                 app: me,
                 previewName: "{{name}} config",
-                restUrl: "/sa/managedobject/{{id}}/repo/cfg/"
+                restUrl: "/sa/managedobject/{{id}}/repo/cfg/",
+                historyHashPrefix: "config"
             })
         );
 
@@ -528,5 +529,33 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.discoveryButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
         me.alarmsButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
 
+    },
+    //
+    // Possible values
+    // [<id>] -- Show object's card
+    // [<id>, "config" ] -- show object's config
+    // [<id>, "config", <rev>] -- show revision
+    // [<id>, "config", <rev1>, <rev2>] -- show diff
+    //
+    restoreHistory: function(args) {
+        var me = this;
+        me.loadById(args[0], function(record) {
+            me.onEditRecord(record);
+            if(args[1] === "config") {
+                switch(args.length) {
+                    case 2:
+                        me.onConfig();
+                        break;
+                    case 3:
+                        me.onConfig();
+                        // @todo: Fix
+                        me.showItem(me.ITEM_CONFIG).historyRevision(record, args[2]);
+                        break;
+                    case 4:
+                        me.showItem(me.ITEM_CONFIG).historyDiff(record, args[2], args[3]);
+                        break;
+                }
+            }
+        });
     }
 });
