@@ -234,6 +234,7 @@ class ManagedObjectApplication(ExtModelApplication):
         for cfg, name, method in self.DISCOVERY_METHODS:
             if getattr(o.object_profile, cfg):
                 if name in r:
+                    self.ensure_discovery_job(name, o)
                     refresh_schedule("inv.discovery",
                                      name, o.id, delta=d)
                     d += 1
@@ -433,8 +434,15 @@ class ManagedObjectApplication(ExtModelApplication):
             d = 0
             for cfg, name, method in self.DISCOVERY_METHODS:
                 if getattr(o.object_profile, cfg):
+                    self.ensure_discovery_job(name, o)
                     refresh_schedule(
                         "inv.discovery",
                         name, o.id, delta=d)
                     d += 1
         return "Discovery processes has been scheduled"
+
+    def ensure_discovery_job(self, job_name, managed_object):
+        if not hasattr(self, "discovery_scheduler"):
+            from noc.inv.discovery.scheduler import DiscoveryScheduler
+            self.discovery_scheduler = DiscoveryScheduler()
+        self.discovery_scheduler.ensure_job(job_name, managed_object)
