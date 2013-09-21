@@ -118,6 +118,7 @@ Ext.define("NOC.core.ModelApplication", {
                             text: o.title,
                             itemId: o.action,
                             form: o.form,
+                            glyph: o.glyph,
                             resultTemplate: o.resultTemplate
                         }
                     }),
