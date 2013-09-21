@@ -25,7 +25,13 @@ Ext.define("NOC.sa.managedobject.Application", {
     model: "NOC.sa.managedobject.Model",
     search: true,
     rowClassField: "row_class",
-
+    actions: [
+        {
+            title: "Run discovery now",
+            action: "run_discovery",
+            glyph: NOC.glyph.play
+        }
+    ],
     //
     initComponent: function() {
         var me = this;
