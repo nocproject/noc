@@ -28,6 +28,7 @@ from noc.lib.serialize import json_decode
 from noc.lib.scheduler.utils import (get_job, refresh_schedule,
                                      submit_job)
 from noc.lib.text import split_alnum
+from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -421,3 +422,19 @@ class ManagedObjectApplication(ExtModelApplication):
         o.save()
         submit_job("main.jobs", "sa.wipe_managedobject", key=o.id)
         return HttpResponse(status=self.DELETED)
+
+    @view(url="^actions/run_discovery/$", method=["POST"],
+          access="launch", api=True,
+          validate={
+              "ids": ListOfParameter(element=ModelParameter(ManagedObject))
+          })
+    def api_action_run_discovery(self, request, ids):
+        for o in ids:
+            d = 0
+            for cfg, name, method in self.DISCOVERY_METHODS:
+                if getattr(o.object_profile, cfg):
+                    refresh_schedule(
+                        "inv.discovery",
+                        name, o.id, delta=d)
+                    d += 1
+        return "Discovery processes has been scheduled"
