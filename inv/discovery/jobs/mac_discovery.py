@@ -138,7 +138,7 @@ class MACDiscoveryJob(MODiscoveryJob):
         if not local_sub:
             return
         #
-        if local_sub.untagged_vlan:
+        if not local_sub.tagged_vlans:
             # Untagged port
             mac = macs[0][1]
             subs = list(SubInterface.objects.filter(
