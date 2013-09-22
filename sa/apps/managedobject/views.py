@@ -427,7 +427,7 @@ class ManagedObjectApplication(ExtModelApplication):
     @view(url="^actions/run_discovery/$", method=["POST"],
           access="launch", api=True,
           validate={
-              "ids": ListOfParameter(element=ModelParameter(ManagedObject))
+              "ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)
           })
     def api_action_run_discovery(self, request, ids):
         for o in ids:
