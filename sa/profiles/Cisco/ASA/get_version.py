@@ -2,28 +2,31 @@
 ##----------------------------------------------------------------------
 ## Cisco.ASA.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+
+## Python modules
 import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
-#rx_ver=re.compile(r'Cisco (?:Adaptive|PIX) Security Appliance Software Version (?P<version>\S+).+System image file is ".*?:/(P<image>[^"]+)".+Hardware:\s+(?P<platform>[^,]+),',re.MULTILINE|re.DOTALL)
-rx_ver = re.compile(r'Cisco (?:Adaptive|PIX) Security Appliance Software Version (?P<version>\S+).+System image file is ".+?:/(?P<image>.+?)".+Hardware:\s+(?P<platform>.+?),', re.MULTILINE | re.DOTALL)
 
-
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name = "Cisco.ASA.get_version"
     cache = True
     implements = [IGetVersion]
+    rx_ver = re.compile(
+        r"Cisco (?:Adaptive|PIX) Security Appliance Software Version (?P<version>\S+)"
+        r".+System image file is \".+?:/(?P<image>.+?)\""
+        r".+Hardware:\s+(?P<platform>.+?),",
+        re.MULTILINE | re.DOTALL
+    )
 
     def execute(self):
-        self.cli("terminal pager 0")
         v = self.cli("show version")
-        match = rx_ver.search(v)
+        match = self.re_search(self.rx_ver, v)
         return {
             "vendor": "Cisco",
             "platform": match.group("platform"),

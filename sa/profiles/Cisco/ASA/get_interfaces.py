@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Cisco.ASA.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 import re
 # NOC modules
@@ -39,7 +38,6 @@ class Script(NOCScript):
 
     def execute(self):
         interfaces = []
-        subinterfaces = []
         ospfs = self.get_ospfint()
         types = {
                "L": 'loopback',
@@ -50,7 +48,6 @@ class Script(NOCScript):
                "R": 'aggregated',
                "P": 'aggregated'
         }
-        self.cli("terminal pager 0")
         v = self.cli("show interface")
         for s in v.split("\nInterface "):
             match = self.rx_int.search(s)
