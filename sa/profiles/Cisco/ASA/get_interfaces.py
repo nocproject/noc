@@ -45,9 +45,11 @@ class Script(NOCScript):
                "L": 'loopback',
                "E": 'physical',
                "G": 'physical',
+               "T": 'physical',
                "M": 'management',
                "R": 'aggregated',
-               }
+               "P": 'aggregated'
+        }
         self.cli("terminal pager 0")
         v = self.cli("show interface")
         for s in v.split("\nInterface "):
