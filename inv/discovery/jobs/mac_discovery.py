@@ -127,7 +127,7 @@ class MACDiscoveryJob(MODiscoveryJob):
         """
         # Local interface
         iface = Interface.objects.filter(
-            managed_object=object.id, name=port).first()
+            managed_object=self.object.id, name=port).first()
         if not iface:
             return  # Not found
         # Check interface is still unlinked
