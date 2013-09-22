@@ -21,3 +21,4 @@ class Profile(noc.sa.profiles.Profile):
     command_super = "enable"
     pattern_prompt = r"^\S+?#"
     command_more = " "
+    command_disable_pager = "terminal pager 0"
