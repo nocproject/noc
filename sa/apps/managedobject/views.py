@@ -356,7 +356,8 @@ class ManagedObjectApplication(ExtModelApplication):
                 "ipv6_addresses": i.ipv6_addresses,
                 "enabled_protocols": i.enabled_protocols,
                 "vlan": i.vlan_ids,
-                "vrf": i.forwarding_instance.name if i.forwarding_instance else ""
+                "vrf": i.forwarding_instance.name if i.forwarding_instance else "",
+                "mac": i.mac
             } for i in
               SubInterface.objects.filter(managed_object=o.id).filter(q)
         ]

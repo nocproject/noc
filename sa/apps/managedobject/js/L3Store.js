@@ -43,6 +43,10 @@ Ext.define("NOC.sa.managedobject.L3Store", {
             type: "auto"
         },
         {
+            name: "mac",
+            type: "string"
+        },
+        {
             name: "vrf",
             type: "string"
         }
