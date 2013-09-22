@@ -47,13 +47,13 @@ class MACDiscoveryJob(MODiscoveryJob):
                 else:
                     seen[mac] = vlan
         # Fill report
-        port_macs = defaultdict(set)  # interface -> set(..(vlan, mac) ..)
+        port_macs = defaultdict(lambda: defaultdict(list))  # port -> vlan -> [macs]
         self.report = MACReport(self, to_save=self.to_save)
         vc_domain = VCDomain.get_for_object(self.object)
         for v in result:
             if v["type"] == "D" and v["interfaces"]:
                 iface = v["interfaces"][0]
-                port_macs[iface].add((v["vlan_id"], v["mac"]))
+                port_macs[iface][v["vlan_id"]] += [v["mac"]]
                 if v["mac"] not in dups:
                     # Save to MAC DB
                     self.report.submit(
@@ -66,18 +66,14 @@ class MACDiscoveryJob(MODiscoveryJob):
         # Submit found MACs to database
         self.report.send()
         # Discover topology
-        # Find ports with only one MAC
-        pmc = [(p, set(mac for vlan, mac in port_macs[p])) for p in port_macs]
-        pmc = [(p, list(m)[0]) for p, m in pmc if len(m) == 1]
-        # Drop duplicated MACs
-        mh = defaultdict(int)
-        for p, m in pmc:
-            mh[m] += 1
-        # Check all unique MACs
-        for port, mac in pmc:
-            if mh[mac] == 1:
-                self.check_port(object, port, mac,
-                    [vlan for vlan, mac in port_macs[port]])
+        # Find suitable ports
+        for port in port_macs:
+            vlans = port_macs[port]
+            if any(1 for vlan in vlans if len(vlans[vlan]) != 1):
+                continue
+            # Suitable port found, only one MAC in each vlan
+            macs = [(vlan, vlans[vlan][0]) for vlan in vlans]
+            self.check_port(port, macs)
         return True
 
     @classmethod
@@ -122,12 +118,11 @@ class MACDiscoveryJob(MODiscoveryJob):
     def get_failed_interval(self):
         return self.object.object_profile.mac_discovery_min_interval
 
-    def check_port(self, object, port, mac, vlans):
+    def check_port(self, port, macs):
         """
-        :param object: Managed Object
-        :param port: Interface Name
-        :param mac: MAC address
-        :param vlans: List of VLANs
+        Check link candidate and submit link if any
+        :param local_port: Local port name
+        :param macs: [(vlan, mac), ...]
         :return:
         """
         # Local interface
@@ -138,38 +133,44 @@ class MACDiscoveryJob(MODiscoveryJob):
         # Check interface is still unlinked
         if iface.is_linked:
             return  # Already linked
-        # Try to find remote interface by MAC
-        interfaces = list(Interface.objects.filter(mac=mac))
-        if len(interfaces) != 1:
-            return  # No strict match
-        remote_iface = interfaces[0]
-        if remote_iface.is_linked:
-            return  # Remote interface is already linked
-        remote_subs = list(remote_iface.subinterface_set.filter(
-            enabled_afi__in=["IPv4", "IPv6"], mac=mac))
-        if not remote_subs:
-            return  # Cannot find remote sub by MAC
+        # Find BRIDGE sub
         local_sub = iface.subinterface_set.filter(enabled_afi="BRIDGE").first()
         if not local_sub:
-            return  # Something goes wrong
-        if not local_sub.tagged_vlans:
-            if len(remote_subs) == 1:
-                # Access port to L3 interface
-                self.submit_link(iface, remote_iface)
+            return
+        #
+        if local_sub.untagged_vlan:
+            # Untagged port
+            mac = macs[0][1]
+            subs = list(SubInterface.objects.filter(
+                enabled_afi__in=["IPv4", "IPv6"], mac=mac))
+            if len(subs) == 1:
+                r_iface = subs[0].interface
+                if not r_iface.is_linked:
+                    self.submit_link(iface, r_iface)
         else:
-            # Trunk to L3 subinterfaces
-            remote_vlans = set()
-            for rs in remote_subs:
-                if len(rs.vlan_ids) != 1:
-                    return  # No Q-in-Q support yet
-                v = rs.vlan_ids[0]
-                remote_vlans.add(v)
-            diff = set(vlans) - remote_vlans
-            native_vlan = local_sub.untagged_vlan if local_sub.untagged_vlan else 1
-            if diff and diff != set([native_vlan]):
-                return  # Cannot find vlan on remote interface
-            # All prerequisites are met
-            self.submit_link(iface, remote_iface)
+            # Tagged port
+            mac_vlans = defaultdict(list)
+            for vlan, mac in macs:
+                mac_vlans[mac] += [vlan]
+            #
+            r_iface = None
+            for mac in mac_vlans:
+                left = set(mac_vlans[mac])
+                for sub in (SubInterface.objects.filter(
+                    enabled_afi__in=["IPv4", "IPv6"], mac=mac)):
+                    if not sub.vlan_ids:
+                        break
+                    vlan = sub.vlan_ids[0]
+                    if vlan in left:
+                        if r_iface is None:
+                            r_iface = sub.interface
+                        elif r_iface != sub.interface:
+                            return  # Interface mismatch
+                        left.remove(vlan)
+                if left:
+                    return  # Not all vlans found
+            if r_iface and not r_iface.is_linked:
+                self.submit_link(iface, r_iface)
 
     def submit_link(self, local_iface, remote_iface):
         self.debug("Linking %s and %s" % (local_iface, remote_iface))
