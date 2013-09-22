@@ -133,6 +133,7 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
                 commands: [cmd],
                 ignore_cli_errors: true
             },
+            loadMask: me,
             scope: me,
             success: function(result) {
                 var t = "Timed out.";
