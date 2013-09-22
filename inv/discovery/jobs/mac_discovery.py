@@ -177,4 +177,5 @@ class MACDiscoveryJob(MODiscoveryJob):
         try:
             local_iface.link_ptp(remote_iface, method="mac")
         except ValueError, why:
-            self.error("Linking error: %s" % why)
+            self.error("Error linking %s with %s: %s" % (
+                local_iface, remote_iface, why))
