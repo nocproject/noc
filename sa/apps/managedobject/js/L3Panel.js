@@ -57,6 +57,10 @@ Ext.define("NOC.sa.managedobject.L3Panel", {
                             dataIndex: "vlan"
                         },
                         {
+                            text: "MAC",
+                            dataIndex: "mac"
+                        },
+                        {
                             text: "Description",
                             dataIndex: "description",
                             flex: 1
