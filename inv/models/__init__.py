@@ -14,21 +14,7 @@ from noc.lib.nosql import *
 from noc.sa.models import ManagedObject, ManagedObjectSelector
 
 
-class Vendor(Document):
-    """
-    Equipment vendor
-    """
-    meta = {
-        "collection": "noc.vendors",
-        "allow_inheritance": False,
-    }
-    
-    name = StringField(unique=True)
-    is_builtin = BooleanField(default=False)
-    site = URLField(required=False)
-    
-    def __unicode__(self):
-        return self.name
+from vendor import Vendor
 
 
 class SocketAttribute(EmbeddedDocument):

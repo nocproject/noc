@@ -48,5 +48,43 @@ Ext.define("NOC.inv.vendor.Application", {
             fieldLabel: "Site",
             allowBlank: true
         }
-    ]
+    ],
+    filters: [
+        {
+            title: "By Is Builtin",
+            name: "is_builtin",
+            ftype: "boolean"
+        }
+    ],
+    //
+    initComponent: function() {
+        var me = this;
+
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: "/inv/vendor/{{id}}/json/",
+            previewName: "Vendor: {{name}}"
+        });
+
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+        Ext.apply(me, {
+            formToolbar: [
+                {
+                    text: "JSON",
+                    glyph: NOC.glyph.file,
+                    tooltip: "Show JSON",
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
+            ]
+        });
+        me.callParent();
+    },
+    //
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
+    }
 });
