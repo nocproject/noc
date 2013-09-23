@@ -1,0 +1,36 @@
+[
+    {
+        "name": "dimensions",
+        "description": "Object dimension properties",
+        "attrs": [
+            {
+                "name": "units",
+                "type": "int",
+                "description": "Object's height in units. 0 - if not rackmountable",
+                "required": true,
+                "is_const": true
+            },
+            {
+                "name": "depth",
+                "type": "int",
+                "description": "Object's depth in mm",
+                "required": true,
+                "is_const": true
+            },
+            {
+                "name": "height",
+                "type": "int",
+                "description": "Object's height in mm",
+                "required": true,
+                "is_const": true
+            },
+            {
+                "name": "width",
+                "type": "int",
+                "description": "Object's width in mm",
+                "required": true,
+                "is_const": true
+            }
+        ]
+    }
+]
