@@ -241,32 +241,52 @@ Ext.define("NOC.SyntaxHighlight", {
         }
     },
     highlight: function(el, text, lang) {
-        var me = this;
-        me.withLang(lang, function(l) {
-            var tags = sh_highlightString(text, l);
-            //
-            // Fill text nodes
-            var last = undefined;
-            for(var i in tags) {
-                var t = tags[i];
-                if(last) {
-                    last.end = t.pos;
+        var me = this,
+            showNumbers = lang != "diff",
+            updateEl = function(el, html) {
+                var out = [];
+                // Append line numbers, if required
+                if(showNumbers) {
+                    var l = html.match(/\n/g).length;
+                    out.push("<div class='noc-numbers'>");
+                    for(var i = 1; i <= l; i++) {
+                        out.push(i + "<br/>");
+                    }
+                    out.push("</div>");
                 }
-                last = t;
-            }
-            // Generate HTML
-            var html = tags.map(function(v) {
-                var t = text.substr(v.pos, v.end - v.pos);
-                if(v.node) {
-                    return "<span class='" + v.node.className + "'>" +
-                        t + "</span>";
-                } else {
-                    return t;
+                // Append code
+                out = out.concat(["<pre class='sh_sourcecode'>", html, "</pre>"]);
+                // Update element
+                el.update(out.join(""));
+            };
+        if(lang) {
+            me.withLang(lang, function(l) {
+                var tags = sh_highlightString(text, l);
+                //
+                // Fill text nodes
+                var last = undefined;
+                for(var i in tags) {
+                    var t = tags[i];
+                    if(last) {
+                        last.end = t.pos;
+                    }
+                    last = t;
                 }
-            }).join("");
-            // Update element
-            el.update("<pre class='sh_sourcecode'>" + html + "</pre>");
-        });
+                // Generate HTML
+                var html = tags.map(function(v) {
+                    var t = text.substr(v.pos, v.end - v.pos);
+                    if(v.node) {
+                        return "<span class='" + v.node.className + "'>" +
+                            t + "</span>";
+                    } else {
+                        return t;
+                    }
+                }).join("");
+                updateEl(el, html);
+            });
+        } else {
+            updateEl(el, text);
+        }
     }
 });
 //
@@ -431,6 +451,29 @@ Ext.apply(Ext.form.field.VTypes, {
 Ext.override(Ext.grid.column.Column, {
     getStateId: function() {
         return this.stateId || this.dataIndex || this.headerId;
+    }
+});
+//
+// Override form field labels
+//
+Ext.override(Ext.form.Panel, {
+    initComponent: function() {
+        var me = this,
+            applyLabelStyle = function(field) {
+                if((field.xtype == "fieldset") || (field.xtype == "container")) {
+                    Ext.each(field.items.items, function(f) {
+                        applyLabelStyle(f);
+                    });
+                } else {
+                    if(!field.allowBlank) {
+                        field.labelClsExtra = "noc-label-required";
+                    }
+                }
+            };
+        me.on("beforeadd", function(form, field) {
+            applyLabelStyle(field);
+        });
+        me.callParent();
     }
 });
 

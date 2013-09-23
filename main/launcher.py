@@ -229,7 +229,6 @@ class Launcher(Daemon):
                 self.daemons += [dd]
                 if dd.update_name:
                     self.update_names.add(dd.update_name)
-            self.update_names = list(self.update_names)
             # Set crashinfo uid
             if self.is_superuser and dn == "noc-sae":
                 self.crashinfo_uid = uid
@@ -285,9 +284,10 @@ class Launcher(Daemon):
     def check_updates(self):
         if not self.update_names:
             return
+        update_names = sorted(self.update_names)
         # Update
-        logging.info("Checking for updates: %s" % ", ".join(self.update_names))
-        uc = UpdateClient(self.update_url, self.update_names)
+        logging.info("Checking for updates: %s" % ", ".join(update_names))
+        uc = UpdateClient(self.update_url, update_names)
         if uc.request_update():
             # Updated, restart
             logging.info("Updates are applied. Restarting")

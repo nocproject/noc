@@ -222,6 +222,10 @@ Ext.define("NOC.fm.alarm.Application", {
         me.callParent();
         //
         me.startPolling();
+        //
+        if(me.noc.cmd && me.noc.cmd.cmd == "history") {
+            me.showAlarm(me.noc.cmd.args[0]);
+        }
     },
     //
     reloadStore: function() {
@@ -272,6 +276,7 @@ Ext.define("NOC.fm.alarm.Application", {
         me.getLayout().setActiveItem(0);
         me.reloadStore();
         me.startPolling();
+        me.setHistoryHash();
     },
     //
     onSelectAlarm: function(grid, record, item, index) {
@@ -302,5 +307,11 @@ Ext.define("NOC.fm.alarm.Application", {
     showForm: function() {
         var me = this;
         me.showItem(me.ITEM_FORM);
+    },
+    //
+    showAlarm: function(id) {
+        var me = this,
+            panel = me.showItem(me.ITEM_FORM);
+        panel.showAlarm(id);
     }
 });

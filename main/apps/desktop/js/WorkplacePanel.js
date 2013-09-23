@@ -30,22 +30,25 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     // Launch application in tab
     launchTab: function(panel_class, title, params) {
         var me = this,
+            app = Ext.create(panel_class, {
+                noc: params,
+                "title": title,
+                "controller": me.controller,
+                //
+                closable: true
+            }),
             tab = me.add({
                 title: title,
                 closable: true,
-                layout: "fit"
-            }),
-            first = me.items.first();
+                layout: "fit",
+                items: [app]
+            });
+        // Close Welcome tab, if any
+        var first = me.items.first();
         if(first && first.title != title && first.title == "Welcome") {
-            // Close "Welcome" tab
             first.close();
         }
-        var app = Ext.create(panel_class, {
-                "noc": params,
-                "title": title,
-                "controller": me.controller
-            });
-        tab.add(app);
+        //
         me.setActiveTab(tab);
         tab.on("beforeclose", function(tab) {
             if(tab.menu_node && tab.desktop_controller)
@@ -55,8 +58,14 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     },
     //
     onTabChange: function(panel, tab) {
+        var me = this,
+            app = tab.items.first(),
+            h = app.getHistoryHash();
+        if(h !== "main.welcome") {
+            Ext.History.setHash(h);
+        }
     },
-    //
+    // Process history
     onAfterRender: function() {
     }
 });
