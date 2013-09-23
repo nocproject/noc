@@ -221,9 +221,8 @@ class Command(BaseCommand):
     collections = [
         ("inv", [
             # Inventory
-            ("sockets", Socket),
             ("vendors", Vendor),
-            ("models", Model)
+            ("modelinterfaces", ModelInterface)
         ]),
         ("fm", [
             # Fault management
