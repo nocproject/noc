@@ -740,6 +740,30 @@ Ext.define("NOC.core.ModelApplication", {
         me.currentQuery = fexp;
         me.reloadStore();
     },
+    // Returns form data
+    getFormData: function() {
+        var me = this,
+            fields = me.form.getFields().items,
+            f, field, data, name,
+            fLen = fields.length,
+            values = {};
+        for(f = 0; f < fLen; f++) {
+            field = fields[f];
+            if(field.inEditor) {
+                // Skip grid inline editors
+                // WARNING: Will skip other inline editors
+                continue;
+            }
+            data = field.getModelData();
+            if(Ext.isObject(data)) {
+                name = field.getName();
+                if(data.hasOwnProperty(name)) {
+                    values[name] = data[name];
+                }
+            }
+        }
+        return values;
+    },
     // Save button pressed
     onSave: function() {
         var me = this;
@@ -747,7 +771,7 @@ Ext.define("NOC.core.ModelApplication", {
             NOC.error("Error in data");
             return;
         }
-        var v = me.form.getFieldValues();
+        var v = me.getFormData();
         if(!me.currentRecord && v[me.idField] !== undefined) {
             delete v[me.idField];
         }
