@@ -40,6 +40,7 @@ class ExtModelApplication(ExtApplication):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
         self.db_table = self.model._meta.db_table
         self.pk_field_name = self.model._meta.pk.name
+        self.pk = self.pk_field_name
         # Prepare field converters
         self.clean_fields = self.clean_fields.copy()  # name -> Parameter
         self.fk_fields = {}
