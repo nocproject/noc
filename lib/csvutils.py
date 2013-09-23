@@ -88,7 +88,9 @@ def csv_export(model, queryset=None, first_row_only=False):
             v = getattr(r, f)
             if v is None:
                 v = ""
-            if rel is None or not v:
+            if f == "tags":
+                row += [",".join(v)]
+            elif rel is None or not v:
                 row += [v]
             else:
                 row += [getattr(v, rf)]
@@ -187,6 +189,8 @@ def csv_import(model, f, resolution=IR_FAIL):
                         vars[h] = int(v)
                     except ValueError, why:
                         raise ValueError("Invalid integer: %s" % why)
+                elif h == "tags":
+                    vars[h] = [x.strip() for x in v.split(",") if x.strip()]
         # Find object
         o = None
         for f in u_fields:

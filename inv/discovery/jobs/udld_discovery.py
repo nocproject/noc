@@ -30,6 +30,7 @@ class UDLDLinkDiscoveryJob(LinkDiscoveryJob):
         local_id = None  # Local IDs
         for n in result:
             local_id = n["local_device"]
+            self.n_cache[local_id] = object
             remote_object = self.get_neighbor(n["remote_device"])
             if not remote_object:
                 continue

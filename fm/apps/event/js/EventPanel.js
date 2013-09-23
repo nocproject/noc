@@ -280,6 +280,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 NOC.error("Failed to get event");
             }
         });
+        me.app.setHistoryHash(eventId);
     },
     //
     updatePanel: function(panel, template, enabled, data) {

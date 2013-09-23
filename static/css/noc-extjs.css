@@ -10,7 +10,7 @@
 /* Syntax highlight */
 /* Override default */
 pre.sh_sourceCode {
-    background-color:#d0d0d0;
+    background-color:#e7e7e7;
 }
 
 .sh_address {
@@ -41,4 +41,39 @@ pre.sh_sourceCode {
 TABLE {
     border-collapse: collapse;
     border-spacing: 0;
+}
+
+.noc-console {
+    background-color: #303030;
+    color: #ffffff !important;
+}
+
+.noc-console .banner {
+    font-style: italic;
+}
+
+.noc-console .cmd {
+    font-weight: bold;
+    clear: both;
+    border-bottom: 1px dotted white;
+}
+
+.noc-console .result {
+}
+
+.noc-inactive {
+    background-color: #808080;
+}
+
+.noc-fail {
+    background-color: #c05050;
+}
+
+.noc-numbers {
+    float: left;
+    text-align: right;
+    background-color: #c0c0c0;
+    border-right: 1px solid white;
+    width: 30pt;
+    padding-right: 2pt;
 }

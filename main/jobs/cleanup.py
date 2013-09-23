@@ -38,6 +38,7 @@ class CleanupJob(AutoIntervalJob):
         self.info("Cleanup map/reduce tasks")
         watermark = datetime.datetime.now() - datetime.timedelta(days=1)
         for t in ReduceTask.objects.filter(stop_time__lt=watermark):
+            MapTask.objects.filter(task=t).delete()
             t.delete()
         self.info("Map/Reduce tasks are cleaned")
         self.info("Compacting MRT tables")

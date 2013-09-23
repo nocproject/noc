@@ -419,5 +419,12 @@ class Scheduler(object):
     def can_run(self, job):
         return True
 
+    def get_job(self, job_class, key=None):
+        return self.collection.find_one({
+            self.ATTR_CLASS: job_class,
+            self.ATTR_KEY: key
+        })
+
+
 ## Avoid circular reference
 from noc.sa.models.reducetask import ReduceTask

@@ -49,17 +49,9 @@ class MODiscoveryJob(IntervalJob):
         if type(qs) == dict:
             qs = Q(**qs)
         for mo in ManagedObject.objects.filter(
-            is_managed=True, profile_name__in=profiles).filter(qs).exclude(
-            id__in=keys).only("id"):
-            if cls.can_submit(mo):
-                s_interval = cls.get_submit_interval(mo)
-                cls.submit(
-                    scheduler=scheduler, key=mo.id,
-                    interval=s_interval,
-                    failed_interval=s_interval,
-                    randomize=True,
-                    ts=now + datetime.timedelta(
-                        seconds=random.random() * cls.initial_submit_interval))
+                is_managed=True, profile_name__in=profiles)\
+            .filter(qs).exclude(id__in=keys).only("id"):
+            if scheduler.ensure_job(cls.name, mo):
                 isc -= 1
                 if not isc:
                     break
