@@ -1,0 +1,73 @@
+[
+    {
+        "name": "Power | CEE 7/4 Type F",
+        "description": "German 'Schuko' Grounded/European",
+        "c_group": ["power_cee_7_4"],
+        "has_gender": true,
+        "multi_connection": false
+    },
+
+    {
+        "name": "Power | CEE 7/5 Type E",
+        "description": "French",
+        "c_group": ["power_cee_7_5"],
+        "has_gender": true,
+        "multi_connection": false
+    },
+
+    {
+        "name": "Power | CEE 7/7 Type E/F",
+        "description": "French/German Hybrid",
+        "c_group": ["power_cee_7_4", "power_cee_7_5"],
+        "has_gender": true,
+        "multi_connection": false
+    },
+
+    {
+        "name": "Power | CEE 7/16 Type C",
+        "description": "Europlug/Ungrounded",
+        "c_group": ["power_cee_7_4", "power_cee_7_16"],
+        "has_gender": true,
+        "multi_connection": false
+    },
+
+    {
+        "name": "Power | CEE 7/17 Type C",
+        "description": "German/French ungrounded",
+        "c_group": ["power_cee_7_4", "power_cee_7_16"],
+        "has_gender": true,
+        "multi_connection": false
+    },
+
+    {
+        "name": "Power | IEC 60320 C1",
+        "description": "Non-polarized C1/C2 connector",
+        "c_group": ["power_c1"],
+        "has_gender": true,
+        "multi_connection": false
+    },
+
+    {
+        "name": "Power | IEC 60320 C2",
+        "description": "Non-polarized C1/C2 inlet",
+        "c_group": ["power_c1"],
+        "has_gender": true,
+        "multi_connection": false
+    },
+
+    {
+        "name": "Power | IEC 60320 C13",
+        "description": "Common computer/peripherials connector",
+        "c_group": ["power_c13"],
+        "has_gender": true,
+        "multi_connection": false
+    },
+
+    {
+        "name": "Power | IEC 60320 C14",
+        "description": "Common computer/peripherials inlet",
+        "c_group": ["power_c13"],
+        "has_gender": true,
+        "multi_connection": false
+    }
+]

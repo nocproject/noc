@@ -222,7 +222,8 @@ class Command(BaseCommand):
         ("inv", [
             # Inventory
             ("vendors", Vendor),
-            ("modelinterfaces", ModelInterface)
+            ("modelinterfaces", ModelInterface),
+            ("connectiontypes", ConnectionType)
         ]),
         ("fm", [
             # Fault management
