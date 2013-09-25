@@ -1,17 +1,20 @@
 //---------------------------------------------------------------------
-// inv.modelinterface application
+// inv.connectiontype application
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2013 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.modelinterface.Application");
+console.debug("Defining NOC.inv.connectiontype.Application");
 
-Ext.define("NOC.inv.modelinterface.Application", {
+Ext.define("NOC.inv.connectiontype.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "Ext.ux.form.GridField"
+        "Ext.ux.form.GridField",
+        "Ext.ux.form.ModelDataField",
+        "NOC.inv.connectiontype.LookupField",
+        "NOC.core.StringListField"
     ],
-    model: "NOC.inv.modelinterface.Model",
+    model: "NOC.inv.connectiontype.Model",
     search: true,
     filters: [
         {
@@ -23,14 +26,14 @@ Ext.define("NOC.inv.modelinterface.Application", {
     //
     initComponent: function() {
         var me = this;
-
+        // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/inv/modelinterface/{{id}}/json/",
-            previewName: "Model Interface: {{name}}"
+            restUrl: "/inv/connectiontype/{{id}}/json/",
+            previewName: "Connection Type: {{name}}"
         });
-
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
+        //
         Ext.apply(me, {
             columns: [
                 {
@@ -68,48 +71,30 @@ Ext.define("NOC.inv.modelinterface.Application", {
                     fieldLabel: "Description"
                 },
                 {
-                    name: "attrs",
-                    xtype: "gridfield",
-                    fieldLabel: "Attrs",
-                    columns: [
-                        {
-                            text: "Name",
-                            dataIndex: "name",
-                            editor: "textfield"
-                        },
-                        {
-                            text: "Type",
-                            dataIndex: "type",
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    "str", "int", "float", "bool",
-                                    "objectid", "ref"
-                                ],
-                                forceSelection: true
-                            }
-                        },
-                        {
-                            text: "Description",
-                            dataIndex: "description",
-                            editor: "textfield",
-                            flex: 1
-                        },
-                        {
-                            text: "Req.",
-                            dataIndex: "required",
-                            editor: "checkboxfield",
-                            width: 30,
-                            renderer: NOC.render.Bool
-                        },
-                        {
-                            text: "Const.",
-                            dataIndex: "is_const",
-                            editor: "checkboxfield",
-                            width: 30,
-                            renderer: NOC.render.Bool
-                        }
-                    ]
+                    name: "extend",
+                    xtype: "inv.connectiontype.LookupField",
+                    fieldLabel: "Extend",
+                    allowBlank: true
+                },
+                {
+                    name: "has_gender",
+                    xtype: "checkboxfield",
+                    boxLabel: "Has Gender"
+                },
+                {
+                    name: "multi_connection",
+                    xtype: "checkboxfield",
+                    boxLabel: "Multi Connection"
+                },
+                {
+                    name: "data",
+                    xtype: "modeldatafield",
+                    fieldLabel: "Model Data"
+                },
+                {
+                    name: "c_group",
+                    xtype: "stringlistfield",
+                    fieldLabel: "Compatible groups"
                 }
             ],
             formToolbar: [
