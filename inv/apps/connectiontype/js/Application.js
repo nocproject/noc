@@ -12,7 +12,8 @@ Ext.define("NOC.inv.connectiontype.Application", {
         "Ext.ux.form.GridField",
         "Ext.ux.form.ModelDataField",
         "NOC.inv.connectiontype.LookupField",
-        "NOC.core.StringListField"
+        "NOC.core.StringListField",
+        "NOC.inv.connectiontype.templates.Test"
     ],
     model: "NOC.inv.connectiontype.Model",
     search: true,
@@ -33,6 +34,13 @@ Ext.define("NOC.inv.connectiontype.Application", {
             previewName: "Connection Type: {{name}}"
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
+        // Test panel
+        me.testPanel = Ext.create("NOC.core.TemplatePreview", {
+            app: me,
+            previewName: "Compatible connections for {{name}}",
+            template: me.templates.Test
+        });
+        me.ITEM_TEST = me.registerItem(me.testPanel);
         //
         Ext.apply(me, {
             columns: [
@@ -46,6 +54,11 @@ Ext.define("NOC.inv.connectiontype.Application", {
                     width: 50,
                     dataIndex: "is_builtin",
                     renderer: NOC.render.Bool
+                },
+                {
+                    text: "Genders",
+                    width: 50,
+                    dataIndex: "genders"
                 },
                 {
                     text: "Description",
@@ -77,14 +90,17 @@ Ext.define("NOC.inv.connectiontype.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "has_gender",
-                    xtype: "checkboxfield",
-                    boxLabel: "Has Gender"
-                },
-                {
-                    name: "multi_connection",
-                    xtype: "checkboxfield",
-                    boxLabel: "Multi Connection"
+                    name: "genders",
+                    xtype: "combobox",
+                    fieldLabel: "Genders",
+                    store: [
+                        ["s", "Same"],
+                        ["m", "Only male"],
+                        ["f", "Only female"],
+                        ["mf", "Male/Female"],
+                        ["mff", "Male/Females"]
+                    ],
+                    allowBlank: false
                 },
                 {
                     name: "data",
@@ -105,6 +121,14 @@ Ext.define("NOC.inv.connectiontype.Application", {
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
+                },
+                {
+                    text: "Test",
+                    glyph: NOC.glyph.question,
+                    tooltip: "Test compatible types",
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onTest
                 }
             ]
         });
@@ -115,5 +139,21 @@ Ext.define("NOC.inv.connectiontype.Application", {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
+    },
+    //
+    onTest: function() {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/inv/connectiontype/" + me.currentRecord.get("id") + "/compatible/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                me.showItem(me.ITEM_TEST).preview(me.currentRecord, {data: data});
+            },
+            failure: function() {
+                NOC.error("Failed to get data");
+            }
+        });
     }
 });

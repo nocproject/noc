@@ -26,15 +26,6 @@ Ext.define("NOC.inv.connectiontype.Model", {
             useNull: true
         },
         {
-            name: "multi_connection",
-            type: "boolean"
-        },
-        {
-            name: "has_gender",
-            type: "boolean",
-            defaultValue: true
-        },
-        {
             name: "data",
             type: "auto"
         },
@@ -48,6 +39,10 @@ Ext.define("NOC.inv.connectiontype.Model", {
         },
         {
             name: "name",
+            type: "string"
+        },
+        {
+            name: "genders",
             type: "string"
         }
     ]
