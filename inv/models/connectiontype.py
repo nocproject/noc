@@ -30,11 +30,9 @@ class ConnectionType(Document):
     description = StringField()
     # Type extends another type, if not null
     extend = PlainReferenceField("self", required=False)
-    # Type has male/female gender
-    has_gender = BooleanField(default=True)
-    # When has_gender == True:
-    #     Can many females be connected to single males,
-    multi_connection = BooleanField(default=False)
+    # List of available genders
+    genders = StringField(
+        choices=["s", "m", "f", "mf", "mff"], default="mf")
     # ModelData
     data = DictField(default={})
     # Compatible group
@@ -49,8 +47,7 @@ class ConnectionType(Document):
         r = {
             "name": self.name,
             "description": self.description,
-            "has_gender": self.has_gender,
-            "milti_connection": self.multi_connection,
+            "genders": self.genders,
             "c_group": self.c_group
         }
         return to_json([r], order=["name", "description"])
@@ -61,3 +58,47 @@ class ConnectionType(Document):
         :return:
         """
         raise NotImplementedError
+
+    def get_superclasses(self):
+        s = []
+        c = self
+        while c:
+            c = c.extend
+            if c:
+                s += [c]
+        return s
+
+    def get_subclasses(self):
+        s = []
+        for c in ConnectionType.objects.filter(extend=self.id):
+            s += [c] + c.get_subclasses()
+        return s
+
+    def get_inheritance_path(self, other):
+        s = []
+        # Upward direction
+        c = self
+        while c:
+            s.insert(0, c)
+            if other.id == c.id:
+                return s
+            c = c.extend
+        # Not found, try downward direction
+        s = []
+        c = other
+        while c:
+            s.insert(0, c)
+            if self.id == c.id:
+                return s
+            c = c.extend
+        return s
+
+    def get_by_c_group(self):
+        c_group = self.c_group
+        if not c_group:
+            return []
+        r = []
+        for ct in ConnectionType.objects.filter(c_group__in=c_group):
+            if ct.id != self.id:
+                r += [ct]
+        return r
