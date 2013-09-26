@@ -58,6 +58,8 @@ class ConnectionType(Document):
             "genders": self.genders,
             "c_group": self.c_group
         }
+        if self.extend:
+            r["extend__name"] = self.extend.name
         return to_json([r], order=["name", "description"])
 
     def get_effective_data(self):
