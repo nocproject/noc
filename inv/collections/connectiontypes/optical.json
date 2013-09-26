@@ -25,5 +25,12 @@
         "description": "Optical FC connection",
         "c_group": [],
         "genders": "mf"
+    },
+
+    {
+        "name": "Optical | TOSLINK",
+        "description": "Optical TOSLINK connection",
+        "c_group": [],
+        "genders": "mf"
     }
 ]
