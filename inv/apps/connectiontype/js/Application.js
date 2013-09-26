@@ -94,9 +94,11 @@ Ext.define("NOC.inv.connectiontype.Application", {
                     xtype: "combobox",
                     fieldLabel: "Genders",
                     store: [
-                        ["s", "Same"],
+                        ["s", "Genderless"],
+                        ["ss", "Genderless, 2 or more"],
                         ["m", "Only male"],
                         ["f", "Only female"],
+                        ["mmf", "Males/Female"],
                         ["mf", "Male/Female"],
                         ["mff", "Male/Females"]
                     ],

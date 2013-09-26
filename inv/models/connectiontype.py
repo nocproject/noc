@@ -32,7 +32,15 @@ class ConnectionType(Document):
     extend = PlainReferenceField("self", required=False)
     # List of available genders
     genders = StringField(
-        choices=["s", "m", "f", "mf", "mff"], default="mf")
+        choices=[
+            "s",  # Genderless connection
+            "ss",  # Genderless connection 2 or more objects
+            "m",  # Only male type
+            "f",  # Only female type
+            "mmf",  # female, 1 or more males
+            "mf",  # male-female
+            "mff"  # male, 2 or more females
+        ], default="mf")
     # ModelData
     data = DictField(default={})
     # Compatible group
