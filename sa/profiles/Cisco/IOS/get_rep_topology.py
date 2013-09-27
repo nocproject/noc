@@ -36,6 +36,8 @@ class Script(NOCScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         r = []
+        if not s.strip():
+            return r
         for rs in s.split("REP Segment "):
             if not rs:
                 continue
