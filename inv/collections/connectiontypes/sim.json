@@ -12,5 +12,10 @@
     {
         "name": "SIM | nano-SIM",
         "genders": "mf"
+    },
+
+    {
+        "name": "SIM | R-UIM",
+        "genders": "mf"
     }
 ]
