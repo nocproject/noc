@@ -20,6 +20,15 @@ Ext.define("Ext.ux.form.GridField", {
         me.fields = me.columns.map(function(v) {
             return v.dataIndex;
         });
+
+        // Add ghost __label fields
+        me.fields = me.fields.concat(me.columns.map(function(v) {
+            return {
+                name: v.dataIndex + "__label",
+                persist: false
+            }
+        }));
+
         me.store = Ext.create("Ext.data.Store", {
             fields: me.fields,
             data: []
