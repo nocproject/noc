@@ -72,12 +72,13 @@ class ObjectModel(Document):
     def save(self, *args, **kwargs):
         super(ObjectModel, self).save(*args, **kwargs)
         # Update connection cache
+        s = ObjectModel.objects.filter(id=self.id).first()
         cache = {}
         collection = ModelConnectionsCache._get_collection()
-        for cc in ModelConnectionsCache.objects.filter(model=self.id):
+        for cc in ModelConnectionsCache.objects.filter(model=s.id):
             cache[(cc.type, cc.gender, cc.model, cc.name)] = cc.id
         nc = []
-        for c in self.connections:
+        for c in s.connections:
             k = (c.type.id, c.gender, self.id, c.name)
             if k in cache:
                 del cache[k]
@@ -107,12 +108,18 @@ class ObjectModel(Document):
         if not cn:
             return []  # Connection not found
         r = []
-        c_types = cn.type.get_compatible_types()
+        c_types = cn.type.get_compatible_types(cn.gender)
         og = ConnectionType.OPPOSITE_GENDER[cn.gender]
         for cc in ModelConnectionsCache.objects.filter(
                 type__in=c_types, gender=og):
             r += [(cc.model, cc.name)]
         return r
+
+    def get_model_connection(self, name):
+        for c in self.connections:
+            if c.name == name:
+                return c
+        return None
 
     def to_json(self):
         r = {
