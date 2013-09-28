@@ -9,7 +9,8 @@
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, DictField,
-                                ListField, EmbeddedDocumentField)
+                                ListField, EmbeddedDocumentField,
+                                ObjectIdField)
 ## NOC modules
 from connectiontype import ConnectionType
 from vendor import Vendor
@@ -37,6 +38,16 @@ class ObjectModelConnection(EmbeddedDocument):
     def __unicode__(self):
         return self.name
 
+    def __eq__(self, other):
+        return (
+            self.name == other.name and
+            self.description == other.description and
+            self.type.id == other.type.id and
+            self.direction == other.direction and
+            self.gender == other.gender and
+            self.group == other.group
+        )
+
 
 class ObjectModel(Document):
     """
@@ -58,6 +69,51 @@ class ObjectModel(Document):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super(ObjectModel, self).save(*args, **kwargs)
+        # Update connection cache
+        cache = {}
+        collection = ModelConnectionsCache._get_collection()
+        for cc in ModelConnectionsCache.objects.filter(model=self.id):
+            cache[(cc.type, cc.gender, cc.model, cc.name)] = cc.id
+        nc = []
+        for c in self.connections:
+            k = (c.type.id, c.gender, self.id, c.name)
+            if k in cache:
+                del cache[k]
+                continue
+            nc += [{
+                "type": c.type.id,
+                "gender": c.gender,
+                "model": self.id,
+                "name": c.name
+            }]
+        if cache:
+            for k in cache:
+                collection.remove(cache[k])
+        if nc:
+            collection.insert(nc)
+
+    def get_connection_proposals(self, name):
+        """
+        Return possible connections for connection name
+        as (model id, connection name)
+        """
+        cn = None
+        for c in self.connections:
+            if c.name == name:
+                cn = c
+                break
+        if not cn:
+            return []  # Connection not found
+        r = []
+        c_types = cn.type.get_compatible_types()
+        og = ConnectionType.OPPOSITE_GENDER[cn.gender]
+        for cc in ModelConnectionsCache.objects.filter(
+                type__in=c_types, gender=og):
+            r += [(cc.model, cc.name)]
+        return r
+
     def to_json(self):
         r = {
             "name": self.name,
@@ -75,4 +131,17 @@ class ObjectModel(Document):
                 } for c in self.connections
             ]
         }
-        return to_json([r], order=["name", "vendor", "description"])
+        return to_json([r], order=["name", "vendor__name", "description"])
+
+
+class ModelConnectionsCache(Document):
+    meta = {
+        "collection": "noc.inv.objectconnectionscache",
+        "allow_inheritance": False,
+        "indexes": ["model", ("type", "gender")]
+    }
+    # Connection type
+    type = ObjectIdField()
+    gender = StringField(choices=["s", "m", "f"])
+    model = ObjectIdField()
+    name = StringField()
