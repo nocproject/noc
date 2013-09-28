@@ -1,0 +1,36 @@
+[
+    {
+        "name": "Juniper | MX | RE",
+        "description": "Juniper MX Routing Engine slot",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | MX | SCB",
+        "description": "Juniper MX SCB Slot (Switchfabric/Routing engine)",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | MX | PEM",
+        "description": "Juniper MX PEM Slot (Power module)",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | MX | DPC",
+        "description": "Juniper MX DPC Slot",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | MX | Fan",
+        "description": "Juniper MX Fan Slot",
+        "c_group": [],
+        "genders": "mf"
+    }
+]
