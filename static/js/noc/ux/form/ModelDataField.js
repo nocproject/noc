@@ -104,14 +104,19 @@ Ext.define("Ext.ux.form.ModelDataField", {
     setValue: function(v) {
         var me = this,
             records = [],
-            iface, key;
+            iface, key, empty;
         for(iface in v) {
+            empty = true;
             for(key in v[iface]) {
                 records.push({
                     "interface": iface,
                     key: key,
                     value: v[iface][key]
                 });
+                empty = false;
+            }
+            if(empty) {
+                records.push({interface: iface, key: "", value: ""});
             }
         }
         me.store.loadData(records);
