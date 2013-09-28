@@ -110,7 +110,7 @@ Ext.define("Ext.ux.form.ModelDataField", {
                 records.push({
                     "interface": iface,
                     key: key,
-                    value: value
+                    value: v[iface][key]
                 });
             }
         }
