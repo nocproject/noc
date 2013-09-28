@@ -223,7 +223,8 @@ class Command(BaseCommand):
             # Inventory
             ("vendors", Vendor),
             ("modelinterfaces", ModelInterface),
-            ("connectiontypes", ConnectionType)
+            ("connectiontypes", ConnectionType),
+            ("objectmodels", ObjectModel)
         ]),
         ("fm", [
             # Fault management
@@ -237,7 +238,7 @@ class Command(BaseCommand):
             ("eventclasses", EventClass),
             ("eventclassificationrules", EventClassificationRule),
             ("cloneclassificationrules", CloneClassificationRule)
-            ])
+        ])
     ]
 
     def handle(self, *args, **options):
