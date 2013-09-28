@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Juniper | MX | PWR-MX960-AC",
+        "vendor__name": "Juniper Networks",
+        "description": "1.2-1.7kW; 100-240V AC power supply for MX960/MX480/MX240",
+        "connections": [
+            {
+                "description": "Internal power slot",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Juniper | MX | PEM"
+            },
+            {
+                "description": "Power outlet",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "power",
+                "type__name": "Power | IEC 60320 C19"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "PWR-MX960-AC-R",
+                "order_part_no1": "PWR-MX960-AC-BB",
+                "part_no": "740-017330"
+            }
+        }
+    }
+]
