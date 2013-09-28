@@ -48,6 +48,12 @@ class ConnectionType(Document):
     # and all types having any c_group
     c_group = ListField(StringField())
 
+    OPPOSITE_GENDER = {
+        "s": "s",
+        "m": "f",
+        "f": "m"
+    }
+
     def __unicode__(self):
         return self.name
 
@@ -111,4 +117,26 @@ class ConnectionType(Document):
         for ct in ConnectionType.objects.filter(c_group__in=c_group):
             if ct.id != self.id:
                 r += [ct]
+        return r
+
+    def get_compatible_types(self, gender):
+        r = []
+        og = self.OPPOSITE_GENDER[gender]
+        # Add self type if opposige gender allowed
+        if og in self.genders:
+            r += [self.id]
+        if gender in ["m", "s"]:
+            # Add superclasses
+            for c in self.get_superclasses():
+                if og in c.genders:
+                    r += [c.id]
+        if gender in ["f", "s"]:
+            # Add subclasses
+            for c in self.get_subclasses():
+                if og in c.genders:
+                    r += [c.id]
+        if self.c_group:
+            for c in self.get_by_c_group():
+                if og in c.genders:
+                    r += [c.id]
         return r
