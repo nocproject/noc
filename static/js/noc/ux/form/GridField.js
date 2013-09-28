@@ -81,6 +81,12 @@ Ext.define("Ext.ux.form.GridField", {
             listeners: {
                 scope: me,
                 select: me.onSelect
+            },
+            viewConfig: {
+                plugins: {
+                    ptype: "gridviewdragdrop",
+                    dragText: "Drag and drop to reorganize"
+                }
             }
         });
 
