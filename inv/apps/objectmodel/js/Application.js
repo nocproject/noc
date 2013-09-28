@@ -13,7 +13,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
         "Ext.ux.form.ModelDataField",
         "NOC.inv.objectmodel.Model",
         "NOC.inv.vendor.LookupField",
-        "NOC.inv.connectiontype.LookupField"
+        "NOC.inv.connectiontype.LookupField",
+        "NOC.inv.objectmodel.templates.Test"
     ],
     model: "NOC.inv.objectmodel.Model",
     search: true,
@@ -35,6 +36,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
             previewName: "Object Model: {{name}}"
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
+        // Test panel
+        me.testPanel = Ext.create("NOC.core.TemplatePreview", {
+            app: me,
+            previewName: "Compatible connections for {{name}}",
+            template: me.templates.Test
+        });
+        me.ITEM_TEST = me.registerItem(me.testPanel);
         //
         Ext.apply(me, {
             columns: [
@@ -156,6 +164,14 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
+                },
+                {
+                    text: "Test",
+                    glyph: NOC.glyph.question,
+                    tooltip: "Test compatible types",
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onTest
                 }
             ]
         });
@@ -166,5 +182,21 @@ Ext.define("NOC.inv.objectmodel.Application", {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
+    },
+    //
+    onTest: function() {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/inv/objectmodel/" + me.currentRecord.get("id") + "/compatible/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                me.showItem(me.ITEM_TEST).preview(me.currentRecord, {data: data});
+            },
+            failure: function() {
+                NOC.error("Failed to get data");
+            }
+        });
     }
 });
