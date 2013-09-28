@@ -63,7 +63,11 @@ Ext.define("Ext.ux.form.GridField", {
             columns: me.columns,
             plugins: [
                 Ext.create("Ext.grid.plugin.CellEditing", {
-                    clicksToEdit: 2
+                    clicksToEdit: 2,
+                    listeners: {
+                        scope: me,
+                        edit: me.onCellEdit
+                    }
                 })
             ],
             dockedItems: [
@@ -166,5 +170,13 @@ Ext.define("Ext.ux.form.GridField", {
         me.currentSelection += 1;
         me.grid.store.insert(me.currentSelection, newRecord);
         sm.select(me.currentSelection);
+    },
+    //
+    onCellEdit: function(editor, e) {
+        var me = this,
+            editor = e.grid.columns[e.colIdx].getEditor();
+        if(editor.rawValue) {
+            e.record.set(e.field + "__label", editor.rawValue);
+        }
     }
 });
