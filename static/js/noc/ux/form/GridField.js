@@ -34,6 +34,29 @@ Ext.define("Ext.ux.form.GridField", {
             data: []
         });
 
+        me.addButton = Ext.create("Ext.button.Button", {
+            text: "Add",
+            glyph: NOC.glyph.plus,
+            scope: me,
+            handler: me.onAdd
+        });
+
+        me.deleteButton = Ext.create("Ext.button.Button", {
+            text: "Delete",
+            glyph: NOC.glyph.minus,
+            disabled: true,
+            scope: me,
+            handler: me.onDelete
+        });
+
+        me.cloneButton = Ext.create("Ext.button.Button", {
+            text: "Clone",
+            glyph: NOC.glyph.copy,
+            disabled: true,
+            scope: me,
+            handler: me.onClone
+        });
+
         me.grid = Ext.create("Ext.grid.Panel", {
             layout: "fit",
             store: me.store,
@@ -48,21 +71,17 @@ Ext.define("Ext.ux.form.GridField", {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
-                        {
-                            text: "Add",
-                            glyph: NOC.glyph.plus,
-                            scope: me,
-                            handler: me.onAdd
-                        },
-                        {
-                            text: "Delete",
-                            glyph: NOC.glyph.minus,
-                            scope: me,
-                            handler: me.onDelete
-                        }
+                        me.addButton,
+                        me.deleteButton,
+                        "-",
+                        me.cloneButton
                     ]
                 }
-            ]
+            ],
+            listeners: {
+                scope: me,
+                select: me.onSelect
+            }
         });
 
         Ext.apply(me, {
@@ -70,6 +89,7 @@ Ext.define("Ext.ux.form.GridField", {
                 me.grid
             ]
         });
+        me.currentSelection = undefined;
         me.callParent();
     },
 
@@ -96,7 +116,13 @@ Ext.define("Ext.ux.form.GridField", {
         me.store.loadData(v);
         return me.mixins.field.setValue.call(me, v);
     },
-
+    //
+    onSelect: function(grid, record, index) {
+        var me = this;
+        me.currentSelection = index;
+        me.deleteButton.setDisabled(false);
+        me.cloneButton.setDisabled(false);
+    },
     //
     onAdd: function() {
         var me = this,
@@ -114,6 +140,25 @@ Ext.define("Ext.ux.form.GridField", {
         me.grid.store.remove(sm.getSelection());
         if(me.grid.store.getCount() > 0) {
             sm.select(0);
+        } else {
+            me.deleteButton.setDisabled(true);
+            me.cloneButton.setDisabled(true);
         }
+    },
+    //
+    onClone: function() {
+        var me = this,
+            sm = me.grid.getSelectionModel(),
+            sel = sm.getLastSelected(),
+            rowEditing = me.grid.plugins[0],
+            newRecord, pos;
+        if(!sel) {
+            return;
+        }
+        rowEditing.cancelEdit();
+        newRecord = sel.copy();
+        me.currentSelection += 1;
+        me.grid.store.insert(me.currentSelection, newRecord);
+        sm.select(me.currentSelection);
     }
 });
