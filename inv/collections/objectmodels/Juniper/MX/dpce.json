@@ -352,7 +352,1084 @@
         "data": {
             "asset": {
                 "order_part_no0": "DPCE-R-40GE-SFP",
-                "part_no0": "750-018122"
+                "part_no0": "750-018122",
+                "part_no1": "750-021679",
+                "part_no2": "710-013699"
+            }
+        }
+    },
+
+    {
+        "name": "Juniper | MX | DPCE-R-Q-40GE-SFP",
+        "vendor__name": "Juniper Networks",
+        "description": "40x1G Enhanced Queuing DPC for MX with full L2/L3 features & VLAN-HQoS",
+        "connections": [
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/9 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/9",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/9 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/9",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/9 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/9",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "Inner connector",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Juniper | MX | DPC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "DPCE-R-Q-40GE-SFP",
+                "part_no0": "710-016669",
+                "part_no1": "750-016670"
+            }
+        }
+    },
+
+    {
+        "name": "Juniper | MX | DPCE-X-40GE-SFP",
+        "vendor__name": "Juniper Networks",
+        "description": "40x1GE DPC for MX with L2/L2.5 features",
+        "connections": [
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/9 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/9",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/9 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/9",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/9 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/9",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "Inner connector",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Juniper | MX | DPC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "DPCE-X-40GE-SFP",
+                "part_no0": "750-020220"
+            }
+        }
+    },
+
+    {
+        "name": "Juniper | MX | DPCE-X-Q-40GE-SFP",
+        "vendor__name": "Juniper Networks",
+        "description": "40x1G Enhanced Queuing DPC for MX with L2/L2.5 features & VLAN-HQoS",
+        "connections": [
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/0/9 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "ge-X/0/9",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/1/9 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "ge-X/1/9",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/2/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "2",
+                "name": "ge-X/2/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/0 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/0",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "ge-X/3/9 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "3",
+                "name": "ge-X/3/9",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "Inner connector",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Juniper | MX | DPC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "DPCE-X-Q-40GE-SFP",
+                "part_no0": "750-020452"
             }
         }
     },
