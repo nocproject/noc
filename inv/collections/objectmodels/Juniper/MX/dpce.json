@@ -1441,7 +1441,7 @@
         "connections": [
             {
                 "description": "ge-X/0/0 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/0",
@@ -1449,7 +1449,7 @@
             },
             {
                 "description": "ge-X/0/0 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/0",
@@ -1457,7 +1457,7 @@
             },
             {
                 "description": "ge-X/0/0 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/0",
@@ -1465,7 +1465,7 @@
             },
             {
                 "description": "ge-X/0/0 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/0",
@@ -1473,7 +1473,7 @@
             },
             {
                 "description": "ge-X/0/1 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/1",
@@ -1481,7 +1481,7 @@
             },
             {
                 "description": "ge-X/0/2 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/2",
@@ -1489,7 +1489,7 @@
             },
             {
                 "description": "ge-X/0/3 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/3",
@@ -1497,7 +1497,7 @@
             },
             {
                 "description": "ge-X/0/4 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/4",
@@ -1505,7 +1505,7 @@
             },
             {
                 "description": "ge-X/0/5 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/5",
@@ -1513,7 +1513,7 @@
             },
             {
                 "description": "ge-X/0/6 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/6",
@@ -1521,7 +1521,7 @@
             },
             {
                 "description": "ge-X/0/7 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/7",
@@ -1529,7 +1529,7 @@
             },
             {
                 "description": "ge-X/0/8 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/8",
@@ -1537,7 +1537,7 @@
             },
             {
                 "description": "ge-X/0/9 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "ge-X/0/9",
@@ -1545,7 +1545,7 @@
             },
             {
                 "description": "ge-X/1/0 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "1",
                 "name": "ge-X/1/0",
@@ -1553,7 +1553,7 @@
             },
             {
                 "description": "ge-X/1/1 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "1",
                 "name": "ge-X/1/1",
@@ -1561,7 +1561,7 @@
             },
             {
                 "description": "ge-X/1/2 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "1",
                 "name": "ge-X/1/2",
@@ -1569,7 +1569,7 @@
             },
             {
                 "description": "ge-X/1/3 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "1",
                 "name": "ge-X/1/3",
@@ -1577,7 +1577,7 @@
             },
             {
                 "description": "ge-X/1/4 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "1",
                 "name": "ge-X/1/4",
@@ -1585,7 +1585,7 @@
             },
             {
                 "description": "ge-X/1/5 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "1",
                 "name": "ge-X/1/5",
@@ -1593,7 +1593,7 @@
             },
             {
                 "description": "ge-X/1/6 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "1",
                 "name": "ge-X/1/6",
@@ -1601,7 +1601,7 @@
             },
             {
                 "description": "ge-X/1/7 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "1",
                 "name": "ge-X/1/7",
@@ -1609,7 +1609,7 @@
             },
             {
                 "description": "ge-X/1/8 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "1",
                 "name": "ge-X/1/8",
@@ -1617,7 +1617,7 @@
             },
             {
                 "description": "ge-X/1/9 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "1",
                 "name": "ge-X/1/9",
@@ -1625,7 +1625,7 @@
             },
             {
                 "description": "ge-X/2/0 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "2",
                 "name": "ge-X/2/0",
@@ -1633,7 +1633,7 @@
             },
             {
                 "description": "ge-X/2/1 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "2",
                 "name": "ge-X/2/1",
@@ -1641,7 +1641,7 @@
             },
             {
                 "description": "ge-X/2/2 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "2",
                 "name": "ge-X/2/2",
@@ -1649,7 +1649,7 @@
             },
             {
                 "description": "ge-X/2/3 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "2",
                 "name": "ge-X/2/3",
@@ -1657,7 +1657,7 @@
             },
             {
                 "description": "ge-X/2/4 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "2",
                 "name": "ge-X/2/4",
@@ -1665,7 +1665,7 @@
             },
             {
                 "description": "ge-X/2/5 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "2",
                 "name": "ge-X/2/5",
@@ -1673,7 +1673,7 @@
             },
             {
                 "description": "ge-X/2/6 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "2",
                 "name": "ge-X/2/6",
@@ -1681,7 +1681,7 @@
             },
             {
                 "description": "ge-X/2/7 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "2",
                 "name": "ge-X/2/7",
@@ -1689,7 +1689,7 @@
             },
             {
                 "description": "ge-X/2/8 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "2",
                 "name": "ge-X/2/8",
@@ -1697,7 +1697,7 @@
             },
             {
                 "description": "ge-X/3/0 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "3",
                 "name": "ge-X/3/0",
@@ -1705,7 +1705,7 @@
             },
             {
                 "description": "ge-X/3/1 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "3",
                 "name": "ge-X/3/1",
@@ -1713,7 +1713,7 @@
             },
             {
                 "description": "ge-X/3/2 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "3",
                 "name": "ge-X/3/2",
@@ -1721,7 +1721,7 @@
             },
             {
                 "description": "ge-X/3/3 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "3",
                 "name": "ge-X/3/3",
@@ -1729,7 +1729,7 @@
             },
             {
                 "description": "ge-X/3/4 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "3",
                 "name": "ge-X/3/4",
@@ -1737,7 +1737,7 @@
             },
             {
                 "description": "ge-X/3/5 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "3",
                 "name": "ge-X/3/5",
@@ -1745,7 +1745,7 @@
             },
             {
                 "description": "ge-X/3/6 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "3",
                 "name": "ge-X/3/6",
@@ -1753,7 +1753,7 @@
             },
             {
                 "description": "ge-X/3/7 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "3",
                 "name": "ge-X/3/7",
@@ -1761,7 +1761,7 @@
             },
             {
                 "description": "ge-X/3/8 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "3",
                 "name": "ge-X/3/8",
@@ -1769,7 +1769,7 @@
             },
             {
                 "description": "ge-X/3/9 interface",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "3",
                 "name": "ge-X/3/9",
