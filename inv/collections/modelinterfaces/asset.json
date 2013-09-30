@@ -1,0 +1,50 @@
+[
+    {
+        "name": "asset",
+        "description": "Asset management interface holding part numbers, serial numbers and asset numbers",
+        "attrs": [
+            {
+                "name": "part_no0",
+                "type": "str",
+                "description": "Part number",
+                "required": true,
+                "is_const": true
+            },
+            {
+                "name": "part_no1",
+                "type": "str",
+                "description": "Alternative part number",
+                "required": false,
+                "is_const": true
+            },
+            {
+                "name": "order_part_no0",
+                "type": "str",
+                "description": "Ordering part number",
+                "required": false,
+                "is_const": true
+            },
+            {
+                "name": "order_part_no1",
+                "type": "str",
+                "description": "Alternative ordering part number",
+                "required": false,
+                "is_const": true
+            },
+            {
+                "name": "serial",
+                "type": "str",
+                "description": "Serial Number",
+                "required": false,
+                "is_const": false
+            },
+            {
+                "name": "asset_no",
+                "type": "str",
+                "description": "Asset number",
+                "required": false,
+                "is_const": false
+            }
+        ]
+    }
+]
