@@ -1,6 +1,7 @@
 [
     {"name": "Alcatel-Lucent", "site": "http://www.alcatel-lucent.com/"},
-    {"name": "Cisco Networks", "site": "http://cisco.com/"},
+    {"name": "Brocade", "site": "http://www.Brocade.com"},
+    {"name": "Cisco Systems", "site": "http://cisco.com/"},
     {"name": "D-Link", "site": "http://www.dlink.com/"},
     {"name": "Extreme Networks", "site": "http://extremenetworks.com/"},
     {"name": "f5 Networks", "site": "http://www.f5.com/"},
