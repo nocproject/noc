@@ -44,6 +44,13 @@
                 "description": "Asset number",
                 "required": false,
                 "is_const": false
+            },
+            {
+                "name": "revision",
+                "type": "str",
+                "description": "Revision id",
+                "required": false,
+                "is_const": false
             }
         ]
     }
