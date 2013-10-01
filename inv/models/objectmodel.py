@@ -125,7 +125,7 @@ class ObjectModel(Document):
         r = {
             "name": self.name,
             "description": self.description,
-            "vendor__name": self.vendor.name,
+            "vendor__code": self.vendor.code,
             "data": self.data,
             "connections": [
                 {
@@ -138,7 +138,7 @@ class ObjectModel(Document):
                 } for c in self.connections
             ]
         }
-        return to_json([r], order=["name", "vendor__name", "description"])
+        return to_json([r], order=["name", "vendor__code", "description"])
 
 
 class ModelConnectionsCache(Document):
