@@ -19,6 +19,13 @@
         "code": "DLINK",
         "site": "http://www.dlink.com/"
     },
+
+    {
+        "name": "Edge-Core",
+        "code": "EDGECORE",
+        "site": "http://www.edge-core.com/"
+    },
+
     {
         "name": "Extreme Networks",
         "code": "EXTREME",
