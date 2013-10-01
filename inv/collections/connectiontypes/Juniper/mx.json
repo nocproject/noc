@@ -35,6 +35,13 @@
     },
 
     {
+        "name": "Juniper | MX | MIC",
+        "description": "Juniper MX MPS's MIC Slot",
+        "c_group": ["juniper_mx_fpc"],
+        "genders": "mf"
+    },
+
+    {
         "name": "Juniper | MX | MX480 Fan",
         "description": "Juniper MX480 Fan Tray Slot",
         "c_group": [],
