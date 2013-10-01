@@ -1,7 +1,7 @@
 [
     {
         "name": "Juniper | MX | PWR-MX480-1200-AC",
-        "vendor__name": "Juniper Networks",
+        "vendor__code": "JUNIPER",
         "description": "MX480 1200W Power Entry Module AC",
         "connections": [
             {

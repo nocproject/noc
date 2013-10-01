@@ -9,7 +9,7 @@
     {
         "name": "Juniper | MX | SCB",
         "description": "Juniper MX SCB Slot (Switchfabric/Routing engine)",
-        "c_group": [],
+        "c_group": ["juniper_mx_scb"],
         "genders": "mf"
     },
 
@@ -21,15 +21,22 @@
     },
 
     {
-        "name": "Juniper | MX | DPC",
-        "description": "Juniper MX DPC Slot",
-        "c_group": [],
+        "name": "Juniper | MX | FPC",
+        "description": "Juniper MX FPC Slot",
+        "c_group": ["juniper_mx_fpc"],
         "genders": "mf"
     },
 
     {
-        "name": "Juniper | MX | Fan",
-        "description": "Juniper MX Fan Slot",
+        "name": "Juniper | MX | FPC/SCB",
+        "description": "Juniper MX FPC/SCB Slot",
+        "c_group": ["juniper_mx_fpc", "juniper_mx_scb"],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | MX | MX480 Fan",
+        "description": "Juniper MX480 Fan Tray Slot",
         "c_group": [],
         "genders": "mf"
     }
