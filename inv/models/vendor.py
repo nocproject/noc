@@ -10,7 +10,7 @@
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, URLField
 ## NOC modules
-from noc.lib.escape import json_escape as q
+from noc.lib.prettyjson import to_json
 
 
 class Vendor(Document):
@@ -24,18 +24,15 @@ class Vendor(Document):
 
     name = StringField(unique=True)
     is_builtin = BooleanField(default=False)
+    code = StringField()
     site = URLField(required=False)
 
     def __unicode__(self):
         return self.name
 
     def to_json(self):
-        r = [
-            "[",
-            "    {",
-            "        \"name\": \"%s\"," % q(self.name),
-            "        \"site\": \"%s\"" % q(self.site),
-            "    }",
-            "]"
-        ]
-        return "\n".join(r)
+        return to_json([{
+            "name": self.name,
+            "code": self.code,
+            "site": self.site
+        }])
