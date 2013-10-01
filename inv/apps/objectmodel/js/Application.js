@@ -23,6 +23,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
             title: "By Is Builtin",
             name: "is_builtin",
             ftype: "boolean"
+        },
+        {
+            title: "By Vendor",
+            name: "vendor",
+            ftype: "lookup",
+            lookup: "inv.vendor"
         }
     ],
 
