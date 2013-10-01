@@ -15,7 +15,8 @@ Ext.define("NOC.inv.vendor.Application", {
     columns: [
         {
             text: "Name",
-            dataIndex: "name"
+            dataIndex: "name",
+            width: 200
         },
         {
             text: "Builtin",
@@ -24,9 +25,14 @@ Ext.define("NOC.inv.vendor.Application", {
             width: 50
         },
         {
+            text: "Code",
+            dataIndex: "code",
+            width: 100
+        },
+        {
             text: "Site",
             dataIndex: "site",
-            flex: true,
+            flex: 1,
             renderer: NOC.render.URL
         }
     ],
@@ -41,6 +47,12 @@ Ext.define("NOC.inv.vendor.Application", {
             name: "is_builtin",
             xtype: "checkboxfield",
             boxLabel: "Is Builtin"
+        },
+        {
+            name: "code",
+            xtype: "textfield",
+            fieldLabel: "Code",
+            allowBlank: false
         },
         {
             name: "site",
