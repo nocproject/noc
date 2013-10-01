@@ -1,6 +1,6 @@
 [
     {
-        "name": "Juniper | MX | FPCE-R-40GE-SFP",
+        "name": "Juniper | MX | DPCE-R-40GE-SFP",
         "vendor__code": "JUNIPER",
         "description": "40x1GE Enhanced DPC for MX",
         "connections": [
@@ -360,7 +360,7 @@
     },
 
     {
-        "name": "Juniper | MX | FPCE-R-Q-40GE-SFP",
+        "name": "Juniper | MX | DPCE-R-Q-40GE-SFP",
         "vendor__code": "JUNIPER",
         "description": "40x1G Enhanced Queuing DPC for MX with full L2/L3 features & VLAN-HQoS",
         "connections": [
@@ -719,7 +719,7 @@
     },
 
     {
-        "name": "Juniper | MX | FPCE-X-40GE-SFP",
+        "name": "Juniper | MX | DPCE-X-40GE-SFP",
         "vendor__code": "JUNIPER",
         "description": "40x1GE DPC for MX with L2/L2.5 features",
         "connections": [
@@ -1077,7 +1077,7 @@
     },
 
     {
-        "name": "Juniper | MX | FPCE-X-Q-40GE-SFP",
+        "name": "Juniper | MX | DPCE-X-Q-40GE-SFP",
         "vendor__code": "JUNIPER",
         "description": "40x1G Enhanced Queuing DPC for MX with L2/L2.5 features & VLAN-HQoS",
         "connections": [
@@ -1435,7 +1435,7 @@
     },
 
     {
-        "name": "Juniper | MX | FPCE-R-40GE-TX",
+        "name": "Juniper | MX | DPCE-R-40GE-TX",
         "vendor__code": "JUNIPER",
         "description": "40 Port 10/100/1000 RJ-45 DPC with L2+L3 Features",
         "connections": [
