@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Huawei | Quidway S5300 | PEM",
+        "description": "Huawei Quidway S5300 PEM slot (Power module)",
+        "c_group": [],
+        "genders": "mf"
+    },
+   {
+        "name": "Huawei | Quidway S5300 | Fan",
+        "description": "Huawei Quidway S5300 FAN slot (Fan module)",
+        "c_group": [],
+        "genders": "mf"
+    }
+]

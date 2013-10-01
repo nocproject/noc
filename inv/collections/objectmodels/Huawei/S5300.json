@@ -1,0 +1,358 @@
+[
+    {
+        "name": "Huawei | Quidway S5300 | Fan",
+        "vendor__name": "Huawei Technologies Co.",
+        "description": "Huawei Quidway S5300 Fan Module",
+        "connections": [
+            {
+                "description": "Fan Slot",
+                "direction": "o",
+                "gender": "f",
+                "group": "",
+                "name": "in",
+                "type__name": "Huawei | Quidway S5300 | Fan"
+            }
+        ],
+        "data": {}
+    },
+    {
+        "name": "Huawei | Quidway S5300 | PEM AC",
+        "vendor__name": "Huawei Technologies Co.",
+        "description": "Huawei Quidway S5300 AC Power Supply",
+        "connections": [
+            {
+                "description": "Power Slot",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Huawei | Quidway S5300 | PEM"
+            },
+            {
+                "description": "Power inlet",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "power",
+                "type__name": "Power | IEC 60320 C14"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "LS5M100PWA00"
+            }
+        }
+    },
+    {
+        "name": "Huawei | Quidway S5300 | PEM DC",
+        "vendor__name": "Huawei Technologies Co.",
+        "description": "Huawei Quidway S5300 DC Power Supply",
+        "connections": [
+            {
+                "description": "Power Slot",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Huawei | Quidway S5300 | PEM"
+            },
+            {
+                "description": "Power inlet",
+                "direction": "s",
+                "gender": "f",
+                "group": "dc_jack",
+                "name": "power +",
+                "type__name": "Power | M4 Pin"
+            },
+            {
+                "description": "Power inlet",
+                "direction": "s",
+                "gender": "f",
+                "group": "dc_jack",
+                "name": "power -",
+                "type__name": "Power | M4 Pin"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "LS5M100PWD00"
+            }
+        }
+    },
+    {
+        "name": "Huawei | Quidway S5300 | S5328C-EI-24S",
+        "vendor__name": "Huawei Technologies Co.",
+        "description": "L3 switch with 20 ports 100/1000Base-X (SFP), 4 combo ports 10/100/1000Base-T/SFP, slot for extension card with 2 ports 10GE XFP or 4 ports 1000Base-X SFP",
+        "connections": [
+            {
+                "description": "FAN Slot",
+                "direction": "i",
+                "gender": "m",
+                "group": "",
+                "name": "FANCARD",
+                "type__name": "Huawei | Quidway S5300 | Fan"
+            },
+            {
+                "description": "Management Console",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "Console",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Outband Management",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "MEthX/0/1",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "PEM Slot #1",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "PWRCARD I",
+                "type__name": "Huawei | Quidway S5300 | PEM"
+            },
+            {
+                "description": "PEM Slot #2",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "PWRCARD II",
+                "type__name": "Huawei | Quidway S5300 | PEM"
+            },
+            {
+                "description": "GigabitEthernet X/0/1 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/1",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/2 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/2",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/3 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/3",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/4 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/4",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/5 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/5",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/6 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/6",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/7 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/7",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/8 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/8",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/9 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/9",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/10 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/10",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/11 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/11",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/12 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/12",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/13 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/13",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/14 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/14",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/15 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/15",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/16 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/16",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/17 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/17",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/18 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/18",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/19 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/19",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/20 interface",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "GigabitEthernetX/0/20",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/21 interface (Copper)",
+                "direction": "s",
+                "gender": "f",
+                "group": "GigabitEthernetX/0/0/21",
+                "name": "GigabitEthernetX/0/21C",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet X/0/21 interface (Fiber)",
+                "direction": "i",
+                "gender": "f",
+                "group": "GigabitEthernetX/0/0/21",
+                "name": "GigabitEthernetX/0/21F",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/22 interface (Copper)",
+                "direction": "s",
+                "gender": "f",
+                "group": "GigabitEthernetX/0/0/22",
+                "name": "GigabitEthernetX/0/22C",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet X/0/22 interface (Fiber)",
+                "direction": "i",
+                "gender": "f",
+                "group": "GigabitEthernetX/0/0/22",
+                "name": "GigabitEthernetX/0/22F",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/23 interface (Copper)",
+                "direction": "s",
+                "gender": "f",
+                "group": "GigabitEthernetX/0/0/23",
+                "name": "GigabitEthernetX/0/23C",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet X/0/23 interface (Fiber)",
+                "direction": "i",
+                "gender": "f",
+                "group": "GigabitEthernetX/0/0/23",
+                "name": "GigabitEthernetX/0/23F",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/0/24 interface (Copper)",
+                "direction": "s",
+                "gender": "f",
+                "group": "GigabitEthernetX/0/0/24",
+                "name": "GigabitEthernetX/0/24C",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet X/0/24 interface (Fiber)",
+                "direction": "i",
+                "gender": "f",
+                "group": "GigabitEthernetX/0/0/24",
+                "name": "GigabitEthernetX/0/24F",
+                "type__name": "Transceiver | GE | SFP"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "S5328C-EI"
+            }
+        }
+    }
+]
