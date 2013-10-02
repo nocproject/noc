@@ -95,7 +95,7 @@
 
             {
                 "description": "Ethernet1/9 interface - fiber",
-                "direction": "s",
+                "direction": "i",
                 "gender": "f",
                 "group": "0",
                 "name": "Ethernet1/9F",
@@ -112,7 +112,7 @@
             },
             {
                 "description": "Ethernet1/10 interface - fiber",
-                "direction": "s",
+                "direction": "i",
                 "gender": "f",
                 "group": "1",
                 "name": "Ethernet1/10F",
