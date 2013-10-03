@@ -121,8 +121,9 @@ class ObjectModel(Document):
                 return c
         return None
 
-    def to_json(self):
-        r = {
+    @property
+    def json_data(self):
+        return {
             "name": self.name,
             "description": self.description,
             "vendor__code": self.vendor.code,
@@ -138,7 +139,10 @@ class ObjectModel(Document):
                 } for c in self.connections
             ]
         }
-        return to_json([r], order=["name", "vendor__code", "description"])
+
+    def to_json(self):
+        return to_json([self.json_data],
+                       order=["name", "vendor__code", "description"])
 
 
 class ModelConnectionsCache(Document):
