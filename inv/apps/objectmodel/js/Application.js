@@ -14,7 +14,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
         "NOC.inv.objectmodel.Model",
         "NOC.inv.vendor.LookupField",
         "NOC.inv.connectiontype.LookupField",
-        "NOC.inv.objectmodel.templates.Test"
+        "NOC.inv.objectmodel.templates.Test",
+        "NOC.inv.objectmodel.templates.JSON"
     ],
     model: "NOC.inv.objectmodel.Model",
     search: true,
@@ -29,6 +30,15 @@ Ext.define("NOC.inv.objectmodel.Application", {
             name: "vendor",
             ftype: "lookup",
             lookup: "inv.vendor"
+        }
+    ],
+
+    actions: [
+        {
+            title: "Get JSON",
+            action: "json",
+            glyph: NOC.glyph.file,
+            resultTemplate: "JSON"
         }
     ],
 

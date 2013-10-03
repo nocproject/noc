@@ -12,6 +12,8 @@ from collections import defaultdict
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.connectiontype import ConnectionType
+from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
+from noc.lib.prettyjson import to_json
 
 
 class ObjectModelApplication(ExtDocApplication):
@@ -56,3 +58,14 @@ class ObjectModelApplication(ExtDocApplication):
                 "connections": proposals
             }]
         return r
+
+    @view(url="^actions/json/$", method=["POST"],
+          access="read",
+          validate={
+            "ids": ListOfParameter(element=DocumentParameter(ObjectModel))
+          },
+          api=True)
+    def api_action_json(self, request, ids):
+        r = [o.json_data for o in ids]
+        s = to_json(r, order=["name", "vendor__code", "description"])
+        return {"data": s}
