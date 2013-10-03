@@ -1,0 +1,1633 @@
+[
+    {
+        "name": "Cisco | ME3400E | ME34X-PWR-AC",
+        "vendor__code": "CISCO",
+        "description": "AC PSU for Cisco ME3400E Series switches",
+        "connections": [
+            {
+                "description": "PSU connect to switch",
+                "direction": "o",
+                "gender": "m",
+                "group": "0",
+                "name": "in",
+                "type__name": "Cisco | ME3400E | PSU"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "ME34X-PWR-AC"
+            }
+        }
+    },
+
+    {
+        "name": "Cisco | ME3400E | ME34X-PWR-DC",
+        "vendor__code": "CISCO",
+        "description": "DC PSU for Cisco ME3400E Series switches",
+        "connections": [
+            {
+                "description": "PSU connect to switch",
+                "direction": "o",
+                "gender": "m",
+                "group": "0",
+                "name": "in",
+                "type__name": "Cisco | ME3400E | PSU"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "ME34X-PWR-DC"
+            }
+        }
+    },
+
+    {
+        "name": "Cisco | ME3400 | ME-3400-24-TS-A",
+        "vendor__code": "CISCO",
+        "description": "Cisco ME3400 Series Metro Ethernet access switch with AC power supply, 24 FastEthernet + 2 SFP ports",
+        "connections": [
+            {
+                "description": "Console port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Console",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/1 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/1",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/10 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/10",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/11 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/11",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/12 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/12",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/13 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/13",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/14 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/14",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/15 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/15",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/16 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/16",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/17 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/17",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/18 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/18",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/19 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/19",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/2 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/2",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/20 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/20",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/21 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/21",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/22 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/22",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/23 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/23",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/24 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/24",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/3 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/3",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/4 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/4",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/5 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/5",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/6 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/6",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/7 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/7",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/8 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/8",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/9 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/9",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/1 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/1",
+                "type__name": "Transceiver | GE | SFP | Cisco"
+            },
+            {
+                "description": "GigabitEthernet 0/2 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/2",
+                "type__name": "Transceiver | GE | SFP | Cisco"
+            },
+            {
+                "description": "Power input",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Power",
+                "type__name": "Power | IEC 60320 C14"
+            }
+        ],
+        "data": {
+            "airflow": {
+                "exhaust": "b",
+                "intake": "f"
+            },
+            "asset": {
+                "part_no0": "ME-3400-24-TS-A"
+            }
+        }
+    },
+
+    {
+        "name": "Cisco | ME3400 | ME-3400-24-TS-D",
+        "vendor__code": "CISCO",
+        "description": "Cisco ME3400 Series Metro Ethernet access switch with DC power supply, 24 FastEthernet + 2 SFP ports",
+        "connections": [
+            {
+                "description": "Console port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Console",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/1 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/1",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/10 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/10",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/11 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/11",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/12 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/12",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/13 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/13",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/14 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/14",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/15 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/15",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/16 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/16",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/17 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/17",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/18 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/18",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/19 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/19",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/2 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/2",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/20 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/20",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/21 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/21",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/22 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/22",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/23 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/23",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/24 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/24",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/3 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/3",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/4 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/4",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/5 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/5",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/6 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/6",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/7 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/7",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/8 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/8",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/9 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/9",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/1 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/1",
+                "type__name": "Transceiver | GE | SFP | Cisco"
+            },
+            {
+                "description": "GigabitEthernet 0/2 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/2",
+                "type__name": "Transceiver | GE | SFP | Cisco"
+            },
+            {
+                "description": "Power input DC A + DC B",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Power",
+                "type__name": "Power | MSTB 2.5/4-G-5.08"
+            }
+        ],
+        "data": {
+            "airflow": {
+                "exhaust": "b",
+                "intake": "f"
+            },
+            "asset": {
+                "part_no0": "ME-3400-24-TS-D"
+            }
+        }
+    },
+
+        {
+        "name": "Cisco | ME3400E | ME-3400E-24-TS-M",
+        "vendor__code": "CISCO",
+        "description": "Cisco ME3400E Series Metro Ethernet access switch with 24 FastEthernet + 2 combo ports",
+        "connections": [
+            {
+                "description": "Console port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Console",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/1 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/1",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/10 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/10",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/11 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/11",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/12 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/12",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/13 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/13",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/14 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/14",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/15 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/15",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/16 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/16",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/17 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/17",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/18 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/18",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/19 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/19",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/2 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/2",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/20 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/20",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/21 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/21",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/22 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/22",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/23 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/23",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/24 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/24",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/3 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/3",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/4 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/4",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/5 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/5",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/6 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/6",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/7 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/7",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/8 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/8",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "FastEthernet 0/9 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Fa0/9",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/1 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/1",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/1 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/1(SFP)",
+                "type__name": "Transceiver | GE | SFP | Cisco"
+            },
+            {
+                "description": "GigabitEthernet 0/2 RJ45 port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/2",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/2 SFP port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/2(SFP)",
+                "type__name": "Transceiver | GE | SFP | Cisco"
+            },
+            {
+                "description": "PSU1 Slot",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "PSU1",
+                "type__name": "Cisco | ME3400E | PSU"
+            },
+            {
+                "description": "PSU2 Slot",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "PSU2",
+                "type__name": "Cisco | ME3400E | PSU"
+            },
+            {
+                "description": "Power input DC A + DC B",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Power DC",
+                "type__name": "Power | MSTB 2.5/4-G-5.08"
+            },
+            {
+                "description": "Power input AC1",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Power AC1",
+                "type__name": "Power | IEC 60320 C14"
+            },
+            {
+                "description": "Power input AC2",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Power AC2",
+                "type__name": "Power | IEC 60320 C14"
+            }
+        ],
+        "data": {
+            "airflow": {
+                "exhaust": "b",
+                "intake": "f"
+            },
+            "asset": {
+                "part_no0": "ME-3400E-24-TS-M"
+            }
+        }
+    },
+
+        {
+        "name": "Cisco | ME3400 | ME-3400G-12CS-A",
+        "vendor__code": "CISCO",
+        "description": "Cisco ME3400 Series Metro Ethernet access switch with AC power supply, 12 combo + 4 SFP ports",
+        "connections": [
+            {
+                "description": "Console port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Console",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/1 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/1",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/1 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/1(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/10 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/10",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/10 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/10(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/11 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/11",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/11 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/11(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/12 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/12",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/12 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/12(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/13 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/13",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/14 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/14",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/15 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/15",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/16 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/16",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/2 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/2",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/2 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/2(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/3 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/3",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/3 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/3(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/4 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/4",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/4 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/4(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/5 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/5",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/5 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/5(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/6 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/6",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/6 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/6(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/7 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/7",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/7 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/7(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/8 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/8",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/8 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/8(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/9 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/9",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/9 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/9(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "Power input AC1",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Power AC1",
+                "type__name": "Power | IEC 60320 C14"
+            },
+            {
+                "description": "Power input AC2",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Power AC2",
+                "type__name": "Power | IEC 60320 C14"
+            }
+        ],
+        "data": {
+            "airflow": {
+                "exhaust": "b",
+                "intake": "f"
+            },
+            "asset": {
+                "part_no0": "ME-3400G-12CS-D"
+            }
+        }
+    },
+
+        {
+        "name": "Cisco | ME3400E | ME-3400EG-12CS-M",
+        "vendor__code": "CISCO",
+        "description": "Cisco ME3400E Series Metro Ethernet access switch with 12 combo + 4 SFP ports",
+        "connections": [
+            {
+                "description": "Console port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Console",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/1 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/1",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/1 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/1(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/10 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/10",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/10 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/10(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/11 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/11",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/11 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/11(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/12 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/12",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/12 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/12(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/13 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/13",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/14 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/14",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/15 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/15",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/16 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/16",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/2 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/2",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/2 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/2(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/3 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/3",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/3 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/3(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/4 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/4",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/4 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/4(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/5 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/5",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/5 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/5(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/6 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/6",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/6 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/6(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/7 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/7",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/7 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/7(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/8 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/8",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/8 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/8(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/9 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/9",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/9 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/9(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "PSU1 Slot",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "PSU1",
+                "type__name": "Cisco | ME3400E | PSU"
+            },
+            {
+                "description": "PSU2 Slot",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "PSU2",
+                "type__name": "Cisco | ME3400E | PSU"
+            },
+            {
+                "description": "Power input AC1",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Power AC1",
+                "type__name": "Power | IEC 60320 C14"
+            },
+            {
+                "description": "Power input AC2",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Power AC2",
+                "type__name": "Power | IEC 60320 C14"
+            },
+            {
+                "description": "Power input DC A + DC B",
+                "direction": "s",
+                "gender": "m",
+                "group": "0",
+                "name": "Power DC",
+                "type__name": "Power | MSTB 2.5/4-G-5.08"
+            }
+        ],
+        "data": {
+            "airflow": {
+                "exhaust": "b",
+                "intake": "f"
+            },
+            "asset": {
+                "part_no0": "ME-3400EG-12CS-M"
+            }
+        }
+    },
+
+    {
+        "name": "Cisco | ME3400 | ME-3400G-12CS-D",
+        "vendor__code": "CISCO",
+        "description": "Cisco ME3400 Series Metro Ethernet access switch with DC power supply, 12 combo + 4 SFP ports",
+        "connections": [
+            {
+                "description": "Console port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Console",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/1 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/1",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/1 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/1(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/10 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/10",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/10 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/10(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/11 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/11",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/11 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/11(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/12 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/12",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/12 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/12(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/13 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/13",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/14 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/14",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/15 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/15",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/16 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/16",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/2 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/2",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/2 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/2(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/3 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/3",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/3 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/3(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/4 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/4",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/4 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/4(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/5 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/5",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/5 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/5(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/6 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/6",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/6 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/6(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/7 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/7",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/7 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/7(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/8 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/8",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/8 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/8(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "GigabitEthernet 0/9 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/9",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet 0/9 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Gi0/9(SFP)",
+                "type__name": "Transceiver | GE | SFP"
+            },
+            {
+                "description": "Power input DC A + DC B",
+                "direction": "i",
+                "gender": "m",
+                "group": "0",
+                "name": "Power PSU1",
+                "type__name": "Power | MSTB 2.5/4-G-5.08"
+            },
+            {
+                "description": "Power input DC A + DC B",
+                "direction": "i",
+                "gender": "m",
+                "group": "0",
+                "name": "Power PSU2",
+                "type__name": "Power | MSTB 2.5/4-G-5.08"
+            }
+        ],
+        "data": {
+            "airflow": {
+                "exhaust": "b",
+                "intake": "f"
+            },
+            "asset": {
+                "part_no0": "ME-3400G-12CS-D"
+            }
+        }
+    }
+]
