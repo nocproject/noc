@@ -137,5 +137,33 @@
         "description": "Naked wire",
         "genders": "f",
         "c_group": ["power_naked"]
+    },
+
+    {
+        "name": "Power | MSTB 2.5/2-G-5.08",
+        "description": "Terminal block outlet, 2 pins",
+        "c_group": ["mstb_2.5_2_5.08"],
+        "genders": "f"
+    },
+
+    {
+        "name": "Power | MSTB 2.5/2-ST-5.08",
+        "description": "Terminal block connector, 2 pins",
+        "c_group": ["mstb_2.5_2_5.08"],
+        "genders": "m"
+    },
+
+    {
+        "name": "Power | MSTB 2.5/4-G-5.08",
+        "description": "Terminal block outlet, 4 pins",
+        "c_group": ["mstb_2.5_4_5.08"],
+        "genders": "f"
+    },
+
+    {
+        "name": "Power | MSTB 2.5/4-ST-5.08",
+        "description": "Terminal block connector, 4 pins",
+        "c_group": ["mstb_2.5_4_5.08"],
+        "genders": "m"
     }
 ]
