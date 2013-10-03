@@ -975,6 +975,9 @@ Ext.define("NOC.core.ModelApplication", {
                         html: d,
                         width: 600,
                         height: 400,
+                        autoScroll: true,
+                        layout: "fit",
+                        maximizable: true,
                         title: Ext.String.format("Result: {0}", action.text)
                     }).show();
                 } else {
