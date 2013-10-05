@@ -90,7 +90,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "port0",
-                "type__name": "Force10 | S | Stacking"
+                "type__name": "Force10 | S | Stacking 12G"
             },
             {
                 "description": "Stack port 1",
@@ -98,7 +98,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "port1",
-                "type__name": "Force10 | S | Stacking"
+                "type__name": "Force10 | S | Stacking 12G"
             }
         ],
         "data": {
@@ -126,7 +126,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "port0",
-                "type__name": "Force10 | S | Stacking"
+                "type__name": "Force10 | S | Stacking 24G"
             }
         ],
         "data": {

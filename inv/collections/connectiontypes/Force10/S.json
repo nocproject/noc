@@ -1,7 +1,14 @@
 [
     {
-        "name": "Force10 | S | Stacking",
-        "description": "Stacking cable connector",
+        "name": "Force10 | S | Stacking 12G",
+        "description": "12G Stacking cable connector",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Force10 | S | Stacking 24G",
+        "description": "24G Stacking cable connector",
         "c_group": [],
         "genders": "mf"
     },
