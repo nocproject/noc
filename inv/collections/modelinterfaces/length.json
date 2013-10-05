@@ -1,0 +1,15 @@
+[
+    {
+        "name": "length",
+        "description": "Cable length",
+        "attrs": [
+            {
+                "name": "length",
+                "type": "float",
+                "description": "Cable length in meters",
+                "required": true,
+                "is_const": false
+            }
+        ]
+    }
+]
