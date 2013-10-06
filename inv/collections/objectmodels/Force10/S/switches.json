@@ -250,6 +250,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "ac power",
+                "protocols": [">220VAC", ">110VAC"],
                 "type__name": "Power | IEC 60320 C14"
             },
             {
@@ -266,6 +267,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "console",
+                "protocols": [">RS232"],
                 "type__name": "Electrical | RJ45"
             }
         ],
@@ -720,6 +722,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "ac power",
+                "protocols": [">220VAC", ">110VAC"],
                 "type__name": "Power | IEC 60320 C14"
             },
             {
@@ -736,6 +739,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "console",
+                "protocols": [">RS232"],
                 "type__name": "Electrical | RJ45"
             }
         ],

@@ -122,7 +122,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             text: "Name",
                             dataIndex: "name",
                             editor: "textfield",
-                            width: 150
+                            width: 100
                         },
                         {
                             text: "Connection Type",
@@ -135,7 +135,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             text: "Group",
                             dataIndex: "group",
                             editor: "textfield",
-                            width: 100
+                            width: 50
                         },
                         {
                             text: "Direction",
@@ -148,7 +148,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                     ["s", "Connection"]
                                 ]
                             },
-                            width: 70
+                            width: 50
                         },
                         {
                             text: "Gender",
@@ -161,11 +161,17 @@ Ext.define("NOC.inv.objectmodel.Application", {
                                     ["s", "Genderless"]
                                 ]
                             },
-                            width: 70
+                            width: 50
                         },
                         {
                             text: "Cross",
                             dataIndex: "cross",
+                            width: 100,
+                            editor: "textfield"
+                        },
+                        {
+                            text: "Protocols",
+                            dataIndex: "protocols",
                             width: 150,
                             editor: "textfield"
                         },
@@ -220,5 +226,23 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 NOC.error("Failed to get data");
             }
         });
+    },
+    //
+    cleanData: function(v) {
+        var me = this,
+            i, c, x;
+        for(i in v.connections) {
+            c = v.connections[i];
+            if(!Ext.isArray(c.protocols)) {
+                x = c.protocols.trim();
+                if(x==="") {
+                    c.protocols = [];
+                } else {
+                    c.protocols = c.protocols.split(",").map(function(v) {
+                        return v.trim();
+                    });
+                }
+            }
+        }
     }
 });

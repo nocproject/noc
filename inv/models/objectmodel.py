@@ -35,6 +35,7 @@ class ObjectModelConnection(EmbeddedDocument):
     gender = StringField(choices=["s", "m", "f"])
     group = StringField(required=False)
     cross = StringField(required=False)
+    protocols = ListField(StringField(), required=False)
 
     def __unicode__(self):
         return self.name
@@ -46,20 +47,27 @@ class ObjectModelConnection(EmbeddedDocument):
             self.type.id == other.type.id and
             self.direction == other.direction and
             self.gender == other.gender and
-            self.group == other.group
+            self.group == other.group and
+            self.cross == other.cross and
+            self.protocols == other.protocols
         )
 
     @property
     def json_data(self):
-        return {
+        r = {
             "name": self.name,
             "description": self.description,
             "type__name": self.type.name,
-            "group": self.group,
             "direction": self.direction,
             "gender": self.gender,
-            "cross": self.cross
         }
+        if self.group:
+            r["group"] = self.group
+        if self.cross:
+            r["cross"] = self.cross
+        if self.protocols:
+            r["protocols"] = self.protocols
+        return r
 
 
 class ObjectModel(Document):

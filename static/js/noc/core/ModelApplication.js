@@ -764,6 +764,10 @@ Ext.define("NOC.core.ModelApplication", {
         }
         return values;
     },
+    //
+    cleanData: function(v) {
+
+    },
     // Save button pressed
     onSave: function() {
         var me = this;
@@ -775,6 +779,8 @@ Ext.define("NOC.core.ModelApplication", {
         if(!me.currentRecord && v[me.idField] !== undefined) {
             delete v[me.idField];
         }
+        //
+        me.cleanData(v);
         // Fetch comboboxes labels
         me.form.getFields().each(function(field) {
             if(Ext.isDefined(field.getLookupData))
