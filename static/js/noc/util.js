@@ -495,3 +495,63 @@ Handlebars.registerHelper("join", function(context, block) {
 });
 
 Handlebars.registerHelper("formatDuration", NOC.render.Duration);
+
+Handlebars.registerHelper("grid", function(val) {
+    var r = [],
+        xset = {},
+        yset = {},
+        values = {},
+        i, j, y, v,
+        xv = [],
+        yv = [];
+    // Get all unique x and y
+    for(i in val) {
+        v = val[i];
+        if(!xset[v.x]) {
+            xset[v.x] = true;
+            xv.push(v.x);
+        }
+        if(!yset[v.y]) {
+            yset[v.y] = true;
+            yv.push(v.y);
+        }
+        if(!values[v.x]) {
+            values[v.x] = {};
+        }
+        values[v.x][v.y] = v.v;
+    }
+    xv = xv.sort();
+    yv = yv.sort();
+    //
+    // Build table
+    //
+    r.push("<table border='1'>");
+    // Push header
+    r.push("<tr><td></td>");
+    for(i in xv) {
+        r.push("<th>");
+        r.push(Handlebars.Utils.escapeExpression(xv[i]));
+        r.push("</th>");
+    }
+    r.push("</tr>");
+    // Push rows
+    for(i in yv) {
+        y = yv[i];
+        r.push("<tr>");
+        r.push("<th>");
+        r.push(Handlebars.Utils.escapeExpression(y));
+        r.push("</th>");
+        for(j in xv) {
+            v = xv[j];
+            r.push("<td>");
+            if(values[v] && values[v][y] !== undefined) {
+                r.push(Handlebars.Utils.escapeExpression(values[v][y]));
+            }
+            r.push("</td>");
+        }
+        r.push("</tr>");
+    }
+    r.push("</table>");
+    // return r.join("");
+    return new Handlebars.SafeString(r.join(""));
+});
