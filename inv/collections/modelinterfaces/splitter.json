@@ -1,0 +1,15 @@
+[
+    {
+        "name": "splitter",
+        "description": "Split input power to outputs with given gain",
+        "attrs": [
+            {
+                "name": "split",
+                "type": "str",
+                "description": "Input power division, as comma-separated list of output_name=gain",
+                "required": true,
+                "is_const": true
+            }
+        ]
+    }
+]
