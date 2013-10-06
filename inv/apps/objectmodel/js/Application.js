@@ -164,6 +164,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             width: 70
                         },
                         {
+                            text: "Cross",
+                            dataIndex: "cross",
+                            width: 150,
+                            editor: "textfield"
+                        },
+                        {
                             text: "Description",
                             dataIndex: "description",
                             editor: "textfield",
@@ -208,7 +214,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                me.showItem(me.ITEM_TEST).preview(me.currentRecord, {data: data});
+                me.showItem(me.ITEM_TEST).preview(me.currentRecord, data);
             },
             failure: function() {
                 NOC.error("Failed to get data");

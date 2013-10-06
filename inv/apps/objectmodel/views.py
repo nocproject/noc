@@ -35,6 +35,7 @@ class ObjectModelApplication(ExtDocApplication):
           access="read", api=True)
     def api_compatible(self, request, id):
         o = self.get_object_or_404(ObjectModel, id=id)
+        # Connections
         r = []
         for c in o.connections:
             # Find compatible objects
@@ -57,7 +58,20 @@ class ObjectModelApplication(ExtDocApplication):
                 "gender": c.gender,
                 "connections": proposals
             }]
-        return r
+        # Crossing
+        # @todo: Count splitter interface
+        rc = []
+        for c in o.connections:
+            if c.cross:
+                rc += [{
+                    "y": c.name,
+                    "x": c.cross,
+                    "v": "1"
+                }]
+        return {
+            "connections": r,
+            "crossing": rc
+        }
 
     @view(url="^actions/json/$", method=["POST"],
           access="read",

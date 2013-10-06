@@ -1,6 +1,6 @@
 <h1>Possible connections for model {{name}}</h1>
 <table border="1">
-{{#each data}}
+{{#each connections}}
     <tr>
         <td><b>{{name}}</b><br/><i>({{description}})</i></td>
         <td>{{direction}}</td>
@@ -19,3 +19,5 @@
     </tr>
 {{/each}}
 </table>
+<h1>Internal crossing for {{ name }}</h1>
+{{ grid crossing }}
