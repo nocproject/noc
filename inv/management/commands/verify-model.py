@@ -8,7 +8,7 @@
 
 ## Python modules
 from optparse import OptionParser, make_option
-from collections import defaultdict
+
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
@@ -17,8 +17,16 @@ from noc.inv.models.objectmodel import ObjectModel, ModelConnectionsCache
 
 class Command(BaseCommand):
     help = "Verify models"
+    option_list = BaseCommand.option_list + (
+    make_option("-r", "--rebuild", dest="action",
+        action="store_const", const="rebuild_cache",
+        help="Rebuild connection cache"),
+    )
 
     def handle(self, *args, **options):
+        if options.get("action") == "rebuild_cache":
+            print "Rebuilding connections cache"
+            ModelConnectionsCache.rebuild()
         CHECK_MAP = {
             "Electrical | RJ45": self.check_ct_rj45,
             "Electrical | Power | IEC 60320 C14": self.check_ct_c14,
