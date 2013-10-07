@@ -10,7 +10,8 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "RX Port",
@@ -18,7 +19,8 @@
                 "gender": "f",
                 "group": null,
                 "name": "rx",
-                "type__name": "Optical | LC"
+                "type__name": "Optical | LC",
+                "protocols": [">1000BASESX"]
             },
             {
                 "description": "TX Port",
@@ -26,7 +28,8 @@
                 "gender": "f",
                 "group": null,
                 "name": "tx",
-                "type__name": "Optical | LC"
+                "type__name": "Optical | LC",
+                "protocols": ["<1000BASESX"]
             }
         ],
         "data": {}
@@ -43,7 +46,8 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "RX Port",
@@ -51,7 +55,8 @@
                 "gender": "f",
                 "group": null,
                 "name": "rx",
-                "type__name": "Optical | LC"
+                "type__name": "Optical | LC",
+                "protocols": [">1000BASELX-1310"]
             },
             {
                 "description": "TX Port",
@@ -59,7 +64,8 @@
                 "gender": "f",
                 "group": null,
                 "name": "tx",
-                "type__name": "Optical | LC"
+                "type__name": "Optical | LC",
+                "protocols": ["<1000BASELX-1310"]
             }
         ],
         "data": {}
@@ -76,7 +82,8 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "RX Port",
@@ -84,7 +91,8 @@
                 "gender": "f",
                 "group": null,
                 "name": "rx",
-                "type__name": "Optical | LC"
+                "type__name": "Optical | LC",
+                "protocols": [">1000BASEEX-1310"]
             },
             {
                 "description": "TX Port",
@@ -92,7 +100,8 @@
                 "gender": "f",
                 "group": null,
                 "name": "tx",
-                "type__name": "Optical | LC"
+                "type__name": "Optical | LC",
+                "protocols": ["<1000BASEEX-1310"]
             }
         ],
         "data": {}
@@ -109,7 +118,8 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "RX Port",
@@ -117,7 +127,8 @@
                 "gender": "f",
                 "group": null,
                 "name": "rx",
-                "type__name": "Optical | LC"
+                "type__name": "Optical | LC",
+                "protocols": [">1000BASEZX-1550"]
             },
             {
                 "description": "TX Port",
@@ -125,7 +136,8 @@
                 "gender": "f",
                 "group": null,
                 "name": "tx",
-                "type__name": "Optical | LC"
+                "type__name": "Optical | LC",
+                "protocols": ["<1000BASEZX-1550"]
             }
         ],
         "data": {}
