@@ -1,41 +1,41 @@
 [
     {
-        "name": "Transceiver | GE | GBIC",
+        "name": "Transceiver | GBIC",
         "description": "GBIC transceiver slot",
         "c_group": [],
         "genders": "mf"
     },
 
     {
-        "name": "Transceiver | GE | SFP",
+        "name": "Transceiver | SFP",
         "description": "SFP transceiver slot",
         "c_group": [],
         "genders": "mf"
     },
 
     {
-        "name": "Transceiver | 10GE | XENPAK",
+        "name": "Transceiver | XENPAK",
         "description": "XENPAK transceiver slot",
         "c_group": [],
         "genders": "mf"
     },
 
     {
-        "name": "Transceiver | 10GE | X2",
+        "name": "Transceiver | X2",
         "description": "X2 transceiver slot",
         "c_group": [],
         "genders": "mf"
     },
 
     {
-        "name": "Transceiver | 10GE | XFP",
+        "name": "Transceiver | XFP",
         "description": "XFP transceiver slot",
         "c_group": [],
         "genders": "mf"
     },
 
     {
-        "name": "Transceiver | 10GE | SFP+",
+        "name": "Transceiver | SFP+",
         "description": "SFP+ transceiver slot",
         "c_group": [],
         "genders": "mf"

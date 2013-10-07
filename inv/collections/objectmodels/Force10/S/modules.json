@@ -10,7 +10,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "port0",
-                "type__name": "Transceiver | 10GE | XFP"
+                "type__name": "Transceiver | XFP"
             },
             {
                 "description": "XFP Port 1",
@@ -18,7 +18,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "port1",
-                "type__name": "Transceiver | 10GE | XFP"
+                "type__name": "Transceiver | XFP"
             },
             {
                 "description": "Chassis connection",

@@ -1,49 +1,49 @@
 [
     {
-        "name": "Transceiver | GE | GBIC | Cisco",
+        "name": "Transceiver | GBIC | Cisco",
         "description": "Cisco-compatible GBIC transceiver slot",
         "c_group": [],
-        "extend__name": "Transceiver | GE | GBIC",
+        "extend__name": "Transceiver | GBIC",
         "genders": "mf"
     },
 
     {
-        "name": "Transceiver | GE | SFP | Cisco",
+        "name": "Transceiver | SFP | Cisco",
         "description": "Cisco-compatible SFP transceiver slot",
         "c_group": [],
-        "extend__name": "Transceiver | GE | SFP",
+        "extend__name": "Transceiver | SFP",
         "genders": "mf"
     },
 
     {
-        "name": "Transceiver | 10GE | XENPAK | Cisco",
+        "name": "Transceiver | XENPAK | Cisco",
         "description": "Cisco-compatible XENPAK transceiver slot",
         "c_group": [],
-        "extend__name": "Transceiver | 10GE | XENPAK",
+        "extend__name": "Transceiver | XENPAK",
         "genders": "mf"
     },
 
     {
-        "name": "Transceiver | 10GE | X2 | Cisco",
+        "name": "Transceiver | X2 | Cisco",
         "description": "Cisco-compatible X2 transceiver slot",
         "c_group": [],
-        "extend__name": "Transceiver | 10GE | X2",
+        "extend__name": "Transceiver | X2",
         "genders": "mf"
     },
 
     {
-        "name": "Transceiver | 10GE | XFP | Cisco",
+        "name": "Transceiver | XFP | Cisco",
         "description": "Cisco-compatible XFP transceiver slot",
         "c_group": [],
-        "extend__name": "Transceiver | 10GE | XFP",
+        "extend__name": "Transceiver | XFP",
         "genders": "mf"
     },
 
     {
-        "name": "Transceiver | 10GE | SFP+ | Cisco",
+        "name": "Transceiver | SFP+ | Cisco",
         "description": "Cisco-compatible SFP+ transceiver slot",
         "c_group": [],
-        "extend__name": "Transceiver | 10GE | SFP+",
+        "extend__name": "Transceiver | SFP+",
         "genders": "mf"
     }
 ]

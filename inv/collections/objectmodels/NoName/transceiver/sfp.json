@@ -1,6 +1,6 @@
 [
     {
-        "name": "NoName | Transceiver | SFP SX",
+        "name": "NoName | Transceiver | 1G | SFP SX",
         "vendor__name": "NoName",
         "description": "NoName SFP SX transceiver",
         "connections": [
@@ -10,7 +10,7 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "RX Port",
@@ -33,7 +33,7 @@
     },
 
     {
-        "name": "NoName | Transceiver | SFP LX",
+        "name": "NoName | Transceiver | 1G | SFP LX",
         "vendor__name": "NoName",
         "description": "NoName SFP LX transceiver",
         "connections": [
@@ -43,7 +43,7 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "RX Port",
@@ -66,7 +66,7 @@
     },
 
     {
-        "name": "NoName | Transceiver | SFP EX",
+        "name": "NoName | Transceiver | 1G | SFP EX",
         "vendor__name": "NoName",
         "description": "NoName SFP EX transceiver",
         "connections": [
@@ -76,7 +76,7 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "RX Port",
@@ -99,7 +99,7 @@
     },
 
     {
-        "name": "NoName | Transceiver | SFP ZX",
+        "name": "NoName | Transceiver | 1G | SFP ZX",
         "vendor__name": "NoName",
         "description": "NoName SFP ZX transceiver",
         "connections": [
@@ -109,7 +109,7 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "RX Port",

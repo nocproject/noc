@@ -18,7 +18,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "xe-X/Y/0",
-                "type__name": "Transceiver | 10GE | XFP"
+                "type__name": "Transceiver | XFP"
             },
             {
                 "description": "Port 1",
@@ -26,7 +26,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "xe-X/Y/1",
-                "type__name": "Transceiver | 10GE | XFP"
+                "type__name": "Transceiver | XFP"
             },
             {
                 "description": "Port 2",
@@ -34,7 +34,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "xe-X/Y/2",
-                "type__name": "Transceiver | 10GE | XFP"
+                "type__name": "Transceiver | XFP"
             },
             {
                 "description": "Port 3",
@@ -42,7 +42,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "xe-X/Y/3",
-                "type__name": "Transceiver | 10GE | XFP"
+                "type__name": "Transceiver | XFP"
             }
         ],
         "data": {
