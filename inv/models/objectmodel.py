@@ -168,3 +168,12 @@ class ModelConnectionsCache(Document):
     gender = StringField(choices=["s", "m", "f"])
     model = ObjectIdField()
     name = StringField()
+
+    def rebuild(self):
+        """
+        Rebuild cache
+        """
+        collection = ModelConnectionsCache._get_collection()
+        collection.drop()
+        for m in ObjectModel.objects.all():
+            m.save()
