@@ -12,7 +12,7 @@ from collections import defaultdict
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.objectmodel import ObjectModel, ModelConnectionsCache
 
 
 class Command(BaseCommand):
@@ -21,7 +21,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         CHECK_MAP = {
             "Electrical | RJ45": self.check_ct_rj45,
-            "Electrical | Power | IEC 60320 C14": self.check_ct_c14
+            "Electrical | Power | IEC 60320 C14": self.check_ct_c14,
+            "Transceiver | SFP": self.check_ct_sfp
         }
         for m in ObjectModel.objects.all():
             self.errors = []
@@ -44,6 +45,13 @@ class Command(BaseCommand):
                 c.gender, c.type.name, c.type.genders
             ))
 
+    def check_protocols(self, c, protocols):
+        if c.protocols:
+            for p in protocols:
+                if p in c.protocols:
+                    return
+        self.e(c, "Must have one of protocols: %s" % ", ".join(protocols))
+
     def check_ct_rj45(self, c):
         if c.direction != "s":
             self.e(c, "RJ45 must have direction 's' (has '%s')" % c.direction)
@@ -53,5 +61,11 @@ class Command(BaseCommand):
     def check_ct_c14(self, c):
         if c.direction != "s":
             self.e(c, "C14 must have direction 's' (has '%s')" % c.direction)
-        if not c.protocols:
-            self.e(c, "C14 must have at least one protocol")
+        self.check_protocols(c, [
+            ">220VAC", "<220VAC", ">110VAC", "<110VAC"
+        ])
+
+    def check_ct_sfp(self, c):
+        self.check_protocols(c, [
+            "TransEth100M", "TransEth1G", "TransEth10G"
+        ])
