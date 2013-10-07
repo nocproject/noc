@@ -18,7 +18,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "power",
-                "type__name": "Power | IEC 60320 C19"
+                "type__name": "Power | IEC 60320 C20",
+                "protocols": [">220VAC", ">110VAC"]
             }
         ],
         "data": {

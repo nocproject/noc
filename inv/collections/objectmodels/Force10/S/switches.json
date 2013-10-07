@@ -318,7 +318,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/1",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/2 port",
@@ -326,7 +327,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/2",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/3 port",
@@ -334,7 +336,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/3",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/4 port",
@@ -342,7 +345,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/4",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/5 port",
@@ -350,7 +354,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/5",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/6 port",
@@ -358,7 +363,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/6",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/7 port",
@@ -366,7 +372,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/7",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/8 port",
@@ -374,7 +381,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/8",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/9 port",
@@ -382,7 +390,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/9",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/10 port",
@@ -390,7 +399,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/10",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/11 port",
@@ -398,7 +408,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/11",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/12 port",
@@ -406,7 +417,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/12",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/13 port",
@@ -414,7 +426,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/13",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/14 port",
@@ -422,7 +435,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/14",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/15 port",
@@ -430,7 +444,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/15",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/16 port",
@@ -438,7 +453,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/16",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/17 port",
@@ -446,7 +462,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/17",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/18 port",
@@ -454,7 +471,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/18",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/19 port",
@@ -462,7 +480,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/19",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/20 port",
@@ -470,7 +489,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/20",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/21 port",
@@ -478,7 +498,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/21",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/22 port",
@@ -486,7 +507,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/22",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/23 port",
@@ -494,7 +516,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/23",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/24 port",
@@ -502,7 +525,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/24",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/25 port",
@@ -510,7 +534,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/25",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/26 port",
@@ -518,7 +543,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/26",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/27 port",
@@ -526,7 +552,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/27",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/28 port",
@@ -534,7 +561,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/28",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/29 port",
@@ -542,7 +570,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/29",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/30 port",
@@ -550,7 +579,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/30",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/31 port",
@@ -558,7 +588,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/31",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/32 port",
@@ -566,7 +597,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/32",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/33 port",
@@ -574,7 +606,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/33",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/34 port",
@@ -582,7 +615,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/34",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/35 port",
@@ -590,7 +624,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/35",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/36 port",
@@ -598,7 +633,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/36",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/37 port",
@@ -606,7 +642,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/37",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/38 port",
@@ -614,7 +651,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/38",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/39 port",
@@ -622,7 +660,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/39",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/40 port",
@@ -630,7 +669,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/40",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/41 port",
@@ -638,7 +678,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/41",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/42 port",
@@ -646,7 +687,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/42",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/43 port",
@@ -654,7 +696,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/43",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/44 port",
@@ -662,7 +705,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/44",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/45 combo (TX)",
@@ -670,7 +714,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/45",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/45 combo (SFP)",
@@ -678,7 +723,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/45 SFP",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "Gi X/46 combo (TX)",
@@ -686,7 +732,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/46",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/46 combo (SFP)",
@@ -694,7 +741,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/46 SFP",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "Gi X/47 combo (TX)",
@@ -702,7 +750,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/47",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/47 combo (SFP)",
@@ -710,7 +759,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/47 SFP",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "Gi X/48 combo (TX)",
@@ -718,7 +768,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/48",
-                "type__name": "Electrical | RJ45"
+                "type__name": "Electrical | RJ45",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"]
             },
             {
                 "description": "Gi X/48 combo (SFP)",
@@ -726,7 +777,8 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/48 SFP",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "Extension slot 0",
