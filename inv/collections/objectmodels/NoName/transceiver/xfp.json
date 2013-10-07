@@ -1,6 +1,6 @@
 [
         {
-        "name": "NoName | Transceiver | XFP SR",
+        "name": "NoName | Transceiver | 10G | XFP SR",
         "vendor__code": "NONAME",
         "description": "NoName XFP LR transceiver",
         "connections": [
@@ -10,7 +10,7 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | 10GE | XFP"
+                "type__name": "Transceiver | XFP"
             },
             {
                 "description": "RX Port",
@@ -33,7 +33,7 @@
     },
     
     {
-        "name": "NoName | Transceiver | XFP LR",
+        "name": "NoName | Transceiver | 10G | XFP LR",
         "vendor__code": "NONAME",
         "description": "NoName XFP LR transceiver",
         "connections": [
@@ -43,7 +43,7 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | 10GE | XFP"
+                "type__name": "Transceiver | XFP"
             },
             {
                 "description": "RX Port",
@@ -66,7 +66,7 @@
     },
     
     {
-        "name": "NoName | Transceiver | XFP ER",
+        "name": "NoName | Transceiver | 10G | XFP ER",
         "vendor__code": "NONAME",
         "description": "NoName XFP ER transceiver",
         "connections": [
@@ -76,7 +76,7 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | 10GE | XFP"
+                "type__name": "Transceiver | XFP"
             },
             {
                 "description": "RX Port",
@@ -99,7 +99,7 @@
     },
 
     {
-        "name": "NoName | Transceiver | XFP ZR",
+        "name": "NoName | Transceiver | 10G | XFP ZR",
         "vendor__code": "NONAME",
         "description": "NoName XFP ZR transceiver",
         "connections": [
@@ -109,7 +109,7 @@
                 "gender": "m",
                 "group": null,
                 "name": "in",
-                "type__name": "Transceiver | 10GE | XFP"
+                "type__name": "Transceiver | XFP"
             },
             {
                 "description": "RX Port",

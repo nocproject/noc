@@ -130,7 +130,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/1",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/2 interface",
@@ -138,7 +138,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/2",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/3 interface",
@@ -146,7 +146,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/3",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/4 interface",
@@ -154,7 +154,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/4",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/5 interface",
@@ -162,7 +162,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/5",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/6 interface",
@@ -170,7 +170,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/6",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/7 interface",
@@ -178,7 +178,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/7",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/8 interface",
@@ -186,7 +186,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/8",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/9 interface",
@@ -194,7 +194,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/9",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/10 interface",
@@ -202,7 +202,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/10",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/11 interface",
@@ -210,7 +210,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/11",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/12 interface",
@@ -218,7 +218,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/12",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/13 interface",
@@ -226,7 +226,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/13",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/14 interface",
@@ -234,7 +234,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/14",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/15 interface",
@@ -242,7 +242,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/15",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/16 interface",
@@ -250,7 +250,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/16",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/17 interface",
@@ -258,7 +258,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/17",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/18 interface",
@@ -266,7 +266,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/18",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/19 interface",
@@ -274,7 +274,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/19",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/20 interface",
@@ -282,7 +282,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "GigabitEthernetX/0/20",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/21 interface (Copper)",
@@ -298,7 +298,7 @@
                 "gender": "f",
                 "group": "GigabitEthernetX/0/0/21",
                 "name": "GigabitEthernetX/0/21F",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/22 interface (Copper)",
@@ -314,7 +314,7 @@
                 "gender": "f",
                 "group": "GigabitEthernetX/0/0/22",
                 "name": "GigabitEthernetX/0/22F",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/23 interface (Copper)",
@@ -330,7 +330,7 @@
                 "gender": "f",
                 "group": "GigabitEthernetX/0/0/23",
                 "name": "GigabitEthernetX/0/23F",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet X/0/24 interface (Copper)",
@@ -346,7 +346,7 @@
                 "gender": "f",
                 "group": "GigabitEthernetX/0/0/24",
                 "name": "GigabitEthernetX/0/24F",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             }
         ],
         "data": {

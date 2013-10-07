@@ -178,7 +178,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/21 SFP",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi X/22 combo (TX)",
@@ -194,7 +194,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/22 SFP",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi X/23 combo (TX)",
@@ -210,7 +210,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/23 SFP",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi X/24 combo (TX)",
@@ -226,7 +226,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/24 SFP",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Extension slot 0",
@@ -650,7 +650,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/45 SFP",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi X/46 combo (TX)",
@@ -666,7 +666,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/46 SFP",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi X/47 combo (TX)",
@@ -682,7 +682,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/47 SFP",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi X/48 combo (TX)",
@@ -698,7 +698,7 @@
                 "gender": "f",
                 "group": "",
                 "name": "Gi X/48 SFP",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Extension slot 0",

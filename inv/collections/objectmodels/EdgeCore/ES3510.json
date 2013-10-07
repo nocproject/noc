@@ -98,7 +98,7 @@
                 "gender": "f",
                 "group": "0",
                 "name": "Ethernet1/9F",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Ethernet1/10 interface - coper",
@@ -114,7 +114,7 @@
                 "gender": "f",
                 "group": "1",
                 "name": "Ethernet1/10F",
-                "type__name": "Transceiver | GE | SFP"
+                "type__name": "Transceiver | SFP"
             }
         ],
         "data": {

@@ -1,9 +1,9 @@
 [
     {
-        "name": "Transceiver | 10GE | SFP+ | Force10",
+        "name": "Transceiver | SFP+ | Force10",
         "description": "Force10-compatible SFP+ transceiver slot",
         "c_group": [],
-        "extend__name": "Transceiver | 10GE | SFP+",
+        "extend__name": "Transceiver | SFP+",
         "genders": "mf"
     }
 ]
