@@ -169,11 +169,21 @@ class ModelConnectionsCache(Document):
     model = ObjectIdField()
     name = StringField()
 
-    def rebuild(self):
+    @classmethod
+    def rebuild(cls):
         """
         Rebuild cache
         """
+        nc = []
+        for m in ObjectModel.objects.all():
+            for c in m.connections:
+                nc += [{
+                    "type": c.type.id,
+                    "gender": c.gender,
+                    "model": m.id,
+                    "name": c.name
+                }]
         collection = ModelConnectionsCache._get_collection()
         collection.drop()
-        for m in ObjectModel.objects.all():
-            m.save()
+        if nc:
+            collection.insert(nc)
