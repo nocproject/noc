@@ -195,5 +195,32 @@
             }
         ],
         "data": {}
+    },
+
+    {
+        "name": "NoName | Transceiver | 1G | SFP TX",
+        "vendor__name": "NoName",
+        "description": "NoName SFP SX transceiver",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "group": null,
+                "name": "in",
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "port",
+                "type__name": "Electrical | RJ45",
+                "protocols": ["1000BASETX"]
+            }
+        ],
+        "data": {}
     }
 ]
