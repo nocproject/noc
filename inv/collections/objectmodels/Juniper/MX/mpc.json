@@ -17,7 +17,7 @@
                 "direction": "i",
                 "gender": "f",
                 "group": "",
-                "name": "pic0",
+                "name": "mic0",
                 "type__name": "Juniper | MX | MIC"
             },
             {
@@ -25,7 +25,7 @@
                 "direction": "i",
                 "gender": "f",
                 "group": "",
-                "name": "pic1",
+                "name": "mic1",
                 "type__name": "Juniper | MX | MIC"
             }
         ],
@@ -33,6 +33,155 @@
             "asset": {
                 "order_part_no0": "MX-MPC2-3D",
                 "part_no0": "750-031089"
+            }
+        }
+    },
+
+    {
+        "name": "Juniper | MX | MPC-3D-16XGE-SFPP",
+        "vendor__code": "JUNIPER",
+        "description": "16x10GE line card, price includes full scale L2/L2.5 and reduced scale L3 features",
+        "connections": [
+            {
+                "description": "Chassis connection",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "Port 0/0",
+                "direction": "i",
+                "gender": "f",
+                "name": "0/0",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 0/1",
+                "direction": "i",
+                "gender": "f",
+                "name": "0/1",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 0/2",
+                "direction": "i",
+                "gender": "f",
+                "name": "0/2",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 0/3",
+                "direction": "i",
+                "gender": "f",
+                "name": "0/3",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 1/0",
+                "direction": "i",
+                "gender": "f",
+                "name": "1/0",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 1/1",
+                "direction": "i",
+                "gender": "f",
+                "name": "1/1",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 1/2",
+                "direction": "i",
+                "gender": "f",
+                "name": "1/2",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 1/3",
+                "direction": "i",
+                "gender": "f",
+                "name": "1/3",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 2/0",
+                "direction": "i",
+                "gender": "f",
+                "name": "2/0",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 2/1",
+                "direction": "i",
+                "gender": "f",
+                "name": "2/1",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 2/2",
+                "direction": "i",
+                "gender": "f",
+                "name": "2/2",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 2/3",
+                "direction": "i",
+                "gender": "f",
+                "name": "2/3",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 3/0",
+                "direction": "i",
+                "gender": "f",
+                "name": "3/0",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 3/1",
+                "direction": "i",
+                "gender": "f",
+                "name": "3/1",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 3/2",
+                "direction": "i",
+                "gender": "f",
+                "name": "3/2",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            },
+            {
+                "description": "Port 3/3",
+                "direction": "i",
+                "gender": "f",
+                "name": "3/3",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | SFP+"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "MPC-3D-16XGE-SFPP",
+                "part_no0": "750-028467"
             }
         }
     }
