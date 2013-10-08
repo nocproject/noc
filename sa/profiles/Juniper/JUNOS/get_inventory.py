@@ -24,7 +24,7 @@ class Script(NOCScript):
 
     rx_part = re.compile(
         r"^\s*(?P<name>\S+(?: \S+)+?)\s+"
-        r"(?P<revision>rev \d+)?\s+"
+        r"(?P<revision>rev \d+|\S{1,6})?\s+"
         r"(?P<part_no>\d{3}-\d{6}|NON-JNPR|BUILTIN)\s+"
         r"(?P<serial>\S+)\s+"
         r"(?P<rest>.+)$", re.IGNORECASE)
@@ -32,7 +32,9 @@ class Script(NOCScript):
     T_MAP = {
         "SFP-T": "NoName | Transceiver | 1G | SFP TX",
         "SFP-LX10": "NoName | Transceiver | 1G | SFP LX",
-        "SFP-LX": "NoName | Transceiver | 1G | SFP LX"
+        "SFP-LX": "NoName | Transceiver | 1G | SFP LX",
+        "XFP-10G-LR": "NoName | Transceiver | 10G | XFP LR",
+        "SFP+-10G-LR": "NoName | Transceiver | 10G | SFP+ LR"
     }
 
     def parse_hardware(self, v):
@@ -76,7 +78,7 @@ class Script(NOCScript):
                 "remote_name": remote_name
             }]
 
-        v = self.cli("show chassis hardware", file="/tmp/s")
+        v = self.cli("show chassis hardware")
         objects = []
         omap = {}
         chassis = None
@@ -95,14 +97,15 @@ class Script(NOCScript):
                 objects += [chassis]
                 omap = {}
                 fpc = None
+                mic = None
                 co = None
                 nfpc = None
                 npic = None
+                mnpic = None
             elif chassis is None:
                 continue  # Bug
             else:
                 # Chassis module
-                print (name, revision, part_no, serial, description)
                 n = name.lower()
                 if n.startswith("pem "):
                     # Power modules
@@ -142,8 +145,24 @@ class Script(NOCScript):
                     fpc = o
                     co = o
                     npic = None
+                    mic = None
+                    mnpic = None
+                elif n.startswith("mic "):
+                    nmic = n.split()[-1]
+                    mnpic = -1
+                    if serial != "BUILTIN":
+                        o = get_object(objects, omap,
+                                       name, revision, part_no,
+                                       serial, description)
+                        cn = "mic%s" % nmic
+                        connect(fpc, cn, o, "in")
+                        co = o
+                        mic = o
                 elif n.startswith("pic "):
                     npic = n.split()[-1]
+                    if mic:
+                        if mnpic is not None:
+                            mnpic += 1
                     if serial != "BUILTIN":
                         o = get_object(objects, omap,
                                        name, revision, part_no,
@@ -156,15 +175,18 @@ class Script(NOCScript):
                     if co == fpc:
                         # Builtin pic
                         cn = "%s/%s" % (npic, name.split()[-1])
-
+                    elif co == mic:
+                        # MIC
+                        cn = "%s/%s" % (mnpic, name.split()[-1])
                     else:
                         # Separate PIC
                         cn = name.split()[-1]
                     if part_no == "NON-JNPR":
                         # Try to detect transceiver type
                         if description == "UNKNOWN":
-                            continue
-                        part_no = self.get_trans_part_no(serial, description)
+                            part_no = "NoName | Transceiver | Unknown"
+                        else:
+                            part_no = self.get_trans_part_no(serial, description)
                     o = get_object(objects, omap,
                                    name, revision, part_no,
                                    serial, description)
