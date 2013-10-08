@@ -76,7 +76,7 @@ class ObjectModelApplication(ExtDocApplication):
     @view(url="^actions/json/$", method=["POST"],
           access="read",
           validate={
-            "ids": ListOfParameter(element=DocumentParameter(ObjectModel))
+            "ids": ListOfParameter(element=DocumentParameter(ObjectModel), convert=True)
           },
           api=True)
     def api_action_json(self, request, ids):
