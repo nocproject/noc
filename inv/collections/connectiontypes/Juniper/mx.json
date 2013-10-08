@@ -15,7 +15,28 @@
 
     {
         "name": "Juniper | MX | PEM",
-        "description": "Juniper MX PEM Slot (Power module)",
+        "description": "DEPRECATED, WILL BE REMOVED",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | MX | MX960 PEM",
+        "description": "Juniper MX960 PEM Slot (Power module)",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | MX | MX480 PEM",
+        "description": "Juniper MX240/MX480 PEM Slot (Power module)",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | MX | MX80 PEM",
+        "description": "Juniper MX80 PEM Slot (Power module)",
         "c_group": [],
         "genders": "mf"
     },
@@ -46,5 +67,13 @@
         "description": "Juniper MX480 Fan Tray Slot",
         "c_group": [],
         "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | MX | MX960 Fan",
+        "description": "Juniper MX960 Fan Tray Slot",
+        "c_group": [],
+        "genders": "mf"
     }
+
 ]
