@@ -17,7 +17,7 @@
                 "direction": "i",
                 "gender": "f",
                 "group": "",
-                "name": "slot0",
+                "name": "pic0",
                 "type__name": "Juniper | MX | MIC"
             },
             {
@@ -25,7 +25,7 @@
                 "direction": "i",
                 "gender": "f",
                 "group": "",
-                "name": "slot1",
+                "name": "pic1",
                 "type__name": "Juniper | MX | MIC"
             }
         ],

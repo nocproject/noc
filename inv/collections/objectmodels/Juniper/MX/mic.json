@@ -17,7 +17,7 @@
                 "direction": "i",
                 "gender": "f",
                 "group": "",
-                "name": "xe-X/Y/0",
+                "name": "0",
                 "type__name": "Transceiver | XFP"
             },
             {
@@ -25,7 +25,7 @@
                 "direction": "i",
                 "gender": "f",
                 "group": "",
-                "name": "xe-X/Y/1",
+                "name": "1",
                 "type__name": "Transceiver | XFP"
             },
             {
@@ -33,7 +33,7 @@
                 "direction": "i",
                 "gender": "f",
                 "group": "",
-                "name": "xe-X/Y/2",
+                "name": "2",
                 "type__name": "Transceiver | XFP"
             },
             {
@@ -41,7 +41,7 @@
                 "direction": "i",
                 "gender": "f",
                 "group": "",
-                "name": "xe-X/Y/3",
+                "name": "3",
                 "type__name": "Transceiver | XFP"
             }
         ],

@@ -114,7 +114,9 @@
                 "exhaust": "l",
                 "intake": "r"
             },
-            "asset": {}
+            "asset": {
+                "order_part_no0": "MX480"
+            }
         }
     }
 ]
