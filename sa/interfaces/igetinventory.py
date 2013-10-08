@@ -29,19 +29,27 @@ class IGetInventory(Interface):
             # Serial number
             "serial": StringParameter(required=False),
             # Optional description
-            "description": StringParameter(required=False)
-        }),
-        # List of connections between objects
-        "connections": DictListParameter(attrs={
-            # value of object.id
-            "object1": IntParameter(),
-            # Connection name of object 1
-            "name1": StringParameter(),
-            # value of object.id
-            "object2": IntParameter(),
-            # Connection name of object 2
-            "name2": StringParameter(),
-            # ModelData
-            "data": DictParameter(required=False)
+            "description": StringParameter(required=False),
+            #
+            "connections": DictListParameter(attrs={
+                # Local connection name, according to model
+                "name": StringParameter(),
+                # Remote object internal id
+                # Must match with objects.id field
+                "object": StringParameter()
+                # Remote connection name, according to model
+                "remote_name": StringParameter(),
+                # ModelData
+                "data": DictParameter(required=False)
+            }, required=False),
+            # Optional internal crossing
+            "crossing": DictListParameter(attrs={
+                # Input connection name, according to model
+                "in": StringParameter(),
+                # Output connection name, according to model
+                "out": StringParameter(),
+                # Power gain, in dB
+                "gain": FloatParameter()
+            }, required=False)
         })
     })
