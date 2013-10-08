@@ -34,7 +34,7 @@ class IGetInventory(Interface):
             "name": StringParameter(),
             # Remote object internal id
             # Must match with objects.id field
-            "object": StringParameter(),
+            "object": IntParameter(),
             # Remote connection name, according to model
             "remote_name": StringParameter(),
             # ModelData
