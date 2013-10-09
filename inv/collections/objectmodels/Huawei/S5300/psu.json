@@ -1,0 +1,66 @@
+[
+    {
+        "name": "Huawei | Quidway S5300 | PSU AC",
+        "vendor__code": "HUAWEI",
+        "description": "Huawei Quidway S5300 AC Power Supply Unit",
+        "connections": [
+            {
+                "description": "PSU slot",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Huawei | Quidway S5300 | PSU"
+            },
+            {
+                "description": "Power inlet",
+                "direction": "s",
+                "gender": "f",
+                "name": "power",
+                "protocols": [">220VAC", ">110VAC"],
+                "type__name": "Power | IEC 60320 C14"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "LS5M100PWA00"
+            }
+        }
+    },
+    {
+        "name": "Huawei | Quidway S5300 | PSU DC",
+        "vendor__code": "HUAWEI",
+        "description": "Huawei Quidway S5300 DC Power Supply Unit",
+        "connections": [
+            {
+                "description": "PSU slot",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Huawei | Quidway S5300 | PSU"
+            },
+            {
+                "description": "Power inlet",
+                "direction": "s",
+                "gender": "m",
+                "group": "dc_jack",
+                "name": "power +",
+                "protocols": [">-48VDC"],
+                "type__name": "Power | M4 Pin"
+            },
+            {
+                "description": "Power inlet",
+                "direction": "s",
+                "gender": "m",
+                "group": "dc_jack",
+                "name": "power -",
+                "protocols": [">-48VDC"],
+                "type__name": "Power | M4 Pin"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "LS5M100PWD00"
+            }
+        }
+    }
+]
