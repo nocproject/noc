@@ -837,7 +837,7 @@
             },
             {
                 "description": "GigabitEthernet 0/1 SFP port",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "Gi0/1(SFP)",
@@ -846,7 +846,7 @@
             },
             {
                 "description": "GigabitEthernet 0/2 RJ45 port",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "Gi0/2",
@@ -855,7 +855,7 @@
             },
             {
                 "description": "GigabitEthernet 0/2 SFP port",
-                "direction": "s",
+                "direction": "i",
                 "gender": "f",
                 "group": "0",
                 "name": "Gi0/2(SFP)",
@@ -924,7 +924,7 @@
         "connections": [
             {
                 "description": "Console port",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "Console",
@@ -1220,7 +1220,7 @@
         "connections": [
             {
                 "description": "Dry contacts",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "Alarms",
@@ -1237,7 +1237,7 @@
             },
             {
                 "description": "Console port",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "Console",
@@ -1558,7 +1558,7 @@
         "connections": [
             {
                 "description": "Console port",
-                "direction": "i",
+                "direction": "s",
                 "gender": "f",
                 "group": "0",
                 "name": "Console",
