@@ -1,0 +1,154 @@
+[
+    {
+        "name": "Huawei | Quidway S5300 | E2XX-2-Port 10GE XFP subcard",
+        "vendor__code": "HUAWEI",
+        "description": "Interface card with 2 10GE XFP ports",
+        "connections": [
+            {
+                "description": "Extension slot",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Huawei | Quidway S5300 | Extension slot"
+            },
+            {
+                "description": "XFP port 1",
+                "direction": "i",
+                "gender": "f",
+                "name": "xfp 1",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XFP"
+            },
+            {
+                "description": "XFP port 2",
+                "direction": "i",
+                "gender": "f",
+                "name": "xfp 2",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XFP"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "LS5D00E2XX00"
+            },
+            "dimensions": {
+                "depth": "69",
+                "height": "22",
+                "width": "200"
+            },
+            "power": {
+                "power": "11"
+            },
+            "weight": {
+                "weight": "0.2"
+            }
+        }
+    },
+    {
+        "name": "Huawei | Quidway S5300 | E4GF-4-Port GE SFP subcard",
+        "vendor__code": "HUAWEI",
+        "description": "Interface card with 4 GE SFP ports",
+        "connections": [
+            {
+                "description": "Extension slot",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Huawei | Quidway S5300 | Extension slot"
+            },
+            {
+                "description": "SFP port 1",
+                "direction": "i",
+                "gender": "f",
+                "name": "sfp 1",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP"
+            },
+            {
+                "description": "SFP port 2",
+                "direction": "i",
+                "gender": "f",
+                "name": "sfp 2",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP"
+            },
+            {
+                "description": "SFP port 3",
+                "direction": "i",
+                "gender": "f",
+                "name": "sfp 3",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP"
+            },
+            {
+                "description": "SFP port 4",
+                "direction": "i",
+                "gender": "f",
+                "name": "sfp 4",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "LS5D00E4GF00"
+            },
+            "dimensions": {
+                "depth": "69",
+                "height": "22",
+                "width": "200"
+            },
+            "power": {
+                "power": "6"
+            },
+            "weight": {
+                "weight": "0.2"
+            }
+        }
+    },
+    {
+        "name": "Huawei | Quidway S5300 | ETPC-Stack Rear Subcard",
+        "vendor__code": "HUAWEI",
+        "description": "Interface card with 2 PCI-E 12G stacking ports",
+        "connections": [
+            {
+                "description": "Rear slot",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Huawei | Quidway S5300 | Rear slot"
+            },
+            {
+                "description": "Stacking interface 1",
+                "direction": "s",
+                "gender": "f",
+                "name": "Stack 1",
+                "type__name": "Huawei | Quidway S5300 | Stack 12G"
+            },
+            {
+                "description": "Stacking interface 2",
+                "direction": "s",
+                "gender": "f",
+                "name": "Stack 2",
+                "type__name": "Huawei | Quidway S5300 | Stack 12G"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "LS5DSTACK200"
+            },
+            "dimensions": {
+                "depth": "69",
+                "height": "22",
+                "width": "200"
+            },
+            "power": {
+                "power": "0.5"
+            },
+            "weight": {
+                "weight": "0.2"
+            }
+        }
+    }
+]
