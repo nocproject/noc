@@ -1020,7 +1020,11 @@ class VLANIDMapParameter(StringParameter):
         """
         >>> VLANIDMapParameter().clean("1,2,5-10")
         '1-2,5-10'
+        >>> VLANIDMapParameter().clean("")
+        ''
         """
+        if isinstance(value, basestring) and not value.strip():
+            return ""
         vp = VLANIDParameter()
         try:
             return list_to_ranges([vp.clean(v) for v in ranges_to_list(value)])
