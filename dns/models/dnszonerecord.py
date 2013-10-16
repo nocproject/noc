@@ -28,7 +28,7 @@ class DNSZoneRecord(models.Model):
         app_label = "dns"
 
     zone = models.ForeignKey(DNSZone, verbose_name="Zone")
-    name = models.CharField(_("Name"), max_length=32, blank=True, null=True)
+    name = models.CharField(_("Name"), max_length=64, blank=True, null=True)
     ttl = models.IntegerField(_("TTL"), null=True, blank=True)
     type = models.CharField(_("Type"), max_length=16)
     priority = models.IntegerField(_("Priority"), null=True, blank=True)
