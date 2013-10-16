@@ -188,6 +188,10 @@ FORCE_LOWERCASE_TAGS = False
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 ## Store sessions in mongodb
 SESSION_ENGINE = "mongoengine.django.sessions"
+## X-Forwarded-Proto
+if config.get("main", "x_forwarded_proto"):
+    h = config.get("main", "x_forwarded_proto").upper().replace("-", "_")
+    SECURE_PROXY_SSL_HEADER = ("HTTP_%s" % h, "https")
 ## Set up crashinfo limit
 CRASHINFO_LIMIT = config.getint("main", "crashinfo_limit")
 ## Fixed beefs directory
