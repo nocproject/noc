@@ -222,7 +222,7 @@
         "name": "Network | Link | DOM | Warning: Out of Threshold",
         "description": "DOM above or below threshold exceeded",
         "is_unique": true,
-        "discriminator": ["interface"],
+        "discriminator": ["interface", "sensor"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
         "datasources": [
@@ -289,7 +289,7 @@
         "name": "Network | Link | DOM | Alarm: Out of Threshold",
         "description": "DOM above or below threshold exceeded",
         "is_unique": true,
-        "discriminator": ["interface"],
+        "discriminator": ["interface", "sensor"],
         "user_clearable": true,
         "default_severity__name": "CRITICAL",
         "datasources": [
