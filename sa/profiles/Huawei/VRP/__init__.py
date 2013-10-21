@@ -20,7 +20,7 @@ class Profile(noc.sa.profiles.Profile):
         (r"^  ---- More ----", " "),
         (r"[Cc]ontinue?\S+", "y\n\r")
     ]
-    pattern_prompt = r"^[<#\[](?P<hostname>\S+?)(?:-[a-zA-Z0-9/]+)*[>#\]]"
+    pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-\.]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
     pattern_syntax_error = r"^Error: "
     command_more = " "
     config_volatile = ["^%.*?$"]
