@@ -406,8 +406,8 @@
         "link_event": true,
         "text" : {
             "en": {
-                "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
-                "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}{% if ovalue %}, Operating value {{ovalue}}{% endif %}{% if tvalue %}, Threshold value {{tvalue}}{% endif %}",
+                "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}",
+                "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}{% if ovalue %}, Operating value {{ovalue}}{% endif %}{% if tvalue %}, Threshold value {{tvalue}}{% endif %}",
                 "symptoms": "Connection lost",
                 "probable_causes": "",
                 "recommended_actions": ""
