@@ -77,9 +77,14 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
     },
     //
     preview: function(record) {
-        var me = this;
+        var me = this,
+            c = [record.get("name"), "console"],
+            platform = record.get("platform");
+        if(platform) {
+            c.push("(" + platform + ")");
+        }
         me.currentRecord = record;
-        me.setTitle(record.get("name") + " console");
+        me.setTitle(c.join(" "));
         me.clearBody();
         me.prompt = record.get("name") + "&gt;&nbsp;"
         me.cmdField.focus();
