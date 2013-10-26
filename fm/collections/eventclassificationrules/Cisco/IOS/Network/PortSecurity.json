@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%PORT_SECURITY-2-PSECURE_VIOLATION:Security violation occurred,? caused by MAC (?P<mac>\\S+) on port (?P<interface>\\S+)\\."
+                "value_re": "%PORT_SECURITY-2-PSECURE_VIOLATION:\\s*Security violation occurred,? caused by MAC( address)? (?P<mac>\\S+) on port (?P<interface>\\S+)\\."
             }
         ]
     }

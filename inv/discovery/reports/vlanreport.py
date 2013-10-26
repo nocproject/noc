@@ -54,6 +54,12 @@ class VLANReport(Report):
         :param name:
         :return:
         """
+        if not name:
+            name = "VLAN_%d" % l1
+        # Check constraints
+        while vc_domain.vc_set.filter(name=name).count() > 0:
+            name += "_"
+        #
         self.new_vcs += [{
             "vc_domain": vc_domain,
             "l1": l1,
