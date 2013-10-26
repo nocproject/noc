@@ -12,7 +12,9 @@ from collections import defaultdict
 from django.http import HttpResponse
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.sa.models import ManagedObject, ManagedObjectAttribute
+from noc.sa.models.managedobject import (ManagedObject,
+                                         ManagedObjectAttribute)
+from noc.sa.models.useraccess import UserAccess
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -81,10 +83,18 @@ class ManagedObjectApplication(ExtModelApplication):
     def field_link_count(self, o):
         return Link.object_links_count(o)
 
+    def queryset(self, request, query=None):
+        qs = super(ManagedObjectApplication, self).queryset(request, query)
+        if not request.user.is_superuser:
+            qs = qs.filter(UserAccess.Q(request.user))
+        return qs
+
     @view(url="^(?P<id>\d+)/links/$", method=["GET"],
           access="read", api=True)
     def api_links(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
         # Get links
         result = []
         for link in Link.object_links(o):
@@ -196,6 +206,8 @@ class ManagedObjectApplication(ExtModelApplication):
                 return None
 
         o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
         link_count = defaultdict(int)
         for link in Link.object_links(o):
             m = link.discovery_method
@@ -229,6 +241,8 @@ class ManagedObjectApplication(ExtModelApplication):
           access="change_discovery", api=True)
     def api_run_discovery(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
         r = json_decode(request.raw_post_data).get("names", [])
         d = 0
         for cfg, name, method in self.DISCOVERY_METHODS:
@@ -376,6 +390,8 @@ class ManagedObjectApplication(ExtModelApplication):
                 return None
             return c.objects.get(id=v)
         o = self.get_object_or_404(ManagedObject, id=int(id))
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
         d = json_decode(request.raw_post_data)
         if "id" in d:
             i = self.get_object_or_404(Interface, id=d["id"])
@@ -417,6 +433,8 @@ class ManagedObjectApplication(ExtModelApplication):
                 "status": False,
                 "message": "Not found"
             }, status=self.NOT_FOUND)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
         # Run sa.wipe_managed_object job instead
         o.name = "wiping-%d" % o.id
         o.is_managed = False
@@ -432,6 +450,8 @@ class ManagedObjectApplication(ExtModelApplication):
           })
     def api_action_run_discovery(self, request, ids):
         for o in ids:
+            if not o.has_access(request.user):
+                continue
             d = 0
             for cfg, name, method in self.DISCOVERY_METHODS:
                 if getattr(o.object_profile, cfg):
