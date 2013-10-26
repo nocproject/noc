@@ -201,6 +201,8 @@ class ManagedObject(models.Model):
         :type user: User instance
         :rtype: Bool
         """
+        if user.is_superuser:
+            return True
         return self.user_objects(user).filter(id=self.id).exists()
 
     @property
