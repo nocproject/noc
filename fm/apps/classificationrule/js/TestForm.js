@@ -65,6 +65,7 @@ Ext.define("NOC.fm.classificationrule.TestForm", {
             jsonData: {
                 data: data,
                 patterns: me.app.getPatterns(),
+                vars: me.app.getVars(),
                 event_class: me.app.currentRecord.get("event_class")
             },
             success: function(response) {
