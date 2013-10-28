@@ -40,7 +40,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
         patterns = []
         result = False
         # Get data
-        data = None
+        data = {}
         vars = {}
         required_vars = set()
         r_patterns = []
@@ -57,7 +57,11 @@ class EventClassificationRuleApplication(ExtDocApplication):
                     errors += ["Event not found: %s" % q["data"]]
             else:
                 # Decode json
-                e = self.deserialize(q["data"])
+                try:
+                    e = self.deserialize(q["data"])
+                except:
+                    errors += ["Cannot decode JSON"]
+                    e = None
                 if isinstance(e, list):
                     e = e[0]
                 if not isinstance(e, dict) or "raw_vars" not in e:
