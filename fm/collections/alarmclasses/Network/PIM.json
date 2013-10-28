@@ -36,6 +36,12 @@
                 "required": false
             },
             {
+                "name": "reason",
+                "description": "Reason",
+                "type": "str",
+                "required": false
+            },
+            {
                 "name": "description",
                 "description": "Interface description",
                 "type": "str",
@@ -45,8 +51,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "PIM neighbor {{neighbor}} down on {{interface}}{% if description %} ({{description}}){% endif %}.{% if vrf %} VRF {{vrf}}.{% endif %}",
-                "body_template": "PIM neighbor {{neighbor}} down on {{interface}}{% if description %} ({{description}}){% endif %}.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "subject_template": "PIM neighbor {{neighbor}} DOWN on {{interface}}{% if description %} ({{description}}){% endif %}.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "body_template": "PIM neighbor {{neighbor}} DOWN on {{interface}}{% if description %} ({{description}}){% endif %}.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %} Reason: {{reason}}.{% endif %}",
                 "symptoms": "Multicast flows lost",
                 "probable_causes": "Link failure or protocol misconfiguration",
                 "recommended_actions": "Check links and local and neighbor router configuration" 

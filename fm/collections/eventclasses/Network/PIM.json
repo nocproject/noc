@@ -48,7 +48,7 @@
         "text" : {
             "en": {
                 "subject_template": "PIM neighbor {{neighbor}} DOWN on {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}",
-                "body_template": "PIM neighbor {{neighbor}} DOWN on {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "body_template": "PIM neighbor {{neighbor}} DOWN on {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %} Reason: {{reason}}.{% endif %}",
                 "symptoms": "Multicast flows lost",
                 "probable_causes": "PIM protocol configuration problem or link failure",
                 "recommended_actions": "Check links and local and neighbor's router configuration" 
@@ -70,6 +70,12 @@
             {
                 "name": "vrf",
                 "description": "VRF",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "reason",
+                "description": "Reason",
                 "type": "str",
                 "required": false
             }
