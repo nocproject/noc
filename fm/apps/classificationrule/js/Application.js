@@ -195,6 +195,11 @@ Ext.define("NOC.fm.classificationrule.Application", {
         return me.form.getFieldValues().patterns;
     },
     //
+    getVars: function() {
+        var me = this;
+        return me.form.getFieldValues().vars;
+    },
+    //
     onCmd_from_event: function(data) {
         var me = this;
         Ext.Ajax.request({

@@ -155,6 +155,19 @@ class EventClassificationRuleApplication(ExtDocApplication):
             if s_patterns and not i_patterns:
                 result = True
             r_patterns = s_patterns + i_patterns
+        # Calculate rule variables
+        if "vars" in q and q["vars"]:
+            for v in q["vars"]:
+                if v["value"].startswith("="):
+                    # Evaluate
+                    try:
+                        vars[v["name"]] = eval(v["value"][1:], {}, vars)
+                    except Exception, why:
+                        errors += [
+                            "Error when evaluating '%s': %s" % (v["name"], why)
+                        ]
+                else:
+                    vars[v["name"]] = v["value"]
         # Check required variables
         for rv in required_vars:
             if rv not in vars:
