@@ -133,6 +133,28 @@ Ext.define("NOC.fm.classificationrule.Application", {
                             renderer: "htmlEncode"
                         }
                     ]
+                },
+                {
+                    xtype: "gridfield",
+                    name: "vars",
+                    fieldLabel: "Vars",
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: "Name",
+                            dataIndex: "name",
+                            width: 100,
+                            editor: "textfield",
+                            renderer: "htmlEncode"
+                        },
+                        {
+                            text: "Value",
+                            dataIndex: "value",
+                            flex: 1,
+                            editor: "textfield",
+                            renderer: "htmlEncode"
+                        }
+                    ]
                 }
             ],
             formToolbar: [
