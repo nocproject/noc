@@ -24,7 +24,6 @@ Ext.define("NOC.vc.vc.VCImportForm", {
     initComponent: function() {
         var me = this,
             store = Ext.create("NOC.vc.vc.VCImportStore");
-
         Ext.apply(me, {
             store: store,
             items: [
@@ -41,20 +40,23 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                             header: "Name",
                             dataIndex: "name",
                             width: 200,
-                            editor: "textfield"
+                            editor: "textfield",
+                            renderer: "htmlEncode"
                         },
                         {
                             header: "Description",
                             dataIndex: "description",
                             flex: 1,
-                            editor: "textfield"
+                            editor: "textfield",
+                            renderer: "htmlEncode"
                         },
                         {
                             xtype: "actioncolumn",
                             width: 25,
                             items: [
                                 {
-                                    icon: "/static/img/fam/silk/delete.png",
+                                    // glyph is not applicable
+                                    icon: "/static/pkg/famfamfam-silk/delete.png",
                                     tooltip: "Delete",
                                     handler: function(grid, rowIndex, colIndex) {
                                         grid.getStore().removeAt(rowIndex);
@@ -73,7 +75,7 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                             items: [
                                 {
                                     text: "Save",
-                                    iconCls: "icon_disk",
+                                    glyph: NOC.glyph.save,
                                     scope: me,
                                     handler: me.onSave
                                 }
