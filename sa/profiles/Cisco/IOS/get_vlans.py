@@ -59,7 +59,7 @@ class Script(NOCScript):
         r"^Total statistics for 802.1Q VLAN (?P<vlan_id>\d{1,4}):",
         re.MULTILINE)
 
-    @NOCScript.match(platform__regex=r"^([123][78]\d\d|7[235]\d\d|107\d\d"
+    @NOCScript.match(platform__regex=r"^([123][78]\d\d|7[235]\d\d|107\d\d|"
         r"C[23][69]00|C8[75]0|C1700|C181X|C2951|ASR\d+)")
     def execute_vlan_switch(self):
         try:
