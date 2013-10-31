@@ -22,14 +22,15 @@ Ext.define("NOC.vc.vc.VCImportForm", {
     vc_filter_expression: null,
 
     initComponent: function() {
-        var me = this,
-            store = Ext.create("NOC.vc.vc.VCImportStore");
+        var me = this;
+
+        me.store = Ext.create("NOC.vc.vc.VCImportStore");
         Ext.apply(me, {
-            store: store,
             items: [
                 {
                     xtype: "gridpanel",
                     itemId: "grid",
+                    store: me.store,
                     columns: [
                         {
                             header: "Label",
@@ -160,7 +161,6 @@ Ext.define("NOC.vc.vc.VCImportForm", {
         // Combine expression
         var src = "return " + expr.join(" || ") + ";"
         //
-        console.log(src);
         return new Function("r", src);
     },
     // Load data to Grid
@@ -185,7 +185,8 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                 });
                 // Left only new VCs
                 var d = data.filter(function(x) {
-                    return !me.existing_vcs[x.l1]});
+                    return !me.existing_vcs[x.l1]
+                });
                 // Apply filters
                 d = d.filter(filter);
                 // Check new VCs found
@@ -194,7 +195,7 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                     me.close();
                 } else {
                     // Load to store
-                    me.grid.store.loadData(d);
+                    me.store.loadData(d);
                 }
             },
             failure: function() {

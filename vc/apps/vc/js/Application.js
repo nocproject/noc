@@ -291,7 +291,6 @@ Ext.define("NOC.vc.vc.Application", {
     processImportFromSwitch: function(result) {
         var me = this,
             r = result[0];
-        console.log("R", result, r);
         if(!Ext.isDefined(r)) {
             NOC.error("Failed to import VLANs.<br/>No result returned");
             return;
