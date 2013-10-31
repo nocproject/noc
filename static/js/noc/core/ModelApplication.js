@@ -388,7 +388,7 @@ Ext.define("NOC.core.ModelApplication", {
             formToolbar = formToolbar.concat([
                 {
                     text: "View",
-                    iconCls: "icon_magnifier",
+                    glyph: NOC.glyph.eye_open,
                     // hasAccess:
                     scope: me,
                     handler: function() {
