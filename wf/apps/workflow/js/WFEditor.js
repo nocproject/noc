@@ -60,29 +60,32 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         });
 
         me.saveButton = Ext.create("Ext.button.Button", {
-            iconCls: "icon_disk",
             text: "Save",
             tooltip: "Save changes",
+            glyph: NOC.glyph.save,
             disabled: true,
             scope: me,
             handler: me.onSave
         });
         // Zoom buttons
         me.zoomInButton = Ext.create("Ext.button.Button", {
+            text: "Zoom In",
             tooltip: "Zoom In",
-            iconCls: "icon_magnifier_zoom_in",
+            glyph: NOC.glyph.zoom_in,
             scope: me,
             handler: me.onZoomIn,
         });
         me.zoomOutButton = Ext.create("Ext.button.Button", {
+            text: "Zoom Out",
             tooltip: "Zoom Out",
-            iconCls: "icon_magifier_zoom_out",
+            glyph: NOC.glyph.zoom_out,
             scope: me,
             handler: me.onZoomOut,
         });
         me.zoomActualButton = Ext.create("Ext.button.Button", {
+            text: "Zoom Actual",
             tooltip: "Zoom Actual",
-            iconCls: "icon_magnifier",
+            glyph: NOC.glyph.search,
             scope: me,
             handler: me.onZoomActual,
         });
@@ -93,15 +96,17 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         });
 
         me.addButton = Ext.create("Ext.button.Button", {
+            text: "Add",
             tooltip: "Add",
-            iconCls: "icon_add",
+            glyph: NOC.glyph.plus,
             scope: me,
             handler: me.onAddNode
         });
 
         me.deleteButton = Ext.create("Ext.button.Button", {
+            text: "Delete",
             tooltip: "Delete",
-            iconCls: "icon_delete",
+            glyph: NOC.glyph.minus,
             scope: me,
             handler: me.onDeleteNode,
             disabled: true
