@@ -77,18 +77,6 @@ Ext.define("NOC.fm.classificationrule.Application", {
         });
         me.ITEM_TEST_RESULT = me.registerItem(me.testResultPanel);
         //
-        me.eventClassField = Ext.create("NOC.fm.eventclass.LookupField", {
-            name: "event_class",
-            fieldLabel: "Event Class",
-            allowBlank: false,
-            listeners: {
-                select: {
-                    scope: me,
-                    fn: me.onSelectEventClass
-                }
-            }
-        });
-        //
         Ext.apply(me, {
             fields: [
                 {
@@ -112,7 +100,18 @@ Ext.define("NOC.fm.classificationrule.Application", {
                     minValue: 0,
                     maxValue: 10000
                 },
-                me.eventClassField,
+                {
+                    xtype: "fm.eventclass.LookupField",
+                    name: "event_class",
+                    fieldLabel: "Event Class",
+                    allowBlank: false,
+                    listeners: {
+                        select: {
+                            scope: me,
+                            fn: me.onSelectEventClass
+                        }
+                    }
+                },
                 {
                     xtype: "gridfield",
                     name: "patterns",
@@ -144,7 +143,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
                         {
                             text: "Name",
                             dataIndex: "name",
-                            width: 200,
+                            width: 100,
                             editor: "textfield",
                             renderer: "htmlEncode"
                         },
@@ -188,17 +187,16 @@ Ext.define("NOC.fm.classificationrule.Application", {
     //
     onTest: function() {
         var me = this;
-        if(me.eventClassField.getValue() === null) {
-            NOC.error("Please select event class");
-            me.eventClassField.focus();
-            return;
-        }
         me.showItem(me.ITEM_TEST_FORM);
     },
     //
     getPatterns: function() {
         var me = this;
         return me.form.getFieldValues().patterns;
+    },
+    getVars: function() {
+        var me = this;
+        return me.form.getFieldValues().vars;
     },
     //
     onCmd_from_event: function(data) {
