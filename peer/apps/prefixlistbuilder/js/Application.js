@@ -76,6 +76,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                 {
                     text: "Build",
                     itemId: "build",
+                    glyph: NOC.glyph.play,
                     formBind: true,
                     disabled: true,
                     handler : function() {
@@ -94,6 +95,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                 {
                     text: "Reset",
                     itemId: "reset",
+                    glyph: NOC.glyph.refresh,
                     disabled: false,
                     handler: function() {
                         this.up("form").getForm().reset();

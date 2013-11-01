@@ -181,7 +181,7 @@ Ext.define("NOC.ip.vrf.Application", {
                 {
                     "itemId": "import",
                     text: "Import",
-                    iconCls: "icon_door_in",
+                    glyph: NOC.glyph.level_down,
                     tooltip: "Import VRFs",
                     checkAccess: NOC.hasPermission("import"),
                     menu: {
@@ -191,7 +191,7 @@ Ext.define("NOC.ip.vrf.Application", {
                             {
                                 text: "From Router",
                                 itemId: "from_router",
-                                iconCls: "icon_arrow_right"
+                                glyph: NOC.glyph.level_down
                             }
                         ],
                         listeners: {
