@@ -1,0 +1,43 @@
+[
+    {
+        "name": "Cisco | IOSXR | Config | Config Changed (SYSLOG)",
+        "description": "RP/0/RSP0/CPU0:Oct 19 20:29:37.103 : config[65891]: %MGBL-CONFIG-6-DB_COMMIT : Configuration committed by user 'cisco'. Use 'show configuration commit changes 1000000783' to view the changes.",
+        "event_class__name": "Config | Config Changed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "profile",
+                "value_re": "Cisco.IOSXR"
+            },
+            {
+                "key_re": "source",
+                "value_re": "syslog"
+            },
+            {
+                "key_re": "message",
+                "value_re": "%MGBL-CONFIG-6-DB_COMMIT : Configuration committed by user '(?P<user>.+)'. Use 'show configuration commit changes (?P<changeset>\\d+)' to view the changes."
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Config | Exiting Configuration Mode (SYSLOG)",
+        "description": "RP/0/RSP0/CPU0:Oct 19 20:18:39.038 : config[65891]: %MGBL-SYS-5-CONFIG_I : Configured from console by cisco on vty0 (1.1.1.1)",
+        "event_class__name": "Config | Exiting Configuration Mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "profile",
+                "value_re": "^Cisco.IOSXR$"
+            },
+            {
+                "key_re": "source",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "message",
+                "value_re": "%MGBL-SYS-5-CONFIG_I : Configured from console by (?P<user>.+) on (?P<source>\\S+) \\((?P<ip>\\S+)\\)$"
+            }
+        ]
+    }
+]

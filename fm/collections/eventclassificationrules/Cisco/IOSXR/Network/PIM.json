@@ -1,0 +1,43 @@
+[
+    {
+        "name": "Cisco | IOSXR | Network | PIM | Neighbor Up (SYSLOG)",
+        "description": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor 1.1.1.1 UP on BV2",
+        "event_class__name": "Network | PIM | Neighbor Up",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "profile",
+                "value_re": "^Cisco.IOSXR$"
+            },
+            {
+                "key_re": "source",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "message",
+                "value_re": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor (?P<neighbor>\\S+) UP on (?P<interface>\\S+)$"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Network | PIM | Neighbor Down (SYSLOG)",
+        "description": " %ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor 1.1.1.1 DOWN on BV2 - interface state changed",
+        "event_class__name": "Network | PIM | Neighbor Down",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "profile",
+                "value_re": "^Cisco.IOSXR$"
+            },
+            {
+                "key_re": "source",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "message",
+                "value_re": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor (?P<neighbor>\\S+) DOWN on (?P<interface>\\S+) - (?P<reason>.+)$"
+            }
+        ]
+    }
+]
