@@ -22,15 +22,15 @@ Ext.define("NOC.vc.vc.VCImportForm", {
     vc_filter_expression: null,
 
     initComponent: function() {
-        var me = this,
-            store = Ext.create("NOC.vc.vc.VCImportStore");
+        var me = this;
 
+        me.store = Ext.create("NOC.vc.vc.VCImportStore");
         Ext.apply(me, {
-            store: store,
             items: [
                 {
                     xtype: "gridpanel",
                     itemId: "grid",
+                    store: me.store,
                     columns: [
                         {
                             header: "Label",
@@ -41,20 +41,23 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                             header: "Name",
                             dataIndex: "name",
                             width: 200,
-                            editor: "textfield"
+                            editor: "textfield",
+                            renderer: "htmlEncode"
                         },
                         {
                             header: "Description",
                             dataIndex: "description",
                             flex: 1,
-                            editor: "textfield"
+                            editor: "textfield",
+                            renderer: "htmlEncode"
                         },
                         {
                             xtype: "actioncolumn",
                             width: 25,
                             items: [
                                 {
-                                    icon: "/static/img/fam/silk/delete.png",
+                                    // glyph is not applicable
+                                    icon: "/static/pkg/famfamfam-silk/delete.png",
                                     tooltip: "Delete",
                                     handler: function(grid, rowIndex, colIndex) {
                                         grid.getStore().removeAt(rowIndex);
@@ -73,7 +76,7 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                             items: [
                                 {
                                     text: "Save",
-                                    iconCls: "icon_disk",
+                                    glyph: NOC.glyph.save,
                                     scope: me,
                                     handler: me.onSave
                                 }
@@ -158,7 +161,6 @@ Ext.define("NOC.vc.vc.VCImportForm", {
         // Combine expression
         var src = "return " + expr.join(" || ") + ";"
         //
-        console.log(src);
         return new Function("r", src);
     },
     // Load data to Grid
@@ -183,7 +185,8 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                 });
                 // Left only new VCs
                 var d = data.filter(function(x) {
-                    return !me.existing_vcs[x.l1]});
+                    return !me.existing_vcs[x.l1]
+                });
                 // Apply filters
                 d = d.filter(filter);
                 // Check new VCs found
@@ -192,7 +195,7 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                     me.close();
                 } else {
                     // Load to store
-                    me.grid.store.loadData(d);
+                    me.store.loadData(d);
                 }
             },
             failure: function() {
