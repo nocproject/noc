@@ -7,7 +7,9 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+import os
 import re
+import difflib
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -27,6 +29,7 @@ from noc.lib.fields import INETField, TagsField
 from noc.lib.app.site import site
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.stencil import stencil_registry
+from noc.lib.gridvcs.manager import GridVCSField
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
@@ -59,7 +62,7 @@ class ManagedObject(models.Model):
     # Access
     scheme = models.IntegerField(_("Scheme"), choices=scheme_choices)
     address = models.CharField(_("Address"), max_length=64)
-    port = models.PositiveIntegerField(_("Port"), blank=True, null=True)
+    port = models.IntegerField(_("Port"), blank=True, null=True)
     user = models.CharField(_("User"), max_length=32, blank=True, null=True)
     password = models.CharField(_("Password"),
             max_length=32, blank=True, null=True)
@@ -79,10 +82,7 @@ class ManagedObject(models.Model):
     vc_domain = models.ForeignKey(
         "vc.VCDomain", verbose_name="VC Domain", null=True, blank=True)
     # CM
-    is_configuration_managed = models.BooleanField(_("Is Configuration Managed?"),
-            default=True)
-    repo_path = models.CharField(_("Repo Path"),
-            max_length=128, blank=True, null=True)
+    config = GridVCSField("config")
     # Default VRF
     vrf = models.ForeignKey("ip.VRF", verbose_name=_("VRF"),
                             blank=True, null=True)
@@ -201,6 +201,8 @@ class ManagedObject(models.Model):
         :type user: User instance
         :rtype: Bool
         """
+        if user.is_superuser:
+            return True
         return self.user_objects(user).filter(id=self.id).exists()
 
     @property
@@ -228,7 +230,6 @@ class ManagedObject(models.Model):
     def save(self):
         """
         Overload model's save()
-        Change related Config object
         """
         # Get previous version
         if self.id:
@@ -249,45 +250,11 @@ class ManagedObject(models.Model):
         if old is None:
             SelectorCache.rebuild_for_object(self)
             self.event(self.EV_NEW, {"object": self})
-        # @todo: will be removed with GridVCS
-        # Process config
-        try:
-            # self.config is OneToOne field created by Config
-            config = self.config
-        except:  # @todo: specify exact exception
-            config = None
-        if config is None: # No related Config object
-            if self.is_configuration_managed:
-                # Object is configuration managed, create related object
-                from noc.cm.models import Config
-                config = Config(managed_object=self,
-                                repo_path=self.repo_path, pull_every=86400)
-                config.save()
-        else: # Update existing config entry when necessary
-            if self.repo_path != self.config.repo_path:
-                # Repo path has been changed
-                config.repo_path = self.repo_path
-            if self.is_configuration_managed and config.pull_every is None:
-                # Device is configuration managed but not on periodic pull
-                config.pull_every = 86400
-            elif not self.is_configuration_managed and config.pull_every:
-                # Reset pull_every for unmanaged devices
-                config.pull_every = None
-            config.save()
 
     def delete(self):
-        """
-        Delete related Config
-        """
-        from noc.cm.models import Config
         # Deny to delete "SAE" object
         if self.name == "SAE":
             raise IntegrityError("Cannot delete SAE object")
-        try:
-            if self.config.id:
-                self.config.delete()
-        except Config.DoesNotExist:
-            pass
         super(ManagedObject, self).delete()
 
     def sync_ipam(self):
@@ -324,8 +291,7 @@ class ManagedObject(models.Model):
         """
         Search engine plugin
         """
-        q = (Q(repo_path__icontains=query) |
-             Q(name__icontains=query) |
+        q = (Q(name__icontains=query) |
              Q(address__icontains=query) |
              Q(user__icontains=query) |
              Q(description__icontains=query))
@@ -473,6 +439,65 @@ class ManagedObject(models.Model):
         # Send notification
         NotificationGroup.group_notify(
             groups, subject=subject, body=body)
+
+    def save_config(self, data):
+        if isinstance(data, list):
+            # Convert list to plain text
+            r = []
+            for d in sorted(data, lambda x, y: cmp(x["name"], y["name"])):
+                r += ["==[ %s ]========================================\n%s" % (d["name"], d["config"])]
+            data = "\n".join(r)
+        # Pass data through config filter, if given
+        if self.config_filter_rule:
+            data = self.config_filter_rule(
+                managed_object=self, config=data)
+        # Pass data through the validation filter, if given
+        if self.config_validation_rule:
+            warnings = self.config_validation_rule(
+                managed_object=self, config=data)
+            if warnings:
+                # There are some warnings. Notify responsible persons
+                self.managed_object.event(
+                    self.EV_CONFIG_POLICY_VIOLATION,
+                    {
+                        "object": self,
+                        "warnings": warnings
+                    }
+                )
+        # Calculate diff
+        old_data = self.config.read()
+        is_new = not bool(old_data)
+        diff = None
+        if not is_new:
+            # Calculate diff
+            if self.config_diff_filter_rule:
+                # Pass through filters
+                old_data = self.config_diff_filter_rule(
+                    managed_object=self, config=old_data)
+                new_data = self.config_diff_filter_rule(
+                    managed_object=self, config=data)
+            else:
+                new_data = data
+            if old_data == new_data:
+                return  # Nothing changed
+            diff = "".join(difflib.unified_diff(
+                old_data.splitlines(True),
+                new_data.splitlines(True),
+                fromfile=os.path.join("a", self.name),
+                tofile=os.path.join("b", self.name)
+            ))
+        # Notify changes
+        self.event(
+            self.EV_CONFIG_CHANGED,
+            {
+                "object": self,
+                "is_new": is_new,
+                "config": data,
+                "diff": diff
+            }
+        )
+        # Save config
+        self.config.write(data)
 
 
 class ManagedObjectAttribute(models.Model):

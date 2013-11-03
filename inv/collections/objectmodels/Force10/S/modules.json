@@ -1,0 +1,138 @@
+[
+    {
+        "name": "Force10 | S | S50-01-10GE-2P",
+        "vendor__code": "FORCE10",
+        "description": "2-port 10 GbE XFP module",
+        "connections": [
+            {
+                "description": "XFP Port 0",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "port0",
+                "type__name": "Transceiver | XFP"
+            },
+            {
+                "description": "XFP Port 1",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "port1",
+                "type__name": "Transceiver | XFP"
+            },
+            {
+                "description": "Chassis connection",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Force10 | S | Module"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "S50-01-10GE-2P"
+            }
+        }
+    },
+    {
+        "name": "Force10 | S | S50-01-10GE-2C",
+        "vendor__code": "FORCE10",
+        "description": "2-port 10 GbE CX4 module",
+        "connections": [
+            {
+                "description": "Chassis connection",
+                "direction": "i",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Force10 | S | Module"
+            },
+            {
+                "description": "CX4 port 0",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "port0",
+                "type__name": "Electrical | SFF-8470"
+            },
+            {
+                "description": "CX4 port 1",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "port1",
+                "type__name": "Electrical | SFF-8470"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "S50-01-10GE-2C"
+            }
+        }
+    },
+    {
+        "name": "Force10 | S | S50-01-12G-2S",
+        "vendor__code": "FORCE10",
+        "description": "2-port 12 Gbps stacking module",
+        "connections": [
+            {
+                "description": "Chassis connection",
+                "direction": "i",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Force10 | S | Module"
+            },
+            {
+                "description": "Stack port 0",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "port0",
+                "type__name": "Force10 | S | Stacking 12G"
+            },
+            {
+                "description": "Stack port 1",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "port1",
+                "type__name": "Force10 | S | Stacking 12G"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "S50-01-12G-2S"
+            }
+        }
+    },
+    {
+        "name": "Force10 | S | S50-01-24G-1S",
+        "vendor__code": "FORCE10",
+        "description": "1-port 24 Gbps stacking module",
+        "connections": [
+            {
+                "description": "Chassis connection",
+                "direction": "i",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Force10 | S | Module"
+            },
+            {
+                "description": "Stack port 0",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "port0",
+                "type__name": "Force10 | S | Stacking 24G"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "S50-01-24G-1S"
+            }
+        }
+    }
+]

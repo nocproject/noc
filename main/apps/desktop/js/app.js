@@ -27,5 +27,33 @@ Ext.application({
         var controller = me.controllers.first();
         NOC.run = controller.launchTab;
         NOC.launch = Ext.bind(controller.launchApp, controller);
+        // Set unload handler
+        Ext.EventManager.addListener(window, "beforeunload",
+            me.onUnload, me, {mormalized: false});
+        //
+        var h = Ext.History.getHash();
+        if(h) {
+            // Open application tab
+            var p = h.split("/"),
+                app = p[0],
+                args = p.slice(1);
+            if(args.length > 0) {
+                NOC.launch(app, "history", {args: args});
+            } else {
+                NOC.launch(app);
+            }
+        }
+    },
+    //
+    onUnload: function(e) {
+        var me = this,
+            msg = "You're trying to close NOC application. Unsaved changes may be lost.";
+        if(e) {
+            e.returnValue = msg;
+        }
+        if(window.event) {
+            window.event.returnValue = msg;
+        }
+        return msg;
     }
 });

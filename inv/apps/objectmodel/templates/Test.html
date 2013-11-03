@@ -1,0 +1,23 @@
+<h1>Possible connections for model {{name}}</h1>
+<table border="1">
+{{#each connections}}
+    <tr>
+        <td><b>{{name}}</b><br/><i>({{description}})</i></td>
+        <td>{{direction}}</td>
+        <td>
+            <table>
+            {{#each connections}}
+                <tr>
+                    <td>
+                        <b>{{name}}</b><br/></i>({{description}})</i>
+                    </td>
+                    <td><b>{{model}}</b><br/>({{model_description}})</td>
+                </tr>
+            {{/each}}
+            </table>
+        </td>
+    </tr>
+{{/each}}
+</table>
+<h1>Internal crossing for {{ name }}</h1>
+{{ grid crossing }}

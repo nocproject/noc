@@ -241,32 +241,52 @@ Ext.define("NOC.SyntaxHighlight", {
         }
     },
     highlight: function(el, text, lang) {
-        var me = this;
-        me.withLang(lang, function(l) {
-            var tags = sh_highlightString(text, l);
-            //
-            // Fill text nodes
-            var last = undefined;
-            for(var i in tags) {
-                var t = tags[i];
-                if(last) {
-                    last.end = t.pos;
+        var me = this,
+            showNumbers = lang != "diff",
+            updateEl = function(el, html) {
+                var out = [];
+                // Append line numbers, if required
+                if(showNumbers) {
+                    var l = html.match(/\n/g).length;
+                    out.push("<div class='noc-numbers'>");
+                    for(var i = 1; i <= l; i++) {
+                        out.push(i + "<br/>");
+                    }
+                    out.push("</div>");
                 }
-                last = t;
-            }
-            // Generate HTML
-            var html = tags.map(function(v) {
-                var t = text.substr(v.pos, v.end - v.pos);
-                if(v.node) {
-                    return "<span class='" + v.node.className + "'>" +
-                        t + "</span>";
-                } else {
-                    return t;
+                // Append code
+                out = out.concat(["<pre class='sh_sourcecode'>", html, "</pre>"]);
+                // Update element
+                el.update(out.join(""));
+            };
+        if(lang) {
+            me.withLang(lang, function(l) {
+                var tags = sh_highlightString(text, l);
+                //
+                // Fill text nodes
+                var last = undefined;
+                for(var i in tags) {
+                    var t = tags[i];
+                    if(last) {
+                        last.end = t.pos;
+                    }
+                    last = t;
                 }
-            }).join("");
-            // Update element
-            el.update("<pre class='sh_sourcecode'>" + html + "</pre>");
-        });
+                // Generate HTML
+                var html = tags.map(function(v) {
+                    var t = text.substr(v.pos, v.end - v.pos);
+                    if(v.node) {
+                        return "<span class='" + v.node.className + "'>" +
+                            t + "</span>";
+                    } else {
+                        return t;
+                    }
+                }).join("");
+                updateEl(el, html);
+            });
+        } else {
+            updateEl(el, text);
+        }
     }
 });
 //
@@ -433,6 +453,29 @@ Ext.override(Ext.grid.column.Column, {
         return this.stateId || this.dataIndex || this.headerId;
     }
 });
+//
+// Override form field labels
+//
+Ext.override(Ext.form.Panel, {
+    initComponent: function() {
+        var me = this,
+            applyLabelStyle = function(field) {
+                if((field.xtype == "fieldset") || (field.xtype == "container")) {
+                    Ext.each(field.items.items, function(f) {
+                        applyLabelStyle(f);
+                    });
+                } else {
+                    if(!field.allowBlank) {
+                        field.labelClsExtra = "noc-label-required";
+                    }
+                }
+            };
+        me.on("beforeadd", function(form, field) {
+            applyLabelStyle(field);
+        });
+        me.callParent();
+    }
+});
 
 //
 // Handlebars helpers
@@ -452,3 +495,63 @@ Handlebars.registerHelper("join", function(context, block) {
 });
 
 Handlebars.registerHelper("formatDuration", NOC.render.Duration);
+
+Handlebars.registerHelper("grid", function(val) {
+    var r = [],
+        xset = {},
+        yset = {},
+        values = {},
+        i, j, y, v,
+        xv = [],
+        yv = [];
+    // Get all unique x and y
+    for(i in val) {
+        v = val[i];
+        if(!xset[v.x]) {
+            xset[v.x] = true;
+            xv.push(v.x);
+        }
+        if(!yset[v.y]) {
+            yset[v.y] = true;
+            yv.push(v.y);
+        }
+        if(!values[v.x]) {
+            values[v.x] = {};
+        }
+        values[v.x][v.y] = v.v;
+    }
+    xv = xv.sort();
+    yv = yv.sort();
+    //
+    // Build table
+    //
+    r.push("<table border='1'>");
+    // Push header
+    r.push("<tr><td></td>");
+    for(i in xv) {
+        r.push("<th>");
+        r.push(Handlebars.Utils.escapeExpression(xv[i]));
+        r.push("</th>");
+    }
+    r.push("</tr>");
+    // Push rows
+    for(i in yv) {
+        y = yv[i];
+        r.push("<tr>");
+        r.push("<th>");
+        r.push(Handlebars.Utils.escapeExpression(y));
+        r.push("</th>");
+        for(j in xv) {
+            v = xv[j];
+            r.push("<td>");
+            if(values[v] && values[v][y] !== undefined) {
+                r.push(Handlebars.Utils.escapeExpression(values[v][y]));
+            }
+            r.push("</td>");
+        }
+        r.push("</tr>");
+    }
+    r.push("</table>");
+    // return r.join("");
+    return new Handlebars.SafeString(r.join(""));
+});

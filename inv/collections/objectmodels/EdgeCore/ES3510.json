@@ -1,0 +1,126 @@
+[
+    {
+        "name": "Edge-Core | ES | ES3510",
+        "vendor__code": "EDGECORE",
+        "description": "ES3510 L2 Switch with 8 RJ-45 10/100Base-T +2 Combo Gigabit (RJ-45/SFP)",
+        "connections": [
+            {
+                "description": "Power input",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "power",
+                "type__name": "Power | IEC 60320 C14"
+            },
+            {
+                "description": "Management console",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "Console",
+                "type__name": "Electrical | DB9"
+            },
+            {
+                "description": "Ethernet1/1 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "Ethernet1/1",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Ethernet1/2 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "Ethernet1/2",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Ethernet1/3 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "Ethernet1/3",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Ethernet1/4 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "Ethernet1/4",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Ethernet1/5 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "Ethernet1/5",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Ethernet1/6 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "Ethernet1/6",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Ethernet1/7 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "Ethernet1/7",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Ethernet1/8 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "Ethernet1/8",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Ethernet1/9 interface - copper",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "Ethernet1/9C",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Ethernet1/9 interface - fiber",
+                "direction": "i",
+                "gender": "f",
+                "group": "0",
+                "name": "Ethernet1/9F",
+                "type__name": "Transceiver | SFP"
+            },
+            {
+                "description": "Ethernet1/10 interface - coper",
+                "direction": "s",
+                "gender": "f",
+                "group": "1",
+                "name": "Ethernet1/10C",
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Ethernet1/10 interface - fiber",
+                "direction": "i",
+                "gender": "f",
+                "group": "1",
+                "name": "Ethernet1/10F",
+                "type__name": "Transceiver | SFP"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no": "ES3510"
+            }
+        }
+    }
+]

@@ -1,0 +1,62 @@
+[
+    {
+        "name": "Juniper | MX | SCB-MX960",
+        "vendor__code": "JUNIPER",
+        "description": "MX Switch Control Board",
+        "connections": [
+            {
+                "description": "Routing Engine slot",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "re",
+                "type__name": "Juniper | MX | RE"
+            },
+            {
+                "description": "Chassis connection",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Juniper | MX | SCB"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no": "SCB-MX960-S",
+                "part_no0": "710-013385",
+                "part_no1": "710-021523"
+            }
+        }
+    },
+
+    {
+        "name": "Juniper | MX | SCBE-MX-S",
+        "vendor__code": "JUNIPER",
+        "description": "MX Enhanced Switch Control Board",
+        "connections": [
+            {
+                "description": "Routing Engine slot",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "re",
+                "type__name": "Juniper | MX | RE"
+            },
+            {
+                "description": "Chassis connection",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Juniper | MX | SCB"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no": "SCBE-MX-S",
+                "part_no0": "750-031391"
+            }
+        }
+    }
+]

@@ -29,21 +29,19 @@ class ConfigDiscoveryJob(MODiscoveryJob):
         :return:
         """
         if self.to_save:
-            object.config.write(result)
+            object.save_config(result)
         return True
 
     @classmethod
     def initial_submit_queryset(cls):
         return {
-            "object_profile__enable_config_polling": True,
-            "is_configuration_managed": True
+            "object_profile__enable_config_polling": True
         }
 
     def can_run(self):
         return (
             super(ConfigDiscoveryJob, self).can_run()
             and self.object.object_profile.enable_config_polling
-            and self.object.is_configuration_managed
         )
 
     @classmethod

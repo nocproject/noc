@@ -1,0 +1,98 @@
+[
+    {
+        "name": "Juniper | MX | PWR-MX480-1200-AC",
+        "vendor__code": "JUNIPER",
+        "description": "MX480 1200W Power Entry Module AC",
+        "connections": [
+            {
+                "description": "Internal power slot",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Juniper | MX | MX480 PEM"
+            },
+            {
+                "description": "Power outlet",
+                "direction": "s",
+                "gender": "f",
+                "group": "",
+                "name": "power",
+                "type__name": "Power | IEC 60320 C20",
+                "protocols": [">220VAC", ">110VAC"]
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "PWR-MX480-1200-AC-S",
+                "part_no0": "740-017330"
+            }
+        }
+    },
+
+    {
+        "name": "Juniper | MX | PWR-MX480-1600-DC-S",
+        "vendor__code": "JUNIPER",
+        "description": "1600W DC Power Entry Module, Redundant",
+        "connections": [
+            {
+                "description": "Internal power slot",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Juniper | MX | MX480 PEM"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "PWR-MX480-1600-DC-S",
+                "part_no0": "740-017343"
+            }
+        }
+    },
+
+    {
+        "name": "Juniper | MX | PWR-MX960-DC-S",
+        "vendor__code": "JUNIPER",
+        "description": "1600W DC Power Entry Module",
+        "connections": [
+            {
+                "description": "Internal power slot",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Juniper | MX | MX960 PEM"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "PWR-MX960-DC-S",
+                "part_no0": "740-013683"
+            }
+        }
+    },
+
+    {
+        "name": "Juniper | MX | PWR-MX80-DC-S",
+        "vendor__code": "JUNIPER",
+        "description": "MX80 DC Power Supply",
+        "connections": [
+            {
+                "description": "Internal power slot",
+                "direction": "o",
+                "gender": "m",
+                "group": "",
+                "name": "in",
+                "type__name": "Juniper | MX | MX80 PEM"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "PWR-MX80-DC-S",
+                "part_no0": "740-029712"
+            }
+        }
+    }
+]

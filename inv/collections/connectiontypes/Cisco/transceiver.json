@@ -1,0 +1,49 @@
+[
+    {
+        "name": "Transceiver | GBIC | Cisco",
+        "description": "Cisco-compatible GBIC transceiver slot",
+        "c_group": [],
+        "extend__name": "Transceiver | GBIC",
+        "genders": "mf"
+    },
+
+    {
+        "name": "Transceiver | SFP | Cisco",
+        "description": "Cisco-compatible SFP transceiver slot",
+        "c_group": [],
+        "extend__name": "Transceiver | SFP",
+        "genders": "mf"
+    },
+
+    {
+        "name": "Transceiver | XENPAK | Cisco",
+        "description": "Cisco-compatible XENPAK transceiver slot",
+        "c_group": [],
+        "extend__name": "Transceiver | XENPAK",
+        "genders": "mf"
+    },
+
+    {
+        "name": "Transceiver | X2 | Cisco",
+        "description": "Cisco-compatible X2 transceiver slot",
+        "c_group": [],
+        "extend__name": "Transceiver | X2",
+        "genders": "mf"
+    },
+
+    {
+        "name": "Transceiver | XFP | Cisco",
+        "description": "Cisco-compatible XFP transceiver slot",
+        "c_group": [],
+        "extend__name": "Transceiver | XFP",
+        "genders": "mf"
+    },
+
+    {
+        "name": "Transceiver | SFP+ | Cisco",
+        "description": "Cisco-compatible SFP+ transceiver slot",
+        "c_group": [],
+        "extend__name": "Transceiver | SFP+",
+        "genders": "mf"
+    }
+]

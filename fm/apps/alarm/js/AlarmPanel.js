@@ -283,6 +283,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                 NOC.error("Failed to get alarm");
             }
         });
+        me.app.setHistoryHash(alarmId);
     },
     //
     updatePanel: function(panel, template, enabled, data) {

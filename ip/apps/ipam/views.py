@@ -787,10 +787,10 @@ class IPAMAppplication(Application):
                 label=_("Auto-update MAC"),
                 required=False,
                 help_text=_("Check to automatically fetch MAC from ARP cache"))
-            managed_object = forms.CharField(
+            managed_object = forms.ModelChoiceField(
                 label="Managed Object",
+                queryset=ManagedObject.objects.order_by("name"),
                 required=False,
-                widget=AutoCompleteTextInput("sa:managedobject:lookup1"),
                 help_text=_("Set if address belong to managed object's interface"))
             description = forms.CharField(
                 label=_("Description"),

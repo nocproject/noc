@@ -36,27 +36,41 @@ class Profile(NOCProfile):
     rx_cable_if = re.compile(r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)", re.IGNORECASE)
 
     def convert_interface_name(self, interface):
-        if interface.lower().startswith("dot11radio"):
+        if " efp_id " in interface:
+            l, r = interface.split(" efp_id ", 1)
+            return "%s.SI.%d" % (
+                self.convert_interface_name_cisco(l.strip()),
+                int(r.strip())
+            )
+        if ".SI." in interface:
+            l, r = interface.split(".SI.", 1)
+            return "%s.SI.%d" % (
+                self.convert_interface_name_cisco(l.strip()),
+                int(r.strip())
+            )
+        il = interface.lower()
+        if il.startswith("dot11radio"):
             return "Dot11Radio" + interface[10:]
-        if interface.lower().startswith("bvi"):
+        if il.startswith("bvi"):
             return "BVI" + interface[3:]
-        if interface.lower().startswith("e1"):
+        if il.startswith("e1"):
             return "E1 %s" % interface[2:].strip()
-        if interface.lower().startswith("t1"):
+        if il.startswith("t1"):
             return "T1 %s" % interface[2:].strip()
-        if interface.lower().startswith("fxo null"):
+        if il.startswith("fxo null"):
             return "FXO %s" % interface[8:].strip()
-        if interface.lower().startswith("fxs"):
+        if il.startswith("fxs"):
             return "FXS %s" % interface[3:].strip()
-        if interface.lower().startswith("efxs"):
+        if il.startswith("efxs"):
             return "EFXS %s" % interface[4:].strip()
-        if interface.lower().startswith("cpp"):
+        if il.startswith("cpp"):
             return "CPP"
-        if interface.lower().startswith("srp"):
+        if il.startswith("srp"):
             return "SRP %s" % interface[3:].strip()
-        match = self.rx_cable_if.search(interface)
-        if match:
-            return "Ca %s/%s" % match.group('pr_if'), match.group('sub_if')
+        if il.startswith("cable"):
+            match = self.rx_cable_if.search(interface)
+            if match:
+                return "Ca %s/%s" % (match.group('pr_if'), match.group('sub_if'))
         return self.convert_interface_name_cisco(interface)
 
     def generate_prefix_list(self, name, pl):

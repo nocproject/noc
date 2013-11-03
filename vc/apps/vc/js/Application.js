@@ -275,6 +275,7 @@ Ext.define("NOC.vc.vc.Application", {
                 NOC.mrt({
                     url: "/vc/vc/mrt/get_vlans/",
                     selector: managed_object,
+                    loadMask: me,
                     scope: me,
                     success: me.processImportFromSwitch,
                     failure: function() {

@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Force10 | S | Stacking 12G",
+        "description": "12G Stacking cable connector",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Force10 | S | Stacking 24G",
+        "description": "24G Stacking cable connector",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Force10 | S | Module",
+        "description": "Force10 S-series extension module slot",
+        "c_group": [],
+        "genders": "mf"
+    }
+]

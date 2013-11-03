@@ -1,0 +1,309 @@
+[
+    {
+        "name": "Juniper | MX | MX480 Chassis",
+        "vendor__code": "JUNIPER",
+        "description": "Juniper MX480 chassis",
+        "connections": [
+            {
+                "description": "Fan Slot #0",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fan0",
+                "type__name": "Juniper | MX | MX480 Fan"
+            },
+            {
+                "description": "SCB Slot #0",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "scb0",
+                "type__name": "Juniper | MX | SCB"
+            },
+            {
+                "description": "SCB Slot #1",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "scb1",
+                "type__name": "Juniper | MX | SCB"
+            },
+            {
+                "description": "DPC Slot #0",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc0",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot#1",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc1",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #2",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc2",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #3",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc3",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #4",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc4",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #5",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc5",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "PEM Slot #0",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "pem0",
+                "type__name": "Juniper | MX | MX480 PEM"
+            },
+            {
+                "description": "PEM Slot #1",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "pem1",
+                "type__name": "Juniper | MX | MX480 PEM"
+            },
+            {
+                "description": "PEM Slot #2",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "pem2",
+                "type__name": "Juniper | MX | MX480 PEM"
+            },
+            {
+                "description": "PEM Slot #3",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "pem3",
+                "type__name": "Juniper | MX | MX480 PEM"
+            }
+        ],
+        "data": {
+            "airflow": {
+                "exhaust": "l",
+                "intake": "r"
+            },
+            "asset": {
+                "order_part_no0": "MX480"
+            }
+        }
+    },
+
+    {
+        "name": "Juniper | MX | MX960 Chassis",
+        "vendor__code": "JUNIPER",
+        "description": "Juniper MX960 chassis",
+        "connections": [
+            {
+                "description": "Fan Slot #0",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fan0",
+                "type__name": "Juniper | MX | MX960 Fan"
+            },
+
+            {
+                "description": "Fan Slot #1",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fan0",
+                "type__name": "Juniper | MX | MX960 Fan"
+            },
+
+            {
+                "description": "SCB Slot #0",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "scb0",
+                "type__name": "Juniper | MX | SCB"
+            },
+            {
+                "description": "SCB Slot #1",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "scb1",
+                "type__name": "Juniper | MX | SCB"
+            },
+            {
+                "description": "SCB Slot #2",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc6",
+                "type__name": "Juniper | MX | FPC/SCB"
+            },
+            {
+                "description": "DPC Slot #0",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc0",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot#1",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc1",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #2",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc2",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #3",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc3",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #4",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc4",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #5",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc5",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #7",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc7",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #8",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc8",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #9",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc9",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #10",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc10",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #11",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc11",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "DPC Slot #12",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "fpc12",
+                "type__name": "Juniper | MX | FPC"
+            },
+            {
+                "description": "PEM Slot #0",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "pem0",
+                "type__name": "Juniper | MX | MX960 PEM"
+            },
+            {
+                "description": "PEM Slot #1",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "pem1",
+                "type__name": "Juniper | MX | MX960 PEM"
+            },
+            {
+                "description": "PEM Slot #2",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "pem2",
+                "type__name": "Juniper | MX | MX960 PEM"
+            },
+            {
+                "description": "PEM Slot #3",
+                "direction": "i",
+                "gender": "f",
+                "group": "",
+                "name": "pem3",
+                "type__name": "Juniper | MX | MX960 PEM"
+            }
+        ],
+        "data": {
+            "airflow": {
+                "exhaust": "l",
+                "intake": "r"
+            },
+            "asset": {
+                "order_part_no0": "MX480"
+            }
+        }
+    }
+]

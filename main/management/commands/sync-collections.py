@@ -221,9 +221,10 @@ class Command(BaseCommand):
     collections = [
         ("inv", [
             # Inventory
-            ("sockets", Socket),
             ("vendors", Vendor),
-            ("models", Model)
+            ("modelinterfaces", ModelInterface),
+            ("connectiontypes", ConnectionType),
+            ("objectmodels", ObjectModel)
         ]),
         ("fm", [
             # Fault management
@@ -237,7 +238,7 @@ class Command(BaseCommand):
             ("eventclasses", EventClass),
             ("eventclassificationrules", EventClassificationRule),
             ("cloneclassificationrules", CloneClassificationRule)
-            ])
+        ])
     ]
 
     def handle(self, *args, **options):

@@ -1,0 +1,22 @@
+[
+    {
+        "name": "airflow",
+        "description": "Air from from cold intake to host exhaust",
+        "attrs": [
+            {
+                "name": "exhaust",
+                "type": "str",
+                "description": "Hot exhaust direction",
+                "required": true,
+                "is_const": true
+            },
+            {
+                "name": "intake",
+                "type": "str",
+                "description": "Cold intake direction",
+                "required": true,
+                "is_const": true
+            }
+        ]
+    }
+]

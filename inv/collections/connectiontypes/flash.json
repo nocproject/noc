@@ -1,0 +1,31 @@
+[
+    {
+        "name": "Flash | CF",
+        "genders": "mf"
+    },
+
+    {
+        "name": "Flash | SD",
+        "genders": "mf"
+    },
+
+    {
+        "name": "Flash | miniSD",
+        "genders": "mf"
+    },
+
+    {
+        "name": "Flash | microSD",
+        "genders": "mf"
+    },
+
+    {
+        "name": "Flash | MMC",
+        "genders": "mf"
+    },
+
+    {
+        "name": "Flash | Memory Stick",
+        "genders": "mf"
+    }
+]

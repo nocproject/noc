@@ -15,7 +15,8 @@ Ext.define("NOC.inv.vendor.Application", {
     columns: [
         {
             text: "Name",
-            dataIndex: "name"
+            dataIndex: "name",
+            width: 200
         },
         {
             text: "Builtin",
@@ -24,9 +25,14 @@ Ext.define("NOC.inv.vendor.Application", {
             width: 50
         },
         {
+            text: "Code",
+            dataIndex: "code",
+            width: 100
+        },
+        {
             text: "Site",
             dataIndex: "site",
-            flex: true,
+            flex: 1,
             renderer: NOC.render.URL
         }
     ],
@@ -43,10 +49,54 @@ Ext.define("NOC.inv.vendor.Application", {
             boxLabel: "Is Builtin"
         },
         {
+            name: "code",
+            xtype: "textfield",
+            fieldLabel: "Code",
+            allowBlank: false
+        },
+        {
             name: "site",
             xtype: "textfield",
             fieldLabel: "Site",
             allowBlank: true
         }
-    ]
+    ],
+    filters: [
+        {
+            title: "By Is Builtin",
+            name: "is_builtin",
+            ftype: "boolean"
+        }
+    ],
+    //
+    initComponent: function() {
+        var me = this;
+
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: "/inv/vendor/{{id}}/json/",
+            previewName: "Vendor: {{name}}"
+        });
+
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+        Ext.apply(me, {
+            formToolbar: [
+                {
+                    text: "JSON",
+                    glyph: NOC.glyph.file,
+                    tooltip: "Show JSON",
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
+            ]
+        });
+        me.callParent();
+    },
+    //
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
+    }
 });
