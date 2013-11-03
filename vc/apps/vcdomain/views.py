@@ -24,3 +24,6 @@ class VCDomainApplication(ExtModelApplication):
 
     def field_row_class(self, o):
         return o.style.css_class_name if o.style else ""
+
+    def field_object_count(self, o):
+        return o.managedobject_set.count()
