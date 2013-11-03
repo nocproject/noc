@@ -164,6 +164,39 @@ class IGetInterfaces(Interface):
                 vlan_ids = [VLAN2]
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = List of VLAN2 addresses in VRF1
+
+    DSLAM routed port
+    -----------------
+    forwarding_instance:
+    forwarding_instance = "default"
+    type = "ip"
+    interfaces:
+        name = physical port name
+        type = "physical"
+        subinterfaces:
+            name = interface name (same as physical name for most platforms)
+            enabled_afi = ["IPv4", "IPv6", "ATM"]
+            ipv4_addresses = list of IPv4 addresses
+            ipv6_addresses = list of IPv6 addresses
+            vpi = port vpi
+            vci = port vci
+
+    DSLAM bridge port
+    -----------------
+    forwarding_instance:
+    forwarding_instance = "default"
+    type = "ip"
+    interfaces:
+        name = physical port name
+        type = "physical"
+        subinterfaces:
+            name = interface name (same as physical name for most platforms)
+            enabled_afi = ["BRIDGE", "ATM"]
+            untagged_vlan = untagged vlan, if any
+            tagged_vlans = list of tagged vlans, if any
+            vpi = port vpi
+            vci = port vci
+
     """
     returns = ListOfParameter(element=DictParameter(attrs={
         # Name of the forwarding instance
@@ -199,12 +232,14 @@ class IGetInterfaces(Interface):
                 # Enabled address families
                 "enabled_afi": ListOfParameter(
                     element=StringParameter(choices=[
-                        "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE"
+                        "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE", "ATM"
                     ]), required=False  # #todo: make required
                 ),
                 "ipv4_addresses": ListOfParameter(element=IPv4PrefixParameter(), required=False),  # enabled_afi = [... IPv4 ...]
                 "ipv6_addresses": ListOfParameter(element=IPv6PrefixParameter(), required=False),  # enabled_afi = [... IPv6 ...]
                 "iso_addresses": ListOfParameter(element=StringParameter(), required=False),  #   # enabled_afi = [... ISO ...]
+                "vpi": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
+                "vci": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
                 # Enabled L3 protocols
                 "enabled_protocols": ListOfParameter(
                                 element=StringParameter(choices=[

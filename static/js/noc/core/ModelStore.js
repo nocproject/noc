@@ -102,12 +102,12 @@ Ext.define("NOC.core.ModelStore", {
             }, config);
         // Override callback
         // @todo: Call original callback
-        config = Ext.Object.merge(config, {
+        config = Ext.Object.merge({
             callback: function(records, operation, success) {
                 if(!success)
                     NOC.error("Failed to fetch data!");
             }
-        });
+        }, config);
         // Continue loading
         me.callParent([config]);
     },

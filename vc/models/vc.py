@@ -11,6 +11,8 @@ import re
 ## Django modules
 from django.db import models
 from django.db.models import Q
+## Third-party modules
+from mongoengine.queryset import Q as MEQ
 ## NOC modules
 from error import InvalidLabelException, MissedLabelException
 from vcdomain import VCDomain
@@ -102,3 +104,29 @@ class VC(models.Model):
                         title="VC: %s" % unicode(r),
                         text=r.description,
                         relevancy=1.0)
+
+    def get_bridge_subinterfaces(self):
+        """
+        Returns a list of SubInterface instances belonging to VC
+        """
+        from noc.inv.models.interface import Interface
+        from noc.inv.models.subinterface import SubInterface
+
+        r = []
+        si_q = MEQ(untagged_vlan=self.l1) | MEQ(tagged_vlans=self.l1)
+        # VC Domain's objects
+        objects = set(self.vc_domain.managedobject_set.values_list(
+            "id", flat=True))
+        for si in SubInterface.objects.filter(
+                managed_object__in=objects,
+                enabled_afi="BRIDGE").filter(si_q):
+            if (si.interface.vc_domain is None or
+                    si.interface.vc_domain.id == self.vc_domain.id):
+                r += [si]
+        # Explicit interfaces
+        for i in Interface.objects.filter(vc_domain=self.vc_domain.id):
+            for si in SubInterface.objects.filter(
+                    interface=i.id,
+                    enabled_afi="BRIDGE").filter(si_q):
+                r += [si]
+        return r

@@ -67,12 +67,24 @@ def migrate_dns():
         if name in files:
             import_file("dns", id, files[name])
 
+
+def migrate_config():
+    files = set(get_hg_files())
+    c = connection.cursor()
+    c.execute("SELECT id, repo_path FROM sa_managedobject")
+    for id, path in c:
+        if path in files:
+            import_file("config", id, path)
+
 if __name__ == "__main__":
     repo = sys.argv[1]
-    assert repo in ["dns"]
+    assert repo in ["dns", "config"]
     REPO = os.path.join(REPO, repo)
     if not os.path.isdir(REPO):
         sys.exit(0)
     if repo == "dns":
         GRIDVCS = GridVCS("dnszone")
         migrate_dns()
+    elif repo == "config":
+        GRIDVCS = GridVCS("config")
+        migrate_config()

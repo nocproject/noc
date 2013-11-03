@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Huawei | Quidway S5300 | Extension slot",
+        "description": "Huawei Quidway S5300 Extension slot (Interface card)",
+        "c_group": [],
+        "genders": "mf"
+    },
+    {
+        "name": "Huawei | Quidway S5300 | Fan",
+        "description": "Huawei Quidway S5300 FAN slot (Fan module)",
+        "c_group": [],
+        "genders": "mf"
+    },
+    {
+        "name": "Huawei | Quidway S5300 | PSU",
+        "description": "Huawei Quidway S5300 PSU slot (Power module)",
+        "c_group": [],
+        "genders": "mf"
+    },
+    {
+        "name": "Huawei | Quidway S5300 | Rear slot",
+        "description": "Huawei Quidway S5300 rear slot",
+        "c_group": [],
+        "genders": "mf"
+    },
+    {
+        "name": "Huawei | Quidway S5300 | Stack 12G",
+        "description": "12G Stacking cable connector",
+        "c_group": [],
+        "genders": "mf"
+    }
+]

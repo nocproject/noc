@@ -20,6 +20,10 @@ Ext.define("NOC.inv.vendor.Model", {
             type: "string"
         },
         {
+            name: "code",
+            type: "string"
+        },
+        {
             name: "is_builtin",
             type: "boolean",
             defaultValue: false

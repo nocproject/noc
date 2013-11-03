@@ -1,0 +1,226 @@
+[
+    {
+        "name": "NoName | Transceiver | 1G | SFP SX",
+        "vendor__name": "NoName",
+        "description": "NoName SFP SX transceiver",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "group": null,
+                "name": "in",
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "rx",
+                "type__name": "Optical | LC",
+                "protocols": [">1000BASESX"]
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "tx",
+                "type__name": "Optical | LC",
+                "protocols": ["<1000BASESX"]
+            }
+        ],
+        "data": {}
+    },
+
+    {
+        "name": "NoName | Transceiver | 1G | SFP LX",
+        "vendor__name": "NoName",
+        "description": "NoName SFP LX transceiver",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "group": null,
+                "name": "in",
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "rx",
+                "type__name": "Optical | LC",
+                "protocols": [">1000BASELX-1310"]
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "tx",
+                "type__name": "Optical | LC",
+                "protocols": ["<1000BASELX-1310"]
+            }
+        ],
+        "data": {}
+    },
+
+    {
+        "name": "NoName | Transceiver | 1G | SFP BX (tx 1310nm)",
+        "vendor__name": "NoName",
+        "description": "NoName SFP LX transceiver",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "group": null,
+                "name": "in",
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "txrx",
+                "type__name": "Optical | LC",
+                "protocols": ["<1000BASELX-1310", ">1000BASELX-1490"]
+            }
+        ],
+        "data": {}
+    },
+
+        {
+        "name": "NoName | Transceiver | 1G | SFP BX (tx 1490nm)",
+        "vendor__name": "NoName",
+        "description": "NoName SFP LX transceiver",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "group": null,
+                "name": "in",
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "txrx",
+                "type__name": "Optical | LC",
+                "protocols": [">1000BASELX-1310", "<1000BASELX-1490"]
+            }
+        ],
+        "data": {}
+    },
+
+    {
+        "name": "NoName | Transceiver | 1G | SFP EX",
+        "vendor__name": "NoName",
+        "description": "NoName SFP EX transceiver",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "group": null,
+                "name": "in",
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "rx",
+                "type__name": "Optical | LC",
+                "protocols": [">1000BASEEX-1310"]
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "tx",
+                "type__name": "Optical | LC",
+                "protocols": ["<1000BASEEX-1310"]
+            }
+        ],
+        "data": {}
+    },
+
+    {
+        "name": "NoName | Transceiver | 1G | SFP ZX",
+        "vendor__name": "NoName",
+        "description": "NoName SFP ZX transceiver",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "group": null,
+                "name": "in",
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "rx",
+                "type__name": "Optical | LC",
+                "protocols": [">1000BASEZX-1550"]
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "tx",
+                "type__name": "Optical | LC",
+                "protocols": ["<1000BASEZX-1550"]
+            }
+        ],
+        "data": {}
+    },
+
+    {
+        "name": "NoName | Transceiver | 1G | SFP TX",
+        "vendor__name": "NoName",
+        "description": "NoName SFP SX transceiver",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "group": null,
+                "name": "in",
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "port",
+                "type__name": "Electrical | RJ45",
+                "protocols": ["1000BASETX"]
+            }
+        ],
+        "data": {}
+    }
+]

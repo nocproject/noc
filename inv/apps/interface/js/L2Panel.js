@@ -80,6 +80,7 @@ Ext.define("NOC.inv.interface.L2Panel", {
             mapParams: {
                 interface: r.get("name")
             },
+            loadMask: me,
             scope: me,
             success: me.showMACForm,
             failure: function() {

@@ -19,3 +19,6 @@ class AdministrativeDomainApplication(ExtModelApplication):
     menu = "Setup | Administrative Domains"
     model = AdministrativeDomain
     query_fields = ["name__icontains", "description__icontains"]
+
+    def field_object_count(self, o):
+        return o.managedobject_set.count()

@@ -54,8 +54,16 @@ Ext.define("NOC.core.ModelApplication", {
         me.callParent();
         me.currentRecord = null;
         // Process commands
-        if(me.noc.cmd && me.noc.cmd.cmd == "open") {
-            me.store.setFilterParams({id: me.noc.cmd.id});
+        if(me.noc.cmd) {
+            switch(me.noc.cmd.cmd) {
+                case "open":
+                    me.store.setFilterParams({id: me.noc.cmd.id});
+                    break;
+                case "history":
+                    me.restoreHistory(me.noc.cmd.args);
+                    return;
+                    break;
+            }
         }
         // Finally, load the store
         me.store.load();
@@ -110,6 +118,7 @@ Ext.define("NOC.core.ModelApplication", {
                             text: o.title,
                             itemId: o.action,
                             form: o.form,
+                            glyph: o.glyph,
                             resultTemplate: o.resultTemplate
                         }
                     }),
@@ -535,23 +544,7 @@ Ext.define("NOC.core.ModelApplication", {
                     }
                 },
                 items: formFields,
-                tbar: me.applyPermissions(formToolbar),
-                listeners: {
-                    beforeadd: function(me, field) {
-                        // Change label style for required fields
-                        if(field.xtype == "fieldset") {
-                            for(var key in field.items.items) {
-                                if (!field.items.items[key].allowBlank) {
-                                    field.items.items[key].labelClsExtra = "noc-label-required";
-                                }
-                            }
-                        } else {
-                            if(!field.allowBlank) {
-                               field.labelClsExtra = "noc-label-required";
-                            }
-                        }
-                    }
-                }
+                tbar: me.applyPermissions(formToolbar)
             }
         });
         me.form = formPanel.items.first().getForm();
@@ -561,6 +554,7 @@ Ext.define("NOC.core.ModelApplication", {
     showGrid: function() {
         var me = this;
         me.showItem(me.ITEM_GRID);
+        me.setHistoryHash();
     },
     // Show Form
     showForm: function() {
@@ -572,7 +566,7 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this,
             item = me.showItem(me.ITEM_PREVIEW);
         if(item !== undefined) {
-            item.preview(record);
+            item.preview(record, me.ITEM_GRID);
         }
     },
     // Save changed data
@@ -706,6 +700,8 @@ Ext.define("NOC.core.ModelApplication", {
         me.cloneButton.setDisabled(!me.hasPermission("create"));
         // Enable custom form toolbar
         me.activateCustomFormToolbar(true);
+        //
+        me.setHistoryHash(me.currentRecord.get(me.idField));
     },
     // Delete record
     deleteRecord: function() {
@@ -744,6 +740,34 @@ Ext.define("NOC.core.ModelApplication", {
         me.currentQuery = fexp;
         me.reloadStore();
     },
+    // Returns form data
+    getFormData: function() {
+        var me = this,
+            fields = me.form.getFields().items,
+            f, field, data, name,
+            fLen = fields.length,
+            values = {};
+        for(f = 0; f < fLen; f++) {
+            field = fields[f];
+            if(field.inEditor) {
+                // Skip grid inline editors
+                // WARNING: Will skip other inline editors
+                continue;
+            }
+            data = field.getModelData();
+            if(Ext.isObject(data)) {
+                name = field.getName();
+                if(data.hasOwnProperty(name)) {
+                    values[name] = data[name];
+                }
+            }
+        }
+        return values;
+    },
+    //
+    cleanData: function(v) {
+
+    },
     // Save button pressed
     onSave: function() {
         var me = this;
@@ -751,10 +775,12 @@ Ext.define("NOC.core.ModelApplication", {
             NOC.error("Error in data");
             return;
         }
-        var v = me.form.getFieldValues();
+        var v = me.getFormData();
         if(!me.currentRecord && v[me.idField] !== undefined) {
             delete v[me.idField];
         }
+        //
+        me.cleanData(v);
         // Fetch comboboxes labels
         me.form.getFields().each(function(field) {
             if(Ext.isDefined(field.getLookupData))
@@ -955,6 +981,9 @@ Ext.define("NOC.core.ModelApplication", {
                         html: d,
                         width: 600,
                         height: 400,
+                        autoScroll: true,
+                        layout: "fit",
+                        maximizable: true,
                         title: Ext.String.format("Result: {0}", action.text)
                     }).show();
                 } else {
@@ -1006,5 +1035,30 @@ Ext.define("NOC.core.ModelApplication", {
     // onPreview: function(record)
     // to create item preview
     //
-    onPreview: undefined
+    onPreview: undefined,
+    //
+    // Load record by id and call callback
+    // Callback is the function(record)
+    //
+    loadById: function(id, callback) {
+        var me = this;
+        me.store.load({
+            params: {id: id},
+            scope: me,
+            callback: function(records, operation, success) {
+                if(success && records.length === 1) {
+                    Ext.callback(callback, me, [records[0]]);
+                }
+            }
+        });
+    },
+    //
+    restoreHistory: function(args) {
+        var me = this;
+        if(args.length === 1) {
+            me.loadById(args[0], function(record) {
+                me.onEditRecord(record);
+            });
+        }
+    }
 });

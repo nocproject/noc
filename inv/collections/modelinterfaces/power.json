@@ -1,0 +1,22 @@
+[
+    {
+        "name": "power",
+        "description": "Object's power consumption",
+        "attrs": [
+            {
+                "name": "is_recursive",
+                "type": "bool",
+                "description": "Add nested object's power consumption if true",
+                "required": true,
+                "is_const": true
+            },
+            {
+                "name": "power",
+                "type": "float",
+                "description": "Object's own power consumption in W",
+                "required": true,
+                "is_const": true
+            }
+        ]
+    }
+]

@@ -1,0 +1,36 @@
+[
+    {
+        "name": "Optical | FC",
+        "description": "Optical FC connection",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Optical | LC",
+        "description": "Optical LC connection",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Optical | SC",
+        "description": "Optical SC connection",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Optical | ST",
+        "description": "Optical FC connection",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Optical | TOSLINK",
+        "description": "Optical TOSLINK connection",
+        "c_group": [],
+        "genders": "mf"
+    }
+]

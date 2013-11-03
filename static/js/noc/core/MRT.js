@@ -16,6 +16,7 @@ Ext.define("NOC.core.MRT", {
     success: null,
     failure: null,
     showProgress: true,
+    _loadMask: false,
     loadMask: false,
 
     constructor: function(config) {
@@ -86,16 +87,16 @@ Ext.define("NOC.core.MRT", {
         var me = this;
 
         if(me.showProgress) {
-            me.loadMask = new Ext.LoadMask(Ext.getBody(), {
+            me._loadMask = new Ext.LoadMask(me.loadMask || Ext.getBody(), {
                 msg: "Running task. Please wait ..."});
-            me.loadMask.show();
+            me._loadMask.show();
         }
     },
     // Hide wait... mask
     unmask: function() {
         var me = this;
-        if(me.loadMask) {
-            me.loadMask.hide();
+        if(me._loadMask) {
+            me._loadMask.hide();
         }
     }
 });
