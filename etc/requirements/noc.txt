@@ -1,13 +1,13 @@
 Mercurial>=2.5.2
 psycopg2>=2.5
-pymongo>=2.5.1
+pymongo==2.6.3
 gmpy==1.16
 pycrypto>=2.6
 python-cjson>=1.0.5
 netifaces>=0.8
 Django==1.4.1
 South==0.7.3
-coverage==3.6
+coverage==3.7
 protobuf==2.5.0
 pyasn1==0.1.7
 pyasn1-modules==0.0.5
