@@ -70,7 +70,8 @@ class Script(NOCScript):
 
     rx_udld = re.compile(r"(?P<ipif>\S+)\s+Enabled\s+\S+\s+\S+\s+\S+\s+\d+")
 
-    rx_ctp = re.compile(r"^(?P<ipif>\S+)\s+Enabled\s+\S+", re.MULTILINE)
+    rx_ctp = re.compile(r"^(?P<ipif>\S+)\s+(?P<state>Enabled|Disabled)\s+\S+",
+        re.MULTILINE)
 
     rx_pim = re.compile(r"(?P<ipif>\S+)\s+\S+\s+\S+\s+\d+\s+\d+\s+\S+\s+"
     r"(?P<state>Enabled)\s+")
@@ -82,7 +83,8 @@ class Script(NOCScript):
         match = self.rx_ctp.search(s)
         if match:
             key = match.group("ipif")
-            obj = {"port": key}
+            state = match.group("state")
+            obj = {"port": key, "state": state}
             return key, obj, s[match.end():]
         else:
             return None
@@ -149,7 +151,8 @@ class Script(NOCScript):
                 except self.CLISyntaxError:
                     c = []
             for i in c:
-                ctp += [i['port']]
+                if i['state'] == 'Enabled':
+                    ctp += [i['port']]
 
         pim = []
         try:
