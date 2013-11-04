@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ManagedObject
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -24,12 +24,12 @@ from objectstatus import ObjectStatus
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.profiles import profile_registry
-from noc.lib.search import SearchResult
 from noc.lib.fields import INETField, TagsField
 from noc.lib.app.site import site
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.stencil import stencil_registry
 from noc.lib.gridvcs.manager import GridVCSField
+from noc.main.models.fts_queue import FTSQueue
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
@@ -286,22 +286,40 @@ class ManagedObject(models.Model):
             a.fqdn = fqdn
             a.save()
 
-    @classmethod
-    def search(cls, user, query, limit):
+    def get_index(self):
         """
-        Search engine plugin
+        Get FTS index
         """
-        q = (Q(name__icontains=query) |
-             Q(address__icontains=query) |
-             Q(user__icontains=query) |
-             Q(description__icontains=query))
-        for o in [o for o in cls.objects.filter(q) if o.has_access(user)]:
-            relevancy = 1.0
-            yield SearchResult(
-                url=("sa:managedobject:change", o.id),
-                title="SA: " + unicode(o),
-                text=unicode(o),
-                relevancy=relevancy)
+        card = "Managed object %s (%s)" % (self.name, self.address)
+        content = [
+            self.name,
+            self.address,
+        ]
+        if self.trap_source_ip:
+            content += [self.trap_source_ip]
+        platform = self.platform
+        if platform:
+            content += [platform]
+            card += " [%s]" % platform
+        version = self.get_attr("version")
+        if version:
+            content += [version]
+            card += " version %s" % version
+        if self.description:
+            content += [self.description]
+        config = self.config.read()
+        if config:
+            content += [config]
+        r = {
+            "id": "sa.ManagedObject:%s" % self.id,
+            "title": self.name,
+            "url": "/sa/managedobject/%s/" % self.id,
+            "content": "\n".join(content),
+            "card": card
+        }
+        if self.tags:
+            r["tags"] = self.tags
+        return r
 
     ##
     ## Returns True if Managed Object presents in more than one networks
@@ -439,6 +457,10 @@ class ManagedObject(models.Model):
         # Send notification
         NotificationGroup.group_notify(
             groups, subject=subject, body=body)
+        # Schedule FTS reindex
+        if event_id in (
+            self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED):
+            FTSQueue.schedule_update(self)
 
     def save_config(self, data):
         if isinstance(data, list):

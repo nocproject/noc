@@ -9,20 +9,17 @@
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.db.models import Q
 ## NOC modules
 from noc.project.models.project import Project
 from vrf import VRF
 from prefix import Prefix
 from afi import AFI_CHOICES
-from noc.main.models import Style, ResourceState, CustomField
+from noc.main.models import Style, ResourceState
 from noc.sa.models import ManagedObject
 from noc.lib.fields import TagsField, INETField, MACField
 from noc.lib.app import site
-from noc.lib.search import SearchResult
 from noc.lib.validators import (
-    ValidationError, check_fqdn, check_ipv4, check_ipv6,
-    is_ipv4, is_ipv6)
+    ValidationError, check_fqdn, check_ipv4, check_ipv6)
 
 
 class Address(models.Model):
@@ -188,43 +185,29 @@ class Address(models.Model):
         else:
             return ""
 
-    ##
-    ## Search engine plugin
-    ##
-    @classmethod
-    def search(cls, user, query, limit):
-        from noc.sa.interfaces import MACAddressParameter,\
-            InterfaceTypeError
-        q = Q(description__icontains=query) | Q(fqdn__icontains=query)
-        if is_ipv4(query):
-            q |= Q(afi="4", address=query)
-        elif is_ipv6(query):
-            q |= Q(afi="6", address=query)
-        else:
-            try:
-                mac = MACAddressParameter().clean(query)
-                q |= Q(mac=mac)
-            except InterfaceTypeError:
-                pass  # Not a MAC address
-        cq = CustomField.table_search_Q(cls._meta.db_table, query)
-        if cq:
-            q |= cq
-        for o in cls.objects.filter(q):
-            if query == o.address:
-                relevancy = 1.0
-            elif query in o.fqdn:
-                relevancy = float(len(query)) / float(len(o.fqdn))
-            elif o.description and query in o.description:
-                relevancy = float(len(query)) / float(len(o.description))
-            else:
-                relevancy = 0
-            yield SearchResult(
-                url=("ip:ipam:vrf_index", o.vrf.id, o.afi, o.prefix.prefix),
-                title="VRF %s (IPv%s): %s (%s)" % (
-                o.vrf.name, o.afi, o.address, o.description),
-                text=unicode(o),
-                relevancy=relevancy
-            )
+    def get_index(self):
+        """
+        Full-text search
+        """
+        content = [self.address, self.fqdn]
+        card = "Address %s, FQDN %s" % (self.address, self.fqdn)
+        if self.mac:
+            content += [self.mac]
+            card += ", MAC %s" % self.mac
+        if self.description:
+            content += [self.description]
+            card += " (%s)" % self.description
+        r = {
+            "id": "ip.Address:%s" % self.id,
+            "title": self.address,
+            "url": "/ip/address/%s/" % self.id,
+            "content": "\n".join(content),
+            "card": card
+        }
+        if self.tags:
+            r["tags"] = self.tags
+        return r
+
 
 ## Prevent import loop
 from noc.dns.models import DNSZone
