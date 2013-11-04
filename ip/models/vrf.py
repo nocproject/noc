@@ -12,16 +12,14 @@ import struct
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.db.models import Q
 ## NOC modules
-from noc.main.models import Style, ResourceState, CustomField
+from noc.main.models import Style, ResourceState
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from vrfgroup import VRFGroup
 from noc.lib.validators import check_rd, is_rd
 from noc.lib.fields import TagsField
 from noc.lib.app import site
-from noc.lib.search import SearchResult
 
 
 class VRF(models.Model):
@@ -131,25 +129,26 @@ class VRF(models.Model):
                     "asn": AS.default_as(),
                     "description": "IPv6 Root"})
 
-    @classmethod
-    def search(cls, user, query, limit):
+    def get_index(self):
         """
-        Search engine plugin
+        Full-text search
         """
-        q = Q(name__icontains=query)
-        if is_rd(query):
-            q |= Q(rd=query)
-        cq = CustomField.table_search_Q(cls._meta.db_table, query)
-        if cq:
-            q |= cq
-        for o in cls.objects.filter(q):
-            relevancy = 1.0
-            yield SearchResult(
-                url=("ip:vrf:change", o.id),
-                title="VRF: " + unicode(o),
-                text=unicode(o),
-                relevancy=relevancy
-            )
+        content = [self.name, str(self.rd)]
+        card = "VRF %s. RD %s" % (self.name, self.rd)
+        if self.description:
+            content += [self.description]
+            card += " (%s)" % self.description
+        r = {
+            "id": "ip.VRF:%s" % self.id,
+            "title": self.name,
+            "url": "/ip/vrf/%s/" % self.id,
+            "content": "\n".join(content),
+            "card": card
+        }
+        if self.tags:
+            r["tags"] = self.tags
+        return r
+
 
 ## Avoid circular references
 from prefix import Prefix
