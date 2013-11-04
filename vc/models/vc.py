@@ -99,15 +99,17 @@ class VC(models.Model):
         if self.l2:
             content += [str(self.l2)]
         r = {
-            "id": "vc.VC:%s" % self.id,
+            "id": "vc.vc:%s" % self.id,
             "title": self.name,
-            "url": "/vc/vc/%s/" % self.id,
             "content": "\n".join(content),
             "card": card
         }
         if self.tags:
             r["tags"] = self.tags
         return r
+
+    def get_search_info(self, user):
+        return ("vc.vc", "history", {"args": [self.id]})
 
     def get_bridge_subinterfaces(self):
         """

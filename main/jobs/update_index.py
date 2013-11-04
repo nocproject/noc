@@ -43,13 +43,12 @@ class UpdateIndexJob(AutoIntervalJob):
         if not o:
             return
         i = o.get_index()
-        if not i.get("content") or not i.get("id") or not i.get("url"):
+        if not i.get("content") or not i.get("id"):
             return
         self.debug(u"Updating %s %s" % (str(o._meta), unicode(o)))
         fields = {
             "id": unicode(i["id"]),
             "title": unicode(i["title"]),
-            "url": unicode(i["url"]),
             "content": unicode(i["content"]),
             "card": unicode(i["card"]),
         }

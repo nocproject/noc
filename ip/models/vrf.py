@@ -139,15 +139,17 @@ class VRF(models.Model):
             content += [self.description]
             card += " (%s)" % self.description
         r = {
-            "id": "ip.VRF:%s" % self.id,
+            "id": "ip.vrf:%s" % self.id,
             "title": self.name,
-            "url": "/ip/vrf/%s/" % self.id,
             "content": "\n".join(content),
             "card": card
         }
         if self.tags:
             r["tags"] = self.tags
         return r
+
+    def get_search_info(self, user):
+        return ("ip.vrf", "history", {"args": [self.id]})
 
 
 ## Avoid circular references

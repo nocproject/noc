@@ -311,15 +311,20 @@ class ManagedObject(models.Model):
         if config:
             content += [config]
         r = {
-            "id": "sa.ManagedObject:%s" % self.id,
+            "id": "sa.managedobject:%s" % self.id,
             "title": self.name,
-            "url": "/sa/managedobject/%s/" % self.id,
             "content": "\n".join(content),
             "card": card
         }
         if self.tags:
             r["tags"] = self.tags
         return r
+
+    def get_search_info(self, user):
+        if self.has_access(user):
+            return ("sa.managedobject", "history", {"args": [self.id]})
+        else:
+            return None
 
     ##
     ## Returns True if Managed Object presents in more than one networks
