@@ -49,7 +49,7 @@ class UpdateIndexJob(AutoIntervalJob):
         fields = {
             "id": unicode(i["id"]),
             "title": unicode(i["title"]),
-            "url": unicode(),
+            "url": unicode(i["url"]),
             "content": unicode(i["content"]),
             "card": unicode(i["card"]),
         }
