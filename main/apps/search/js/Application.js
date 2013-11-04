@@ -51,12 +51,25 @@ Ext.define("NOC.main.search.Application", {
             ]
         });
         me.callParent();
+        // Process commands
+        if(me.noc.cmd) {
+            switch(me.noc.cmd.cmd) {
+                case "search":
+                    me.searchField.setValue(me.noc.cmd.query);
+                    break;
+            }
+        }
+
     },
     //
     afterRender: function() {
         var me = this;
         me.callParent();
         me.searchField.focus();
+        var v = me.searchField.getValue();
+        if(v !== "") {
+            me.doSearch(v);
+        }
     },
     //
     onSearchSpecialKey: function(field, event) {
@@ -94,7 +107,8 @@ Ext.define("NOC.main.search.Application", {
     },
     //
     onSelect: function(model, record, index, opts) {
-        var me = this;
-        console.log(record.get("info"));
+        var me = this,
+            i = record.get("info");
+        NOC.launch(i[0], i[1], i[2]);
     }
 });
