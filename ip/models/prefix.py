@@ -396,15 +396,27 @@ class Prefix(models.Model):
             content += [self.description]
             card += " (%s)" % self.description
         r = {
-            "id": "ip.Prefix:%s" % self.id,
+            "id": "ip.prefix:%s" % self.id,
             "title": self.prefix,
-            "url": "/ip/prefix/%s/" % self.id,
             "content": "\n".join(content),
             "card": card
         }
         if self.tags:
             r["tags"] = self.tags
         return r
+
+    def get_search_info(self, user):
+        # @todo: Check user access
+        return (
+            "iframe",
+            None,
+            {
+                "title": "Assigned addresses",
+                "url": "/ip/ipam/%s/%s/%s/" % (
+                    self.vrf.id, self.afi, self.prefix
+                )
+            }
+        )
 
     ##
     ## All prefix-related address ranges

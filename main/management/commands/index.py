@@ -127,12 +127,11 @@ class Command(BaseCommand):
     def reindex_model(self, writer, model):
         for o in model.objects.all():
             i = o.get_index()
-            if not i.get("content") or not i.get("id") or not i.get("url"):
+            if not i.get("content") or not i.get("id"):
                 continue
             fields = {
                 "id": unicode(i["id"]),
                 "title": unicode(i["title"]),
-                "url": unicode(i["url"]),
                 "content": unicode(i["content"]),
                 "card": unicode(i["card"]),
             }

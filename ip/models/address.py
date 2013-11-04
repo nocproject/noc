@@ -198,9 +198,8 @@ class Address(models.Model):
             content += [self.description]
             card += " (%s)" % self.description
         r = {
-            "id": "ip.Address:%s" % self.id,
+            "id": "ip.address:%s" % self.id,
             "title": self.address,
-            "url": "/ip/address/%s/" % self.id,
             "content": "\n".join(content),
             "card": card
         }
@@ -208,6 +207,18 @@ class Address(models.Model):
             r["tags"] = self.tags
         return r
 
+    def get_search_info(self, user):
+        # @todo: Check user access
+        return (
+            "iframe",
+            None,
+            {
+                "title": "Assigned addresses",
+                "url": "/ip/ipam/%s/%s/%s/change_address/" % (
+                    self.vrf.id, self.afi, self.address
+                )
+            }
+        )
 
 ## Prevent import loop
 from noc.dns.models import DNSZone
