@@ -66,7 +66,8 @@ fi
 ##
 cp /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
 awk '/RPM-GPG-KEY-CentOS-6/{print;print "exclude=postgresql*";next}1' /etc/yum.repos.d/CentOS-Base.repo.backup > /etc/yum.repos.d/CentOS-Base.repo
-cat > /etc/yum.repos.d/CentOS-Base.repo << __EOF__
+cat >> /etc/yum.repos.d/CentOS-Base.repo << __EOF__
+
 [mongodb]
 name=MongoDB Repository
 baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
