@@ -21,22 +21,17 @@ class Script(NOCScript):
         "et": "physical",
         "ma": "management",
         "vl": "SVI",
-        "po": "aggregated"
+        "po": "aggregated",
+        "lo": "loopback"
     }
 
     rx_iface_sep = re.compile(r"^(\S+\d+)\s+is\s+.+$", re.MULTILINE)
     rx_hw_mac = re.compile(
         r"^\s+Hardware is \S+, address is (?P<mac>\S+)"
     )
-    rx_description = re.compile(
-        r"^\s+Description:\s+(?P<description>.+)"
-    )
-    rx_member = re.compile(
-        r"^\s+Member of (?P<agg>\S+)"
-    )
-    rx_ip = re.compile(
-        r"^\s+Internet address is (?P<ip>\S+)"
-    )
+    rx_description = re.compile(r"^\s+Description:\s+(?P<description>.+)")
+    rx_member = re.compile(r"^\s+Member of (?P<agg>\S+)")
+    rx_ip = re.compile(r"^\s+Internet address is (?P<ip>\S+)")
 
     def execute(self, interface=None):
         interfaces = []
