@@ -100,6 +100,8 @@ class NOCHTTPSocket(ConnectedTCPSocket):
     """
     HTTP Connection
     """
+    TTL = 30
+
     def __init__(self, parent, address, port):
         self.buffer = ""
         self.queue = Queue.Queue()
