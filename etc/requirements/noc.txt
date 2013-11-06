@@ -18,7 +18,7 @@ Pygments==1.2.2
 mongoengine==0.6.20
 tornado==3.1
 sleekxmpp==1.1.11
-Whoosh==2.6.0
+Whoosh==2.5.4
 noc-pkg-handlebars==1.0.0
 noc-pkg-shjs==0.6
 noc-pkg-famfamfam-silk==1.3
