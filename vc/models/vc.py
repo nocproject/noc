@@ -10,7 +10,6 @@
 import re
 ## Django modules
 from django.db import models
-from django.db.models import Q
 ## Third-party modules
 from mongoengine.queryset import Q as MEQ
 ## NOC modules
@@ -20,8 +19,6 @@ from noc.main.models import ResourceState, Style
 from noc.project.models.project import Project
 from noc.lib.fields import TagsField
 from noc.lib.app.site import site
-from noc.lib.validators import is_int
-from noc.lib.search import SearchResult
 
 ## Regular expressions
 rx_vc_underline = re.compile("\s+")
@@ -90,20 +87,29 @@ class VC(models.Model):
             self.name = "VC_%04d" % self.l1
         super(VC, self).save()
 
-    @classmethod
-    def search(cls, user, search, limit):
+    def get_index(self):
         """
-        Search engine
+        Full-text search
         """
-        if user.has_perm("vc.change_vc"):
-            if is_int(search):
-                tag = int(search)
-                for r in VC.objects.filter(Q(l1=tag) | Q(l2=tag))[:limit]:
-                    yield SearchResult(
-                        url=("vc:vc:change", r.id),
-                        title="VC: %s" % unicode(r),
-                        text=r.description,
-                        relevancy=1.0)
+        content = [self.name, str(self.l1)]
+        card = "VC %s. Tag %s" % (self.name, self.l1)
+        if self.description:
+            content += [self.description]
+            card += " (%s)" % self.description
+        if self.l2:
+            content += [str(self.l2)]
+        r = {
+            "id": "vc.vc:%s" % self.id,
+            "title": self.name,
+            "content": "\n".join(content),
+            "card": card
+        }
+        if self.tags:
+            r["tags"] = self.tags
+        return r
+
+    def get_search_info(self, user):
+        return ("vc.vc", "history", {"args": [self.id]})
 
     def get_bridge_subinterfaces(self):
         """

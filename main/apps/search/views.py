@@ -1,42 +1,62 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Global Search
+## main.search application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-# Django Modules
-from django.utils.translation import ugettext_lazy as _
-from django import forms
-# NOC Modules
-from noc.lib.forms import NOCForm
-from noc.lib.app import Application,PermitLogged,view
-from noc.lib.search import search as search_engine
+## Third-party modules
+from whoosh.qparser import QueryParser
+from whoosh.index import open_dir
+## NOC modules
+from noc.lib.app import ExtApplication, view
+from noc.sa.interfaces.base import StringParameter
+from noc.main.models import fts_models
 
-##
-## Search engine application
-##
-class SearchApplication(Application):
-    title="Search"
-    ##
-    ## Simple search form
-    ##
-    class SearchForm(NOCForm):
-        query=forms.CharField(label=_("Query"))
-    
-    ##
-    ## Render success page
-    ##
-    @view(url=r"^$", url_name="search", access=PermitLogged())
-    def view_search(self,request):
-        result=[]
-        rq = request.POST or request.GET
-        if rq:
-            form=self.SearchForm(rq)
-            if form.is_valid():
-                result=search_engine(request.user,form.cleaned_data["query"])
-        else:
-            form=self.SearchForm()
-        return self.render(request,"search.html",{"form":form,"result":result})
-    
+
+class SearchApplication(ExtApplication):
+    """
+    main.search application
+    """
+    title = "Search"
+    menu = "Search"
+    INDEX = "local/index"
+    LIMIT = 1000
+
+    @view(url="^$", method=["POST"], access="launch", api=True,
+          validate={
+              "query": StringParameter()
+          })
+    def api_search(self, request, query):
+        user = request.user
+        index = open_dir(self.INDEX, readonly=True)
+        parser = QueryParser("content", index.schema)
+        r = []
+        q = parser.parse(query)
+        with index.searcher() as searcher:
+            for hit in searcher.search(q, limit=self.LIMIT):
+                o = self.get_object(hit["id"])
+                if not o:
+                    continue  # Not found in database
+                li = o.get_search_info(user)
+                if not li:
+                    continue  # Not accessible for user
+                r += [{
+                    "id": hit["id"],
+                    "title": hit["title"],
+                    "card": hit["card"],
+                    "tags": hit.get("tags"),
+                    "info": li
+                }]
+        return r
+
+    def get_object(self, id):
+        m, i = id.split(":")
+        if not m in fts_models:
+            return None
+        model = fts_models[m]
+        try:
+            return model.objects.get(id=int(i))
+        except model.DoesNotExist:
+            return None
