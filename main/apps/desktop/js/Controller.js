@@ -258,9 +258,7 @@ Ext.define("NOC.main.desktop.Controller", {
     // Search text entered
     onSearch: function(value) {
         var me = this;
-        me.launchTab("NOC.main.desktop.IFramePanel",
-                        "Search",
-                        {url: "/main/search/?" + Ext.urlEncode({query: value})});
+        me.launchApp("main.search", "search", {query: value});
     },
     // Show change credentials form
     showChangeCredentials: function() {
@@ -355,8 +353,18 @@ Ext.define("NOC.main.desktop.Controller", {
     },
     //
     launchApp: function(app, cmd, data) {
-        var me = this,
-            url = "/" + app.replace(".", "/") + "/launch_info/";
+        var me = this;
+        // iframe shortcut
+        if(app === "iframe") {
+            me.launchTab(
+                "NOC.main.desktop.IFramePanel",
+                data.title,
+                {url: data.url}
+            );
+            return;
+        }
+        //
+        var url = "/" + app.replace(".", "/") + "/launch_info/";
         Ext.Ajax.request({
             url: url,
             method: "GET",

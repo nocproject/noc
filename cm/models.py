@@ -23,7 +23,6 @@ from noc.lib.fileutils import rewrite_when_differ, read_file, is_differ, in_dir
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
 from noc.sa.models import AdministrativeDomain, ManagedObject
-from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.lib.app.site import site
 
