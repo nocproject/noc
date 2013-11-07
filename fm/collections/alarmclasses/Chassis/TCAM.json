@@ -26,7 +26,7 @@
     },
 
     {
-        "name": "Chassis | TCAM | TCAM entry capacity exceeded",
+        "name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
         "description": "TCAM entry capacity exceeded",
         "is_unique": true,
         "discriminator": [],

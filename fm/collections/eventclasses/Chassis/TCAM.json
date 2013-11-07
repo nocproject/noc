@@ -30,7 +30,7 @@
     },
 
     {
-        "name": "Chassis | TCAM | TCAM entry capacity exceeded",
+        "name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
         "description": "TCAM entry capacity exceeded",
         "action": "A",
         "text": {
@@ -54,7 +54,7 @@
             {
                 "name": "dispose",
                 "action": "raise",
-                "alarm_class__name": "Chassis | TCAM | TCAM entry capacity exceeded"
+                "alarm_class__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded"
             }
         ]
     }
