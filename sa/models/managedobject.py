@@ -30,8 +30,11 @@ from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.stencil import stencil_registry
 from noc.lib.gridvcs.manager import GridVCSField
 from noc.main.models.fts_queue import FTSQueue
+from noc.settings import config
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
+
+CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
 
 
 class ManagedObject(models.Model):
@@ -82,7 +85,7 @@ class ManagedObject(models.Model):
     vc_domain = models.ForeignKey(
         "vc.VCDomain", verbose_name="VC Domain", null=True, blank=True)
     # CM
-    config = GridVCSField("config")
+    config = GridVCSField("config", mirror=CONFIG_MIRROR)
     # Default VRF
     vrf = models.ForeignKey("ip.VRF", verbose_name=_("VRF"),
                             blank=True, null=True)
