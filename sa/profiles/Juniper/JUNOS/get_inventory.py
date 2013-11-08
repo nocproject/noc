@@ -17,6 +17,9 @@ class Script(NOCScript):
     name = "Juniper.JUNOS.get_inventory"
     implements = [IGetInventory]
 
+    JUNIPER = "JUNIPER"
+    NONAME = "NONAME"
+
     rx_chassis = re.compile(
         r"^Chassis\s+(?P<serial>\S+)\s+(?P<rest>.+)$",
         re.IGNORECASE
@@ -57,9 +60,10 @@ class Script(NOCScript):
 
     def execute(self):
         def get_object(objects, omap, name, revision,
-                       part_no, serial, description):
+                       part_no, serial, description, vendor=None):
             o = {
                 "id": len(objects),
+                "vendor": vendor or self.JUNIPER,
                 "serial": serial,
                 "description": description,
                 "part_no": [part_no],
@@ -89,6 +93,7 @@ class Script(NOCScript):
                 chassis_type = description.split()[0].upper()
                 chassis = {
                     "id": len(objects),
+                    "vendor": self.JUNIPER,
                     "serial": serial,
                     "description": description,
                     "part_no": [chassis_type],
@@ -181,7 +186,9 @@ class Script(NOCScript):
                     else:
                         # Separate PIC
                         cn = name.split()[-1]
+                    vendor = self.JUNIPER
                     if part_no == "NON-JNPR":
+                        vendor = self.NONAME
                         # Try to detect transceiver type
                         if description == "UNKNOWN":
                             part_no = "NoName | Transceiver | Unknown"
@@ -189,7 +196,7 @@ class Script(NOCScript):
                             part_no = self.get_trans_part_no(serial, description)
                     o = get_object(objects, omap,
                                    name, revision, part_no,
-                                   serial, description)
+                                   serial, description, vendor=vendor)
                     connect(co, cn, o, "in")
         return objects
 

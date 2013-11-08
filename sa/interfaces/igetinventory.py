@@ -16,6 +16,8 @@ class IGetInventory(Interface):
         # May be changed during script runs
         # Used only as reference in connections
         "id": IntParameter(),
+        # Object vendor. Must match Vendor.code
+        "vendor": StringParameter(),
         # List of part numbers
         # May contain
         # * NOC model name
