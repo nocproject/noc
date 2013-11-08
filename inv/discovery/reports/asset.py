@@ -56,7 +56,7 @@ class AssetReport(Report):
             * asset.order_part_no* value (FRU numbers)
         """
         # Process list of part no
-        if type(part_no) == type(list):
+        if type(part_no) == list:
             for p in part_no:
                 m = self.get_model(p)
                 if m:
