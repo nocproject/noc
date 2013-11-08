@@ -46,6 +46,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             renderer: NOC.render.Bool
         },
         {
+            text: "Asset",
+            dataIndex: "enable_asset_discovery",
+            width: 50,
+            renderer: NOC.render.Bool
+        },
+        {
             text: "IP",
             dataIndex: "enable_ip_discovery",
             width: 50,
@@ -278,6 +284,26 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 },
                 {
                     name: "interface_discovery_max_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                // Asset discovery
+                {
+                    xtype: "label",
+                    text: "Asset discovery"
+                },
+                {
+                    name: "enable_asset_discovery",
+                    xtype: "checkboxfield",
+                    allowBlank: false
+                },
+                {
+                    name: "asset_discovery_min_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                {
+                    name: "asset_discovery_max_interval",
                     xtype: "numberfield",
                     allowBlank: false
                 },

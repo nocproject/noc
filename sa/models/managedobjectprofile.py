@@ -158,11 +158,18 @@ class ManagedObjectProfile(models.Model):
         _("Max. UDLD discovery interval"), default=86400)
     # OAM Topology discovery
     enable_oam_discovery = models.BooleanField(
-            _("Enable UDLD discovery"), default=True)
+            _("Enable OAM discovery"), default=True)
     oam_discovery_min_interval = models.IntegerField(
         _("Min. OAM discovery interval"), default=600)
     oam_discovery_max_interval = models.IntegerField(
         _("Max. OAM discovery interval"), default=86400)
+    # Asset discovery
+    enable_asset_discovery = models.BooleanField(
+            _("Enable asset discovery"), default=True)
+    asset_discovery_min_interval = models.IntegerField(
+        _("Min. asset discovery interval"), default=600)
+    asset_discovery_max_interval = models.IntegerField(
+        _("Max. asset discovery interval"), default=86400)
 
     def __unicode__(self):
         return self.name
