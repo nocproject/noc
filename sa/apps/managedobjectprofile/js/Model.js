@@ -290,6 +290,21 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 86400
         },
         {
+            name: "enable_asset_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "asset_discovery_min_interval",
+            type: "int",
+            defaultValue: 600
+        },
+        {
+            name: "asset_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false
