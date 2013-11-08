@@ -33,6 +33,8 @@ class AssetDiscoveryJob(MODiscoveryJob):
                 revision=o.get("revision"), serial=o.get("serial"),
                 description=o.get("description")
             )
+        self.report.send()
+        return True
 
     @classmethod
     def initial_submit_queryset(cls):
