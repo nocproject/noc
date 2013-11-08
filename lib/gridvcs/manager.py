@@ -49,12 +49,16 @@ class GridVCSObjectDescriptor(object):
         self.field = field
         self.repo = field.repo
         self.mirror = mirror
+        if self.mirror:
+            self.mirror = os.path.realpath(self.mirror)
 
     def __get__(self, instance, instance_type=None):
         mpath = None
         if self.mirror:
             mpath = os.path.join(self.mirror, unicode(instance))
-            print mpath
+            if not os.path.realpath(mpath).startswith(self.mirror):
+                # Security violation
+                mpath = None
         return GridVCSObjectProxy(
             self.repo, instance.id,
             mirror=mpath)

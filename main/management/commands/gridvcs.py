@@ -88,13 +88,19 @@ class Command(BaseCommand):
         mirror = config.get("gridvcs", "mirror.%s" % self.repo) or None
         if not mirror:
             raise CommandError("No mirror path set")
+        mirror = os.path.realpath(mirror)
         self.out("Mirroring")
         if self.repo == "sa.managedobject.config":
             for o in ManagedObject.objects.filter(is_managed=True):
                 v = self.get_value(o)
                 if v:
-                    self.out("   ... %s" % o)
-                    safe_rewrite(os.path.join(mirror, unicode(o)), v)
+                    mpath = os.path.realpath(
+                        os.path.join(mirror, unicode(o)))
+                    if mpath.startswith(mirror):
+                        self.out("   mirroring %s" % o)
+                        safe_rewrite(mpath, v)
+                    else:
+                        self.out("    !!! mirror path violation for" % o)
         self.out("Done")
 
     def handle_get(self, objects):
