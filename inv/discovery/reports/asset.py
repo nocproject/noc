@@ -12,6 +12,7 @@ from mongoengine.queryset import Q
 from base import Report
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
+from noc.inv.models.vendor import Vendor
 
 
 class AssetReport(Report):
@@ -23,8 +24,10 @@ class AssetReport(Report):
         self.om_cache = {}  # part_no -> object model
         self.unknown_part_no = {}  # part_no -> list of variants
         self.pn_description = {}  # part_no -> Description
+        self.vendors = {}  # code -> Vendor instance
 
-    def submit(self, jid, part_no, revision=None, serial=None,
+    def submit(self, jid, part_no, vendor=None,
+               revision=None, serial=None,
                description=None, connections=None):
         connections = [] if connections is None else connections
         # Cache description
@@ -32,8 +35,14 @@ class AssetReport(Report):
             for p in part_no:
                 if p not in self.pn_description:
                     self.pn_description[p] = description
+        # Find vendor
+        vnd = self.get_vendor(vendor)
+        if not vnd:
+            self.error("Unknown vendor '%s' for S/N %s (%s)" % (
+                vendor, serial, description))
+            return
         # Find model
-        m = self.get_model(part_no)
+        m = self.get_model(vnd, part_no)
         if not m:
             self.register_unknown_part_no(part_no)
             return
@@ -70,7 +79,7 @@ class AssetReport(Report):
                 self.error("Unknown part number for %s: %s (%s)" % (
                     platform, ", ".join(pns), description))
 
-    def get_model(self, part_no):
+    def get_model(self, vendor, part_no):
         """
         Get ObjectModel by part part_no,
         Search order:
@@ -81,7 +90,7 @@ class AssetReport(Report):
         # Process list of part no
         if type(part_no) == list:
             for p in part_no:
-                m = self.get_model(p)
+                m = self.get_model(vendor, p)
                 if m:
                     return m
             return None
@@ -95,20 +104,25 @@ class AssetReport(Report):
             if m:
                 self.om_cache[part_no] = m
                 return m
+        vq = Q(vendor=vendor.id)
         # Check for asset.part_no*
-        q = (Q(data__asset__part_no0=part_no) |
-             Q(data__asset__part_no1=part_no) |
-             Q(data__asset__part_no2=part_no) |
-             Q(data__asset__part_no3=part_no))
+        q = vq & (
+            Q(data__asset__part_no0=part_no) |
+            Q(data__asset__part_no1=part_no) |
+            Q(data__asset__part_no2=part_no) |
+            Q(data__asset__part_no3=part_no)
+        )
         m = ObjectModel.objects.filter(q).first()
         if m:
             self.om_cache[part_no] = m
             return m
         # Check for asset.order_part_no*
-        q = (Q(data__asset__order_part_no0=part_no) |
-             Q(data__asset__order_part_no1=part_no) |
-             Q(data__asset__order_part_no2=part_no) |
-             Q(data__asset__order_part_no3=part_no))
+        q = vq & (
+            Q(data__asset__order_part_no0=part_no) |
+            Q(data__asset__order_part_no1=part_no) |
+            Q(data__asset__order_part_no2=part_no) |
+            Q(data__asset__order_part_no3=part_no)
+        )
         m = ObjectModel.objects.filter(q).first()
         if m:
             self.om_cache[part_no] = m
@@ -139,3 +153,20 @@ class AssetReport(Report):
             if n not in r:
                 r += [n]
         return r
+
+    def get_vendor(self, v):
+        """
+        Get vendor instance or None
+        """
+        if v is None:
+            v = "NONAME"
+        v = v.upper()
+        if v in self.vendors:
+            return self.vendors[v]
+        o = Vendor.objects.filter(code=v).first()
+        if o:
+            self.vendors[v] = o
+            return o
+        else:
+            self.vendors[v] = None
+            return None

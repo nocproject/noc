@@ -29,7 +29,8 @@ class AssetDiscoveryJob(MODiscoveryJob):
         self.report = AssetReport(self, to_save=self.to_save)
         for o in result:
             self.report.submit(
-                jid=o["id"], part_no=o["part_no"],
+                jid=o["id"],
+                vendor=o.get("vendor"), part_no=o["part_no"],
                 revision=o.get("revision"), serial=o.get("serial"),
                 description=o.get("description")
             )
