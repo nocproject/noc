@@ -21,13 +21,21 @@ class AssetReport(Report):
         super(AssetReport, self).__init__(
             job, enabled=enabled, to_save=to_save)
         self.om_cache = {}  # part_no -> object model
+        self.unknown_part_no = {}  # part_no -> list of variants
+        self.pn_description = {}  # part_no -> Description
 
     def submit(self, jid, part_no, revision=None, serial=None,
                description=None, connections=None):
         connections = [] if connections is None else connections
+        # Cache description
+        if description:
+            for p in part_no:
+                if p not in self.pn_description:
+                    self.pn_description[p] = description
+        # Find model
         m = self.get_model(part_no)
         if not m:
-            self.error("Model not found for part_no %s" % part_no)
+            self.register_unknown_part_no(part_no)
             return
         # Find existing object or create new
         o = Object.objects.filter(
@@ -46,6 +54,21 @@ class AssetReport(Report):
             ))
             o.set_data("asset", "revision", revision)
             o.save()
+
+    def send(self):
+        if self.unknown_part_no:
+            platform = self.object.platform
+            upn = self.get_unknown_part_no()
+            for pns in upn:
+                # Find description
+                description = "no description"
+                for p in pns:
+                    if p in self.pn_description:
+                        description = self.pn_description[p]
+                        break
+                # Report error
+                self.error("Unknown part number for %s: %s (%s)" % (
+                    platform, ", ".join(pns), description))
 
     def get_model(self, part_no):
         """
@@ -93,3 +116,26 @@ class AssetReport(Report):
         # Not found
         self.om_cache[part_no] = None
         return None
+
+    def register_unknown_part_no(self, part_no):
+        """
+        Register missed part number
+        """
+        if type(part_no) != list:
+            part_no = [part_no]
+        for p in part_no:
+            if p not in self.unknown_part_no:
+                self.unknown_part_no[p] = set()
+            for pp in part_no:
+                self.unknown_part_no[p].add(pp)
+
+    def get_unknown_part_no(self):
+        """
+        Get list of missed part number variants
+        """
+        r = []
+        for p in self.unknown_part_no:
+            n = sorted(self.unknown_part_no[p])
+            if n not in r:
+                r += [n]
+        return r
