@@ -106,9 +106,11 @@
             }
         ],
         "data": {
-            "order_part_no0": "SFP-T",
-            "part_no0": "740-013111",
-            "part_no1": "740-014132"
+            "asset": {
+                "order_part_no0": "SFP-T",
+                "part_no0": "740-013111",
+                "part_no1": "740-014132"
+            }
         }
     }
 ]
