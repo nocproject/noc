@@ -60,6 +60,7 @@ class ManagedObjectApplication(ExtModelApplication):
         ("enable_id_discovery", "id_discovery", None),
         ("enable_config_polling", "config_discovery", None),
         ("enable_interface_discovery", "interface_discovery", None),
+        ("enable_asset_discovery", "asset_discovery", 1),
         ("enable_vlan_discovery", "vlan_discovery", None),
         ("enable_lldp_discovery", "lldp_discovery", "lldp"),
         ("enable_bfd_discovery", "bfd_discovery", "bfd"),
