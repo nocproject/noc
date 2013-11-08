@@ -25,7 +25,7 @@ class AssetDiscoveryJob(MODiscoveryJob):
         "initial_submit_concurrency")
     to_save = config.getboolean("asset_discovery", "save")
 
-    def process_result(self, object, result):
+    def handler(self, object, result):
         self.report = AssetReport(self, to_save=self.to_save)
         for o in result:
             self.report.submit(
