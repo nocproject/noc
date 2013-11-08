@@ -55,6 +55,14 @@ class AssetReport(Report):
             * asset.part_no* value (Part numbers)
             * asset.order_part_no* value (FRU numbers)
         """
+        # Process list of part no
+        if type(part_no) == type(list):
+            for p in part_no:
+                m = self.get_model(p)
+                if m:
+                    return m
+            return None
+        # Process scalar type
         m = self.om_cache.get(part_no)
         if m:
             return m
