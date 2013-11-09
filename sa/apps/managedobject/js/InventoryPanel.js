@@ -47,7 +47,11 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
                     xtype: "treecolumn",
                     dataIndex: "name",
                     text: "Name",
-                    width: "200"
+                    width: 200
+                },
+                {
+                    text: "Model",
+                    dataIndex: "model"
                 },
                 {
                     text: "Description",
@@ -81,7 +85,7 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
     preview: function(record, backItem) {
         var me = this;
         me.callParent(arguments);
-        me.setTitle(record.get("name") + " interfaces");
+        me.setTitle(record.get("name") + " inventory");
         Ext.Ajax.request({
             url: "/sa/managedobject/" + record.get("id") + "/inventory/",
             method: "GET",

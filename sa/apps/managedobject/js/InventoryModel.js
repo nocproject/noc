@@ -18,6 +18,10 @@ Ext.define("NOC.sa.managedobject.InventoryModel", {
             type: "string"
         },
         {
+            name: "model",
+            type: "string"
+        },
+        {
             name: "description",
             type: "string"
         },
