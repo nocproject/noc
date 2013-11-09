@@ -503,8 +503,9 @@ class ManagedObjectApplication(ExtModelApplication):
                     "model": None
                 }]
         if children:
+            to_expand = "Transceiver" not in o.model.name
             r["children"] = children
-            r["expanded"] = True
+            r["expanded"] = to_expand
         else:
             r["leaf"] = True
         return r
