@@ -427,6 +427,15 @@ class ManagedObject(models.Model):
     def set_status(self, status):
         ObjectStatus.set_status(self, status)
 
+    def get_inventory(self):
+        """
+        Retuns a list of inventory Objects managed by
+        this managed object
+        """
+        from noc.inv.models.object import Object
+        return list(Object.objects.filter(
+            data__management__managed_object=self.id))
+
     def run_discovery(self, delta=0):
         op = self.object_profile
         for attr, job, duration in [

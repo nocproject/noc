@@ -33,7 +33,7 @@ class Object(Document):
     data = DictField()
 
     def __unicode__(self):
-        return self.name
+        return unicode(self.name or self.id)
 
     def get_data(self, interface, key):
         mi = ModelInterface.objects.filter(name=interface).first()
