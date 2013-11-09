@@ -11,7 +11,7 @@ from collections import defaultdict
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.connectiontype import ConnectionType
+from noc.inv.models.modelinterface import ModelInterface
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 from noc.lib.prettyjson import to_json
 
@@ -24,6 +24,11 @@ class ObjectModelApplication(ExtDocApplication):
     menu = "Setup | Object Models"
     model = ObjectModel
     query_fields = ["name__icontains", "description__icontains"]
+
+    def clean(self, data):
+        if "data" in data:
+            data["data"] = ModelInterface.clean_data(data["data"])
+        return super(ObjectModelApplication, self).clean(data)
 
     @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"],
           access="read", api=True)

@@ -11,8 +11,18 @@ from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField)
 ## NOC modules
+from error import ModelDataError
+from noc.lib.utils import deep_copy
 from noc.lib.escape import json_escape as q
+from noc.sa.interfaces.base import (StringParameter, BooleanParameter,
+                                    FloatParameter, IntParameter)
 
+T_MAP = {
+    "str": StringParameter(),
+    "int": IntParameter(),
+    "float": FloatParameter(),
+    "bool": BooleanParameter()
+}
 
 A_TYPE = ["str", "int", "float", "bool", "objectid", "ref"]
 
@@ -89,3 +99,19 @@ class ModelInterface(Document):
             "]"
         ]
         return "\n".join(r)
+
+    @classmethod
+    def clean_data(cls, data):
+        """
+        Convert types accoding to interface
+        """
+        d = deep_copy(data)
+        for i_name in d:
+            mi = ModelInterface.objects.filter(name=i_name).first()
+            if not mi:
+                raise ModelDataError("Unknown interface '%s'" % i_name)
+            v = d[i_name]
+            for a in mi.attrs:
+                if a.name in v:
+                    v[a.name] = T_MAP[a.type].clean(v[a.name])
+        return d
