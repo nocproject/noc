@@ -55,6 +55,7 @@ class Job(object):
     S_LATE = "L"
 
     group = None
+    beef = {}  # key -> result for MRT tasks
 
     def __init__(self, scheduler, key=None, data=None, schedule=None):
         self.scheduler = scheduler
@@ -76,6 +77,10 @@ class Job(object):
         :return:
         """
         pass
+
+    @classmethod
+    def set_beef(cls, beef):
+        cls.beef = beef
 
     def get_display_key(self):
         return self.key
