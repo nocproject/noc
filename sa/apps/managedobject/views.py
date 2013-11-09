@@ -500,7 +500,7 @@ class ManagedObjectApplication(ExtModelApplication):
                     "leaf": True,
                     "serial": None,
                     "description": n.description,
-                    "model": None
+                    "model": ", ".join(n.protocols)
                 }]
         if children:
             to_expand = "Transceiver" not in o.model.name
