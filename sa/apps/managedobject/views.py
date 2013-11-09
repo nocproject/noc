@@ -468,3 +468,47 @@ class ManagedObjectApplication(ExtModelApplication):
             from noc.inv.discovery.scheduler import DiscoveryScheduler
             self.discovery_scheduler = DiscoveryScheduler()
         self.discovery_scheduler.ensure_job(job_name, managed_object)
+
+    def get_nested_inventory(self, o):
+        r = {
+            "id": str(o.id),
+            "serial": o.get_data("asset", "serial"),
+            "description": o.model.description
+        }
+        children = []
+        for n in o.model.connections:
+            if n.direction == "i":
+                c, r_object, _ = o.get_p2p_connection(n.name)
+                if c is None:
+                    children += [{
+                        "id": None,
+                        "name": n.name,
+                        "leaf": True,
+                        "serial": None
+                    }]
+                else:
+                    cc = self.get_nested_inventory(r_object)
+                    cc["name"] = n.name
+                    children += [cc]
+        if children:
+            r["children"] = children
+            r["expand"] = True
+        else:
+            r["leaf"] = True
+        return r
+
+    @view(url="^(?P<id>\d+)/inventory/$", method=["GET"],
+        access="read", api=True)
+    def api_inventory(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        r = []
+        for p in o.get_inventory():
+            c = self.get_nested_inventory(p)
+            c["name"] = p.model.description
+            r += [c]
+        return {
+            "expanded": True,
+            "children": r
+        }

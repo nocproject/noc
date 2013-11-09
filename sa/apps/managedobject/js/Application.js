@@ -86,6 +86,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onAlarm
         });
 
+        me.inventoryButton = Ext.create("Ext.button.Button", {
+            text: "Inventory",
+            glyph: NOC.glyph.list,
+            scope: me,
+            handler: me.onInventory
+        });
+
         me.ITEM_CONFIG = me.registerItem(
             Ext.create("NOC.core.RepoPreview", {
                 app: me,
@@ -98,7 +105,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.ITEM_CONSOLE = me.registerItem(
             Ext.create("NOC.sa.managedobject.ConsolePanel", {app: me})
         );
-
+        me.ITEM_INVENTORY = me.registerItem("NOC.sa.managedobject.InventoryPanel");
         me.ITEM_INTERFACE = me.registerItem("NOC.sa.managedobject.InterfacePanel");
         me.ITEM_LINKS = me.registerItem("NOC.sa.managedobject.LinksPanel");
 
@@ -410,6 +417,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.consoleButton,
                 me.scriptsButton,
                 me.configPreviewButton,
+                me.inventoryButton,
                 me.interfacesButton,
                 me.linksButton,
                 me.discoveryButton,
@@ -490,6 +498,11 @@ Ext.define("NOC.sa.managedobject.Application", {
     onConfig: function() {
         var me = this;
         me.previewItem(me.ITEM_CONFIG, me.currentRecord);
+    },
+    //
+    onInventory: function() {
+        var me = this;
+        me.previewItem(me.ITEM_INVENTORY, me.currentRecord);
     },
     //
     onInterfaces: function() {
