@@ -64,7 +64,7 @@ class Object(Document):
         """
         c = ObjectConnection.objects.filter(
             connection__object=self.id,
-            connection__name=self.id).first()
+            connection__name=name).first()
         if c:
             for x in c.connection:
                 if x.object.id != self.id or x.name != name:

@@ -25,7 +25,7 @@ class ObjectConnectionItem(EmbeddedDocument):
     name = StringField()
 
     def __unicode__(self):
-        return "%s: %s" % (object.name, connection)
+        return "%s: %s" % (object.name, self.name)
 
 
 class ObjectConnection(Document):
