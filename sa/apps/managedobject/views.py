@@ -473,7 +473,8 @@ class ManagedObjectApplication(ExtModelApplication):
         r = {
             "id": str(o.id),
             "serial": o.get_data("asset", "serial"),
-            "description": o.model.description
+            "description": o.model.description,
+            "model": o.model.name
         }
         children = []
         for n in o.model.connections:
@@ -484,7 +485,9 @@ class ManagedObjectApplication(ExtModelApplication):
                         "id": None,
                         "name": n.name,
                         "leaf": True,
-                        "serial": None
+                        "serial": None,
+                        "description": "--- EMPTY ---",
+                        "model": None
                     }]
                 else:
                     cc = self.get_nested_inventory(r_object)
@@ -492,7 +495,7 @@ class ManagedObjectApplication(ExtModelApplication):
                     children += [cc]
         if children:
             r["children"] = children
-            r["expand"] = True
+            r["expanded"] = True
         else:
             r["leaf"] = True
         return r
