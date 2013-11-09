@@ -90,6 +90,10 @@ class ObjectModel(Document):
     def __unicode__(self):
         return self.name
 
+    def get_data(self, interface, key):
+        v = self.data.get(interface, {})
+        return v.get(key)
+
     def save(self, *args, **kwargs):
         super(ObjectModel, self).save(*args, **kwargs)
         # Update connection cache

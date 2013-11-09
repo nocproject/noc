@@ -116,6 +116,9 @@
             },
             "asset": {
                 "order_part_no0": "MX480"
+            },
+            "management": {
+                "managed": true
             }
         }
     },
@@ -303,6 +306,9 @@
             },
             "asset": {
                 "order_part_no0": "MX480"
+            },
+            "management": {
+                "managed": true
             }
         }
     }

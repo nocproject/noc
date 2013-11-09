@@ -12,7 +12,8 @@ from mongoengine.fields import StringField, DictField
 ## NOC modules
 from connectiontype import ConnectionType
 from objectmodel import ObjectModel
-from error import ConnectionError
+from modelinterface import ModelInterface
+from error import ConnectionError, ModelDataError
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.utils import deep_merge
 
@@ -35,10 +36,22 @@ class Object(Document):
         return self.name
 
     def get_data(self, interface, key):
-        v = self.data.get(interface, {})
-        return v.get(key)
+        mi = ModelInterface.objects.filter(name=interface).first()
+        if not mi:
+            raise ModelDataError("Invalid interface '%s'" % interface)
+        attr = mi.get_attr(key)
+        if not attr:
+            raise ModelDataError("Invalid attribute '%s.%s'" % (
+                interface, key))
+        if attr.is_const:
+            # Lookup model
+            return self.model.get_data(interface, key)
+        else:
+            v = self.data.get(interface, {})
+            return v.get(key)
 
     def set_data(self, interface, key, value):
+        # @todo: Check interface restrictions
         if interface not in self.data:
             self.data[interface] = {}
         self.data[interface][key] = value
