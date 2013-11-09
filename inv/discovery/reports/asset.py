@@ -66,6 +66,12 @@ class AssetReport(Report):
             ))
             o.set_data("asset", "revision", revision)
             o.save()
+        # Check management
+        if o.get_data("management", "managed"):
+            if o.get_data("management", "managed_object") != self.object.id:
+                self.info("Changing object management to '%s'" % self.object.name)
+                o.set_data("management", "managed_object", self.object.id)
+                o.save()
         self.id_map[jid] = o
 
     def send(self):

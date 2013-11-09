@@ -59,6 +59,12 @@ class ModelInterface(Document):
     def __unicode__(self):
         return self.name
 
+    def get_attr(self, name):
+        for a in self.attrs:
+            if a.name == name:
+                return a
+        return None
+
     def to_json(self):
         ar = []
         for a in self.attrs:

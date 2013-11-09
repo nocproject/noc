@@ -1,0 +1,22 @@
+[
+    {
+        "name": "management",
+        "description": "ManagedObject binding",
+        "attrs": [
+            {
+                "name": "managed",
+                "type": "bool",
+                "description": "Object can be bind to the ManagedObject",
+                "required": false,
+                "is_const": true
+            },
+            {
+                "name": "managed_object",
+                "type": "int",
+                "description": "Managed Object id",
+                "required": false,
+                "is_const": false
+            }
+        ]
+    }
+]
