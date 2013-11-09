@@ -251,6 +251,7 @@ class Scheduler(object):
 
     def _job_wrapper(self, job, **kwargs):
         tb = None
+        t0 = time.time()
         try:
             r = job.handler(**kwargs)
         except Exception:
@@ -260,13 +261,17 @@ class Scheduler(object):
             tb = get_traceback()
         else:
             if r:
-                self.info("Job %s(%s) is completed successfully" % (
-                    job.name, job.get_display_key()))
+                self.info("Job %s(%s) is completed successfully (%fsec)" % (
+                    job.name, job.get_display_key(),
+                    time.time() - t0
+                ))
                 job.on_success()
                 s = job.S_SUCCESS
             else:
-                self.info("Job %s(%s) is failed" % (
-                    job.name, job.get_display_key()))
+                self.info("Job %s(%s) is failed (%fsec)" % (
+                    job.name, job.get_display_key(),
+                    time.time() - t0
+                ))
                 job.on_failure()
                 s = job.S_FAILED
         self._complete_job(job, s, tb)
