@@ -229,13 +229,20 @@ class Scheduler(object):
         }})
         #
         if job.map_task:
-            # Run in MRT mode
-            t = ReduceTask.create_task(
-                job.get_managed_object(),  # Managed object is in key
-                None, {},
-                job.map_task, job.get_map_task_params()
-            )
-            self.active_mrt[t] = job
+            if job.beef and job.key in job.beef:
+                # Do not run job, provide beef instead
+                self._run_job_handler(
+                    job,
+                    object=job.get_managed_object(),
+                    result=job.beef[job.key])
+            else:
+                # Run in MRT mode
+                t = ReduceTask.create_task(
+                    job.get_managed_object(),  # Managed object is in key
+                    None, {},
+                    job.map_task, job.get_map_task_params()
+                )
+                self.active_mrt[t] = job
         else:
             self._run_job_handler(job)
 
