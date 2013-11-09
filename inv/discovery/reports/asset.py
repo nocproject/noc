@@ -13,6 +13,7 @@ from base import Report
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from noc.inv.models.vendor import Vendor
+from noc.inv.models.error import ConnectionError
 
 
 class AssetReport(Report):
@@ -25,11 +26,13 @@ class AssetReport(Report):
         self.unknown_part_no = {}  # part_no -> list of variants
         self.pn_description = {}  # part_no -> Description
         self.vendors = {}  # code -> Vendor instance
+        self.id_map = {}  # jid -> object
 
     def submit(self, jid, part_no, vendor=None,
                revision=None, serial=None,
                description=None, connections=None):
         connections = [] if connections is None else connections
+        self.id_map[jid] = None
         # Cache description
         if description:
             for p in part_no:
@@ -63,6 +66,7 @@ class AssetReport(Report):
             ))
             o.set_data("asset", "revision", revision)
             o.save()
+        self.id_map[jid] = o
 
     def send(self):
         if self.unknown_part_no:
@@ -170,3 +174,21 @@ class AssetReport(Report):
         else:
             self.vendors[v] = None
             return None
+
+    def submit_connections(self, jid, connections):
+        l_object = self.id_map.get(jid)
+        if not l_object:
+            return  # Skip unknown model
+        for c in connections:
+            r_object = self.id_map.get(c["object"])
+            if not r_object:
+                continue  # Skip unknown model
+            try:
+                l_object.connect_p2p(
+                    c["name"], r_object, c["remote_name"],
+                    c.get("data", {}), reconnect=True)
+            except ConnectionError, why:
+                self.error("Cannot connect %s and %s: %s" % (
+                    l_object.jid, r_object.jid, why
+                ))
+        # @todo: Delete unexisting connections
