@@ -493,6 +493,15 @@ class ManagedObjectApplication(ExtModelApplication):
                     cc = self.get_nested_inventory(r_object)
                     cc["name"] = n.name
                     children += [cc]
+            elif n.direction == "s":
+                children += [{
+                    "id": None,
+                    "name": n.name,
+                    "leaf": True,
+                    "serial": None,
+                    "description": n.description,
+                    "model": None
+                }]
         if children:
             r["children"] = children
             r["expanded"] = True
