@@ -22,7 +22,7 @@ class ObjectConnectionItem(EmbeddedDocument):
     # Object reference
     object = PlainReferenceField(Object)
     # Connection name
-    connection = StringField()
+    name = StringField()
 
     def __unicode__(self):
         return "%s: %s" % (object.name, connection)

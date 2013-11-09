@@ -10,9 +10,11 @@
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField
 ## NOC modules
-from noc.inv.models.connectiontype import ConnectionType
-from noc.inv.models.objectmodel import ObjectModel
+from connectiontype import ConnectionType
+from objectmodel import ObjectModel
+from error import ConnectionError
 from noc.lib.nosql import PlainReferenceField
+from noc.lib.utils import deep_merge
 
 
 class Object(Document):
@@ -43,16 +45,17 @@ class Object(Document):
 
     def get_p2p_connection(self, name):
         """
-        Get neighbor for p2 connection (s and mf types)
+        Get neighbor for p2p connection (s and mf types)
         Returns connection, remote object, remote connection or
         None, None, None
         """
         c = ObjectConnection.objects.filter(
             connection__object=self.id,
             connection__name=self.id).first()
-        for x in c.connection:
-            if x.object.id != self.id or x.name != name:
-                return c, x.object, x.name
+        if c:
+            for x in c.connection:
+                if x.object.id != self.id or x.name != name:
+                    return c, x.object, x.name
         # Strange things happen
         return None, None, None
 
@@ -63,41 +66,56 @@ class Object(Document):
         for c, _, _ in self.get_p2p_connection(name):
             c.delete()
 
-    def connect_p2p(self, name, remote_object, remote_name, data):
+    def connect_p2p(self, name, remote_object, remote_name, data,
+                    reconnect=False):
         lc = self.model.get_model_connection(name)
-        if lc is not None:
-            raise ValueError("Local connection not found: %s" % name)
+        if lc is None:
+            raise ConnectionError("Local connection not found: %s" % name)
         rc = remote_object.model.get_model_connection(remote_name)
-        if rc is not None:
-            raise ValueError("Remote connection not found: %s" % remote_name)
+        if rc is None:
+            raise ConnectionError("Remote connection not found: %s" % remote_name)
         # Check genders are compatible
         r_gender = ConnectionType.OPPOSITE_GENDER[rc.gender]
         if lc.gender != r_gender:
-            raise ValueError("Incompatible genders: %s - %s" % (
+            raise ConnectionError("Incompatible genders: %s - %s" % (
                 lc.gender, rc.gender
             ))
         # Check directions are compatible
         if ((lc.direction == "i" and rc.direction != "o") or
-                (lc.direciton == "o" and rc.direction != "i") or
-                (lc.direciton == "s" and rc.direciton != "s")):
-            raise ValueError("Incompatible direcitons: %s - %s" % (
+                (lc.direction == "o" and rc.direction != "i") or
+                (lc.direction == "s" and rc.direction != "s")):
+            raise ConnectionError("Incompatible directions: %s - %s" % (
                 lc.direction, rc.direction))
         # Check types are compatible
         c_types = lc.type.get_compatible_types(lc.gender)
-        if rc.type not in c_types:
-            raise ValueError("Incompatible connection types: %s - %s" % (
+        if rc.type.id not in c_types:
+            raise ConnectionError("Incompatible connection types: %s - %s" % (
                 lc.type.name, rc.type.name
             ))
         # Check existing connecitons
-        if (lc.type.genders in ("s", "m", "f", "mf") and
-            self.get_p2p_connection(name)[0] is not None):
-            raise ValueError("Already connected")
+        if lc.type.genders in ("s", "m", "f", "mf"):
+            ec, r_object, r_name = self.get_p2p_connection(name)
+            if ec is not None:
+                # Connection exists
+                if reconnect:
+                    if (r_object.id == remote_object.id and
+                        r_name == remote_name):
+                        # Same connection exists
+                        n_data = deep_merge(ec.data, data)
+                        if n_data != ec.data:
+                            # Update data
+                            ec.data = n_data
+                            ec.save()
+                        return
+                    self.disconnect_p2p(name)
+                else:
+                    raise ConnectionError("Already connected")
         # Create connection
         c = ObjectConnection(
             connection=[
-                ObjectConnectionItem(object=self, connection=name),
+                ObjectConnectionItem(object=self, name=name),
                 ObjectConnectionItem(object=remote_object,
-                                     connection=remote_name)
+                                     name=remote_name)
             ],
             data=data
         ).save()

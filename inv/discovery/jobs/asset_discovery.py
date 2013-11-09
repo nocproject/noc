@@ -27,6 +27,7 @@ class AssetDiscoveryJob(MODiscoveryJob):
 
     def handler(self, object, result):
         self.report = AssetReport(self, to_save=self.to_save)
+        # Submit objects
         for o in result:
             self.report.submit(
                 jid=o["id"],
@@ -34,6 +35,11 @@ class AssetDiscoveryJob(MODiscoveryJob):
                 revision=o.get("revision"), serial=o.get("serial"),
                 description=o.get("description")
             )
+        # Submit connection map
+        for o in result:
+            self.report.submit_connections(
+                o["id"], o.get("connections", []))
+        # Finish
         self.report.send()
         return True
 
