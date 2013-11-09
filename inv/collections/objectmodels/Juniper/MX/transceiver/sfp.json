@@ -84,7 +84,7 @@
     {
         "name": "Juniper | Transceiver | 1G | SFP T",
         "vendor__code": "JUNIPER",
-        "description": "NoName SFP SX transceiver",
+        "description": "Juniper SFP TX transceiver",
         "connections": [
             {
                 "description": "SFP Connector",
