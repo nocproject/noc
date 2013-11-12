@@ -1,0 +1,102 @@
+[
+    {
+        "name": "Juniper | MX",
+        "description": "Juniper MX 240/480/960 connection rules",
+        "context": [
+            {
+                "reset_scopes": ["fpc", "pic"],
+                "scope": "chassis",
+                "type": "CHASSIS"
+            },
+            {
+                "reset_scopes": ["pic"],
+                "scope": "fpc",
+                "type": "FPC"
+            },
+            {
+                "reset_scopes": [],
+                "scope": "pic",
+                "type": "PIC"
+            },
+            {
+                "reset_scopes": ["pic"],
+                "scope": "mic",
+                "type": "MIC"
+            }
+        ],
+        "rules": [
+            {
+                "match_connection": "in",
+                "match_type": "PEM",
+                "scope": "chassis",
+                "target_connection": "pem{N}",
+                "target_number": "",
+                "target_type": "CHASSIS"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "RE",
+                "scope": "chassis",
+                "target_connection": "re",
+                "target_number": "{N}",
+                "target_type": "SCB"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "SCB",
+                "scope": "chassis",
+                "target_connection": "scb{N}",
+                "target_number": "",
+                "target_type": "CHASSIS"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "FPC",
+                "scope": "chassis",
+                "target_connection": "fpc{N}",
+                "target_number": "",
+                "target_type": "CHASSIS"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "MIC",
+                "scope": "fpc",
+                "target_connection": "mic{N}",
+                "target_number": "",
+                "target_type": "FPC"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "PIC",
+                "scope": "fpc",
+                "target_connection": "pic{N}",
+                "target_number": "",
+                "target_type": "FPC"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "XCVR",
+                "scope": "pic",
+                "target_connection": "{N}",
+                "target_number": "",
+                "target_type": "PIC"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "XCVR",
+                "scope": "fpc",
+                "target_connection": "{Npic}/{N}",
+                "target_number": "",
+                "target_type": "MIC"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "XCVR",
+                "scope": "fpc",
+                "target_connection": "{pic}/{N}",
+                "target_number": "",
+                "target_type": "FPC"
+            }
+        ]
+    }
+]
