@@ -25,7 +25,6 @@ def deep_merge(t, d):
     and returns merged dict. Values from *d* override values from *t*
     """
     def _merge(x, y):
-        print "merge", x, y
         for k, v in y.iteritems():
             if isinstance(v, dict):
                 x[k] = x.get(k, {})
