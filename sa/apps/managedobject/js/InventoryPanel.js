@@ -42,6 +42,8 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
             store: me.store,
             rootVisible: false,
             useArrows: true,
+            stateful: true,
+            stateId: "sa.managedobject-inventory",
             columns: [
                 {
                     xtype: "treecolumn",
