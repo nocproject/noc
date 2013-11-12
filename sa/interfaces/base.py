@@ -652,9 +652,10 @@ class StringListParameter(ListOfParameter):
     >>> StringListParameter().clean(["1",2,"3"])
     ['1', '2', '3']
     """
-    def __init__(self, required=True, default=None):
-        super(StringListParameter, self).__init__(element=StringParameter(),
-                                           required=required, default=default)
+    def __init__(self, required=True, default=None, convert=False):
+        super(StringListParameter, self).__init__(
+            element=StringParameter(), required=required,
+            default=default, convert=convert)
     
 
 ##

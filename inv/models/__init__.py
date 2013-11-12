@@ -17,6 +17,7 @@ from noc.sa.models import ManagedObject, ManagedObjectSelector
 from vendor import Vendor
 from modelinterface import ModelInterface, ModelInterfaceAttr
 from connectiontype import ConnectionType
+from connectionrule import ConnectionRule
 from objectmodel import ObjectModel
 
 

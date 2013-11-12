@@ -14,6 +14,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
         "NOC.inv.objectmodel.Model",
         "NOC.inv.vendor.LookupField",
         "NOC.inv.connectiontype.LookupField",
+        "NOC.inv.connectionrule.LookupField",
         "NOC.inv.objectmodel.templates.Test",
         "NOC.inv.objectmodel.templates.JSON"
     ],
@@ -80,6 +81,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     width: 150
                 },
                 {
+                    text: "Connection Rule",
+                    dataIndex: "connection_rule",
+                    renderer: NOC.render.Lookup("connection_rule"),
+                    width: 100
+                },
+                {
                     text: "Description",
                     dataIndex: "description",
                     flex: 1
@@ -107,6 +114,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     xtype: "inv.vendor.LookupField",
                     fieldLabel: "Vendor",
                     allowBlank: false
+                },
+                {
+                    name: "connection_rule",
+                    xtype: "inv.connectionrule.LookupField",
+                    fieldLabel: "Connection Rule",
+                    allowBlank: true
                 },
                 {
                     name: "data",

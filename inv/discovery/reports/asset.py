@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## NOC modules
+from collections import defaultdict
 ## Third-party modules
 from mongoengine.queryset import Q
 ## NOC modules
@@ -13,6 +15,9 @@ from base import Report
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from noc.inv.models.vendor import Vendor
+from noc.inv.models.connectionrule import ConnectionRule
+from noc.inv.models.error import ConnectionError
+from noc.lib.text import str_dict
 from noc.inv.models.error import ConnectionError
 
 
@@ -26,13 +31,27 @@ class AssetReport(Report):
         self.unknown_part_no = {}  # part_no -> list of variants
         self.pn_description = {}  # part_no -> Description
         self.vendors = {}  # code -> Vendor instance
-        self.id_map = {}  # jid -> object
+        self.objects = []  # [(type, object, context)]
+        self.rule = defaultdict(list)  # Connection rule. type -> [rule1, ruleN]
+        self.rule_context = {}
+        self.ctx = {}
 
-    def submit(self, jid, part_no, vendor=None,
+    def submit(self, type, part_no, number=None,
+               builtin=False,
+               vendor=None,
                revision=None, serial=None,
-               description=None, connections=None):
-        connections = [] if connections is None else connections
-        self.id_map[jid] = None
+               description=None):
+        # Set contexts
+        self.set_context("N", number)
+        if type in self.rule_context:
+            scope, reset_scopes = self.rule_context[type]
+            if scope:
+                self.set_context(scope, number)
+            if reset_scopes:
+                self.reset_context(reset_scopes)
+        # Skip builtin modules
+        if builtin:
+            return
         # Cache description
         if description:
             for p in part_no:
@@ -47,8 +66,18 @@ class AssetReport(Report):
         # Find model
         m = self.get_model(vnd, part_no)
         if not m:
+            self.debug("Unknown model: vendor=%s, part_no=%s (%s). Skipping" % (
+                vnd.name, description, part_no))
             self.register_unknown_part_no(part_no)
             return
+        # Get connection rule
+        if not self.rule and m.connection_rule:
+            self.set_rule(m.connection_rule)
+            # Set initial context
+            if type in self.rule_context:
+                scope = self.rule_context[type][0]
+                if scope:
+                    self.set_context(scope, number)
         # Find existing object or create new
         o = Object.objects.filter(
             model=m.id, data__asset__serial=serial).first()
@@ -72,7 +101,66 @@ class AssetReport(Report):
                 self.info("Changing object management to '%s'" % self.object.name)
                 o.set_data("management", "managed_object", self.object.id)
                 o.save()
-        self.id_map[jid] = o
+        self.objects += [(type, o, self.ctx.copy())]
+
+    def iter_object(self, i, scope, value):
+        # Search backwards
+        for j in range(i - 1, -1, -1):
+            type, object, ctx = self.objects[j]
+            if scope in ctx and ctx[scope] == value:
+                yield type, object, ctx
+            else:
+                break
+        # Search forward
+        for j in range(i + 1, len(self.objects)):
+            type, object, ctx = self.objects[j]
+            if scope in ctx and ctx[scope] == value:
+                yield type, object, ctx
+            else:
+                raise StopIteration
+
+    def expand_context(self, s, ctx):
+        """
+        Replace values in context
+        """
+        for c in ctx:
+            s = s.replace("{%s}" % c, str(ctx[c]))
+        return s
+
+    def submit_connections(self):
+        # Check connection rule is set
+        if not self.rule:
+            return
+        for i, o in enumerate(self.objects):
+            type, object, context = o
+            self.debug("Trying to connect #%d. %s (%s)" % (
+                i, type, str_dict(context)))
+            if type not in self.rule:
+                continue
+            # Find applicable rule
+            for r in self.rule[type]:
+                found = False
+                t_n = self.expand_context(r.target_number, context)
+                for t_type, t_object, t_ctx in self.iter_object(
+                        i, r.scope, context.get(r.scope)):
+                    if t_type == r.target_type and (
+                            not t_n or t_n == t_ctx["N"]):
+                        # Match
+                        m_c = self.expand_context(r.match_connection, context)
+                        t_c = self.expand_context(r.target_connection, context)
+                        self.info("Connecting %s %s:%s -> %s %s:%s" % (
+                            type, context["N"], m_c,
+                            t_type, t_ctx["N"], t_c
+                        ))
+                        try:
+                            object.connect_p2p(m_c, t_object, t_c, {},
+                                               reconnect=True)
+                        except ConnectionError, why:
+                            self.error("Failed to connect: %s" % why)
+                        found = True
+                        break
+                if found:
+                    break
 
     def send(self):
         if self.unknown_part_no:
@@ -181,20 +269,33 @@ class AssetReport(Report):
             self.vendors[v] = None
             return None
 
-    def submit_connections(self, jid, connections):
-        l_object = self.id_map.get(jid)
-        if not l_object:
-            return  # Skip unknown model
-        for c in connections:
-            r_object = self.id_map.get(c["object"])
-            if not r_object:
-                continue  # Skip unknown model
-            try:
-                l_object.connect_p2p(
-                    c["name"], r_object, c["remote_name"],
-                    c.get("data", {}), reconnect=True)
-            except ConnectionError, why:
-                self.error("Cannot connect %s and %s: %s" % (
-                    l_object.jid, r_object.jid, why
-                ))
-        # @todo: Delete unexisting connections
+    def set_rule(self, rule):
+        self.debug("Setting connection rule '%s'" % rule.name)
+        # Compile context mappings
+        self.rule_context = {}
+        for ctx in rule.context:
+            self.rule_context[ctx.type] = (ctx.scope, ctx.reset_scopes)
+        self.debug("Context mappings: %s" % self.rule_context)
+        # Compile rules
+        for r in rule.rules:
+            self.rule[r.match_type] += [r]
+
+    def set_context(self, name, value):
+        self.ctx[name] = value
+        n = "N%s" % name
+        if n not in self.ctx:
+            self.ctx[n] = 0
+        else:
+            self.ctx[n] += 1
+        self.debug("Set context %s = %s -> %s" % (
+            name, value, str_dict(self.ctx)))
+
+    def reset_context(self, names):
+        for n in names:
+            if n in self.ctx:
+                del self.ctx[n]
+            m = "N%s" % n
+            if m in self.ctx:
+                del self.ctx[m]
+        self.debug("Reset context scopes %s -> %s" % (
+            ", ".join(names), str_dict(self.ctx)))

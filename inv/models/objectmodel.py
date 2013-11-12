@@ -13,6 +13,7 @@ from mongoengine.fields import (StringField, BooleanField, DictField,
                                 ObjectIdField)
 ## NOC modules
 from connectiontype import ConnectionType
+from connectionrule import ConnectionRule
 from vendor import Vendor
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
@@ -84,6 +85,7 @@ class ObjectModel(Document):
     is_builtin = BooleanField(default=False)
     description = StringField()
     vendor = PlainReferenceField(Vendor)
+    connection_rule = PlainReferenceField(ConnectionRule, required=False)
     data = DictField()
     connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
 
@@ -120,16 +122,18 @@ class ObjectModel(Document):
         if nc:
             collection.insert(nc)
 
+    def get_connection(self, name):
+        for c in self.connections:
+            if c.name == name:
+                return c
+        return None
+
     def get_connection_proposals(self, name):
         """
         Return possible connections for connection name
         as (model id, connection name)
         """
-        cn = None
-        for c in self.connections:
-            if c.name == name:
-                cn = c
-                break
+        cn = self.get_connection(name)
         if not cn:
             return []  # Connection not found
         r = []

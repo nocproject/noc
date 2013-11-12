@@ -10,6 +10,7 @@
 from base import MODiscoveryJob
 from noc.settings import config
 from noc.inv.discovery.reports.asset import AssetReport
+from noc.lib.text import str_dict
 
 
 class AssetDiscoveryJob(MODiscoveryJob):
@@ -29,16 +30,16 @@ class AssetDiscoveryJob(MODiscoveryJob):
         self.report = AssetReport(self, to_save=self.to_save)
         # Submit objects
         for o in result:
+            self.debug("Submit %s" % str_dict(o))
             self.report.submit(
-                jid=o["id"],
+                type=o["type"], number=o.get("number"),
+                builtin=o["builtin"],
                 vendor=o.get("vendor"), part_no=o["part_no"],
                 revision=o.get("revision"), serial=o.get("serial"),
                 description=o.get("description")
             )
-        # Submit connection map
-        for o in result:
-            self.report.submit_connections(
-                o["id"], o.get("connections", []))
+        #
+        self.report.submit_connections()
         # Finish
         self.report.send()
         return True
