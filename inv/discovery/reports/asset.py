@@ -103,10 +103,12 @@ class AssetReport(Report):
                 o.save()
         self.objects += [(type, o, self.ctx.copy())]
 
-    def iter_object(self, i, scope, value):
+    def iter_object(self, i, scope, value, target_type):
         # Search backwards
         for j in range(i - 1, -1, -1):
             type, object, ctx = self.objects[j]
+            if target_type != type:
+                continue
             if scope in ctx and ctx[scope] == value:
                 yield type, object, ctx
             else:
@@ -114,6 +116,8 @@ class AssetReport(Report):
         # Search forward
         for j in range(i + 1, len(self.objects)):
             type, object, ctx = self.objects[j]
+            if target_type != type:
+                continue
             if scope in ctx and ctx[scope] == value:
                 yield type, object, ctx
             else:
@@ -142,9 +146,8 @@ class AssetReport(Report):
                 found = False
                 t_n = self.expand_context(r.target_number, context)
                 for t_type, t_object, t_ctx in self.iter_object(
-                        i, r.scope, context.get(r.scope)):
-                    if t_type == r.target_type and (
-                            not t_n or t_n == t_ctx["N"]):
+                        i, r.scope, context.get(r.scope), r.target_type):
+                    if not t_n or t_n == t_ctx["N"]:
                         # Match
                         m_c = self.expand_context(r.match_connection, context)
                         t_c = self.expand_context(r.target_connection, context)
