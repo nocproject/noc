@@ -14,11 +14,14 @@ import os
 import subprocess
 import pprint
 from collections import defaultdict
+import uuid
+import datetime
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.lib.test.beeftestcase import BeefTestCase
 from noc.lib.fileutils import copy_file, safe_rewrite
+from noc.lib.serialize import json_encode
 
 
 class Command(BaseCommand):
@@ -43,12 +46,18 @@ class Command(BaseCommand):
             const="view"),
         make_option("-i", "--import", action="store_const", dest="cmd",
             const="import"),
+        make_option("--create", action="store_const", dest="cmd",
+                    const="create"),
         make_option("--rm", action="store_true", dest="remove"),
         make_option("--clone-version", action="store", dest="clone-version"),
         make_option("-m", "--manifest", action="store_const", dest="cmd",
             const="manifest"),
         make_option("--ensure-private", action="store_const", dest="cmd",
-            const="ensure_private")
+            const="ensure_private"),
+        make_option("--cli", action="append", dest="cli"),
+        make_option("--result", action="append", dest="result"),
+        make_option("--script", action="store", dest="script"),
+        make_option("--platform", action="store", dest="platform")
     )
 
     def local_repo_path(self, r):
@@ -283,3 +292,25 @@ class Command(BaseCommand):
                     tc.private = True
                     print "Marking %s as private" % p
                     tc.save_beef(p)
+
+    def handle_create(self, *args, **options):
+        if options.get("platform"):
+            vendor, platform, version = options["platform"].split(",", 2)
+        else:
+            vendor, platform, version = None, None, None
+
+        beef = {
+            "type": "script::beef",
+            "date": datetime.datetime.now().isoformat(),
+            "script": options.get("script"),
+            "guid": str(uuid.uuid4()),
+            "vendor": vendor,
+            "platform": platform,
+            "version": version,
+            "cli": {},
+            "result": None
+        }
+        for cmd, result in zip(options["cli"], options["result"]):
+            with open(result) as f:
+                beef["cli"][cmd] = f.read()
+        print json_encode(beef)
