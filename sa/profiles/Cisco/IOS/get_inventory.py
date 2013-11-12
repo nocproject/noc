@@ -33,7 +33,7 @@ class Script(NOCScript):
 
     def execute(self):
         objects = []
-        v = self.cli("show hardware")
+        v = self.cli("show inventory")
         for match in self.rx_item.finditer(v):
             type, number, part_no = self.get_type(
                 match.group("name"), match.group("pid"),
