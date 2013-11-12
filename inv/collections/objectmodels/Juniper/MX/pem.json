@@ -53,6 +53,28 @@
     },
 
     {
+        "name": "Juniper | MX | PWR-MX480-2400-DC-S",
+        "vendor__code": "JUNIPER",
+        "description": "2400W DC Power Supply",
+        "connections": [
+            {
+                "description": "Internal power slot",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Juniper | MX | MX480 PEM"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "PWR-MX480-2400-DC-BB",
+                "order_part_no1": "PWR-MX480-2400-DC-R",
+                "part_no0": "740-027736"
+            }
+        }
+    },
+
+    {
         "name": "Juniper | MX | PWR-MX960-DC-S",
         "vendor__code": "JUNIPER",
         "description": "1600W DC Power Entry Module",

@@ -3,6 +3,7 @@
         "name": "Juniper | MX | MX480 Chassis",
         "vendor__code": "JUNIPER",
         "description": "Juniper MX480 chassis",
+        "connection_rule__name": "Juniper | MX",
         "connections": [
             {
                 "description": "Fan Slot #0",
@@ -127,6 +128,7 @@
         "name": "Juniper | MX | MX960 Chassis",
         "vendor__code": "JUNIPER",
         "description": "Juniper MX960 chassis",
+        "connection_rule__name": "Juniper | MX",
         "connections": [
             {
                 "description": "Fan Slot #0",
