@@ -103,25 +103,25 @@ class AssetReport(Report):
                 o.save()
         self.objects += [(type, o, self.ctx.copy())]
 
-    def iter_object(self, i, scope, value, target_type):
+    def iter_object(self, i, scope, value, target_type, fwd):
         # Search backwards
-        for j in range(i - 1, -1, -1):
-            type, object, ctx = self.objects[j]
-            if target_type != type:
-                continue
-            if scope in ctx and ctx[scope] == value:
-                yield type, object, ctx
-            else:
-                break
+        if not fwd:
+            for j in range(i - 1, -1, -1):
+                type, object, ctx = self.objects[j]
+                if scope in ctx and ctx[scope] == value:
+                    if target_type == type:
+                        yield type, object, ctx
+                else:
+                    break
         # Search forward
-        for j in range(i + 1, len(self.objects)):
-            type, object, ctx = self.objects[j]
-            if target_type != type:
-                continue
-            if scope in ctx and ctx[scope] == value:
-                yield type, object, ctx
-            else:
-                raise StopIteration
+        if fwd:
+            for j in range(i + 1, len(self.objects)):
+                type, object, ctx = self.objects[j]
+                if scope in ctx and ctx[scope] == value:
+                    if target_type == type:
+                        yield type, object, ctx
+                else:
+                    raise StopIteration
 
     def expand_context(self, s, ctx):
         """
@@ -145,8 +145,14 @@ class AssetReport(Report):
             for r in self.rule[type]:
                 found = False
                 t_n = self.expand_context(r.target_number, context)
+                if r.scope.startswith("-"):
+                    scope = r.scope[1:]
+                    fwd = True
+                else:
+                    scope = r.scope
+                    fwd = False
                 for t_type, t_object, t_ctx in self.iter_object(
-                        i, r.scope, context.get(r.scope), r.target_type):
+                        i, scope, context.get(scope), r.target_type, fwd=fwd):
                     if not t_n or t_n == t_ctx["N"]:
                         # Match
                         m_c = self.expand_context(r.match_connection, context)
