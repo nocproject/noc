@@ -57,6 +57,12 @@ class Rule(EmbeddedDocument):
     target_number = StringField()
     target_connection = StringField()
 
+    def __unicode__(self):
+        return "%s:%s -(%s)-> %s %s:%s" % (
+            self.match_type, self.match_connection, self.scope,
+            self.target_type, self.target_number,
+            self.target_connection)
+
     def __eq__(self, other):
         return (
             self.match_type == other.match_type and
