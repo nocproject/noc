@@ -1,0 +1,77 @@
+[
+        {
+        "name": "Juniper | Transceiver | 10G | SFP+-10G-SR",
+        "vendor__code": "JUNIPER",
+        "description": "Juniper SFP+ SR transceiver",
+        "connections": [
+            {
+                "description": "SFP+ Connector",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Transceiver | SFP+",
+                "protocols": ["TransEth10G"]
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "rx",
+                "type__name": "Optical | LC",
+                "protocols": [">10GBASESR"]
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "tx",
+                "type__name": "Optical | LC",
+                "protocols": ["<10GBASESR"]
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "SFP+-10G-SR",
+                "part_no0": "740-021308"
+            }
+        }
+    },
+
+    {
+        "name": "Juniper | Transceiver | 10G | SFP+-10G-LR",
+        "vendor__code": "JUNIPER",
+        "description": "Juniper SFP+ LR transceiver",
+        "connections": [
+            {
+                "description": "SFP+ Connector",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Transceiver | SFP+",
+                "protocols": ["TransEth10G"]
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "rx",
+                "type__name": "Optical | LC",
+                "protocols": [">10GBASELR-1310"]
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "tx",
+                "type__name": "Optical | LC",
+                "protocols": ["<10GBASELR-1310"]
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "SFP+-10G-LR",
+                "part_no0": "740-021309"
+            }
+        }
+    }
+]
