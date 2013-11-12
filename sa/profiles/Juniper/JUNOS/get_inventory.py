@@ -32,6 +32,7 @@ class Script(NOCScript):
 
     XCVR_MAP = {
         "SFP-T": "NoName | Transceiver | 1G | SFP TX",
+        "SFP-SX": "NoName | Transceiver | 1G | SFP SX",
         "SFP-LX10": "NoName | Transceiver | 1G | SFP LX",
         "SFP-LX": "NoName | Transceiver | 1G | SFP LX",
         "XFP-10G-LR": "NoName | Transceiver | 10G | XFP LR",
