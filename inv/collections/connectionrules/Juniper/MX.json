@@ -36,7 +36,7 @@
             {
                 "match_connection": "in",
                 "match_type": "RE",
-                "scope": "chassis",
+                "scope": "-chassis",
                 "target_connection": "re",
                 "target_number": "{N}",
                 "target_type": "SCB"
