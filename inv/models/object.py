@@ -63,11 +63,18 @@ class Object(Document):
         None, None, None
         """
         c = ObjectConnection.objects.filter(
-            connection__object=self.id,
-            connection__name=name).first()
+            __raw__={
+                "connection": {
+                    "$elemMatch": {
+                        "object": self.id,
+                        "name": name
+                    }
+                }
+            }
+        ).first()
         if c:
             for x in c.connection:
-                if x.object.id != self.id or x.name != name:
+                if x.object.id != self.id:
                     return c, x.object, x.name
         # Strange things happen
         return None, None, None

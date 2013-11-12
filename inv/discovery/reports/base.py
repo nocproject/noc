@@ -36,6 +36,9 @@ class Report(object):
     def error(self, msg):
         self.job.error(msg)
 
+    def debug(self, msg):
+        self.job.debug(msg)
+
     def update_if_changed(self, obj, values):
         """
         Update fields if changed.

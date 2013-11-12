@@ -11,14 +11,12 @@ import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces.igetinventory import IGetInventory
+from noc.lib.validators import is_int
 
 
 class Script(NOCScript):
     name = "Juniper.JUNOS.get_inventory"
     implements = [IGetInventory]
-
-    JUNIPER = "JUNIPER"
-    NONAME = "NONAME"
 
     rx_chassis = re.compile(
         r"^Chassis\s+(?P<serial>\S+)\s+(?P<rest>.+)$",
@@ -32,12 +30,24 @@ class Script(NOCScript):
         r"(?P<serial>\S+)\s+"
         r"(?P<rest>.+)$", re.IGNORECASE)
 
-    T_MAP = {
+    XCVR_MAP = {
         "SFP-T": "NoName | Transceiver | 1G | SFP TX",
         "SFP-LX10": "NoName | Transceiver | 1G | SFP LX",
         "SFP-LX": "NoName | Transceiver | 1G | SFP LX",
         "XFP-10G-LR": "NoName | Transceiver | 10G | XFP LR",
         "SFP+-10G-LR": "NoName | Transceiver | 10G | SFP+ LR"
+    }
+
+    TYPE_MAP = {
+        "CHASSIS": "CHASSIS",
+        "PEM": "PEM",
+        "ROUTING ENGINE": "RE",
+        "CB": "SCB",
+        "FPC": "FPC",
+        "MPC": "FPC",
+        "MIC": "MIC",
+        "PIC": "PIC",
+        "XCVR": "XCVR"
     }
 
     def parse_hardware(self, v):
@@ -59,152 +69,59 @@ class Script(NOCScript):
                            match.group("serial"), match.group("rest"))
 
     def execute(self):
-        def get_object(objects, omap, name, revision,
-                       part_no, serial, description, vendor=None):
-            o = {
-                "id": len(objects),
-                "vendor": vendor or self.JUNIPER,
-                "serial": serial,
-                "description": description,
-                "part_no": [part_no],
-                "connections": []
-            }
-            if revision:
-                o["revision"] = revision
-            objects += [o]
-            omap[name.lower()] = o
-            return o
-
-        def connect(object, name, remote_object, remote_name):
-            object["connections"] += [{
-                "name": name,
-                "object": remote_object["id"],
-                "remote_name": remote_name
-            }]
-
         v = self.cli("show chassis hardware")
         objects = []
-        omap = {}
-        chassis = None
-        chassis_type = None
         for name, revision, part_no, serial, description in self.parse_hardware(v):
-            if name.lower() == "chassis":
-                # New object
-                chassis_type = description.split()[0].upper()
-                chassis = {
-                    "id": len(objects),
-                    "vendor": self.JUNIPER,
-                    "serial": serial,
-                    "description": description,
-                    "part_no": [chassis_type],
-                    "connections": []
-                }
-                objects += [chassis]
-                omap = {}
-                fpc = None
-                mic = None
-                co = None
-                nfpc = None
-                npic = None
-                mnpic = None
-            elif chassis is None:
-                continue  # Bug
+            builtin = False
+            # Detect type
+            t, number = self.get_type(name)
+            if not t:
+                continue
+            # Detect vendor
+            if part_no == "NON-JNPR":
+                vendor = "NONAME"
             else:
-                # Chassis module
-                n = name.lower()
-                if n.startswith("pem "):
-                    # Power modules
-                    o = get_object(objects, omap,
-                                   name, revision, part_no,
-                                   serial, description)
-                    cn = n.replace(" ", "")
-                    connect(chassis, cn, o, "in")
-                elif n.startswith("routing engine"):
-                    # RE modules
-                    o = get_object(objects, omap,
-                                   name, revision, part_no,
-                                   serial, description)
-                    # Will be connected at scb
-                    # for mx series
-                elif n.startswith("cb "):
-                    # SCB
-                    o = get_object(objects, omap,
-                                   name, revision, part_no,
-                                   serial, description)
-                    n = name.split()[-1]
-                    cn = "scb%s" % n
-                    connect(chassis, cn, o, "in")
-                    #
-                    if chassis_type.startswith("MX"):
-                        r = omap.get("routing engine %s" % n)
-                        if r:
-                            connect(o, "re", r, "in")
-                elif n.startswith("fpc "):
-                    # Line card
-                    nfpc = name.split()[-1]
-                    o = get_object(objects, omap,
-                                   name, revision, part_no,
-                                   serial, description)
-                    cn = "fpc%s" % nfpc
-                    connect(chassis, cn, o, "in")
-                    fpc = o
-                    co = o
-                    npic = None
-                    mic = None
-                    mnpic = None
-                elif n.startswith("mic "):
-                    nmic = n.split()[-1]
-                    mnpic = -1
-                    if serial != "BUILTIN":
-                        o = get_object(objects, omap,
-                                       name, revision, part_no,
-                                       serial, description)
-                        cn = "mic%s" % nmic
-                        connect(fpc, cn, o, "in")
-                        co = o
-                        mic = o
-                elif n.startswith("pic "):
-                    npic = n.split()[-1]
-                    if mic:
-                        if mnpic is not None:
-                            mnpic += 1
-                    if serial != "BUILTIN":
-                        o = get_object(objects, omap,
-                                       name, revision, part_no,
-                                       serial, description)
-                        cn = "pic%s" % npic
-                        connect(fpc, cn, o, "in")
-                        co = o
-                elif n.startswith("xcvr "):
-                    # Transceiver
-                    if co == fpc:
-                        # Builtin pic
-                        cn = "%s/%s" % (npic, name.split()[-1])
-                    elif co == mic:
-                        # MIC
-                        cn = "%s/%s" % (mnpic, name.split()[-1])
+                vendor = "JUNIPER"
+            # Get chassis part number from description
+            if t == "CHASSIS":
+                part_no = description.split()[0].upper()
+            elif t == "XCVR":
+                if vendor == "NONAME":
+                    if description == "UNKNOWN":
+                        part_no = "NoName | Transceiver | Unknown"
                     else:
-                        # Separate PIC
-                        cn = name.split()[-1]
-                    vendor = self.JUNIPER
-                    if part_no == "NON-JNPR":
-                        vendor = self.NONAME
-                        # Try to detect transceiver type
-                        if description == "UNKNOWN":
-                            part_no = "NoName | Transceiver | Unknown"
-                        else:
-                            part_no = self.get_trans_part_no(serial, description)
-                    o = get_object(objects, omap,
-                                   name, revision, part_no,
-                                   serial, description, vendor=vendor)
-                    connect(co, cn, o, "in")
+                        part_no = self.get_trans_part_no(serial, description)
+            elif serial == "BUILTIN":
+                builtin = True
+                part_no = []
+            # Submit object
+            objects += [{
+                "type": t,
+                "number": number,
+                "vendor": vendor,
+                "serial": serial,
+                "description": description,
+                "part_no": part_no,
+                "revision": revision,
+                "builtin": builtin
+            }]
         return objects
+
+    def get_type(self, name):
+        name = name.upper()
+        n = name.split()
+        if is_int(n[-1]):
+            number = n[-1]
+            name = " ".join(n[:-1])
+        else:
+            number = None
+        return self.TYPE_MAP.get(name), number
 
     def get_trans_part_no(self, serial, description):
         """
         Try to detect non-juniper transceiver model
         """
-        pn = self.T_MAP.get(description.split()[0])
+        pn = self.XCVR_MAP.get(description.split()[0])
         if not pn:
             raise Exception("Cannot detect transceiver type: '%s'" % description)
         return pn
