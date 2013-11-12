@@ -67,6 +67,8 @@ class Job(object):
         self._log = []
         self.on_complete = []  # List of (job_name, key)
                                # to launch on complete
+        self.to_log = scheduler and scheduler.to_log_jobs
+        self.job_log = []
 
     @classmethod
     def initialize(cls, scheduler):
@@ -89,16 +91,25 @@ class Job(object):
         logging.debug("[%s: %s(%s)] %s" % (
             self.scheduler.name, self.name,
             self.get_display_key(), msg))
+        if self.to_log:
+            self.job_log += [msg]
 
     def info(self, msg):
         logging.info("[%s: %s(%s)] %s" % (
             self.scheduler.name, self.name,
             self.get_display_key(), msg))
+        if self.to_log:
+            self.job_log += [msg]
 
     def error(self, msg):
         logging.error("[%s: %s(%s)] %s" % (
             self.scheduler.name, self.name,
             self.get_display_key(), msg))
+        if self.to_log:
+            self.job_log += [msg]
+
+    def get_job_log(self):
+        return "\n".join(self.job_log)
 
     def handler(self, *args, **kwargs):
         """

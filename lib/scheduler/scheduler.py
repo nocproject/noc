@@ -19,6 +19,7 @@ from error import JobExists
 from job import Job
 from noc.lib.nosql import get_db
 from noc.lib.debug import error_report, get_traceback
+from noc.lib.fileutils import safe_rewrite
 
 
 class Scheduler(object):
@@ -60,6 +61,7 @@ class Scheduler(object):
         self.preserve_order = preserve_order
         self.running_lock = threading.Lock()
         self.running_count = defaultdict(int)  # Group -> Count
+        self.log_jobs = None
 
     def ensure_indexes(self):
         if self.preserve_order:
@@ -284,6 +286,9 @@ class Scheduler(object):
         self._complete_job(job, s, tb)
 
     def _complete_job(self, job, status, tb):
+        if self.to_log_jobs:
+            path = os.path.join(self.log_jobs, job.name, str(job.key))
+            safe_rewrite(path, job.get_job_log())
         group = job.get_group()
         if group is not None:
             with self.running_lock:
@@ -437,6 +442,17 @@ class Scheduler(object):
             self.ATTR_KEY: key
         })
 
+    @property
+    def to_log_jobs(self):
+        return self.log_jobs is not None
+
+    def set_job_log(self, path):
+        self.log_jobs = path
+        if self.log_jobs:
+            # Check job logs directory exists
+            if not os.path.isdir(self.log_jobs):
+                self.error("Jobs log directory does not exists: %s" % self.log_jobs)
+                self.log_jobs = None
 
 ## Avoid circular reference
 from noc.sa.models.reducetask import ReduceTask

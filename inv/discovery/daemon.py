@@ -22,9 +22,9 @@ class DiscoveryDaemon(Daemon):
     daemon_name = "noc-discovery"
 
     def __init__(self, *args, **kwargs):
+        self.scheduler = DiscoveryScheduler(self)
         self.beef = defaultdict(dict)  # method -> mo id -> beef
         super(DiscoveryDaemon, self).__init__(*args, **kwargs)
-        self.scheduler = DiscoveryScheduler(self)
         self.install_beef()
 
     def run(self):
@@ -38,6 +38,8 @@ class DiscoveryDaemon(Daemon):
     def load_config(self):
         super(DiscoveryDaemon, self).load_config()
         self.load_beef_map()
+        log_jobs = self.config.get("main", "log_jobs") or None
+        self.scheduler.set_job_log(log_jobs)
 
     def load_beef_map(self):
         for o in self.config.options("beef"):
