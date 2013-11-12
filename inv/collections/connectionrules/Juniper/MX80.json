@@ -1,7 +1,7 @@
 [
     {
         "name": "Juniper | MX80",
-        "description": "Juniper MX 240/480/960 connection rules",
+        "description": "Juniper MX80 connection rules",
         "context": [
             {
                 "reset_scopes": ["fpc", "pic"],
