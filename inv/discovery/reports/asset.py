@@ -15,6 +15,7 @@ from base import Report
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from noc.inv.models.vendor import Vendor
+from noc.inv.models.unknownmodel import UnknownModel
 from noc.inv.models.connectionrule import ConnectionRule
 from noc.inv.models.error import ConnectionError
 from noc.lib.text import str_dict
@@ -68,7 +69,7 @@ class AssetReport(Report):
         if not m:
             self.debug("Unknown model: vendor=%s, part_no=%s (%s). Skipping" % (
                 vnd.name, description, part_no))
-            self.register_unknown_part_no(part_no)
+            self.register_unknown_part_no(vnf, part_no, description)
             return
         # Get connection rule
         if not self.rule and m.connection_rule:
@@ -238,7 +239,7 @@ class AssetReport(Report):
         self.om_cache[part_no] = None
         return None
 
-    def register_unknown_part_no(self, part_no):
+    def register_unknown_part_no(self, vendor, part_no, descripton):
         """
         Register missed part number
         """
@@ -249,6 +250,8 @@ class AssetReport(Report):
                 self.unknown_part_no[p] = set()
             for pp in part_no:
                 self.unknown_part_no[p].add(pp)
+        UnknownModel.mark_unknown(vendor.code, self.object.name,
+                                  part_no, descripton)
 
     def get_unknown_part_no(self):
         """

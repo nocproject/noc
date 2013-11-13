@@ -19,6 +19,7 @@ from modelinterface import ModelInterface, ModelInterfaceAttr
 from connectiontype import ConnectionType
 from connectionrule import ConnectionRule
 from objectmodel import ObjectModel
+from unknownmodel import UnknownModel
 
 
 class SocketAttribute(EmbeddedDocument):

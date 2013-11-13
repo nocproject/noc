@@ -14,6 +14,7 @@ from mongoengine.fields import (StringField, BooleanField, DictField,
 ## NOC modules
 from connectiontype import ConnectionType
 from connectionrule import ConnectionRule
+from unknownmodel import UnknownModel
 from vendor import Vendor
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
@@ -121,6 +122,15 @@ class ObjectModel(Document):
                 collection.remove(cache[k])
         if nc:
             collection.insert(nc)
+        # Clear unknown part numbers
+        if "asset" in self.data:
+            part_no = [
+                self.data["asset"][k]
+                for k in self.data["asset"]
+                if k.startswith("part_no") or k.startswith("order_part_no")
+            ]
+            if part_no:
+                UnknownModel.clear_unknown(self.vendor.code, part_no)
 
     def get_connection(self, name):
         for c in self.connections:
