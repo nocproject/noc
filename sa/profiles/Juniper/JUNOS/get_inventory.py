@@ -72,6 +72,7 @@ class Script(NOCScript):
     def execute(self):
         v = self.cli("show chassis hardware")
         objects = []
+        chassis_sn = set()
         for name, revision, part_no, serial, description in self.parse_hardware(v):
             builtin = False
             # Detect type
@@ -86,13 +87,14 @@ class Script(NOCScript):
             # Get chassis part number from description
             if t == "CHASSIS":
                 part_no = description.split()[0].upper()
+                chassis_sn.add(serial)
             elif t == "XCVR":
                 if vendor == "NONAME":
                     if description == "UNKNOWN":
                         part_no = "NoName | Transceiver | Unknown"
                     else:
                         part_no = self.get_trans_part_no(serial, description)
-            elif serial == "BUILTIN":
+            elif serial == "BUILTIN" or serial in chassis_sn:
                 builtin = True
                 part_no = []
             # Submit object
