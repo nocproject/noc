@@ -11,6 +11,7 @@ from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, DictField,
                                 ListField, EmbeddedDocumentField,
                                 ObjectIdField)
+from mongoengine import signals
 ## NOC modules
 from connectiontype import ConnectionType
 from connectionrule import ConnectionRule
@@ -100,6 +101,7 @@ class ObjectModel(Document):
     def save(self, *args, **kwargs):
         super(ObjectModel, self).save(*args, **kwargs)
         # Update connection cache
+        # @todo: Move to signal
         s = ObjectModel.objects.filter(id=self.id).first()
         cache = {}
         collection = ModelConnectionsCache._get_collection()
@@ -122,15 +124,6 @@ class ObjectModel(Document):
                 collection.remove(cache[k])
         if nc:
             collection.insert(nc)
-        # Clear unknown part numbers
-        if "asset" in self.data:
-            part_no = [
-                self.data["asset"][k]
-                for k in self.data["asset"]
-                if k.startswith("part_no") or k.startswith("order_part_no")
-            ]
-            if part_no:
-                UnknownModel.clear_unknown(self.vendor.code, part_no)
 
     def get_connection(self, name):
         for c in self.connections:
@@ -209,3 +202,23 @@ class ModelConnectionsCache(Document):
         collection.drop()
         if nc:
             collection.insert(nc)
+
+
+def clear_unknown_models(sender, document, **kwargs):
+    """
+    Clear unknown part numbers
+    """
+    if "asset" in document.data:
+        part_no = [
+            document.data["asset"][k]
+            for k in document.data["asset"]
+            if k.startswith("part_no") or k.startswith("order_part_no")
+        ]
+        if part_no:
+            vendor = document.vendor
+            if isinstance(vendor, basestring):
+                vendor = Vendor.objects.get(id=vendor)
+            UnknownModel.clear_unknown(vendor.code, part_no)
+
+
+signals.post_save.connect(clear_unknown_models, sender=ObjectModel)
