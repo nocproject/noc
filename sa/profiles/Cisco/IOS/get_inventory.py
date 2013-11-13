@@ -20,7 +20,7 @@ class Script(NOCScript):
 
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
-        r"PID: (?P<pid>\S+)\s*, VID: (?P<vid>\S+)\s*, SN: (?P<serial>\S+)",
+        r"PID: (?P<pid>\S+)\s*, VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
         re.MULTILINE | re.DOTALL
     )
     rx_trans = re.compile("(1000Base..)")
@@ -37,7 +37,7 @@ class Script(NOCScript):
         for match in self.rx_item.finditer(v):
             type, number, part_no = self.get_type(
                 match.group("name"), match.group("pid"),
-                match.group("descr")
+                match.group("descr"), len(objects)
             )
             if not part_no:
                 print "!!! UNKNOWN: ", match.groupdict()
@@ -56,7 +56,7 @@ class Script(NOCScript):
                 }]
         return objects
 
-    def get_type(self, name, pid, descr):
+    def get_type(self, name, pid, descr, lo):
         """
         Get type, number and part_no
         """
@@ -75,7 +75,7 @@ class Script(NOCScript):
                     return "XCVR", number, pid
             else:
                 return "XCVR", number, pid
-        elif pid.startswith("CISCO"):
+        elif lo == 0 or pid.startswith("CISCO"):
             return "CHASSIS", None, pid
         elif name.startswith("module "):
             # Linecards or supervisors
