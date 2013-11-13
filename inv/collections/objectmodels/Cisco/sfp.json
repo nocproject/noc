@@ -1,0 +1,58 @@
+[
+    {
+        "name": "Cisco | Transceiver | 1G | GLC-BX-D",
+        "vendor__code": "CISCO",
+        "description": "1000BASE-BX-D",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP | Cisco"
+            },
+            {
+                "description": "TX/RX LC",
+                "direction": "s",
+                "gender": "f",
+                "name": "txrx",
+                "protocols": [">1000BASELX-1310", "<1000BASELX-1490"],
+                "type__name": "Optical | LC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "GLC-BX-D"
+            }
+        }
+    },
+    {
+        "name": "Cisco | Transceiver | 1G | GLC-BX-U",
+        "vendor__code": "CISCO",
+        "description": "1000BASE-BX-U",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP | Cisco"
+            },
+            {
+                "description": "TX/RX LC",
+                "direction": "s",
+                "gender": "f",
+                "name": "txrx",
+                "protocols": ["<1000BASELX-1310", ">1000BASELX-1490"],
+                "type__name": "Optical | LC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "GLC-BX-U"
+            }
+        }
+    }
+]
