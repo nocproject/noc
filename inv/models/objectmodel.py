@@ -152,17 +152,21 @@ class ObjectModel(Document):
 
     @property
     def json_data(self):
-        return {
+        r = {
             "name": self.name,
             "description": self.description,
             "vendor__code": self.vendor.code,
             "data": self.data,
             "connections": [c.json_data for c in self.connections]
         }
+        if self.connection_rule:
+            r["connection_rule__name"] = self.connection_rule.name
+        return r
 
     def to_json(self):
         return to_json([self.json_data],
-                       order=["name", "vendor__code", "description"])
+                       order=["name", "vendor__code", "description",
+                              "connection_rule__name"])
 
 
 class ModelConnectionsCache(Document):
