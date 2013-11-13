@@ -69,7 +69,7 @@ class AssetReport(Report):
         if not m:
             self.debug("Unknown model: vendor=%s, part_no=%s (%s). Skipping" % (
                 vnd.name, description, part_no))
-            self.register_unknown_part_no(vnf, part_no, description)
+            self.register_unknown_part_no(vnd, part_no, description)
             return
         # Get connection rule
         if not self.rule and m.connection_rule:
