@@ -1,0 +1,31 @@
+[
+    {
+        "name": "Generic | Switch SFP",
+        "description": "Generic switch following convenction.\n\nTransceiver slots: sfpN\nPower Supply: psuN",
+        "context": [
+            {
+                "reset_scopes": [],
+                "scope": "chassis",
+                "type": "CHASSIS"
+            }
+        ],
+        "rules": [
+            {
+                "match_connection": "in",
+                "match_type": "XCVR",
+                "scope": "chassis",
+                "target_connection": "sfp{N}",
+                "target_number": "",
+                "target_type": "CHASSIS"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "PSU",
+                "scope": "chassis",
+                "target_connection": "psu{N}",
+                "target_number": "",
+                "target_type": "CHASSIS"
+            }
+        ]
+    }
+]
