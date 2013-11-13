@@ -71,6 +71,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
         });
 
         me.grid = Ext.create("Ext.grid.Panel", {
+            width: 550,
             store: me.store,
             stateful: true,
             stateId: "sa.managedobject-discovery",
@@ -160,9 +161,31 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
             }
         });
 
+        me.logPanel = Ext.create("Ext.panel.Panel", {
+            layout: "fit",
+            autoScroll: true,
+            flex: 1,
+            items: [{
+                xtype: "container",
+                autoScroll: true,
+                padding: 4
+            }]
+        });
+
         Ext.apply(me, {
             items: [
-                me.grid
+                {
+                    xtype: "container",
+                    layout: {
+                        type: "hbox",
+                        pack: "start",
+                        align: "stretch"
+                    },
+                    items: [
+                        me.grid,
+                        me.logPanel
+                    ]
+                }
             ]
         });
         me.callParent();
@@ -230,5 +253,29 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
     onGridSelection: function(selection, records) {
         var me = this;
         me.runSelectedButton.setDisabled(records.length === 0);
+        if(records.length === 1) {
+            me.showLog(records[0].get("name"));
+        }
+    },
+    //
+    setLog: function(text) {
+        var me = this;
+        me.logPanel.items.first().update("<pre>" + text + "<pre>");
+    },
+    //
+    showLog: function(name) {
+        var me = this,
+            url = "/sa/managedobject/" + me.currentRecord.get("id") + "/job_log/" + name + "/";
+        Ext.Ajax.request({
+            url: url,
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                me.setLog(response.responseText);
+            },
+            failure: function() {
+                me.setLog("Failed to get job log");
+            }
+        });
     }
 });

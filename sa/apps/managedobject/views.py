@@ -8,6 +8,8 @@
 
 ## Python modules
 from collections import defaultdict
+from ConfigParser import SafeConfigParser
+import os
 ## Django modules
 from django.http import HttpResponse
 ## NOC modules
@@ -525,3 +527,25 @@ class ManagedObjectApplication(ExtModelApplication):
             "expanded": True,
             "children": r
         }
+
+    @view(url="^(?P<id>\d+)/job_log/(?P<job>[a-zA-Z0-9_]+)/$", method=["GET"],
+        access="read", api=True)
+    def api_job_log(self, request, id, job):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        if not hasattr(self, "discovery_log_jobs"):
+            # Read config
+            self.discovery_log_jobs = None
+            config = SafeConfigParser()
+            config.read("etc/noc-discovery.conf")
+            if config.has_section("main") and config.has_option("main", "log_jobs"):
+                p = config.get("main", "log_jobs")
+                if os.path.isdir(p):
+                    self.discovery_log_jobs = p
+        if self.discovery_log_jobs:
+            p = os.path.join(self.discovery_log_jobs, job, id)
+            if os.path.exists(p):
+                with open(p) as f:
+                    return self.render_plain_text(f.read())
+        return self.render_plain_text("No data!")
