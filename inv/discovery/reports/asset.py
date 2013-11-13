@@ -250,8 +250,9 @@ class AssetReport(Report):
                 self.unknown_part_no[p] = set()
             for pp in part_no:
                 self.unknown_part_no[p].add(pp)
-        UnknownModel.mark_unknown(vendor.code, self.object.name,
-                                  part_no, descripton)
+            UnknownModel.mark_unknown(
+                vendor.code, self.object.name,
+                p, descripton)
 
     def get_unknown_part_no(self):
         """
