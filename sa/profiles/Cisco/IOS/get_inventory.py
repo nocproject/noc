@@ -66,14 +66,16 @@ class Script(NOCScript):
             if name.startswith("Transceiver "):
                 # Get port number
                 _, number = name.rsplit("/", 1)
+            elif name.startswith("GigabitEthernet"):
+                number = name.split(" ", 1)[0].split("/")[-1]
+            else:
+                number = None
             if pid in ("N/A", "Unspecified"):
                 # Non-Cisco transceivers
                 pid = self.get_transceiver_pid(descr)
                 if not pid:
                     return None, None, None
                 else:
-                    if name.startswith("GigabitEthernet"):
-                        number = name[15:]
                     return "XCVR", number, pid
             else:
                 return "XCVR", number, pid
