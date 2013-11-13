@@ -60,7 +60,7 @@ class Script(NOCScript):
         """
         Get type, number and part_no
         """
-        if descr.startswith("Transceiver"):
+        if descr.startswith("Transceiver") or name.startswith("GigabitEthernet"):
             # Transceivers
             # Get number
             if name.startswith("Transceiver "):
@@ -72,6 +72,8 @@ class Script(NOCScript):
                 if not pid:
                     return None, None, None
                 else:
+                    if name.startswith("GigabitEthernet"):
+                        number = name[15:]
                     return "XCVR", number, pid
             else:
                 return "XCVR", number, pid
