@@ -91,7 +91,7 @@ class Script(NOCScript):
                 chassis_sn.add(serial)
             elif t == "XCVR":
                 if vendor == "NONAME":
-                    if description == "UNKNOWN":
+                    if description in ("UNKNOWN", "UNSUPPORTED"):
                         part_no = "NoName | Transceiver | Unknown"
                     else:
                         part_no = self.get_trans_part_no(serial, description)
