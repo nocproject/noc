@@ -38,7 +38,8 @@ class UnknownModel(Document):
             "managed_object": managed_object,
             "part_no": part_no
         }, update={
-            "$setOnInsert": {
+            # "$setOnInsert": {
+            "$set": {
                 "description": description
             }
         }, upsert=True)
