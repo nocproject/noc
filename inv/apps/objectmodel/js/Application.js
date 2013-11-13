@@ -195,7 +195,11 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             editor: "textfield",
                             flex: 1
                         }
-                    ]
+                    ],
+                    listeners: {
+                        scope: me,
+                        clone: me.onCloneConnection
+                    }
                 }
             ],
             formToolbar: [
@@ -258,5 +262,16 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 }
             }
         }
+    },
+    //
+    onCloneConnection: function(record) {
+        var me = this,
+            v = record.get("name"),
+            m = v.match(/(.*?)(\d+)/);
+        if(m===null) {
+            return;
+        }
+        var n = +m[2] + 1;
+        record.set("name", m[1] + n);
     }
 });
