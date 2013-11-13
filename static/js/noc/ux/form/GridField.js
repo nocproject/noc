@@ -101,6 +101,7 @@ Ext.define("Ext.ux.form.GridField", {
         });
         me.currentSelection = undefined;
         me.callParent();
+        me.addEvents(["clone"]);
     },
 
     getValue: function() {
@@ -161,12 +162,13 @@ Ext.define("Ext.ux.form.GridField", {
             sm = me.grid.getSelectionModel(),
             sel = sm.getLastSelected(),
             rowEditing = me.grid.plugins[0],
-            newRecord, pos;
+            newRecord;
         if(!sel) {
             return;
         }
         rowEditing.cancelEdit();
         newRecord = sel.copy();
+        me.fireEvent("clone", newRecord);
         me.currentSelection += 1;
         me.grid.store.insert(me.currentSelection, newRecord);
         sm.select(me.currentSelection);
