@@ -18,6 +18,8 @@ class Script(NOCScript):
     name = "Juniper.JUNOS.get_inventory"
     implements = [IGetInventory]
 
+    UNKNOWN_XCVR = "NoName | Transceiver | Unknown"
+
     rx_chassis = re.compile(
         r"^Chassis\s+(?P<serial>\S+)\s+(?P<rest>.+)$",
         re.IGNORECASE
@@ -92,7 +94,7 @@ class Script(NOCScript):
             elif t == "XCVR":
                 if vendor == "NONAME":
                     if description in ("UNKNOWN", "UNSUPPORTED"):
-                        part_no = "NoName | Transceiver | Unknown"
+                        part_no = self.UNKNOWN_XCVR
                     else:
                         part_no = self.get_trans_part_no(serial, description)
             elif serial == "BUILTIN" or serial in chassis_sn:
@@ -127,5 +129,6 @@ class Script(NOCScript):
         """
         pn = self.XCVR_MAP.get(description.split()[0])
         if not pn:
-            raise Exception("Cannot detect transceiver type: '%s'" % description)
+            self.error("Cannot detect transceiver type: '%s'" % description)
+            return self.UNKNOWN_XCVR
         return pn
