@@ -36,7 +36,8 @@ class Script(NOCScript):
         "SFP-LX10": "NoName | Transceiver | 1G | SFP LX",
         "SFP-LX": "NoName | Transceiver | 1G | SFP LX",
         "XFP-10G-LR": "NoName | Transceiver | 10G | XFP LR",
-        "SFP+-10G-LR": "NoName | Transceiver | 10G | SFP+ LR"
+        "SFP+-10G-LR": "NoName | Transceiver | 10G | SFP+ LR",
+        "SFP+-10G-SR": "NoName | Transceiver | 10G | SFP+ SR"
     }
 
     TYPE_MAP = {
