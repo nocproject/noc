@@ -84,7 +84,11 @@ class Script(NOCScript):
             else:
                 return "XCVR", number, pid
         elif lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"):
-            return "CHASSIS", None, pid
+            try:
+                number = int(name)
+            except ValueError:
+                number = None
+            return "CHASSIS", number, pid
         elif name.startswith("module "):
             # Linecards or supervisors
             if pid.startswith("RSP"):
