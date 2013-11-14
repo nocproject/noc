@@ -20,7 +20,7 @@ class Script(NOCScript):
 
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
-        r"PID: (?P<pid>\S+)\s*, VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
+        r"PID:\s+(?P<pid>\S+)\s*,\s+VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
         re.MULTILINE | re.DOTALL
     )
     rx_trans = re.compile("(1000Base..)")
@@ -28,7 +28,10 @@ class Script(NOCScript):
     TRANS_MAP = {
         "1000BASELX": "NoName | Transceiver | 1G | SFP LX",
         "1000BASELH": "NoName | Transceiver | 1G | SFP LH",
-        "1000BASEZX": "NoName | Transceiver | 1G | SFP ZX"
+        "1000BASEZX": "NoName | Transceiver | 1G | SFP ZX",
+        "1000BASEBX10D": "NoName | Transceiver | 1G | SFP BX (tx 1490nm)",
+        "1000BASEBX10U": "NoName | Transceiver | 1G | SFP BX (tx 1310nm)",
+        "1000BASET": "NoName | Transceiver | 1G | SFP TX"
     }
 
     def execute(self):
@@ -60,7 +63,7 @@ class Script(NOCScript):
         """
         Get type, number and part_no
         """
-        if (descr.startswith("Transceiver") or
+        if ("Transceiver" in descr or
                 name.startswith("GigabitEthernet") or
                 pid.startswith("X2-")):
             # Transceivers
@@ -103,6 +106,9 @@ class Script(NOCScript):
             return "PSU", name.split()[1], pid
         elif name.startswith("Power Supply "):
             return "PSU", name.split()[2], pid
+        elif pid.startswith("FAN"):
+            # Fan module
+            return "FAN", name.split()[1], pid
         # Unknown
         return None, None, None
 
