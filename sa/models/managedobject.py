@@ -497,7 +497,7 @@ class ManagedObject(models.Model):
                 managed_object=self, config=data)
             if warnings:
                 # There are some warnings. Notify responsible persons
-                self.managed_object.event(
+                self.event(
                     self.EV_CONFIG_POLICY_VIOLATION,
                     {
                         "object": self,
