@@ -242,7 +242,7 @@ class Command(BaseCommand):
                 tc.platform = platform
                 tc.version = version
             if not tc.vendor or not tc.platform or not tc.version:
-                raise CommandError("%f: No version info" % f)
+                raise CommandError("%s: No version info" % f)
             s = tc.script.split(".")
             path = os.path.join(*([r_path] + s + ["%s.json" % tc.guid]))
             print "Importing %s -> %s" % (f, path)
