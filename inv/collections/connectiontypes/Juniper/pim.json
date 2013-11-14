@@ -1,0 +1,16 @@
+[
+    {
+        "name": "Juniper | J | PIM",
+        "description": "Juniper PIM Slot",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | J | UPIM",
+        "description": "Juniper uPIM Slot",
+        "c_group": [],
+        "extend__name": "Juniper | J | PIM",
+        "genders": "mf"
+    }
+]
