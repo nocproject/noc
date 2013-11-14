@@ -56,6 +56,9 @@ class Object(Document):
             self.data[interface] = {}
         self.data[interface][key] = value
 
+    def has_connection(self, name):
+        return self.model.get_connection(name) is not None
+
     def get_p2p_connection(self, name):
         """
         Get neighbor for p2p connection (s and mf types)
