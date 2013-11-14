@@ -83,7 +83,8 @@ class Object(Document):
         """
         Remove connection *name*
         """
-        for c, _, _ in self.get_p2p_connection(name):
+        c = self.get_p2p_connection(name)[0]
+        if c:
             c.delete()
 
     def connect_p2p(self, name, remote_object, remote_name, data,
