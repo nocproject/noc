@@ -3,197 +3,197 @@
         "name": "Cisco | C2960 | WS-C2960-24TC-L",
         "vendor__code": "CISCO",
         "description": "24 Ethernet 10/100 ports",
-        "connection_rule__name": "Generic | Switch SFP",
+        "connection_rule__name": "Generic | Switch SFP Prefixed",
         "connections": [
             {
-                "description": "Fe0/1",
+                "description": "Fa0/1",
                 "direction": "s",
                 "gender": "f",
-                "name": "1",
+                "name": "Fa1",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/2",
+                "description": "Fa0/2",
                 "direction": "s",
                 "gender": "f",
-                "name": "2",
+                "name": "Fa2",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/3",
+                "description": "Fa0/3",
                 "direction": "s",
                 "gender": "f",
-                "name": "3",
+                "name": "Fa3",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/4",
+                "description": "Fa0/4",
                 "direction": "s",
                 "gender": "f",
-                "name": "4",
+                "name": "Fa4",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/5",
+                "description": "Fa0/5",
                 "direction": "s",
                 "gender": "f",
-                "name": "5",
+                "name": "Fa5",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/6",
+                "description": "Fa0/6",
                 "direction": "s",
                 "gender": "f",
-                "name": "6",
+                "name": "Fa6",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/7",
+                "description": "Fa0/7",
                 "direction": "s",
                 "gender": "f",
-                "name": "7",
+                "name": "Fa7",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/8",
+                "description": "Fa0/8",
                 "direction": "s",
                 "gender": "f",
-                "name": "8",
+                "name": "Fa8",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/9",
+                "description": "Fa0/9",
                 "direction": "s",
                 "gender": "f",
-                "name": "9",
+                "name": "Fa9",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/10",
+                "description": "Fa0/10",
                 "direction": "s",
                 "gender": "f",
-                "name": "10",
+                "name": "Fa10",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/11",
+                "description": "Fa0/11",
                 "direction": "s",
                 "gender": "f",
-                "name": "11",
+                "name": "Fa11",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/12",
+                "description": "Fa0/12",
                 "direction": "s",
                 "gender": "f",
-                "name": "12",
+                "name": "Fa12",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/13",
+                "description": "Fa0/13",
                 "direction": "s",
                 "gender": "f",
-                "name": "13",
+                "name": "Fa13",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/14",
+                "description": "Fa0/14",
                 "direction": "s",
                 "gender": "f",
-                "name": "14",
+                "name": "Fa14",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/15",
+                "description": "Fa0/15",
                 "direction": "s",
                 "gender": "f",
-                "name": "15",
+                "name": "Fa15",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/16",
+                "description": "Fa0/16",
                 "direction": "s",
                 "gender": "f",
-                "name": "16",
+                "name": "Fa16",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/17",
+                "description": "Fa0/17",
                 "direction": "s",
                 "gender": "f",
-                "name": "17",
+                "name": "Fa17",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/18",
+                "description": "Fa0/18",
                 "direction": "s",
                 "gender": "f",
-                "name": "18",
+                "name": "Fa18",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/19",
+                "description": "Fa0/19",
                 "direction": "s",
                 "gender": "f",
-                "name": "19",
+                "name": "Fa19",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/20",
+                "description": "Fa0/20",
                 "direction": "s",
                 "gender": "f",
-                "name": "20",
+                "name": "Fa20",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/21",
+                "description": "Fa0/21",
                 "direction": "s",
                 "gender": "f",
-                "name": "21",
+                "name": "Fa21",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/22",
+                "description": "Fa0/22",
                 "direction": "s",
                 "gender": "f",
-                "name": "22",
+                "name": "Fa22",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/23",
+                "description": "Fa0/23",
                 "direction": "s",
                 "gender": "f",
-                "name": "23",
+                "name": "Fa23",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
             {
-                "description": "Fe0/24",
+                "description": "Fa0/24",
                 "direction": "s",
                 "gender": "f",
-                "name": "24",
+                "name": "Fa24",
                 "protocols": ["10BASET", "100BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -201,7 +201,7 @@
                 "description": "Gi0/1",
                 "direction": "i",
                 "gender": "f",
-                "name": "sfp1",
+                "name": "Gi1_sfp",
                 "protocols": ["TransEth100M", "TransEth1G"],
                 "type__name": "Transceiver | SFP"
             },
@@ -209,7 +209,7 @@
                 "description": "Gi0/2",
                 "direction": "i",
                 "gender": "f",
-                "name": "sfp2",
+                "name": "Gi2_sfp",
                 "protocols": ["TransEth100M", "TransEth1G"],
                 "type__name": "Transceiver | SFP"
             },
@@ -244,13 +244,13 @@
         "name": "Cisco | C2960 | WS-C2960G-24TC-L",
         "vendor__code": "CISCO",
         "description": "20 Ethernet 10/100/1000 ports and 4 dual-purpose uplinks",
-        "connection_rule__name": "Generic | Switch SFP",
+        "connection_rule__name": "Generic | Switch SFP Prefixed",
         "connections": [
             {
                 "description": "Gi0/1",
                 "direction": "s",
                 "gender": "f",
-                "name": "1",
+                "name": "Gi1",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -258,7 +258,7 @@
                 "description": "Gi0/2",
                 "direction": "s",
                 "gender": "f",
-                "name": "2",
+                "name": "Gi2",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -266,7 +266,7 @@
                 "description": "Gi0/3",
                 "direction": "s",
                 "gender": "f",
-                "name": "3",
+                "name": "Gi3",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -274,7 +274,7 @@
                 "description": "Gi0/4",
                 "direction": "s",
                 "gender": "f",
-                "name": "4",
+                "name": "Gi4",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -282,7 +282,7 @@
                 "description": "Gi0/5",
                 "direction": "s",
                 "gender": "f",
-                "name": "5",
+                "name": "Gi5",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -290,7 +290,7 @@
                 "description": "Gi0/6",
                 "direction": "s",
                 "gender": "f",
-                "name": "6",
+                "name": "Gi6",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -298,7 +298,7 @@
                 "description": "Gi0/7",
                 "direction": "s",
                 "gender": "f",
-                "name": "7",
+                "name": "Gi7",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -306,7 +306,7 @@
                 "description": "Gi0/8",
                 "direction": "s",
                 "gender": "f",
-                "name": "8",
+                "name": "Gi8",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -314,7 +314,7 @@
                 "description": "Gi0/9",
                 "direction": "s",
                 "gender": "f",
-                "name": "9",
+                "name": "Gi9",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -322,7 +322,7 @@
                 "description": "Gi0/10",
                 "direction": "s",
                 "gender": "f",
-                "name": "10",
+                "name": "Gi10",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -330,7 +330,7 @@
                 "description": "Gi0/11",
                 "direction": "s",
                 "gender": "f",
-                "name": "11",
+                "name": "Gi11",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -338,7 +338,7 @@
                 "description": "Gi0/12",
                 "direction": "s",
                 "gender": "f",
-                "name": "12",
+                "name": "Gi12",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -346,7 +346,7 @@
                 "description": "Gi0/13",
                 "direction": "s",
                 "gender": "f",
-                "name": "13",
+                "name": "Gi13",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -354,7 +354,7 @@
                 "description": "Gi0/14",
                 "direction": "s",
                 "gender": "f",
-                "name": "14",
+                "name": "Gi14",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -362,7 +362,7 @@
                 "description": "Gi0/15",
                 "direction": "s",
                 "gender": "f",
-                "name": "15",
+                "name": "Gi15",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -370,7 +370,7 @@
                 "description": "Gi0/16",
                 "direction": "s",
                 "gender": "f",
-                "name": "16",
+                "name": "Gi16",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -378,7 +378,7 @@
                 "description": "Gi0/17",
                 "direction": "s",
                 "gender": "f",
-                "name": "17",
+                "name": "Gi17",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -386,7 +386,7 @@
                 "description": "Gi0/18",
                 "direction": "s",
                 "gender": "f",
-                "name": "18",
+                "name": "Gi18",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -394,7 +394,7 @@
                 "description": "Gi0/19",
                 "direction": "s",
                 "gender": "f",
-                "name": "19",
+                "name": "Gi19",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -402,7 +402,7 @@
                 "description": "Gi0/20",
                 "direction": "s",
                 "gender": "f",
-                "name": "20",
+                "name": "Gi20",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -410,7 +410,7 @@
                 "description": "Gi0/21",
                 "direction": "s",
                 "gender": "f",
-                "name": "21",
+                "name": "Gi21",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -418,7 +418,7 @@
                 "description": "Gi0/22",
                 "direction": "s",
                 "gender": "f",
-                "name": "22",
+                "name": "Gi22",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -426,7 +426,7 @@
                 "description": "Gi0/23",
                 "direction": "s",
                 "gender": "f",
-                "name": "23",
+                "name": "Gi23",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -434,7 +434,7 @@
                 "description": "Gi0/24",
                 "direction": "s",
                 "gender": "f",
-                "name": "24",
+                "name": "Gi24",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -442,7 +442,7 @@
                 "description": "Gi0/21",
                 "direction": "i",
                 "gender": "f",
-                "name": "sfp21",
+                "name": "Gi21_sfp",
                 "protocols": ["TransEth100M", "TransEth1G"],
                 "type__name": "Transceiver | SFP"
             },
@@ -450,7 +450,7 @@
                 "description": "Gi0/22",
                 "direction": "i",
                 "gender": "f",
-                "name": "sfp22",
+                "name": "Gi22_sfp",
                 "protocols": ["TransEth100M", "TransEth1G"],
                 "type__name": "Transceiver | SFP"
             },
@@ -458,7 +458,7 @@
                 "description": "Gi0/23",
                 "direction": "i",
                 "gender": "f",
-                "name": "sfp23",
+                "name": "Gi23_sfp",
                 "protocols": ["TransEth100M", "TransEth1G"],
                 "type__name": "Transceiver | SFP"
             },
@@ -466,7 +466,7 @@
                 "description": "Gi0/24",
                 "direction": "i",
                 "gender": "f",
-                "name": "sfp24",
+                "name": "Gi24_sfp",
                 "protocols": ["TransEth100M", "TransEth1G"],
                 "type__name": "Transceiver | SFP"
             },
@@ -501,13 +501,13 @@
         "name": "Cisco | C2960 | WS-C2960G-48TC-L",
         "vendor__code": "CISCO",
         "description": "44 Ethernet 10/100/1000 ports and 4 dual-purpose uplinks",
-        "connection_rule__name": "Generic | Switch SFP",
+        "connection_rule__name": "Generic | Switch SFP Prefixed",
         "connections": [
             {
                 "description": "Gi0/1",
                 "direction": "s",
                 "gender": "f",
-                "name": "1",
+                "name": "Gi1",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -515,7 +515,7 @@
                 "description": "Gi0/2",
                 "direction": "s",
                 "gender": "f",
-                "name": "2",
+                "name": "Gi2",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -523,7 +523,7 @@
                 "description": "Gi0/3",
                 "direction": "s",
                 "gender": "f",
-                "name": "3",
+                "name": "Gi3",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -531,7 +531,7 @@
                 "description": "Gi0/4",
                 "direction": "s",
                 "gender": "f",
-                "name": "4",
+                "name": "Gi4",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -539,7 +539,7 @@
                 "description": "Gi0/5",
                 "direction": "s",
                 "gender": "f",
-                "name": "5",
+                "name": "Gi5",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -547,7 +547,7 @@
                 "description": "Gi0/6",
                 "direction": "s",
                 "gender": "f",
-                "name": "6",
+                "name": "Gi6",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -555,7 +555,7 @@
                 "description": "Gi0/7",
                 "direction": "s",
                 "gender": "f",
-                "name": "7",
+                "name": "Gi7",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -563,7 +563,7 @@
                 "description": "Gi0/8",
                 "direction": "s",
                 "gender": "f",
-                "name": "8",
+                "name": "Gi8",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -571,7 +571,7 @@
                 "description": "Gi0/9",
                 "direction": "s",
                 "gender": "f",
-                "name": "9",
+                "name": "Gi9",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -579,7 +579,7 @@
                 "description": "Gi0/10",
                 "direction": "s",
                 "gender": "f",
-                "name": "10",
+                "name": "Gi10",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -587,7 +587,7 @@
                 "description": "Gi0/11",
                 "direction": "s",
                 "gender": "f",
-                "name": "11",
+                "name": "Gi11",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -595,7 +595,7 @@
                 "description": "Gi0/12",
                 "direction": "s",
                 "gender": "f",
-                "name": "12",
+                "name": "Gi12",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -603,7 +603,7 @@
                 "description": "Gi0/13",
                 "direction": "s",
                 "gender": "f",
-                "name": "13",
+                "name": "Gi13",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -611,7 +611,7 @@
                 "description": "Gi0/14",
                 "direction": "s",
                 "gender": "f",
-                "name": "14",
+                "name": "Gi14",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -619,7 +619,7 @@
                 "description": "Gi0/15",
                 "direction": "s",
                 "gender": "f",
-                "name": "15",
+                "name": "Gi15",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -627,7 +627,7 @@
                 "description": "Gi0/16",
                 "direction": "s",
                 "gender": "f",
-                "name": "16",
+                "name": "Gi16",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -635,7 +635,7 @@
                 "description": "Gi0/17",
                 "direction": "s",
                 "gender": "f",
-                "name": "17",
+                "name": "Gi17",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -643,7 +643,7 @@
                 "description": "Gi0/18",
                 "direction": "s",
                 "gender": "f",
-                "name": "18",
+                "name": "Gi18",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -651,7 +651,7 @@
                 "description": "Gi0/19",
                 "direction": "s",
                 "gender": "f",
-                "name": "19",
+                "name": "Gi19",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -659,7 +659,7 @@
                 "description": "Gi0/20",
                 "direction": "s",
                 "gender": "f",
-                "name": "20",
+                "name": "Gi20",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -667,7 +667,7 @@
                 "description": "Gi0/21",
                 "direction": "s",
                 "gender": "f",
-                "name": "21",
+                "name": "Gi21",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -675,7 +675,7 @@
                 "description": "Gi0/22",
                 "direction": "s",
                 "gender": "f",
-                "name": "22",
+                "name": "Gi22",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -683,7 +683,7 @@
                 "description": "Gi0/23",
                 "direction": "s",
                 "gender": "f",
-                "name": "23",
+                "name": "Gi23",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -691,7 +691,7 @@
                 "description": "Gi0/24",
                 "direction": "s",
                 "gender": "f",
-                "name": "24",
+                "name": "Gi24",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -699,7 +699,7 @@
                 "description": "Gi0/25",
                 "direction": "s",
                 "gender": "f",
-                "name": "25",
+                "name": "Gi25",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -707,7 +707,7 @@
                 "description": "Gi0/26",
                 "direction": "s",
                 "gender": "f",
-                "name": "26",
+                "name": "Gi26",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -715,7 +715,7 @@
                 "description": "Gi0/27",
                 "direction": "s",
                 "gender": "f",
-                "name": "27",
+                "name": "Gi27",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -723,7 +723,7 @@
                 "description": "Gi0/28",
                 "direction": "s",
                 "gender": "f",
-                "name": "28",
+                "name": "Gi28",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -731,7 +731,7 @@
                 "description": "Gi0/29",
                 "direction": "s",
                 "gender": "f",
-                "name": "29",
+                "name": "Gi29",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -739,7 +739,7 @@
                 "description": "Gi0/30",
                 "direction": "s",
                 "gender": "f",
-                "name": "30",
+                "name": "Gi30",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -747,7 +747,7 @@
                 "description": "Gi0/31",
                 "direction": "s",
                 "gender": "f",
-                "name": "31",
+                "name": "Gi31",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -755,7 +755,7 @@
                 "description": "Gi0/32",
                 "direction": "s",
                 "gender": "f",
-                "name": "32",
+                "name": "Gi32",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -763,7 +763,7 @@
                 "description": "Gi0/33",
                 "direction": "s",
                 "gender": "f",
-                "name": "33",
+                "name": "Gi33",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -771,7 +771,7 @@
                 "description": "Gi0/34",
                 "direction": "s",
                 "gender": "f",
-                "name": "34",
+                "name": "Gi34",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -779,7 +779,7 @@
                 "description": "Gi0/35",
                 "direction": "s",
                 "gender": "f",
-                "name": "35",
+                "name": "Gi35",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -787,7 +787,7 @@
                 "description": "Gi0/36",
                 "direction": "s",
                 "gender": "f",
-                "name": "36",
+                "name": "Gi36",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -795,7 +795,7 @@
                 "description": "Gi0/37",
                 "direction": "s",
                 "gender": "f",
-                "name": "37",
+                "name": "Gi37",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -803,7 +803,7 @@
                 "description": "Gi0/38",
                 "direction": "s",
                 "gender": "f",
-                "name": "38",
+                "name": "Gi38",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -811,7 +811,7 @@
                 "description": "Gi0/39",
                 "direction": "s",
                 "gender": "f",
-                "name": "39",
+                "name": "Gi39",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -819,7 +819,7 @@
                 "description": "Gi0/40",
                 "direction": "s",
                 "gender": "f",
-                "name": "40",
+                "name": "Gi40",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -827,7 +827,7 @@
                 "description": "Gi0/41",
                 "direction": "s",
                 "gender": "f",
-                "name": "41",
+                "name": "Gi41",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -835,7 +835,7 @@
                 "description": "Gi0/42",
                 "direction": "s",
                 "gender": "f",
-                "name": "42",
+                "name": "Gi42",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -843,7 +843,7 @@
                 "description": "Gi0/43",
                 "direction": "s",
                 "gender": "f",
-                "name": "43",
+                "name": "Gi43",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -851,7 +851,7 @@
                 "description": "Gi0/44",
                 "direction": "s",
                 "gender": "f",
-                "name": "44",
+                "name": "Gi44",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -859,7 +859,7 @@
                 "description": "Gi0/45",
                 "direction": "s",
                 "gender": "f",
-                "name": "45",
+                "name": "Gi45",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -867,7 +867,7 @@
                 "description": "Gi0/46",
                 "direction": "s",
                 "gender": "f",
-                "name": "46",
+                "name": "Gi46",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -875,7 +875,7 @@
                 "description": "Gi0/47",
                 "direction": "s",
                 "gender": "f",
-                "name": "47",
+                "name": "Gi47",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -883,7 +883,7 @@
                 "description": "Gi0/48",
                 "direction": "s",
                 "gender": "f",
-                "name": "48",
+                "name": "Gi48",
                 "protocols": ["10BASET", "100BASETX", "1000BASETX"],
                 "type__name": "Electrical | RJ45"
             },
@@ -891,7 +891,7 @@
                 "description": "Gi0/45",
                 "direction": "i",
                 "gender": "f",
-                "name": "sfp45",
+                "name": "Gi45_sfp",
                 "protocols": ["TransEth100M", "TransEth1G"],
                 "type__name": "Transceiver | SFP"
             },
@@ -899,7 +899,7 @@
                 "description": "Gi0/46",
                 "direction": "i",
                 "gender": "f",
-                "name": "sfp46",
+                "name": "Gi46_sfp",
                 "protocols": ["TransEth100M", "TransEth1G"],
                 "type__name": "Transceiver | SFP"
             },
@@ -907,7 +907,7 @@
                 "description": "Gi0/47",
                 "direction": "i",
                 "gender": "f",
-                "name": "sfp47",
+                "name": "Gi47_sfp",
                 "protocols": ["TransEth100M", "TransEth1G"],
                 "type__name": "Transceiver | SFP"
             },
@@ -915,7 +915,7 @@
                 "description": "Gi0/48",
                 "direction": "i",
                 "gender": "f",
-                "name": "sfp48",
+                "name": "Gi48_sfp",
                 "protocols": ["TransEth100M", "TransEth1G"],
                 "type__name": "Transceiver | SFP"
             },
@@ -944,4 +944,5 @@
                 "managed": true
             }
         }
-    }]
+    }
+]
