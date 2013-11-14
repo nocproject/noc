@@ -60,13 +60,17 @@ class Script(NOCScript):
         """
         Get type, number and part_no
         """
-        if descr.startswith("Transceiver") or name.startswith("GigabitEthernet"):
+        if (descr.startswith("Transceiver") or
+                name.startswith("GigabitEthernet") or
+                pid.startswith("X2-")):
             # Transceivers
             # Get number
             if name.startswith("Transceiver "):
                 # Get port number
                 _, number = name.rsplit("/", 1)
             elif name.startswith("GigabitEthernet"):
+                number = name.split(" ", 1)[0].split("/")[-1]
+            elif name.startswith("TenGigabitEthernet"):
                 number = name.split(" ", 1)[0].split("/")[-1]
             else:
                 number = None
