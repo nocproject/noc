@@ -253,7 +253,7 @@
                 "direction": "i",
                 "gender": "f",
                 "group": "0",
-                "name": "Gi25_sfp",
+                "name": "Gi26_sfp",
                 "protocols": ["TransEth1G"],
                 "type__name": "Transceiver | SFP | Cisco"
             },
