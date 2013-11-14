@@ -203,7 +203,7 @@
                 "gender": "f",
                 "name": "sfp1",
                 "protocols": ["TransEth100M", "TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi0/2",
@@ -211,7 +211,7 @@
                 "gender": "f",
                 "name": "sfp2",
                 "protocols": ["TransEth100M", "TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Console port",
@@ -444,7 +444,7 @@
                 "gender": "f",
                 "name": "sfp21",
                 "protocols": ["TransEth100M", "TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi0/22",
@@ -452,7 +452,7 @@
                 "gender": "f",
                 "name": "sfp22",
                 "protocols": ["TransEth100M", "TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi0/23",
@@ -460,7 +460,7 @@
                 "gender": "f",
                 "name": "sfp23",
                 "protocols": ["TransEth100M", "TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi0/24",
@@ -468,7 +468,7 @@
                 "gender": "f",
                 "name": "sfp24",
                 "protocols": ["TransEth100M", "TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Console port",
@@ -893,7 +893,7 @@
                 "gender": "f",
                 "name": "sfp45",
                 "protocols": ["TransEth100M", "TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi0/46",
@@ -901,7 +901,7 @@
                 "gender": "f",
                 "name": "sfp46",
                 "protocols": ["TransEth100M", "TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi0/47",
@@ -909,7 +909,7 @@
                 "gender": "f",
                 "name": "sfp47",
                 "protocols": ["TransEth100M", "TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Gi0/48",
@@ -917,7 +917,7 @@
                 "gender": "f",
                 "name": "sfp48",
                 "protocols": ["TransEth100M", "TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "Console port",
