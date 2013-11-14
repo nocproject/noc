@@ -19,6 +19,7 @@ from whoosh.fields import Schema, ID, TEXT, STORED, KEYWORD
 from whoosh.qparser import QueryParser
 ## NOC modules
 from noc.main.models import fts_models
+from noc.main.models.fts_queue import FTSQueue
 
 
 class Command(BaseCommand):
@@ -144,6 +145,7 @@ class Command(BaseCommand):
         if not self.check_index():
             self.create_index()
         index = open_dir(self.INDEX)
+        FTSQueue._get_collection().drop()  # Drop pending tasks
         for m in fts_models:
             self.out("    %s" % m)
             writer = index.writer()
