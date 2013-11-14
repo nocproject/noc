@@ -158,6 +158,10 @@ class AssetReport(Report):
                         # Match
                         m_c = self.expand_context(r.match_connection, context)
                         t_c = self.expand_context(r.target_connection, context)
+                        # Check source and target have proper connection
+                        if (not object.has_connection(m_c) or
+                                not t_object.has_connection(t_c)):
+                            continue
                         self.info("Connecting %s %s:%s -> %s %s:%s" % (
                             type, context["N"], m_c,
                             t_type, t_ctx["N"], t_c
