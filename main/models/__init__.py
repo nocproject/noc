@@ -46,12 +46,18 @@ fts_models = {}  # name -> model
 from fts_queue import FTSQueue
 
 
+def update_fts(sender, instance, **kwargs):
+    FTSQueue.schedule_update(instance)
+
+
 def on_new_model(sender, **kwargs):
     """
     Register new search handler if model has .search() classmethod
     """
     if hasattr(sender, "get_index"):
         fts_models[str(sender._meta)] = sender
+        if settings.IS_WEB:
+            post_save.connect(update_fts, sender=sender)
 
 ##
 ## Attach to the 'class_prepared' signal
@@ -105,7 +111,6 @@ def audit_trail_save(sender, instance, **kwargs):
         message = "\n".join(["%s = %s" % (f.name, f.value_to_string(instance))
                              for f in sender._meta.fields])
     AuditTrail.log(sender, instance, operation, message)
-    FTSQueue.schedule_update(instance)
 
 
 def audit_trail_delete(sender, instance, **kwargs):
