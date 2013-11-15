@@ -23,7 +23,7 @@ class Script(NOCScript):
         r"PID:\s+(?P<pid>\S+)\s*,\s+VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
         re.MULTILINE | re.DOTALL
     )
-    rx_trans = re.compile("(1000Base\S{2})")
+    rx_trans = re.compile("(1000Base\S+)")
 
     TRANS_MAP = {
         "1000BASELX": "NoName | Transceiver | 1G | SFP LX",
