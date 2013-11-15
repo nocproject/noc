@@ -38,6 +38,8 @@ class AssetDiscoveryJob(MODiscoveryJob):
                 revision=o.get("revision"), serial=o.get("serial"),
                 description=o.get("description")
             )
+        # Assign stack members
+        self.report.submit_stack_members()
         #
         self.report.submit_connections()
         # Finish
