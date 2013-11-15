@@ -1,0 +1,22 @@
+[
+    {
+        "name": "stack",
+        "description": "Stack/Virtual Chassis/Cluster",
+        "attrs": [
+            {
+                "name": "stackable",
+                "type": "bool",
+                "description": "Object can be stacked",
+                "required": false,
+                "is_const": true
+            },
+            {
+                "name": "member",
+                "type": "str",
+                "description": "Stack member id",
+                "required": false,
+                "is_const": false
+            }
+        ]
+    }
+]
