@@ -36,6 +36,7 @@ class AssetReport(Report):
         self.rule = defaultdict(list)  # Connection rule. type -> [rule1, ruleN]
         self.rule_context = {}
         self.ctx = {}
+        self.stack_member = {}  # object -> stack member numbers
 
     def submit(self, type, part_no, number=None,
                builtin=False,
@@ -103,6 +104,9 @@ class AssetReport(Report):
                 o.set_data("management", "managed_object", self.object.id)
                 o.save()
         self.objects += [(type, o, self.ctx.copy())]
+        # Collect stack members
+        if number and o.get_data("stack", "stackable"):
+            self.stack_member[o] = number
 
     def iter_object(self, i, scope, value, target_type, fwd):
         # Search backwards
@@ -175,6 +179,16 @@ class AssetReport(Report):
                         break
                 if found:
                     break
+
+    def submit_stack_members(self):
+        if len(self.stack_member) < 2:
+            return
+        for o in self.stack_member:
+            m = self.stack_member[o]
+            if o.get_data("stack", "member") != m:
+                self.info("Setting stack member %s" % m)
+                o.set_data("stack", "member", m)
+                o.save()
 
     def send(self):
         if self.unknown_part_no:
