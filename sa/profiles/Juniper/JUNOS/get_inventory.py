@@ -45,6 +45,7 @@ class Script(NOCScript):
     TYPE_MAP = {
         "CHASSIS": "CHASSIS",
         "PEM": "PEM",
+        "POWER SUPPLY": "PEM",
         "ROUTING ENGINE": "RE",
         "CB": "SCB",
         "FPC": "FPC",
@@ -52,6 +53,12 @@ class Script(NOCScript):
         "MIC": "MIC",
         "PIC": "PIC",
         "XCVR": "XCVR"
+    }
+
+    IGNORED = {
+        "RE": set([
+            "750-033065"  # EX4200-24T, 8 POE
+        ])
     }
 
     def parse_hardware(self, v):
@@ -82,6 +89,11 @@ class Script(NOCScript):
             t, number = self.get_type(name)
             if not t:
                 continue
+            # Discard virtual chassis and ignored part numbers
+            if description == "Virtual Chassis":
+                continue
+            if t in self.IGNORED and part_no in self.IGNORED[t]:
+                continue
             # Detect vendor
             if part_no == "NON-JNPR":
                 vendor = "NONAME"
@@ -91,6 +103,10 @@ class Script(NOCScript):
             if t == "CHASSIS":
                 part_no = description.split()[0].upper()
                 chassis_sn.add(serial)
+            elif t == "FPC":
+                if description.startswith("EX4"):
+                    t = "CHASSIS"
+                    chassis_sn.add(serial)
             elif t == "XCVR":
                 if vendor == "NONAME":
                     if description in ("UNKNOWN", "UNSUPPORTED"):
