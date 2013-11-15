@@ -944,5 +944,110 @@
                 "managed": true
             }
         }
+   },
+
+   {
+        "name": "Cisco | C2960 | WS-C2960-8TC-L",
+        "vendor__code": "CISCO",
+        "description": "8 Ethernet 10/100 ports + 1 SFP port",
+        "connection_rule__name": "Generic | Switch SFP Prefixed",
+        "connections": [
+            {
+                "description": "Fa0/1",
+                "direction": "s",
+                "gender": "f",
+                "name": "Fa1",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Fa0/2",
+                "direction": "s",
+                "gender": "f",
+                "name": "Fa2",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Fa0/3",
+                "direction": "s",
+                "gender": "f",
+                "name": "Fa3",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Fa0/4",
+                "direction": "s",
+                "gender": "f",
+                "name": "Fa4",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Fa0/5",
+                "direction": "s",
+                "gender": "f",
+                "name": "Fa5",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Fa0/6",
+                "direction": "s",
+                "gender": "f",
+                "name": "Fa6",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Fa0/7",
+                "direction": "s",
+                "gender": "f",
+                "name": "Fa7",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Fa0/8",
+                "direction": "s",
+                "gender": "f",
+                "name": "Fa8",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Gi0/1",
+                "direction": "i",
+                "gender": "f",
+                "name": "Gi1_sfp",
+                "protocols": ["TransEth100M", "TransEth1G"],
+                "type__name": "Transceiver | SFP"
+            },
+            {
+                "description": "Console port",
+                "direction": "s",
+                "gender": "f",
+                "name": "console",
+                "protocols": [">RS232"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Power inlet",
+                "direction": "s",
+                "gender": "f",
+                "name": "power",
+                "protocols": [">220VAC", ">110VAC"],
+                "type__name": "Power | IEC 60320 C14"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no1": "WS-C2960-8TC-L"
+            },
+            "management": {
+                "managed": true
+            }
+        }
     }
 ]
