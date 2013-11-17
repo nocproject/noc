@@ -91,7 +91,7 @@
                 "gender": "f",
                 "group": "0",
                 "name": "fpc1",
-                "type__name": "Juniper | SRX | Mini-PIM"
+                "type__name": "Juniper | J | Mini-PIM"
             },
             {
                 "description": "USB port 0",
@@ -99,7 +99,7 @@
                 "gender": "f",
                 "group": "0",
                 "name": "usb0",
-                "protocols": ["<USB10", "<USB20"],
+                "protocols": ["<USB10", "<USB11"],
                 "type__name": "Electrical | USB"
             },
             {
@@ -108,7 +108,7 @@
                 "gender": "f",
                 "group": "0",
                 "name": "usb1",
-                "protocols": ["<USB10", "<USB20"],
+                "protocols": ["<USB10", "<USB11"],
                 "type__name": "Electrical | USB"
             }
         ],
@@ -118,6 +118,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "stack": {
+                "stackable": true
             }
         }
     },
@@ -286,7 +289,7 @@
                 "gender": "f",
                 "group": "0",
                 "name": "fpc1",
-                "type__name": "Juniper | SRX | Mini-PIM"
+                "type__name": "Juniper | J | Mini-PIM"
             },
             {
                 "description": "Mini-PIM slot #2",
@@ -294,7 +297,7 @@
                 "gender": "f",
                 "group": "0",
                 "name": "fpc2",
-                "type__name": "Juniper | SRX | Mini-PIM"
+                "type__name": "Juniper | J | Mini-PIM"
             },
             {
                 "description": "Mini-PIM slot #3",
@@ -302,7 +305,7 @@
                 "gender": "f",
                 "group": "0",
                 "name": "fpc3",
-                "type__name": "Juniper | SRX | Mini-PIM"
+                "type__name": "Juniper | J | Mini-PIM"
             },
             {
                 "description": "Mini-PIM slot #4",
@@ -310,7 +313,7 @@
                 "gender": "f",
                 "group": "0",
                 "name": "fpc4",
-                "type__name": "Juniper | SRX | Mini-PIM"
+                "type__name": "Juniper | J | Mini-PIM"
             },
             {
                 "description": "USB port 0",
@@ -318,7 +321,7 @@
                 "gender": "f",
                 "group": "0",
                 "name": "usb0",
-                "protocols": ["<USB10", "<USB20"],
+                "protocols": ["<USB10", "<USB11"],
                 "type__name": "Electrical | USB"
             },
             {
@@ -327,7 +330,7 @@
                 "gender": "f",
                 "group": "0",
                 "name": "usb1",
-                "protocols": ["<USB10", "<USB20"],
+                "protocols": ["<USB10", "<USB11"],
                 "type__name": "Electrical | USB"
             },
             {
@@ -346,6 +349,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "stack": {
+                "stackable": true
             }
         }
     }

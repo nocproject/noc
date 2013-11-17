@@ -57,7 +57,9 @@ class Script(NOCScript):
 
     IGNORED = {
         "RE": set([
-            "750-033065"  # EX4200-24T, 8 POE
+            "750-033065",  # EX4200-24T, 8 POE
+            "750-034594",  # RE-SRX210HE
+            "710-017560"   # 710-017560
         ])
     }
 
@@ -70,6 +72,9 @@ class Script(NOCScript):
             l = l.strip()
             if not l:
                 continue
+            if l.startswith("node"):
+                self.chassis_no = l.strip()[4:-1]
+                continue
             match = self.rx_part.search(l)
             if match:
                 yield match.groups()
@@ -80,6 +85,7 @@ class Script(NOCScript):
                            match.group("serial"), match.group("rest"))
 
     def execute(self):
+        self.chassis_no = None
         v = self.cli("show chassis hardware")
         objects = []
         chassis_sn = set()
@@ -116,6 +122,8 @@ class Script(NOCScript):
             elif serial == "BUILTIN" or serial in chassis_sn:
                 builtin = True
                 part_no = []
+            if t == "CHASSIS" and number is None and self.chassis_no is not None:
+                number = self.chassis_no
             # Submit object
             objects += [{
                 "type": t,
