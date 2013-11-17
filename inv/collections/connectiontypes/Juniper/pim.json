@@ -12,5 +12,12 @@
         "c_group": [],
         "extend__name": "Juniper | J | PIM",
         "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | J | Mini-PIM",
+        "description": "Juniper J/SRX Mini-PIM slot",
+        "c_group": [],
+        "genders": "mf"
     }
 ]
