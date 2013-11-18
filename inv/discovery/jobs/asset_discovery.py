@@ -28,6 +28,8 @@ class AssetDiscoveryJob(MODiscoveryJob):
 
     def handler(self, object, result):
         self.report = AssetReport(self, to_save=self.to_save)
+        #
+        self.report.find_managed()
         # Submit objects
         for o in result:
             self.debug("Submit %s" % str_dict(o))
@@ -42,6 +44,8 @@ class AssetDiscoveryJob(MODiscoveryJob):
         self.report.submit_stack_members()
         #
         self.report.submit_connections()
+        #
+        self.report.check_management()
         # Finish
         self.report.send()
         return True

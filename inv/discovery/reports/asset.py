@@ -37,6 +37,7 @@ class AssetReport(Report):
         self.rule_context = {}
         self.ctx = {}
         self.stack_member = {}  # object -> stack member numbers
+        self.managed = set()  # Object ids
 
     def submit(self, type, part_no, number=None,
                builtin=False,
@@ -103,6 +104,8 @@ class AssetReport(Report):
                 self.info("Changing object management to '%s'" % self.object.name)
                 o.set_data("management", "managed_object", self.object.id)
                 o.save()
+            if o.id in self.managed:
+                self.managed.remove(o.id)
         self.objects += [(type, o, self.ctx.copy())]
         # Collect stack members
         if number and o.get_data("stack", "stackable"):
@@ -330,3 +333,23 @@ class AssetReport(Report):
                 del self.ctx[m]
         self.debug("Reset context scopes %s -> %s" % (
             ", ".join(names), str_dict(self.ctx)))
+
+    def find_managed(self):
+        """
+        Get all objects managed by managed object
+        """
+        self.managed = set(Object.objects.filter(
+            data__management__managed_object=self.object.id
+        ).values_list("id"))
+
+    def check_management(self):
+        """
+        Unmanage all left objects
+        """
+        for oid in self.managed:
+            o = Object.objects.filter(id=oid).first()
+            if o:
+                self.info("Revoking management from %s %s" % (
+                    o.model.name, o.id))
+                o.reset_data("management", "managed_object")
+                o.save()

@@ -56,6 +56,10 @@ class Object(Document):
             self.data[interface] = {}
         self.data[interface][key] = value
 
+    def reset_data(self, interface, key):
+        if interface in self.data and key in self.data[interface]:
+            del self.data[interface][key]
+
     def has_connection(self, name):
         return self.model.get_connection(name) is not None
 
