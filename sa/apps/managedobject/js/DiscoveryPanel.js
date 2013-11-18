@@ -75,6 +75,8 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
             store: me.store,
             stateful: true,
             stateId: "sa.managedobject-discovery",
+            region: "west",
+            split: true,
             columns: [
                 {
                     text: "Name",
@@ -163,6 +165,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
 
         me.logPanel = Ext.create("Ext.panel.Panel", {
             layout: "fit",
+            region: "center",
             autoScroll: true,
             flex: 1,
             items: [{
@@ -176,11 +179,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
             items: [
                 {
                     xtype: "container",
-                    layout: {
-                        type: "hbox",
-                        pack: "start",
-                        align: "stretch"
-                    },
+                    layout: "border",
                     items: [
                         me.grid,
                         me.logPanel
