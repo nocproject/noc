@@ -70,7 +70,8 @@
         "data": {
             "asset": {
                 "order_part_no0": "SFP+-10G-LR",
-                "part_no0": "740-021309"
+                "part_no0": "740-021309",
+                "part_no1": "740-021408"
             }
         }
     }
