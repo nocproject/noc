@@ -91,5 +91,116 @@
                 "part_no0": "GLC-FE-100LX"
             }
         }
+    },
+
+    {
+        "name": "Cisco | Transceiver | 1G | GLC-LH-SM",
+        "vendor__code": "CISCO",
+        "description": "Cisco SFP LH/LX transceiver without DOM support",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP | Cisco"
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "rx",
+                "protocols": [">1000BASELX-1310"],
+                "type__name": "Optical | LC"
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "tx",
+                "protocols": ["<1000BASELX-1310"],
+                "type__name": "Optical | LC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "GLC-LH-SM"
+            }
+        }
+    },
+
+    {
+        "name": "Cisco | Transceiver | 1G | GLC-LH-SMD",
+        "vendor__code": "CISCO",
+        "description": "Cisco SFP LH/LX transceiver with DOM support",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP | Cisco"
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "rx",
+                "protocols": [">1000BASELX-1310"],
+                "type__name": "Optical | LC"
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "tx",
+                "protocols": ["<1000BASELX-1310"],
+                "type__name": "Optical | LC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "GLC-LH-SMD"
+            }
+        }
+    },
+
+    {
+        "name": "Cisco | Transceiver | 1G | SFP-GE-L",
+        "vendor__code": "CISCO",
+        "description": "Cisco SFP LH/LX transceiver with DOM support",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP | Cisco"
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "rx",
+                "protocols": [">1000BASELX-1310"],
+                "type__name": "Optical | LC"
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "tx",
+                "protocols": ["<1000BASELX-1310"],
+                "type__name": "Optical | LC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "SFP-GE-L"
+            }
+        }
     }
 ]
