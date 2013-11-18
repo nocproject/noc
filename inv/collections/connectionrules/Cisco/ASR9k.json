@@ -1,0 +1,81 @@
+[
+    {
+        "name": "Cisco | ASR9k",
+        "description": "ASR9k connection rules",
+        "context": [
+            {
+                "reset_scopes": ["mod", "mpa"],
+                "scope": "chassis",
+                "type": "CHASSIS"
+            },
+            {
+                "reset_scopes": ["mpa"],
+                "scope": "mod",
+                "type": "MOD"
+            },
+            {
+                "reset_scopes": [],
+                "scope": "mpa",
+                "type": "MPA"
+            }
+        ],
+        "rules": [
+            {
+                "match_connection": "in",
+                "match_type": "PWR",
+                "scope": "chassis",
+                "target_connection": "PEM{N}",
+                "target_number": "",
+                "target_type": "CHASSIS"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "FAN",
+                "scope": "chassis",
+                "target_connection": "fan{N}",
+                "target_number": "",
+                "target_type": "CHASSIS"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "RSP",
+                "scope": "chassis",
+                "target_connection": "RSP{N}",
+                "target_number": "",
+                "target_type": "CHASSIS"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "MOD",
+                "scope": "chassis",
+                "target_connection": "LC{N}",
+                "target_number": "",
+                "target_type": "CHASSIS"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "MPA",
+                "scope": "mod",
+                "target_connection": "MPA{N}",
+                "target_number": "",
+                "target_type": "MOD"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "XCVR",
+                "scope": "mpa",
+                "target_connection": "Gi{N}_sfp",
+                "target_number": "",
+                "target_type": "MPA"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "XCVR",
+                "scope": "mpa",
+                "target_connection": "Te{N}_xfp",
+                "target_number": "",
+                "target_type": "MPA"
+            }
+        ]
+    }
+]
