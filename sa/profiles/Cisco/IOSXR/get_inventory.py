@@ -57,6 +57,9 @@ class Script(NOCScript):
                     "revision": match.group("vid"),
                     "builtin": False
                 }]
+        # Reorder chassis
+        if objects[-1]["type"] == "CHASSIS":
+            objects = [objects[-1]] + objects[:-1]
         return objects
 
     def get_type(self, name, pid, descr, lo):
@@ -67,7 +70,7 @@ class Script(NOCScript):
             number = name.split()[1].split("/")[1][3]
             return "RSP", number, pid
         elif "MOD" in pid:
-            number = name.split()[1]
+            number = name.split()[1].split("/")[1]
             return "MOD", number, pid
         elif "MPA" in pid:
             number = name.split()[1].split("/")[-1]
@@ -79,7 +82,8 @@ class Script(NOCScript):
             number = name.split()[1].split("/")[1][2]
             return "FAN", number, pid
         elif "Power Module" in descr:
-            number = name.split()[1]
+            # number = 0/PM0/SP
+            number = name.split()[1].split("/")[1][2:]
             return "PWR", number, pid
         elif name.startswith("chassis"):
             return "CHASSIS", None, pid
