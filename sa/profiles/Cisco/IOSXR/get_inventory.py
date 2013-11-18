@@ -36,7 +36,7 @@ class Script(NOCScript):
 
     def execute(self):
         objects = []
-        v = self.cli("show inventory")
+        v = self.cli("admin show inventory")
         for match in self.rx_item.finditer(v):
             type, number, part_no = self.get_type(
                 match.group("name"), match.group("pid"),
@@ -64,7 +64,7 @@ class Script(NOCScript):
         Get type, number and part_no
         """
         if "RSP" in pid:
-            number = name.split()[1].split("/")[0]
+            number = name.split()[1].split("/")[1][3]
             return "RSP", number, pid
         elif "MOD" in pid:
             number = name.split()[1]
@@ -72,10 +72,13 @@ class Script(NOCScript):
         elif "MPA" in pid:
             number = name.split()[1].split("/")[-1]
             return "MPA", number, pid
-        elif "XFP" in pid or "GLC" in pid:
-            number = name.split()[1].split("/")[-1]
+        elif "XFP" in pid or "GLC" in pid or "SFP" in pid:
+            number = name.split()[2].split("/")[-1]
             return "XCVR", number, pid
-        elif "PWR" in pid:
+        elif "FAN" in pid:
+            number = name.split()[1].split("/")[1][2]
+            return "FAN", number, pid
+        elif "Power Module" in descr:
             number = name.split()[1]
             return "PWR", number, pid
         elif name.startswith("chassis"):
