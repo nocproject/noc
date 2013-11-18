@@ -36,6 +36,22 @@
         "description": "1600W DC Power Entry Module, Redundant",
         "connections": [
             {
+                "description": "-48V",
+                "direction": "s",
+                "gender": "m",
+                "name": "-48V",
+                "protocols": [">48DC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
+            {
+                "description": "RTN (+)",
+                "direction": "s",
+                "gender": "m",
+                "name": "RTN",
+                "protocols": [">48DC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
+            {
                 "description": "Internal power slot",
                 "direction": "o",
                 "gender": "m",
@@ -57,6 +73,22 @@
         "vendor__code": "JUNIPER",
         "description": "2400W DC Power Supply",
         "connections": [
+            {
+                "description": "-48V",
+                "direction": "s",
+                "gender": "m",
+                "name": "-48V",
+                "protocols": [">48DC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
+            {
+                "description": "RTN (+)",
+                "direction": "s",
+                "gender": "m",
+                "name": "RTN",
+                "protocols": [">48DC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
             {
                 "description": "Internal power slot",
                 "direction": "o",
@@ -112,6 +144,22 @@
         "description": "1600W DC Power Entry Module",
         "connections": [
             {
+                "description": "-48V",
+                "direction": "s",
+                "gender": "m",
+                "name": "-48V",
+                "protocols": [">48DC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
+            {
+                "description": "RTN (+)",
+                "direction": "s",
+                "gender": "m",
+                "name": "RTN",
+                "protocols": [">48DC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
+            {
                 "description": "Internal power slot",
                 "direction": "o",
                 "gender": "m",
@@ -133,6 +181,22 @@
         "vendor__code": "JUNIPER",
         "description": "MX80 DC Power Supply",
         "connections": [
+            {
+                "description": "-48V",
+                "direction": "s",
+                "gender": "m",
+                "name": "-48V",
+                "protocols": [">48DC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
+            {
+                "description": "RTN (+)",
+                "direction": "s",
+                "gender": "m",
+                "name": "RTN",
+                "protocols": [">48DC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
             {
                 "description": "Internal power slot",
                 "direction": "o",

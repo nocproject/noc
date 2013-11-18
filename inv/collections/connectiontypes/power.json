@@ -165,5 +165,19 @@
         "description": "Terminal block connector, 4 pins",
         "c_group": ["mstb_2.5_4_5.08"],
         "genders": "m"
+    },
+
+    {
+        "name": "Power | Dual M6 Terminal Studs",
+        "description": "1/4-20 UNC terminal studs at 15.86-mm (0.625-in.) center line.",
+        "c_group": ["dual_m6"],
+        "genders": "m"
+    },
+
+    {
+        "name": "Power | Dual M6 Lug",
+        "description": "Cable lug; dual hole, sized to fit 1/4-20 UNC terminal studs at 15.86-mm (0.625-in.) center line.",
+        "c_group": ["dual_m6"],
+        "genders": "f"
     }
 ]
