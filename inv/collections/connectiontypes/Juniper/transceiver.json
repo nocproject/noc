@@ -1,0 +1,9 @@
+[
+    {
+        "name": "Transceiver | SFP+ | Juniper",
+        "description": "Juniper-compatible SFP+ transceiver slot",
+        "c_group": [],
+        "extend__name": "Transceiver | SFP+",
+        "genders": "mf"
+    }
+]

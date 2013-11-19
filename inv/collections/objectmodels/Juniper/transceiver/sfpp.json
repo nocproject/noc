@@ -9,7 +9,7 @@
                 "direction": "o",
                 "gender": "m",
                 "name": "in",
-                "type__name": "Transceiver | SFP+",
+                "type__name": "Transceiver | SFP+ | Juniper",
                 "protocols": ["TransEth10G"]
             },
             {
@@ -47,7 +47,7 @@
                 "direction": "o",
                 "gender": "m",
                 "name": "in",
-                "type__name": "Transceiver | SFP+",
+                "type__name": "Transceiver | SFP+ | Juniper",
                 "protocols": ["TransEth10G"]
             },
             {
