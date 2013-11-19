@@ -20,7 +20,7 @@ from noc.lib.debug import error_report
 from noc.lib.serialize import json_decode
 
 
-class CollectionSync(object):
+class CollectionSync:
     def __init__(self, app, name, doc, paths=None):
         self.app = app
         self.name = name
