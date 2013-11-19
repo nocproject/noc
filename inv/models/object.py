@@ -149,8 +149,8 @@ class Object(Document):
             data=data
         ).save()
         # Disconnect from container on o-connection
-        if lc.direction == "o" and self.parent:
-            self.parent = None
+        if lc.direction == "o" and self.container:
+            self.container = None
             self.save()
         return c
 
