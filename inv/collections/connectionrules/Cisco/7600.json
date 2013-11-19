@@ -107,6 +107,22 @@
                 "target_connection": "Te{N}_x2",
                 "target_number": "",
                 "target_type": "LINECARD"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "XCVR",
+                "scope": "linecard",
+                "target_connection": "Te{N}_xfp",
+                "target_number": "",
+                "target_type": "LINECARD"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "XCVR",
+                "scope": "linecard",
+                "target_connection": "Te{N}_xenpak",
+                "target_number": "",
+                "target_type": "LINECARD"
             }
         ]
     }
