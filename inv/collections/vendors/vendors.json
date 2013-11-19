@@ -5,6 +5,11 @@
         "site": "http://www.alcatel-lucent.com/"
     },
     {
+        "code": "AVAGO",
+        "name": "AVAGO-TECH",
+        "site": "http://www.avagotech.com"
+    },
+    {
         "name": "Brocade",
         "code": "BROCADE",
         "site": "http://www.Brocade.com"
@@ -35,6 +40,11 @@
         "name": "f5 Networks",
         "code": "F5",
         "site": "http://www.f5.com/"
+    },
+    {
+        "code": "FINISAR",
+        "name": "FINISAR CORPORATION",
+        "site": "http://www.finisar.com/"
     },
     {
         "name": "Force10 Networks",
