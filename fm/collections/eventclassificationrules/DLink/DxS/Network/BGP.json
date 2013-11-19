@@ -103,7 +103,7 @@
             },
             {
                 "key_re": "^BGP4-MIB::bgpPeerState$",
-                "value_re": "^BGP4-MIB::openconfirm$"
+                "value_re": "^openconfirm$"
             },
             {
                 "key_re": "^BGP4-MIB::bgpPeerRemoteAddr$",
@@ -132,7 +132,7 @@
             },
             {
                 "key_re": "^BGP4-MIB::bgpPeerState$",
-                "value_re": "^BGP4-MIB::established$"
+                "value_re": "^established$"
             },
             {
                 "key_re": "^BGP4-MIB::bgpPeerRemoteAddr$",
