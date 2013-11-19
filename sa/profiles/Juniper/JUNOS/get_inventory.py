@@ -21,7 +21,7 @@ class Script(NOCScript):
     UNKNOWN_XCVR = "NoName | Transceiver | Unknown"
 
     rx_chassis = re.compile(
-        r"^Chassis\s+(?P<serial>\S+)\s+(?P<rest>.+)$",
+        r"^Chassis\s+(?P<revision>REV \d+)?\s+(?P<serial>\S+)\s+(?P<rest>.+)$",
         re.IGNORECASE
     )
 
@@ -59,7 +59,10 @@ class Script(NOCScript):
         "RE": set([
             "750-033065",  # EX4200-24T, 8 POE
             "750-034594",  # RE-SRX210HE
-            "710-017560"   # 710-017560
+            "710-017560",  # 710-017560
+            "750-021778",  # RE-SRX210B
+            "710-015273",  # RE-J4350-2540
+            "710-017560"   # RE-J2320-2000
         ])
     }
 
@@ -81,7 +84,8 @@ class Script(NOCScript):
             else:
                 match = self.rx_chassis.search(l)
                 if match:
-                    yield ("Chassis", None, None,
+                    rev = match.group("revision")
+                    yield ("Chassis", rev, None,
                            match.group("serial"), match.group("rest"))
 
     def execute(self):
