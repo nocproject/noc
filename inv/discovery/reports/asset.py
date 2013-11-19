@@ -234,29 +234,29 @@ class AssetReport(Report):
                 self.om_cache[part_no] = m
                 return m
         vq = Q(vendor=vendor.id)
-        # Check for asset.part_no*
-        q = vq & (
+        pq = (
             Q(data__asset__part_no0=part_no) |
             Q(data__asset__part_no1=part_no) |
             Q(data__asset__part_no2=part_no) |
-            Q(data__asset__part_no3=part_no)
-        )
-        m = ObjectModel.objects.filter(q).first()
-        if m:
-            self.om_cache[part_no] = m
-            return m
-        # Check for asset.order_part_no*
-        q = vq & (
+            Q(data__asset__part_no3=part_no) |
             Q(data__asset__order_part_no0=part_no) |
             Q(data__asset__order_part_no1=part_no) |
             Q(data__asset__order_part_no2=part_no) |
             Q(data__asset__order_part_no3=part_no)
         )
-        m = ObjectModel.objects.filter(q).first()
+        # Check for asset.part_no* and asset.order_part_no*
+        m = ObjectModel.objects.filter(vq & pq).first()
         if m:
             self.om_cache[part_no] = m
             return m
         # Not found
+        # Fallback and search by unique part no
+        oml = list(ObjectModel.objects.filter(pq))
+        if len(oml) == 1:
+            # Unique match found
+            self.om_cache[part_no] = oml[0]
+            return oml[0]
+        # Nothing found
         self.om_cache[part_no] = None
         return None
 
