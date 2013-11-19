@@ -24,7 +24,7 @@ class ReportUnknownModelsSummary(SimpleReport):
                 data[k] = [c["description"], 1]
         data = sorted(
             ((k[0], k[1], data[k][0], data[k][1]) for k in data),
-            key=lambda x: x[3]
+            key=lambda x: -x[3]
         )
         return self.from_dataset(
             title=self.title,
