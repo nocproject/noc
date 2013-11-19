@@ -213,7 +213,7 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         link_count = defaultdict(int)
         for link in Link.object_links(o):
-            m = link.discovery_method
+            m = link.discovery_method or ""
             if "+" in m:
                 m = m.split("+")[0]
             link_count[m] += 1
