@@ -1,0 +1,39 @@
+[
+    {
+        "name": "Finisar | Transceiver | 1G | SFP LH",
+        "vendor__code": "FINISAR",
+        "description": "LH/LX transceiver without DOM support",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP | Cisco"
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "rx",
+                "protocols": [">1000BASELX-1310"],
+                "type__name": "Optical | LC"
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "tx",
+                "protocols": ["<1000BASELX-1310"],
+                "type__name": "Optical | LC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "FTRJ-1319-7D-CSC",
+                "part_no1": "FTLF1318P2BCL-C3"
+            }
+        }
+    }
+]
