@@ -81,5 +81,64 @@
                 "value_re": "(?:WARN:|WARN\\(4\\)) \\[BGP(\\(3\\))?:\\] BGP connection is closed due to error \\(.+ Peer:<(?P<peer>\\S+)>\\)\\."
             }
         ]
+    },
+
+    {
+        "name": "DLink | DxS | Network | BGP | Established (SNMP)",
+        "description": "BGP4-MIB::bgpEstablished",
+        "event_class__name": "Network | BGP | Established",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^BGP4-MIB::bgpEstablished$"
+            },
+            {
+                "key_re": "^BGP4-MIB::bgpPeerState$",
+                "value_re": "^BGP4-MIB::openconfirm$"
+            },
+            {
+                "key_re": "^BGP4-MIB::bgpPeerRemoteAddr$",
+                "value_re": "^(?P<ip>.+)$"
+            }
+        ]
+    },
+
+    {
+        "name": "DLink | DxS | Network | BGP | Backward Transition (SNMP)",
+        "description": "BGP4-MIB::bgpEstablished",
+        "event_class__name": "Network | BGP | Backward Transition",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^BGP4-MIB::bgpBackwardTransition$"
+            },
+            {
+                "key_re": "^BGP4-MIB::bgpPeerState$",
+                "value_re": "^BGP4-MIB::established$"
+            },
+            {
+                "key_re": "^BGP4-MIB::bgpPeerRemoteAddr$",
+                "value_re": "^(?P<ip>.+)$"
+            }
+        ]
     }
+
 ]
