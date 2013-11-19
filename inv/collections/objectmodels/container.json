@@ -1,0 +1,49 @@
+[
+    {
+        "name": "Group",
+        "vendor__code": "NOC",
+        "description": "Group container",
+        "connections": [],
+        "data": {
+            "container": {
+                "container": true
+            }
+        }
+    },
+
+    {
+        "name": "Building",
+        "vendor__code": "NOC",
+        "description": "Building",
+        "connections": [],
+        "data": {
+            "container": {
+                "container": true
+            }
+        }
+    },
+
+    {
+        "name": "Floor",
+        "vendor__code": "NOC",
+        "description": "Building's floor",
+        "connections": [],
+        "data": {
+            "container": {
+                "container": true
+            }
+        }
+    },
+
+    {
+        "name": "Room",
+        "vendor__code": "NOC",
+        "description": "Room",
+        "connections": [],
+        "data": {
+            "container": {
+                "container": true
+            }
+        }
+    }
+]

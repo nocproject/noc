@@ -8,7 +8,7 @@
 
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, DictField
+from mongoengine.fields import StringField, DictField, ObjectIdField
 ## NOC modules
 from connectiontype import ConnectionType
 from objectmodel import ObjectModel
@@ -25,12 +25,13 @@ class Object(Document):
     meta = {
         "collection": "noc.objects",
         "allow_inheritance": False,
-        "indexes": ["data"]
+        "indexes": ["data", "container"]
     }
 
     name = StringField()
     model = PlainReferenceField(ObjectModel)
     data = DictField()
+    container = ObjectIdField(required=False)
 
     def __unicode__(self):
         return unicode(self.name or self.id)
@@ -147,7 +148,49 @@ class Object(Document):
             ],
             data=data
         ).save()
+        # Disconnect from container on o-connection
+        if lc.direction == "o" and self.parent:
+            self.parent = None
+            self.save()
         return c
+
+    def put_into(self, container):
+        """
+        Put object into container
+        """
+        if not container.get_data("container", "container"):
+            raise ValueError("Must be put into container")
+        # Disconnect all o-connections
+        for c in self.model.connections:
+            if c.direction == "o":
+                c, _, _ = self.get_p2p_connection(c.name)
+                if c:
+                    self.disconnect_p2p(c.name)
+        # Connect to parent
+        self.container = container.id
+        self.save()
+
+    def get_content(self):
+        """
+        Returns all items directly put into container
+        """
+        return Object.objects.filter(container=self.id)
+
+    def get_name_path(self):
+        """
+        Return list of container names
+        """
+        np = [unicode(self)]
+        c = self.container
+        while c:
+            o = Object.objects.filter(id=c).first()
+            if o:
+                np = [unicode(o)] + np
+                c = o.container
+            else:
+                break
+        return np
+
 
 
 ## Avoid circular references
