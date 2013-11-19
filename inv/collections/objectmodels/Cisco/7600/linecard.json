@@ -306,5 +306,145 @@
                 "part_no0": "WS-X6724-SFP"
             }
         }
+    },
+
+    {
+        "name": "Cisco | 7600 | WS-X6704-10GE",
+        "vendor__code": "CISCO",
+        "description": "WS-X6704-10GE CEF720 4 port 10-Gigabit Ethernet",
+        "connections": [
+            {
+                "description": "TeX/1 XENPAK port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Te1_xenpak",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XENPAK | Cisco"
+            },
+            {
+                "description": "TeX/2 XENPAK port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Te2_xenpak",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XENPAK | Cisco"
+            },
+            {
+                "description": "TeX/3 XENPAK port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Te3_xenpak",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XENPAK | Cisco"
+            },
+            {
+                "description": "TeX/4 XENPAK port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Te4_xenpak",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XENPAK | Cisco"
+            },
+            {
+                "description": "Chassis connection",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Cisco | 7600 | Fabric Linecard"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "WS-X6704-10GE"
+            }
+        }
+    },
+
+    {
+        "name": "Cisco | 7600 | 76-ES+XT-4TG3CXL",
+        "vendor__code": "CISCO",
+        "description": "76-ES+XT-4TG3CXL 4 ports 7600 ES+",
+        "connections": [
+            {
+                "description": "TeX/1 XFP port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Te1_xfp",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XFP | Cisco"
+            },
+            {
+                "description": "TeX/2 XFP port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Te2_xfp",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XFP | Cisco"
+            },
+            {
+                "description": "TeX/3 XFP port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Te3_xfp",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XFP | Cisco"
+            },
+            {
+                "description": "TeX/4 XFP port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Te4_xfp",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XFP | Cisco"
+            },
+            {
+                "description": "Chassis connection",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Cisco | 7600 | Fabric Linecard"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "76-ES+XT-4TG3CXL"
+            }
+        }
+    },
+
+    {
+        "name": "Cisco | 7600 | 7600-ES+2TG3CXL",
+        "vendor__code": "CISCO",
+        "description": "7600-ES+2TG3CXL 2 ports 7600 ES+",
+        "connections": [
+            {
+                "description": "TeX/1 XFP port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Te1_xfp",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XFP | Cisco"
+            },
+            {
+                "description": "TeX/2 XFP port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Te2_xfp",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | XFP | Cisco"
+            },
+            {
+                "description": "Chassis connection",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Cisco | 7600 | Fabric Linecard"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "7600-ES+2TG3CXL"
+            }
+        }
     }
 ]
