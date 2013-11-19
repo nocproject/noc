@@ -1,5 +1,42 @@
 [
     {
+        "name": "Cisco | Transceiver | 10G | X2-10GB-SR",
+        "vendor__code": "CISCO",
+        "description": "Cisco X2 10G SR transciever",
+        "connections": [
+            {
+                "description": "X2 Connector",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | X2 | Cisco"
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "rx",
+                "protocols": [">10GBASESR"],
+                "type__name": "Optical | LC"
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "tx",
+                "protocols": ["<10GBASESR"],
+                "type__name": "Optical | LC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "X2-10GB-SR"
+            }
+        }
+    },
+
+    {
         "name": "Cisco | Transceiver | 10G | X2-10GB-LR",
         "vendor__code": "CISCO",
         "description": "Cisco X2 10G LR transciever",
@@ -32,6 +69,43 @@
         "data": {
             "asset": {
                 "part_no0": "X2-10GB-LR"
+            }
+        }
+    },
+
+    {
+        "name": "Cisco | Transceiver | 10G | X2-10GB-ER",
+        "vendor__code": "CISCO",
+        "description": "Cisco X2 10G ER transciever",
+        "connections": [
+            {
+                "description": "X2 Connector",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "protocols": ["TransEth10G"],
+                "type__name": "Transceiver | X2 | Cisco"
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "rx",
+                "protocols": [">10GBASEER-1550"],
+                "type__name": "Optical | LC"
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "name": "tx",
+                "protocols": ["<10GBASEER-1550"],
+                "type__name": "Optical | LC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "X2-10GB-ER"
             }
         }
     }
