@@ -2,7 +2,7 @@
     {
         "name": "Juniper | SRX | SRX210HE",
         "vendor__code": "JUNIPER",
-        "description": "SRX services gateway 210 with 2xGE + 6xFE ports, 1xMini-PIM slot, 1xExpressCard slot, and base memory (512MB RAM, 1GB FLASH)",
+        "description": "SRX services gateway 210 with 2xGE + 6xFE ports, 1xMini-PIM slot, 1xExpressCard slot, and high memory (1Gb RAM w/ 512Mb accessible, 1GB FLASH)",
         "connections": [
             {
                 "description": "Console",
@@ -115,6 +115,132 @@
         "data": {
             "asset": {
                 "order_part_no0": "SRX210HE"
+            },
+            "management": {
+                "managed": true
+            },
+            "stack": {
+                "stackable": true
+            }
+        }
+    },
+
+    {
+        "name": "Juniper | SRX | SRX210B",
+        "vendor__code": "JUNIPER",
+        "description": "SRX services gateway 210 with 2xGE + 6xFE ports, 1xMini-PIM slot, 1xExpressCard slot, and base memory (512MB RAM, 1GB FLASH)",
+        "connections": [
+            {
+                "description": "Console",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "console",
+                "protocols": [">RS232"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "ge-X/0/0 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "0/0",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "ge-X/0/1 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "0/1",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "fe-X/0/2 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "0/2",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "fe-X/0/3 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "0/3",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "fe-X/0/4 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "0/4",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "fe-X/0/5 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "0/5",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "fe-X/0/6 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "0/6",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "fe-X/0/7 interface",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "0/7",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Mini-PIM slot",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "fpc1",
+                "type__name": "Juniper | J | Mini-PIM"
+            },
+            {
+                "description": "USB port 0",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "usb0",
+                "protocols": ["<USB10", "<USB11"],
+                "type__name": "Electrical | USB"
+            },
+            {
+                "description": "USB port 1",
+                "direction": "s",
+                "gender": "f",
+                "group": "0",
+                "name": "usb1",
+                "protocols": ["<USB10", "<USB11"],
+                "type__name": "Electrical | USB"
+            }
+        ],
+        "data": {
+            "asset": {
+                "order_part_no0": "SRX210B"
             },
             "management": {
                 "managed": true
