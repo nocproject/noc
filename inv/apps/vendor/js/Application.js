@@ -58,7 +58,7 @@ Ext.define("NOC.inv.vendor.Application", {
             name: "site",
             xtype: "textfield",
             fieldLabel: "Site",
-            allowBlank: true
+            allowBlank: false
         }
     ],
     filters: [
