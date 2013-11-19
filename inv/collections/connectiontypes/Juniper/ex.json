@@ -4,5 +4,33 @@
         "description": "Juniper EX3200/EX4200 PSU Slot (Power module)",
         "c_group": [],
         "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | EX | 8200 SRE",
+        "description": "Juniper EX8200 Switch and Routing Engine",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | EX | 8200 FPC",
+        "description": "Juniper EX8200 Linecard",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | EX | 8200 PWR",
+        "description": "Juniper EX8200 PSU Slot",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Juniper | EX | 8208 Fan",
+        "description": "Juniper EX8208 Fan Tray",
+        "c_group": [],
+        "genders": "mf"
     }
 ]
