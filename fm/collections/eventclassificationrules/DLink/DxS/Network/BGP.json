@@ -107,7 +107,7 @@
             },
             {
                 "key_re": "^BGP4-MIB::bgpPeerRemoteAddr$",
-                "value_re": "^(?P<ip>.+)$"
+                "value_re": "^(?P<peer>.+)$"
             }
         ]
     },
@@ -136,7 +136,7 @@
             },
             {
                 "key_re": "^BGP4-MIB::bgpPeerRemoteAddr$",
-                "value_re": "^(?P<ip>.+)$"
+                "value_re": "^(?P<peer>.+)$"
             }
         ]
     }
