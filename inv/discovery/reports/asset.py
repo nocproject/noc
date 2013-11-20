@@ -395,7 +395,8 @@ class AssetReport(Report):
                 name, serial))
             return None  # ERROR
         # Transceiver formfactor
-        ff = c.type.name.split(" | ")[1]
+        tp = c.type.name.split(" | ")
+        ff = tp[1]
         if name == "Unknown | Transceiver | Unknown":
             m = "NoName | Transceiver | Unknown %s" % ff
         else:
@@ -406,6 +407,9 @@ class AssetReport(Report):
                 "10G": "10G"
             }[speed]
             m = "NoName | Transceiver | %s | %s %s" % (spd, ff, ot)
+        # Add vendor suffix when necessary
+        if len(tp) == 3:
+            m += " | %s" % tp[2]
         #
         if m in self.unk_model:
             model = self.unk_model[m]
