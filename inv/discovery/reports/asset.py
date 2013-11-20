@@ -396,13 +396,16 @@ class AssetReport(Report):
             return None  # ERROR
         # Transceiver formfactor
         ff = c.type.name.split(" | ")[1]
-        # Speed and media
-        speed, ot = name[24:].upper().replace("-", "").split("BASE")
-        spd = {
-            "1000": "1G",
-            "10G": "10G"
-        }[speed]
-        m = "NoName | Transceiver | %s | %s %s" % (spd, ff, ot)
+        if name == "Unknown | Transceiver | Unknown":
+            m = "NoName | Transceiver | Unknown %s" % ff
+        else:
+            # Speed and media
+            speed, ot = name[24:].upper().replace("-", "").split("BASE")
+            spd = {
+                "1000": "1G",
+                "10G": "10G"
+            }[speed]
+            m = "NoName | Transceiver | %s | %s %s" % (spd, ff, ot)
         #
         if m in self.unk_model:
             model = self.unk_model[m]
