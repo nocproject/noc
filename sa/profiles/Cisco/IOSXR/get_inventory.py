@@ -23,7 +23,8 @@ class Script(NOCScript):
         r"PID:\s+(?P<pid>\S*)\s*,\s+VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
         re.MULTILINE | re.DOTALL
     )
-    rx_trans = re.compile("(1000Base\S+)")
+
+    rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
 
     def execute(self):
         objects = []
@@ -89,4 +90,4 @@ class Script(NOCScript):
         match = self.rx_trans.search(descr)
         if match:
             return "Unknown | Transceiver | %s" % match.group(1).upper()
-        return None
+        return "Unknown | Transceiver | Unknown"
