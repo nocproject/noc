@@ -23,16 +23,7 @@ class Script(NOCScript):
         r"PID:\s+(?P<pid>\S+)\s*,\s+VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
         re.MULTILINE | re.DOTALL
     )
-    rx_trans = re.compile("(1000Base\S+)")
-
-    TRANS_MAP = {
-        "1000BASELX": "NoName | Transceiver | 1G | SFP LX",
-        "1000BASELH": "NoName | Transceiver | 1G | SFP LH",
-        "1000BASEZX": "NoName | Transceiver | 1G | SFP ZX",
-        "1000BASEBX10D": "NoName | Transceiver | 1G | SFP BX (tx 1490nm)",
-        "1000BASEBX10U": "NoName | Transceiver | 1G | SFP BX (tx 1310nm)",
-        "1000BASET": "NoName | Transceiver | 1G | SFP TX"
-    }
+    rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
 
     IGNORED_NAMES = set([
         "c7201"
@@ -71,6 +62,7 @@ class Script(NOCScript):
         """
         if ("Transceiver" in descr or
                 name.startswith("GigabitEthernet") or
+                name.startswith("TenGigabitEthernet") or
                 pid.startswith("X2-")):
             # Transceivers
             # Get number
@@ -80,7 +72,10 @@ class Script(NOCScript):
             elif name.startswith("GigabitEthernet"):
                 number = name.split(" ", 1)[0].split("/")[-1]
             elif name.startswith("TenGigabitEthernet"):
-                number = name.split(" ", 1)[0].split("/")[-1]
+                if " " in name:
+                    number = name.split(" ", 1)[0].split("/")[-1]
+                else:
+                    number = name.split("/")[-1]
             else:
                 number = None
             if pid in ("N/A", "Unspecified"):
@@ -119,7 +114,7 @@ class Script(NOCScript):
         return None, None, None
 
     def get_transceiver_pid(self, descr):
-        match = self.rx_trans.search(descr)
+        match = self.rx_trans.search(descr.upper().replace("-", ""))
         if match:
-            return self.TRANS_MAP.get(match.group(1).upper())
+            return "Unknown | Transceiver | %s" % match.group(1).upper()
         return None
