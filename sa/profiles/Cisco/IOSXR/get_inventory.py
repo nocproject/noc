@@ -20,19 +20,10 @@ class Script(NOCScript):
 
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
-        r"PID:\s+(?P<pid>\S+)\s*,\s+VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
+        r"PID:\s+(?P<pid>\S*)\s*,\s+VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
         re.MULTILINE | re.DOTALL
     )
     rx_trans = re.compile("(1000Base\S+)")
-
-    TRANS_MAP = {
-        "1000BASELX": "NoName | Transceiver | 1G | SFP LX",
-        "1000BASELH": "NoName | Transceiver | 1G | SFP LH",
-        "1000BASEZX": "NoName | Transceiver | 1G | SFP ZX",
-        "1000BASEBX10D": "NoName | Transceiver | 1G | SFP BX (tx 1490nm)",
-        "1000BASEBX10U": "NoName | Transceiver | 1G | SFP BX (tx 1310nm)",
-        "1000BASET": "NoName | Transceiver | 1G | SFP TX"
-    }
 
     def execute(self):
         objects = []
@@ -75,8 +66,12 @@ class Script(NOCScript):
         elif "MPA" in pid:
             number = name.split()[1].split("/")[-1]
             return "MPA", number, pid
-        elif "XFP" in pid or "GLC" in pid or "SFP" in pid:
+        elif "XFP" in pid or "GLC" in pid or "SFP" in descr:
             number = name.split()[2].split("/")[-1]
+            if not pid:
+                pid = self.get_transceiver_pid(descr)
+                if not pid:
+                    return None, None, None
             return "XCVR", number, pid
         elif "FAN" in pid:
             number = name.split()[1].split("/")[1][2]
@@ -93,5 +88,5 @@ class Script(NOCScript):
     def get_transceiver_pid(self, descr):
         match = self.rx_trans.search(descr)
         if match:
-            return self.TRANS_MAP.get(match.group(1).upper())
+            return "Unknown | Transceiver | %s" % match.group(1).upper()
         return None

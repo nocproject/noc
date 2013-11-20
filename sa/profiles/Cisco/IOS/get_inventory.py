@@ -78,7 +78,7 @@ class Script(NOCScript):
                     number = name.split("/")[-1]
             else:
                 number = None
-            if pid in ("N/A", "Unspecified"):
+            if pid in ("N/A", "Unspecified") or self.rx_trans.search(pid):
                 # Non-Cisco transceivers
                 pid = self.get_transceiver_pid(descr)
                 if not pid:
