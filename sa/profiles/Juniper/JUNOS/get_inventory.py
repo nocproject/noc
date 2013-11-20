@@ -32,16 +32,6 @@ class Script(NOCScript):
         r"(?P<serial>\S+)\s+"
         r"(?P<rest>.+)$", re.IGNORECASE)
 
-    XCVR_MAP = {
-        "SFP-T": "NoName | Transceiver | 1G | SFP TX",
-        "SFP-SX": "NoName | Transceiver | 1G | SFP SX",
-        "SFP-LX10": "NoName | Transceiver | 1G | SFP LX",
-        "SFP-LX": "NoName | Transceiver | 1G | SFP LX",
-        "XFP-10G-LR": "NoName | Transceiver | 10G | XFP LR",
-        "SFP+-10G-LR": "NoName | Transceiver | 10G | SFP+ LR",
-        "SFP+-10G-SR": "NoName | Transceiver | 10G | SFP+ SR"
-    }
-
     TYPE_MAP = {
         "CHASSIS": "CHASSIS",
         "PEM": "PEM",
@@ -159,8 +149,17 @@ class Script(NOCScript):
         """
         Try to detect non-juniper transceiver model
         """
-        pn = self.XCVR_MAP.get(description.split()[0])
-        if not pn:
+        n = description.split()[0].split("-")
+        if len(n) == 2:
+            # SFP-LX
+            t, m = n
+            s = "1G"
+            if m == "LX10":
+                m = "LX"
+        elif len(n) == 3:
+            # SFP+-10G-LR
+            t, s, m = n
+        else:
             self.error("Cannot detect transceiver type: '%s'" % description)
             return self.UNKNOWN_XCVR
-        return pn
+        return "NoName | Transceiver | %s | %s %s" % (s, t, m)
