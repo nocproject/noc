@@ -32,12 +32,13 @@ class AssetReport(Report):
         self.unknown_part_no = {}  # part_no -> list of variants
         self.pn_description = {}  # part_no -> Description
         self.vendors = {}  # code -> Vendor instance
-        self.objects = []  # [(type, object, context)]
+        self.objects = []  # [(type, object, context, serial)]
         self.rule = defaultdict(list)  # Connection rule. type -> [rule1, ruleN]
         self.rule_context = {}
         self.ctx = {}
         self.stack_member = {}  # object -> stack member numbers
         self.managed = set()  # Object ids
+        self.unk_model = {}  # name -> model
 
     def submit(self, type, part_no, number=None,
                builtin=False,
@@ -54,6 +55,12 @@ class AssetReport(Report):
                 self.reset_context(reset_scopes)
         # Skip builtin modules
         if builtin:
+            return
+        #
+        if part_no[0].startswith("Unknown | Transceiver | "):
+            self.debug("%s S/N %s should be resolved later" % (
+                part_no[0], serial))
+            self.objects += [(type, part_no[0], self.ctx.copy(), serial)]
             return
         # Cache description
         if description:
@@ -106,7 +113,7 @@ class AssetReport(Report):
                 o.save()
             if o.id in self.managed:
                 self.managed.remove(o.id)
-        self.objects += [(type, o, self.ctx.copy())]
+        self.objects += [(type, o, self.ctx.copy(), serial)]
         # Collect stack members
         if number and o.get_data("stack", "stackable"):
             self.stack_member[o] = number
@@ -115,7 +122,7 @@ class AssetReport(Report):
         # Search backwards
         if not fwd:
             for j in range(i - 1, -1, -1):
-                type, object, ctx = self.objects[j]
+                type, object, ctx, _ = self.objects[j]
                 if scope in ctx and ctx[scope] == value:
                     if target_type == type:
                         yield type, object, ctx
@@ -124,7 +131,7 @@ class AssetReport(Report):
         # Search forward
         if fwd:
             for j in range(i + 1, len(self.objects)):
-                type, object, ctx = self.objects[j]
+                type, object, ctx, _ = self.objects[j]
                 if scope in ctx and ctx[scope] == value:
                     if target_type == type:
                         yield type, object, ctx
@@ -144,7 +151,7 @@ class AssetReport(Report):
         if not self.rule:
             return
         for i, o in enumerate(self.objects):
-            type, object, context = o
+            type, object, context, serial = o
             self.debug("Trying to connect #%d. %s (%s)" % (
                 i, type, str_dict(context)))
             if type not in self.rule:
@@ -161,14 +168,27 @@ class AssetReport(Report):
                     fwd = False
                 for t_type, t_object, t_ctx in self.iter_object(
                         i, scope, context.get(scope), r.target_type, fwd=fwd):
+                    if isinstance(t_object, basestring):
+                        continue
                     if not t_n or t_n == t_ctx["N"]:
-                        # Match
-                        m_c = self.expand_context(r.match_connection, context)
-                        t_c = self.expand_context(r.target_connection, context)
-                        # Check source and target have proper connection
-                        if (not object.has_connection(m_c) or
-                                not t_object.has_connection(t_c)):
+                        # Check target object has proper connection
+                        t_c = self.expand_context(
+                            r.target_connection, context)
+                        if not t_object.has_connection(t_c):
                             continue
+                        # Check source object has proper conneciton
+                        m_c = self.expand_context(
+                            r.match_connection, context)
+                        if isinstance(object, basestring):
+                            # Resolving unknown object
+                            o = self.resolve_object(
+                                object, m_c, t_object, t_c, serial)
+                            if not o:
+                                continue
+                            object = o
+                        if not object.has_connection(m_c):
+                            continue
+                        # Connect
                         self.info("Connecting %s %s:%s -> %s %s:%s" % (
                             type, context["N"], m_c,
                             t_type, t_ctx["N"], t_c
@@ -353,3 +373,51 @@ class AssetReport(Report):
                     o.model.name, o.id))
                 o.reset_data("management", "managed_object")
                 o.save()
+
+    def resolve_object(self, name, m_c, t_object, t_c, serial):
+        """
+        Resolve object type
+        """
+        # Check object is already exists
+        c, object, c_name = t_object.get_p2p_connection(t_c)
+        if c is not None:
+            if (c_name == m_c and
+                    object.get_data("asset", "serial") == serial):
+                # Object with same serial number exists
+                return object
+            else:
+                # Serial number/connection mismatch
+                return None
+        # Check connection type
+        c = t_object.model.get_connection(t_c)
+        if c is None:
+            self.error("Connection violation for %s SN %s" % (
+                name, serial))
+            return None  # ERROR
+        # Transceiver formfactor
+        ff = c.type.name.split(" | ")[1]
+        # Speed and media
+        speed, ot = name[24:].upper().replace("-", "").split("BASE")
+        spd = {
+            "1000": "1G",
+            "10G": "10G"
+        }[speed]
+        m = "NoName | Transceiver | %s | %s %s" % (spd, ff, ot)
+        #
+        if m in self.unk_model:
+            model = self.unk_model[m]
+        else:
+            model = ObjectModel.objects.filter(name=m).first()
+            self.unk_model[m] = model
+        if not model:
+            self.error("Unknown model '%s'" % m)
+            self.register_unknown_part_no(
+                self.get_vendor("NONAME"),
+                m, "%s -> %s" % (name, m))
+            return None
+        # Create object
+        self.info("Creating new object. model='%s', serial='%s'" % (
+            m, serial))
+        o = Object(model=model, data={"asset": {"serial": serial}})
+        o.save()
+        return o
