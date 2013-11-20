@@ -4,17 +4,17 @@
         "description": "Cisco 6500/7600 series connection rules",
         "context": [
             {
-                "reset_scopes": ["linecard", "sup", "clk"],
+                "reset_scopes": ["linecard", "sup"],
                 "scope": "chassis",
                 "type": "CHASSIS"
             },
             {
-                "reset_scopes": ["xfc"],
+                "reset_scopes": [],
                 "scope": "linecard",
                 "type": "LINECARD"
             },
             {
-                "reset_scopes": ["pfc", "msfc"],
+                "reset_scopes": [],
                 "scope": "sup",
                 "type": "SUP"
             }
@@ -51,22 +51,6 @@
                 "target_connection": "xfc",
                 "target_number": "",
                 "target_type": "LINECARD"
-            },
-            {
-                "match_connection": "in",
-                "match_type": "PFC",
-                "scope": "sup",
-                "target_connection": "pfc",
-                "target_number": "",
-                "target_type": "SUP"
-            },
-            {
-                "match_connection": "in",
-                "match_type": "MSFC",
-                "scope": "sup",
-                "target_connection": "msfc",
-                "target_number": "",
-                "target_type": "SUP"
             },
             {
                 "match_connection": "in",
