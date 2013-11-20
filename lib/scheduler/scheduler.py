@@ -264,10 +264,11 @@ class Scheduler(object):
         try:
             r = job.handler(**kwargs)
         except Exception:
-            error_report()
+            # error_report()
+            tb = get_traceback()
+            job.error(tb)
             job.on_exception()
             s = job.S_EXCEPTION
-            tb = get_traceback()
         else:
             if r:
                 self.info("Job %s(%s) is completed successfully (%fsec)" % (
