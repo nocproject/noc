@@ -30,7 +30,7 @@
                 "group": "0",
                 "name": "Gi1_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/2 sfp port",
@@ -39,7 +39,7 @@
                 "group": "0",
                 "name": "Gi2_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/3 sfp port",
@@ -48,7 +48,7 @@
                 "group": "0",
                 "name": "Gi3_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/4 sfp port",
@@ -57,7 +57,7 @@
                 "group": "0",
                 "name": "Gi4_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/5 sfp port",
@@ -66,7 +66,7 @@
                 "group": "0",
                 "name": "Gi5_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/6 sfp port",
@@ -75,7 +75,7 @@
                 "group": "0",
                 "name": "Gi6_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/7 sfp port",
@@ -84,7 +84,7 @@
                 "group": "0",
                 "name": "Gi7_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/8 sfp port",
@@ -93,7 +93,7 @@
                 "group": "0",
                 "name": "Gi8_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/9 sfp port",
@@ -102,7 +102,7 @@
                 "group": "0",
                 "name": "Gi9_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/10 sfp port",
@@ -111,7 +111,7 @@
                 "group": "0",
                 "name": "Gi10_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/11 sfp port",
@@ -120,7 +120,7 @@
                 "group": "0",
                 "name": "Gi11_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/12 sfp port",
@@ -129,7 +129,7 @@
                 "group": "0",
                 "name": "Gi12_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/13 sfp port",
@@ -138,7 +138,7 @@
                 "group": "0",
                 "name": "Gi13_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/14 sfp port",
@@ -147,7 +147,7 @@
                 "group": "0",
                 "name": "Gi14_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/15 sfp port",
@@ -156,7 +156,7 @@
                 "group": "0",
                 "name": "Gi15_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/16 sfp port",
@@ -165,7 +165,7 @@
                 "group": "0",
                 "name": "Gi16_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/17 sfp port",
@@ -174,7 +174,7 @@
                 "group": "0",
                 "name": "Gi17_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/18 sfp port",
@@ -183,7 +183,7 @@
                 "group": "0",
                 "name": "Gi18_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/19 sfp port",
@@ -192,7 +192,7 @@
                 "group": "0",
                 "name": "Gi19_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/20 sfp port",
@@ -201,7 +201,7 @@
                 "group": "0",
                 "name": "Gi20_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/21 sfp port",
@@ -210,7 +210,7 @@
                 "group": "0",
                 "name": "Gi21_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/22 sfp port",
@@ -219,7 +219,7 @@
                 "group": "0",
                 "name": "Gi22_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/23 sfp port",
@@ -228,7 +228,7 @@
                 "group": "0",
                 "name": "Gi23_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/24 sfp port",
@@ -237,7 +237,7 @@
                 "group": "0",
                 "name": "Gi24_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "GigabitEthernet 1/25 sfp port",
@@ -246,7 +246,7 @@
                 "group": "0",
                 "name": "Gi25_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
              {
                 "description": "GigabitEthernet 1/26 sfp port",
@@ -255,7 +255,7 @@
                 "group": "0",
                 "name": "Gi26_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
              {
                 "description": "GigabitEthernet 1/27 sfp port",
@@ -264,7 +264,7 @@
                 "group": "0",
                 "name": "Gi27_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
              {
                 "description": "GigabitEthernet 1/28 sfp port",
@@ -273,7 +273,7 @@
                 "group": "0",
                 "name": "Gi28_sfp",
                 "protocols": ["TransEth1G"],
-                "type__name": "Transceiver | SFP | Cisco"
+                "type__name": "Transceiver | SFP"
             },
 
             {
