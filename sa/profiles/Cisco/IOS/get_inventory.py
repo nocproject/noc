@@ -34,10 +34,16 @@ class Script(NOCScript):
         "1000BASET": "NoName | Transceiver | 1G | SFP TX"
     }
 
+    IGNORED_NAMES = set([
+        "c7201"
+    ])
+
     def execute(self):
         objects = []
         v = self.cli("show inventory")
         for match in self.rx_item.finditer(v):
+            if match.group("name") in self.IGNORED_NAMES:
+                continue
             type, number, part_no = self.get_type(
                 match.group("name"), match.group("pid"),
                 match.group("descr"), len(objects)

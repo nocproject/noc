@@ -1,0 +1,114 @@
+[
+    {
+        "name": "Cisco | 7200 | 7201 Chassis",
+        "vendor__code": "CISCO",
+        "description": "Cisco 7201 Chassis, 1GB Memory, Dual P/S, 256MB Flash",
+        "connections": [
+            {
+                "description": "Gi 0/1 port",
+                "direction": "s",
+                "gender": "f",
+                "name": "Gi0/1",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Gi 0/1 port (SFP)",
+                "direction": "s",
+                "gender": "f",
+                "name": "Gi0/1_sfp",
+                "type__name": "Transceiver | SFP | Cisco"
+            },
+            {
+                "description": "Gi 0/2 port",
+                "direction": "s",
+                "gender": "f",
+                "name": "Gi0/2",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Gi 0/2 port (SFP)",
+                "direction": "s",
+                "gender": "f",
+                "name": "Gi0/2_sfp",
+                "type__name": "Transceiver | SFP | Cisco"
+            },
+            {
+                "description": "Gi 0/3 port (SFP)",
+                "direction": "s",
+                "gender": "f",
+                "name": "Gi0/3_sfp",
+                "type__name": "Transceiver | SFP | Cisco"
+            },
+            {
+                "description": "Gi 0/4 port (SFP)",
+                "direction": "s",
+                "gender": "f",
+                "name": "Gi0/4_sfp",
+                "type__name": "Transceiver | SFP | Cisco"
+            },
+            {
+                "description": "USB port",
+                "direction": "s",
+                "gender": "f",
+                "name": "usb",
+                "protocols": ["USB10", "USB11"],
+                "type__name": "Electrical | USB"
+            },
+            {
+                "description": "Console port",
+                "direction": "s",
+                "gender": "f",
+                "name": "console",
+                "protocols": [">RS232"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "AUX port",
+                "direction": "s",
+                "gender": "f",
+                "name": "aux",
+                "protocols": [">RS232", "<RS323"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Management port",
+                "direction": "s",
+                "gender": "f",
+                "name": "Fa0/0",
+                "protocols": ["10BASET", "100BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "Compact Flash slot",
+                "direction": "i",
+                "gender": "f",
+                "name": "disk0",
+                "type__name": "Flash | CF"
+            },
+            {
+                "description": "PSU0",
+                "direction": "i",
+                "gender": "f",
+                "name": "pwr0",
+                "type__name": "Cisco | 7200 | 7201 PWR"
+            },
+            {
+                "description": "PSU1",
+                "direction": "i",
+                "gender": "f",
+                "name": "pwr1",
+                "type__name": "Cisco | 7200 | 7201 PWR"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "CISCO7201"
+            },
+            "management": {
+                "managed": true
+            }
+        }
+    }
+]
