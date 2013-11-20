@@ -814,19 +814,17 @@
             },
             {
                 "description": "ge-X/0/0",
-                "direction": "s",
+                "direction": "i",
                 "gender": "f",
                 "name": "0/40",
-                "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-                "type__name": "Electrical | RJ45"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "ge-X/0/0",
-                "direction": "s",
+                "direction": "i",
                 "gender": "f",
                 "name": "0/41",
-                "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-                "type__name": "Electrical | RJ45"
+                "type__name": "Transceiver | SFP"
             },
             {
                 "description": "ge-X/0/0",
@@ -843,31 +841,17 @@
                 "type__name": "Transceiver | SFP"
             },
             {
-                "description": "ge-X/0/0",
+                "description": "xe-X/0/0",
                 "direction": "i",
                 "gender": "f",
                 "name": "0/44",
-                "type__name": "Transceiver | SFP"
-            },
-            {
-                "description": "ge-X/0/0",
-                "direction": "i",
-                "gender": "f",
-                "name": "0/45",
-                "type__name": "Transceiver | SFP"
-            },
-            {
-                "description": "ge-X/0/0",
-                "direction": "i",
-                "gender": "f",
-                "name": "0/46",
                 "type__name": "Transceiver | SFP+ | Juniper"
             },
             {
-                "description": "ge-X/0/0",
+                "description": "xe-X/0/0",
                 "direction": "i",
                 "gender": "f",
-                "name": "0/47",
+                "name": "0/45",
                 "type__name": "Transceiver | SFP+ | Juniper"
             },
             {
