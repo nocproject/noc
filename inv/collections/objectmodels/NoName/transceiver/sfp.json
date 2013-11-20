@@ -72,6 +72,42 @@
     },
 
     {
+        "name": "NoName | Transceiver | 1G | SFP LH",
+        "vendor__name": "NoName",
+        "description": "NoName SFP LH transceiver",
+        "connections": [
+            {
+                "description": "SFP Connector",
+                "direction": "o",
+                "gender": "m",
+                "group": null,
+                "name": "in",
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
+            },
+            {
+                "description": "RX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "rx",
+                "type__name": "Optical | LC",
+                "protocols": [">1000BASELX-1310"]
+            },
+            {
+                "description": "TX Port",
+                "direction": "s",
+                "gender": "f",
+                "group": null,
+                "name": "tx",
+                "type__name": "Optical | LC",
+                "protocols": ["<1000BASELX-1310"]
+            }
+        ],
+        "data": {}
+    },
+
+    {
         "name": "NoName | Transceiver | 1G | SFP BX (tx 1310nm)",
         "vendor__name": "NoName",
         "description": "NoName SFP LX transceiver",
