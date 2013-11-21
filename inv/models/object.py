@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import datetime
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, ObjectIdField
@@ -13,9 +15,11 @@ from mongoengine.fields import StringField, DictField, ObjectIdField
 from connectiontype import ConnectionType
 from objectmodel import ObjectModel
 from modelinterface import ModelInterface
+from objectlog import ObjectLog
 from error import ConnectionError, ModelDataError
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.utils import deep_merge
+from noc.lib.middleware import get_user
 
 
 class Object(Document):
@@ -191,7 +195,26 @@ class Object(Document):
                 break
         return np
 
+    def log(self, message, user=None, system=None, managed_object=None):
+        if not user:
+            user = get_user()
+        if hasattr(user, "username"):
+            user = user.username
+        if not user:
+            user = "NOC"
+        if not isinstance(managed_object, basestring):
+            managed_object = unicode(managed_object)
+        ObjectLog(
+            object=self.id,
+            user=user,
+            ts=datetime.datetime.now(),
+            message=message,
+            system=system,
+            managed_object=managed_object
+        ).save()
 
+    def get_log(self):
+        return ObjectLog.objects.filter(object=self.id).order_by("ts")
 
 ## Avoid circular references
 from objectconnection import ObjectConnection, ObjectConnectionItem

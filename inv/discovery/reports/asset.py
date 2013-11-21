@@ -95,8 +95,15 @@ class AssetReport(Report):
             # Create new object
             self.info("Creating new object. model='%s', serial='%s'" % (
                 m.name, serial))
-            o = Object(model=m, data={"asset": {"serial": serial}})
+            data = {"asset": {"serial": serial}}
+            if revision:
+                data["asset"]["revision"] = revision
+            o = Object(model=m, data=data)
             o.save()
+            o.log(
+                "Created",
+                system="DISCOVERY", managed_object=self.object
+            )
         # Check revision
         if o.get_data("asset", "revision") != revision:
             # Update revision
@@ -105,12 +112,21 @@ class AssetReport(Report):
             ))
             o.set_data("asset", "revision", revision)
             o.save()
+            o.log(
+                "Object revision changed: %s -> %s" % (
+                o.get_data("asset", "revision"), revision),
+                system="DISCOVERY", managed_object=self.object
+            )
         # Check management
         if o.get_data("management", "managed"):
             if o.get_data("management", "managed_object") != self.object.id:
                 self.info("Changing object management to '%s'" % self.object.name)
                 o.set_data("management", "managed_object", self.object.id)
                 o.save()
+                o.log(
+                    "Management granted",
+                    system="DISCOVERY", managed_object=self.object
+                )
             if o.id in self.managed:
                 self.managed.remove(o.id)
         self.objects += [(type, o, self.ctx.copy(), serial)]
@@ -198,6 +214,14 @@ class AssetReport(Report):
                                                reconnect=True)
                         except ConnectionError, why:
                             self.error("Failed to connect: %s" % why)
+                        object.log(
+                            "Connect %s -> %s:%s" % (m_c, t_object, t_c),
+                            system="DISCOVERY", managed_object=self.object
+                        )
+                        object.log(
+                            "Connect %s -> %s:%s" % (t_c, object, m_c),
+                            system="DISCOVERY", managed_object=self.object
+                        )
                         found = True
                         break
                 if found:
@@ -373,6 +397,10 @@ class AssetReport(Report):
                     o.model.name, o.id))
                 o.reset_data("management", "managed_object")
                 o.save()
+                o.log(
+                    "Management revoked",
+                    system="DISCOVERY", managed_object=self.object
+                )
 
     def resolve_object(self, name, m_c, t_object, t_c, serial):
         """
@@ -427,4 +455,6 @@ class AssetReport(Report):
             m, serial))
         o = Object(model=model, data={"asset": {"serial": serial}})
         o.save()
+        o.log("Created",
+              system="DISCOVERY", managed_object=self.object)
         return o
