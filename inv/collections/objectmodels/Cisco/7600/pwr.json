@@ -25,5 +25,64 @@
                 "part_no0": "PWR-2700-AC"
             }
         }
+    },
+
+   {
+        "name": "Cisco | 7600 | PWR-2700-DC",
+        "vendor__code": "CISCO",
+        "description": "2700 Watt DC Power Supply for Cisco 7600",
+        "connections": [
+            {
+                "description": "DC 1 input Positive contact",
+                "direction": "i",
+                "gender": "m",
+                "name": "DC1+",
+                "protocols": [">-48VDC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
+            {
+                "description": "DC 1 input Negative contact",
+                "direction": "i",
+                "gender": "m",
+                "name": "DC1-",
+                "protocols": [">-48VDC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
+            {
+                "description": "DC 2 input Positive contact",
+                "direction": "i",
+                "gender": "m",
+                "name": "DC2+",
+                "protocols": [">-48VDC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
+            {
+                "description": "DC 2 input Negative contact",
+                "direction": "i",
+                "gender": "m",
+                "name": "DC2-",
+                "protocols": [">-48VDC"],
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
+            {
+                "description": "Ground connection",
+                "direction": "i",
+                "gender": "m",
+                "name": "GND",
+                "type__name": "Power | Dual M6 Terminal Studs"
+            },
+            {
+                "description": "Internal Power slot",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Cisco | 7600 | PSU"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "PWR-2700-DC"
+            }
+        }
     }
 ]
