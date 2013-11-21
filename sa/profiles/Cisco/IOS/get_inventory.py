@@ -99,7 +99,7 @@ class Script(NOCScript):
                 return "SUP", name[7:], pid
             else:
                 return "LINECARD", name[7:], pid
-        elif "-DFC" in pid:
+        elif "-DFC" in pid or "-CFC" in pid:
             # DFC subcard
             return "DFC", None, pid
         elif name.startswith("PS "):
