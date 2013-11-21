@@ -1,5 +1,25 @@
 [
     {
+        "name": "Cisco | 7600 | WS-F6700-CFC",
+        "vendor__code": "CISCO",
+        "description": "Cisco WS-F6700-CFC Centralized Forwarding Card",
+        "connections": [
+            {
+                "description": "DFC slot",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Cisco | 7600 | DFC"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "WS-F6700-CFC"
+            }
+        }
+    },
+
+    {
         "name": "Cisco | 7600 | WS-F6700-DFC3B",
         "vendor__code": "CISCO",
         "description": "Cisco WS-F6700-DFC3B Distributed Forwarding Card 3",

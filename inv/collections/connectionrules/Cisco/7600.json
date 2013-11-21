@@ -46,9 +46,9 @@
             },
             {
                 "match_connection": "in",
-                "match_type": "XFC",
+                "match_type": "DFC",
                 "scope": "linecard",
-                "target_connection": "xfc",
+                "target_connection": "dfc",
                 "target_number": "",
                 "target_type": "LINECARD"
             },
