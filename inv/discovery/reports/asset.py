@@ -101,8 +101,9 @@ class AssetReport(Report):
             o = Object(model=m, data=data)
             o.save()
             o.log(
-                "Created",
-                system="DISCOVERY", managed_object=self.object
+                "Created by asset_discovery",
+                system="DISCOVERY", managed_object=self.object,
+                op="CREATE"
             )
         # Check revision
         if o.get_data("asset", "revision") != revision:
@@ -115,7 +116,8 @@ class AssetReport(Report):
             o.log(
                 "Object revision changed: %s -> %s" % (
                 o.get_data("asset", "revision"), revision),
-                system="DISCOVERY", managed_object=self.object
+                system="DISCOVERY", managed_object=self.object,
+                op="CHANGE"
             )
         # Check management
         if o.get_data("management", "managed"):
@@ -125,7 +127,8 @@ class AssetReport(Report):
                 o.save()
                 o.log(
                     "Management granted",
-                    system="DISCOVERY", managed_object=self.object
+                    system="DISCOVERY", managed_object=self.object,
+                    op="CHANGE"
                 )
             if o.id in self.managed:
                 self.managed.remove(o.id)
@@ -210,18 +213,25 @@ class AssetReport(Report):
                             t_type, t_ctx["N"], t_c
                         ))
                         try:
-                            object.connect_p2p(m_c, t_object, t_c, {},
-                                               reconnect=True)
+                            cn = object.connect_p2p(m_c, t_object, t_c,
+                                {}, reconnect=True)
+                            if cn:
+                                object.log(
+                                    "Connect %s -> %s:%s" % (
+                                        m_c, t_object, t_c),
+                                    system="DISCOVERY",
+                                    managed_object=self.object,
+                                    op="CONNECT"
+                                )
+                                object.log(
+                                    "Connect %s -> %s:%s" % (
+                                        t_c, object, m_c),
+                                    system="DISCOVERY",
+                                    managed_object=self.object,
+                                    op="CONNECT"
+                                )
                         except ConnectionError, why:
                             self.error("Failed to connect: %s" % why)
-                        object.log(
-                            "Connect %s -> %s:%s" % (m_c, t_object, t_c),
-                            system="DISCOVERY", managed_object=self.object
-                        )
-                        object.log(
-                            "Connect %s -> %s:%s" % (t_c, object, m_c),
-                            system="DISCOVERY", managed_object=self.object
-                        )
                         found = True
                         break
                 if found:
@@ -236,6 +246,9 @@ class AssetReport(Report):
                 self.info("Setting stack member %s" % m)
                 o.set_data("stack", "member", m)
                 o.save()
+                o.log("Setting stack member %s" % m,
+                      system="DISCOVERY", managed_object=self.object,
+                      op="CHANGE")
 
     def send(self):
         if self.unknown_part_no:
@@ -399,7 +412,8 @@ class AssetReport(Report):
                 o.save()
                 o.log(
                     "Management revoked",
-                    system="DISCOVERY", managed_object=self.object
+                    system="DISCOVERY", managed_object=self.object,
+                    op="CHANGE"
                 )
 
     def resolve_object(self, name, m_c, t_object, t_c, serial):
@@ -455,6 +469,7 @@ class AssetReport(Report):
             m, serial))
         o = Object(model=model, data={"asset": {"serial": serial}})
         o.save()
-        o.log("Created",
-              system="DISCOVERY", managed_object=self.object)
+        o.log("Created by asset_discovery",
+              system="DISCOVERY", managed_object=self.object,
+              op="CREATE")
         return o
