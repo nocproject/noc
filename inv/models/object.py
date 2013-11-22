@@ -97,6 +97,8 @@ class Object(Document):
         """
         c = self.get_p2p_connection(name)[0]
         if c:
+            self.log("'%s' disconnected" % name,
+                     system="CORE", op="DISCONNECT")
             c.delete()
 
     def connect_p2p(self, name, remote_object, remote_name, data,
@@ -152,8 +154,12 @@ class Object(Document):
             ],
             data=data
         ).save()
+        self.log("%s:%s -> %s:%s" % (self, name, remote_object, remote_name),
+                 system="CORE", op="CONNECT")
         # Disconnect from container on o-connection
         if lc.direction == "o" and self.container:
+            self.log("Remove from %s" % self.container,
+                     system="CORE", op="REMOVE")
             self.container = None
             self.save()
         return c
@@ -173,6 +179,9 @@ class Object(Document):
         # Connect to parent
         self.container = container.id
         self.save()
+        self.log(
+            "Insert into %s" % container,
+            system="CORE", op="INSERT")
 
     def get_content(self):
         """
@@ -195,7 +204,8 @@ class Object(Document):
                 break
         return np
 
-    def log(self, message, user=None, system=None, managed_object=None):
+    def log(self, message, user=None, system=None,
+            managed_object=None, op=None):
         if not user:
             user = get_user()
         if hasattr(user, "username"):
@@ -210,7 +220,8 @@ class Object(Document):
             ts=datetime.datetime.now(),
             message=message,
             system=system,
-            managed_object=managed_object
+            managed_object=managed_object,
+            op=op
         ).save()
 
     def get_log(self):
