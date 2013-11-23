@@ -16,6 +16,7 @@ from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.unknownmodel import UnknownModel
+from noc.inv.models.modelmapping import ModelMapping
 from noc.inv.models.connectionrule import ConnectionRule
 from noc.inv.models.error import ConnectionError
 from noc.lib.text import str_dict
@@ -70,16 +71,23 @@ class AssetReport(Report):
         # Find vendor
         vnd = self.get_vendor(vendor)
         if not vnd:
-            self.error("Unknown vendor '%s' for S/N %s (%s)" % (
-                vendor, serial, description))
-            return
-        # Find model
-        m = self.get_model(vnd, part_no)
-        if not m:
-            self.debug("Unknown model: vendor=%s, part_no=%s (%s). Skipping" % (
-                vnd.name, description, part_no))
-            self.register_unknown_part_no(vnd, part_no, description)
-            return
+            # Try to resolve via model map
+            m = self.get_model_map(vendor, part_no, serial)
+            if not m:
+                self.error("Unknown vendor '%s' for S/N %s (%s)" % (
+                    vendor, serial, description))
+                return
+        else:
+            # Find model
+            m = self.get_model(vnd, part_no)
+            if not m:
+                # Try to resolve via model map
+                m = self.get_model_map(vendor, part_no, serial)
+                if not m:
+                    self.debug("Unknown model: vendor=%s, part_no=%s (%s). Skipping" % (
+                        vnd.name, description, part_no))
+                    self.register_unknown_part_no(vnd, part_no, description)
+                    return
         # Get connection rule
         if not self.rule and m.connection_rule:
             self.set_rule(m.connection_rule)
@@ -509,3 +517,27 @@ class AssetReport(Report):
               system="DISCOVERY", managed_object=self.object,
               op="CREATE")
         return o
+
+    def get_model_map(self, vendor, part_no, serial):
+        """
+        Try to resolve using model map
+        """
+        # Process list of part no
+        if type(part_no) == list:
+            for p in part_no:
+                m = self.get_model_map(vendor, p, serial)
+                if m:
+                    return m
+            return None
+        for mm in ModelMapping.objects.filter(
+                vendor=vendor, part_no=part_no):
+            if mm.part_no and mm.part_no != part_no:
+                continue
+            if mm.from_serial and mm.to_serial:
+                if mm.from_serial <= serial and serial <= mm.to_serial:
+                    return True
+            else:
+                self.debug("Mapping %s %s %s to %s" % (
+                    vendor, part_no, serial, mm.model.name))
+                return mm.model
+        return None
