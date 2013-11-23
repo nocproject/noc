@@ -1,0 +1,36 @@
+[
+    {
+        "name": "twinax",
+        "description": "Twinax transceiver cable",
+        "attrs": [
+            {
+                "name": "twinax",
+                "type": "bool",
+                "description": "Object is the twinax transceiver",
+                "required": true,
+                "is_const": true
+            },
+            {
+                "name": "alias",
+                "type": "str",
+                "description": "Virtual connection name for ConnectionRule",
+                "required": true,
+                "is_const": true
+            },
+            {
+                "name": "connection1",
+                "type": "str",
+                "description": "Connection name for first side of twinax",
+                "required": true,
+                "is_const": true
+            },
+            {
+                "name": "connection2",
+                "type": "str",
+                "description": "Connection name for second side of twinax",
+                "required": true,
+                "is_const": true
+            }
+        ]
+    }
+]

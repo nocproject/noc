@@ -66,7 +66,7 @@ class Object(Document):
             del self.data[interface][key]
 
     def has_connection(self, name):
-        return self.model.get_connection(name) is not None
+        return self.model.has_connection(name)
 
     def get_p2p_connection(self, name):
         """

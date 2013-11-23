@@ -212,30 +212,66 @@ class AssetReport(Report):
                             type, context["N"], m_c,
                             t_type, t_ctx["N"], t_c
                         ))
-                        try:
-                            cn = object.connect_p2p(m_c, t_object, t_c,
-                                {}, reconnect=True)
-                            if cn:
-                                object.log(
-                                    "Connect %s -> %s:%s" % (
-                                        m_c, t_object, t_c),
-                                    system="DISCOVERY",
-                                    managed_object=self.object,
-                                    op="CONNECT"
-                                )
-                                object.log(
-                                    "Connect %s -> %s:%s" % (
-                                        t_c, object, m_c),
-                                    system="DISCOVERY",
-                                    managed_object=self.object,
-                                    op="CONNECT"
-                                )
-                        except ConnectionError, why:
-                            self.error("Failed to connect: %s" % why)
+                        if (object.get_data("twinax", "twinax") and
+                                m_c == object.get_data("twinax", "alias")):
+                            self.connect_twinax(object, m_c, t_object, t_c)
+                        else:
+                            self.connect_p2p(object, m_c, t_object, t_c)
                         found = True
                         break
                 if found:
                     break
+
+    def connect_p2p(self, o1, c1, o2, c2):
+        """
+        Create P2P connection o1:c1 - o2:c2
+        """
+        try:
+            cn = o1.connect_p2p(c1, o2, c2, {}, reconnect=True)
+            if cn:
+                o1.log(
+                    "Connect %s -> %s:%s" % (
+                        c1, o2, c2),
+                    system="DISCOVERY",
+                    managed_object=self.object,
+                    op="CONNECT"
+                )
+                o2.log(
+                    "Connect %s -> %s:%s" % (
+                        c2, o1, c1),
+                    system="DISCOVERY",
+                    managed_object=self.object,
+                    op="CONNECT"
+                )
+        except ConnectionError, why:
+            self.error("Failed to connect: %s" % why)
+
+    def connect_twinax(self, o1, c1, o2, c2):
+        """
+        Connect twinax object o1 and virtual connection c1 to o2:c2
+        """
+        free_connections = []
+        # Resolve virtual name c1 to real connection
+        r_names = [o1.get_data("twinax", "connection%d" % i)
+                   for i in range(1, 3)]
+        # Check connection is already exists
+        for n in r_names:
+            cn, o, c = o1.get_p2p_connection(n)
+            if not cn:
+                free_connections += [n]
+                continue
+            if o.id == o2.id and c == c2:
+                # Already connected
+                return
+        # Check twinax has free connection
+        if not free_connections:
+            self.error("Twinax has no free connections")
+            return
+        # Connect first free to o2:c2
+        c = free_connections[0]
+        self.debug("Using twinax connection '%s' instead of '%s'" % (
+            c, c1))
+        self.connect_p2p(o1, c, o2, c2)
 
     def submit_stack_members(self):
         if len(self.stack_member) < 2:
