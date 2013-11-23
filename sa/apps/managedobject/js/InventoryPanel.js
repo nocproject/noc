@@ -38,7 +38,6 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
         });
 
         me.inventoryPanel = Ext.create("Ext.tree.Panel", {
-            title: "Inventory",
             store: me.store,
             rootVisible: false,
             useArrows: true,
