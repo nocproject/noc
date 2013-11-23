@@ -125,6 +125,14 @@ class ObjectModel(Document):
         if nc:
             collection.insert(nc)
 
+    def has_connection(self, name):
+        if self.get_connection(name) is None:
+            # Check twinax virtual connection
+            return (self.get_data("twinax", "twinax") and
+                    self.get_data("twinax", "alias") == name)
+        else:
+            return True
+
     def get_connection(self, name):
         for c in self.connections:
             if c.name == name:
