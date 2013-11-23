@@ -20,6 +20,7 @@ from connectiontype import ConnectionType
 from connectionrule import ConnectionRule
 from objectmodel import ObjectModel
 from unknownmodel import UnknownModel
+from modelmapping import ModelMapping
 
 
 class SocketAttribute(EmbeddedDocument):
