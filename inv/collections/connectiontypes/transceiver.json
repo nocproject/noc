@@ -6,10 +6,18 @@
         "genders": "mf"
     },
 
+        {
+        "name": "Transceiver | SFP+",
+        "description": "SFP+ transceiver slot",
+        "c_group": [],
+        "genders": "mf"
+    },
+
     {
         "name": "Transceiver | SFP",
         "description": "SFP transceiver slot",
         "c_group": [],
+        "extend__name": "Transceiver | SFP+",
         "genders": "mf"
     },
 
@@ -30,13 +38,6 @@
     {
         "name": "Transceiver | XFP",
         "description": "XFP transceiver slot",
-        "c_group": [],
-        "genders": "mf"
-    },
-
-    {
-        "name": "Transceiver | SFP+",
-        "description": "SFP+ transceiver slot",
         "c_group": [],
         "genders": "mf"
     }
