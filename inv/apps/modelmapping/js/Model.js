@@ -43,6 +43,11 @@ Ext.define("NOC.inv.modelmapping.Model", {
         {
             name: "model",
             type: "string"
+        },
+        {
+            name: "model__label",
+            type: "string",
+            persist: false
         }
     ]
 });
