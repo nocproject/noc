@@ -5,6 +5,11 @@
         "site": "http://www.alcatel-lucent.com/"
     },
     {
+        "code": "ARISTA",
+        "name": "Arista Networks",
+        "site": "http://aristanetworks.com"
+    },
+    {
         "code": "AVAGO",
         "name": "AVAGO-TECH",
         "site": "http://www.avagotech.com"

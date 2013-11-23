@@ -1,0 +1,15 @@
+[
+    {
+        "name": "Arista | 7100 | PWR",
+        "description": "Arista 7100 PSU slot",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Arista | 7100 | FAN",
+        "description": "Arista 7100 FAN Slot",
+        "c_group": [],
+        "genders": "mf"
+    }
+]
