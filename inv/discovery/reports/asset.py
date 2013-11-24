@@ -530,7 +530,7 @@ class AssetReport(Report):
                     return m
             return None
         for mm in ModelMapping.objects.filter(
-                vendor=vendor, part_no=part_no):
+                vendor=vendor, is_active=True):
             if mm.part_no and mm.part_no != part_no:
                 continue
             if mm.from_serial and mm.to_serial:
