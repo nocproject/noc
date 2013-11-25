@@ -117,5 +117,24 @@
                 "recommended_actions": ""
             }
         }
+    },
+
+    {
+        "name": "Config | Invalid Config",
+        "description": "Some lines in config are invalid",
+        "is_unique": true,
+        "discriminator": [],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [],
+        "text": {
+            "en": {
+                "subject_template": "Invalid config",
+                "body_template": "Invalid config",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
     }
 ]
