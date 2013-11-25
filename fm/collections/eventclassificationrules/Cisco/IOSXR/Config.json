@@ -39,5 +39,89 @@
                 "value_re": "%MGBL-SYS-5-CONFIG_I : Configured from console by (?P<user>.+) on (?P<source>\\S+) \\((?P<ip>\\S+)\\)$"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Config | Invalid Config #1 (SYSLOG)",
+        "description": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Node id misconfiguration detected, disabling IG 1.",
+        "event_class__name": "Config | Invalid Config",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "profile",
+                "value_re": "^Cisco.IOSXR$"
+            },
+            {
+                "key_re": "source",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "message",
+                "value_re": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Node id misconfiguration detected"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Config | Config Corrected #1 (SYSLOG)",
+        "description": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Misconfiguration cleared, re-enabling Node 195.98.32.93 in IG 1.",
+        "event_class__name": "Config | Config Corrected",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "profile",
+                "value_re": "^Cisco.IOSXR$"
+            },
+            {
+                "key_re": "source",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "message",
+                "value_re": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Misconfiguration cleared"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Config | Invalid Config #2 (SYSLOG)",
+        "description": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface GigabitEthernet0/1/0/6 in Bundle-Ether5 is incompatible with the bundle operational state; link is not using LACP but bundle is running mLACP",
+        "event_class__name": "Config | Invalid Config",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "profile",
+                "value_re": "^Cisco.IOSXR$"
+            },
+            {
+                "key_re": "source",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "message",
+                "value_re": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface .+ is incompatible with the .+ operational state"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Config | Config Corrected #2 (SYSLOG)",
+        "description": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface GigabitEthernet0/1/0/6 in Bundle-Ether5 is no longer incompatible with the bundle operational state",
+        "event_class__name": "Config | Config Corrected",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "profile",
+                "value_re": "^Cisco.IOSXR$"
+            },
+            {
+                "key_re": "source",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "message",
+                "value_re": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface .+ is no longer incompatible with the .+ operational state"
+            }
+        ]
     }
 ]
