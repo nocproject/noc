@@ -42,6 +42,27 @@
     },
 
     {
+        "name": "Cisco | IOSXR | Security | Authentication | SSH - Login (SYSLOG)",
+        "description": "%SECURITY-SSHD-6-INFO_SUCCESS : Successfully authenticated user 'cisco' from '1.1.1.1' on 'vty3'(cipher 'aes128-cbc', mac 'hmac-md5')",
+        "event_class__name": "Security | Authentication | Login",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOSXR$" 
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SECURITY-SSHD-6-INFO_SUCCESS : Successfully authenticated user '(?P<user>.+)' from '(?P<ip>.+)' on '(?P<line>.+)'\\s*\\(.+\\)"
+            }
+        ]
+    },
+
+    {
         "name": "Cisco | IOSXR | Security | Authentication | SSH - Login Failed (SYSLOG)",
         "description": "%SECURITY-SSHD-4-INFO_FAILURE : Failed authentication attempt by user 'root' from '1.1.1.1' on 'vty3'",
         "event_class__name": "Security | Authentication | Login Failed",
