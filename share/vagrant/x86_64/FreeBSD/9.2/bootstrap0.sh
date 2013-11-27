@@ -25,9 +25,11 @@ info ( ) {
 
 install_pkg ( ) {
     info "Installing $1"
-    pkg install -y $1 || error_exit "Failed to install: $1"
+    /usr/sbin/pkg install -y $1 || error_exit "Failed to install: $1"
 }
 
+## Check pkg is activated
+/usr/sbin/pkg -N || error_exit "pkg is not initialized. Run 'pkg', ask 'y', then restart the script"
 ##
 ## Create NOC user and group
 ##
@@ -49,7 +51,7 @@ fi
 ## Install base packages
 ##
 info "Installing system packages"
-install_pkg postgresql93-server
+install_pkg postgresql90-server
 install_pkg postgis-2.0.2_4
 install_pkg mongodb
 install_pkg py27-virtualenv
