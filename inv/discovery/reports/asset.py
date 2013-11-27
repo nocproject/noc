@@ -130,6 +130,12 @@ class AssetReport(Report):
         # Check management
         if o.get_data("management", "managed"):
             if o.get_data("management", "managed_object") != self.object.id:
+                if not o.name:
+                    self.info("Changing name to '%s'" % self.object.name)
+                    o.name = self.object.name
+                    o.log("Change name to '%s'" % self.object.name,
+                          system="DISCOVERY",
+                          managed_object=self.object, op="CHANGE")
                 self.info("Changing object management to '%s'" % self.object.name)
                 o.set_data("management", "managed_object", self.object.id)
                 o.save()
