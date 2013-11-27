@@ -57,7 +57,7 @@ fi
 ./scripts/set-conf.py etc/noc-activator.conf activator listen_syslog 0.0.0.0
 ./scripts/set-conf.py etc/noc-activator.conf activator name default
 ./scripts/set-conf.py etc/noc-activator.conf activator secret thenocproject
-su - postgres -c "psql noc" << __EOF__
+su - pgsql -c "psql noc" << __EOF__
 BEGIN;
 UPDATE sa_activator SET auth='thenocproject';
 COMMIT;
