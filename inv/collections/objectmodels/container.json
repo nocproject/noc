@@ -1,8 +1,56 @@
 [
     {
+        "name": "Root",
+        "vendor__code": "NOC",
+        "description": "Inventory root",
+        "connections": [],
+        "data": {
+            "container": {
+                "container": true
+            }
+        }
+    },
+
+    {
+        "name": "Lost&Found",
+        "vendor__code": "NOC",
+        "description": "Lost&Found Storage",
+        "connections": [],
+        "data": {
+            "container": {
+                "container": true
+            }
+        }
+    },
+
+    {
         "name": "Group",
         "vendor__code": "NOC",
         "description": "Group container",
+        "connections": [],
+        "data": {
+            "container": {
+                "container": true
+            }
+        }
+    },
+
+    {
+        "name": "Country",
+        "vendor__code": "NOC",
+        "description": "Country",
+        "connections": [],
+        "data": {
+            "container": {
+                "container": true
+            }
+        }
+    },
+
+    {
+        "name": "City",
+        "vendor__code": "NOC",
+        "description": "City",
         "connections": [],
         "data": {
             "container": {

@@ -1293,6 +1293,13 @@ class ColorParameter(Parameter):
         self.raise_error(value)
 
 
+class ObjectIdParameter(REStringParameter):
+    def __init__(self, required=True, default=None):
+        super(ObjectIdParameter, self).__init__(
+            "^[0-9a-f]{24}$", required=required, default=default
+        )
+
+
 ## Stub for interface registry
 interface_registry = {}
 

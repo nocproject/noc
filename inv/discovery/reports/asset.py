@@ -17,10 +17,8 @@ from noc.inv.models.object import Object
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.unknownmodel import UnknownModel
 from noc.inv.models.modelmapping import ModelMapping
-from noc.inv.models.connectionrule import ConnectionRule
 from noc.inv.models.error import ConnectionError
 from noc.lib.text import str_dict
-from noc.inv.models.error import ConnectionError
 
 
 class AssetReport(Report):
@@ -40,6 +38,7 @@ class AssetReport(Report):
         self.stack_member = {}  # object -> stack member numbers
         self.managed = set()  # Object ids
         self.unk_model = {}  # name -> model
+        self.lost_and_found = self.get_lost_and_found(self.object)
 
     def submit(self, type, part_no, number=None,
                builtin=False,
@@ -106,7 +105,7 @@ class AssetReport(Report):
             data = {"asset": {"serial": serial}}
             if revision:
                 data["asset"]["revision"] = revision
-            o = Object(model=m, data=data)
+            o = Object(model=m, data=data, container=self.lost_and_found)
             o.save()
             o.log(
                 "Created by asset_discovery",
@@ -517,7 +516,8 @@ class AssetReport(Report):
         # Create object
         self.info("Creating new object. model='%s', serial='%s'" % (
             m, serial))
-        o = Object(model=model, data={"asset": {"serial": serial}})
+        o = Object(model=model, data={"asset": {"serial": serial}},
+                   container=self.lost_and_found)
         o.save()
         o.log("Created by asset_discovery",
               system="DISCOVERY", managed_object=self.object,
@@ -547,3 +547,14 @@ class AssetReport(Report):
                     vendor, part_no, serial, mm.model.name))
                 return mm.model
         return None
+
+    def get_lost_and_found(self, object):
+        lfm = ObjectModel.objects.filter(name="Lost&Found").first()
+        if not lfm:
+            self.error("Lost&Found model not found")
+            return None
+        lf = Object.objects.filter(model=lfm.id).first()
+        if not lf:
+            self.error("Lost&Found not found")
+            return None
+        return lf.id

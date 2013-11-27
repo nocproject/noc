@@ -30,6 +30,13 @@ class ObjectModelApplication(ExtDocApplication):
             data["data"] = ModelInterface.clean_data(data["data"])
         return super(ObjectModelApplication, self).clean(data)
 
+    def cleaned_query(self, q):
+        if "is_container" in q:
+            q["data__container__container"] = True
+            q["name__ne"] = "Root"
+            del q["is_container"]
+        return super(ObjectModelApplication, self).cleaned_query(q)
+
     @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"],
           access="read", api=True)
     def api_to_json(self, request, id):
