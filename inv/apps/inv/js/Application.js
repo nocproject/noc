@@ -1,0 +1,159 @@
+//---------------------------------------------------------------------
+// inv.inv application
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2013 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+console.debug("Defining NOC.inv.inv.Application");
+
+Ext.define("NOC.inv.inv.Application", {
+    extend: "NOC.core.Application",
+    layout: "border",
+    requires: [
+        "NOC.inv.inv.NavModel"
+    ],
+    initComponent: function() {
+        var me = this;
+        // Navigation tree
+        me.defaultRoot = {
+            text: ".",
+            children: []
+        };
+
+        me.store = Ext.create("Ext.data.TreeStore", {
+            model: "NOC.inv.inv.NavModel",
+            proxy: {
+                type: "ajax",
+                reader: "json",
+                url: "/inv/inv/node/"
+            },
+            lazyFill: true
+        });
+
+        me.navReloadButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.refresh,
+            tooltip: "Reload",
+            scope: me,
+            handler: me.onReloadNav
+        });
+
+        me.addButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.plus,
+            tooltip: "Add group",
+            scope: me,
+            handler: me.onAddGroup
+        });
+
+        me.navTree = Ext.create("Ext.tree.Panel", {
+            store: me.store,
+            autoScroll: true,
+            rootVisible: false,
+            useArrows: true,
+            region: "west",
+            loadMask: true,
+            width: 300,
+            displayField: "name",
+            dockedItems: [{
+                xtype: "toolbar",
+                dock: "top",
+                items: [
+                    me.navReloadButton,
+                    "-",
+                    me.addButton
+                ]
+            }],
+            listeners: {
+                scope: me,
+                select: me.onSelectNav
+            },
+            viewConfig: {
+                plugins: [
+                    {
+                        ptype: "treeviewdragdrop",
+                    }
+                ]
+            }
+        });
+        me.navTree.getView().on("drop", me.onNavDrop, me);
+        //
+        me.dataPanel = Ext.create("NOC.inv.inv.DataPanel", {
+            app: me
+        });
+
+        me.tabPanel = Ext.create("Ext.tab.Panel", {
+            region: "center",
+            layout: "fit",
+            border: false,
+            autoScroll: true,
+            defaults: {
+                autoScroll: true
+            },
+            items: [
+                me.dataPanel
+            ]
+        });
+        //
+        Ext.apply(me, {
+            items: [
+                me.navTree,
+                me.tabPanel
+            ]
+        });
+        me.callParent();
+    },
+    //
+    onReloadNav: function() {
+        var me = this;
+        me.store.reload();
+    },
+    //
+    onSelectNav: function(panel, record, index, eOpts) {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/inv/inv/" + record.get("id") + "/data/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                me.dataPanel.preview(data);
+            },
+            failure: function() {
+                NOC.error("Failed to get data");
+            }
+        });
+    },
+    //
+    onAddGroup: function() {
+        var me = this,
+            sm = me.navTree.getSelectionModel(),
+            sel = sm.getSelection(),
+            container = null;
+        if(sel.length > 0) {
+            container = sel[0].get("id");
+        }
+        Ext.create("NOC.inv.inv.AddGroupForm", {
+            app: me,
+            groupContainer: container
+        });
+    },
+    //
+    onNavDrop: function(node, data, overModel, dropPosition, eOpts) {
+        var me = this,
+            objects = data.records.map(function(r) {return r.get("id")});
+        Ext.Ajax.request({
+            url: "/inv/inv/insert/",
+            method: "POST",
+            jsonData: {
+                objects: objects,
+                container: overModel.get("id"),
+                position: dropPosition
+            },
+            scope: me,
+            success: function() {
+            },
+            failure: function() {
+                NOC.error("Failed to move");
+            }
+        });
+    }
+});
