@@ -1,36 +1,32 @@
 //---------------------------------------------------------------------
-// inv.inv LogModel
+// inv.inv DataModel
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2013 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.inv.LogModel");
+console.debug("Defining NOC.inv.inv.plugins.data.DataModel");
 
-Ext.define("NOC.inv.inv.LogModel", {
+Ext.define("NOC.inv.inv.plugins.data.DataModel", {
     extend: "Ext.data.Model",
     fields: [
         {
-            name: "ts",
-            type: "date"
-        },
-        {
-            name: "user",
+            name: "interface",
             type: "string"
         },
         {
-            name: "system",
+            name: "name",
+            type: "string"
+        },
+        {
+            name: "value",
             type: "auto"
         },
         {
-            name: "managed_object",
+            name: "type",
             type: "string"
         },
         {
-            name: "op",
-            type: "string"
-        },
-        {
-            name: "message",
+            name: "description",
             type: "string"
         }
     ]

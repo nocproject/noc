@@ -202,7 +202,7 @@ class Object(Document):
                 c = o.container
             else:
                 break
-        return np
+        return np[1:]
 
     def log(self, message, user=None, system=None,
             managed_object=None, op=None):

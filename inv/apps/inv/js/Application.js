@@ -76,9 +76,6 @@ Ext.define("NOC.inv.inv.Application", {
         });
         me.navTree.getView().on("drop", me.onNavDrop, me);
         //
-        me.dataPanel = Ext.create("NOC.inv.inv.DataPanel", {
-            app: me
-        });
 
         me.tabPanel = Ext.create("Ext.tab.Panel", {
             region: "center",
@@ -89,7 +86,6 @@ Ext.define("NOC.inv.inv.Application", {
                 autoScroll: true
             },
             items: [
-                me.dataPanel
             ]
         });
         //
@@ -108,18 +104,26 @@ Ext.define("NOC.inv.inv.Application", {
     },
     //
     onSelectNav: function(panel, record, index, eOpts) {
-        var me = this;
-        Ext.Ajax.request({
-            url: "/inv/inv/" + record.get("id") + "/data/",
-            method: "GET",
-            scope: me,
-            success: function(response) {
-                var data = Ext.decode(response.responseText);
-                me.dataPanel.preview(data);
-            },
-            failure: function() {
-                NOC.error("Failed to get data");
-            }
+        var me = this,
+            plugins = record.get("plugins"),
+            plugin;
+        me.tabPanel.removeAll();
+        console.log(record.get("plugins"));
+        Ext.each(plugins, function(p) {
+            plugin = Ext.create(p.xtype, {app: me});
+            me.tabPanel.add(plugin);
+            Ext.Ajax.request({
+                url: "/inv/inv/" + record.get("id") + "/plugin/" + p.name + "/",
+                method: "GET",
+                scope: me,
+                success: function(response) {
+                    var data = Ext.decode(response.responseText);
+                    plugin.preview(data);
+                },
+                failure: function() {
+                    NOC.error("Failed to get data for plugin " + p.name);
+                }
+            });
         });
     },
     //

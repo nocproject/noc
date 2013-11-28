@@ -4,13 +4,13 @@
 // Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.inv.DataPanel");
+console.debug("Defining NOC.inv.inv.plugins.data.DataPanel");
 
-Ext.define("NOC.inv.inv.DataPanel", {
+Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
     extend: "Ext.panel.Panel",
     requires: [
-        "NOC.inv.inv.DataModel",
-        "NOC.inv.inv.LogModel"
+        "NOC.inv.inv.plugins.data.DataModel",
+        "NOC.inv.inv.plugins.data.LogModel"
     ],
     title: "Data",
     closable: false,
@@ -21,12 +21,12 @@ Ext.define("NOC.inv.inv.DataPanel", {
 
         // Data Store
         me.store = Ext.create("Ext.data.Store", {
-            model: "NOC.inv.inv.DataModel",
+            model: "NOC.inv.inv.plugins.data.DataModel",
             groupField: "interface"
         });
         // Log Store
         me.logStore = Ext.create("Ext.data.Store", {
-            model: "NOC.inv.inv.LogModel"
+            model: "NOC.inv.inv.plugins.data.LogModel"
         });
         // Grids
         Ext.apply(me, {
@@ -110,7 +110,6 @@ Ext.define("NOC.inv.inv.DataPanel", {
     //
     preview: function(data) {
         var me = this;
-        console.log("DATA", data);
         me.store.loadData(data.data);
         me.logStore.loadData(data.log);
     }
