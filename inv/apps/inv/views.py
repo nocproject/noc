@@ -115,6 +115,16 @@ class InvApplication(ExtApplication):
         o.save()
         return str(o.id)
 
+    @view("^remove_group/$", method=["DELETE"], access="remove_group",
+          api=True,
+          validate={
+              "container": ObjectIdParameter(required=True)
+          })
+    def api_remove_group(self, request, container=None):
+        c = self.get_object_or_404(Object, id=container)
+        c.delete()
+        return True
+
     @view("^insert/$", method=["POST"], access="reorder", api=True,
           validate={
               "container": ObjectIdParameter(required=False),
