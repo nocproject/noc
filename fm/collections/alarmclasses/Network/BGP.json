@@ -29,6 +29,12 @@
                 "required": true
             },
             {
+                "name": "reason",
+                "description": "Reason",
+                "type": "str",
+                "required": false
+            },
+            {
                 "name": "as",
                 "description": "BGP Peer AS",
                 "type": "int",
@@ -67,8 +73,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}{% if description %}, {{description}}{% endif %}){% endif %} session down",
-                "body_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}{% if description %}, {{description}}{% endif %}){% endif %} session down\n{% if local_as %}Local AS: AS{{local_as}}\nRemote AS: AS{{as}} ({{description}})\nImport Filter: {{import_filter}}\nExport Filter: {{export_filter}}{% endif %}",
+                "subject_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}{% if description %}, {{description}}{% endif %}){% endif %} session down{%if reason %} - {{reason}}{% endif %}",
+                "body_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}{% if description %}, {{description}}{% endif %}){% endif %} session down{%if reason %}\nReason - {{reason}}{% endif %}\n{% if local_as %}Local AS: AS{{local_as}}\nRemote AS: AS{{as}} ({{description}})\nImport Filter: {{import_filter}}\nExport Filter: {{export_filter}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
