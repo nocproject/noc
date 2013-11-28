@@ -113,6 +113,8 @@ class InvApplication(ExtApplication):
         m = self.get_object_or_404(ObjectModel, id=type)
         o = Object(name=name, model=m, container=c.id)
         o.save()
+        o.log("Created", user=request.user.username,
+              system="WEB", op="CREATE")
         return str(o.id)
 
     @view("^remove_group/$", method=["DELETE"], access="remove_group",
