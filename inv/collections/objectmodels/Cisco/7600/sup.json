@@ -1,5 +1,5 @@
 [
-{
+    {
         "name": "Cisco | 7600 | WS-SUP720-3B",
         "vendor__code": "CISCO",
         "description": "WS-SUP720-3B 2 ports Supervisor Engine 720",
@@ -53,6 +53,80 @@
         "data": {
             "asset": {
                 "part_no0": "WS-SUP720-3B"
+            }
+        }
+    },
+
+    {
+        "name": "Cisco | 7600 | RSP720-3CXL-GE",
+        "vendor__code": "CISCO",
+        "description": "RSP720-3CXL-GE 2 ports Route Switch Processor 720",
+        "connections": [
+            {
+                "description": "Chassis connection",
+                "direction": "o",
+                "gender": "m",
+                "name": "in",
+                "type__name": "Cisco | 7600 | Supervisor"
+            },
+            {
+                "description": "Compact flash slot 1",
+                "direction": "i",
+                "gender": "f",
+                "name": "disk1",
+                "type__name": "Flash | CF"
+            },
+            {
+                "description": "Compact flash slot 2",
+                "direction": "i",
+                "gender": "f",
+                "name": "disk2",
+                "type__name": "Flash | CF"
+            },
+            {
+                "description": "GigabitEthernet X/1 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Gi1_sfp",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP"
+            },
+            {
+                "description": "GigabitEthernet X/1 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "name": "Gi1",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet X/2 RJ45 port",
+                "direction": "s",
+                "gender": "f",
+                "name": "Gi2",
+                "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+                "type__name": "Electrical | RJ45"
+            },
+            {
+                "description": "GigabitEthernet X/2 SFP port",
+                "direction": "i",
+                "gender": "f",
+                "name": "Gi2_sfp",
+                "protocols": ["TransEth1G"],
+                "type__name": "Transceiver | SFP"
+            },
+            {
+                "description": "Console port",
+                "direction": "s",
+                "gender": "f",
+                "name": "Console",
+                "protocols": [">RS232"],
+                "type__name": "Electrical | RJ45"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "RSP720-3CXL-GE"
             }
         }
     }
