@@ -168,8 +168,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "BGP Session down {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
-                "body_template": "BGP Session down {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
+                "subject_template": "BGP Session down {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{%if reason %} - {{reason}}{% endif %}",
+                "body_template": "BGP Session down {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{%if reason %} - {{reason}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -192,6 +192,12 @@
                 "name": "as",
                 "description": "Peer AS",
                 "type": "int",
+                "required": false
+            },
+            {
+                "name": "reason",
+                "description": "Reason",
+                "type": "str",
                 "required": false
             }
         ],
