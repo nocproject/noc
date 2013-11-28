@@ -44,6 +44,13 @@ Ext.define("NOC.inv.inv.Application", {
             handler: me.onAddGroup
         });
 
+        me.removeButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.minus,
+            tooltip: "Remove group",
+            scope: me,
+            handler: me.onRemoveGroup
+        });
+
         me.navTree = Ext.create("Ext.tree.Panel", {
             store: me.store,
             autoScroll: true,
@@ -59,7 +66,8 @@ Ext.define("NOC.inv.inv.Application", {
                 items: [
                     me.navReloadButton,
                     "-",
-                    me.addButton
+                    me.addButton,
+                    me.removeButton
                 ]
             }],
             listeners: {
@@ -162,5 +170,41 @@ Ext.define("NOC.inv.inv.Application", {
                 NOC.error("Failed to move");
             }
         });
+    },
+    //
+    onRemoveGroup: function() {
+        var me = this,
+            sm = me.navTree.getSelectionModel(),
+            sel = sm.getSelection(),
+            container = null;
+        if(sel.length > 0) {
+            container = sel[0];
+        }
+        if(container) {
+            Ext.Msg.show({
+                title: "Remove group '" + container.get("name") + "'?",
+                msg: "Would you like to remove group. All nested groups will be removed. All nested objects will be moved to Lost&Found folder",
+                buttons: Ext.Msg.YESNO,
+                glyph: NOC.glyph.question_sign,
+                fn: function(rec) {
+                    if(rec === "yes") {
+                        Ext.Ajax.request({
+                            url: "/inv/inv/remove_group/",
+                            method: "DELETE",
+                            jsonData: {
+                                container: container.get("id")
+                            },
+                            scope: me,
+                            success: function() {
+                                me.store.reload({node: me.store.getRootNode()});
+                            },
+                            failure: function() {
+                                NOC.error("Failed to delete group");
+                            }
+                        });
+                    }
+                }
+            });
+        }
     }
 });

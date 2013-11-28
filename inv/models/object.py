@@ -11,6 +11,7 @@ import datetime
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, ObjectIdField
+from mongoengine import signals
 ## NOC modules
 from connectiontype import ConnectionType
 from objectmodel import ObjectModel
@@ -226,6 +227,34 @@ class Object(Document):
 
     def get_log(self):
         return ObjectLog.objects.filter(object=self.id).order_by("ts")
+
+    def get_lost_and_found(self):
+        c = self.container
+        while c:
+            # Check siblings
+            for x in Object.objects.filter(container=c):
+                if x.model.name == "Lost&Found":
+                    return x
+            # Up level
+            c = Object.objects.get(id=c)
+            c = c.container
+        return None
+
+    @classmethod
+    def detach_children(cls, sender, document, target=None):
+        if not document.get_data("container", "container"):
+            return
+        if not target:
+            target = document.get_lost_and_found()
+        for o in Object.objects.filter(container=document.id):
+            if o.get_data("container", "container"):
+                cls.detach_children(sender, o, target)
+                o.delete()
+            else:
+                o.put_into(target)
+
+
+signals.pre_delete.connect(Object.detach_children, sender=Object)
 
 ## Avoid circular references
 from objectconnection import ObjectConnection, ObjectConnectionItem
