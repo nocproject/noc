@@ -95,6 +95,8 @@ class InvApplication(ExtApplication):
                 n["leaf"] = True
             if o.model.connections:
                 n["plugins"] += [self.get_plugin_data("inventory")]
+            if o.get_data("rack", "units"):
+                n["plugins"] += [self.get_plugin_data("rack")]
             r += [n]
         return r
 
