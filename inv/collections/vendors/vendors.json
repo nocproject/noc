@@ -5,6 +5,11 @@
         "site": "http://www.alcatel-lucent.com/"
     },
     {
+        "name": "APC",
+        "code": "APC",
+        "site": "http://www.apc.com/"
+    },
+    {
         "code": "ARISTA",
         "name": "Arista Networks",
         "site": "http://aristanetworks.com"
