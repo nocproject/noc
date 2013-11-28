@@ -93,6 +93,8 @@ class InvApplication(ExtApplication):
                 n["expanded"] = False
             else:
                 n["leaf"] = True
+            if o.model.connections:
+                n["plugins"] += [self.get_plugin_data("inventory")]
             r += [n]
         return r
 
