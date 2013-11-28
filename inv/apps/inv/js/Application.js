@@ -69,7 +69,7 @@ Ext.define("NOC.inv.inv.Application", {
             viewConfig: {
                 plugins: [
                     {
-                        ptype: "treeviewdragdrop",
+                        ptype: "treeviewdragdrop"
                     }
                 ]
             }
@@ -106,24 +106,27 @@ Ext.define("NOC.inv.inv.Application", {
     onSelectNav: function(panel, record, index, eOpts) {
         var me = this,
             plugins = record.get("plugins"),
-            plugin;
+            plugin,
+            runPlugin = function(id, pData) {
+                var plugin = Ext.create(pData.xtype, {app: me});
+                me.tabPanel.add(plugin);
+                Ext.Ajax.request({
+                    url: "/inv/inv/" + id + "/plugin/" + pData.name + "/",
+                    method: "GET",
+                    scope: me,
+                    success: function(response) {
+                        var data = Ext.decode(response.responseText);
+                        plugin.preview(data);
+                    },
+                    failure: function() {
+                        NOC.error("Failed to get data for plugin " + p.name);
+                    }
+                });
+            };
         me.tabPanel.removeAll();
         console.log(record.get("plugins"));
         Ext.each(plugins, function(p) {
-            plugin = Ext.create(p.xtype, {app: me});
-            me.tabPanel.add(plugin);
-            Ext.Ajax.request({
-                url: "/inv/inv/" + record.get("id") + "/plugin/" + p.name + "/",
-                method: "GET",
-                scope: me,
-                success: function(response) {
-                    var data = Ext.decode(response.responseText);
-                    plugin.preview(data);
-                },
-                failure: function() {
-                    NOC.error("Failed to get data for plugin " + p.name);
-                }
-            });
+            runPlugin(record.get("id"), p);
         });
     },
     //
