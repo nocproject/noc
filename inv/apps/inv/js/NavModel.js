@@ -16,6 +16,10 @@ Ext.define("NOC.inv.inv.NavModel", {
         {
             name: "name",
             type: "string"
+        },
+        {
+            name: "plugins",
+            type: "auto"
         }
     ]
 });

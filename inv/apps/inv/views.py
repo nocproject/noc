@@ -6,6 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import inspect
+import os
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.inv.models.object import Object
@@ -24,6 +27,26 @@ class InvApplication(ExtApplication):
     title = "Inventory"
     menu = "Inventory"
 
+    def __init__(self, *args, **kwargs):
+        ExtApplication.__init__(self, *args, **kwargs)
+        # Load plugins
+        from plugins.base import InvPlugin
+        self.plugins = {}
+        for f in os.listdir("inv/apps/inv/plugins/"):
+            if (not f.endswith(".py") or
+                    f == "base.py" or
+                    f.startswith("_")):
+                continue
+            mn = "noc.inv.apps.inv.plugins.%s" % f[:-3]
+            m = __import__(mn, {}, {}, "*")
+            for on in dir(m):
+                o = getattr(m, on)
+                if (inspect.isclass(o) and
+                        issubclass(o, InvPlugin) and
+                        o.__module__.startswith(mn)):
+                    assert o.name
+                    self.plugins[o.name] = o(self)
+
     def get_root(self):
         """
         Get root container
@@ -41,6 +64,12 @@ class InvApplication(ExtApplication):
         else:
             return self.root_container
 
+    def get_plugin_data(self, name):
+        return {
+            "name": name,
+            "xtype": self.plugins[name].js
+        }
+
     @view("^node/$", method=["GET"],
           access="read", api=True)
     def api_node(self, request):
@@ -57,7 +86,8 @@ class InvApplication(ExtApplication):
         for o in Object.objects.filter(container=container):
             n = {
                 "id": str(o.id),
-                "name": o.name
+                "name": o.name,
+                "plugins": [self.get_plugin_data("data")]
             }
             if o.get_data("container", "container"):
                 n["expanded"] = False
@@ -98,58 +128,3 @@ class InvApplication(ExtApplication):
             for x in o:
                 x.put_into(c)
         return True
-
-    @view("^(?P<id>[0-9a-f]{24})/data/", method=["GET"],
-          access="read", api=True)
-    def api_data(self, request, id):
-        o = self.get_object_or_404(Object, id=id)
-        data = []
-        for k, v, d in [
-                ("Vendor", o.model.vendor.name, "Hardware vendor"),
-                ("Model", o.model.name, "Inventory model"),
-                ("Name", o.name, "Inventory name"),
-                ("ID", str(o.id), "Internal ID")
-            ]:
-            data += [{
-                "interface": "Common",
-                "name": k,
-                "value": v,
-                "type": "str",
-                "description": d,
-                "required": True,
-                "is_const": True
-            }]
-        d = deep_merge(o.model.data, o.data)
-        for i in d:
-            mi = ModelInterface.objects.filter(name=i).first()
-            if not mi:
-                continue
-            for k in d[i]:
-                a = mi.get_attr(k)
-                if not a:
-                    continue
-                data += [{
-                    "interface": i,
-                    "name": k,
-                    "value": d[i][k],
-                    "type": a.type,
-                    "description": a.description,
-                    "required": a.required,
-                    "is_const": a.is_const
-                }]
-        return {
-            "name": o.name,
-            "model": o.model.name,
-            "data": data,
-            "log": [
-                {
-                    "ts": x.ts.isoformat(),
-                    "user": x.user,
-                    "system": x.system,
-                    "managed_object": x.managed_object,
-                    "op": x.op,
-                    "message": x.message
-                }
-                for x in o.get_log()
-            ]
-        }
