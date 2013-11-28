@@ -1,0 +1,15 @@
+[
+    {
+        "name": "container",
+        "description": "Generic container properties",
+        "attrs": [
+            {
+                "name": "container",
+                "type": "bool",
+                "description": "Is object a container?",
+                "required": true,
+                "is_const": true
+            }
+        ]
+    }
+]
