@@ -136,7 +136,7 @@ Ext.define("NOC.inv.inv.Application", {
             sel = sm.getSelection(),
             container = null;
         if(sel.length > 0) {
-            container = sel[0].get("id");
+            container = sel[0];
         }
         Ext.create("NOC.inv.inv.AddGroupForm", {
             app: me,
