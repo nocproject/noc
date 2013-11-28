@@ -18,7 +18,7 @@ class Script(NOCScript):
     name = "Cisco.ASA.get_interfaces"
     implements = [IGetInterfaces]
 
-    rx_int = re.compile(r"(?P<interface>\S+)\s\"(?P<alias>\w*)\"\,\sis(\sadministratively)?\s(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)", re.MULTILINE | re.IGNORECASE)
+    rx_int = re.compile(r"(?P<interface>\S+)\s\"(?P<alias>[\w-]*)\"\,\sis(\sadministratively)?\s(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)", re.MULTILINE | re.IGNORECASE)
     rx_mac = re.compile(r"MAC\saddress\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
         re.MULTILINE | re.IGNORECASE)
     rx_vlan = re.compile(r"VLAN\sIdentifier\s(?P<vlan>\w+)",
