@@ -75,12 +75,16 @@ Ext.define("NOC.inv.inv.AddGroupForm", {
             jsonData: {
                 name: values.name,
                 type: values.type,
-                container: me.groupContainer.get("id")
+                container: me.groupContainer ? me.groupContainer.get("id") : null
             },
             scope: me,
             success: function() {
                 me.close();
-                me.app.store.reload({node: me.groupContainer});
+                if(me.groupContainer) {
+                    me.app.store.reload({node: me.groupContainer});
+                } else {
+                    me.app.store.reload();
+                }
             },
             failure: function() {
                 NOC.error("Failed to save");
