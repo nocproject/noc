@@ -81,5 +81,26 @@
                 "value_re": "%SECURITY-SSHD-4-INFO_FAILURE : Failed authentication attempt by user '(?P<user>.+)' from '(?P<ip>.+)' on '(?P<line>.+)'"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Security | Authentication | SSH - Logout (SYSLOG)",
+        "description": "%SECURITY-SSHD-6-INFO_GENERAL : Client closes socket connection",
+        "event_class__name": "Security | Authentication | Logout",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "profile",
+                "value_re": "Cisco.IOSXR"
+            },
+            {
+                "key_re": "source",
+                "value_re": "syslog"
+            },
+            {
+                "key_re": "message",
+                "value_re": "%SECURITY-SSHD-6-INFO_GENERAL : Client closes socket connection"
+            }
+        ]
     }
 ]
