@@ -179,6 +179,11 @@ class Object(Document):
                     self.disconnect_p2p(c.name)
         # Connect to parent
         self.container = container.id
+        # Reset previous rack position
+        if self.data.get("rackmount"):
+            for k in ("position", "side"):
+                if self.data.get("rackmount", k):
+                    del self.data["rackmount"][k]
         self.save()
         self.log(
             "Insert into %s" % container,

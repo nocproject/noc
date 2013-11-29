@@ -16,20 +16,39 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     autoScroll: true,
     title: "Rack",
     layout: "fit",
-    autoScroll: true,
 
     initComponent: function() {
         var me = this;
+
+        me.reloadButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.refresh,
+            scope: me,
+            tooltip: "Reload"
+        });
+
+        Ext.apply(me, {
+            dockedItems: [
+                {
+                    xtype: "toolbar",
+                    dock: "top",
+                    items: [
+                        me.reloadButton,
+                        "-"
+                    ]
+                }
+            ]
+        });
 
         me.callParent();
     },
     //
     preview: function(data) {
         var me = this,
-            r = NOC.core.Rack.getRack(5, 5, data.rack),
+            r = NOC.core.Rack.getRack(5, 5, data.rack, data.content),
             dc = Ext.create("Ext.draw.Component", {
                 viewBox: false,
-                items: r
+                items: r,
+                autoScroll: true
             });
         me.removeAll();
         me.add(dc);
