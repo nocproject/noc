@@ -90,6 +90,84 @@
     },
 
     {
+        "name": "Network | PIM | MSDP Peer Up",
+        "description": "PIM MSDP peer up",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "PIM MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "body_template": "PIM MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "symptoms": "Multicast flows send successfully",
+                "probable_causes": "PIM MSDP successfully established connect with peer",
+                "recommended_actions": "No reaction needed" 
+            }
+        },
+        "vars": [
+            {
+                "name": "peer",
+                "description": "Peer's IP",
+                "type": "ip_address",
+                "required": true
+            },
+            {
+                "name": "vrf",
+                "description": "VRF",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | PIM | MSDP Peer Down" 
+            }
+        ]
+    },
+
+    {
+        "name": "Network | PIM | MSDP Peer Down",
+        "description": "PIM MSDP peer down",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "PIM MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "body_template": "PIM MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %}\n Reason: {{reason}}.{% endif %}",
+                "symptoms": "Multicast flows lost",
+                "probable_causes": "PIM protocol configuration problem or link failure",
+                "recommended_actions": "Check links and local and neighbor's router configuration" 
+            }
+        },
+        "vars": [
+            {
+                "name": "peer",
+                "description": "Peer's IP",
+                "type": "ip_address",
+                "required": true
+            },
+            {
+                "name": "vrf",
+                "description": "VRF",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "reason",
+                "description": "Reason",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | PIM | MSDP Peer Down"
+            }
+        ]
+    },
+
+    {
         "name": "Network | PIM | DR Change",
         "description": "Designated Router Change",
         "action": "L",
