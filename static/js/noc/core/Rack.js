@@ -13,13 +13,13 @@ Ext.define("NOC.core.Rack", {
     SIDE_WIDTH: 10,
     BOTTOM_WIDTH: 10,
     TOP_WIDTH: 20,
-    SCALE: 2,
+    SCALE: 3,
     U_HEIGH: 14,
-    N_WIDTH: 20,
+    N_WIDTH: 14,
     TEXT_PADDING: 2,
     N_FONT: "8px monospace",
 
-    getRack: function(x, y, opts) {
+    getRack: function(x, y, opts, content) {
         var me = this,
             out = [],
             // Internal width
@@ -35,25 +35,10 @@ Ext.define("NOC.core.Rack", {
             // Number boxes bottom
             n_bottom = y + me.TOP_WIDTH + i_height;
 
-        // Unit numbers
-        for(var u = 1; u <= opts.units; u++) {
-            out.push({
-                type: "rect",
-                x: n_left,
-                y: n_bottom - u * me.U_HEIGH,
-                width: me.N_WIDTH,
-                height: me.U_HEIGH,
-                stroke: "#808080"
-            });
-            out.push({
-                type: "text",
-                x: n_left + me.TEXT_PADDING,
-                y: n_bottom - (u - 1) * me.U_HEIGH - me.TEXT_PADDING,
-                text: "" + u,
-                fill: "black",
-                font: me.N_FONT
-            });
-        }
+        /*
+         * Enclosure
+         */
+
         // External box
         out.push({
             type: "rect",
@@ -62,6 +47,7 @@ Ext.define("NOC.core.Rack", {
             width: e_width,
             height: e_height,
             stroke: "black",
+            fill: "#444444",
             "stroke-width": 2
         });
         // Internal box
@@ -74,6 +60,58 @@ Ext.define("NOC.core.Rack", {
             stroke: "black",
             fill: "#C0C0C0"
         });
+        // Unit numbers
+        out.push({
+            type: "rect",
+            x: n_left,
+            y: y + me.TOP_WIDTH,
+            width: me.N_WIDTH,
+            height: i_height,
+            stroke: "black",
+            fill: "#606060"
+        });
+
+        for(var u = 1; u <= opts.units; u++) {
+            out.push({
+                type: "text",
+                x: n_left + me.TEXT_PADDING,
+                y: n_bottom - (u - 1) * me.U_HEIGH - me.U_HEIGH / 2,
+                text: "" + u,
+                fill: "#e0e0e0",
+                font: me.N_FONT
+            });
+        }
+        // Unit rulers
+        for(var u = 1; u < opts.units; u++) {
+            out.push({
+                type: "path",
+                path: "M" + (x + me.SIDE_WIDTH) + " " + (y + me.TOP_WIDTH + u * me.U_HEIGH) + "h" + (i_width + me.N_WIDTH),
+                stroke: "#e0e0e0"
+            });
+        }
+        /*
+         * Content
+         */
+        for(var i in content) {
+            var c = content[i];
+            out.push({
+                type: "rect",
+                x: x + me.SIDE_WIDTH,
+                y: n_bottom - (c.pos + c.units - 1)* me.U_HEIGH,
+                width: i_width,
+                height: c.units * me.U_HEIGH,
+                stroke: "black",
+                fill: "#f0f0f0"
+            });
+            out.push({
+                type: "text",
+                text: c.name,
+                x: x + me.SIDE_WIDTH + 10,
+                y: n_bottom - (c.pos + c.units / 2 - 1)* me.U_HEIGH,
+                stroke: "black",
+                font: "8px monospace"
+            });
+        }
         return out;
     }
 });

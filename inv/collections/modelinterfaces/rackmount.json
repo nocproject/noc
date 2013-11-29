@@ -1,0 +1,29 @@
+[
+    {
+        "name": "rackmount",
+        "description": "Rack mouted equipment",
+        "attrs": [
+            {
+                "name": "units",
+                "type": "int",
+                "description": "Size in units",
+                "required": true,
+                "is_const": true
+            },
+            {
+                "name": "position",
+                "type": "int",
+                "description": "Bottom rack position (in units)",
+                "required": false,
+                "is_const": false
+            },
+            {
+                "name": "side",
+                "type": "str",
+                "description": "Mounting side (f/r)",
+                "required": false,
+                "is_const": false
+            }
+        ]
+    }
+]

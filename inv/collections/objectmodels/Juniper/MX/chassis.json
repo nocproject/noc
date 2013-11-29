@@ -104,6 +104,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 2
             }
         }
     },
@@ -229,6 +232,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 8
             }
         }
     },
@@ -420,6 +426,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 16
             }
         }
     }
