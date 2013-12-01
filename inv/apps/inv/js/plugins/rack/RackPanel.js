@@ -30,13 +30,15 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
             text: "Front",
             scope: me,
             toggleGroup: "side",
-            pressed: true
+            pressed: true,
+            handler: me.onEditLoad
         });
 
         me.sideRearButton = Ext.create("Ext.button.Button", {
             text: "Rear",
             scope: me,
-            toggleGroup: "side"
+            toggleGroup: "side",
+            handler: me.onEditLoad
         });
 
         me.editLoadButton = Ext.create("Ext.button.Button", {
@@ -79,7 +81,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     //
     preview: function(data) {
         var me = this,
-            r = NOC.core.Rack.getRack(5, 5, data.rack, data.content),
+            r = NOC.core.Rack.getRack(5, 5, data.rack, data.content, me.getSide()),
             dc = Ext.create("Ext.draw.Component", {
                 viewBox: false,
                 items: r,
@@ -88,6 +90,11 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         me.currentId = data.id;
         me.rackViewPanel.removeAll();
         me.rackViewPanel.add(dc);
+    },
+    //
+    getSide: function() {
+        var me = this;
+        return me.sideRearButton.pressed? "r" : "f";
     },
     //
     onEditLoad: function() {
