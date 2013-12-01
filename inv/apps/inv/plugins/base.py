@@ -20,15 +20,17 @@ class InvPlugin(object):
     def set_app(self, app):
         pass
 
-    def add_view(self, name, func, url, method=["GET"], access="read"):
+    def add_view(self, name, func, url, method=["GET"], access="read",
+                 validate=None):
         self.app.add_view(
-            name, func, url=url, method=method, access=access)
+            name, func, url=url, method=method, access=access,
+            validate=validate)
 
     def init_plugin(self):
         self.add_view(
             "api_plugin_%s_data" % self.name,
             self.api_get_data,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/" % self.name
+            url="^(?P<id>[0-9a-f]{24})/plugin/%s/$" % self.name
         )
 
     def api_get_data(self, request, id):

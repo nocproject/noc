@@ -15,7 +15,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     app: null,
     autoScroll: true,
     title: "Rack",
-    layout: "fit",
+    layout: "card",
 
     initComponent: function() {
         var me = this;
@@ -26,14 +26,49 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
             tooltip: "Reload"
         });
 
+        me.sideFrontButton = Ext.create("Ext.button.Button", {
+            text: "Front",
+            scope: me,
+            toggleGroup: "side",
+            pressed: true
+        });
+
+        me.sideRearButton = Ext.create("Ext.button.Button", {
+            text: "Rear",
+            scope: me,
+            toggleGroup: "side"
+        });
+
+        me.editLoadButton = Ext.create("Ext.button.Button", {
+            text: "Edit",
+            glyph: NOC.glyph.edit,
+            scope: me,
+            handler: me.onEditLoad,
+            enableToggle: true
+        });
+
+        me.rackViewPanel = Ext.create("Ext.container.Container", {
+            autoScroll: true
+        });
+
+        me.rackLoadPanel = Ext.create("NOC.inv.inv.plugins.rack.RackLoadPanel", {app: me});
+
         Ext.apply(me, {
+            items: [
+                me.rackViewPanel,
+                me.rackLoadPanel
+            ],
             dockedItems: [
                 {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
                         me.reloadButton,
-                        "-"
+                        "-",
+                        me.sideFrontButton,
+                        me.sideRearButton,
+                        "-",
+                        me.editLoadButton
                     ]
                 }
             ]
@@ -50,7 +85,38 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
                 items: r,
                 autoScroll: true
             });
-        me.removeAll();
-        me.add(dc);
+        me.currentId = data.id;
+        me.rackViewPanel.removeAll();
+        me.rackViewPanel.add(dc);
+    },
+    //
+    onEditLoad: function() {
+        var me = this;
+
+        if(me.editLoadButton.pressed) {
+            Ext.Ajax.request({
+                url: "/inv/inv/" + me.currentId + "/plugin/rack/rackload/",
+                method: "GET",
+                scope: me,
+                success: function(response) {
+                    var data = Ext.decode(response.responseText);
+                    me.rackLoadPanel.preview(data);
+                    me.getLayout().setActiveItem(1);
+                }
+            });
+        } else {
+            me.getLayout().setActiveItem(0);
+            Ext.Ajax.request({
+                url: "/inv/inv/" + me.currentId + "/plugin/rack/",
+                method: "GET",
+                scope: me,
+                success: function(response) {
+                    me.preview(Ext.decode(response.responseText));
+                },
+                failure: function() {
+                    NOC.error("Failed to get data");
+                }
+            });
+        }
     }
 });
