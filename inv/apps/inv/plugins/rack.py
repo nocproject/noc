@@ -99,8 +99,8 @@ class RackPlugin(InvPlugin):
                 op="CHANGE"
             )
         elif position_rear:
-            co.set_data("rackmount", "position", position_front)
-            co.set_data("rackmount", "side", "f")
+            co.set_data("rackmount", "position", position_rear)
+            co.set_data("rackmount", "side", "r")
             co.save()
             co.log(
                 "Set rack position to rear #%d" % position_rear,

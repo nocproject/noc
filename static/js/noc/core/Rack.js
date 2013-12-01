@@ -18,8 +18,10 @@ Ext.define("NOC.core.Rack", {
     N_WIDTH: 14,
     TEXT_PADDING: 2,
     N_FONT: "8px monospace",
+    NEAR_COLOR: "#f0f0f0",
+    FAR_COLOR: "#e0e0e0",
 
-    getRack: function(x, y, opts, content) {
+    getRack: function(x, y, opts, content, side) {
         var me = this,
             out = [],
             // Internal width
@@ -27,14 +29,15 @@ Ext.define("NOC.core.Rack", {
             // Internal height
             i_height = opts.units * me.U_HEIGH,
             // External width
-            e_width = i_width + 2 * me.SIDE_WIDTH + me.N_WIDTH;
+            e_width = i_width + 2 * me.SIDE_WIDTH + me.N_WIDTH,
             // External height
-            e_height = i_height + me.BOTTOM_WIDTH + me.TOP_WIDTH;
+            e_height = i_height + me.BOTTOM_WIDTH + me.TOP_WIDTH,
             // Number boxes left side
-            n_left = x + me.SIDE_WIDTH + i_width;
+            n_left = x + me.SIDE_WIDTH + i_width,
             // Number boxes bottom
-            n_bottom = y + me.TOP_WIDTH + i_height;
-
+            n_bottom = y + me.TOP_WIDTH + i_height,
+            // far side
+            far_side = side === "f" ? "r" : "f";
         /*
          * Enclosure
          */
@@ -92,8 +95,12 @@ Ext.define("NOC.core.Rack", {
         /*
          * Content
          */
+        // Far side
         for(var i in content) {
             var c = content[i];
+            if(c.side !== far_side) {
+                continue;
+            }
             out.push({
                 type: "rect",
                 x: x + me.SIDE_WIDTH,
@@ -101,7 +108,31 @@ Ext.define("NOC.core.Rack", {
                 width: i_width,
                 height: c.units * me.U_HEIGH,
                 stroke: "black",
-                fill: "#f0f0f0"
+                fill: me.FAR_COLOR
+            });
+            out.push({
+                type: "text",
+                text: c.name,
+                x: x + me.SIDE_WIDTH + 10,
+                y: n_bottom - (c.pos + c.units / 2 - 1)* me.U_HEIGH,
+                stroke: "black",
+                font: "8px monospace"
+            });
+        }
+        // Near side
+        for(var i in content) {
+            var c = content[i];
+            if(c.side !== side) {
+                continue;
+            }
+            out.push({
+                type: "rect",
+                x: x + me.SIDE_WIDTH,
+                y: n_bottom - (c.pos + c.units - 1)* me.U_HEIGH,
+                width: i_width,
+                height: c.units * me.U_HEIGH,
+                stroke: "black",
+                fill: me.NEAR_COLOR
             });
             out.push({
                 type: "text",
