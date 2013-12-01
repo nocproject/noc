@@ -817,42 +817,48 @@
                 "direction": "i",
                 "gender": "f",
                 "name": "0/40",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "ge-X/0/0",
                 "direction": "i",
                 "gender": "f",
                 "name": "0/41",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "ge-X/0/0",
                 "direction": "i",
                 "gender": "f",
                 "name": "0/42",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "ge-X/0/0",
                 "direction": "i",
                 "gender": "f",
                 "name": "0/43",
-                "type__name": "Transceiver | SFP"
+                "type__name": "Transceiver | SFP",
+                "protocols": ["TransEth1G"]
             },
             {
                 "description": "xe-X/0/0",
                 "direction": "i",
                 "gender": "f",
                 "name": "0/44",
-                "type__name": "Transceiver | SFP+ | Juniper"
+                "type__name": "Transceiver | SFP+ | Juniper",
+                "protocols": ["TransEth10G"]
             },
             {
                 "description": "xe-X/0/0",
                 "direction": "i",
                 "gender": "f",
                 "name": "0/45",
-                "type__name": "Transceiver | SFP+ | Juniper"
+                "type__name": "Transceiver | SFP+ | Juniper",
+                "protocols": ["TransEth10G"]
             },
             {
                 "description": "Chassis connection",
