@@ -284,6 +284,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     }
