@@ -18,13 +18,27 @@ class Migration(object):
         root = om.find_one({"name": "Root"})
         if not root:
             print "    Create Root model stub"
-            root = om.insert({"name": "Root"})
+            root = om.insert({
+                "name": "Root",
+                "data": {
+                    "container": {
+                        "container": True
+                    }
+                }
+            })
         else:
             root = root["_id"]
         lost_and_found = om.find_one({"name": "Lost&Found"})
         if not lost_and_found:
             print "    Create Lost&Found model stub"
-            lost_and_found = om.insert({"name": "Lost&Found"})
+            lost_and_found = om.insert({
+                "name": "Lost&Found",
+                "data": {
+                    "container": {
+                        "container": True
+                    }
+                }
+            })
         else:
             lost_and_found = lost_and_found["_id"]
         # Create root object
@@ -51,7 +65,7 @@ class Migration(object):
             if oc:
                 for c in db.noc.objectconnections.find({"object": o["_id"]}):
                     for cc in c["connection"]:
-                        if c["name"] in oc and c["object"] == o["_id"]:
+                        if cc["name"] in oc and cc["object"] == o["_id"]:
                             found = True
                             break
             if not found:
