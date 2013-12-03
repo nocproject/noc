@@ -17,7 +17,8 @@ Ext.define("NOC.core.Rack", {
     U_HEIGH: 15,
     N_WIDTH: 14,
     TEXT_PADDING: 2,
-    N_FONT: "8px monospace",
+    N_FONT: "10px normal",
+    B_FONT: "10px normal",
     FREE_COLOR: "#808080",
     NEAR_COLOR: "#f0f0f0",
     FAR_COLOR: "#d0d0d0",
@@ -118,7 +119,7 @@ Ext.define("NOC.core.Rack", {
                 x: x + me.SIDE_WIDTH + 10,
                 y: n_bottom - (c.pos + c.units / 2 - 1)* me.U_HEIGH - shift,
                 stroke: "black",
-                font: "8px monospace"
+                font: me.B_FONT
             });
         }
         // Near side
@@ -143,7 +144,7 @@ Ext.define("NOC.core.Rack", {
                 x: x + me.SIDE_WIDTH + 10,
                 y: n_bottom - (c.pos + c.units / 2 - 1)* me.U_HEIGH - shift,
                 stroke: "black",
-                font: "8px monospace"
+                font: me.B_FONT
             });
         }
         return out;
