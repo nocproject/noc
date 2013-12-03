@@ -73,7 +73,7 @@
 
     {
         "name": "Network | PIM | MSDP Peer Down",
-        "description": "PIM MSDP peer down",
+        "description": "MSDP peer down",
         "is_unique": true,
         "discriminator": ["peer"],
         "user_clearable": true,
@@ -100,8 +100,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "PIM MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}",
-                "body_template": "PIM MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %}\n Reason: {{reason}}.{% endif %}",
+                "subject_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "body_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %}\n Reason: {{reason}}.{% endif %}",
                 "symptoms": "Multicast flows lost",
                 "probable_causes": "Link failure or protocol misconfiguration",
                 "recommended_actions": "Check links and local and neighbor router configuration" 

@@ -91,14 +91,14 @@
 
     {
         "name": "Network | PIM | MSDP Peer Up",
-        "description": "PIM MSDP peer up",
+        "description": "MSDP peer up",
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "PIM MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
-                "body_template": "PIM MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "subject_template": "MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "body_template": "MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
                 "symptoms": "Multicast flows send successfully",
-                "probable_causes": "PIM MSDP successfully established connect with peer",
+                "probable_causes": "MSDP successfully established connect with peer",
                 "recommended_actions": "No reaction needed" 
             }
         },
@@ -127,14 +127,14 @@
 
     {
         "name": "Network | PIM | MSDP Peer Down",
-        "description": "PIM MSDP peer down",
+        "description": "MSDP peer down",
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "PIM MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}",
-                "body_template": "PIM MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %}\n Reason: {{reason}}.{% endif %}",
+                "subject_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "body_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %}\n Reason: {{reason}}.{% endif %}",
                 "symptoms": "Multicast flows lost",
-                "probable_causes": "PIM protocol configuration problem or link failure",
+                "probable_causes": "MSDP protocol configuration problem or link failure",
                 "recommended_actions": "Check links and local and neighbor's router configuration" 
             }
         },
