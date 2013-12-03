@@ -23,6 +23,13 @@
                 "description": "Mounting side (f/r)",
                 "required": false,
                 "is_const": false
+            },
+            {
+                "name": "shift",
+                "type": "int",
+                "description": "Shift 0/1/2 holes up",
+                "required": false,
+                "is_const": false
             }
         ]
     }

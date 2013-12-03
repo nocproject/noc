@@ -14,7 +14,7 @@ Ext.define("NOC.core.Rack", {
     BOTTOM_WIDTH: 10,
     TOP_WIDTH: 20,
     SCALE: 3,
-    U_HEIGH: 14,
+    U_HEIGH: 15,
     N_WIDTH: 14,
     TEXT_PADDING: 2,
     N_FONT: "8px monospace",
@@ -97,14 +97,15 @@ Ext.define("NOC.core.Rack", {
          */
         // Far side
         for(var i in content) {
-            var c = content[i];
+            var c = content[i], shift;
             if(c.side !== far_side) {
                 continue;
             }
+            shift = Math.round(me.U_HEIGH * c.shift / 3);
             out.push({
                 type: "rect",
                 x: x + me.SIDE_WIDTH,
-                y: n_bottom - (c.pos + c.units - 1)* me.U_HEIGH,
+                y: n_bottom - (c.pos + c.units - 1)* me.U_HEIGH - shift,
                 width: i_width,
                 height: c.units * me.U_HEIGH,
                 stroke: "black",
@@ -114,21 +115,22 @@ Ext.define("NOC.core.Rack", {
                 type: "text",
                 text: c.name,
                 x: x + me.SIDE_WIDTH + 10,
-                y: n_bottom - (c.pos + c.units / 2 - 1)* me.U_HEIGH,
+                y: n_bottom - (c.pos + c.units / 2 - 1)* me.U_HEIGH - shift,
                 stroke: "black",
                 font: "8px monospace"
             });
         }
         // Near side
         for(var i in content) {
-            var c = content[i];
+            var c = content[i], shift;
             if(c.side !== side) {
                 continue;
             }
+            shift = Math.round(me.U_HEIGH * c.shift / 3);
             out.push({
                 type: "rect",
                 x: x + me.SIDE_WIDTH,
-                y: n_bottom - (c.pos + c.units - 1)* me.U_HEIGH,
+                y: n_bottom - (c.pos + c.units - 1)* me.U_HEIGH - shift,
                 width: i_width,
                 height: c.units * me.U_HEIGH,
                 stroke: "black",
@@ -138,7 +140,7 @@ Ext.define("NOC.core.Rack", {
                 type: "text",
                 text: c.name,
                 x: x + me.SIDE_WIDTH + 10,
-                y: n_bottom - (c.pos + c.units / 2 - 1)* me.U_HEIGH,
+                y: n_bottom - (c.pos + c.units / 2 - 1)* me.U_HEIGH - shift,
                 stroke: "black",
                 font: "8px monospace"
             });

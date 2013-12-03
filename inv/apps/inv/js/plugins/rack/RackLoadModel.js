@@ -32,6 +32,10 @@ Ext.define("NOC.inv.inv.plugins.rack.RackLoadModel", {
         {
             name: "position_rear",
             type: "int"
+        },
+        {
+            name: "shift",
+            type: "int"
         }
     ]
 });
