@@ -63,21 +63,21 @@ class Migration(object):
             found = False
             oc = m_c[o["model"]]
             if oc:
-                for c in db.noc.objectconnections.find({"object": o["_id"]}):
+                for c in db.noc.objectconnections.find({"connection.object": o["_id"]}):
                     for cc in c["connection"]:
                         if cc["name"] in oc and cc["object"] == o["_id"]:
                             found = True
                             break
-            if not found:
-                # Set container
-                db.noc.objects.update(
-                    {"_id": o["_id"]},
-                    {
-                        "$set": {
-                            "container": lf
+                if not found:
+                    # Set container
+                    db.noc.objects.update(
+                        {"_id": o["_id"]},
+                        {
+                            "$set": {
+                                "container": lf
+                            }
                         }
-                    }
-                )
+                    )
 
     def backwards(self):
         pass
