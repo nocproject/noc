@@ -32,7 +32,8 @@ class RackPlugin(InvPlugin):
             validate={
                 "cid": ObjectIdParameter(),
                 "position_front": IntParameter(),
-                "position_rear": IntParameter()
+                "position_rear": IntParameter(),
+                "shift": IntParameter()
             }
         )
 
@@ -54,7 +55,8 @@ class RackPlugin(InvPlugin):
                     "units": units,
                     "pos": pos,
                     "name": c.name,
-                    "side": side
+                    "side": side,
+                    "shift": c.get_data("rackmount", "shift") or 0
                 }]
         return r
 
@@ -68,7 +70,8 @@ class RackPlugin(InvPlugin):
                 "model": c.model.name,
                 "units": c.get_data("rackmount", "units"),
                 "position_front": None,
-                "position_rear": None
+                "position_rear": None,
+                "shift": c.get_data("rackmount", "shift") or 0
             }
             if x["units"]:
                 pos = c.get_data("rackmount", "position")
@@ -84,7 +87,7 @@ class RackPlugin(InvPlugin):
         }
 
     def api_set_rack_load(self, request, id, cid,
-                          position_front, position_rear):
+                          position_front, position_rear, shift):
         o = self.app.get_object_or_404(Object, id=id)
         co = self.app.get_object_or_404(Object, id=cid)
         if co.container != o.id:
@@ -110,8 +113,17 @@ class RackPlugin(InvPlugin):
         else:
             co.reset_data("rackmount", "position")
             co.reset_data("rackmount", "side")
+            co.save()
             co.log(
                 "Reset rack position",
                 user=request.user.username, system="WEB",
                 op="CHANGE"
             )
+        if shift < 0 or shift > 2:
+            shift = 0
+        if co.get_data("rackmount", "shift") != shift:
+            co.set_data("rackmount", "shift", shift)
+            co.save()
+            co.log("Set position shift to %d holes" % shift,
+                user=request.user.username, system="WEB",
+                op="CHANGE")

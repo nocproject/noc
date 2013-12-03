@@ -51,6 +51,16 @@ Ext.define("NOC.inv.inv.plugins.rack.RackLoadPanel", {
                     dataIndex: "position_rear",
                     width: 50,
                     editor: "numberfield"
+                },
+                {
+                    text: "Shift",
+                    dataIndex: "shift",
+                    width: 50,
+                    editor: {
+                        xtype: "numberfield",
+                        minValue: 0,
+                        maxValue: 2
+                    }
                 }
             ],
             selType: "cellmodel",
@@ -99,9 +109,10 @@ Ext.define("NOC.inv.inv.plugins.rack.RackLoadPanel", {
             method: "POST",
             scope: me,
             jsonData: {
-                "cid": e.record.get("id"),
-                "position_front": e.record.get("position_front"),
-                "position_rear": e.record.get("position_rear")
+                cid: e.record.get("id"),
+                position_front: e.record.get("position_front"),
+                position_rear: e.record.get("position_rear"),
+                shift: e.record.get("shift")
             },
             loadMask: me,
             success: function() {
