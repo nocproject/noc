@@ -18,8 +18,9 @@ Ext.define("NOC.core.Rack", {
     N_WIDTH: 14,
     TEXT_PADDING: 2,
     N_FONT: "8px monospace",
+    FREE_COLOR: "#808080",
     NEAR_COLOR: "#f0f0f0",
-    FAR_COLOR: "#e0e0e0",
+    FAR_COLOR: "#d0d0d0",
 
     getRack: function(x, y, opts, content, side) {
         var me = this,
@@ -61,7 +62,7 @@ Ext.define("NOC.core.Rack", {
             width: i_width,
             height: i_height,
             stroke: "black",
-            fill: "#C0C0C0"
+            fill: me.FREE_COLOR
         });
         // Unit numbers
         out.push({
