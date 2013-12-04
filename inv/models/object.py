@@ -21,6 +21,7 @@ from error import ConnectionError, ModelDataError
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.utils import deep_merge
 from noc.lib.middleware import get_user
+from noc.lib.gridvcs.manager import GridVCSField
 
 
 class Object(Document):
@@ -37,6 +38,7 @@ class Object(Document):
     model = PlainReferenceField(ObjectModel)
     data = DictField()
     container = ObjectIdField(required=False)
+    comment = GridVCSField("object_comment")
 
     def __unicode__(self):
         return unicode(self.name or self.id)
