@@ -40,8 +40,18 @@ class GridVCSField(object):
         self.mirror = mirror
 
     def contribute_to_class(self, model, name):
+        """
+        Initialize Django's model
+        """
         self.model = model
         setattr(model, name, GridVCSObjectDescriptor(self, mirror=self.mirror))
+
+    def __get__(self, instance, owner):
+        """
+        Mongoengine shortcut
+        """
+        return GridVCSObjectProxy(
+            self.repo, instance.id, mirror=self.mirror)
 
 
 class GridVCSObjectDescriptor(object):
