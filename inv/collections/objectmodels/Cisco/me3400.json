@@ -310,6 +310,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     },
@@ -580,6 +583,9 @@
             },
             "asset": {
                 "part_no0": "ME-3400-24TS-D"
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     },
@@ -919,6 +925,9 @@
             },
             "asset": {
                 "part_no0": "ME-3400E-24TS-M"
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     },
@@ -1216,6 +1225,12 @@
             },
             "asset": {
                 "part_no0": "ME-3400G-12CS-A"
+            },
+            "rackmount": {
+                "units": 1
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     },
@@ -1558,6 +1573,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     },
@@ -1849,6 +1867,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     }

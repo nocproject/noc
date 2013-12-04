@@ -121,6 +121,9 @@
             },
             "stack": {
                 "stackable": true
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     },
@@ -247,6 +250,9 @@
             },
             "stack": {
                 "stackable": true
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     },
@@ -478,6 +484,9 @@
             },
             "stack": {
                 "stackable": true
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     }

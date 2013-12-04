@@ -176,6 +176,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 21
             }
         }
     },
@@ -373,6 +376,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 21
             }
         }
     }

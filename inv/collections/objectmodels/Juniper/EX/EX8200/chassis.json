@@ -117,6 +117,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 14
             }
         }
     }
