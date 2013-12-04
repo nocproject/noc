@@ -95,6 +95,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 7
             }
         }
     }

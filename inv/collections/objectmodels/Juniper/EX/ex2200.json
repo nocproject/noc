@@ -282,6 +282,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     },
@@ -569,6 +572,9 @@
             },
             "management": {
                 "managed": true
+            },
+            "rackmount": {
+                "units": 1
             }
         }
     }
