@@ -97,6 +97,7 @@ class InvApplication(ExtApplication):
                 n["plugins"] += [self.get_plugin_data("inventory")]
             if o.get_data("rack", "units"):
                 n["plugins"] += [self.get_plugin_data("rack")]
+            n["plugins"] += [self.get_plugin_data("comment")]
             r += [n]
         return r
 
