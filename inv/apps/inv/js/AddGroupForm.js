@@ -8,7 +8,7 @@ console.debug("Defining NOC.inv.inv.AddGroupForm");
 
 Ext.define("NOC.inv.inv.AddGroupForm", {
     extend: "Ext.window.Window",
-    requires: ["NOC.inv.objectmodel.ContainerLookupField"],
+    requires: ["NOC.inv.objectmodel.LookupField"],
     modal: true,
     autoShow: true,
     closeable: true,
@@ -18,7 +18,13 @@ Ext.define("NOC.inv.inv.AddGroupForm", {
     width: 400,
 
     initComponent: function() {
-        var me = this;
+        var me = this,
+            title;
+        if(me.groupContainer) {
+            title = "Create new object in '" + me.groupContainer.get("name") + "'";
+        } else {
+            title = "Create new top-level object";
+        }
 
         me.form = Ext.create("Ext.form.Panel", {
             bodyPadding: 4,
@@ -35,7 +41,7 @@ Ext.define("NOC.inv.inv.AddGroupForm", {
                     allowBlank: false
                 },
                 {
-                    xtype: "inv.objectmodel.ContainerLookupField",
+                    xtype: "inv.objectmodel.LookupField",
                     name: "type",
                     fieldLabel: "Type",
                     allowBlank: false
@@ -57,6 +63,7 @@ Ext.define("NOC.inv.inv.AddGroupForm", {
         });
 
         Ext.apply(me, {
+            title: title,
             items: [me.form]
         });
         me.callParent();
