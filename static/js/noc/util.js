@@ -143,6 +143,19 @@ NOC.render.Duration = function(val) {
     return "" + d + "d " + f(h) + "h";
 };
 
+NOC.render.Size = function(v) {
+    if (v === null || v === undefined) {
+        return "";
+    }
+    if(v > 10000000) {
+        return Math.round(v / 1000000) + "M";
+    }
+    if(v > 1000) {
+        return Math.round(v / 1000) + "K";
+    }
+    return "" + v;
+}
+
 //
 // Run new Map/Reduce task
 // Usage:
