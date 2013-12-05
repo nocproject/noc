@@ -60,6 +60,7 @@ Ext.define("NOC.inv.inv.Application", {
             loadMask: true,
             width: 300,
             displayField: "name",
+            allowDeselect: true,
             dockedItems: [{
                 xtype: "toolbar",
                 dock: "top",
