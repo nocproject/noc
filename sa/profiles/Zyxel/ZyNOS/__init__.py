@@ -29,7 +29,7 @@ class Profile(noc.sa.profiles.Profile):
     command_exit = "exit"
     command_save_config = "write memory"
     pattern_syntax_error = "Invalid (command|input)"
-
+    config_volatile = [r"^time\s+(\d+|date).*?^"]
     rx_ifname = re.compile(r"^swp(?P<number>\d+)$")
 
     def convert_interface_name(self, s):
