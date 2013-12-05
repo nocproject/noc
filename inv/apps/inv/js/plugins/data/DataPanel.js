@@ -58,7 +58,10 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                             flex: 1
                         }
                     ],
-                    features: [{ftype:'grouping'}]
+                    features: [{ftype:'grouping'}],
+                    viewConfig: {
+                        enableTextSelection: true
+                    }
                 },
                 {
                     xtype: "gridpanel",
@@ -101,7 +104,10 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                             dataIndex: "message",
                             flex: 1
                         }
-                    ]
+                    ],
+                    viewConfig: {
+                        enableTextSelection: true
+                    }
                 }
             ]
         });
