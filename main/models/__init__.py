@@ -284,7 +284,7 @@ class MIMEType(models.Model):
         """
         r, ext = os.path.splitext(filename)
         try:
-            m = MIMEType.objects.get(extension=ext)
+            m = MIMEType.objects.get(extension=ext.lower())
             return m.mime_type
         except MIMEType.DoesNotExist:
             return "application/octet-stream"
