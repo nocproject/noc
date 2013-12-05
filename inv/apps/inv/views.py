@@ -13,11 +13,9 @@ import os
 from noc.lib.app import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.modelinterface import ModelInterface
 from noc.lib.validators import is_objectid
 from noc.sa.interfaces.base import (StringParameter, ObjectIdParameter,
                                     UnicodeParameter, ListOfParameter)
-from noc.lib.utils import deep_copy, deep_merge
 
 
 class InvApplication(ExtApplication):
@@ -147,4 +145,8 @@ class InvApplication(ExtApplication):
         if position == "append":
             for x in o:
                 x.put_into(c)
+        elif position in ("before", "after"):
+            cc = self.get_object_or_404(Object, id=c.container)
+            for x in o:
+                x.put_into(cc)
         return True
