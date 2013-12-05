@@ -109,7 +109,7 @@ Ext.define("NOC.inv.inv.Application", {
     //
     onReloadNav: function() {
         var me = this;
-        me.store.reload();
+        me.store.reload({node: me.store.getRootNode()});
     },
     //
     onSelectNav: function(panel, record, index, eOpts) {
@@ -133,7 +133,6 @@ Ext.define("NOC.inv.inv.Application", {
                 });
             };
         me.tabPanel.removeAll();
-        console.log(record.get("plugins"));
         Ext.each(plugins, function(p) {
             runPlugin(record.get("id"), p);
         });
