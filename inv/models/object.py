@@ -260,6 +260,39 @@ class Object(Document):
             else:
                 o.put_into(target)
 
+    def iter_inner_connections(self):
+        """
+        Yields inner connections as tuples of
+        (name, remote_object, remote_name)
+        """
+        ic = set(c.name for c in self.model.connections if c.direction == "i")
+        r = []
+        for c in ObjectConnection.objects.filter(
+                connection__object=self.id):
+            sn = None
+            oc = None
+            for cc in c.connection:
+                if cc.object.id == self.id:
+                    if cc.name in ic:
+                        sn = cc.name
+                else:
+                    oc = cc
+            if sn and oc:
+                yield (sn, oc.object, oc.name)
+
+    def has_inner_connections(self):
+        """
+        Returns True if object has any inner connections
+        """
+        return any(self.iter_inner_connections())
+
+    def get_inner_connections(self):
+        """
+        Returns a list of inner connections as
+        (name, remote_object, remote_name)
+        """
+        return list(self.iter_inner_connections())
+
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 
