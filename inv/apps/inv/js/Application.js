@@ -132,6 +132,7 @@ Ext.define("NOC.inv.inv.Application", {
                     }
                 });
             };
+        me.addButton.setDisabled(!record.get("can_add"));
         me.tabPanel.removeAll();
         Ext.each(plugins, function(p) {
             runPlugin(record.get("id"), p);

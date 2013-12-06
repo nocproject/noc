@@ -97,7 +97,8 @@ class InvApplication(ExtApplication):
             n = {
                 "id": str(o.id),
                 "name": name,
-                "plugins": [self.get_plugin_data("data")]
+                "plugins": [self.get_plugin_data("data")],
+                "can_add": bool(o.get_data("container", "container"))
             }
             if (o.get_data("container", "container") or
                     o.has_inner_connections()):
