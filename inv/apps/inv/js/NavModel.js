@@ -20,6 +20,10 @@ Ext.define("NOC.inv.inv.NavModel", {
         {
             name: "plugins",
             type: "auto"
+        },
+        {
+            name: "can_add",
+            type: "boolean"
         }
     ]
 });
