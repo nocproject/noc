@@ -97,7 +97,7 @@ class InvApplication(ExtApplication):
             n = {
                 "id": str(o.id),
                 "name": name,
-                "plugins": [self.get_plugin_data("data")],
+                "plugins": [],
                 "can_add": bool(o.get_data("container", "container"))
             }
             if (o.get_data("container", "container") or
@@ -105,11 +105,12 @@ class InvApplication(ExtApplication):
                 n["expanded"] = False
             else:
                 n["leaf"] = True
-            if o.model.connections:
-                n["plugins"] += [self.get_plugin_data("inventory")]
             if o.get_data("rack", "units"):
                 n["plugins"] += [self.get_plugin_data("rack")]
+            if o.model.connections:
+                n["plugins"] += [self.get_plugin_data("inventory")]
             n["plugins"] += [
+                self.get_plugin_data("data"),
                 self.get_plugin_data("comment"),
                 self.get_plugin_data("file")
             ]
