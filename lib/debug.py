@@ -184,10 +184,10 @@ def format_frames(frames, reverse=True):
         for n, v in f["vars"]:
             try:
                 pv = unicode(repr(v), "utf-8")
+                if len(pv) > 72:
+                    pv = u"\n" + pprint.pformat(v)
             except:
                 pv = u"repr() failed"
-            if len(pv) > 72:
-                pv = "\n" + pprint.pformat(v)
             r += [u"%20s = %s" % (n, pv)]
         r += [u"-" * 72]
     r += [u"END OF TRACEBACK"]
