@@ -75,19 +75,32 @@ class InvApplication(ExtApplication):
         if request.GET and "node" in request.GET:
             container = request.GET["node"]
             if container == "root":
-                container = self.get_root().id
+                container = self.get_root()
             elif not is_objectid(container):
                 raise Exception("Invalid node")
+            else:
+                container = self.get_object_or_404(Object, id=container)
         r = []
         if not container:
-            container = self.get_root().id
-        for o in Object.objects.filter(container=container):
+            container = self.get_root()
+        # Collect children objects
+        children = [
+            (o.name, o)
+            for o in Object.objects.filter(container=container.id)
+        ]
+        # Collect inner connections
+        children += [
+            (name, o) for name, o, _ in container.get_inner_connections()
+        ]
+        # Build node interface
+        for name, o in children:
             n = {
                 "id": str(o.id),
-                "name": o.name,
+                "name": name,
                 "plugins": [self.get_plugin_data("data")]
             }
-            if o.get_data("container", "container"):
+            if (o.get_data("container", "container") or
+                    o.has_inner_connections()):
                 n["expanded"] = False
             else:
                 n["leaf"] = True
