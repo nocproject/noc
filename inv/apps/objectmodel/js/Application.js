@@ -124,12 +124,14 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 {
                     name: "data",
                     xtype: "modeldatafield",
-                    fieldLabel: "Model Data"
+                    fieldLabel: "Model Data",
+                    labelAlign: "top"
                 },
                 {
                     name: "connections",
                     xtype: "gridfield",
                     fieldLabel: "Connections",
+                    labelAlign: "top",
                     columns: [
                         {
                             text: "Name",
@@ -188,6 +190,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             width: 150,
                             editor: "textfield",
                             renderer: "htmlEncode"
+                        },
+                        {
+                            text: "Int. name",
+                            dataIndex: "internal_name",
+                            width: 150,
+                            editor: "textfield"
                         },
                         {
                             text: "Description",
