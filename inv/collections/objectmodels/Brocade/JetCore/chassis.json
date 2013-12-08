@@ -1,0 +1,127 @@
+[
+    {
+        "name": "Brocade | JetCore | 4 slot chassis",
+        "vendor__code": "BROCADE",
+        "description": "BigIron 4000 Router/FastIron 400 Router/Switch",
+        "connection_rule__name": "Brocade | JetCore",
+        "connections": [
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card1",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card2",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card3",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card4",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "BigIron 4000 Router",
+                "part_no1": "FastIron 400 Router"
+            },
+            "management": {
+                "managed": true
+            },
+            "rackmount": {
+                "units": 5
+            }
+        }
+    },
+    {
+        "name": "Brocade | JetCore | 8 slot chassis",
+        "vendor__code": "BROCADE",
+        "description": "BigIron 8000 Router/FastIron 800 Router/Switch",
+        "connection_rule__name": "Brocade | JetCore",
+        "connections": [
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card1",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card2",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card3",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card4",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card5",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card6",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card7",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card8",
+                "type__name": "Brocade | JetCore | Backplane Connector"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "BigIron 8000 Router",
+                "part_no1": "FastIron 800 Router",
+                "part_no2": "NetIron 800 Router"
+            },
+            "management": {
+                "managed": true
+            },
+            "rackmount": {
+                "units": 12
+            }
+        }
+    }
+]

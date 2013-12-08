@@ -1,0 +1,148 @@
+[
+    {
+        "name": "Brocade | RX | BigIron RX-8 Chassis",
+        "vendor__code": "BROCADE",
+        "description": "BigIron RX-8 AC 8 slot chassis",
+        "connection_rule__name": "Brocade | SX",
+        "connections": [
+            {
+                "description": "pwr1",
+                "direction": "i",
+                "gender": "m",
+                "name": "pwr1",
+                "type__name": "Brocade | BigIron RX | PS Connector AC"
+            },
+            {
+                "description": "pwr2",
+                "direction": "i",
+                "gender": "m",
+                "name": "pwr2",
+                "type__name": "Brocade | BigIron RX | PS Connector AC"
+            },
+            {
+                "description": "pwr3",
+                "direction": "i",
+                "gender": "m",
+                "name": "pwr3",
+                "type__name": "Brocade | BigIron RX | PS Connector AC"
+            },
+            {
+                "description": "pwr4",
+                "direction": "i",
+                "gender": "m",
+                "name": "pwr4",
+                "type__name": "Brocade | BigIron RX | PS Connector AC"
+            },
+            {
+                "description": "sfm",
+                "direction": "i",
+                "gender": "m",
+                "name": "sfm1",
+                "type__name": "Brocade | BigIron RX | SFM Connector"
+            },
+            {
+                "description": "sfm",
+                "direction": "i",
+                "gender": "m",
+                "name": "sfm2",
+                "type__name": "Brocade | BigIron RX | SFM Connector"
+            },
+            {
+                "description": "sfm",
+                "direction": "i",
+                "gender": "m",
+                "name": "sfm3",
+                "type__name": "Brocade | BigIron RX | SFM Connector"
+            },
+            {
+                "description": "sfm",
+                "direction": "i",
+                "gender": "m",
+                "name": "sfm4",
+                "type__name": "Brocade | BigIron RX | SFM Connector"
+            },
+            {
+                "description": "mgmt",
+                "direction": "i",
+                "gender": "m",
+                "name": "mgmt1",
+                "type__name": "Brocade | BigIron RX | Mgmt Connector"
+            },
+            {
+                "description": "mgmt",
+                "direction": "i",
+                "gender": "m",
+                "name": "mgmt2",
+                "type__name": "Brocade | BigIron RX | Mgmt Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card1",
+                "type__name": "Brocade | BigIron RX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card2",
+                "type__name": "Brocade | BigIron RX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card3",
+                "type__name": "Brocade | BigIron RX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card4",
+                "type__name": "Brocade | BigIron RX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card5",
+                "type__name": "Brocade | BigIron RX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card6",
+                "type__name": "Brocade | BigIron RX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card7",
+                "type__name": "Brocade | BigIron RX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card8",
+                "type__name": "Brocade | BigIron RX | Line Connector"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "31549-000B",
+                "part_no1": "35549-000B"
+            },
+            "management": {
+                "managed": true
+            },
+            "rackmount": {
+                "units": 7
+            }
+        }
+    }
+]
