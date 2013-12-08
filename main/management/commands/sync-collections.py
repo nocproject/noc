@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Load and syncronize built-in inventory collections
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 from __future__ import with_statement
 import os
@@ -254,13 +253,13 @@ class Command(BaseCommand):
                     if ad[0] == app:
                         for cn, doc in ad[1]:
                             if cn == c:
-                                a = (app, cn, doc, args[1:])
+                                a = (app, cn, doc)
                                 break
                         if a:
                             break
                 if not a:
                     raise CommandError("Invalid collection: %s" % name)
-                CollectionSync(*a)
+                CollectionSync(*a).sync()
             else:
                 # Sync all collections
                 for app, collections in self.collections:
