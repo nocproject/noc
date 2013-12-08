@@ -9,13 +9,13 @@ console.debug("Defining NOC.inv.inv.plugins.rack.RackPanel");
 Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     extend: "NOC.core.ApplicationPanel",
     requires: [
-        //"NOC.inv.inv.plugins.inventory.InventoryModel"
-        "NOC.core.Rack"
+        "NOC.core.Rack",
+        "NOC.inv.inv.plugins.rack.RackLoadModel"
     ],
     app: null,
     autoScroll: true,
     title: "Rack",
-    layout: "card",
+    layout: "border",
 
     initComponent: function() {
         var me = this;
@@ -31,29 +31,89 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
             scope: me,
             toggleGroup: "side",
             pressed: true,
-            handler: me.onEditLoad
+            handler: me.onReload
         });
 
         me.sideRearButton = Ext.create("Ext.button.Button", {
             text: "Rear",
             scope: me,
             toggleGroup: "side",
-            handler: me.onEditLoad
+            handler: me.onReload
         });
 
         me.editLoadButton = Ext.create("Ext.button.Button", {
             text: "Edit",
             glyph: NOC.glyph.edit,
             scope: me,
-            handler: me.onEditLoad,
+            handler: me.onEdit,
             enableToggle: true
         });
 
         me.rackViewPanel = Ext.create("Ext.container.Container", {
-            autoScroll: true
+            autoScroll: true,
+            region: "center"
         });
 
-        me.rackLoadPanel = Ext.create("NOC.inv.inv.plugins.rack.RackLoadPanel", {app: me});
+        me.rackLoadStore = Ext.create("Ext.data.Store", {
+            model: "NOC.inv.inv.plugins.rack.RackLoadModel"
+        });
+
+        me.rackLoadPanel = Ext.create("Ext.grid.Panel", {
+            store: me.rackLoadStore,
+            region: "east",
+            width: 500,
+            hidden: true,
+            columns: [
+                {
+                    text: "Name",
+                    dataIndex: "name",
+                    width: 100
+                },
+                {
+                    text: "Model",
+                    dataIndex: "model",
+                    width: 200
+                },
+                {
+                    text: "Units",
+                    dataIndex: "units",
+                    width: 50
+                },
+                {
+                    text: "Pos. Front",
+                    dataIndex: "position_front",
+                    width: 50,
+                    editor: "numberfield"
+                },
+                {
+                    text: "Pos. Rear",
+                    dataIndex: "position_rear",
+                    width: 50,
+                    editor: "numberfield"
+                },
+                {
+                    text: "Shift",
+                    dataIndex: "shift",
+                    width: 50,
+                    editor: {
+                        xtype: "numberfield",
+                        minValue: 0,
+                        maxValue: 2
+                    }
+                }
+            ],
+            selType: "cellmodel",
+            plugins: [
+                Ext.create("Ext.grid.plugin.CellEditing", {
+                    clicksToEdit: 2
+                })
+            ],
+            listeners: {
+                scope: me,
+                validateedit: Ext.bind(me.onCellValidateEdit, me),
+                edit: Ext.bind(me.onCellEdit, me)
+            }
+        });
 
         Ext.apply(me, {
             items: [
@@ -90,6 +150,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         me.currentId = data.id;
         me.rackViewPanel.removeAll();
         me.rackViewPanel.add(dc);
+        me.rackLoadStore.loadData(data.load);
     },
     //
     getSide: function() {
@@ -97,33 +158,62 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         return me.sideRearButton.pressed? "r" : "f";
     },
     //
-    onEditLoad: function() {
+    onReload: function() {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/inv/inv/" + me.currentId + "/plugin/rack/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                me.preview(Ext.decode(response.responseText));
+            },
+            failure: function() {
+                NOC.error("Failed to get data");
+            }
+        });
+    },
+    //
+    onEdit: function() {
         var me = this;
 
         if(me.editLoadButton.pressed) {
-            Ext.Ajax.request({
-                url: "/inv/inv/" + me.currentId + "/plugin/rack/rackload/",
-                method: "GET",
-                scope: me,
-                success: function(response) {
-                    var data = Ext.decode(response.responseText);
-                    me.rackLoadPanel.preview(data);
-                    me.getLayout().setActiveItem(1);
-                }
-            });
+            me.rackLoadPanel.show();
         } else {
-            me.getLayout().setActiveItem(0);
-            Ext.Ajax.request({
-                url: "/inv/inv/" + me.currentId + "/plugin/rack/",
-                method: "GET",
-                scope: me,
-                success: function(response) {
-                    me.preview(Ext.decode(response.responseText));
-                },
-                failure: function() {
-                    NOC.error("Failed to get data");
-                }
-            });
+            me.rackLoadPanel.hide();
         }
+    },
+    onCellValidateEdit: function(editor, e, eOpts) {
+        var me = this;
+        return true;
+    },
+    //
+    onCellEdit: function(editor, e) {
+        var me = this;
+        if(e.field == "position_front") {
+            e.record.set("position_rear", 0);
+        }
+        if(e.field == "position_rear") {
+            e.record.set("position_front", 0);
+        }
+        // Submit
+        Ext.Ajax.request({
+            url: "/inv/inv/" + me.currentId + "/plugin/rack/rackload/",
+            method: "POST",
+            scope: me,
+            jsonData: {
+                cid: e.record.get("id"),
+                position_front: e.record.get("position_front"),
+                position_rear: e.record.get("position_rear"),
+                shift: e.record.get("shift")
+            },
+            loadMask: me,
+            success: function() {
+                me.onReload();
+            },
+            failure: function() {
+                NOC.error("Failed to save");
+            }
+        });
     }
+
 });
