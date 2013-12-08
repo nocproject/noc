@@ -42,6 +42,12 @@
     },
 
     {
+        "name": "Ericsson",
+        "code": "ERICSSON",
+        "site": "http://www.ericsson.com/"
+    },
+
+    {
         "name": "Extreme Networks",
         "code": "EXTREME",
         "site": "http://extremenetworks.com/"

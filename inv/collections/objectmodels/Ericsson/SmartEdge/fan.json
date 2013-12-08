@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Ericsson | SmartEdge | FANTRAY",
+        "vendor__code": "ERICSSON",
+        "description": "FANTRAY",
+        "connection_rule__name": "Ericsson | SmartEdge",
+        "connections": [
+            {
+                "description": "Line connector",
+                "direction": "o",
+                "gender": "f",
+                "name": "in",
+                "type__name": "Ericsson | SE600 | FAN"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "SE600-FAN"
+            }
+        }
+    }
+]
