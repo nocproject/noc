@@ -1,0 +1,36 @@
+[
+    {
+        "name": "Brocade | FastIron SuperX | PS Connector DC",
+        "description": "Power supply connector in SX chassis",
+        "c_group": ["power_dc"],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Brocade | FastIron SuperX | SFM Connector",
+        "description": "Switchfabric module connector in SX chassis",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Brocade | FastIron SuperX | Line Connector",
+        "description": "Linecard module connector in SX chassis",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Brocade | FastIron SuperX | Mgmt Connector",
+        "description": "Management module connector in SX chassis",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Brocade | FastIron SuperX | PS Connector AC",
+        "description": "Power supply connector in SX chassis",
+        "c_group": [],
+        "genders": "mf"
+    }
+]

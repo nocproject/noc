@@ -1,0 +1,15 @@
+[
+    {
+        "name": "Brocade | JetCore | Backplane Connector",
+        "description": "Backplane connector on JetCore modules/chassis",
+        "c_group": [],
+        "genders": "mf"
+    },
+
+    {
+        "name": "Brocade | JetCore | PS Connector",
+        "description": "PS Connector in FastIron 400/800/1500 or BigIron 4000/8000/15000 or NetIron 4000/8000/15000 chassis",
+        "c_group": [],
+        "genders": "mf"
+    }
+]

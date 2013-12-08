@@ -1,0 +1,264 @@
+[
+    {
+        "name": "Brocade | SX | Chassis FastIron SX 1600",
+        "vendor__code": "BROCADE",
+        "description": "Chassis FastIron SX 1600",
+        "connection_rule__name": "Brocade | SX",
+        "connections": [
+            {
+                "description": "mgmt",
+                "direction": "i",
+                "gender": "m",
+                "name": "mgmt17",
+                "type__name": "Brocade | FastIron SuperX | Mgmt Connector"
+            },
+            {
+                "description": "mgmt",
+                "direction": "i",
+                "gender": "m",
+                "name": "mgmt18",
+                "type__name": "Brocade | FastIron SuperX | Mgmt Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card1",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card2",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card3",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card4",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card5",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card6",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card7",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card8",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card9",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card10",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card11",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card12",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card13",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card14",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card15",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card16",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "Chassis FastIron SX 1600"
+            },
+            "management": {
+                "managed": true
+            },
+            "rackmount": {
+                "units": 14
+            }
+        }
+    },
+    {
+        "name": "Brocade | SX | Chassis FastIron SX 800",
+        "vendor__code": "BROCADE",
+        "description": "Chassis FastIron SX 800",
+        "connection_rule__name": "Brocade | SX",
+        "connections": [
+            {
+                "description": "pwr",
+                "direction": "i",
+                "gender": "m",
+                "name": "pwr1",
+                "type__name": "Brocade | BigIron RX | PS Connector AC"
+            },
+            {
+                "description": "pwr",
+                "direction": "i",
+                "gender": "m",
+                "name": "pwr2",
+                "type__name": "Brocade | BigIron RX | PS Connector AC"
+            },
+            {
+                "description": "pwr",
+                "direction": "i",
+                "gender": "m",
+                "name": "pwr3",
+                "type__name": "Brocade | BigIron RX | PS Connector AC"
+            },
+            {
+                "description": "pwr",
+                "direction": "i",
+                "gender": "m",
+                "name": "pwr4",
+                "type__name": "Brocade | BigIron RX | PS Connector AC"
+            },
+            {
+                "description": "mgmt",
+                "direction": "i",
+                "gender": "m",
+                "name": "mgmt9",
+                "type__name": "Brocade | FastIron SuperX | Mgmt Connector"
+            },
+            {
+                "description": "mgmt",
+                "direction": "i",
+                "gender": "m",
+                "name": "mgmt10",
+                "type__name": "Brocade | FastIron SuperX | Mgmt Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card1",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card2",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card3",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card4",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card5",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card6",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card7",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            },
+            {
+                "description": "Backplane connector",
+                "direction": "i",
+                "gender": "m",
+                "name": "card8",
+                "type__name": "Brocade | FastIron SuperX | Line Connector"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "Chassis FastIron SX 800"
+            },
+            "management": {
+                "managed": true
+            },
+            "rackmount": {
+                "units": 6
+            }
+        }
+    }
+]

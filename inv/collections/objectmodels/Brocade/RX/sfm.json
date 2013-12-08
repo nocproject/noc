@@ -1,0 +1,25 @@
+[
+    {
+        "name": "Brocade | RX | Switch Fabric Module",
+        "vendor__code": "BROCADE",
+        "description": "RX-BI-SFM3 Switch Fabric Module",
+        "connection_rule__name": "Brocade | SX",
+        "connections": [
+            {
+                "description": "SFM connector",
+                "direction": "o",
+                "gender": "f",
+                "name": "in",
+                "type__name": "Brocade | BigIron RX | SFM Connector"
+            }
+        ],
+        "data": {
+            "asset": {
+                "part_no0": "31523-200B",
+                "part_no1": "35523-200B",
+                "part_no2": "35523-201E",
+                "part_no3": "35523-201B"
+            }
+        }
+    }
+]

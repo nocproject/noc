@@ -1,0 +1,44 @@
+[
+    {
+        "name": "Brocade | JetCore",
+        "description": "JetCore Connection rules",
+        "context": [
+            {
+                "reset_scopes": [],
+                "scope": "mlc",
+                "type": "MLC"
+            },
+            {
+                "reset_scopes": ["mlc"],
+                "scope": "chassis",
+                "type": "CHASSIS"
+            }
+        ],
+        "rules": [
+            {
+                "match_connection": "in",
+                "match_type": "MLC",
+                "scope": "chassis",
+                "target_connection": "card{N}",
+                "target_number": "",
+                "target_type": "CHASSIS"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "XCVR",
+                "scope": "mlc",
+                "target_connection": "sfp{N}",
+                "target_number": "",
+                "target_type": "MLC"
+            },
+            {
+                "match_connection": "in",
+                "match_type": "XCVR",
+                "scope": "mlc",
+                "target_connection": "xenpak{N}",
+                "target_number": "",
+                "target_type": "MLC"
+            }
+        ]
+    }
+]
