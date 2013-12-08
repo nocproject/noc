@@ -23,7 +23,8 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         me.reloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
             scope: me,
-            tooltip: "Reload"
+            tooltip: "Reload",
+            handler: me.onReload
         });
 
         me.sideFrontButton = Ext.create("Ext.button.Button", {
