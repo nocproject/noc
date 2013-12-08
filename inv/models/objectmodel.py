@@ -39,6 +39,7 @@ class ObjectModelConnection(EmbeddedDocument):
     group = StringField(required=False)
     cross = StringField(required=False)
     protocols = ListField(StringField(), required=False)
+    internal_name = StringField(required=False)
 
     def __unicode__(self):
         return self.name
@@ -70,6 +71,8 @@ class ObjectModelConnection(EmbeddedDocument):
             r["cross"] = self.cross
         if self.protocols:
             r["protocols"] = self.protocols
+        if self.internal_name:
+            r["internal_name"] = self.internal_name
         return r
 
 
@@ -135,7 +138,8 @@ class ObjectModel(Document):
 
     def get_connection(self, name):
         for c in self.connections:
-            if c.name == name:
+            if (c.name == name or (
+                    c.internal_name and c.internal_name == name)):
                 return c
         return None
 
