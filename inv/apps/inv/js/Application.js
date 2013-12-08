@@ -57,6 +57,7 @@ Ext.define("NOC.inv.inv.Application", {
             rootVisible: false,
             useArrows: true,
             region: "west",
+            split: true,
             loadMask: true,
             width: 300,
             displayField: "name",

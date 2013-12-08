@@ -72,6 +72,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                     store: me.logStore,
                     region: "south",
                     height: 100,
+                    split: true,
                     columns: [
                         {
                             text: "Time",
