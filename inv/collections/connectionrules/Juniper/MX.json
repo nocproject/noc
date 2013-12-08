@@ -19,7 +19,7 @@
                 "type": "PIC"
             },
             {
-                "reset_scopes": ["pic"],
+                "reset_scopes": [],
                 "scope": "mic",
                 "type": "MIC"
             }
