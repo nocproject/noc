@@ -55,12 +55,24 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                         {
                             text: "Value",
                             dataIndex: "value",
-                            flex: 1
+                            flex: 1,
+                            editor: "textfield"
                         }
                     ],
                     features: [{ftype:'grouping'}],
+                    selType: "cellmodel",
+                    plugins: [
+                        Ext.create("Ext.grid.plugin.CellEditing", {
+                            clicksToEdit: 2
+                        })
+                    ],
                     viewConfig: {
                         enableTextSelection: true
+                    },
+                    listeners: {
+                        scope: me,
+                        beforeedit: me.onBeforeEdit,
+                        edit: me.onEdit
                     }
                 },
                 {
@@ -117,7 +129,53 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
     //
     preview: function(data) {
         var me = this;
+        me.currentId = data.id;
         me.store.loadData(data.data);
         me.logStore.loadData(data.log);
+    },
+    //
+    onReload: function() {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/inv/inv/" + me.currentId + "/plugin/data/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                me.preview(Ext.decode(response.responseText));
+            },
+            failure: function() {
+                NOC.error("Failed to get data");
+            }
+        });
+    },
+    //
+    onBeforeEdit: function(editor, e, eOpts) {
+        if(e.record.get("is_const")) {
+            return false;
+        }
+    },
+    //
+    onEdit: function(editor, e, eOpts) {
+        var me = this,
+            toReload = e.record.get("interface") === "Common" && e.record.get("name") === "Name";
+        Ext.Ajax.request({
+            url: "/inv/inv/" + me.currentId + "/plugin/data/",
+            method: "PUT",
+            jsonData: {
+                "interface": e.record.get("interface"),
+                "key": e.record.get("name"),
+                "value": e.record.get("value")
+            },
+            scope: me,
+            success: function(response) {
+                me.onReload();
+                if(toReload) {
+                    me.app.onReloadNav();
+                }
+            },
+            failure: function() {
+                NOC.error("Failed to save");
+            }
+        });
     }
 });

@@ -28,6 +28,10 @@ Ext.define("NOC.inv.inv.plugins.data.DataModel", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "is_const",
+            type: "boolean"
         }
     ]
 });
