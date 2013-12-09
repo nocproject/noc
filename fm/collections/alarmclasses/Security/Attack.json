@@ -1,5 +1,87 @@
 [
     {
+        "name": "Security | Attack | Attack",
+        "description": "Attack in progress detected",
+        "is_unique": true,
+        "discriminator": [ ],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            },
+            {
+                "name": "VCDS",
+                "datasource": "vc.VCDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "l1": "vlan"
+                }
+            }
+        ],
+        "vars": [
+            {
+                "name": "name",
+                "description": "Attack name",
+                "type": "str",
+                "required": true
+            },
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "src_ip",
+                "description": "Source IP",
+                "type": "ip_address",
+                "required": false
+            },
+            {
+                "name": "src_mac",
+                "description": "Source MAC",
+                "type": "mac",
+                "required": false
+            },
+            {
+                "name": "vlan",
+                "description": "Vlan ID",
+                "type": "int",
+                "required": false
+            }
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
+            },
+            {
+                "name": "vlan_name",
+                "description": "Vlan name",
+                "type": "str",
+                "required": false,
+                "default": "=VCDS.name"
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "{{name}} attack detected{% if interface %} at interface {{interface}}{% endif %}{% if description %} ({{description}}){% endif %}{% if src_ip %} from {{src_ip}}{% endif %}",
+                "body_template": "{{name}} attack detected.{% if interface %}\nInterface: {{interface}}{% endif %}{% if description %} ({{description}}){% endif %}{% if src_ip %}\nSource IP: {{src_ip}}{% endif %}{% if src_mac %}\nSource MAC: {{src_mac}}{% endif %}{% if vlan %}\nVlan: {{vlan}}{% endif %}{% if vlan_name %} ({{vlan_name}}){% endif %}",
+                "symptoms": "Unsolicitized traffic from source",
+                "probable_causes": "Virus/Botnet activity or malicious actions",
+                "recommended_actions": "Negotiate the source if it is your customer, or ignore"
+            }
+        }
+    },
+
+    {
         "name": "Security | Attack | Blat Attack",
         "description": "Blat Attack Detected",
         "is_unique": true,
