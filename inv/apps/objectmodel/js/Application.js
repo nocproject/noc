@@ -192,7 +192,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             renderer: "htmlEncode"
                         },
                         {
-                            text: "Int. name",
+                            text: "Internal name",
                             dataIndex: "internal_name",
                             width: 150,
                             editor: "textfield"

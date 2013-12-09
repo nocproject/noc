@@ -43,7 +43,7 @@ class Object(Document):
     def __unicode__(self):
         return unicode(self.name or self.id)
 
-    def get_data(self, interface, key):
+    def get_interface_attr(self, interface, key):
         mi = ModelInterface.objects.filter(name=interface).first()
         if not mi:
             raise ModelDataError("Invalid interface '%s'" % interface)
@@ -51,6 +51,10 @@ class Object(Document):
         if not attr:
             raise ModelDataError("Invalid attribute '%s.%s'" % (
                 interface, key))
+        return attr
+
+    def get_data(self, interface, key):
+        attr = self.get_interface_attr(interface, key)
         if attr.is_const:
             # Lookup model
             return self.model.get_data(interface, key)
@@ -59,12 +63,19 @@ class Object(Document):
             return v.get(key)
 
     def set_data(self, interface, key, value):
+        attr = self.get_interface_attr(interface, key)
+        if attr.is_const:
+            raise ModelDataError("Cannot set read-only value")
+        value = attr.clean(value)
         # @todo: Check interface restrictions
         if interface not in self.data:
             self.data[interface] = {}
         self.data[interface][key] = value
 
     def reset_data(self, interface, key):
+        attr = self.get_interface_attr(interface, key)
+        if attr.is_const:
+            raise ModelDataError("Cannot reset read-only value")
         if interface in self.data and key in self.data[interface]:
             del self.data[interface][key]
 

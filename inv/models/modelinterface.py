@@ -51,6 +51,28 @@ class ModelInterfaceAttr(EmbeddedDocument):
             self.is_const == v.is_const
         )
 
+    def clean(self, value):
+        return getattr(self, "clean_%s" % self.type)(value)
+
+    def clean_str(self, value):
+        return value
+
+    def clean_int(self, value):
+        return int(value)
+
+    def clean_float(self, value):
+        return float(value.replace(",", "."))
+
+    def clean_bool(self, value):
+        value = value.lower()
+        if value in ("yes", "y", "t", "true"):
+            return True
+        try:
+            v = int(value)
+            return v != 0
+        except ValueError:
+            return False
+
 
 class ModelInterface(Document):
     """
