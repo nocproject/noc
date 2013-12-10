@@ -1,13 +1,13 @@
 [
     {
-        "name": "Cisco | IOSXR | Network | MSDP | Peer Up (SYSLOG)",
-        "description": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer up:  1.1.1.1",
+        "name": "Cisco | IOS | Network | MSDP | Peer Up (SYSLOG)",
+        "description": "%MSDP-5-PEER_UPDOWN: Session to peer 10.225.205.12 going up",
         "event_class__name": "Network | MSDP | Peer Up",
         "preference": 1000,
         "patterns": [
             {
                 "key_re": "profile",
-                "value_re": "^Cisco.IOSXR$"
+                "value_re": "^Cisco.IOS$"
             },
             {
                 "key_re": "source",
@@ -15,20 +15,20 @@
             },
             {
                 "key_re": "message",
-                "value_re": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer up:\\s+(?P<peer>\\S+)"
+                "value_re": "%MSDP-5-PEER_UPDOWN: Session to peer (?P<peer>\\S+) going up"
             }
         ]
     },
 
     {
-        "name": "Cisco | IOSXR | Network | MSDP | Peer Down (SYSLOG)",
-        "description": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer down:  1.1.1.1 : User clearing peer",
+        "name": "Cisco | IOS | Network | MSDP | Peer Down (SYSLOG)",
+        "description": "%MSDP-5-PEER_UPDOWN: Session to peer 10.225.205.12 going down",
         "event_class__name": "Network | MSDP | Peer Down",
         "preference": 1000,
         "patterns": [
             {
                 "key_re": "profile",
-                "value_re": "^Cisco.IOSXR$"
+                "value_re": "^Cisco.IOS$"
             },
             {
                 "key_re": "source",
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "message",
-                "value_re": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer down:\\s+(?P<peer>\\S+) : (?P<reason>.+)"
+                "value_re": "%MSDP-5-PEER_UPDOWN: Session to peer (?P<peer>\\S+) going down"
             }
         ]
     }
