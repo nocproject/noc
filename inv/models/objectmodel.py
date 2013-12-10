@@ -53,7 +53,8 @@ class ObjectModelConnection(EmbeddedDocument):
             self.gender == other.gender and
             self.group == other.group and
             self.cross == other.cross and
-            self.protocols == other.protocols
+            self.protocols == other.protocols and
+            self.internal_name == other.internal_name
         )
 
     @property
