@@ -102,7 +102,7 @@ class InvApplication(ExtApplication):
             }
             if (o.get_data("container", "container") or
                     o.has_inner_connections()):
-                n["expanded"] = False
+                n["expanded"] = Object.objects.filter(container=o.id).count() == 1
             else:
                 n["leaf"] = True
             if o.get_data("rack", "units"):
