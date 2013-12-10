@@ -93,5 +93,17 @@
                 "container": true
             }
         }
+    },
+
+    {
+        "name": "Rack Row",
+        "vendor__code": "NOC",
+        "description": "Rack Row",
+        "connections": [],
+        "data": {
+            "container": {
+                "container": true
+            }
+        }
     }
 ]
