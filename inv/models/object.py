@@ -208,12 +208,21 @@ class Object(Document):
         """
         return Object.objects.filter(container=self.id)
 
+    def get_local_name_path(self):
+        for _, ro, rn in self.get_outer_connections():
+            return ro.get_local_name_path() + [rn]
+        return []
+
     def get_name_path(self):
         """
         Return list of container names
         """
-        np = [unicode(self)]
         c = self.container
+        if c is None:
+            for _, ro, rn in self.get_outer_connections():
+                return ro.get_name_path() + [rn]
+            return [unicode(self)]
+        np = [unicode(self)]
         while c:
             o = Object.objects.filter(id=c).first()
             if o:
@@ -271,12 +280,12 @@ class Object(Document):
             else:
                 o.put_into(target)
 
-    def iter_inner_connections(self):
+    def iter_connections(self, direction):
         """
-        Yields inner connections as tuples of
+        Yields connections of specified direction as tuples of
         (name, remote_object, remote_name)
         """
-        ic = set(c.name for c in self.model.connections if c.direction == "i")
+        ic = set(c.name for c in self.model.connections if c.direction == direction)
         r = []
         for c in ObjectConnection.objects.filter(
                 connection__object=self.id):
@@ -291,6 +300,22 @@ class Object(Document):
             if sn and oc:
                 yield (sn, oc.object, oc.name)
 
+    def iter_inner_connections(self):
+        """
+        Yields inner connections as tuples of
+        (name, remote_object, remote_name)
+        """
+        for r in self.iter_connections("i"):
+            yield r
+
+    def iter_outer_connections(self):
+        """
+        Yields outer connections as tuples of
+        (name, remote_object, remote_name)
+        """
+        for r in self.iter_connections("o"):
+            yield r
+
     def has_inner_connections(self):
         """
         Returns True if object has any inner connections
@@ -304,6 +329,12 @@ class Object(Document):
         """
         return list(self.iter_inner_connections())
 
+    def get_outer_connections(self):
+        """
+        Returns a list of outer connections as
+        (name, remote_object, remote_name)
+        """
+        return list(self.iter_outer_connections())
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 
