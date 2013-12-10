@@ -1,0 +1,144 @@
+[
+    {
+        "name": "Network | OAM | Enter Session",
+        "description": "Client has entered the OAM session",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "The client on interface {{interface}} has entered the OAM session",
+                "body_template": "The client on interface {{interface}} has entered the OAM session",
+                "symptoms": "",
+                "probable_causes": "Ethernet OAM client on the specified interface has detected a remote client and has entered the OAM session.",
+                "recommended_actions": "No action is required. "
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+        ]
+    },
+
+    {
+        "name": "Network | OAM | Exit Session",
+        "description": "Client has left the OAM session",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "The client on interface {{interface}} has left the OAM session",
+                "body_template": "The client on interface {{interface}} has left the OAM session",
+                "symptoms": "",
+                "probable_causes": "Ethernet OAM client on the specified interface has experienced some state change.",
+                "recommended_actions": "No action is required."
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+        ]
+    },
+
+    {
+        "name": "Network | OAM | Client Recieved Remote Failure",
+        "description": "Client has received a remote failure indication from its remote peer",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "The client on interface {{interface}} has received a remote failure indication from its remote peer",
+                "body_template": "The client on interface {{interface}} has received a remote failure indication from its remote peer{% if reason %}\nFailure reason: {{reason}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "The remote client indicates a Link Fault, or a Dying Gasp (an unrecoverable local failure), or a Critical Event in the OAMPDU. In the event of Link Fault, the Fnetwork administrator may consider shutting down the link.",
+                "recommended_actions": "In the event of a link fault, consider shutting down the link."
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "reason",
+                "description": "Failure reason",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+        ]
+    },
+
+    {
+        "name": "Network | OAM | Client Clear Remote Failure",
+        "description": "Client has received a message to clear remote failure indication from its remote peer",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "The client on interface {{interface}} has clear remote failure indication from its remote peer",
+                "body_template": "The client on interface {{interface}} has clear remote failure indication from its remote peer{% if reason %}\nFailure reason: {{reason}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "The remote client received a message to clear a link fault, or a dying gasp (an unrecoverable local failure), or a critical event in the operations, administration, and maintenance Protocol Data Unit (OAMPDU).",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "reason",
+                "description": "Failure reason",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+        ]
+    },
+
+    {
+        "name": "Network | OAM | Monitoring Error",
+        "description": "Monitored error has been detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "{{error}} detected on interface {{interface}}",
+                "body_template": "{{error}} detected on interface {{interface}}",
+                "symptoms": "",
+                "probable_causes": "A monitored error has been detected to have crossed the user-specified threshold.",
+                "recommended_actions": "No action is required."
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "error",
+                "description": "Error type",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "disposition": [
+        ]
+    }
+]
