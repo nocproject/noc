@@ -162,7 +162,8 @@ class ObjectModel(Document):
 
     def get_model_connection(self, name):
         for c in self.connections:
-            if c.name == name:
+            if (c.name == name or (
+                    c.internal_name and c.internal_name == name)):
                 return c
         return None
 
