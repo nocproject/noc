@@ -103,5 +103,26 @@
                 "value_re": "%PLATFORM_UCAST-4-PREFIX: (?P<reason>.+could not be programmed into TCAM.+)"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | TCAM | TCAM entry capacity exceeded #4 (SYSLOG)",
+        "description": "%MLSCEF-DFC8-4-FIB_EXCEPTION_THRESHOLD: Hardware CEF entry usage is at 95% capacity for IPv4 unicast protocol.",
+        "event_class__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%MLSCEF-.+-4-FIB_EXCEPTION_THRESHOLD: (?P<reason>.+)"
+            }
+        ]
     }
 ]
