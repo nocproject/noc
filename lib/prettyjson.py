@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import uuid
 ## NOC modules
 from noc.lib.escape import json_escape
 from noc.lib.text import indent
@@ -13,8 +15,11 @@ from noc.lib.text import indent
 
 class PrettyJSON(object):
     @classmethod
-    def to_json(self, o, order=None):
-        return self.convert(o, 0, order)
+    def to_json(cls, o, order=None):
+        r = cls.convert(o, 0, order)
+        if not r.endswith("\n"):
+            r += "\n"
+        return r
 
     @classmethod
     def convert(cls, o, i, order=None):
@@ -28,6 +33,8 @@ class PrettyJSON(object):
             return indent("%d" % o, i)
         elif isinstance(o, float):
             return indent(str(o), i)
+        elif isinstance(o, uuid.UUID):
+            return indent("\"%s\"" % o, i)
         elif isinstance(o, list):
             if len(o) == 0:
                 return indent("[]", i)

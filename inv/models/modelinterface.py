@@ -6,10 +6,12 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, ListField,
-                                EmbeddedDocumentField)
+                                EmbeddedDocumentField, UUIDField)
 ## NOC modules
 from error import ModelDataError
 from noc.lib.utils import deep_copy
@@ -84,9 +86,9 @@ class ModelInterface(Document):
     }
 
     name = StringField(unique=True)
-    is_builtin = BooleanField(default=False)
     description = StringField()
     attrs = ListField(EmbeddedDocumentField(ModelInterfaceAttr))
+    uuid = UUIDField(binary=True)
 
     def __unicode__(self):
         return self.name
@@ -100,27 +102,29 @@ class ModelInterface(Document):
     def to_json(self):
         ar = []
         for a in self.attrs:
-            r = ["            {"]
-            r += ["                \"name\": \"%s\"," % q(a.name)]
-            r += ["                \"type\": \"%s\"," % q(a.type)]
-            r += ["                \"description\": \"%s\"," % q(a.description)]
-            r += ["                \"required\": %s," % q(a.required)]
-            r += ["                \"is_const\": %s" % q(a.is_const)]
-            r += ["            }"]
+            r = ["        {"]
+            r += ["            \"name\": \"%s\"," % q(a.name)]
+            r += ["            \"type\": \"%s\"," % q(a.type)]
+            r += ["            \"description\": \"%s\"," % q(a.description)]
+            r += ["            \"required\": %s," % q(a.required)]
+            r += ["            \"is_const\": %s" % q(a.is_const)]
+            r += ["        }"]
             ar += ["\n".join(r)]
-
         r = [
-            "[",
-            "    {",
-            "        \"name\": \"%s\"," % q(self.name),
-            "        \"description\": \"%s\"," % q(self.description),
-            "        \"attrs\": [",
+            "{",
+            "    \"name\": \"%s\"," % q(self.name),
+            "    \"uuid\": \"%s\"," % str(self.uuid),
+            "    \"description\": \"%s\"," % q(self.description),
+            "    \"attrs\": [",
             ",\n".join(ar),
-            "        ]",
-            "    }",
-            "]"
+            "    ]",
+            "}",
         ]
-        return "\n".join(r)
+        return "\n".join(r) + "\n"
+
+    def get_json_path(self):
+        p = [n.strip() for n in self.name.split("|")]
+        return os.path.join(*p) + ".json"
 
     @classmethod
     def clean_data(cls, data):

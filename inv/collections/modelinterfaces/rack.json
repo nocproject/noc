@@ -1,43 +1,42 @@
-[
-    {
-        "name": "rack",
-        "description": "Rack enclosures",
-        "attrs": [
-            {
-                "name": "units",
-                "type": "int",
-                "description": "Internal height in units",
-                "required": true,
-                "is_const": true
-            },
-            {
-                "name": "width",
-                "type": "int",
-                "description": "Max. equipment width in mm",
-                "required": true,
-                "is_const": true
-            },
-            {
-                "name": "depth",
-                "type": "int",
-                "description": "Max. equipment depth in mm",
-                "required": true,
-                "is_const": true
-            },
-            {
-                "name": "front_door",
-                "type": "str",
-                "description": "Front door configuration",
-                "required": true,
-                "is_const": true
-            },
-            {
-                "name": "rear_door",
-                "type": "str",
-                "description": "Rear door configuration",
-                "required": true,
-                "is_const": true
-            }
-        ]
-    }
-]
+{
+    "name": "rack",
+    "uuid": "a15da7b7-98de-4843-b256-0da049137833",
+    "description": "Rack enclosures",
+    "attrs": [
+        {
+            "name": "units",
+            "type": "int",
+            "description": "Internal height in units",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "width",
+            "type": "int",
+            "description": "Max. equipment width in mm",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "depth",
+            "type": "int",
+            "description": "Max. equipment depth in mm",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "front_door",
+            "type": "str",
+            "description": "Front door configuration",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "rear_door",
+            "type": "str",
+            "description": "Rear door configuration",
+            "required": true,
+            "is_const": true
+        }
+    ]
+}

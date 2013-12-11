@@ -120,9 +120,11 @@ class Object(Document):
         lc = self.model.get_model_connection(name)
         if lc is None:
             raise ConnectionError("Local connection not found: %s" % name)
+        name = lc.name
         rc = remote_object.model.get_model_connection(remote_name)
         if rc is None:
             raise ConnectionError("Remote connection not found: %s" % remote_name)
+        remote_name = rc.name
         # Check genders are compatible
         r_gender = ConnectionType.OPPOSITE_GENDER[rc.gender]
         if lc.gender != r_gender:

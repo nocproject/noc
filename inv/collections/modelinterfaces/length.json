@@ -1,15 +1,14 @@
-[
-    {
-        "name": "length",
-        "description": "Cable length",
-        "attrs": [
-            {
-                "name": "length",
-                "type": "float",
-                "description": "Cable length in meters",
-                "required": true,
-                "is_const": false
-            }
-        ]
-    }
-]
+{
+    "name": "length",
+    "uuid": "ba30451d-61f6-4fff-9443-f3ebfe30bbfe",
+    "description": "Cable length",
+    "attrs": [
+        {
+            "name": "length",
+            "type": "float",
+            "description": "Cable length in meters",
+            "required": true,
+            "is_const": false
+        }
+    ]
+}

@@ -1,22 +1,21 @@
-[
-    {
-        "name": "airflow",
-        "description": "Air from from cold intake to host exhaust",
-        "attrs": [
-            {
-                "name": "exhaust",
-                "type": "str",
-                "description": "Hot exhaust direction",
-                "required": true,
-                "is_const": true
-            },
-            {
-                "name": "intake",
-                "type": "str",
-                "description": "Cold intake direction",
-                "required": true,
-                "is_const": true
-            }
-        ]
-    }
-]
+{
+    "name": "airflow",
+    "uuid": "f7a27faf-3b5d-45a6-b3f3-bedf20ea3337",
+    "description": "Air from from cold intake to host exhaust",
+    "attrs": [
+        {
+            "name": "exhaust",
+            "type": "str",
+            "description": "Hot exhaust direction",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "intake",
+            "type": "str",
+            "description": "Cold intake direction",
+            "required": true,
+            "is_const": true
+        }
+    ]
+}
