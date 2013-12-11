@@ -53,7 +53,8 @@ Ext.define("NOC.inv.connectiontype.Application", {
                     text: "Builtin",
                     width: 50,
                     dataIndex: "is_builtin",
-                    renderer: NOC.render.Bool
+                    renderer: NOC.render.Bool,
+                    sortable: false
                 },
                 {
                     text: "Genders",

@@ -27,7 +27,8 @@ Ext.define("NOC.inv.vendor.Application", {
             text: "Builtin",
             dataIndex: "is_builtin",
             width: 30,
-            renderer: NOC.render.Bool
+            renderer: NOC.render.Bool,
+            sortable: false
         },
         {
             text: "Site",
