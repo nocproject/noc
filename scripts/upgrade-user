@@ -53,6 +53,7 @@ info "Syncronizing pyRules"
 ./noc sync-pyrules || error_exit "$LINENO: sync-pyrules failed"
 # Syncronize mongodb collections
 info "Syncronize collections"
+./noc collection --sync || error_exit "$LINENO: collection --sync failed"
 ./noc sync-collections || error_exit "$LINENO: sync-collections failed"
 # Syncronize refbooks
 info "Syncronizing refbooks"

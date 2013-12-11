@@ -1,36 +1,35 @@
-[
-    {
-        "name": "rackmount",
-        "description": "Rack mouted equipment",
-        "attrs": [
-            {
-                "name": "units",
-                "type": "int",
-                "description": "Size in units",
-                "required": true,
-                "is_const": true
-            },
-            {
-                "name": "position",
-                "type": "int",
-                "description": "Bottom rack position (in units)",
-                "required": false,
-                "is_const": false
-            },
-            {
-                "name": "side",
-                "type": "str",
-                "description": "Mounting side (f/r)",
-                "required": false,
-                "is_const": false
-            },
-            {
-                "name": "shift",
-                "type": "int",
-                "description": "Shift 0/1/2 holes up",
-                "required": false,
-                "is_const": false
-            }
-        ]
-    }
-]
+{
+    "name": "rackmount",
+    "uuid": "b26d8388-0450-4c30-886d-d3d6da86c401",
+    "description": "Rack mouted equipment",
+    "attrs": [
+        {
+            "name": "units",
+            "type": "int",
+            "description": "Size in units",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "position",
+            "type": "int",
+            "description": "Bottom rack position (in units)",
+            "required": false,
+            "is_const": false
+        },
+        {
+            "name": "side",
+            "type": "str",
+            "description": "Mounting side (f/r)",
+            "required": false,
+            "is_const": false
+        },
+        {
+            "name": "shift",
+            "type": "int",
+            "description": "Shift 0/1/2 holes up",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}

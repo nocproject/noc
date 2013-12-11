@@ -58,9 +58,9 @@ Ext.define("NOC.inv.modelinterface.Application", {
                     allowBlank: false
                 },
                 {
-                    name: "is_builtin",
-                    xtype: "checkboxfield",
-                    boxLabel: "Is Builtin"
+                    name: "uuid",
+                    xtype: "displayfield",
+                    fieldLabel: "UUID"
                 },
                 {
                     name: "description",

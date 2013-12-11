@@ -1,22 +1,21 @@
-[
-    {
-        "name": "power",
-        "description": "Object's power consumption",
-        "attrs": [
-            {
-                "name": "is_recursive",
-                "type": "bool",
-                "description": "Add nested object's power consumption if true",
-                "required": true,
-                "is_const": true
-            },
-            {
-                "name": "power",
-                "type": "float",
-                "description": "Object's own power consumption in W",
-                "required": true,
-                "is_const": true
-            }
-        ]
-    }
-]
+{
+    "name": "power",
+    "uuid": "a3c13162-a7bf-420c-99e3-5977a5f0f47e",
+    "description": "Object's power consumption",
+    "attrs": [
+        {
+            "name": "is_recursive",
+            "type": "bool",
+            "description": "Add nested object's power consumption if true",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "power",
+            "type": "float",
+            "description": "Object's own power consumption in W",
+            "required": true,
+            "is_const": true
+        }
+    ]
+}

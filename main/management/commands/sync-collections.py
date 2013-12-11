@@ -220,8 +220,8 @@ class Command(BaseCommand):
     collections = [
         ("inv", [
             # Inventory
-            ("vendors", Vendor),
-            ("modelinterfaces", ModelInterface),
+            # ("vendors", Vendor),
+            # ("modelinterfaces", ModelInterface),
             ("connectiontypes", ConnectionType),
             ("connectionrules", ConnectionRule),
             ("objectmodels", ObjectModel)

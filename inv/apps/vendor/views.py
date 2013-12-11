@@ -9,6 +9,7 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.vendor import Vendor
+from noc.main.models.collectioncache import CollectionCache
 
 
 class VendorApplication(ExtDocApplication):
@@ -18,7 +19,12 @@ class VendorApplication(ExtDocApplication):
     title = "Vendor"
     menu = "Setup | Vendors"
     model = Vendor
-    query_fields = ["name__icontains", "site__icontains"]
+    query_fields = [
+        "name__icontains", "code__icontains", "site__icontains"
+    ]
+
+    def field_is_builtin(self, o):
+        return bool(CollectionCache.objects.filter(uuid=o.uuid))
 
     @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"],
           access="read", api=True)

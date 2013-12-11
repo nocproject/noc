@@ -19,15 +19,15 @@ Ext.define("NOC.inv.vendor.Application", {
             width: 200
         },
         {
-            text: "Builtin",
-            dataIndex: "is_builtin",
-            renderer: NOC.render.Bool,
-            width: 50
-        },
-        {
             text: "Code",
             dataIndex: "code",
             width: 100
+        },
+        {
+            text: "Builtin",
+            dataIndex: "is_builtin",
+            width: 30,
+            renderer: NOC.render.Bool
         },
         {
             text: "Site",
@@ -44,9 +44,9 @@ Ext.define("NOC.inv.vendor.Application", {
             allowBlank: false
         },
         {
-            name: "is_builtin",
-            xtype: "checkboxfield",
-            boxLabel: "Is Builtin"
+            name: "uuid",
+            xtype: "displayfield",
+            fieldLabel: "UUID"
         },
         {
             name: "code",
@@ -59,13 +59,6 @@ Ext.define("NOC.inv.vendor.Application", {
             xtype: "textfield",
             fieldLabel: "Site",
             allowBlank: false
-        }
-    ],
-    filters: [
-        {
-            title: "By Is Builtin",
-            name: "is_builtin",
-            ftype: "boolean"
         }
     ],
     //

@@ -9,6 +9,7 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.modelinterface import ModelInterface
+from noc.main.models.collectioncache import CollectionCache
 
 
 class ModelInterfaceApplication(ExtDocApplication):
@@ -19,6 +20,9 @@ class ModelInterfaceApplication(ExtDocApplication):
     menu = "Setup | Model Interfaces"
     model = ModelInterface
     query_fields = ["name__icontains", "description__icontains"]
+
+    def field_is_builtin(self, o):
+        return bool(CollectionCache.objects.filter(uuid=o.uuid))
 
     @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"],
           access="read", api=True)

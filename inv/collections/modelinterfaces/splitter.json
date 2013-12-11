@@ -1,15 +1,14 @@
-[
-    {
-        "name": "splitter",
-        "description": "Split input power to outputs with given gain",
-        "attrs": [
-            {
-                "name": "split",
-                "type": "str",
-                "description": "Input power division, as comma-separated list of output_name=gain",
-                "required": true,
-                "is_const": true
-            }
-        ]
-    }
-]
+{
+    "name": "splitter",
+    "uuid": "62b945a4-ebf6-4174-94a7-c77e327d16d4",
+    "description": "Split input power to outputs with given gain",
+    "attrs": [
+        {
+            "name": "split",
+            "type": "str",
+            "description": "Input power division, as comma-separated list of output_name=gain",
+            "required": true,
+            "is_const": true
+        }
+    ]
+}

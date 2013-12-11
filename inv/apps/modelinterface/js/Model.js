@@ -17,7 +17,8 @@ Ext.define("NOC.inv.modelinterface.Model", {
         },
         {
             name: "is_builtin",
-            type: "boolean"
+            type: "boolean",
+            persist: false
         },
         {
             name: "description",
@@ -26,6 +27,11 @@ Ext.define("NOC.inv.modelinterface.Model", {
         {
             name: "name",
             type: "string"
+        },
+        {
+            name: "uuid",
+            type: "string",
+            persist: false
         },
         {
             name: "attrs",
