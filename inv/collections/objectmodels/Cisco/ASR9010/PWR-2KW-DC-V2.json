@@ -1,0 +1,20 @@
+{
+    "name": "Cisco | ASR9010 | PWR-2KW-DC-V2",
+    "uuid": "855b6783-2c6c-4bd2-8f9d-f3e34b478a42",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR9010 2000 Watt DC power module version 2",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR9010 | PEM-V2"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "PWR-2KW-DC-V2"
+        }
+    }
+}

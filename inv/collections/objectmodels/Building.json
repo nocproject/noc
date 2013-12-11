@@ -1,0 +1,12 @@
+{
+    "name": "Building",
+    "uuid": "9e67029a-d694-41bb-b07c-b241a18c69b9",
+    "vendor__code": "NOC",
+    "description": "Building",
+    "connections": [],
+    "data": {
+        "container": {
+            "container": true
+        }
+    }
+}

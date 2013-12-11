@@ -1,0 +1,37 @@
+{
+    "name": "Juniper | MX | PWR-MX80-DC-S",
+    "uuid": "3f88374e-f103-476d-a58b-7707f824c7b9",
+    "vendor__code": "JUNIPER",
+    "description": "MX80 DC Power Supply",
+    "connections": [
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Internal power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX80 PEM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "PWR-MX80-DC-S",
+            "part_no0": "740-029712"
+        }
+    }
+}

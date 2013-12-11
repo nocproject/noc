@@ -1,0 +1,189 @@
+{
+    "name": "Brocade | SX | SX-FI-24HF 24 SFP Linecard1",
+    "uuid": "0d2895b7-1076-411b-8104-bd5d305465e2",
+    "vendor__code": "BROCADE",
+    "description": "SX-FI-24HF 25 SFP 100/1000M Linecard",
+    "connection_rule__name": "Brocade | SX",
+    "connections": [
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp1",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp2",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp3",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp4",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp5",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp6",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp7",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp8",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp9",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp10",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp11",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp12",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp13",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp14",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp15",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp16",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp17",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp18",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp19",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp20",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp21",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp22",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp23",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp24",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "mgmt connector",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Brocade | FastIron SuperX | Line Connector"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SX-FI-24HF"
+        }
+    }
+}

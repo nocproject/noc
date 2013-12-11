@@ -1,0 +1,33 @@
+{
+    "name": "NoName | Transceiver | 10G | SFP+ ZR",
+    "uuid": "996cc11c-aee5-4997-a4a5-d9b005a4a05b",
+    "vendor__code": "NONAME",
+    "description": "NoName SFP+ ZR transceiver",
+    "connections": [
+        {
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASEZR-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASEZR-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {}
+}

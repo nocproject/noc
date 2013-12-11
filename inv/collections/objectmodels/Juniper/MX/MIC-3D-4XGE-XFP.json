@@ -1,0 +1,49 @@
+{
+    "name": "Juniper | MX | MIC-3D-4XGE-XFP",
+    "uuid": "b10a145e-fc7b-4484-8079-429385fdf83c",
+    "vendor__code": "JUNIPER",
+    "description": "4x10G MIC for MX",
+    "connections": [
+        {
+            "description": "MPC connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "Port 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0",
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "Port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/1",
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "Port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "1/0",
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "Port 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "1/1",
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "MIC-3D-4XGE-XFP",
+            "part_no0": "750-028387"
+        }
+    }
+}

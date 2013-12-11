@@ -1,0 +1,292 @@
+{
+    "name": "Arista | 7100 | DCS-7124S",
+    "uuid": "f2ba6387-5e5a-46e1-a2f3-e0cc645877a2",
+    "vendor__code": "ARISTA",
+    "description": "Arista 7124S, 24-port L2/3/4 switch, 600ns latency, 760W AC power supplies",
+    "connection_rule__name": "Arista | 7100",
+    "connections": [
+        {
+            "description": "Port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 8",
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 9",
+            "direction": "i",
+            "gender": "f",
+            "name": "9",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 10",
+            "direction": "i",
+            "gender": "f",
+            "name": "10",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 11",
+            "direction": "i",
+            "gender": "f",
+            "name": "11",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 12",
+            "direction": "i",
+            "gender": "f",
+            "name": "12",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 13",
+            "direction": "i",
+            "gender": "f",
+            "name": "13",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 14",
+            "direction": "i",
+            "gender": "f",
+            "name": "14",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 15",
+            "direction": "i",
+            "gender": "f",
+            "name": "15",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 16",
+            "direction": "i",
+            "gender": "f",
+            "name": "16",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 17",
+            "direction": "i",
+            "gender": "f",
+            "name": "17",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 18",
+            "direction": "i",
+            "gender": "f",
+            "name": "18",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 19",
+            "direction": "i",
+            "gender": "f",
+            "name": "19",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 20",
+            "direction": "i",
+            "gender": "f",
+            "name": "20",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 21",
+            "direction": "i",
+            "gender": "f",
+            "name": "21",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 22",
+            "direction": "i",
+            "gender": "f",
+            "name": "22",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 23",
+            "direction": "i",
+            "gender": "f",
+            "name": "23",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 24",
+            "direction": "i",
+            "gender": "f",
+            "name": "24",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Management port 0",
+            "direction": "s",
+            "gender": "f",
+            "name": "management0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Management port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "management1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fan Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan1",
+            "type__name": "Arista | 7100 | FAN"
+        },
+        {
+            "description": "Fan Slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan2",
+            "type__name": "Arista | 7100 | FAN"
+        },
+        {
+            "description": "Fan Slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan3",
+            "type__name": "Arista | 7100 | FAN"
+        },
+        {
+            "description": "Fan Slot 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan4",
+            "type__name": "Arista | 7100 | FAN"
+        },
+        {
+            "description": "Fan Slot 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan5",
+            "type__name": "Arista | 7100 | FAN"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB Slot",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "Power Supply 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Arista | 7100 | PWR"
+        },
+        {
+            "description": "Power Supply 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Arista | 7100 | PWR"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "DCS-7124S"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1
+        }
+    }
+}

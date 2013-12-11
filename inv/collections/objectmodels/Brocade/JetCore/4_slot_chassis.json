@@ -1,0 +1,49 @@
+{
+    "name": "Brocade | JetCore | 4 slot chassis",
+    "uuid": "c69d8ee7-a292-48ca-9db4-bd64515c722b",
+    "vendor__code": "BROCADE",
+    "description": "BigIron 4000 Router/FastIron 400 Router/Switch",
+    "connection_rule__name": "Brocade | JetCore",
+    "connections": [
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card1",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card2",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card3",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card4",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "BigIron 4000 Router",
+            "part_no1": "FastIron 400 Router"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 5
+        }
+    }
+}

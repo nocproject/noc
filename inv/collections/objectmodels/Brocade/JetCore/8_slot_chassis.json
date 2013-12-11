@@ -1,0 +1,78 @@
+{
+    "name": "Brocade | JetCore | 8 slot chassis",
+    "uuid": "9ac4db8f-3421-4ff0-9378-e6dc87bfbd56",
+    "vendor__code": "BROCADE",
+    "description": "BigIron 8000 Router/FastIron 800 Router/Switch",
+    "connection_rule__name": "Brocade | JetCore",
+    "connections": [
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card1",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card2",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card3",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card4",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card5",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card6",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card7",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        },
+        {
+            "description": "Backplane connector",
+            "direction": "i",
+            "gender": "m",
+            "name": "card8",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "BigIron 8000 Router",
+            "part_no1": "FastIron 800 Router",
+            "part_no2": "NetIron 800 Router"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 12
+        }
+    }
+}

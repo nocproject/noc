@@ -1,0 +1,29 @@
+{
+    "name": "Force10 | S | S50-01-LSC-24G",
+    "uuid": "24e34c75-ae69-4b80-b7cc-c71950bbdb87",
+    "vendor__code": "FORCE10",
+    "description": "4m stacking cable for S50-01-24G-1S",
+    "connections": [
+        {
+            "cross": "1",
+            "description": "12G stacking connector",
+            "direction": "s",
+            "gender": "m",
+            "name": "0",
+            "type__name": "Force10 | S | Stacking 24G"
+        },
+        {
+            "cross": "0",
+            "description": "12G stacking connector",
+            "direction": "s",
+            "gender": "m",
+            "name": "1",
+            "type__name": "Force10 | S | Stacking 24G"
+        }
+    ],
+    "data": {
+        "length": {
+            "length": "4"
+        }
+    }
+}

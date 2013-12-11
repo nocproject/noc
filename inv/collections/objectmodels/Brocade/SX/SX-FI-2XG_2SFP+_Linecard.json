@@ -1,0 +1,35 @@
+{
+    "name": "Brocade | SX | SX-FI-2XG 2SFP+ Linecard",
+    "uuid": "bcc931e4-58e6-45d0-926d-850db06186f0",
+    "vendor__code": "BROCADE",
+    "description": "SX-FI-2XG 2SFP+ Linecard",
+    "connection_rule__name": "Brocade | SX",
+    "connections": [
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfpp1",
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfpp2",
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "mgmt connector",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Brocade | FastIron SuperX | Line Connector"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SX-FI-2XG"
+        }
+    }
+}

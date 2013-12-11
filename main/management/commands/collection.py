@@ -18,6 +18,7 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.modelinterface import ModelInterface
 from noc.inv.models.connectiontype import ConnectionType
 from noc.inv.models.connectionrule import ConnectionRule
+from noc.inv.models.objectmodel import ObjectModel
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
 
@@ -62,7 +63,8 @@ class Command(BaseCommand):
         ("inv.vendors", Vendor),
         ("inv.modelinterfaces", ModelInterface),
         ("inv.connectiontypes", ConnectionType),
-        ("inv.connectionrules", ConnectionRule)
+        ("inv.connectionrules", ConnectionRule),
+        ("inv.objectmodels", ObjectModel)
     ]
 
     def log(self, msg):

@@ -1,0 +1,81 @@
+{
+    "name": "Juniper | J | J2320",
+    "uuid": "10625c7f-c264-445e-ae78-2210cb6b31d0",
+    "vendor__code": "JUNIPER",
+    "description": "J2320, JUNOS, 3 PIM Slots, HW Encryption, AC Power Supply, 19\" Rack Mount\n",
+    "connection_rule__name": "Juniper | MX",
+    "connections": [
+        {
+            "description": "ge-0/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-0/0/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-0/0/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-0/0/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "PIM1",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc1",
+            "type__name": "Juniper | J | PIM"
+        },
+        {
+            "description": "PIM2",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc2",
+            "type__name": "Juniper | J | PIM"
+        },
+        {
+            "description": "PIM3",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc3",
+            "type__name": "Juniper | J | PIM"
+        },
+        {
+            "description": "power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "J2320"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1
+        }
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "name": "Juniper | MX | MX-MPC2-3D",
+    "uuid": "4d3c9a48-9a71-457c-ae48-59f8d1ed442a",
+    "vendor__code": "JUNIPER",
+    "description": "2 Trio PFEs, port queue, 64 K IFLs",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "MIC Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic0",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "MIC Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic1",
+            "type__name": "Juniper | MX | MIC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "MX-MPC2-3D",
+            "part_no0": "750-031089"
+        }
+    }
+}

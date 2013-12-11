@@ -1,0 +1,34 @@
+{
+    "name": "Force10 | S | S50-01-10GE-2P",
+    "uuid": "2a4a146d-8b8c-4509-b026-b25ff398e5b7",
+    "vendor__code": "FORCE10",
+    "description": "2-port 10 GbE XFP module",
+    "connections": [
+        {
+            "description": "XFP Port 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "port0",
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "XFP Port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "port1",
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Force10 | S | Module"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "S50-01-10GE-2P"
+        }
+    }
+}

@@ -1,0 +1,133 @@
+{
+    "name": "Brocade | JetCore | J-BxG16",
+    "uuid": "66ba4a93-0eb3-4303-a888-48e9e4216c1a",
+    "vendor__code": "BROCADE",
+    "description": "16-sfp jetcore line card",
+    "connection_rule__name": "Brocade | JetCore",
+    "connections": [
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp1",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp2",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp3",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp4",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp5",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp6",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp7",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp8",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp9",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp10",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp11",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp12",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp13",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp14",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp15",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp16",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "backplane",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "J-BxG16"
+        }
+    }
+}

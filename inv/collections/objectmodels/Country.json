@@ -1,0 +1,12 @@
+{
+    "name": "Country",
+    "uuid": "cf775661-9287-4f5a-ae13-86693c1a2a79",
+    "vendor__code": "NOC",
+    "description": "Country",
+    "connections": [],
+    "data": {
+        "container": {
+            "container": true
+        }
+    }
+}

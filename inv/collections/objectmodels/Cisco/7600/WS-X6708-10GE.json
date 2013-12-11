@@ -1,0 +1,91 @@
+{
+    "name": "Cisco | 7600 | WS-X6708-10GE",
+    "uuid": "85f3cd3f-a4ca-4692-ba7d-8ae28b64b567",
+    "vendor__code": "CISCO",
+    "description": "Cisco WS-X6708-10GE CEF720 8 port 10GE with DFC",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "DFC slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "dfc",
+            "type__name": "Cisco | 7600 | DFC"
+        },
+        {
+            "description": "TenGigabitEthernet X/1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te1_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "TenGigabitEthernet X/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te2_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "TenGigabitEthernet X/3",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te3_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "TenGigabitEthernet X/4",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te4_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "TenGigabitEthernet X/5",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te5_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "TenGigabitEthernet X/6",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te6_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "TenGigabitEthernet X/7",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te7_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "TenGigabitEthernet X/8",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te8_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-X6708-10GE"
+        }
+    }
+}

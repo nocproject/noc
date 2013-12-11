@@ -1,0 +1,28 @@
+{
+    "name": "Huawei | Quidway S5300 | Fan Module",
+    "uuid": "ae0df0b7-e0a1-46db-a4f9-126134bbf2d4",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei Quidway S5300 Fan Module",
+    "connections": [
+        {
+            "description": "Fan Slot",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Huawei | Quidway S5300 | Fan"
+        }
+    ],
+    "data": {
+        "dimensions": {
+            "depth": "100",
+            "height": "40",
+            "width": "103"
+        },
+        "power": {
+            "power": "12"
+        },
+        "weight": {
+            "weight": "0.27"
+        }
+    }
+}
