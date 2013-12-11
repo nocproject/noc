@@ -140,5 +140,130 @@
         ],
         "disposition": [
         ]
+    },
+
+    {
+        "name": "Network | OAM | Discovery Timeout",
+        "description": "Client discovery timeout",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Discovery timeout on interface {{interface}}",
+                "body_template": "Discovery timeout on interface {{interface}}",
+                "symptoms": "",
+                "probable_causes": "The Ethernet OAM client on the specified interface has not received any OAMPDUs in the number of seconds for timeout that were configured by the user. The client has exited the OAM session.",
+                "recommended_actions": "No action is required."
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+        ]
+    },
+
+    {
+        "name": "Network | OAM | Entering Master Loopback Mode",
+        "description": "Interface has entered the master loopback mode",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Interface {{interface}} has entered the master loopback mode",
+                "body_template": "Interface {{interface}} has entered the master loopback mode",
+                "symptoms": "",
+                "probable_causes": "The specified interface has entered or exited loopback mode because of protocol control or an external event, such as the interface link going down.",
+                "recommended_actions": "No action is required."
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+        ]
+    },
+
+    {
+        "name": "Network | OAM | Exiting Master Loopback Mode",
+        "description": "Interface has exited the master loopback mode",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Interface {{interface}} has exited the master loopback mode",
+                "body_template": "Interface {{interface}} has exited the master loopback mode",
+                "symptoms": "",
+                "probable_causes": "The specified interface has entered or exited loopback mode because of protocol control or an external event, such as the interface link going down.",
+                "recommended_actions": "No action is required."
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+        ]
+    },
+
+    {
+        "name": "Network | OAM | Entering Slave Loopback Mode",
+        "description": "Interface has entered the slave loopback mode",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Interface {{interface}} has entered the slave loopback mode",
+                "body_template": "Interface {{interface}} has entered the slave loopback mode",
+                "symptoms": "",
+                "probable_causes": "The specified interface has entered or exited loopback mode because of protocol control or an external event, such as the interface link going down.",
+                "recommended_actions": "No action is required."
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+        ]
+    },
+
+    {
+        "name": "Network | OAM | Exiting Slave Loopback Mode",
+        "description": "Interface has exited the slave loopback mode",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Interface {{interface}} has exited the slave loopback mode",
+                "body_template": "Interface {{interface}} has exited the slave loopback mode",
+                "symptoms": "",
+                "probable_causes": "The specified interface has entered or exited loopback mode because of protocol control or an external event, such as the interface link going down.",
+                "recommended_actions": "No action is required."
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+        ]
     }
 ]

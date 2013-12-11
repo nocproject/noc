@@ -102,5 +102,110 @@
                 "value_re": "%ETHERNET_OAM-5-LINK_MONITOR: (?P<error>.+) errors detected over the last .+ on interface (?P<interface>\\S+)"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Discovery Timeout (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-LINK_TIMEOUT: The client on interface Gi0/1 has timed out and exited the OAM session.",
+        "event_class__name": "Network | OAM | Discovery Timeout",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-LINK_TIMEOUT: The client on interface (?P<interface>\\S+) has timed out"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Entering Master Loopback Mode (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has entered the master loopback mode.",
+        "event_class__name": "Network | OAM | Entering Master Loopback Mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has entered the master loopback mode"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Exiting Master Loopback Mode (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has exited the master loopback mode.",
+        "event_class__name": "Network | OAM | Exiting Master Loopback Mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has exited the master loopback mode"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Entering Slave Loopback Mode (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has entered the slave loopback mode.",
+        "event_class__name": "Network | OAM | Entering Slave Loopback Mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has entered the slave loopback mode"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Exiting Slave Loopback Mode (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has exited the slave loopback mode.",
+        "event_class__name": "Network | OAM | Exiting Slave Loopback Mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has exited the slave loopback mode"
+            }
+        ]
     }
 ]

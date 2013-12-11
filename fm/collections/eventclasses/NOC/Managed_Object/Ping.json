@@ -17,6 +17,10 @@
             {
                 "action": "clear",
                 "alarm_class__name": "NOC | Managed Object | Ping Failed"
+            },
+            {
+                "action": "clear",
+                "alarm_class__name": "Chassis | PSU | Power Failed"
             }
         ],
         "repeat_suppression": [
