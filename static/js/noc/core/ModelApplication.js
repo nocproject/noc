@@ -879,6 +879,10 @@ Ext.define("NOC.core.ModelApplication", {
     // "clone" button pressed
     onClone: function() {
         var me = this;
+        if(me.currentRecord && me.currentRecord.get("uuid")) {
+            me.currentRecord.set("uuid", null);
+            me.form.setValues({uuid: null});
+        }
         me.currentRecord = null;  // Mark record as new
         me.setFormTitle(me.createTitle);
         me.setFormId("CLONE");
