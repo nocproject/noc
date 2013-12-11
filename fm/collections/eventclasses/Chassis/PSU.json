@@ -28,7 +28,7 @@
             }
         ]
     },
-    
+
     {
         "name": "Chassis | PSU | PSU Recovered",
         "description": "Power Suppply Unit recovered",
@@ -90,6 +90,29 @@
                 "description": "Current state",
                 "type": "str",
                 "required": false
+            }
+        ]
+    },
+
+    {
+        "name": "Chassis | PSU | Power Failed",
+        "description": "Power failed",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "Power failed",
+                "body_template": "Power failed",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [ ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Chassis | PSU | Power Failed"
             }
         ]
     }

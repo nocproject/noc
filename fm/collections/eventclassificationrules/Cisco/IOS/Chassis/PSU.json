@@ -504,5 +504,26 @@
                 "value_re": "%ENVM-6-PS(?:CHANGE|LEV): (?P<name>Power Supply \\d+)( state)? changed from (?P<from_state>.+) to (?P<to_state>.+)$"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | Power Failed (SYSLOG)",
+        "description": "%DYINGGASP-0-POWER_LOSS: Shutdown due to power loss",
+        "event_class__name": "Chassis | PSU | Power Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%DYINGGASP-0-POWER_LOSS: Shutdown due to power loss"
+            }
+        ]
     }
 ]
