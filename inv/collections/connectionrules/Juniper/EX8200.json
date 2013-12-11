@@ -1,73 +1,72 @@
-[
-    {
-        "name": "Juniper | EX8200",
-        "description": "Juniper EX8200 Connection rules",
-        "context": [
-            {
-                "reset_scopes": ["fpc", "pic"],
-                "scope": "chassis",
-                "type": "CHASSIS"
-            },
-            {
-                "reset_scopes": ["pic"],
-                "scope": "fpc",
-                "type": "FPC"
-            },
-            {
-                "reset_scopes": [],
-                "scope": "pic",
-                "type": "PIC"
-            }
-        ],
-        "rules": [
-            {
-                "match_connection": "in",
-                "match_type": "FAN",
-                "scope": "chassis",
-                "target_connection": "fan{N}",
-                "target_number": "",
-                "target_type": "CHASSIS"
-            },
-            {
-                "match_connection": "in",
-                "match_type": "PSU",
-                "scope": "chassis",
-                "target_connection": "psu{N}",
-                "target_number": "",
-                "target_type": "CHASSIS"
-            },
-            {
-                "match_connection": "in",
-                "match_type": "SCB",
-                "scope": "chassis",
-                "target_connection": "cb{N}",
-                "target_number": "",
-                "target_type": "CHASSIS"
-            },
-            {
-                "match_connection": "in",
-                "match_type": "FPC",
-                "scope": "chassis",
-                "target_connection": "fpc{N}",
-                "target_number": "",
-                "target_type": "CHASSIS"
-            },
-            {
-                "match_connection": "in",
-                "match_type": "PIC",
-                "scope": "fpc",
-                "target_connection": "pic{N}",
-                "target_number": "",
-                "target_type": "FPC"
-            },
-            {
-                "match_connection": "in",
-                "match_type": "XCVR",
-                "scope": "fpc",
-                "target_connection": "{pic}/{N}",
-                "target_number": "",
-                "target_type": "FPC"
-            }
-        ]
-    }
-]
+{
+    "name": "Juniper | EX8200",
+    "uuid": "b3c79076-96d9-486a-86d8-57b338c68dbe",
+    "description": "Juniper EX8200 Connection rules",
+    "context": [
+        {
+            "reset_scopes": ["fpc", "pic"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": ["pic"],
+            "scope": "fpc",
+            "type": "FPC"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "pic",
+            "type": "PIC"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SCB",
+            "scope": "chassis",
+            "target_connection": "cb{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FPC",
+            "scope": "chassis",
+            "target_connection": "fpc{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PIC",
+            "scope": "fpc",
+            "target_connection": "pic{N}",
+            "target_number": "",
+            "target_type": "FPC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "fpc",
+            "target_connection": "{pic}/{N}",
+            "target_number": "",
+            "target_type": "FPC"
+        }
+    ]
+}

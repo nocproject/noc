@@ -6,16 +6,15 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, BooleanField, DictField,
-                                ListField, EmbeddedDocumentField,
-                                ObjectIdField)
+from mongoengine.fields import (StringField, UUIDField,
+                                ListField, EmbeddedDocumentField)
 ## NOC modules
-from connectiontype import ConnectionType
-from vendor import Vendor
-from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
+from noc.lib.text import quote_safe_path
 
 
 class Context(EmbeddedDocument):
@@ -96,10 +95,10 @@ class ConnectionRule(Document):
     }
 
     name = StringField(unique=True)
-    is_builtin = BooleanField(default=False)
     description = StringField()
     context = ListField(EmbeddedDocumentField(Context))
     rules = ListField(EmbeddedDocumentField(Rule))
+    uuid = UUIDField(binary=True)
 
     def __unicode__(self):
         return self.name
@@ -108,11 +107,16 @@ class ConnectionRule(Document):
     def json_data(self):
         return {
             "name": self.name,
+            "uuid": self.uuid,
             "description": self.description,
             "context": [c.json_data for c in self.context],
             "rules": [c.json_data for c in self.rules]
         }
 
     def to_json(self):
-        return to_json([self.json_data],
-                       order=["name", "description"])
+        return to_json(self.json_data,
+                       order=["name", "uuid", "description"])
+
+    def get_json_path(self):
+        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        return os.path.join(*p) + ".json"

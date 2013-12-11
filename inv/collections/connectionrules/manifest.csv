@@ -1,0 +1,14 @@
+name,uuid,path,hash
+Arista | 7100,ca7c714b-2949-49a0-b3bd-ef1c2d2f671e,Arista/7100.json,320a9254af5291952e64580acdaf5d2834b67b3bc7cc874ab07aa71ba7753ebd
+Brocade | JetCore,c82bd220-e4dc-4f1b-b501-787d2b537a67,Brocade/JetCore.json,b4238640483b1c3de9d989e17bebc1d89f0f2beda599a36f2eccf7f18011ffd0
+Brocade | SX,3aefbe22-c0b6-421a-9bf7-5a4b49ff4a98,Brocade/SX.json,0a2a0f9e93018fdc4be6e0c70fcc4aca15aebdeb0ff93a40b4e6e1dab011b2b4
+Cisco | 7600,eaa17985-6b50-4cdb-8b30-bdab3f28f6f9,Cisco/7600.json,d177d5779d34e09b5356cf80a3d86d680056f48e7721c51587e32b345ebd6baf
+Cisco | ASR9k,b1cea7b6-08f6-4bfd-a1b5-ce73cc8f3c56,Cisco/ASR9k.json,e2e640a3a0385515fd7b7d88fa8681ccc1ad79fb24e2a274e245c6d7cd97c357
+Ericsson | SmartEdge,a67b67ef-874a-463c-a982-ad06d241fd65,Ericsson/SmartEdge.json,3be500a14b6f906b25acf0d08a0aa5c619b43c7cfea09435f546bbf62b257dc5
+Generic | Switch SFP,15cd98dd-d9cc-4d55-b610-fc29c409421f,Generic/Switch_SFP.json,119f69e5480ce81499bf95eb4de39c7868ce9b902bad621cb013e2da886f9af3
+Generic | Switch SFP Prefixed,ae6edc55-6d07-46e6-b1e8-ab2b583a5fc9,Generic/Switch_SFP_Prefixed.json,1f0efe6781974b685841d48fc84a27a884fbf02dce776824f3ea2ee1014eee77
+Juniper | EX2200,bc65f05e-83c1-41e8-bdfe-01c28a9a2be5,Juniper/EX2200.json,a0e829249cd3b7e482a0d69f9fc89af9e86ac303e8502e3dcfd8877160f460e2
+Juniper | EX4200,07e41325-c05c-4468-92f0-ee3f04ff01d1,Juniper/EX4200.json,75211f1d0c109d6f020dd45c1abbc387339f72b0d5c1fa2a6b4182a53e48ddab
+Juniper | EX8200,b3c79076-96d9-486a-86d8-57b338c68dbe,Juniper/EX8200.json,6b0048dbefa46d81ea6c2e2944cec8817c2697fda15de07095df02e7b115ea5a
+Juniper | MX,d45eb997-536a-48d7-9b7d-5a94cc4996e5,Juniper/MX.json,f7c1696d17e901b2bbb34d780d5c731697cdf4cda6053c47e3abb9e3d3b08bca
+Juniper | MX80,a0d2e5de-661b-4546-bec8-21e4ef388402,Juniper/MX80.json,50d3f0f1bcc738d5a412aeabc1a1c46619bd673d0083c6d34b282174edf928d4

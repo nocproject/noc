@@ -1,62 +1,61 @@
-[
-    {
-        "name": "Juniper | MX80",
-        "description": "Juniper MX80 connection rules",
-        "context": [
-            {
-                "reset_scopes": ["fpc", "pic"],
-                "scope": "chassis",
-                "type": "CHASSIS"
-            },
-            {
-                "reset_scopes": ["pic"],
-                "scope": "fpc",
-                "type": "FPC"
-            },
-            {
-                "reset_scopes": [],
-                "scope": "pic",
-                "type": "PIC"
-            },
-            {
-                "reset_scopes": ["pic"],
-                "scope": "mic",
-                "type": "MIC"
-            }
-        ],
-        "rules": [
-            {
-                "match_connection": "in",
-                "match_type": "PEM",
-                "scope": "chassis",
-                "target_connection": "pem{N}",
-                "target_number": "",
-                "target_type": "CHASSIS"
-            },
-            {
-                "match_connection": "in",
-                "match_type": "MIC",
-                "scope": "chassis",
-                "target_connection": "mic{N}",
-                "target_number": "",
-                "target_type": "CHASSIS"
-            },
-            {
-                "match_connection": "in",
-                "match_type": "XCVR",
-                "scope": "mic",
-                "target_connection": "{Npic}/{N}",
-                "target_number": "",
-                "target_type": "MIC"
-            },
-            {
-                "match_connection": "in",
-                "match_type": "XCVR",
-                "scope": "chassis",
-                "target_connection": "0/0/{N}",
-                "target_number": "",
-                "target_type": "CHASSIS"
-            }
-        ]
-    }
-]
+{
+    "name": "Juniper | MX80",
+    "uuid": "a0d2e5de-661b-4546-bec8-21e4ef388402",
+    "description": "Juniper MX80 connection rules",
+    "context": [
+        {
+            "reset_scopes": ["fpc", "pic"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": ["pic"],
+            "scope": "fpc",
+            "type": "FPC"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "pic",
+            "type": "PIC"
+        },
+        {
+            "reset_scopes": ["pic"],
+            "scope": "mic",
+            "type": "MIC"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "PEM",
+            "scope": "chassis",
+            "target_connection": "pem{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "MIC",
+            "scope": "chassis",
+            "target_connection": "mic{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "mic",
+            "target_connection": "{Npic}/{N}",
+            "target_number": "",
+            "target_type": "MIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "0/0/{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}
