@@ -222,7 +222,7 @@ class Command(BaseCommand):
             # Inventory
             # ("vendors", Vendor),
             # ("modelinterfaces", ModelInterface),
-            ("connectiontypes", ConnectionType),
+            # ("connectiontypes", ConnectionType),
             ("connectionrules", ConnectionRule),
             ("objectmodels", ObjectModel)
         ]),

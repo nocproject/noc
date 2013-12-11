@@ -6,13 +6,16 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BooleanField, DictField,
-                                ListField)
+                                ListField, UUIDField)
 ## NOC modules
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
+from noc.lib.text import quote_safe_path
 
 
 class ConnectionType(Document):
@@ -47,6 +50,7 @@ class ConnectionType(Document):
     # Connection compatible with opposite gender of same type
     # and all types having any c_group
     c_group = ListField(StringField())
+    uuid = UUIDField(binary=True)
 
     OPPOSITE_GENDER = {
         "s": "s",
@@ -60,13 +64,18 @@ class ConnectionType(Document):
     def to_json(self):
         r = {
             "name": self.name,
+            "uuid": self.uuid,
             "description": self.description,
             "genders": self.genders,
             "c_group": self.c_group
         }
         if self.extend:
             r["extend__name"] = self.extend.name
-        return to_json([r], order=["name", "description"])
+        return to_json(r, order=["name", "uuid", "description"])
+
+    def get_json_path(self):
+        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        return os.path.join(*p) + ".json"
 
     def get_effective_data(self):
         """

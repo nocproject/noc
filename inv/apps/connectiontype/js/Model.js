@@ -35,7 +35,13 @@ Ext.define("NOC.inv.connectiontype.Model", {
         },
         {
             name: "is_builtin",
-            type: "boolean"
+            type: "boolean",
+            persist: false
+        },
+        {
+            name: "uuid",
+            type: "string",
+            persist: false
         },
         {
             name: "name",

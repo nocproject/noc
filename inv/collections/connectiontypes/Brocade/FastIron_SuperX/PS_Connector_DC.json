@@ -1,0 +1,7 @@
+{
+    "name": "Brocade | FastIron SuperX | PS Connector DC",
+    "uuid": "fbdfffb6-f894-4cb7-8aff-f0f11325070f",
+    "description": "Power supply connector in SX chassis",
+    "c_group": ["power_dc"],
+    "genders": "mf"
+}

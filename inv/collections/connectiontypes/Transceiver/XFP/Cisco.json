@@ -1,0 +1,8 @@
+{
+    "name": "Transceiver | XFP | Cisco",
+    "uuid": "d52ec758-106f-449e-9f6c-63d0cf608caa",
+    "description": "Cisco-compatible XFP transceiver slot",
+    "c_group": [],
+    "extend__name": "Transceiver | XFP",
+    "genders": "mf"
+}

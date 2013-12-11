@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | J | UPIM",
+    "uuid": "83ae5a60-bb8b-449c-b383-04903762a36c",
+    "description": "Juniper uPIM Slot",
+    "c_group": [],
+    "extend__name": "Juniper | J | PIM",
+    "genders": "mf"
+}

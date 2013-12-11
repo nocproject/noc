@@ -324,3 +324,9 @@ def str_dict(d):
     :rtype: str
     """
     return ", ".join("%s=%s" % (k, d[k]) for k in d)
+
+rx_safe_path = re.compile("[^a-z0-9\-\+]+", re.IGNORECASE)
+
+
+def quote_safe_path(d):
+    return rx_safe_path.sub("_", d)
