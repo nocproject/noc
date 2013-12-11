@@ -481,7 +481,7 @@ class AssetReport(Report):
                 # Serial number/connection mismatch
                 return None
         # Check connection type
-        c = t_object.model.get_connection(t_c)
+        c = t_object.model.get_model_connection(t_c)
         if c is None:
             self.error("Connection violation for %s SN %s" % (
                 name, serial))
