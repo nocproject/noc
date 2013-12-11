@@ -218,14 +218,6 @@ class Command(BaseCommand):
     help = "Syncronize built-in inventory collections"
 
     collections = [
-        ("inv", [
-            # Inventory
-            # ("vendors", Vendor),
-            # ("modelinterfaces", ModelInterface),
-            # ("connectiontypes", ConnectionType),
-            # ("connectionrules", ConnectionRule),
-            ("objectmodels", ObjectModel)
-        ]),
         ("fm", [
             # Fault management
             ("oidaliases", OIDAlias),

@@ -1,0 +1,33 @@
+{
+    "name": "NoName | Transceiver | 1G | SFP ZX",
+    "uuid": "f486bb38-71a8-4688-bac4-62fc9c3dd183",
+    "vendor__code": "NONAME",
+    "description": "NoName SFP ZX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASEZX-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASEZX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {}
+}

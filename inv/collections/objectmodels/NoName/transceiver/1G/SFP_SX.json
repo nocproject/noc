@@ -1,0 +1,33 @@
+{
+    "name": "NoName | Transceiver | 1G | SFP SX",
+    "uuid": "81e1867e-4297-4cd0-84f5-46931022868e",
+    "vendor__code": "NONAME",
+    "description": "NoName SFP SX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASESX"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASESX"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {}
+}

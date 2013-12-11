@@ -43,7 +43,13 @@ Ext.define("NOC.inv.objectmodel.Model", {
         },
         {
             name: "is_builtin",
-            type: "boolean"
+            type: "boolean",
+            persist: false
+        },
+        {
+            name: "uuid",
+            type: "string",
+            persist: false
         },
         {
             name: "data",

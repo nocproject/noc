@@ -1,0 +1,43 @@
+{
+    "name": "NoName | Patch | LC-LC SMF Duplex Patch Cord",
+    "uuid": "c16eb516-bbb1-45b1-a3d4-a960c3109e2f",
+    "vendor__code": "NONAME",
+    "description": "2-fiber LC-LC SMF Patch",
+    "connections": [
+        {
+            "cross": "3",
+            "description": "side 1 1st connector",
+            "direction": "s",
+            "gender": "m",
+            "name": "1",
+            "type__name": "Optical | LC"
+        },
+        {
+            "cross": "4",
+            "description": "side 1 2nd connector",
+            "direction": "s",
+            "gender": "m",
+            "name": "2",
+            "type__name": "Optical | LC"
+        },
+        {
+            "cross": "1",
+            "description": "side 2 1st connector",
+            "direction": "s",
+            "gender": "m",
+            "name": "3",
+            "type__name": "Optical | LC"
+        },
+        {
+            "cross": "2",
+            "description": "side 2 2nd connector",
+            "direction": "s",
+            "gender": "m",
+            "name": "4",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "length": {}
+    }
+}

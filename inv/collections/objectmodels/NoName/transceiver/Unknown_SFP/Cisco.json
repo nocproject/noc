@@ -1,0 +1,17 @@
+{
+    "name": "NoName | Transceiver | Unknown SFP | Cisco",
+    "uuid": "f52610b5-718c-4e8d-a4c1-7585588cd8c0",
+    "vendor__code": "NONAME",
+    "description": "Unknown SFP transceiver. Replace with real type manually",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        }
+    ],
+    "data": {}
+}

@@ -1,0 +1,31 @@
+{
+    "name": "Juniper | Transceiver | 1G | SFP T",
+    "uuid": "03a7f540-4dc2-412d-9990-183c3d29e507",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper SFP TX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "SFP-T",
+            "part_no0": "740-013111",
+            "part_no1": "740-014132"
+        }
+    }
+}

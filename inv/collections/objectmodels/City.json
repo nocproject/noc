@@ -1,0 +1,12 @@
+{
+    "name": "City",
+    "uuid": "f75b9b29-702e-4525-b748-498aca1c8739",
+    "vendor__code": "NOC",
+    "description": "City",
+    "connections": [],
+    "data": {
+        "container": {
+            "container": true
+        }
+    }
+}

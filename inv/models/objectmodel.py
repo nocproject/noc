@@ -6,9 +6,11 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, BooleanField, DictField,
+from mongoengine.fields import (StringField, UUIDField, DictField,
                                 ListField, EmbeddedDocumentField,
                                 ObjectIdField)
 from mongoengine import signals
@@ -19,6 +21,7 @@ from unknownmodel import UnknownModel
 from vendor import Vendor
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
+from noc.lib.text import quote_safe_path
 
 
 class ObjectModelConnection(EmbeddedDocument):
@@ -88,12 +91,12 @@ class ObjectModel(Document):
     }
 
     name = StringField(unique=True)
-    is_builtin = BooleanField(default=False)
     description = StringField()
     vendor = PlainReferenceField(Vendor)
     connection_rule = PlainReferenceField(ConnectionRule, required=False)
     data = DictField()
     connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
+    uuid = UUIDField(binary=True)
 
     def __unicode__(self):
         return self.name
@@ -164,6 +167,7 @@ class ObjectModel(Document):
     def json_data(self):
         r = {
             "name": self.name,
+            "uuid": self.uuid,
             "description": self.description,
             "vendor__code": self.vendor.code,
             "data": self.data,
@@ -174,9 +178,14 @@ class ObjectModel(Document):
         return r
 
     def to_json(self):
-        return to_json([self.json_data],
-                       order=["name", "vendor__code", "description",
+        return to_json(self.json_data,
+                       order=["name", "uuid", "vendor__code",
+                              "description",
                               "connection_rule__name"])
+
+    def get_json_path(self):
+        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        return os.path.join(*p) + ".json"
 
 
 class ModelConnectionsCache(Document):

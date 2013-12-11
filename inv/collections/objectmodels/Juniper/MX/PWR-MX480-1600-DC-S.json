@@ -1,0 +1,37 @@
+{
+    "name": "Juniper | MX | PWR-MX480-1600-DC-S",
+    "uuid": "0da4fcc0-2f0d-44d5-80f1-339cd869331a",
+    "vendor__code": "JUNIPER",
+    "description": "1600W DC Power Entry Module, Redundant",
+    "connections": [
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Internal power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX480 PEM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "PWR-MX480-1600-DC-S",
+            "part_no0": "740-017343"
+        }
+    }
+}

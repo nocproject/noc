@@ -1,0 +1,22 @@
+{
+    "name": "Brocade | RX | BigIron RX Mgmt module",
+    "uuid": "17722045-ff6b-4a67-9b48-536eefeb3365",
+    "vendor__code": "BROCADE",
+    "description": "0 port management module\n",
+    "connection_rule__name": "Brocade | SX",
+    "connections": [
+        {
+            "description": "mgmt connector",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Brocade | BigIron RX | Mgmt Connector"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "35524-001A",
+            "part_no1": "35524-001C"
+        }
+    }
+}

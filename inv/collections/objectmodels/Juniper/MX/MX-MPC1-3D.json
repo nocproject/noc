@@ -1,0 +1,35 @@
+{
+    "name": "Juniper | MX | MX-MPC1-3D",
+    "uuid": "2a32d79b-0222-4b42-a319-f2d809de6935",
+    "vendor__code": "JUNIPER",
+    "description": "1xTrio Chipset MPC, port queuing",
+    "connections": [
+        {
+            "description": "MPC0 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic0",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "MPC1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic1",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "Inner connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | FPC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "MX-MPC1-3D",
+            "part_no0": "750-031087"
+        }
+    }
+}

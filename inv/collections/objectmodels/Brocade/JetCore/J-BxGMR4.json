@@ -1,0 +1,77 @@
+{
+    "name": "Brocade | JetCore | J-BxGMR4",
+    "uuid": "cf3cd4ac-4e7d-4d69-8dfc-30df613a6fab",
+    "vendor__code": "BROCADE",
+    "description": "J-BxGMR4 - 4 gen FastIron mgmt",
+    "connection_rule__name": "Brocade | JetCore",
+    "connections": [
+        {
+            "description": "sfp port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp1",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp2",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp3",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp4",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp5",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp6",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp7",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp8",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "backplane",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "J-BxGMR4"
+        }
+    }
+}

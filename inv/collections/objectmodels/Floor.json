@@ -1,0 +1,12 @@
+{
+    "name": "Floor",
+    "uuid": "12538374-fd97-481d-83ed-d8ac5d5e0454",
+    "vendor__code": "NOC",
+    "description": "Building's floor",
+    "connections": [],
+    "data": {
+        "container": {
+            "container": true
+        }
+    }
+}

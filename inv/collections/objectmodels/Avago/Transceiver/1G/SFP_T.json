@@ -1,0 +1,29 @@
+{
+    "name": "Avago | Transceiver | 1G | SFP T",
+    "uuid": "7cfc875b-2413-4607-96c0-608a78b59b80",
+    "vendor__code": "AVAGO",
+    "description": "Cisco-compatible SFP T transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "ABCU-5710RZ-CS2"
+        }
+    }
+}

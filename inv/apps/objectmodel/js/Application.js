@@ -100,9 +100,9 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     allowBlank: false
                 },
                 {
-                    name: "is_builtin",
-                    xtype: "checkboxfield",
-                    boxLabel: "Is Builtin"
+                    name: "uuid",
+                    xtype: "displayfield",
+                    fieldLabel: "UUID"
                 },
                 {
                     name: "description",

@@ -1,0 +1,37 @@
+{
+    "name": "Cisco | Transceiver | 100M | GLC-FE-100LX",
+    "uuid": "18472601-fd06-48d9-8d98-5da8a821bac8",
+    "vendor__code": "CISCO",
+    "description": "100BaseLX-FE SFP",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "RX LC",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">100BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX LC",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<100BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "GLC-FE-100LX"
+        }
+    }
+}

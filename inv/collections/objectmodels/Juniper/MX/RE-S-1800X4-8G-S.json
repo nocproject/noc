@@ -1,0 +1,47 @@
+{
+    "name": "Juniper | MX | RE-S-1800X4-8G-S",
+    "uuid": "21225099-f0a9-46cb-926c-789480596528",
+    "vendor__code": "JUNIPER",
+    "description": "Routing Engine - Quad Core 1800Ghz with 8G Memory",
+    "connections": [
+        {
+            "description": "AUX serial port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "RJ45 Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet port",
+            "direction": "s",
+            "gender": "f",
+            "name": "ethernet",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "SCB connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | RE"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "RE-S-1800X4-8G-S",
+            "order_part_no1": "RE-S-1800X4-8G-BB",
+            "order_part_no2": "RE-S-1800X4-8G-WW-S",
+            "part_no0": "740-031118"
+        }
+    }
+}

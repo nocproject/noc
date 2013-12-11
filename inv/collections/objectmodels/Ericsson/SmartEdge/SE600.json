@@ -1,0 +1,90 @@
+{
+    "name": "Ericsson | SmartEdge | SE600",
+    "uuid": "b86525d4-3b4e-40d2-b48b-056810ad22d5",
+    "vendor__code": "ERICSSON",
+    "description": "6 slot chassis",
+    "connection_rule__name": "Ericsson | SmartEdge",
+    "connections": [
+        {
+            "description": "Alarm card slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "ALARM",
+            "type__name": "Ericsson | SE600 | Alarm"
+        },
+        {
+            "description": "FANTRAY",
+            "direction": "i",
+            "gender": "m",
+            "name": "FAN",
+            "type__name": "Ericsson | SE600 | FAN"
+        },
+        {
+            "description": "XConnect slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "mgmt7",
+            "type__name": "Ericsson | SE600 | MGMT"
+        },
+        {
+            "description": "XConnect slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "mgmt8",
+            "type__name": "Ericsson | SE600 | MGMT"
+        },
+        {
+            "description": "linecard slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "card1",
+            "type__name": "Ericsson | SE600 | CARD"
+        },
+        {
+            "description": "linecard slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "card2",
+            "type__name": "Ericsson | SE600 | CARD"
+        },
+        {
+            "description": "linecard slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "card3",
+            "type__name": "Ericsson | SE600 | CARD"
+        },
+        {
+            "description": "linecard slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "card4",
+            "type__name": "Ericsson | SE600 | CARD"
+        },
+        {
+            "description": "linecard slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "card5",
+            "type__name": "Ericsson | SE600 | CARD"
+        },
+        {
+            "description": "linecard slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "card6",
+            "type__name": "Ericsson | SE600 | CARD"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SE600"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 7
+        }
+    }
+}
