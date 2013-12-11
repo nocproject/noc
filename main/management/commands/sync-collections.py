@@ -223,7 +223,7 @@ class Command(BaseCommand):
             # ("vendors", Vendor),
             # ("modelinterfaces", ModelInterface),
             # ("connectiontypes", ConnectionType),
-            ("connectionrules", ConnectionRule),
+            # ("connectionrules", ConnectionRule),
             ("objectmodels", ObjectModel)
         ]),
         ("fm", [

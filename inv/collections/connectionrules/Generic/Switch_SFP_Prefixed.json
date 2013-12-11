@@ -1,7 +1,7 @@
 {
-    "name": "Arista | 7100",
-    "uuid": "ca7c714b-2949-49a0-b3bd-ef1c2d2f671e",
-    "description": "Arista 7100 connection rules",
+    "name": "Generic | Switch SFP Prefixed",
+    "uuid": "ae6edc55-6d07-46e6-b1e8-ab2b583a5fc9",
+    "description": "Generic switch following convenction.\n\nFixed TX ports: {Fa|Gi}N\nTransceiver slots: giN_sfp\nPower Supply: psuN",
     "context": [
         {
             "reset_scopes": [],
@@ -14,21 +14,21 @@
             "match_connection": "in",
             "match_type": "XCVR",
             "scope": "chassis",
-            "target_connection": "{N}",
+            "target_connection": "Te{N}_x2",
             "target_number": "",
             "target_type": "CHASSIS"
         },
         {
             "match_connection": "in",
-            "match_type": "FAN",
+            "match_type": "XCVR",
             "scope": "chassis",
-            "target_connection": "fan{N}",
+            "target_connection": "Gi{N}_sfp",
             "target_number": "",
             "target_type": "CHASSIS"
         },
         {
             "match_connection": "in",
-            "match_type": "PWR",
+            "match_type": "PSU",
             "scope": "chassis",
             "target_connection": "psu{N}",
             "target_number": "",

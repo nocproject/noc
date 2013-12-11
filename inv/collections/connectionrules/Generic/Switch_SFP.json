@@ -1,33 +1,28 @@
 {
-    "name": "Juniper | EX4200",
-    "uuid": "07e41325-c05c-4468-92f0-ee3f04ff01d1",
-    "description": "Juniper EX4200/3200 connection rules",
+    "name": "Generic | Switch SFP",
+    "uuid": "15cd98dd-d9cc-4d55-b610-fc29c409421f",
+    "description": "Generic switch following convenction.\n\nTransceiver slots: sfpN\nPower Supply: psuN",
     "context": [
         {
-            "reset_scopes": ["pic"],
+            "reset_scopes": [],
             "scope": "chassis",
             "type": "CHASSIS"
-        },
-        {
-            "reset_scopes": [],
-            "scope": "pic",
-            "type": "PIC"
         }
     ],
     "rules": [
         {
             "match_connection": "in",
-            "match_type": "PEM",
+            "match_type": "XCVR",
             "scope": "chassis",
-            "target_connection": "pem{N}",
+            "target_connection": "sfp{N}",
             "target_number": "",
             "target_type": "CHASSIS"
         },
         {
             "match_connection": "in",
-            "match_type": "XCVR",
+            "match_type": "PSU",
             "scope": "chassis",
-            "target_connection": "{pic}/{N}",
+            "target_connection": "psu{N}",
             "target_number": "",
             "target_type": "CHASSIS"
         }

@@ -1,41 +1,40 @@
-[
-    {
-        "name": "Juniper | EX2200",
-        "description": "Juniper EX2200 connection rules",
-        "context": [
-            {
-                "reset_scopes": ["fpc", "pic"],
-                "scope": "chassis",
-                "type": "CHASSIS"
-            },
-            {
-                "reset_scopes": ["pic"],
-                "scope": "fpc",
-                "type": "FPC"
-            },
-            {
-                "reset_scopes": [],
-                "scope": "pic",
-                "type": "PIC"
-            }
-        ],
-        "rules": [
-            {
-                "match_connection": "in",
-                "match_type": "PEM",
-                "scope": "chassis",
-                "target_connection": "pem{N}",
-                "target_number": "",
-                "target_type": "CHASSIS"
-            },
-            {
-                "match_connection": "in",
-                "match_type": "XCVR",
-                "scope": "chassis",
-                "target_connection": "{pic}/{N}",
-                "target_number": "",
-                "target_type": "CHASSIS"
-            }
-        ]
-    }
-]
+{
+    "name": "Juniper | EX2200",
+    "uuid": "bc65f05e-83c1-41e8-bdfe-01c28a9a2be5",
+    "description": "Juniper EX2200 connection rules",
+    "context": [
+        {
+            "reset_scopes": ["fpc", "pic"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": ["pic"],
+            "scope": "fpc",
+            "type": "FPC"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "pic",
+            "type": "PIC"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "PEM",
+            "scope": "chassis",
+            "target_connection": "pem{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "{pic}/{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

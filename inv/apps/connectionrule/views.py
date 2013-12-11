@@ -11,6 +11,7 @@ from noc.lib.app import ExtDocApplication, view
 from noc.inv.models import ConnectionRule
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 from noc.lib.prettyjson import to_json
+from noc.main.models.collectioncache import CollectionCache
 
 
 class ConnectionRuleApplication(ExtDocApplication):
@@ -20,6 +21,9 @@ class ConnectionRuleApplication(ExtDocApplication):
     title = "Connection Rules"
     menu = "Setup | Connection Rules"
     model = ConnectionRule
+
+    def field_is_builtin(self, o):
+        return bool(CollectionCache.objects.filter(uuid=o.uuid))
 
     @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"],
           access="read", api=True)
