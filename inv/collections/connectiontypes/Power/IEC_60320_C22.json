@@ -1,0 +1,7 @@
+{
+    "name": "Power | IEC 60320 C22",
+    "uuid": "8da8cafd-dddd-4783-a210-ae638cd766b7",
+    "description": "Earthed/Polarized, Higher current inlet",
+    "c_group": ["power_c21"],
+    "genders": "f"
+}

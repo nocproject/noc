@@ -1,0 +1,7 @@
+{
+    "name": "Cisco | 7600 | Linecard/Supervisor",
+    "uuid": "8604650d-677b-47a0-8f33-4d8f282807f9",
+    "description": "Cisco 6500/7600 Linecard slot (either bus, switch fabric or supervisor)",
+    "c_group": ["7600_bus", "7600_fabric", "7600_supervisor"],
+    "genders": "f"
+}

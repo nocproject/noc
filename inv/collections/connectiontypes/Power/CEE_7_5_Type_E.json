@@ -1,0 +1,7 @@
+{
+    "name": "Power | CEE 7/5 Type E",
+    "uuid": "175904ad-dd05-4685-9ced-a5e5a4ef9f91",
+    "description": "French",
+    "c_group": ["power_cee_7_5"],
+    "genders": "mf"
+}

@@ -119,6 +119,7 @@ class Collection(object):
         self.log("Syncing %s.%s" % (self.module, self.name))
         sl = set(self.items)
         sr = set(collection.items)
+        partial = set()
         # Delete revoked items
         for i in collection.get_revoked_items():
             if i in self.items:
@@ -126,14 +127,27 @@ class Collection(object):
         # Check for new items
         for i in sr - sl:
             o = self.doc.objects.filter(uuid=i).first()
+            try:
+                if o:
+                    self.update_item(collection.items[i])
+                else:
+                    self.create_item(collection.items[i])
+            except ValueError:
+                partial.add(i)
+        # Update changed items
+        for i in sr & sl:
+            if self.items[i].hash != collection.items[i].hash:
+                try:
+                    self.update_item(collection.items[i])
+                except ValueError:
+                    partial.add(i)
+        # Update partial items
+        for i in partial:
+            o = self.doc.objects.filter(uuid=i).first()
             if o:
                 self.update_item(collection.items[i])
             else:
                 self.create_item(collection.items[i])
-        # Update changed items
-        for i in sr & sl:
-            if self.items[i].hash != collection.items[i].hash:
-                self.update_item(collection.items[i])
         if self.changed:
             self.save()
 
@@ -263,6 +277,19 @@ class Collection(object):
         """
         First-time collection upgrade
         """
+        def upgrade_item(u):
+            d = self.load_item(collection.items[u])
+            d = self.dereference(self.doc, d)
+            o = self.doc.objects.filter(uuid=d["uuid"]).first()
+            if o:
+                return
+            for un in unique:
+                o = self.doc.objects.filter(**{un: d[un]}).first()
+                if o:
+                    self.log("    ... upgrading %s" % unicode(o))
+                    o.uuid = d["uuid"]
+                    o.save()
+
         self.log("Upgrading %s.%s" % (self.module, self.name))
         # Define set of unique fields
         unique = set()
@@ -270,17 +297,10 @@ class Collection(object):
             for f, flag in index:
                 unique.add(f)
         for u in collection.items:
-            d = self.load_item(collection.items[u])
-            d = self.dereference(self.doc, d)
-            o = self.doc.objects.filter(uuid=d["uuid"]).first()
-            if o:
-                continue
-            for un in unique:
-                o = self.doc.objects.filter(**{un: d[un]}).first()
-                if o:
-                    self.log("    ... upgrading %s" % unicode(o))
-                    o.uuid = d["uuid"]
-                    o.save()
+            try:
+                upgrade_item(u)
+            except ValueError:
+                pass
 
     def install_item(self, data):
         o = self.doc(**self.dereference(self.doc, data))

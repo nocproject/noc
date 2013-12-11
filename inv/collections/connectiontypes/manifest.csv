@@ -1,0 +1,141 @@
+name,uuid,path,hash
+Arista | 7100 | FAN,0cf35072-15bb-4ab4-9f4f-ae7d8af9f3ef,Arista/7100/FAN.json,53130c31d46dc8814bf75f5fdeb75a9aada8ba8d99c74e12bd6b9b14e794bdce
+Arista | 7100 | PWR,ae8148bf-5799-4a03-a667-618f87fa8980,Arista/7100/PWR.json,f5ed312857e6357354df6c29a954d6ebce02a68352a3f94ce5a67dbdb92f5498
+Brocade | BigIron RX | Line Connector,bb71b0a4-b398-4908-b6cb-e38e3a47a0dc,Brocade/BigIron_RX/Line_Connector.json,d47a58ee4e1369c0fe92009f5b662617212dd71b9a24b8956187b633ae2e658d
+Brocade | BigIron RX | Mgmt Connector,e244e1c8-ae34-401c-a49b-fb7902429903,Brocade/BigIron_RX/Mgmt_Connector.json,0ee1853ce65ec318b6b4c589527dfe517b7a7fa10fecec085833ae1aab3f9f38
+Brocade | BigIron RX | PS Connector AC,96b015ba-4efe-42fb-b135-bce4c291e2b7,Brocade/BigIron_RX/PS_Connector_AC.json,38aef55fe71d1112a9512cacd81b49b722941f3d94c02237f581c06d5d075411
+Brocade | BigIron RX | SFM Connector,aab251d1-296b-4389-8f79-3e495bad9a5c,Brocade/BigIron_RX/SFM_Connector.json,53bc68694b7476922f57447a880992ad076fbed44800f21ebfcdeb81e96357b8
+Brocade | FastIron SuperX | Line Connector,72a22a24-ffca-42f3-9916-338d1b3b585c,Brocade/FastIron_SuperX/Line_Connector.json,9c6f8bfa22b9af39ef37f9c2c7eb09a386b0fe6dc09f01a7b41df488f5fd6caa
+Brocade | FastIron SuperX | Mgmt Connector,6f73a03a-c518-41f5-932a-4352d684b94c,Brocade/FastIron_SuperX/Mgmt_Connector.json,255afc92998ac6adf90b145de2e2602a7a3105a5858562ba62124f8d9689178a
+Brocade | FastIron SuperX | PS Connector AC,13a5c9e4-bf49-434e-b995-22952643a364,Brocade/FastIron_SuperX/PS_Connector_AC.json,cd6117aa28dc45c184684ff4e59b8392beca6c095416d4c3ac5ff9ffa36f6312
+Brocade | FastIron SuperX | PS Connector DC,fbdfffb6-f894-4cb7-8aff-f0f11325070f,Brocade/FastIron_SuperX/PS_Connector_DC.json,af3f587c1047e83f7e69f4aec7c0db0cbdd8a6dc8cb3dff04c854634ef783bab
+Brocade | FastIron SuperX | SFM Connector,e25e43f7-64a0-4891-82cf-c6bd897d7a78,Brocade/FastIron_SuperX/SFM_Connector.json,1da516a5d597e85eae6e7602916191595c02aa6261433666ad6d64a48c30067f
+Brocade | JetCore | Backplane Connector,714e6a57-8b15-45a0-acc0-fb005437dfa5,Brocade/JetCore/Backplane_Connector.json,00785fcb5c976c1947fa82e693b1394099540d6d74b6c8ecde05d7112f85981f
+Brocade | JetCore | PS Connector,11c0312e-7761-42c3-af60-af698a669a98,Brocade/JetCore/PS_Connector.json,18aa1d2600e3b070a950ef752b20ee4de8a4231a14059f49a73d738d9a698795
+Cisco | 7200 | 7201 PWR,60bd80ff-7bb2-4313-a1d3-2f0e7d522bcc,Cisco/7200/7201_PWR.json,89e10daf95be78699e2dfe4ade03a4ea94e09eff7c5c1a6163a8943dfc4d04bd
+Cisco | 7600 | 7606 Fan,463a22b7-2a1b-42dc-ab07-df99bb4edfff,Cisco/7600/7606_Fan.json,d6f91ebe1436adeb81b7a5a354b9ac751c4f3181e8617232444a9c8e607c2bc8
+Cisco | 7600 | Bus Linecard,de7c5b2c-8c75-4546-a3f6-9a2e4a03c1cf,Cisco/7600/Bus_Linecard.json,df1bd56f6f697bbf004d68e4a67df1856843f545f253b783a69a4480ef515a42
+Cisco | 7600 | Bus/Fabric Linecard,c7387cf5-dd0d-46f8-a3d6-8ecc169de993,Cisco/7600/Bus_Fabric_Linecard.json,13a8b6e3ece17970500d581795c8bfeff9a8fe63545ffd41b90ae07c10c752ec
+Cisco | 7600 | CLK,905b0c8a-8d26-418f-b1af-74e53ec0ebd9,Cisco/7600/CLK.json,39ae87cc73cbac2f2ef3d5d838d0c287eb41b1bd9306db40f3f6a100562396f2
+Cisco | 7600 | DFC,934ffe8a-eaf4-4465-87c9-d307be65ed7f,Cisco/7600/DFC.json,7994e786e8d386f5da2b41e1a0384b03b63ca4946ffbbe6847111d08eb91bca1
+Cisco | 7600 | Fabric Linecard,86277d7d-f062-451d-b592-b9344a425fe6,Cisco/7600/Fabric_Linecard.json,6222280aa721f8f94e62b035cd4c4b65a057ddeb5b7b8778ee6214db1589ca12
+Cisco | 7600 | Linecard/Supervisor,8604650d-677b-47a0-8f33-4d8f282807f9,Cisco/7600/Linecard_Supervisor.json,1ba36f5bc96ef9a60bdd8ce4a3e165e1fa13d2e2fab2c9e7810c6458d01a712a
+Cisco | 7600 | PSU,d5df768b-91de-4009-b2fc-1468d0e07e55,Cisco/7600/PSU.json,09f9efe8b024d00427e0b3bb6c8c6711a759166ea4586d52ef53cd89a1446ec1
+Cisco | 7600 | Supervisor,2c1d2988-a62a-4fa0-8709-ac1a5999b3ec,Cisco/7600/Supervisor.json,eac5896a80213c68be91dc6539e29e447e1081f20ec4c41792d4eaecb6c67470
+Cisco | ASR9010 | FAN,66a7b94b-ff24-4a97-8886-689fa9a1684b,Cisco/ASR9010/FAN.json,00a84630a5103da5674cc93916fcc6b0986ce4d85d3442e037c34562b18ef90e
+Cisco | ASR9010 | PEM-V1,e3e8cba8-8be7-4b74-a06d-fc4c3e2f6679,Cisco/ASR9010/PEM-V1.json,4d453369e203bfd21ae6ab570b8eab4d2184d5c732c97a7655e18a718f63f30e
+Cisco | ASR9010 | PEM-V2,a40bd6b1-f790-4b5f-89ac-81e754b8fec5,Cisco/ASR9010/PEM-V2.json,3db7c5a67cfc0eb659626675d7d5f35a3413cbe191caf808d6176312023af461
+Cisco | ASR9k | Linecard,be866aed-e2df-49a5-8618-78fff9762d9e,Cisco/ASR9k/Linecard.json,97efdca5c5df683a275869b65499f3a66ec7760c3d0572ffaf5f3711214a5c75
+Cisco | ASR9k | MPA,fec2106b-bb55-4c93-b75f-4f18375fa4a6,Cisco/ASR9k/MPA.json,c576f4464f7df828e05ed3c2123867266d464df094ab12838c10251222e84dfc
+Cisco | ASR9k | RSP,a39f10a0-1239-4735-8204-2c7ecb56655d,Cisco/ASR9k/RSP.json,4a9c44bd409fb806132f40c4b279bfaab201f939bafcaf946abc045934fa6bc4
+Cisco | Electrical | StackWise,1bf4cdf7-0063-4a58-b33b-4369ef5f6916,Cisco/Electrical/StackWise.json,4e2b2adce3af83294c27a90e3d0f714c0d28b527abcfc8bed147854f655dd477
+Cisco | Electrical | StackWise Plus,f3ed397f-f3a9-4522-a7b7-4e7e230460da,Cisco/Electrical/StackWise_Plus.json,e6b5e6104a29b0c7806714f31e3f32306de397e30f23c391f162ce85faa2a4e2
+Cisco | ME3400E | PSU,343d7a6d-00e3-4936-af1c-9e0698f011fd,Cisco/ME3400E/PSU.json,d4b88aa1ea4c87874297ebe086c9df5fcf737b4c0654fa67d04aaca029b677bb
+Cisco | PWR-C49-300,3fb7b6cf-2671-405b-874d-4ba2f96393ba,Cisco/PWR-C49-300.json,433aa1da87a2f871d873dbd32a844c18b5a70896361fdccfa44f1e3d2995726c
+Electrical | D-sub,5d808b39-c16b-4dc2-bc2f-12d3a852c81a,Electrical/D-sub.json,f03d78946fc6562382129c313dc1844ecce4427bb6900150268e36fc5981cc5f
+Electrical | DB21,a3a85312-fc14-4e26-9b86-6480b0b4ec71,Electrical/DB21.json,ef36f7bc8cd0791392ab022109d8e345412455281fe98cc24131584acf696631
+Electrical | DB9,6cc436fb-ecf8-40e4-adf7-4e3484bdcd7c,Electrical/DB9.json,8a24eebe933d633ff8795217e511b6769e85455d5be09ed49d4dbd18e795905c
+Electrical | DVI,c1b66538-fe2d-4561-902e-0eb1da61e580,Electrical/DVI.json,37f4dde560c6a360a7e1975837e81919115ad7d1a14c47b15d31059c44af2912
+Electrical | HDMI,088f0008-579b-4887-bcc2-ca1589937b36,Electrical/HDMI.json,7e445f20cb9b3b2cb959ac3202b41d05669f0a5de1437407267268a8c266da2d
+Electrical | MRJ21,740a029d-1004-42d2-8207-16b6d7b9e276,Electrical/MRJ21.json,5ece4a8d0f967a81ceb9434470ec06425a877a4de0d9330f69ed592e99bde0f1
+Electrical | RCA,0c1aa856-46fe-4694-9a0c-53f649d1616a,Electrical/RCA.json,eb89ca2eba51c72716f1691ccf375d0f68256d0c7673569e52ecb973833247bf
+Electrical | RJ11,eb9f70d9-48b5-4d63-b5e5-97001bcf0285,Electrical/RJ11.json,4f37f3e8a7c8de0a9a49dd3738da7236a1c6704318596c9b7cbab2998e2173a0
+Electrical | RJ12,05b8505a-0601-404e-bb96-f077f414f1eb,Electrical/RJ12.json,451c866dcb50e97de77b13f5ee6c956dedef32c905d6f523e86249f7edd05d1c
+Electrical | RJ21,c9467319-1280-4c9b-8d8d-daa073c8cbfe,Electrical/RJ21.json,5421d657d35c983b38e93b56eb364592a7929212d9fab582920b5010d3eb59c2
+Electrical | RJ45,350706f6-4694-440d-80f7-6aa4b31a8ad9,Electrical/RJ45.json,598c2d4af86389b0e77f8fe0a2d5c0bfed538730d5f4996bef595a13889dbe7c
+Electrical | RJ48,c14270cb-4e82-42b1-ac1b-51291f430055,Electrical/RJ48.json,d60a294f7f7cab81b6541347150f3832395cd7eac5eab1f81613d1998d64d960
+Electrical | S-Video,dffb5f01-cbad-4106-94ec-ee81d85ffab6,Electrical/S-Video.json,142d66da247a0a9dd1792ca98aaa80d589ccf7e9a442504143e59cadd470cb81
+Electrical | SCART,3ef85ada-9585-4404-8a13-07fbff59fd1b,Electrical/SCART.json,0c9aeed6cb62ef554ac6f5cfeccd6fefb737606c784c9a03f912eeb8b4270f0e
+Electrical | SFF-8470,e18c7653-7402-4abf-9105-e371e269b71d,Electrical/SFF-8470.json,a62b7bfa27602503946d5a28201cdfac40b8a822d2671876e8c1a47e5fccdcc5
+Electrical | USB,5e1d3fcc-dac1-44b7-8d56-38cf4bc2fb73,Electrical/USB.json,2f4a27cc416e90094c39b0f0edf6fb6fb6966c84daeaf42197d63c341ac1ee93
+Electrical | XLR,b1ba0dab-8bea-45f2-8325-ad3627b40aa6,Electrical/XLR.json,47263cb7304e9aa1deeae02b9ca3db5fe922a68750025d7b0fda616a75c0a298
+Electrical | micro-USB,12bd9834-e953-45b7-afa6-0c59be402efa,Electrical/micro-USB.json,0e0a3eb6d150d635c742e712308319af4d84de4782a0fe36bc39d5e7604f4916
+Electrical | mini-DVI,74376cab-b1fb-462a-9e99-23bcc31a83c8,Electrical/mini-DVI.json,67a224d53cf9a2f38dffd14050d4b17845af8ae723a1d3eb5002c55f840ad028
+Electrical | mini-USB,ae55e881-5ddf-4d40-b60c-b5b6a1740602,Electrical/mini-USB.json,cc10bb2a248b6f052e5b8c5bf2c95bc20469e69cfcee0c80f9590bb4ba8311cf
+Ericsson | SE600 | Alarm,2ba97fb4-c3ea-4ad9-b21b-a272206bfc4d,Ericsson/SE600/Alarm.json,13b88e722a342f8e6db02f0935621088cf3a6179545f9c035bd3979e2fba77f2
+Ericsson | SE600 | CARD,9f9ee914-6bb4-4d87-a612-f36425070f6c,Ericsson/SE600/CARD.json,234bfd8f3e57631174619a00d8b1338397747e1ccaec4fabe47dc0c075510a9a
+Ericsson | SE600 | FAN,55fcad3d-76c1-4ab1-bb2b-5b526e11bf9c,Ericsson/SE600/FAN.json,e9a6b4913ea5a959f29958b07720e7e96469ee12ab10b73637164d87efb7ac47
+Ericsson | SE600 | MGMT,f0acc592-b13d-4d3c-8bb2-9bcf5ba0c600,Ericsson/SE600/MGMT.json,051cc7ad0aa9ce3def322fb6872a516d2995ab5ea5719fea09ff9340bff57e25
+Flash | CF,175acd37-e1d7-41d3-b0cc-1d897f29b1c9,Flash/CF.json,76934ee0ded58acd9c07d7c2aef15107edd860237709fdda2a1771dae35838da
+Flash | MMC,c5f7eab1-1dcd-4b83-a3ea-20762d9c899b,Flash/MMC.json,792e017120651f15533a9dfe9dedcda49e42932e6ba5fd4017886d94550a2120
+Flash | Memory Stick,279f9080-31b0-455f-9b5a-9271307b6e6a,Flash/Memory_Stick.json,aecf24ef3ce455de5496eb1e8144a622338da8cbbcdf8549ace4ec89ee535e96
+Flash | SD,2a0f0b19-2572-4c37-8676-077c4fc22a5a,Flash/SD.json,4624d6a772a4b84896e6c968a65284214ec44b9251242e93be9641dc621b9769
+Flash | microSD,94cb91eb-61c6-4eaa-ab16-eec6869af223,Flash/microSD.json,2c0c727c129f96196da9829566cba3f6fd3c1f51732dba4877df378ef9ea680d
+Flash | miniSD,60dcf9c8-4e38-445e-a251-35342602fbba,Flash/miniSD.json,cc5d8c8d062af0c5f3a6fa9241763ca75662dfdc3e56ab094d0f8806328c9dac
+Force10 | S | Module,0518bfbe-33e6-4e5f-9ae0-23179d41a07e,Force10/S/Module.json,946aa79414cdd689e783cf856dbc04bd88513c33dcd6a5cd5f2eed8612d355b3
+Force10 | S | Stacking 12G,640d8d49-1e6f-415d-bbb9-bd2dd3d43f12,Force10/S/Stacking_12G.json,84b7e7289f0901b9294006f54568e8b446fd49462355225eb904ec38a19f7d78
+Force10 | S | Stacking 24G,4feef3ae-a1c7-491b-9800-9b5de3b02b0b,Force10/S/Stacking_24G.json,9b199fc61feb79c94d864119f4474fc2bcdc0f89d41c5e1a962fefc3376d8c9f
+Huawei | Quidway S5300 | Extension slot,442ee2b7-3385-4d10-891b-5339432c8fd7,Huawei/Quidway_S5300/Extension_slot.json,e31de8ec43d8175e7c74fb847b2dea083555fca902e8d031b2285588279cf88e
+Huawei | Quidway S5300 | Fan,16bdd354-1a6e-496c-aaf4-82dc97f61b16,Huawei/Quidway_S5300/Fan.json,7a2b331f0408feac9661f588a45f5316b2f10c978df79c0b27a0d5052163884b
+Huawei | Quidway S5300 | PSU,02305433-2a8c-4812-80c1-bbec7db6f364,Huawei/Quidway_S5300/PSU.json,6854f6aab0a4fa6c760db13c1e9e929476a4ea9f7e620d914ab66de6ed09deb7
+Huawei | Quidway S5300 | Rear slot,96552572-4f2b-459a-8d92-f82ab9ff4933,Huawei/Quidway_S5300/Rear_slot.json,9cd125877d1d9fb7c3288b9be2169b9ed1313f8cb2750c02858a59fe0bb4118b
+Huawei | Quidway S5300 | Stack 12G,36197a0a-dbd7-4814-aee7-714df1e5888c,Huawei/Quidway_S5300/Stack_12G.json,e6320475a6db94587bd48a1391e05481c594b6d221d874d063ebfb7c8db9e937
+Juniper | EX | 8200 FPC,fc9e0b87-5b70-4ad2-a797-2266b80f6049,Juniper/EX/8200_FPC.json,64ffdf99e99abeaeaa56feb68fa935cba615beef8b3590953261d6158cd5bb87
+Juniper | EX | 8200 PWR,38e6b715-f422-403a-acb8-d4183f46e8b8,Juniper/EX/8200_PWR.json,6a0aaacf112d3f986d424f51ad491f4e14bac234fa43d50be0b4683566c01230
+Juniper | EX | 8200 SRE,52a42d8c-778f-4105-b218-0b264d98fdee,Juniper/EX/8200_SRE.json,42e4b94e6c3632770ad74c8540a1bfe42052464d168edc497a3f322892adb47e
+Juniper | EX | 8208 Fan,5cc22cfa-9a8f-4cd2-9f4e-79e41e08fa59,Juniper/EX/8208_Fan.json,318ae781b437149c09d78ef752314f19f5f48daea3beab64d06c4544705cb23a
+Juniper | J | Mini-PIM,6517dcc0-7c7f-478e-901d-4e1363f3edcc,Juniper/J/Mini-PIM.json,7020edea8f1d8e92489d799fef2017ab8e64eafb6f8379efe7c2694b5452c091
+Juniper | J | PIM,941a5963-ce0b-47e2-a81f-bfe77c52e35e,Juniper/J/PIM.json,d321348c2d4c63ccc80f573b32894b29410fe6a8dc3cd0f1584cd865a2855c98
+Juniper | J | UPIM,83ae5a60-bb8b-449c-b383-04903762a36c,Juniper/J/UPIM.json,924b943738e79dfeab62a68f00b369a3a1ac8d5e6f603bc30bcb321380e28295
+Juniper | MX | EX4200 PSU,400d6b14-a397-4b6d-92f0-542019db9a64,Juniper/MX/EX4200_PSU.json,5bdb8eb336a19dfd071753b5d9a8dba823f5b34ab8ea1fd393690e89cdc0570a
+Juniper | MX | FPC,6a7c4027-d13a-4e12-adcf-88920d452937,Juniper/MX/FPC.json,29cde71998f3d4e1539f2deff1d6c8ee1ce99479e94942cc6bee0cd17e5c5611
+Juniper | MX | FPC/SCB,6db9cc83-814a-42c0-a554-c1e66a68a7ac,Juniper/MX/FPC_SCB.json,8a4a2ecff44897f5c4256397f121cf45693cdcf3e87be9a2d560053b0a5ff370
+Juniper | MX | MIC,9481fe8b-4461-43c5-82c1-4cbd7b63e012,Juniper/MX/MIC.json,bbea3d555e83f4a317004f293921e9e89a8e17350a0de40725dd819860b20a9f
+Juniper | MX | MX480 Fan,5d11e169-c856-451d-aab3-2588f78a75a6,Juniper/MX/MX480_Fan.json,64a35b369d082d3c0c9115a295e726eced742abebf1820881c99b1e5247d3301
+Juniper | MX | MX480 PEM,838e40f5-e863-4755-9755-07863a1b9b5b,Juniper/MX/MX480_PEM.json,50bf8bd80630122c9951a1bff68e219b014b9e5bd84f97c666f934df7562e6c6
+Juniper | MX | MX80 PEM,b545f8a7-7bd3-4164-89a2-ef8257da27fb,Juniper/MX/MX80_PEM.json,bd0df98b21e082b9b0976d5d438e6ccd0c8b7ff4763e429686d55b599dae9367
+Juniper | MX | MX960 Fan,22f2e84d-bbad-4301-9032-109a2d6a545c,Juniper/MX/MX960_Fan.json,df99cfade76f8f81e4d64ccd64be7fd802690ea5ed661b8f30bdbd6abda557dd
+Juniper | MX | MX960 PEM,8f5031bb-eee3-4d6b-9c62-a914e0a3d1d6,Juniper/MX/MX960_PEM.json,12c3ec977c8c5d9e9d6f2795fc87427c62854b1796d3c6334aa2ccba1bdc739c
+Juniper | MX | PEM,02548890-13a5-4677-a022-c3d4064eba5b,Juniper/MX/PEM.json,1f358cf12bfd8ec917461c3d752659065207e1955fbafa321ec575c42eac3aa9
+Juniper | MX | RE,93b87248-79dd-44db-a573-9817a1e40eab,Juniper/MX/RE.json,a849bee1744c88fe3267f90c2e638a1878acc4893cf3f3a2cd076f0d5456183c
+Juniper | MX | SCB,24bc8b77-61f1-4eb5-9c92-fa868c5c056d,Juniper/MX/SCB.json,e58056c92a20f8e67f739b97dc8aa8f62aa195400618e6082a35d091211ab252
+Juniper | SRX | Mini-PIM,8d7d5975-bb25-41bb-bb43-60bc81bdba81,Juniper/SRX/Mini-PIM.json,94a860432681848f17ff52ddd894ab0ea3ec45636c8de1c87dd5ecdf2fb0986d
+Optical | FC,24b96124-b28b-423f-83c2-e2c5318289be,Optical/FC.json,253525cebceeea1d45aaea79a25c6cec61983ef2d778f43a709c528ae1d37080
+Optical | LC,994a5a64-52de-45d0-b253-45e849d37ea2,Optical/LC.json,af5db96371ce385baa22d60a527f77854ecdd6216c3a89210dbcd44288cccc44
+Optical | SC,28e4906f-e830-4f20-863d-a5b58a8dc6b6,Optical/SC.json,ecfaf0771bad1ce0c89a040e43b048124b6da0463b9695fe478158ea344ef447
+Optical | ST,130872b7-1eef-46ca-b0be-f1f41a63038f,Optical/ST.json,8fbc61ec0ba97b7365a628b84a5bc789aebf928b428ef69aeedf04bc67931efe
+Optical | TOSLINK,20fb30a4-029e-485f-a3a0-bdf8000a6e47,Optical/TOSLINK.json,5a070592822ee7c22e2d754cbefbb9f61247e3a34f4e3b4cb2979014b7bb45a2
+Power | CEE 7/16 Type C,920f7047-5e89-4824-826f-015791aae3fa,Power/CEE_7_16_Type_C.json,37ff312d0c5aef019bf35ebce8b7875019a9d719ced568ffb9d6ab62437a4bb4
+Power | CEE 7/17 Type C,f685064d-2de5-413b-b2a0-7da317b29d35,Power/CEE_7_17_Type_C.json,3993a5b38ddd0c85f9938e389d0bad7e1e66c9a4f9ea789ceda6ecd037ac09b5
+Power | CEE 7/4 Type F,e4ce4d6c-cb53-4841-87aa-2ad4f30caddb,Power/CEE_7_4_Type_F.json,5d26759717adbfa1973cf1e67b0f43aee3ef7498fe3c74305c05f9515b58a842
+Power | CEE 7/5 Type E,175904ad-dd05-4685-9ced-a5e5a4ef9f91,Power/CEE_7_5_Type_E.json,1cfc75b9aad54046eef5f9d9456fb69b2133c77fca42548c93df56a9883a199d
+Power | CEE 7/7 Type E/F,17e99e2a-70e8-4add-a8b2-29ada405695d,Power/CEE_7_7_Type_E_F.json,c651c3add9bee91a06d1a2d22b2e4f08594e3c413b77966b36226b1b8abbfcd0
+Power | Dual M6 Lug,d24cc8dc-50f3-4ad5-8307-22ee1af770eb,Power/Dual_M6_Lug.json,6487e157d9e4e864025b44c08dec0731357d1b92240b33b71f9f2cdb326be95e
+Power | Dual M6 Terminal Studs,098c74ad-969b-40da-be69-297505919c07,Power/Dual_M6_Terminal_Studs.json,94636460a60e4784b2ebdefb6bb6642a74fbd00744670406409d10c99b954f26
+Power | IEC 60320 C1,f9ad61cb-4a0a-4204-bbe0-580ae42ab78b,Power/IEC_60320_C1.json,6d6f96874f2f1d95c9d7d0c046097c754fb22001ba999c3e54d52b6941f1b787
+Power | IEC 60320 C13,63150a91-1180-4f20-b5d7-67bdcf3a47d3,Power/IEC_60320_C13.json,07c8caaff87c972e9991d5635954dbb7d6303cbcfe7bfdb7b94d99a7ec993e88
+Power | IEC 60320 C14,ed5774d9-edf8-46f8-a0a7-a2285884eeda,Power/IEC_60320_C14.json,5b3e096282d7017cb422e5ea85d34bfb59048238a8ca76c97d58dd1800df442c
+Power | IEC 60320 C19,1e4d58f8-28e8-43a3-9f8d-05967e5d590f,Power/IEC_60320_C19.json,f8d4aa8f1d898662cac82d7a501355f171d50252974c06814659354f9959a226
+Power | IEC 60320 C2,f278a74e-3b9c-49c0-8d42-e87964f3d18e,Power/IEC_60320_C2.json,f965f2dc9a061adc546b55ce49d051c9026753b1b64dd47209972944c63d2c1b
+Power | IEC 60320 C20,94917498-9556-4fc3-bf55-b1492f7f9539,Power/IEC_60320_C20.json,33a2402cccd6a6c0915d8826ca20b942e71ef123edf2fe9631f0327a24ba60f6
+Power | IEC 60320 C21,8ad6f737-f836-4e73-8ccc-66adff142789,Power/IEC_60320_C21.json,b57c4199d60119593d628007d1d5242dfcfb201ec1d09b02d184f73db364567c
+Power | IEC 60320 C22,8da8cafd-dddd-4783-a210-ae638cd766b7,Power/IEC_60320_C22.json,be30a36098ece4a18f4bb60899265abd5862ead79692a1c0e214bd8e5fa621e1
+Power | IEC 60320 C5,5872c75f-5cff-424e-b6ab-dfdf510a7c3e,Power/IEC_60320_C5.json,d19b2b028104a960b1cfcffac736ed868bc5c800aa7c1c5bffa9863f678d01ab
+Power | IEC 60320 C6,ad239325-ca07-49af-9182-391e0a7ae36b,Power/IEC_60320_C6.json,bc4707553c400093d1a0788d9bdfe654b4ca9faf91cda95cf55079eda924aec9
+Power | IEC 60320 C7,9b1e454e-00b3-4091-b83d-6b4201abc92f,Power/IEC_60320_C7.json,a91fbadda5f64d9b4555ce1cff9c6309ecd941983874f1ccffc3376189a6e236
+Power | IEC 60320 C8,1078bad0-dcce-45f9-98de-f7b48e7cf710,Power/IEC_60320_C8.json,06211af6aa499f16cbb04ebbf53b3d3640c3dd2eca6a79e3c4e746a9aa4c0bb9
+Power | M4 Fork,34532643-0f1e-414a-9c99-6b84aab9016f,Power/M4_Fork.json,7f3224aa8bb799fbacf693e0127a3c3cd1432ed233eff4fd2b344c748967ac13
+Power | M4 Pin,6440b55a-888c-409e-86e1-a922f5162cd6,Power/M4_Pin.json,dab4acc8f74c3f51a17c9257a56feb1edbc67717cb46ed9e22660f9aa15e8952
+Power | MSTB 2.5/2-G-5.08,d8434224-6f44-4cd3-b6dd-87830b331f59,Power/MSTB_2_5_2-G-5_08.json,607e571993dd81dd30f9701b53b6f699d438bc8802f8071b094304b956fc50a0
+Power | MSTB 2.5/2-ST-5.08,b0a0686e-e6b8-448b-b0c4-185fea7ab4cc,Power/MSTB_2_5_2-ST-5_08.json,b5e8240580bb3dcf3d42d9a1f4d95d096561a91af97022403122b1998b53b587
+Power | MSTB 2.5/4-G-5.08,99a314cd-6d29-446c-93f0-6b0a806f5253,Power/MSTB_2_5_4-G-5_08.json,093fe1a112e4aa624b91e2fafb7968b3e0ee5d4c63f2028e2c66e2463ae7289e
+Power | MSTB 2.5/4-ST-5.08,2a371b8a-b7b0-4680-ad76-ba5ab1b3bafa,Power/MSTB_2_5_4-ST-5_08.json,6ad36099ec07c510a474a98669845dee670e045234596989e9dec12503d4afc9
+Power | Naked,074707f6-a77b-4d7a-807e-b5e3218683a6,Power/Naked.json,fd31b033e6d797b0e7c86ae8d1f08c0a99c6eca969a3cc529862e7070928e1f1
+SIM | R-UIM,b709706a-2a60-4b41-963d-9022cb66e492,SIM/R-UIM.json,9c1af7b5631ee87bf4c442e4c962cd091bda0d69253eee6278f99c82c14423b5
+SIM | micro-SIM,c21eef0f-4c90-43e4-90c6-a73e0bcc5a50,SIM/micro-SIM.json,c501b4b6832ef64589499670bff9156997f936c8058c1c63c27844adf0b748ce
+SIM | mini-SIM,41d47933-930d-4b59-a96b-87bf246fae67,SIM/mini-SIM.json,4fcf7cfc59082165fdc455c851134649651e4861c9ad6749e8fce33c922138e5
+SIM | nano-SIM,a698542a-27c4-4da4-8764-49389d92eb68,SIM/nano-SIM.json,b4b8efccf625be58f54b08ba2033ebc93c128534128c6a4adcc4b722606e9877
+Transceiver | GBIC,1eb3aa41-ac7c-4ed3-a227-2c565b83e8ad,Transceiver/GBIC.json,0601325c89d3e9a1a9745f22b2dc0208933f85fa6709d1ca1ffdefa4cc844209
+Transceiver | GBIC | Cisco,a970b76a-e6d0-409c-a8a9-75923691f76c,Transceiver/GBIC/Cisco.json,5cd021107ded0b87222dcf7353749e5e657962d7c903ead8c3fb58d87f33bc1d
+Transceiver | SFP,5571ccae-fb7f-4733-961b-cefc75de3285,Transceiver/SFP.json,eed54ec9ecbc68fec9e69309f410bdc031d6604a1fe8a4aee5d39aac71d183c6
+Transceiver | SFP | Cisco,6403c26d-82f0-4c3e-bc79-2a57422b1375,Transceiver/SFP/Cisco.json,e7f340368ae09b3df1ec33815c4f6d711da29d52dcedae6b89641ceb9e0c5118
+Transceiver | SFP+,6086d594-515d-400c-8351-aceff54e6d2b,Transceiver/SFP+.json,d7dedbb4f7e3bb76c395c74fa52be8214e4712da87fa4b36a0ff98489cc9f8c2
+Transceiver | SFP+ | Cisco,2eed3b94-39d5-4fdf-9efc-0cf829d49bd0,Transceiver/SFP+/Cisco.json,116b972ef6b01462a137c263946c3bbfb9d95e185c3d8661bfaa7206cf1a4438
+Transceiver | SFP+ | Force10,127d3569-2df1-4584-b638-b18d9d67203c,Transceiver/SFP+/Force10.json,d0b7a71dcc82032f9d2577d56bc880c7db2eb90319ea17043af485633560d30a
+Transceiver | SFP+ | Juniper,e8236695-3995-4482-83a2-a2f782869c59,Transceiver/SFP+/Juniper.json,da2d8aaf154c937649c19790bc5cd5cbdddbf2b04fa55968d9d9f2a70d5e54da
+Transceiver | X2,360edd98-8e9e-4ec6-b456-b588455ca258,Transceiver/X2.json,072e3f7160a028f85c278c9db1762d9ae854341603b1cb33cf543dbf38c74a8a
+Transceiver | X2 | Cisco,b540fb7a-3021-442a-a976-ff33e736c3e5,Transceiver/X2/Cisco.json,7a86586fd258a7bb8d34042bf7983e0301669245e1e473791c51d01b068386c7
+Transceiver | XENPAK,8c44c8a7-2447-44e3-9b2c-c2ce1c01a1ff,Transceiver/XENPAK.json,ec9e4b6948900eadeb164beff97b7ebb0222b7a3e88aa38a9727848f4f527a6c
+Transceiver | XENPAK | Cisco,e7acafdd-79c0-43fe-9008-0a1d1e2c4f16,Transceiver/XENPAK/Cisco.json,6c0d481654af740860a5c1b8e39f1eb48145f3a270088046c72a54c1ff04680c
+Transceiver | XFP,70ae7666-a616-4c6e-9597-b7bdefd8a01d,Transceiver/XFP.json,5d0f8d4ffabd1dc365caac94be5adbfd2461059b23fb048a3bbcfd2f95c91a1c
+Transceiver | XFP | Cisco,d52ec758-106f-449e-9f6c-63d0cf608caa,Transceiver/XFP/Cisco.json,16a1371eb0c148b4e34c8b2bb604a255eb3a22b8aad59138cacec260a2dca7db

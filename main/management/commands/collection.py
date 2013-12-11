@@ -16,6 +16,7 @@ from django.core.management.base import BaseCommand, CommandError
 from noc.lib.collection import Collection
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.modelinterface import ModelInterface
+from noc.inv.models.connectiontype import ConnectionType
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
 
@@ -58,7 +59,8 @@ class Command(BaseCommand):
 
     collections = [
         ("inv.vendors", Vendor),
-        ("inv.modelinterfaces", ModelInterface)
+        ("inv.modelinterfaces", ModelInterface),
+        ("inv.connectiontypes", ConnectionType)
     ]
 
     def log(self, msg):

@@ -1,0 +1,7 @@
+{
+    "name": "Brocade | BigIron RX | SFM Connector",
+    "uuid": "aab251d1-296b-4389-8f79-3e495bad9a5c",
+    "description": "Switchfabric module connector in RX chassis",
+    "c_group": [],
+    "genders": "mf"
+}

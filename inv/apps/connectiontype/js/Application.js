@@ -74,9 +74,9 @@ Ext.define("NOC.inv.connectiontype.Application", {
                     allowBlank: false
                 },
                 {
-                    name: "is_builtin",
-                    xtype: "checkboxfield",
-                    boxLabel: "Is Builtin"
+                    name: "uuid",
+                    xtype: "displayfield",
+                    boxLabel: "UUID"
                 },
                 {
                     name: "description",

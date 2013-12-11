@@ -1,0 +1,8 @@
+{
+    "name": "Transceiver | SFP+ | Cisco",
+    "uuid": "2eed3b94-39d5-4fdf-9efc-0cf829d49bd0",
+    "description": "Cisco-compatible SFP+ transceiver slot",
+    "c_group": [],
+    "extend__name": "Transceiver | SFP+",
+    "genders": "mf"
+}
