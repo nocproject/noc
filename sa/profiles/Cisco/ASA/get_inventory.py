@@ -84,7 +84,11 @@ class Script(NOCScript):
             return "CHASSIS", None, pid
         elif "-PWR-" in pid:
             # Power supply
-            return "PSU", name.split()[1], pid
+            if name.lower() == "power supply":
+                number = "0"
+            else:
+                number = name.split()[1]
+            return "PSU", number, pid
         # Unknown
         return None, None, None
 
