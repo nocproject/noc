@@ -82,7 +82,7 @@ class Script(NOCScript):
                 return "XCVR", number, pid
         elif name.lower() == "chassis":
             return "CHASSIS", None, pid
-        elif "-pwr-" in name.lower():
+        elif "-PWR-" in pid:
             # Power supply
             return "PSU", name.split()[1], pid
         # Unknown
