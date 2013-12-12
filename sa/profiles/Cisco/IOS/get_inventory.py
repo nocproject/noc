@@ -20,7 +20,7 @@ class Script(NOCScript):
 
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
-        r"PID:\s+(?P<pid>\S+)\s*,\s+VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
+        r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+(?P<vid>\S+)?\s*, SN: (?P<serial>\S+)",
         re.MULTILINE | re.DOTALL
     )
     rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
