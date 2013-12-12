@@ -1,0 +1,30 @@
+{
+    "name": "Cisco | ASA",
+    "uuid": "dbd6557e-a3cd-496a-8f9d-1e6dfe1df492",
+    "description": "Cisco ASA connection rules",
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "sfp{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}
