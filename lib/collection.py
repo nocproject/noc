@@ -279,6 +279,9 @@ class Collection(object):
         """
         def upgrade_item(u):
             d = self.load_item(collection.items[u])
+            if d is None:
+                p = self.get_item_path(collection.items[u])
+                self.die("File not found: %s" % p)
             d = self.dereference(self.doc, d)
             o = self.doc.objects.filter(uuid=d["uuid"]).first()
             if o:
