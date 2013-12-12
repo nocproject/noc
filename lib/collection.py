@@ -80,7 +80,8 @@ class Collection(object):
         out = StringIO()
         writer = csv.writer(out)
         writer.writerows(rows)
-        safe_rewrite(self.get_collection_path(), out.getvalue())
+        safe_rewrite(self.get_collection_path(), out.getvalue(),
+                     mode=0644)
         # Update collection cache
         self.log("Updating CollectionCache")
         CollectionCache.merge(
@@ -247,7 +248,8 @@ class Collection(object):
             safe_rewrite(os.path.join(
                 self.module, "collections",
                 self.name, doc.get_json_path()),
-                data
+                data,
+                mode=0644
             )
         if paths:
             self.save()
@@ -269,7 +271,8 @@ class Collection(object):
             safe_rewrite(os.path.join(
                 self.module, "collections", self.name,
                 o.get_json_path()),
-                data
+                data,
+                mode=0644
             )
         self.save()
 
@@ -321,5 +324,6 @@ class Collection(object):
         safe_rewrite(os.path.join(
             self.module, "collections", self.name,
             o.get_json_path()),
-            dd
+            dd,
+            mode=0644
         )
