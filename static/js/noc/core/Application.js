@@ -109,5 +109,7 @@ Ext.define("NOC.core.Application", {
         var me = this;
         me.currentHistoryHash = [me.appId].concat([].slice.call(arguments, 0)).join("/");
         Ext.History.setHash(me.currentHistoryHash);
-    }
+    },
+    //
+    onCloseApp: function() {}
 });

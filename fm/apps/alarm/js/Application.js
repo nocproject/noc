@@ -313,5 +313,10 @@ Ext.define("NOC.fm.alarm.Application", {
         var me = this,
             panel = me.showItem(me.ITEM_FORM);
         panel.showAlarm(id);
+    },
+    //
+    onCloseApp: function() {
+        var me = this;
+        me.stopPolling();
     }
 });

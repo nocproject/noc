@@ -301,5 +301,10 @@ Ext.define("NOC.fm.event.Application", {
     showForm: function() {
         var me = this;
         me.showItem(me.ITEM_FORM);
+    },
+    //
+    onCloseApp: function() {
+        var me = this;
+        me.stopPolling();
     }
 });
