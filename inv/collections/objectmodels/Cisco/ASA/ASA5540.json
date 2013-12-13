@@ -1,8 +1,8 @@
 {
-    "name": "Cisco | ASA | ASA5520",
-    "uuid": "1268022c-d600-45c5-9cc3-65e8e296f5c7",
+    "name": "Cisco | ASA | ASA5540",
+    "uuid": "c072d1a3-493e-4f6c-b276-441b32e0dd57",
     "vendor__code": "CISCO",
-    "description": "Cisco ASA5520 chassis",
+    "description": "Cisco ASA5540 chassis",
     "connection_rule__name": "Cisco | ASA",
     "connections": [
         {
@@ -94,7 +94,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ASA5520"
+            "part_no0": "ASA5540"
         },
         "management": {
             "managed": true
