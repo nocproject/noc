@@ -60,6 +60,8 @@ class Script(NOCScript):
         """
         Get type, number and part_no
         """
+        if pid is None:
+            pid = ""
         if ("Transceiver" in descr or
                 name.startswith("GigabitEthernet") or
                 name.startswith("TenGigabitEthernet") or
