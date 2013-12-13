@@ -91,7 +91,7 @@ class Collection(object):
     def load_item(self, mi):
         p = self.get_item_path(mi)
         if not os.path.exists(p):
-            return None
+            self.die("File not found: %s" % p)
         with open(p) as f:
             fdata = f.read()
             try:
