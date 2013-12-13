@@ -6,8 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## NOC modules
+## Python modules
 from collections import defaultdict
+import hashlib
+import base64
 ## Third-party modules
 from mongoengine.queryset import Q
 ## NOC modules
@@ -95,6 +97,10 @@ class AssetReport(Report):
                 scope = self.rule_context[type][0]
                 if scope:
                     self.set_context(scope, number)
+        #
+        if not serial:
+            serial = self.generate_serial(m, number)
+            self.info("Generating virtual serial: %s" % serial)
         # Find existing object or create new
         o = Object.objects.filter(
             model=m.id, data__asset__serial=serial).first()
@@ -559,3 +565,17 @@ class AssetReport(Report):
             self.error("Lost&Found not found")
             return None
         return lf.id
+
+    def generate_serial(self, model, number):
+        """
+        Generate virtual serial number
+        """
+        seed = [
+            str(self.object.id),
+            str(model.uuid),
+            str(number)
+        ]
+        for k in sorted(x for x in self.ctx if not x.startswith("N")):
+            seed += [k, str(self.ctx[k])]
+        h = hashlib.sha256(":".join(seed))
+        return "NOC%s" % base64.b32encode(h.digest())[:7]
