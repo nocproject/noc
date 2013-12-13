@@ -127,7 +127,7 @@ class Collection(object):
                 self.delete_item(i)
         # Check for new items
         for i in sr - sl:
-            o = self.doc.objects.filter(uuid=i).first()
+            o = self.doc.objects.filter(uuid=uuid.UUID(i)).first()
             try:
                 if o:
                     self.update_item(collection.items[i])
@@ -144,7 +144,7 @@ class Collection(object):
                     partial.add(i)
         # Update partial items
         for i in partial:
-            o = self.doc.objects.filter(uuid=i).first()
+            o = self.doc.objects.filter(uuid=uuid.UUID(i)).first()
             if o:
                 self.update_item(collection.items[i])
             else:
@@ -170,7 +170,7 @@ class Collection(object):
         self.changed = True
 
     def update_item(self, mi):
-        o = self.doc.objects.filter(uuid=mi.uuid).first()
+        o = self.doc.objects.filter(uuid=uuid.UUID(mi.uuid)).first()
         if not o:
             self.create_item(mi)
             return
