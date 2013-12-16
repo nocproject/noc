@@ -98,7 +98,7 @@ class AssetReport(Report):
                 if scope:
                     self.set_context(scope, number)
         #
-        if not serial:
+        if not serial or serial == "None":
             serial = self.generate_serial(m, number)
             self.info("Generating virtual serial: %s" % serial)
         # Find existing object or create new
