@@ -1009,3 +1009,10 @@ class Script(threading.Thread):
                 }[scheme]
         except KeyError:
             raise UnknownAccessScheme(scheme)
+
+    def push_prompt_pattern(self, pattern):
+        self.request_cli_provider()
+        self.cli_provider.push_prompt_pattern(pattern)
+
+    def pop_prompt_pattern(self):
+        self.cli_provider.pop_prompt_pattern()

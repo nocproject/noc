@@ -99,6 +99,7 @@ class CLI(StreamFSM):
             # Merge pager patterns
         self.pager_patterns = "|".join(
             [r"(%s)" % p for p in self.more_patterns])
+        self.pattern_prompt_stack = []
         # Switch to asynchronous check after 100K of input
         super(CLI, self).__init__(async_throttle=100000)
 
@@ -288,11 +289,7 @@ class CLI(StreamFSM):
             self.debug("Using prompt pattern: %s" % self.pattern_prompt)
             self.queue.put(None)  # Signal provider passing into PROMPT state
             self.is_ready = True
-        p = [
-            (self.pattern_prompt, "PROMPT"),
-            (self.pager_patterns, "PAGER"),
-        ]
-        self.set_patterns(p)
+        self.set_prompt_patterns(self.pattern_prompt)
 
     def on_PROMPT_match(self, data, match):
         """
@@ -357,3 +354,25 @@ class CLI(StreamFSM):
             self.queue.put(self.in_buffer)
             self.in_buffer = ""
             self.ac = False
+
+    def set_prompt_patterns(self, pattern_prompt):
+        self.set_patterns([
+            (pattern_prompt, "PROMPT"),
+            (self.pager_patterns, "PAGER"),
+        ])
+
+    def push_prompt_pattern(self, pattern_prompt):
+        """
+        Override prompt pattern
+        @todo: Adaptive pattern prompt
+        """
+        self.pattern_prompt_stack.insert(0, self.pattern_prompt)
+        self.pattern_prompt = pattern_prompt
+        self.set_prompt_patterns(self.pattern_prompt)
+
+    def pop_prompt_pattern(self):
+        """
+        Restore previous prompt pattern
+        """
+        self.pattern_prompt = self.pattern_prompt_stack.pop(0)
+        self.set_prompt_patterns(self.pattern_prompt)
