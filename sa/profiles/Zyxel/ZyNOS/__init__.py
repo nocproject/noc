@@ -57,19 +57,20 @@ class Profile(noc.sa.profiles.Profile):
 
 
 class ZyNOSContextManager(object):
-    """Configuration context manager to use with "with" statement"""
+    """zynos mode context manager to use with "with" statement"""
     def __init__(self, script):
         self.script = script
         self.profile = script.profile
 
     def __enter__(self):
-        """Entering configuration context"""
+        """Entering zynos mode context"""
+        self.script.enter_config()
         self.script.push_prompt_pattern(self.script.profile.pattern_zynos)
         self.script.cli(self.profile.command_enter_zynos)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Leaving configuration context"""
+        """Leaving zynos mode context"""
         if exc_type is None:
             self.script.pop_prompt_pattern()
-            self.script.cli_provider.set_state("SUPER_USERNAME")
+            self.script.cli_provider.set_state("UNPRIVELEGED_PROMPT")
             self.script.cli(self.profile.command_exit_zynos)
