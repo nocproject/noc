@@ -61,17 +61,16 @@ class Script(NOCScript):
                     "builtin": False
                 }]
         else:
-            with self.configure():
-                with self.zynos_mode():
-                    inv = self.cli("sys sw sfp disp2")
-                    for match in self.rx_trans_old.finditer(inv):
-                        objects += [{
-                            "type": "XCVR",
-                            "number": match.group("number"),
-                            "vendor": match.group("vendor"),
-                            "serial": match.group("serial"),
-                            "description": match.group("part_no"),
-                            "part_no": [match.group("part_no")],
-                            "builtin": False
-                        }]
+            with self.zynos_mode():
+                inv = self.cli("sys sw sfp disp2")
+                for match in self.rx_trans_old.finditer(inv):
+                    objects += [{
+                        "type": "XCVR",
+                        "number": match.group("number"),
+                        "vendor": match.group("vendor"),
+                        "serial": match.group("serial"),
+                        "description": match.group("part_no"),
+                        "part_no": [match.group("part_no")],
+                        "builtin": False
+                    }]
         return objects
