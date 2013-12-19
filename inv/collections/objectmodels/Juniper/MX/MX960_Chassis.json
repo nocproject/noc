@@ -34,13 +34,6 @@
             "type__name": "Juniper | MX | SCB"
         },
         {
-            "description": "SCB Slot #2",
-            "direction": "i",
-            "gender": "f",
-            "name": "fpc6",
-            "type__name": "Juniper | MX | FPC/SCB"
-        },
-        {
             "description": "DPC Slot #0",
             "direction": "i",
             "gender": "f",
@@ -81,6 +74,14 @@
             "gender": "f",
             "name": "fpc5",
             "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "DPC Slot #6/SCB Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "scb2",
+            "name": "fpc6",
+            "type__name": "Juniper | MX | FPC/SCB"
         },
         {
             "description": "DPC Slot #7",
