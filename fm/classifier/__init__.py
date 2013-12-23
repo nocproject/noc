@@ -685,7 +685,7 @@ class Classifier(Daemon):
         """
         Generator iterating unclassified events in the queue
         """
-        for e in NewEvent.objects.order_by("id")[:max_chunk]:
+        for e in NewEvent.objects.order_by("seq")[:max_chunk]:
             yield e
 
     def mark_as_failed(self, event, traceback=None):
