@@ -5,7 +5,7 @@
     "attrs": [
         {
             "name": "units",
-            "type": "int",
+            "type": "float",
             "description": "Size in units",
             "required": true,
             "is_const": true
