@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ class Migration:
         # OS-depended hardcoded paths
         u = os.uname()
         if u[0] == "FreeBSD":
-            for v in ["2.0", "1.5"]:
+            for v in ["2.1", "2.0", "1.5"]:
                 root = "/usr/local/share/postgis/contrib/postgis-%s" % v
                 if os.path.exists(root):
                     self.postgis_root = root
@@ -63,7 +63,7 @@ class Migration:
         if not sd:
             self.fail("pg_config is not found.\n"\
                       "Ensure pg_config is in the current user's $PATH")
-        for v in ["2.0", "1.5"]:
+        for v in ["2.1", "2.0", "1.5"]:
             root = os.path.join(sd, "contrib", "postgis-%s" % v)
             if os.path.exists(root):
                 self.postgis_root = root
