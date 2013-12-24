@@ -42,7 +42,40 @@
             },
             {
                 "key_re": "message",
-                "value_re": "%MGBL-IFSTATS-6-CLEAR_COUNTERS : Clear counters on (?P<interface>.+)"
+                "value_re": "%MGBL-IFSTATS-6-CLEAR_COUNTERS : Clear counters on (?P<iface>.+)"
+            }
+        ],
+        "vars": [
+            {
+                "name": "command",
+                "value": "='clear counter interface %s' % iface"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Security | Audit | Command #2 (SYSLOG)",
+        "description": "%PKT_INFRA-LINK-5-CHANGED : Interface TenGigE0/0/1/1, changed state to Administratively Down",
+        "event_class__name": "Security | Audit | Command",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "profile",
+                "value_re": "Cisco.IOSXR"
+            },
+            {
+                "key_re": "source",
+                "value_re": "syslog"
+            },
+            {
+                "key_re": "message",
+                "value_re": "%PKT_INFRA-LINK-5-CHANGED : Interface (?P<iface>.+), changed state to Administratively Down$"
+            }
+        ],
+        "vars": [
+            {
+                "name": "command",
+                "value": "='interface %s shutdown' % iface"
             }
         ]
     }
