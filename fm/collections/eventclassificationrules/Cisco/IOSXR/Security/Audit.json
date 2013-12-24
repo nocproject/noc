@@ -24,5 +24,26 @@
                 "value_re": "%OS-SYSMGR-4-PROC_RESTART_NAME : User (?P<user>.+) \\(vty\\d+\\) requested a restart of process msdp at .+"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Security | Audit | Clearing Counters (SYSLOG)",
+        "description": "%MGBL-IFSTATS-6-CLEAR_COUNTERS : Clear counters on TenGigE0/0/1/2",
+        "event_class__name": "Security | Audit | Clearing Counters",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "profile",
+                "value_re": "Cisco.IOSXR"
+            },
+            {
+                "key_re": "source",
+                "value_re": "syslog"
+            },
+            {
+                "key_re": "message",
+                "value_re": "%MGBL-IFSTATS-6-CLEAR_COUNTERS : Clear counters on (?P<interface>.+)"
+            }
+        ]
     }
 ]
