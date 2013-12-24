@@ -1,6 +1,6 @@
 [
     {
-        "name": "DLink | DxS_Cisco_CLI | Chassis | RAM | Insufficient Memory (SYSLOG)",
+        "name": "DLink | DxS_Cisco_CLI | Chassis | RAM | Insufficient Memory #1 (SYSLOG)",
         "description": "%BGP-4-MEM_WARNING_START: BGP down due to insufficient memory and will be restarting in 120s",
         "event_class__name": "Chassis | RAM | Insufficient Memory",
         "preference": 1000,
@@ -16,6 +16,27 @@
             {
                 "key_re": "^message$",
                 "value_re": "%(?:BGP-4-MEM_WARNING_START|NSM-4-MEM_WARNING): (?P<reason>.+)"
+            }
+        ]
+    },
+
+    {
+        "name": "DLink | DxS_Cisco_CLI | Chassis | RAM | Insufficient Memory #2 (SYSLOG)",
+        "description": "%MC-6-HASH_CONFLICT: Failed to allocate multicast entry (source:0.0.0.0, group:228.235.216.37) due to hash conflict",
+        "event_class__name": "Chassis | RAM | Insufficient Memory",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS_Cisco_CLI$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%MC-6-HASH_CONFLICT: Failed to allocate multicast entry .+ (?P<reason>due to hash conflict)"
             }
         ]
     }
