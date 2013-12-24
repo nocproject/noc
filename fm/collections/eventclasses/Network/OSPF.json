@@ -6,7 +6,7 @@
         "text" : {
             "en": {
                 "subject_template": "OSPF {% if area %}area {{area}} {% endif %}neighbor {{neighbor}} state changed {{from_state}} -> {{to_state}}. Reason: {{reason}}",
-                "body_template": "OSPF {% if area %}area {{area}} {% endif %}neighbor {{neighbor}} state changed {{from_state}} -> {{to_state}}. Reason: {{reason}}",
+                "body_template": "OSPF {% if area %}area {{area}} {% endif %}{% if vrf %}VRF {{vrf}} {% endif %}neighbor {{neighbor}} state changed {{from_state}} -> {{to_state}}. Reason: {{reason}}",
                 "symptoms": "Routing table changes",
                 "probable_causes": "An OSPF adjacency was established with the indicated neighboring router. The local router can now exchange information with it.",
                 "recommended_actions": "No specific actions needed"
@@ -19,38 +19,39 @@
                 "type": "str",
                 "required": false
             },
-            
             {
                 "name": "interface",
                 "description": "Interface",
                 "type": "interface_name",
                 "required": true
             },
-            
             {
                 "name": "neighbor",
                 "description": "Neighbor's Router ID",
                 "type": "ip_address",
                 "required": true
             },
-            
             {
                 "name": "reason",
                 "description": "Adjacency lost reason",
                 "type": "str",
                 "required": false
             },
-            
             {
                 "name": "from_state",
                 "description": "from state",
                 "type": "str",
                 "required": false
             },
-
             {
                 "name": "to_state",
                 "description": "to state",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "vrf",
+                "description": "VRF",
                 "type": "str",
                 "required": false
             }
@@ -64,7 +65,7 @@
             }
         ]
     },
-    
+
     {
         "name": "Network | OSPF | Neighbor Down",
         "description": "OSPF adjacency down",
@@ -72,7 +73,7 @@
         "text" : {
             "en": {
                 "subject_template": "OSPF lost {% if area %}area {{area}} {% endif %}adjacency to {{neighbor}}. Reason: {{reason}}",
-                "body_template": "OSPF lost {% area %}area {{area}} {% endif %}adjacency to {{neighbor}}\nReason: {{reason}}\nTransiting from {{from_state}} to {{to_state}} state",
+                "body_template": "OSPF lost {% area %}area {{area}} {% endif %}{% if vrf %}VRF {{vrf}} {% endif %}adjacency to {{neighbor}}\nReason: {{reason}}\nTransiting from {{from_state}} to {{to_state}} state",
                 "symptoms": "Routing table changes and possible lost of connectivity",
                 "probable_causes": "Link failure or protocol misconfiguration",
                 "recommended_actions": "Check links and local and neighbor router configuration"
@@ -85,38 +86,39 @@
                 "type": "str",
                 "required": false
             },
-            
             {
                 "name": "interface",
                 "description": "Interface",
                 "type": "interface_name",
                 "required": true
             },
-            
             {
                 "name": "neighbor",
                 "description": "Neighbor's Router ID",
                 "type": "ip_address",
                 "required": true
             },
-            
             {
                 "name": "reason",
                 "description": "Adjacency lost reason",
                 "type": "str",
                 "required": false
             },
-            
             {
                 "name": "from_state",
                 "description": "from state",
                 "type": "str",
                 "required": false
             },
-
             {
                 "name": "to_state",
                 "description": "to state",
+                "type": "str",
+                "required": false
+            }
+            {
+                "name": "vrf",
+                "description": "VRF",
                 "type": "str",
                 "required": false
             }
