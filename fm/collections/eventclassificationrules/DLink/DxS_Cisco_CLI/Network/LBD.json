@@ -1,6 +1,6 @@
 [
     {
-        "name": "DLink | DxS_Cisco_CLI | Network | LBD | Loop Detected (SYSLOG)",
+        "name": "DLink | DxS_Cisco_CLI | Network | LBD | Loop Detected #1 (SYSLOG)",
         "description": "%RLDP-3-LINK_DETECT_ERROR: Detected loop detection error on interface TenGigabitEthernet 1/1.Set this interface errordisable.",
         "event_class__name": "Network | LBD | Loop Detected",
         "preference": 1000,
@@ -21,7 +21,7 @@
     },
 
     {
-        "name": "DLink | DxS_Cisco_CLI | Network | LBD | Loop Cleared (SYSLOG)",
+        "name": "DLink | DxS_Cisco_CLI | Network | LBD | Loop Cleared #1 (SYSLOG)",
         "description": "%RLDP-3-LINK_DETECT_RECOVER: Interface TenGigabitEthernet 1/1 recovered from loop error.",
         "event_class__name": "Network | LBD | Loop Cleared",
         "preference": 1000,
@@ -37,6 +37,27 @@
             {
                 "key_re": "^message$",
                 "value_re": "%RLDP-3-LINK_DETECT_RECOVER: Interface (?P<interface>.+) recovered from loop error."
+            }
+        ]
+    },
+
+    {
+        "name": "DLink | DxS_Cisco_CLI | Network | LBD | Loop Detected #2 (SYSLOG)",
+        "description": "%LLDP-4-ERRDETECT: Port GigabitEthernet 0/13 detected loop, please check the network.",
+        "event_class__name": "Network | LBD | Loop Detected",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS_Cisco_CLI$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%LLDP-4-ERRDETECT: Port (?P<interface>.+) detected loop, please check the network"
             }
         ]
     }
