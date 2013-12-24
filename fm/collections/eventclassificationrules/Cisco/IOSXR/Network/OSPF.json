@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%OSPF-5-ADJCHG: Process \\d+, Nbr (?P<neighbor>\\S+) on (?P<interface>.+) in area (?P<area>\\d+) from (?P<from_state>LOADING) to (?P<to_state>FULL), Loading Done, vrf (?P<vrf>\\S+)"
+                "value_re": "%ROUTING-OSPF-5-ADJCHG : Process \\d+, Nbr (?P<neighbor>\\S+) on (?P<interface>.+) in area (?P<area>\\d+) from (?P<from_state>LOADING) to (?P<to_state>FULL), Loading Done, vrf (?P<vrf>\\S+)"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%OSPF-5-ADJCHG: Process \\d+, Nbr (?P<neighbor>\\S+) on (?P<interface>.+) in area (?P<area>\\d+) from (?P<from_state>INIT|FULL|2WAY) to (?P<to_state>DOWN), Neighbor Down: (?P<reason>.+), vrf (?P<vrf>\\S+)"
+                "value_re": "%ROUTING-OSPF-5-ADJCHG : Process \\d+, Nbr (?P<neighbor>\\S+) on (?P<interface>.+) in area (?P<area>\\d+) from (?P<from_state>INIT|FULL|2WAY) to (?P<to_state>DOWN), Neighbor Down: (?P<reason>.+), vrf (?P<vrf>\\S+)"
             }
         ]
     }
