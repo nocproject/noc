@@ -1,0 +1,168 @@
+{
+    "name": "Zyxel | GS-3012F",
+    "uuid": "6b2fca62-6b11-4b19-a3b9-fbc08cc52456",
+    "vendor__code": "ZYXEL",
+    "description": "ZyXEL ES-3012F switch, 8 SFP, 4 Combo",
+    "connection_rule__name": "Generic | Switch SFP",
+    "connections": [
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp1",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp2",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp3",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp4",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp5",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp6",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp7",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 8",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp8",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 9 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp9",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 9 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 10 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp10",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 10 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 11 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp11",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 11 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 12 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp12",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 12 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "GS-3012F"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 6.0
+        }
+    }
+}
