@@ -1,0 +1,125 @@
+{
+    "name": "Zyxel | ES-2108-G",
+    "uuid": "a151ed35-0649-4cc3-8936-a2d200aa1d31",
+    "vendor__code": "ZYXEL",
+    "description": "L2+ switch with 8 ports 10/100Base-TX, 1 combo ports 10/100/1000Base-TX / SFP",
+    "connection_rule__name": "Generic | Switch SFP",
+    "connections": [
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "Power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Management console",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 3",
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 4",
+            "direction": "s",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 5",
+            "direction": "s",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 6",
+            "direction": "s",
+            "gender": "f",
+            "name": "6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 7",
+            "direction": "s",
+            "gender": "f",
+            "name": "7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 8",
+            "direction": "s",
+            "gender": "f",
+            "name": "8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 9 (Copper)",
+            "direction": "s",
+            "gender": "f",
+            "name": "9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 9 (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp9",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "ES-2108-G"
+        },
+        "dimensions": {
+            "depth": 135,
+            "height": 35,
+            "width": 250
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 1.2
+        }
+    }
+}
