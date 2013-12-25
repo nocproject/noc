@@ -15,6 +15,7 @@ import hashlib
 import uuid
 ## Third-party modules
 from mongoengine.fields import ListField, EmbeddedDocumentField
+from mongoengine.queryset import Q
 ## NOC modules
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.serialize import json_decode
@@ -162,7 +163,9 @@ class Collection(object):
         self.changed = True
 
     def update_item(self, mi):
-        o = self.doc.objects.filter(uuid=mi.uuid).first()
+        o = self.doc.objects.filter(
+            Q(uuid=mi.uuid) | Q(uuid=uuid.UUID(mi.uuid))
+        ).first()
         if not o:
             self.create_item(mi)
             return
