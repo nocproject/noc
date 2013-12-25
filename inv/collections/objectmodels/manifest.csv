@@ -91,6 +91,7 @@ Cisco | Transceiver | 1G | GLC-BX-D,c51048d8-9b4e-44ca-9734-4c9330ca4dc0,Cisco/T
 Cisco | Transceiver | 1G | GLC-BX-U,b3d9223c-28da-4696-a01e-624f843fcc19,Cisco/Transceiver/1G/GLC-BX-U.json,b0c3556749e0dac411dc38e5df690223f331ac8b9b7485844acfac271119bba8
 Cisco | Transceiver | 1G | GLC-LH-SM,e848a84b-0e8a-4184-930f-baf93ebfd4f7,Cisco/Transceiver/1G/GLC-LH-SM.json,bbd9321342fea17e7d9f73820270f95395e1543bc39f6b8b12873d0576a8f95b
 Cisco | Transceiver | 1G | GLC-LH-SMD,1724b01e-e07c-47ad-a4e7-5dce23000251,Cisco/Transceiver/1G/GLC-LH-SMD.json,d400275b8792a7b27b7b3a6a906d44e184d73075e5ba745c2f20e058930be008
+Cisco | Transceiver | 1G | GLC-T,37b32d6b-90b5-4f69-ba1d-efecf3525565,Cisco/Transceiver/1G/GLC-T.json,f41f5d05dd4d8f324481acdbeb247812265ce2497ac9b81cfab87407fa22a109
 Cisco | Transceiver | 1G | SFP-GE-L,aa50f7d4-fb20-42d8-bdc6-e5c036d98e40,Cisco/Transceiver/1G/SFP-GE-L.json,1db6753339e4afd0001484a6edf6a552e2a66ce1996bc97ed876124d0b4723be
 City,f75b9b29-702e-4525-b748-498aca1c8739,City.json,7b8057ac6d3b38751ef9ee78e7e89cde3bd32e1ea1032a3adbe0d4fab3f88c19
 Country,cf775661-9287-4f5a-ae13-86693c1a2a79,Country.json,e15469e7d3bf069d3ae07fde467f981ecda8d597a09ee602dbd962d4f06fda5e
@@ -191,6 +192,7 @@ NoName | Transceiver | 1G | SFP EX,a9fbca81-48c0-4ed3-8175-5de081ec5020,NoName/T
 NoName | Transceiver | 1G | SFP LH,e053a183-d0d3-4624-853e-96119178edbc,NoName/Transceiver/1G/SFP_LH.json,d75bc725efb7956fac1b8b28475bce72f5898b39dd046acff3b836fe076c34f1
 NoName | Transceiver | 1G | SFP LX,7c7fc083-3843-44bc-ab39-1ddce0966f49,NoName/Transceiver/1G/SFP_LX.json,c62d034f591144b9a8a655a27c6f7809304d5415529a70fc29f2c08e0e3dba75
 NoName | Transceiver | 1G | SFP SX,81e1867e-4297-4cd0-84f5-46931022868e,NoName/Transceiver/1G/SFP_SX.json,acaa7cf0fddd1dcce9679ea5c49dbb5d3b5f4b41e15745219f1ecd2bd2422c08
+NoName | Transceiver | 1G | SFP T,b75fb86c-df34-4e60-b87e-59ebceaf215e,NoName/Transceiver/1G/SFP_T.json,a8f83291fbf0df4df8841fc52776bf7d2dcfeb44aebbf7093ed8877372893ef3
 NoName | Transceiver | 1G | SFP TX,fd39e350-47dd-482f-9b7f-31615e6795a6,NoName/Transceiver/1G/SFP_TX.json,732c83fc18d54350d0043446155e2a02f41d628375762024b80a09550d16e431
 NoName | Transceiver | 1G | SFP ZX,f486bb38-71a8-4688-bac4-62fc9c3dd183,NoName/Transceiver/1G/SFP_ZX.json,866de545e6b2a0038ffee45e9247f3bedacf027c1379d751973117a3b1671331
 NoName | Transceiver | Unknown SFP,2ba9fd2c-1a6e-44f9-b59b-0305f9f893ff,NoName/Transceiver/Unknown_SFP.json,84643893c6386f079be486357c08fb5414883f2daacfcd7fad4f3219d7fa3228
