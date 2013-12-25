@@ -11,6 +11,7 @@ import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces.igetinventory import IGetInventory
+from noc.lib.text import parse_table
 
 
 class Script(NOCScript):
@@ -25,9 +26,10 @@ class Script(NOCScript):
                 r"Date Code\s+:\s+\S+."
                 r"Transceiver\s+:\s+(?P<type>\S+)",
                 re.MULTILINE | re.DOTALL)
-    rx_trans_old = re.compile(r"^\s+(?P<number>\d+)\s+"
-                r"(?P<vendor>\S+)\s+(?P<part_no>\S+)\s+"
-                r"(?P<serial>\S+)\s*$", re.MULTILINE)
+
+    trans_map = {
+        "1000BASE-L": "Unknown | Transceiver | 1000BASE-LX"
+    }
 
     def execute(self):
         objects = []
@@ -63,14 +65,23 @@ class Script(NOCScript):
         else:
             with self.zynos_mode():
                 inv = self.cli("sys sw sfp disp2")
-                for match in self.rx_trans_old.finditer(inv):
+                for idx, vendor, pn, sn in parse_table(inv):
+                    if not vendor and not pn and not sn:
+                        continue
+                    if vendor == "OEM":
+                        vendor = "NoName"
+                        if pn in self.trans_map:
+                            pn = self.trans_map[pn]
+                        else:
+                            raise self.UnexpectedResultError(
+                                "Unknown transceiver type: %s" % pn)
                     objects += [{
                         "type": "XCVR",
-                        "number": match.group("number"),
-                        "vendor": match.group("vendor"),
-                        "serial": match.group("serial"),
-                        "description": match.group("part_no"),
-                        "part_no": [match.group("part_no")],
+                        "number": idx,
+                        "vendor": vendor,
+                        "serial": sn,
+                        "description": pn,
+                        "part_no": [pn],
                         "builtin": False
                     }]
         return objects
