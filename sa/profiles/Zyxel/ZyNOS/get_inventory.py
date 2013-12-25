@@ -48,13 +48,19 @@ class Script(NOCScript):
         return objects
 
     def get_transceivers(self):
+        if self.match_version(platform__contains="2024"):
+            XN = lambda x: str(int(x) + 24)
+        elif self.match_version(platform__contains="2108"):
+            XN = lambda x: str(int(x) + 8)
+        else:
+            XN = lambda x: x
         objects = []
         if self.match_version(version__startswith="3.90"):
             inv = self.cli("show interface transceiver *")
             for match in self.rx_trans.finditer(inv):
                 objects += [{
                     "type": "XCVR",
-                    "number": match.group("number"),
+                    "number": XN(match.group("number")),
                     "vendor": match.group("vendor"),
                     "serial": match.group("serial"),
                     "description": match.group("type"),
@@ -77,7 +83,7 @@ class Script(NOCScript):
                                 "Unknown transceiver type: %s" % pn)
                     objects += [{
                         "type": "XCVR",
-                        "number": idx,
+                        "number": XN(idx),
                         "vendor": vendor,
                         "serial": sn,
                         "description": pn,
