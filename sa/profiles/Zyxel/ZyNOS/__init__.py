@@ -72,5 +72,5 @@ class ZyNOSContextManager(object):
         """Leaving zynos mode context"""
         if exc_type is None:
             self.script.pop_prompt_pattern()
-            self.script.cli_provider.set_state("UNPRIVELEGED_PROMPT")
-            self.script.cli(self.profile.command_exit_zynos)
+            self.script.cli_provider.set_state("START")
+            self.script.cli_provider.submit(self.profile.command_exit_zynos)
