@@ -141,3 +141,4 @@ Transceiver | XENPAK,8c44c8a7-2447-44e3-9b2c-c2ce1c01a1ff,Transceiver/XENPAK.jso
 Transceiver | XENPAK | Cisco,e7acafdd-79c0-43fe-9008-0a1d1e2c4f16,Transceiver/XENPAK/Cisco.json,6c0d481654af740860a5c1b8e39f1eb48145f3a270088046c72a54c1ff04680c
 Transceiver | XFP,70ae7666-a616-4c6e-9597-b7bdefd8a01d,Transceiver/XFP.json,5d0f8d4ffabd1dc365caac94be5adbfd2461059b23fb048a3bbcfd2f95c91a1c
 Transceiver | XFP | Cisco,d52ec758-106f-449e-9f6c-63d0cf608caa,Transceiver/XFP/Cisco.json,16a1371eb0c148b4e34c8b2bb604a255eb3a22b8aad59138cacec260a2dca7db
+Zyxel | BPS-120 Connector,ac8ee234-191a-49ae-b2b0-9fc36c2a374f,Zyxel/BPS-120_Connector.json,90f5da9349e4e2848abe34f8eae35d141420e54edc4b7203cfc235dd75b9f610
