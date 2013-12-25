@@ -263,7 +263,7 @@
             "group": "0",
             "name": "Gi1_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP | Cisco"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernet 0/2 RJ45 port",
