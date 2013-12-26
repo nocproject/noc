@@ -1,0 +1,29 @@
+{
+    "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-10-55",
+    "uuid": "eafaf118-1378-4065-9e3b-d84966dbf713",
+    "vendor__code": "CARELINK",
+    "description": "CareLink SFP WDM transceiver (1550 tx, 1310 rx)",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "CL-SFP-WDM-10-55"
+        }
+    }
+}

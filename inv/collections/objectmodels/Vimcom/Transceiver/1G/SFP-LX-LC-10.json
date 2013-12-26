@@ -1,0 +1,37 @@
+{
+    "name": "Vimcom | Transceiver | 1G | SFP-LX-LC-10",
+    "uuid": "4ad05e3e-e88b-477b-a4e0-655d5d94293e",
+    "vendor__code": "VIMCOM",
+    "description": "Vimcom SFP LX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-LX.LC.10"
+        }
+    }
+}
