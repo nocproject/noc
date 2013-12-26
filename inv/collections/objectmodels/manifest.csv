@@ -30,6 +30,8 @@ Brocade | SX | SX-FI-2XG 2SFP+ Linecard,bcc931e4-58e6-45d0-926d-850db06186f0,Bro
 Brocade | SX | SX-FIZMRXL6 0-port management module,f4a68d1d-f6cc-4be3-b857-de6bd573e3e4,Brocade/SX/SX-FIZMRXL6_0-port_management_module.json,6143487c88e931f5af2f4d9c6201f621d9bd3288f19ba806a7c74c2b29a7cb6c
 Brocade | TurboIron x24,17edc5e8-15cf-4e58-8cbf-fa8fba6be867,Brocade/TurboIron_x24.json,d6c824c74f7b0a957a61ad713356a3d0e1cf0dc9fc01215fa33ab755985034ef
 Building,9e67029a-d694-41bb-b07c-b241a18c69b9,Building.json,1f0ca201b098c469e3ad25369755a191f320c9ee89ecb26211dd721d74cb4998
+Carelink | Transceiver | 1G | CL-SFP-WDM-10-31,9fc8baef-f958-4e44-93e7-d57f2971761c,Carelink/Transceiver/1G/CL-SFP-WDM-10-31.json,d50b97f1203d28bed7dc81490957546ca522ba18ea10c3ce9c36090136fd51e9
+Carelink | Transceiver | 1G | CL-SFP-WDM-10-55,eafaf118-1378-4065-9e3b-d84966dbf713,Carelink/Transceiver/1G/CL-SFP-WDM-10-55.json,3c6e47ed9b1e54ea186e28079d5b0a44d74164f8ce61b18302bb0d6cee9df730
 Cisco | 4500 | ME-4924-10GE,b271f13b-61a6-4149-add2-775cc8d9e6e2,Cisco/4500/ME-4924-10GE.json,b25620ed8dc6361438837b11fc790daad1568f8916e2848f97617d0d8eb4190c
 Cisco | 7200 | 7201 Chassis,ffba3ba6-eaeb-4e4b-bb77-88c299585450,Cisco/7200/7201_Chassis.json,726706bc73f7e3fba2ca2d1ecef2f09b6e5cf413acdacca52ec1e6809f8e2dfc
 Cisco | 7600 | 76-ES+XT-4TG3CXL,b8099319-e928-4713-b7e8-1fabce36ff5d,Cisco/7600/76-ES+XT-4TG3CXL.json,71db6e1a2469421ee70ce83f91619320fb2e5be6288c98ec4d746fee448eb2f0
@@ -172,6 +174,7 @@ Juniper | Transceiver | 1G | SFP LX10,b5deb0b0-75ba-4ba7-afd7-791959f3a62c,Junip
 Juniper | Transceiver | 1G | SFP SX,8b2e420a-3464-40f5-a1f1-6800963c3cbf,Juniper/Transceiver/1G/SFP_SX.json,ccccf92c5d91274b863e6816d4aea8c33c413d2d31034768fe5e0fd2723a65ce
 Juniper | Transceiver | 1G | SFP T,03a7f540-4dc2-412d-9990-183c3d29e507,Juniper/Transceiver/1G/SFP_T.json,c37bcbb3d66ea8dbebfb935280293d534a185a9980aff4a3d149fa1ec0494d15
 Lost&Found,b0fae773-b214-4edf-be35-3468b53b03f2,Lost_Found.json,cb356be5b985f148cde5a8ebc313aadd4e33f918b84143c6ac4f3afc76fb4d82
+Nateks | Transceiver | 1G | SFP-GE-SM-10KM,8490de94-1ca6-44e7-96f9-0fb5bf3f60b2,Nateks/Transceiver/1G/SFP-GE-SM-10KM.json,edd8371bbca214e9bea7244e3ba38f03bac797b3553c7cebf5c4d679137c41b4
 Newstar | Transceiver | 10G | X2 LR,714250aa-b66b-45d8-bad6-6de4318b6305,Newstar/Transceiver/10G/X2_LR.json,08c51eeca7fac06bddf4b3e7cfab76d078a62ec493ef4f505bcaba531932ee54
 NoName | Patch | LC-LC SMF Duplex Patch Cord,c16eb516-bbb1-45b1-a3d4-a960c3109e2f,NoName/Patch/LC-LC_SMF_Duplex_Patch_Cord.json,183981824c7d01e4a1508fb7e436a818365ab10593f145be2d303836e42756fb
 NoName | Patch | LC-LC SMF Simplex Patch Cord,217ba845-5309-4c4b-8543-d26dea35f11a,NoName/Patch/LC-LC_SMF_Simplex_Patch_Cord.json,bea4a13dbb4a39f8f97b94c0f47c81ee5850c7ab969760f5029b4cea9bf4ee2f
@@ -197,9 +200,11 @@ NoName | Transceiver | 1G | SFP TX,fd39e350-47dd-482f-9b7f-31615e6795a6,NoName/T
 NoName | Transceiver | 1G | SFP ZX,f486bb38-71a8-4688-bac4-62fc9c3dd183,NoName/Transceiver/1G/SFP_ZX.json,866de545e6b2a0038ffee45e9247f3bedacf027c1379d751973117a3b1671331
 NoName | Transceiver | Unknown SFP,2ba9fd2c-1a6e-44f9-b59b-0305f9f893ff,NoName/Transceiver/Unknown_SFP.json,84643893c6386f079be486357c08fb5414883f2daacfcd7fad4f3219d7fa3228
 NoName | Transceiver | Unknown SFP | Cisco,f52610b5-718c-4e8d-a4c1-7585588cd8c0,NoName/Transceiver/Unknown_SFP/Cisco.json,b9c8249a88efac4f378ecdca6ae177484a06db257838adfbd9ab24a11d77ac59
+Optostar | Transceiver | 1G | OP-MP413L1SN-10,57d4d724-619f-43a5-a82e-ad6fbaee468b,Optostar/Transceiver/1G/OP-MP413L1SN-10.json,ea0c342d51d52c5bec740a05f2784a320940260660cb7ef7a2858a45ba9eaf4a
 Rack Row,1cf66a38-fa88-4ef9-b181-6e6a298c55cf,Rack_Row.json,0c31a7ca30958d35e929b474936643d9859144b5ed9154f31550004261a3fa68
 Room,c945e7dc-4c82-40c3-b8f9-65c62e85ed1d,Room.json,61885056aec43caad30616d71d8d17895713592977c7202cd1687435bca619de
 Root,0f1b7c90-c611-4046-9a83-b120377eb6e0,Root.json,4910992ac340ddf78eecc465816f3d5efa34c8a33fd9e21c631b4493b7bfe5e1
+Vimcom | Transceiver | 1G | SFP-LX-LC-10,4ad05e3e-e88b-477b-a4e0-655d5d94293e,Vimcom/Transceiver/1G/SFP-LX-LC-10.json,8d7d39d741384ba3c0f3162b0bd69f89f0657f85f185c6053fbfd5601a7a4509
 Zyxel | ES-2024A,dfdd4064-fb61-4e04-9333-c5f60a298878,Zyxel/ES-2024A.json,9c72132d469f128123b16d1cadcc7dd370d4deacad18d881692ff082f2868cb8
 Zyxel | ES-2108-G,a151ed35-0649-4cc3-8936-a2d200aa1d31,Zyxel/ES-2108-G.json,34b094369d7111cc3c867345c6f1114e96e991e7af38391e34972945de0134cf
 Zyxel | ES-3124,99007bb3-2c3f-4a5b-984b-2e0a2420c06e,Zyxel/ES-3124.json,6ee762a69f814f9b10d5e1dbf5dad86573f0b182b83116ef9d8689cec1459da9
