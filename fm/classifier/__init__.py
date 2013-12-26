@@ -34,6 +34,7 @@ from noc.sa.interfaces.base import (IPv4Parameter, IPv6Parameter,
                                     MACAddressParameter, InterfaceTypeError)
 from noc.lib.datasource import datasource_registry
 from noc.lib.nosql import ObjectId
+from noc.lib.dateutils import total_seconds
 
 
 ##
@@ -948,7 +949,7 @@ class Classifier(Daemon):
         st = {
             CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
             CR_UNKNOWN: 0, CR_CLASSIFIED: 0, CR_DISPOSED: 0,
-            CR_DUPLICATED:0
+            CR_DUPLICATED: 0
         }
         # Enter main loop
         while True:
@@ -969,7 +970,8 @@ class Classifier(Daemon):
                 reset_queries()
             if n:
                 # Write performance report
-                dt = time.time() - t0
+                tt = time.time()
+                dt = tt - t0
                 if dt:
                     perf = n / dt
                 else:
@@ -977,7 +979,8 @@ class Classifier(Daemon):
                 s = [
                     "elapsed: %ss" % ("%10.4f" % dt).strip(),
                     "speed: %sev/s" % ("%10.1f" % perf).strip(),
-                    "events: %d" % n
+                    "events: %d" % n,
+                    "lag: %fs" % total_seconds(datetime.datetime.now() - e.timestamp)
                     ]
                 s += ["%s: %d" % (CR[i], sn[i]) for i in range(len(CR))]
                 s = ", ".join(s)
