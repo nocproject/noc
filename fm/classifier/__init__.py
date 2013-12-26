@@ -635,7 +635,10 @@ class Classifier(Daemon):
         return value
 
     def decode_int(self, event, value):
-        return int(value)
+        if value is not None and value.isdigit():
+            return int(value)
+        else:
+            return 0
 
     def decode_ipv4_address(self, event, value):
         return IPv4Parameter().clean(value)

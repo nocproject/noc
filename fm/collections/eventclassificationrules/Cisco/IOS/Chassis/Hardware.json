@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%\\S+ASIC-\\S+WARN: .+"
+                "value_re": "%\\S+ASIC-\\S+(?:WARN|ERR_INTRPT): .+"
             }
         ]
     },
@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%PM_SCP-SP-3-GBIC_BAD: (?P<module>\\S+) integrity check on port (?P<interface>\\S+) failed: .+"
+                "value_re": "%PM_SCP-SP-3-GBIC_BAD: (?P<module>\\S+) integrity check on port (?P<interface>\\S+) failed: (?P<reason>.+)"
             }
         ]
     },
@@ -71,6 +71,10 @@
             {
                 "name": "module",
                 "value": "GBIC"
+            },
+            {
+                "name": "reason",
+                "value": "Bad eeprom"
             }
         ],
         "patterns": [
@@ -105,7 +109,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%CONST_DIAG-(\\S+)?SP-4-ERROR_COUNTER_WARNING: (?P<module>Module \\S+) Error counter exceeds threshold"
+                "value_re": "%CONST_DIAG-(\\S+)?SP-4-ERROR_COUNTER_WARNING: (?P<module>Module \\S+) (?P<reason>Error counter exceeds threshold)"
             }
         ]
     },
@@ -115,6 +119,12 @@
         "description": "%DIAG-SP-3-MINOR_HW: Module 1: Online Diagnostics detected Minor Hardware Error",
         "event_class__name": "Chassis | Hardware | Module | Module Error",
         "preference": 1000,
+        "vars": [
+            {
+                "name": "reason",
+                "value": "Online diagnostic failed"
+            }
+        ],
         "patterns": [
             {
                 "key_re": "^source$",
@@ -136,6 +146,12 @@
         "description": "%GBIC_SECURITY_UNIQUE-4-DUPLICATE_SN: GBIC interface 0/1 has the same serial number as another GBIC interface.",
         "event_class__name": "Chassis | Hardware | Module | Module Error",
         "preference": 1000,
+        "vars": [
+            {
+                "name": "reason",
+                "value": "Duplicate serial number"
+            }
+        ],
         "patterns": [
             {
                 "key_re": "^source$",
@@ -157,6 +173,12 @@
         "description": "%PHY-4-SFP_NOT_SUPPORTED: The SFP in Gi0/1 is not supported",
         "event_class__name": "Chassis | Hardware | Module | Module Error",
         "preference": 1000,
+        "vars": [
+            {
+                "name": "reason",
+                "value": "SFP is not supported"
+            }
+        ],
         "patterns": [
             {
                 "key_re": "^source$",
@@ -169,6 +191,48 @@
             {
                 "key_re": "^message$",
                 "value_re": "%PHY-4-SFP_NOT_SUPPORTED: The (?P<module>SFP) in (?P<interface>\\S+) is not supported"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #7 (SYSLOG)",
+        "description": "%PM_SCP-SP-2-LCP_FW_ERR_INFORM: Module 4 is experiencing the following error: Bus Asic #0 transient Pb error",
+        "event_class__name": "Chassis | Hardware | Module | Module Error",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PM_SCP(-SP)?-2-LCP_FW_ERR_INFORM: Module (?P<module>\\d+) is experiencing the following error: (?P<reason>.+)"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #8 (SYSLOG)",
+        "description": "%PM_SCP-SP-1-LCP_FW_ERR: System resetting module 13 to recover from error: Linecard received system exception",
+        "event_class__name": "Chassis | Hardware | Module | Module Error",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PM_SCP-SP-1-LCP_FW_ERR: System resetting module (?P<module>\\d+) to recover from error: (?P<reason>.+)"
             }
         ]
     },

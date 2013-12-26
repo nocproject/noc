@@ -1,0 +1,22 @@
+[
+    {
+        "name": "DLink | DxS_Cisco_CLI | Network | NTP | System Clock Adjusted (SYSLOG)",
+        "description": "%SYS-6-CLOCKUPDATE: System clock has been updated to 10:24:59 UTC Thu Nov 14 2013.",
+        "event_class__name": "Network | NTP | System Clock Adjusted",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS_Cisco_CLI$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-6-CLOCKUPDATE: System clock has been updated to.+"
+            }
+        ]
+    }
+]

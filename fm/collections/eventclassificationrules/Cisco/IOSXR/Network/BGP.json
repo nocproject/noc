@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Cisco | IOSXR | Network | BGP | Established (SYSLOG)",
+        "description": "%ROUTING-BGP-5-ADJCHANGE : neighbor 1.1.1.1 Up (VRF: default) (AS: 65531)",
+        "event_class__name": "Network | BGP | Established",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOSXR$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ROUTING-BGP-5-ADJCHANGE : neighbor (?P<peer>\\S+) Up \\(VRF: (?P<vrf>.+)\\) \\(AS: (?P<as>\\d+)\\)"
+            }
+        ]
+    }
+]

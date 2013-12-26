@@ -17,8 +17,10 @@ class Script(NOCScript):
     cache = True
     implements = [IGetVersion]
     rx_ver = re.compile(
-        r"System description\s+:\s+(?P<platform>\S+).+System software version"
-        r"\s+:\s+v(?P<version>\S+?),?\s+Release\(\d+\)", re.MULTILINE | re.DOTALL)
+        r"System description\s+:\s+(?P<platform>\S+).+System hardware version"
+        r"\s+:\s+(?P<hversion>\S+?),?\s+System software version"
+        r"\s+:\s+v(?P<version>\S+?),?\s+Release\(\d+\)",
+        re.MULTILINE | re.DOTALL)
 
     def execute(self):
         match = self.re_search(self.rx_ver, self.cli("show version"))
@@ -26,4 +28,7 @@ class Script(NOCScript):
             "vendor": "DLink",
             "platform": match.group("platform"),
             "version": match.group("version"),
+            "attributes": {
+                "HW version": match.group("hversion")
+            }
         }
