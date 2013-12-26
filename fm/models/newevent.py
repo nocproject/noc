@@ -23,7 +23,7 @@ class NewEvent(document.Document):
     meta = {
         "collection": "noc.events.new",
         "allow_inheritance": False,
-        "indexes": ["timestamp"]
+        "indexes": ["seq"]
     }
     status = "N"
     # Fields
