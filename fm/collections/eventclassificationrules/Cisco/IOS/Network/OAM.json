@@ -1,0 +1,211 @@
+[
+    {
+        "name": "Cisco | IOS | Network | OAM | Enter Session (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-ENTER_SESSION: The client on interface Gi0/1 has entered the OAM session.",
+        "event_class__name": "Network | OAM | Enter Session",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-ENTER_SESSION: The client on interface (?P<interface>\\S+) has entered the OAM session"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Exit Session (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-EXIT_SESSION: The client on interface Gi0/1 has left the OAM session.",
+        "event_class__name": "Network | OAM | Exit Session",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-EXIT_SESSION: The client on interface (?P<interface>\\S+) has left the OAM session"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Client Recieved Remote Failure (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-RFI: The client on interface Gi0/1 has received a remote failure indication from its remote peer(failure reason = remote client down action = )",
+        "event_class__name": "Network | OAM | Client Recieved Remote Failure",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-RFI: The client on interface (?P<interface>\\S+) has received a remote failure indication from its remote peer\\s*\\(failure reason = (?P<reason>.+)\\)"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Client Clear Remote Failure (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-RFI_CLEAR: The client on interface %s has received a clear of remote failure indication from its remote peer(failure reason = %s action = %s)",
+        "event_class__name": "Network | OAM | Client Clear Remote Failure",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-RFI_CLEAR: The client on interface (?P<interface>\\S+) has received a clear of remote failure indication from its remote peer\\s*\\(failure reason = (?P<reason>.+)\\)"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Monitoring Error (SYSLOG)",
+        "description": "%ETHERNET_OAM-5-LINK_MONITOR: 121507 rx CRC errors detected over the last 180 seconds on interface Fa0/24",
+        "event_class__name": "Network | OAM | Monitoring Error",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-5-LINK_MONITOR: (?P<error>.+) errors detected over the last .+ on interface (?P<interface>\\S+)"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Discovery Timeout (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-LINK_TIMEOUT: The client on interface Gi0/1 has timed out and exited the OAM session.",
+        "event_class__name": "Network | OAM | Discovery Timeout",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-LINK_TIMEOUT: The client on interface (?P<interface>\\S+) has timed out"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Entering Master Loopback Mode (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has entered the master loopback mode.",
+        "event_class__name": "Network | OAM | Entering Master Loopback Mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has entered the master loopback mode"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Exiting Master Loopback Mode (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has exited the master loopback mode.",
+        "event_class__name": "Network | OAM | Exiting Master Loopback Mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has exited the master loopback mode"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Entering Slave Loopback Mode (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has entered the slave loopback mode.",
+        "event_class__name": "Network | OAM | Entering Slave Loopback Mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has entered the slave loopback mode"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | OAM | Exiting Slave Loopback Mode (SYSLOG)",
+        "description": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has exited the slave loopback mode.",
+        "event_class__name": "Network | OAM | Exiting Slave Loopback Mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has exited the slave loopback mode"
+            }
+        ]
+    }
+]

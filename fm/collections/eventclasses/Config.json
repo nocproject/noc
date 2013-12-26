@@ -258,5 +258,51 @@
                 "alarm_class__name" : "Config | Config Download Failed"
             }
         ]
+    },
+
+    {
+        "name": "Config | Invalid Config",
+        "description": "Some lines in config are invalid",
+        "action": "A",
+        "vars": [],
+        "text": {
+            "en": {
+                "subject_template": "Invalid config",
+                "body_template": "Invalid config",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name" : "Config | Invalid Config"
+            }
+        ]
+    },
+
+    {
+        "name": "Config | Config Corrected",
+        "description": "Correct invalid config",
+        "action": "A",
+        "vars": [],
+        "text": {
+            "en": {
+                "subject_template": "Invalid config corrected",
+                "body_template": "Invalid config corrected",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name" : "Config | Invalid Config"
+            }
+        ]
     }
 ]

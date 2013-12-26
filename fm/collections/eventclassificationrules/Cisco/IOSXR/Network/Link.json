@@ -39,5 +39,89 @@
                 "value_re": "%PKT_INFRA-LINK-3-UPDOWN\\s*: Interface (?P<interface>.+), changed state to Down$"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Network | Link | DOM | Warning: Out of Threshold (SYSLOG)",
+        "description": "%PLATFORM-SFP-3-HIGH_VOLTAGE_WARNING : Set|envmon_lc[168024]|SFP(0x1029011)|Port_0/17",
+        "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOSXR$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PLATFORM-SFP-3-(?P<threshold>HIGH|LOW)_(?P<sensor>LASER_BIAS|RX_POWER|TEMP|TX_POWER|VOLTAGE)_WARNING : Set\\|envmon_lc\\[\\d+\\]\\|SFP\\(0x\\d+\\)\\|(?P<interface>.+)"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Network | Link | DOM | Warning: Out of Threshold Recovered (SYSLOG)",
+        "description": "%PLATFORM-SFP-3-HIGH_VOLTAGE_WARNING : Clear|envmon_lc[168024]|SFP(0x1029011)|Port_0/17",
+        "event_class__name": "Network | Link | DOM | Warning: Out of Threshold Recovered",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOSXR$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PLATFORM-SFP-3-(?P<threshold>HIGH|LOW)_(?P<sensor>LASER_BIAS|RX_POWER|TEMP|TX_POWER|VOLTAGE)_WARNING : Clear\\|envmon_lc\\[\\d+\\]\\|SFP\\(0x\\d+\\)\\|(?P<interface>.+)"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Network | Link | DOM | Alarm: Out of Threshold (SYSLOG)",
+        "description": "%PLATFORM-SFP-3-HIGH_VOLTAGE_ALARM : Set|envmon_lc[168024]|SFP(0x1029011)|Port_0/17",
+        "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOSXR$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PLATFORM-SFP-3-(?P<threshold>HIGH|LOW)_(?P<sensor>LASER_BIAS|RX_POWER|TEMP|TX_POWER|VOLTAGE)_ALARM : Set\\|envmon_lc\\[\\d+\\]\\|SFP\\(0x\\d+\\)\\|(?P<interface>.+)"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Network | Link | DOM | Alarm: Out of Threshold Recovered (SYSLOG)",
+        "description": "%PLATFORM-SFP-3-HIGH_VOLTAGE_ALARM : Clear|envmon_lc[168024]|SFP(0x1029011)|Port_0/17",
+        "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold Recovered",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOSXR$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PLATFORM-SFP-3-(?P<threshold>HIGH|LOW)_(?P<sensor>LASER_BIAS|RX_POWER|TEMP|TX_POWER|VOLTAGE)_ALARM : Clear\\|envmon_lc\\[\\d+\\]\\|SFP\\(0x\\d+\\)\\|(?P<interface>.+)"
+            }
+        ]
     }
 ]

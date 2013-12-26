@@ -42,7 +42,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%NFPP_ARP_GUARD-4-DOS_DETECTED: Host<IP=(?P<src_ip>\\d+\\S+),MAC=\\S+,port=(?P<interface>\\S+),VLAN=\\d+> was detected."
+                "value_re": "%NFPP_ARP_GUARD-4-DOS_DETECTED: Host<IP=(?P<src_ip>\\d+\\S+),MAC=\\S+,port=(?P<interface>\\S+),VLAN=(?P<vlan>\\d+)> was detected."
             }
         ]
     },
@@ -69,7 +69,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%NFPP_ARP_GUARD-4-DOS_DETECTED: Host<IP=N/A,MAC=\\S+,port=(?P<interface>\\S+),VLAN=\\d+> was detected."
+                "value_re": "%NFPP_ARP_GUARD-4-DOS_DETECTED: Host<IP=N/A,MAC=(?P<src_mac>\\S+),port=(?P<interface>\\S+),VLAN=(?P<vlan>\\d+)> was detected."
             }
         ]
     }

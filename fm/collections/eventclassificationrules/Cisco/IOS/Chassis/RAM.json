@@ -1,6 +1,6 @@
 [
     {
-        "name": "Cisco | IOS | Chassis | RAM | Insufficient Memory #1 (SYSLOG)",
+        "name": "Cisco | IOS | Chassis | RAM | Insufficient Memory (SYSLOG)",
         "description": "%SYS-2-MALLOCFAIL: Memory allocation of 65536 bytes failed from 0x4183958C, alignment 0",
         "event_class__name": "Chassis | RAM | Insufficient Memory",
         "preference": 1000,
@@ -21,10 +21,16 @@
     },
 
     {
-        "name": "Cisco | IOS | Chassis | RAM | Insufficient Memory #2 (SYSLOG)",
-        "description": "%QM-4-TCAM_ENTRY: Hardware TCAM entry capacity exceeded",
-        "event_class__name": "Chassis | RAM | Insufficient Memory",
+        "name": "Cisco | IOS | Chassis | RAM | RAM Failed (SYSLOG)",
+        "description": "%MISTRAL-SP-3-ERROR: Error condition detected: TM_NPP_PARITY_ERROR",
+        "event_class__name": "Chassis | RAM | RAM Failed",
         "preference": 1000,
+        "vars": [
+            {
+                "name": "bank",
+                "value": "Mistral ASIC"
+            }
+        ],
         "patterns": [
             {
                 "key_re": "^source$",
@@ -36,7 +42,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%(?:Q|F)M-4-TCAM_ENTRY: (?P<reason>.+ capacity exceeded)"
+                "value_re": "%MISTRAL-SP-3-ERROR:"
             }
         ]
     }

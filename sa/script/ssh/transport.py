@@ -526,7 +526,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         remote_soft = match.group("soft")
         self.debug("Remote protocol version %s, remote software version %s" % (s_version, remote_soft))
         # Send our version
-        if remote_soft.startswith("FreSSH"):
+        if remote_soft.startswith("FreSSH") or remote_soft.startswith("OpenSSH_3.4"):
             # FreSSH.0.8 requires version negotiation
             # to be in separate packet
             self.socket.send(self.SSH_VERSION_STRING + "\r\n")

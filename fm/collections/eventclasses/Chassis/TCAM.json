@@ -1,0 +1,61 @@
+[
+    {
+        "name": "Chassis | TCAM | TCAM Error",
+        "description": "TCAM Error",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "TCAM error{% if reason %}: {{reason}}{% endif %}",
+                "body_template": "TCAM error{% if reason %}: {{reason}}{% endif %}",
+                "symptoms": "From random instability to complete operation failure",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "reason",
+                "description": "Reason",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Chassis | TCAM | TCAM Error"
+            }
+        ]
+    },
+
+    {
+        "name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
+        "description": "TCAM entry capacity exceeded",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "TCAM entry capacity exceeded{% if reason %}: {{reason}}{% endif %}",
+                "body_template": "TCAM entry capacity exceeded{% if reason %}: {{reason}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "reason",
+                "description": "Reason",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded"
+            }
+        ]
+    }
+]
