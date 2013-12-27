@@ -266,6 +266,9 @@
         "asset": {
             "part_no0": "ME-3400-24TS-D"
         },
+        "management": {
+            "managed": true
+        },
         "rackmount": {
             "units": 1
         }
