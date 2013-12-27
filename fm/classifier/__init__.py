@@ -1016,7 +1016,7 @@ class Classifier(Daemon):
                 # No events classified this pass. Sleep
                 time.sleep(CHECK_EVERY)
 
-    rx_non_alpha = re.compile(r"^[a-z]+")
+    rx_non_alpha = re.compile(r"[^a-z]+")
     rx_spaces = re.compile(r"\s+")
 
     def get_msg_codebook(self, s):
