@@ -258,7 +258,7 @@
         },
         {
             "description": "GigabitEthernet 0/1 SFP port",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "group": "0",
             "name": "Gi1_sfp",
