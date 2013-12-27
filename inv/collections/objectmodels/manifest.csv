@@ -9,7 +9,7 @@ Arista | Transceiver | 10G | SFP-10G-SR,945b77ec-1178-4741-8f0f-d9ce4ad0e2d9,Ari
 Arista | Transceiver | 10G | SFP-10G-SRL,b098b6a5-d6d3-44d7-b337-6f2ca142ada1,Arista/Transceiver/10G/SFP-10G-SRL.json,3ee6470b625520434d38cb455c76193c1e46008eb28f7a6b5ee960a1d4b7bac7
 Arista | Transceiver | 1G | SFP-1G-T,5bc911e4-1d42-4f90-b0a3-8f483d7d5e9f,Arista/Transceiver/1G/SFP-1G-T.json,00e8750a6150ea6d591c454dd3253cd98bc55220b68eb08a2541e973f28548e3
 Avago | Transceiver | 1G | SFP LH,8c27952d-8fc0-4cff-9220-3bad9cb270c9,Avago/Transceiver/1G/SFP_LH.json,55f4a3e0e2a3015e3a84a05b569545862cc716a4c7c89dec262274acc28e5ada
-Avago | Transceiver | 1G | SFP T,7cfc875b-2413-4607-96c0-608a78b59b80,Avago/Transceiver/1G/SFP_T.json,1e614e4caa941eef4204ee29ecbc768e181a103b0125137301f37aea7fcab9a4
+Avago | Transceiver | 1G | SFP T,7cfc875b-2413-4607-96c0-608a78b59b80,Avago/Transceiver/1G/SFP_T.json,51b63212e8bb6e2743d5ec8ddfa0f9ba43374308f8bcd44b101205f543555019
 Brocade | JetCore | 4 slot chassis,c69d8ee7-a292-48ca-9db4-bd64515c722b,Brocade/JetCore/4_slot_chassis.json,26c3a75f75a78a6fe9451ad5099d6bb34af7601dd1c5e0c00b054e4e19f24b22
 Brocade | JetCore | 8 slot chassis,9ac4db8f-3421-4ff0-9378-e6dc87bfbd56,Brocade/JetCore/8_slot_chassis.json,f8acdce63cc605310ba5901fa4c83aa20a5fa420fab1e71325064dc944c765e4
 Brocade | JetCore | B10G,d2b8bfb6-c4e9-41b2-9dcd-2693859c6dad,Brocade/JetCore/B10G.json,e700944b591b5aae4d8b076d05b7af49c7236bc1877ca7e3ac12483ce62a8884
@@ -104,7 +104,7 @@ Ericsson | SmartEdge | ALARM CARD,004d371b-192f-414c-86ac-4aa38f8277e1,Ericsson/
 Ericsson | SmartEdge | FANTRAY,fc2b08fc-edd4-4da1-b980-8d8c37a3869a,Ericsson/SmartEdge/FANTRAY.json,e7ea43c8bbe267c3e440fa21bd3ba82abcae5953f3b8152bdd625d20886061b8
 Ericsson | SmartEdge | SE600,b86525d4-3b4e-40d2-b48b-056810ad22d5,Ericsson/SmartEdge/SE600.json,81b9f68099fdb42b36e891ad4f742c1befc9ef42f39ddf0439d3f10f54de1e62
 Ericsson | SmartEdge | xcrp4-base,9a4f4e60-bfae-47eb-9d0f-bab0e9ed8810,Ericsson/SmartEdge/xcrp4-base.json,d7884f5547733f2216155582fc7aa394a1b5f87d08941345f10374132d010736
-Finisar | Transceiver | 1G | SFP LH,bb81c014-4d71-451d-aa13-eadfaef53869,Finisar/Transceiver/1G/SFP_LH.json,016d63ca17f1faca22c1c5f6883bf2217e7a775e63c5786e690f1d21f4b5ea0b
+Finisar | Transceiver | 1G | SFP LH,bb81c014-4d71-451d-aa13-eadfaef53869,Finisar/Transceiver/1G/SFP_LH.json,35a5f0d2f61fba933bcb847b2bdffdddeb63e514275cf221c8ea4f4ed1104971
 Floor,12538374-fd97-481d-83ed-d8ac5d5e0454,Floor.json,8305a323c23e8f59145fac3ff5cf5b4346c4c326b039a2b84049d9aa5b5badc8
 Force10 | S | S25N,439beb5a-b5b1-4295-8e69-62751143a2b7,Force10/S/S25N.json,106fbad6c23479f6fd8dfd8d82b5b6f35157dbbf90230e11bcffc14741d0fdbc
 Force10 | S | S50-01-10GE-2C,c4fd87c0-9fe6-4d4d-9ecb-ed2dfcfc8803,Force10/S/S50-01-10GE-2C.json,2e379081688b100e307941692f6009cb0cd2e59fd1ca05eb6e964dfd9a25fe63
