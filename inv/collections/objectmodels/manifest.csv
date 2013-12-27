@@ -174,6 +174,7 @@ Juniper | Transceiver | 1G | SFP LX10,b5deb0b0-75ba-4ba7-afd7-791959f3a62c,Junip
 Juniper | Transceiver | 1G | SFP SX,8b2e420a-3464-40f5-a1f1-6800963c3cbf,Juniper/Transceiver/1G/SFP_SX.json,ccccf92c5d91274b863e6816d4aea8c33c413d2d31034768fe5e0fd2723a65ce
 Juniper | Transceiver | 1G | SFP T,03a7f540-4dc2-412d-9990-183c3d29e507,Juniper/Transceiver/1G/SFP_T.json,c37bcbb3d66ea8dbebfb935280293d534a185a9980aff4a3d149fa1ec0494d15
 Lost&Found,b0fae773-b214-4edf-be35-3468b53b03f2,Lost_Found.json,cb356be5b985f148cde5a8ebc313aadd4e33f918b84143c6ac4f3afc76fb4d82
+Methode | Transceiver | 1G | SFP T,cd0449f7-6fe4-4e55-bfa9-90bee6c0bdc2,Methode/Transceiver/1G/SFP_T.json,f760763747e4d935ac34cb2bc6256ad2b80c5ce7a46f26a7ad0a3c00c67add87
 Nateks | Transceiver | 1G | SFP-GE-SM-10KM,8490de94-1ca6-44e7-96f9-0fb5bf3f60b2,Nateks/Transceiver/1G/SFP-GE-SM-10KM.json,edd8371bbca214e9bea7244e3ba38f03bac797b3553c7cebf5c4d679137c41b4
 Newstar | Transceiver | 10G | X2 LR,714250aa-b66b-45d8-bad6-6de4318b6305,Newstar/Transceiver/10G/X2_LR.json,08c51eeca7fac06bddf4b3e7cfab76d078a62ec493ef4f505bcaba531932ee54
 NoName | Patch | LC-LC SMF Duplex Patch Cord,c16eb516-bbb1-45b1-a3d4-a960c3109e2f,NoName/Patch/LC-LC_SMF_Duplex_Patch_Cord.json,183981824c7d01e4a1508fb7e436a818365ab10593f145be2d303836e42756fb
@@ -204,7 +205,7 @@ Optostar | Transceiver | 1G | OP-MP413L1SN-10,57d4d724-619f-43a5-a82e-ad6fbaee46
 Rack Row,1cf66a38-fa88-4ef9-b181-6e6a298c55cf,Rack_Row.json,0c31a7ca30958d35e929b474936643d9859144b5ed9154f31550004261a3fa68
 Room,c945e7dc-4c82-40c3-b8f9-65c62e85ed1d,Room.json,61885056aec43caad30616d71d8d17895713592977c7202cd1687435bca619de
 Root,0f1b7c90-c611-4046-9a83-b120377eb6e0,Root.json,4910992ac340ddf78eecc465816f3d5efa34c8a33fd9e21c631b4493b7bfe5e1
-Sumitomo | Transceiver | 100M | SCP6803-C1-BM,98fa28dc-09de-46e7-9971-45f707ba9d08,Sumitomo/Transceiver/100M/SCP6803-C1-BM.json,cdd21b069ecfd8c7c624a19cd5ee93e5a359bc6892fc25593ae09c64de1704b4
+Sumitomo | Transceiver | 100M | SFP LX,98fa28dc-09de-46e7-9971-45f707ba9d08,Sumitomo/Transceiver/100M/SFP_LX.json,c302c31de15d00a37e36275ecd2b47a085396ce5781704cb4168a32290d81a01
 Vimcom | Transceiver | 1G | SFP-LX-LC-10,4ad05e3e-e88b-477b-a4e0-655d5d94293e,Vimcom/Transceiver/1G/SFP-LX-LC-10.json,8d7d39d741384ba3c0f3162b0bd69f89f0657f85f185c6053fbfd5601a7a4509
 Zyxel | ES-2024A,dfdd4064-fb61-4e04-9333-c5f60a298878,Zyxel/ES-2024A.json,9c72132d469f128123b16d1cadcc7dd370d4deacad18d881692ff082f2868cb8
 Zyxel | ES-2108-G,a151ed35-0649-4cc3-8936-a2d200aa1d31,Zyxel/ES-2108-G.json,34b094369d7111cc3c867345c6f1114e96e991e7af38391e34972945de0134cf

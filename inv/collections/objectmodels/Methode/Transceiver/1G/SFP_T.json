@@ -1,0 +1,29 @@
+{
+    "name": "Methode | Transceiver | 1G | SFP T",
+    "uuid": "cd0449f7-6fe4-4e55-bfa9-90bee6c0bdc2",
+    "vendor__code": "METHODE",
+    "description": "SFP T transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SP7041"
+        }
+    }
+}
