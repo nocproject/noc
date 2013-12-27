@@ -108,6 +108,16 @@ class Collection(object):
     def get_hash(self, data):
         return hashlib.sha256(data).hexdigest()
 
+    def check_item(self, mi):
+        path = self.get_item_path(mi)
+        if not os.path.exists(path):
+            return ["File not found: %s" % path]
+        with open(path) as f:
+            hash = self.get_hash(f.read())
+        if hash != mi.hash:
+            return ["Checksum mismatch: %s" % path]
+        return []
+
     def get_revoked_items(self):
         """
         Returns set of revoked items

@@ -56,6 +56,13 @@ class Command(BaseCommand):
             dest="cmd",
             const="remove",
             help="Remove file to collection"
+        ),
+        make_option(
+            "--check", "-c",
+            action="store_const",
+            dest="cmd",
+            const="check",
+            help="check_collections"
         )
     )
 
@@ -84,6 +91,8 @@ class Command(BaseCommand):
             return self.handle_install(args[0], args[1:])
         elif options["cmd"] == "remove":
             return self.handle_remove(args[0])
+        elif options["cmd"] == "check":
+            return self.handle_check()
 
     def get_collection(self, name):
         for n, d in self.collections:
@@ -146,3 +155,17 @@ class Command(BaseCommand):
 
     def handle_remove(self, name):
         raise CommandError("Not implemented yet")
+
+    def handle_check(self):
+        try:
+            for name, doc in self.collections:
+                dc = Collection(name, doc)
+                dc.load()
+                for mi in dc.items.itervalues():
+                    r = dc.check_item(mi)
+                    if r:
+                        print mi.name
+                        for x in r:
+                            print "    %s" % x
+        except ValueError, why:
+            raise CommandError(why)
