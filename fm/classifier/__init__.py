@@ -172,6 +172,7 @@ class Rule(object):
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
         self.is_unknown = self.event_class_name.startswith("Unknown | ")
+        self.is_unknown_syslog = self.event_class_name.startswith("Unknown | Syslog")
         self.datasources = {}  # name -> DS
         self.vars = {}  # name -> value
         # Parse datasources
@@ -431,8 +432,11 @@ CR_UNKNOWN = 3
 CR_CLASSIFIED = 4
 CR_DISPOSED = 5
 CR_DUPLICATED = 6
+CR_UDUPLICATED = 7
 CR = ["failed", "deleted", "suppressed",
-      "unknown", "classified", "disposed", "duplicated"]
+      "unknown", "classified", "disposed", "duplicated",
+      "unk. duplicated"
+      ]
 
 
 class Classifier(Daemon):
@@ -454,6 +458,8 @@ class Classifier(Daemon):
         self.suppression = {}  # event_class_id -> (condition, suppress)
         self.dump_clone = False
         self.deduplication_window = 0
+        self.unclassified_codebook_depth = 5
+        self.unclassified_codebook = {}  # object id -> [<codebook>]
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         Daemon.__init__(self)
@@ -804,9 +810,20 @@ class Classifier(Daemon):
         resolved_vars = {
             "profile": event.managed_object.profile_name
         }
-        # For SNMP traps format values according to MIB definitions
         if event.source == "SNMP Trap":
+            # For SNMP traps format values according to MIB definitions
             resolved_vars.update(MIB.resolve_vars(event.raw_vars))
+        elif event.source == "syslog":
+            # Check for unclassified events flood
+            o_id = event.managed_object.id
+            if o_id in self.unclassified_codebook:
+                msg = event.raw_vars.get("message", "")
+                cb = self.get_msg_codebook(msg)
+                for pcb in self.unclassified_codebook[o_id]:
+                    if self.is_codebook_match(cb, pcb):
+                        # Signature is already seen, supress
+                        event.delete()
+                        return CR_UDUPLICATED
         # Find matched event class
         c_vars = event.raw_vars.copy()
         c_vars.update(dict([(k, fm_unescape(v)) for k, v in resolved_vars.items()]))
@@ -820,6 +837,16 @@ class Classifier(Daemon):
             # Silently drop event if declared by action
             event.delete()
             return CR_DELETED
+        if rule.is_unknown_syslog:
+            # Append codebook
+            msg = event.raw_vars.get("message", "")
+            cb = self.get_msg_codebook(msg)
+            o_id = event.managed_object.id
+            if not o_id in self.unclassified_codebook:
+                self.unclassified_codebook[o_id] = []
+            cbs = [cb] + self.unclassified_codebook[o_id]
+            cbs = cbs[:self.unclassified_codebook_depth]
+            self.unclassified_codebook[o_id] = cbs
         event_class = rule.event_class
         # Calculate rule variables
         vars = self.eval_rule_variables(event, event_class, vars)
@@ -949,7 +976,7 @@ class Classifier(Daemon):
         st = {
             CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
             CR_UNKNOWN: 0, CR_CLASSIFIED: 0, CR_DISPOSED: 0,
-            CR_DUPLICATED: 0
+            CR_DUPLICATED: 0, CR_UDUPLICATED: 0
         }
         # Enter main loop
         while True:
@@ -988,3 +1015,20 @@ class Classifier(Daemon):
             else:
                 # No events classified this pass. Sleep
                 time.sleep(CHECK_EVERY)
+
+    rx_non_alpha = re.compile(r"^[a-z]+")
+    rx_spaces = re.compile(r"\s+")
+
+    def get_msg_codebook(self, s):
+        """
+        Generate message codebook vector
+        """
+        x = self.rx_non_alpha.sub(" ", s.lower())
+        x = self.rx_spaces.sub(" ", x)
+        return x.strip()
+
+    def is_codebook_match(self, cb1, cb2):
+        """
+        Check codebooks for match
+        """
+        return cb1 == cb2
