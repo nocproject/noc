@@ -1,0 +1,37 @@
+{
+    "name": "Sumitomo | Transceiver | 100M | SCP6803-C1-BM",
+    "uuid": "98fa28dc-09de-46e7-9971-45f707ba9d08",
+    "vendor__code": "SUMITOMO",
+    "description": "100BaseLX-FE SFP",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX LC",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">100BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX LC",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<100BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SCP6803-C1-BM"
+        }
+    }
+}

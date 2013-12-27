@@ -23,7 +23,9 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ABCU-5710RZ-CS2"
+            "part_no0": "ABCU-5710RZ-CS2",
+            "part_no1": "ABCU-5710RZ-CS4",
+            "part_no2": "ABCU-5710RZ-CS4B"
         }
     }
 }
