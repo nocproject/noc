@@ -11,6 +11,9 @@
                 "required": false
             }
         ],
+        "handlers": [
+            "noc.fm.handlers.event.discovery.schedule_discovery"
+        ],
         "text" : {
             "en": {
                 "subject_template": "Configuration changed",

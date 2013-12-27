@@ -228,6 +228,8 @@ class EventClass(Document):
     # True if event processing is regulated by
     # Interface Profile.link_events setting
     link_event = fields.BooleanField(default=False)
+    #
+    handlers = fields.ListField(fields.StringField())
     # Plugin settings
     plugins = fields.ListField(fields.EmbeddedDocumentField(EventPlugin))
     #
@@ -278,6 +280,12 @@ class EventClass(Document):
         r += ["        \"vars \": ["]
         r += [",\n\n".join(vars)]
         r += ["        ],"]
+        # Handlers
+        hh = ["            \"%s\"" % h for h in self.handlers]
+        if self.handlers:
+            r += ["        \"handlers\": ["]
+            r += [",\n\n".join(hh)]
+            r += ["        ],"]
         # text
         r += ["        \"text\": {"]
         t = []
