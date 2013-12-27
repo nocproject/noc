@@ -81,6 +81,7 @@ class Classifier(Daemon):
         self.deduplication_window = 0
         self.unclassified_codebook_depth = 5
         self.unclassified_codebook = {}  # object id -> [<codebook>]
+        self.handlers = {}  # event class id -> [<handler>]
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         Daemon.__init__(self)
@@ -105,6 +106,7 @@ class Classifier(Daemon):
         self.load_triggers()
         self.load_suppression()
         self.load_link_action()
+        self.load_handlers()
 
     def load_rules(self):
         """
@@ -255,6 +257,36 @@ class Classifier(Daemon):
             if p:
                 logging.info("Setting default link event action to %r" % p.link_events)
                 self.default_link_action = p.link_events
+
+    def load_handlers(self):
+        logging.info("Loading handlers")
+        self.handlers = {}
+        for ec in EventClass.objects.filter():
+            if not ec.handlers:
+                continue
+            hl = []
+            for h in ec.handlers:
+                # Resolve handler
+                hh = self.resolve_handler(h)
+                if hh:
+                    hl += [hh]
+            if hl:
+                self.handlers[ec.id] = hl
+        logging.info("Handlers are loaded")
+
+    @classmethod
+    def resolve_handler(cls, h):
+        mn, s = h.rsplit(".", 1)
+        try:
+            m = __import__(mn, {}, {}, s)
+        except ImportError:
+            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            return None
+        try:
+            return getattr(m, s)
+        except AttributeError:
+            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            return None
 
     ##
     ## Variable decoders
@@ -544,6 +576,19 @@ class Classifier(Daemon):
         a_event.save()
         event.delete()
         event = a_event
+        # Call handlers
+        if event_class.id in self.handlers:
+            event_id = event.id
+            for h in self.handlers[event_class.id]:
+                try:
+                    h(event)
+                except:
+                    error_report()
+                if event.to_drop:
+                    logging.debug("Event dropped by handler")
+                    event.id = event_id  # Restore event id
+                    event.delete()
+                    return CR_DELETED
         # Call triggers if necessary
         if event_class.id in self.triggers:
             event_id = event.id
