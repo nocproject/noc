@@ -1,0 +1,31 @@
+{
+    "name": "NoName | Transceiver | 1G | SFP",
+    "uuid": "5144216d-f876-4e97-ad23-b41512985be5",
+    "vendor__code": "NONAME",
+    "description": "NoName SFP transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {}
+}
