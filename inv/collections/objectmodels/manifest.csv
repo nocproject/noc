@@ -99,6 +99,9 @@ City,f75b9b29-702e-4525-b748-498aca1c8739,City.json,7b8057ac6d3b38751ef9ee78e7e8
 Country,cf775661-9287-4f5a-ae13-86693c1a2a79,Country.json,e15469e7d3bf069d3ae07fde467f981ecda8d597a09ee602dbd962d4f06fda5e
 Edge-Core | ES | ES3510,e4935dff-8f94-407b-a1d3-419ec5027565,Edge-Core/ES/ES3510.json,71d5d7f0b663d6a6e5846a992af8ebbfda69d8aa5ae6a806575f9d2cbfbb5d62
 Edge-Core | ES | ES3510MA,28f3c0d8-9cb8-4a78-a533-f40500002144,Edge-Core/ES/ES3510MA.json,17c12f3472c234facef5d3bef344b1d5d243f3be698da2b32f88d17b1e177151
+Edge-Core | ES | ES3526XA-V2,3dfd3732-8197-4577-8410-e3d7ff7c8f59,Edge-Core/ES/ES3526XA-V2.json,6acbecab567905a917ff897e67350b2c1116645f09a42d239bdc613067d10f69
+Edge-Core | ES | ES3528M,320d4483-e8a9-42fd-8a4d-9c7d43edfbc8,Edge-Core/ES/ES3528M.json,74fe009a9bf0b582f76077d0b0cca486636c38da2f6990fe46fc9c1519004942
+Edge-Core | ES | ES3552M,4656d985-0faa-4b92-b81c-522e688968d1,Edge-Core/ES/ES3552M.json,6e3e027d4e5f8c05acb01b944a42cb859fce00afd145a588af1aff7d2b7211a6
 Ericsson | SmartEdge | 10ge-4-port,73cc796e-828d-4346-aa3d-75de2a7934b6,Ericsson/SmartEdge/10ge-4-port.json,d551c02bc0c2248986f331f929122729b1a66c6a89cc82cb2bc5e695bba6e659
 Ericsson | SmartEdge | ALARM CARD,004d371b-192f-414c-86ac-4aa38f8277e1,Ericsson/SmartEdge/ALARM_CARD.json,91e01bb912a97b5f2c156385b04ad492cd6651c1826d23a97028a026ce31d9ef
 Ericsson | SmartEdge | FANTRAY,fc2b08fc-edd4-4da1-b980-8d8c37a3869a,Ericsson/SmartEdge/FANTRAY.json,e7ea43c8bbe267c3e440fa21bd3ba82abcae5953f3b8152bdd625d20886061b8
@@ -190,6 +193,7 @@ NoName | Transceiver | 10G | XFP ER,1ede79eb-43a5-4d20-9452-d208402286d9,NoName/
 NoName | Transceiver | 10G | XFP LR,6d43fc9c-1c0d-4fd6-be82-13044dff9f85,NoName/Transceiver/10G/XFP_LR.json,c88dcdc90beeba0649da8a5bdf0e8950854aa9e209af6301890b73bc5802c460
 NoName | Transceiver | 10G | XFP SR,070deca5-5589-4343-866c-512472c79f5b,NoName/Transceiver/10G/XFP_SR.json,30a869396fe6e5cab13d143d9d8faab0cd8fdc136fc52079fcf88e685b52d055
 NoName | Transceiver | 10G | XFP ZR,51a5ea17-d727-4bba-863c-13df21adbc61,NoName/Transceiver/10G/XFP_ZR.json,27fc993a5f69fe983b49bb941ab1b098ac9c33c3be53cb640e2e721b362cb8ee
+NoName | Transceiver | 1G | SFP,5144216d-f876-4e97-ad23-b41512985be5,NoName/Transceiver/1G/SFP.json,e3c201bfc14b453c89117615068279108f6997c014ea6646feab9377d17224e1
 NoName | Transceiver | 1G | SFP BX (tx 1310nm),dcbd9163-836e-4b4c-a18e-542130509eb1,NoName/Transceiver/1G/SFP_BX_tx_1310nm_.json,c74f3b2c7f20ea6365103abbf903ed54c2a9f23bc0add4ba1a95f4be94deedd6
 NoName | Transceiver | 1G | SFP BX (tx 1490nm),705ecb31-581c-4543-91c2-cc0c6c9517cd,NoName/Transceiver/1G/SFP_BX_tx_1490nm_.json,507cfa4b0c7a68a5f6b652e16d23d7f22e854bb9e988c5313278ced749b58807
 NoName | Transceiver | 1G | SFP EX,a9fbca81-48c0-4ed3-8175-5de081ec5020,NoName/Transceiver/1G/SFP_EX.json,28329b8392e2b562a194feed43852bb7db85625d4389ebe66c32760949f9eb38
