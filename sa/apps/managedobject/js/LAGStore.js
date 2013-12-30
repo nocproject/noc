@@ -11,6 +11,10 @@ Ext.define("NOC.sa.managedobject.LAGStore", {
     model: null,
     fields: [
         {
+            name: "id",
+            type: "auto"
+        },
+        {
             name: "name",
             type: "string"
         },
@@ -27,6 +31,18 @@ Ext.define("NOC.sa.managedobject.LAGStore", {
             convert: function(value, record) {
                 return record.get("members").length;
             }
+        },
+        {
+            name: "profile",
+            type: "string"
+        },
+        {
+            name: "profile__label",
+            type: "string"
+        },
+        {
+            name: "row_class",
+            type: "string"
         }
     ],
     data: []

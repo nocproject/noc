@@ -108,7 +108,7 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                         }
                     ],
                     viewConfig: {
-                        getRowClass: Ext.bind(me.getRowClass, me),
+                        getRowClass: Ext.bind(me.getRowClass, me)
                     },
                     plugins: gridPlugins
                 }
