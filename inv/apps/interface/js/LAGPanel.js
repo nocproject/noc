@@ -39,14 +39,60 @@ Ext.define("NOC.inv.interface.LAGPanel", {
                             dataIndex: "members"
                         },
                         {
+                            text: "Profile",
+                            dataIndex: "profile",
+                            renderer: NOC.render.ClickableLookup("profile"),
+                            onClick: me.onChangeProfile
+                        },
+                        {
                             text: "Description",
                             dataIndex: "description",
                             flex: 1
                         }
-                     ]
+                    ],
+                    viewConfig: {
+                        getRowClass: Ext.bind(me.getRowClass, me),
+                        listeners: {
+                            scope: me,
+                            cellclick: me.onCellClick
+                        }
+                    }
                 }
             ]
         });
         me.callParent();
+    },
+    //
+    onCellClick: function(view, cell, cellIndex, record, row,
+                          rowIndex, e) {
+        var me = this;
+        if(e.target.tagName == "A") {
+            var header = view.panel.headerCt.getHeaderAtIndex(cellIndex);
+            if(header.onClick) {
+                header.onClick.apply(me, [record]);
+            }
+        }
+    },
+    //
+    onChangeProfile: function(record) {
+        var me = this;
+        Ext.create("NOC.inv.interface.ChangeInterfaceProfileForm", {
+            app: me,
+            record: record
+        });
+    },
+    // Return Grid's row classes
+    getRowClass: function(record, index, params, store) {
+        var me = this;
+        if(me.rowClassField) {
+            var c = record.get(me.rowClassField);
+            if(c) {
+                return c;
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
     }
 });
