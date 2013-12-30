@@ -344,10 +344,14 @@ class ManagedObjectApplication(ExtModelApplication):
         # LAG
         lag = [
             {
+                "id": str(i.id),
                 "name": i.name,
                 "description": i.description,
+                "profile": str(i.profile.id) if i.profile else None,
+                "profile__label": unicode(i.profile) if i.profile else None,
                 "members": [j.name for j in Interface.objects.filter(
-                    managed_object=o.id, aggregated_interface=i.id)]
+                    managed_object=o.id, aggregated_interface=i.id)],
+                "row_class": get_style(i)
             } for i in
               Interface.objects.filter(managed_object=o.id,
                                        type="aggregated")

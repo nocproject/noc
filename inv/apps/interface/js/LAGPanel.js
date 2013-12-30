@@ -12,6 +12,7 @@ Ext.define("NOC.inv.interface.LAGPanel", {
     title: "LAG",
     closable: false,
     layout: "fit",
+    rowClassField: "row_class",
 
     initComponent: function() {
         var me = this;
