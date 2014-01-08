@@ -76,6 +76,7 @@ class Profile(NOCProfile):
         r"(?P<duplex>Half|Full)/(?P<flowctrl>None|802.3x))?\s+"
         r"(?P<addr_learning>Enabled|Disabled)\s*"
         r"((?P<trap_state>Enabled|Disabled)\s*)?"
+        r"((?P<asd>\-)\s*)?"
         r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?"
         r"\n\s+Desc(ription)?:\s*?(?P<desc>.*?)$",
         re.MULTILINE)
