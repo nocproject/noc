@@ -108,7 +108,9 @@ class Profile(NOCProfile):
 
     def get_ports(self, script):
         if (script.match_version(DES3200, version__gte="1.70.B007") \
-        or script.match_version(DES3028, version__gte="2.90.B10")) \
+        or script.match_version(DES3028, version__gte="2.90.B10") \
+        or script.match_version(DGS3120, version__gte="3.00.B022") \
+        or script.match_version(DGS3620, version__gte="2.50.017")) \
         and not script.match_version(DES3200, platform="DES-3200-28F"):
             objects = []
             c = script.cli("show ports description")
