@@ -220,7 +220,6 @@ class Command(BaseCommand):
     collections = [
         ("fm", [
             # Fault management
-            ("mibaliases", MIBAlias),
             ("mibpreferences", MIBPreference),
             ("enumerations", Enumeration),
             ("alarmseverities", AlarmSeverity),
