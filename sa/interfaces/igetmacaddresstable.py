@@ -18,4 +18,4 @@ class IGetMACAddressTable(Interface):
         "interfaces": ListOfParameter(element=InterfaceNameParameter()),
         "type": StringParameter()  # choices=["D","S"]
     }))
-    template = "interfaces/igetmacaddresstable.html"
+    preview = "NOC.sa.managedobject.scripts.ShowMAC"
