@@ -156,6 +156,12 @@ NOC.render.Size = function(v) {
     return "" + v;
 }
 
+NOC.render.Join = function(sep) {
+    return function(value) {
+        return value.join(sep);
+    }
+}
+
 //
 // Run new Map/Reduce task
 // Usage:
