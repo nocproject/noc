@@ -8,64 +8,89 @@ console.debug("Defining NOC.fm.oidalias.Application");
 
 Ext.define("NOC.fm.oidalias.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.fm.oidalias.Model"],
+    requires: ["NOC.fm.oidalias.Model"],
     model: "NOC.fm.oidalias.Model",
     search: true,
-    columns: [
-        {
-            text: "Rewrite OID",
-            dataIndex: "rewrite_oid",
-            width: 200
-        },
-        {
-            text: "To OID",
-            dataIndex: "to_oid",
-            width: 200
-        },
-        {
-            text: "Is Builtin",
-            dataIndex: "is_builtin",
-            renderer: NOC.render.Bool,
-            width: 50
-        },
-        {
-            text: "Description",
-            dataIndex: "description",
-            flex: 1
-        }
-    ],
-    fields: [
-        {
-            name: "rewrite_oid",
-            xtype: "textfield",
-            fieldLabel: "Rewrite OID",
-            allowBlank: false,
-            regex: /^[0-9]+(\.[0-9]+)+$/
-        },
-        {
-            name: "to_oid",
-            xtype: "textfield",
-            fieldLabel: "To OID",
-            allowBlank: true,
-            regex: /^[0-9]+(\.[0-9]+)+$/
-        },
-        {
-            name: "is_builtin",
-            xtype: "checkboxfield",
-            boxLabel: "Is Builtin"
-        },
-        {
-            name: "description",
-            xtype: "textfield",
-            fieldLabel: "description",
-            allowBlank: true
-        }
-    ],
-    filters: [
-        {
-            title: "By Is Builtin",
-            name: "is_builtin",
-            ftype: "boolean"
-        }
-    ]
+
+    initComponent: function() {
+        var me = this;
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: "/inv/modelinterface/{{id}}/json/",
+            previewName: "Model Interface: {{name}}"
+        });
+
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+
+        Ext.apply(me, {
+            columns: [
+                {
+                    text: "Rewrite OID",
+                    dataIndex: "rewrite_oid",
+                    width: 200
+                },
+                {
+                    text: "To OID",
+                    dataIndex: "to_oid",
+                    width: 200
+                },
+                {
+                    text: "Is Builtin",
+                    dataIndex: "is_builtin",
+                    renderer: NOC.render.Bool,
+                    width: 50,
+                    sortable: false
+                },
+                {
+                    text: "Description",
+                    dataIndex: "description",
+                    flex: 1
+                }
+            ],
+            fields: [
+                {
+                    name: "rewrite_oid",
+                    xtype: "textfield",
+                    fieldLabel: "Rewrite OID",
+                    allowBlank: false,
+                    regex: /^[0-9]+(\.[0-9]+)+$/
+                },
+                {
+                    name: "to_oid",
+                    xtype: "textfield",
+                    fieldLabel: "To OID",
+                    allowBlank: true,
+                    regex: /^[0-9]+(\.[0-9]+)+$/
+                },
+                {
+                    name: "uuid",
+                    xtype: "displayfield",
+                    fieldLabel: "UUID"
+                },
+                {
+                    name: "description",
+                    xtype: "textarea",
+                    fieldLabel: "Description",
+                    allowBlank: true
+                }
+            ],
+            formToolbar: [
+                {
+                    text: "JSON",
+                    glyph: NOC.glyph.file,
+                    tooltip: "Show JSON",
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
+            ]
+        });
+        me.callParent();
+    },
+    //
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
+    }
 });

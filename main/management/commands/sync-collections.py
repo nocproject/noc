@@ -220,7 +220,6 @@ class Command(BaseCommand):
     collections = [
         ("fm", [
             # Fault management
-            ("oidaliases", OIDAlias),
             ("syntaxaliases", SyntaxAlias),
             ("mibaliases", MIBAlias),
             ("mibpreferences", MIBPreference),

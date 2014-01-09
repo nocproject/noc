@@ -2,24 +2,27 @@
 ##----------------------------------------------------------------------
 ## OIDAlias model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## NOC project
-import noc.lib.nosql as nosql
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField, UUIDField
+## NOC modules
+from noc.lib.prettyjson import to_json
 
 
-class OIDAlias(nosql.Document):
+class OIDAlias(Document):
     meta = {
         "collection": "noc.oidaliases",
         "allow_inheritance": False
     }
 
-    rewrite_oid = nosql.StringField(unique=True)
-    to_oid = nosql.StringField()
-    is_builtin = nosql.BooleanField(default=False)
-    description = nosql.StringField(required=False)
+    rewrite_oid = StringField(unique=True)
+    to_oid = StringField()
+    description = StringField(required=False)
+    uuid = UUIDField(binary=True)
 
     ## Lookup cache
     cache = None
@@ -49,3 +52,16 @@ class OIDAlias(nosql.Document):
                 rest = [l_oid.pop()] + rest
         # Not found
         return oid
+
+    def get_json_path(self):
+        return "%s.json" % self.rewrite_oid
+
+    def to_json(self):
+        r = {
+            "rewrite_oid": self.rewrite_oid,
+            "to_oid": self.to_oid,
+            "uuid": self.uuid
+        }
+        if self.description:
+            r["description"] = self.description
+        return to_json(r, order=["rewrite_oid", "to_oid", "uuid"])
