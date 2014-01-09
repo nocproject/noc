@@ -13,6 +13,7 @@ from collections import namedtuple
 from cStringIO import StringIO
 import hashlib
 import uuid
+from operator import attrgetter
 ## Third-party modules
 from mongoengine.fields import ListField, EmbeddedDocumentField
 from mongoengine.queryset import Q
@@ -36,6 +37,12 @@ class Collection(object):
         self.items = {}  # uuid -> CollectionItem
         self.changed = False
         self.ref_cache = {}
+        if hasattr(self.doc, "name"):
+            # Use .name field when present
+            self.get_name = attrgetter("name")
+        else:
+            # Or first unique field otherwise
+            self.get_name = attrgetter(self.doc._meta["unique_indexes"][0][0][0])
 
     def log(self, msg):
         print msg
@@ -266,13 +273,13 @@ class Collection(object):
                 o.save()
             data = o.to_json()
             mi = CollectionItem(
-                name=o.name,
+                name=self.get_name(o),
                 uuid=o.uuid,
                 path=o.get_json_path(),
                 hash=self.get_hash(data)
             )
             self.items[mi.uuid] = mi
-            self.log("    ... importing %s" % o.name)
+            self.log("    ... importing %s" % mi.name)
             safe_rewrite(os.path.join(
                 self.module, "collections", self.name,
                 o.get_json_path()),
@@ -320,7 +327,7 @@ class Collection(object):
             o.uuid = uuid.uuid4()
         dd = o.to_json()
         mi = CollectionItem(
-            name=o.name,
+            name=self.get_name(o),
             uuid=o.uuid,
             path=o.get_json_path(),
             hash=self.get_hash(dd)
