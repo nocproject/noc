@@ -13,13 +13,6 @@ Ext.define("NOC.inv.modelinterface.Application", {
     ],
     model: "NOC.inv.modelinterface.Model",
     search: true,
-    filters: [
-        {
-            title: "By Is Builtin",
-            name: "is_builtin",
-            ftype: "boolean"
-        }
-    ],
     //
     initComponent: function() {
         var me = this;

@@ -19,6 +19,7 @@ from noc.inv.models.modelinterface import ModelInterface
 from noc.inv.models.connectiontype import ConnectionType
 from noc.inv.models.connectionrule import ConnectionRule
 from noc.inv.models.objectmodel import ObjectModel
+from noc.fm.models.oidalias import OIDAlias
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
 
@@ -67,11 +68,14 @@ class Command(BaseCommand):
     )
 
     collections = [
+        # Inventory
         ("inv.vendors", Vendor),
         ("inv.modelinterfaces", ModelInterface),
         ("inv.connectiontypes", ConnectionType),
         ("inv.connectionrules", ConnectionRule),
-        ("inv.objectmodels", ObjectModel)
+        ("inv.objectmodels", ObjectModel),
+        # Fault Management
+        ("fm.oidaliases", OIDAlias)
     ]
 
     def log(self, msg):
