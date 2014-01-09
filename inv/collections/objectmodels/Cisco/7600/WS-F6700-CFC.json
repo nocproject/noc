@@ -1,0 +1,20 @@
+{
+    "name": "Cisco | 7600 | WS-F6700-CFC",
+    "uuid": "0e1fdb7b-b471-41c7-b957-70b9a0e4f985",
+    "vendor__code": "CISCO",
+    "description": "Cisco WS-F6700-CFC Centralized Forwarding Card",
+    "connections": [
+        {
+            "description": "DFC slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | DFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-F6700-CFC"
+        }
+    }
+}

@@ -6,7 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django moules
+## Python modules
+import uuid
+## Django modules
 from django.http import HttpResponse
 ## NOC modules
 from extapplication import ExtApplication, view
@@ -29,6 +31,7 @@ class ExtDocApplication(ExtApplication):
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
         self.pk = "id"  # @todo: detect properly
+        self.has_uuid = False
         # Prepare field converters
         self.clean_fields = {}  # name -> Parameter
         for name, f in self.model._fields.items():
@@ -45,6 +48,8 @@ class ExtDocApplication(ExtApplication):
                         element=EmbeddedDocumentParameter(f.field.document_type))
             if f.primary_key:
                 self.pk = name
+            if name == "uuid":
+                self.has_uuid = True
         #
         if not self.query_fields:
             self.query_fields = ["%s__%s" % (n, self.query_condition)
@@ -122,7 +127,7 @@ class ExtDocApplication(ExtApplication):
             del q[p]
         return q
 
-    def instance_to_dict(self, o, fields=None):
+    def instance_to_dict(self, o, fields=None, nocustom=False):
         r = {}
         for n, f in o._fields.items():
             if fields and n not in fields:
@@ -145,7 +150,7 @@ class ExtDocApplication(ExtApplication):
                 elif isinstance(f, ListField):
                     if (hasattr(f, "field") and
                             isinstance(f.field, EmbeddedDocumentField)):
-                        v = [self.instance_to_dict(vv) for vv in v]
+                        v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
                 elif type(v) not in (str, unicode, int, long, bool, dict):
                     if hasattr(v, "id"):
                         v = v.id
@@ -153,8 +158,9 @@ class ExtDocApplication(ExtApplication):
                         v = unicode(v)
             r[n] = v
         # Add custom fields
-        for f in self.custom_fields:
-            r[f] = self.custom_fields[f](o)
+        if not nocustom:
+            for f in self.custom_fields:
+                r[f] = self.custom_fields[f](o)
         return r
 
     def instance_to_lookup(self, o, fields=None):
@@ -179,6 +185,8 @@ class ExtDocApplication(ExtApplication):
             return self.response(str(why), status=self.BAD_REQUEST)
         if self.pk in attrs:
             del attrs[self.pk]
+        if self.has_uuid and "uuid" not in attrs:
+            attrs["uuid"] = uuid.uuid4()
         # Check for duplicates
         if self.unique_fields:
             q = dict((k, attrs[k])
@@ -228,10 +236,12 @@ class ExtDocApplication(ExtApplication):
             o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
+        if self.has_uuid and "uuid" not in attrs and not o.uuid:
+            attrs["uuid"] = uuid.uuid4()
         # @todo: Check for duplicates
-        for k, v in attrs.items():
+        for k in attrs:
             if k != self.pk and "__" not in k:
-                setattr(o, k, v)
+                setattr(o, k, attrs[k])
         o.save()
         return self.response(status=self.OK)
 

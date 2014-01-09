@@ -1,0 +1,34 @@
+{
+    "name": "Cisco | ASR9k | A9K-MOD80-SE",
+    "uuid": "61cc1401-a1cf-44e4-b7f1-369585545425",
+    "vendor__code": "CISCO",
+    "description": "80G Modular Linecard, Service Edge Optimized",
+    "connections": [
+        {
+            "description": "MPA 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "MPA0",
+            "type__name": "Cisco | ASR9k | MPA"
+        },
+        {
+            "description": "MPA 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "MPA1",
+            "type__name": "Cisco | ASR9k | MPA"
+        },
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR9k | Linecard"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "A9K-MOD80-SE"
+        }
+    }
+}

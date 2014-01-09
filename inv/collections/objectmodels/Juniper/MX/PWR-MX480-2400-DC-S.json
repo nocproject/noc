@@ -1,0 +1,38 @@
+{
+    "name": "Juniper | MX | PWR-MX480-2400-DC-S",
+    "uuid": "6bcfa7ea-b3e2-4695-8738-542377ed8e92",
+    "vendor__code": "JUNIPER",
+    "description": "2400W DC Power Supply",
+    "connections": [
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">48DC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Internal power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX480 PEM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "PWR-MX480-2400-DC-BB",
+            "order_part_no1": "PWR-MX480-2400-DC-R",
+            "part_no0": "740-027736"
+        }
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Ericsson | SmartEdge | ALARM CARD",
+    "uuid": "004d371b-192f-414c-86ac-4aa38f8277e1",
+    "vendor__code": "ERICSSON",
+    "description": "Alarm card",
+    "connection_rule__name": "Ericsson | SmartEdge",
+    "connections": [
+        {
+            "description": "Line connector",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Ericsson | SE600 | Alarm"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SE600-ALARM"
+        }
+    }
+}

@@ -1,0 +1,37 @@
+{
+    "name": "Arista | Transceiver | 10G | CAB-SFP-SFP-2M",
+    "uuid": "7636ae50-fa92-4b25-b764-6443710ec4cb",
+    "vendor__code": "ARISTA",
+    "description": "Arista 10GBASE-CR twinax copper cable with SFP+ connectors on both ends (2m)",
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "CAB-SFP-SFP-2M"
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "name": "Power | MSTB 2.5/4-G-5.08",
+    "uuid": "99a314cd-6d29-446c-93f0-6b0a806f5253",
+    "description": "Terminal block outlet, 4 pins",
+    "c_group": ["mstb_2.5_4_5.08"],
+    "genders": "f"
+}

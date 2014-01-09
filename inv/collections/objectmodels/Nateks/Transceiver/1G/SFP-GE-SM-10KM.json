@@ -1,0 +1,37 @@
+{
+    "name": "Nateks | Transceiver | 1G | SFP-GE-SM-10KM",
+    "uuid": "8490de94-1ca6-44e7-96f9-0fb5bf3f60b2",
+    "vendor__code": "NATEKS",
+    "description": "Nateks SFP LX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-GE-SM-10KM"
+        }
+    }
+}

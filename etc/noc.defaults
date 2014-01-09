@@ -244,6 +244,11 @@ timeout_error    = 300
 # the final timeout will be random value in range of [T-T/N,T+T/N]
 timeout_variation = 10
 
+[gridvcs]
+# Mirror sa.managedobject.config to designated directory
+# Do not mirror when empty
+mirror.sa.managedobject.config =
+
 #
 # Peer module setup
 #
@@ -464,6 +469,14 @@ initial_submit_concurrency = 20
 
 [id_discovery]
 enabled = true
+# Inject new schedules every N seconds
+initial_submit_interval = 900
+# Upper limit of new schedule submitted at once
+initial_submit_concurrency = 20
+
+[asset_discovery]
+enabled = true
+save = true
 # Inject new schedules every N seconds
 initial_submit_interval = 900
 # Upper limit of new schedule submitted at once

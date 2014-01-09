@@ -1,0 +1,38 @@
+{
+    "name": "Juniper | Transceiver | 1G | SFP LH",
+    "uuid": "b2b522fa-8d71-4cd6-9bbf-b72f68c6ffd9",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper SFP LH transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASEEX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASEEX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "SFP-LH",
+            "part_no0": "740-011612"
+        }
+    }
+}

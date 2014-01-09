@@ -18,11 +18,16 @@ Ext.define("NOC.sa.administrativedomain.Model", {
 
         {
             name: "name",
-            type: "string",
+            type: "string"
         },
         {
             name: "description",
-            type: "string",
+            type: "string"
+        },
+        {
+            name: "object_count",
+            type: "int",
+            persist: false
         }
     ]
 });

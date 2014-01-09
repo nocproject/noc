@@ -1,0 +1,234 @@
+{
+    "name": "Juniper | SRX | SRX240H",
+    "uuid": "eab18269-21e4-40fc-b6d1-e5b28cd0672a",
+    "vendor__code": "JUNIPER",
+    "description": "SRX services gateway 240 with 16 x GE ports, 4xmini-PIM slots, and high memory (1GB RAM, 1GB FLASH)",
+    "connections": [
+        {
+            "description": "Console",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/1 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/2 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/3 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/4 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/5 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/6 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/7 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/8 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/9 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/10 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/11 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/12 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/13 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/14 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/15 interface",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Mini-PIM slot #1",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "fpc1",
+            "type__name": "Juniper | J | Mini-PIM"
+        },
+        {
+            "description": "Mini-PIM slot #2",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "fpc2",
+            "type__name": "Juniper | J | Mini-PIM"
+        },
+        {
+            "description": "Mini-PIM slot #3",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "fpc3",
+            "type__name": "Juniper | J | Mini-PIM"
+        },
+        {
+            "description": "Mini-PIM slot #4",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "fpc4",
+            "type__name": "Juniper | J | Mini-PIM"
+        },
+        {
+            "description": "USB port 0",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "usb0",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "USB port 1",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "usb1",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "SRX240H"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1
+        },
+        "stack": {
+            "stackable": true
+        }
+    }
+}

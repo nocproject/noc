@@ -1,0 +1,37 @@
+{
+    "name": "Zyxel | Transceiver | 1G | SFP LX",
+    "uuid": "360483a2-f3c4-472e-9580-d7a119b2f8e9",
+    "vendor__code": "ZYXEL",
+    "description": "Zyxel SFP LX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-LX-10"
+        }
+    }
+}

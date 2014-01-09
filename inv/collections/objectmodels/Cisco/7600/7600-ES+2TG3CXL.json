@@ -1,0 +1,36 @@
+{
+    "name": "Cisco | 7600 | 7600-ES+2TG3CXL",
+    "uuid": "060062bb-6cc3-43f4-9577-8de85aab52a4",
+    "vendor__code": "CISCO",
+    "description": "7600-ES+2TG3CXL 2 ports 7600 ES+",
+    "connections": [
+        {
+            "description": "TeX/1 XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te1_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "TeX/2 XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te2_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "7600-ES+2TG3CXL"
+        }
+    }
+}

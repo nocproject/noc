@@ -1,0 +1,7 @@
+{
+    "name": "Power | M4 Fork",
+    "uuid": "34532643-0f1e-414a-9c99-6b84aab9016f",
+    "description": "M4 fork",
+    "c_group": ["power_m4_pin"],
+    "genders": "f"
+}

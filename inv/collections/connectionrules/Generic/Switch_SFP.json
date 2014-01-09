@@ -1,0 +1,30 @@
+{
+    "name": "Generic | Switch SFP",
+    "uuid": "15cd98dd-d9cc-4d55-b610-fc29c409421f",
+    "description": "Generic switch following convenction.\n\nTransceiver slots: sfpN\nPower Supply: psuN",
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "sfp{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

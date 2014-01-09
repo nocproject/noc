@@ -53,6 +53,13 @@ def submit_job(scheduler_name, job_class, key=None,
     })
 
 
+def get_job(scheduler_name, job_class, key=None):
+    c = get_db()["noc.schedules.%s" % scheduler_name]
+    return c.find_one({
+        Scheduler.ATTR_CLASS: job_class, Scheduler.ATTR_KEY: key
+    })
+
+
 def sliding_job(scheduler_name, job_class, key=None,
                ts=None, delta=None, data=None, cutoff_delta=0):
     #

@@ -75,7 +75,7 @@ class VLANReport(Report):
 
     def send(self):
         if not self.new_vcs:
-            pass
+            return
         # Send report
         ctx = {
             "count": len(self.new_vcs),

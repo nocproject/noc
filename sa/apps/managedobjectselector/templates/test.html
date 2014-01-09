@@ -13,8 +13,8 @@
         <tr><td colspan="6"><b>{{r.name}}</b></td></tr>
             {% for o in r.objects %}
             <tr class="{%cycle 'row1' 'row2'%}">
-                <td><a href="{% url sa:managedobject:change o.id %}">{{o.id}}</a></td>
-                <td><a href="{% url sa:managedobject:change o.id %}">{{o.name}}</a></td>
+                <td>{{o.id}}</td>
+                <td>{{o.name}}</td>
                 <td>{{o.profile_name}}</td>
                 <td>{{o.address}}</td>
                 <td>{{o.description}}</td>

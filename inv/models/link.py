@@ -96,3 +96,8 @@ class Link(Document):
     def object_links(cls, object):
         ifaces = Interface.objects.filter(managed_object=object.id).values_list("id")
         return cls.objects.filter(interfaces__in=ifaces)
+
+    @classmethod
+    def object_links_count(cls, object):
+        ifaces = Interface.objects.filter(managed_object=object.id).values_list("id")
+        return cls.objects.filter(interfaces__in=ifaces).count()

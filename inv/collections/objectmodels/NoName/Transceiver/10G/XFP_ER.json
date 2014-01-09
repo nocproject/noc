@@ -1,0 +1,30 @@
+{
+    "name": "NoName | Transceiver | 10G | XFP ER",
+    "uuid": "1ede79eb-43a5-4d20-9452-d208402286d9",
+    "vendor__code": "NONAME",
+    "description": "NoName XFP ER transceiver",
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {}
+}

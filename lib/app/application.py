@@ -33,8 +33,6 @@ from noc import settings
 from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces import DictParameter
 
-TZ = get_current_timezone()
-
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
          api=False):
@@ -122,6 +120,8 @@ class Application(object):
 
     Form = NOCForm  # Shortcut for form class
     config = settings.config
+
+    TZ = get_current_timezone()
 
     def __init__(self, site):
         self.site = site
@@ -553,7 +553,7 @@ class Application(object):
         if v is None:
             return None
         elif isinstance(v, datetime.datetime):
-            return v.replace(tzinfo=TZ).isoformat()
+            return v.replace(tzinfo=self.TZ).isoformat()
         else:
             raise Exception("Invalid to_json type")
 

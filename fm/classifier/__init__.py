@@ -13,7 +13,6 @@ import time
 import datetime
 import sys
 import os
-import new
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
@@ -21,7 +20,7 @@ from noc.lib.daemon import Daemon
 from noc.fm.models import (EventClassificationRule, NewEvent, FailedEvent,
                            EventClass, MIB, EventLog, CloneClassificationRule,
                            ActiveEvent, EventTrigger, Enumeration)
-from noc.inv.models import Interface, SubInterface, InterfaceProfile
+from noc.inv.models import InterfaceProfile
 from noc.fm.correlator.scheduler import CorrelatorScheduler
 import noc.inv.models
 from noc.sa.models import profile_registry, ManagedObject
@@ -32,396 +31,20 @@ from noc.sa.interfaces.base import (IPv4Parameter, IPv6Parameter,
                                     IPParameter, IPv4PrefixParameter,
                                     IPv6PrefixParameter, PrefixParameter,
                                     MACAddressParameter, InterfaceTypeError)
-from noc.lib.datasource import datasource_registry
 from noc.lib.nosql import ObjectId
-
+from noc.lib.dateutils import total_seconds
+from trigger import Trigger
+from exception import InvalidPatternException, EventProcessingFailed
+from cloningrule import CloningRule
+from rule import Rule
 
 ##
 ## Exceptions
 ##
-class InvalidPatternException(Exception):
-    pass
-
-
-class EventProcessingFailed(Exception):
-    pass
 ##
 ## Patterns
 ##
 rx_oid = re.compile(r"^(\d+\.){6,}$")
-rx_named_group = re.compile(r"\(\?P<([^>]+)>")
-
-
-class Trigger(object):
-    def __init__(self, t):
-        self.name = t.name
-        # Condition
-        self.condition = compile(t.condition, "<string>", "eval")
-        self.time_pattern = t.time_pattern
-        self.selector = t.selector
-        # Action
-        self.notification_group = t.notification_group
-        self.template = t.template
-        self.pyrule = t.pyrule
-
-    def match(self, event):
-        """
-        Check event matches trigger condition
-        """
-        return (eval(self.condition, {}, {"event": event, "re": re}) and
-                (self.time_pattern.match(event.timestamp) if self.time_pattern else True) and
-                (self.selector.match(event.managed_object) if self.selector else True))
-        
-    def call(self, event):
-        if not self.match(event):
-            return
-        logging.debug("Calling trigger '%s'" % self.name)
-        # Notify if necessary
-        if self.notification_group and self.template:
-            subject = {}
-            body = {}
-            for lang in self.notification_group.languages:
-                s = event.get_translated_subject(lang)
-                b = event.get_translated_body(lang)
-                subject[lang] = self.template.render_subject(LANG=lang,
-                                                event=event, subject=s, body=b)
-                body[lang] = self.template.render_body(LANG=lang,
-                                                event=event, subject=s, body=b)
-            self.notification_group.notify(subject=subject, body=body)
-        # Call pyRule
-        if self.pyrule:
-            self.pyrule(event=event)
-
-
-class CloningRule(object):
-    class Pattern(object):
-        def __init__(self, key_re, value_re):
-            self.key_re = key_re
-            self.value_re = value_re
-
-        def __unicode__(self):
-            return u"%s : %s" % (self.key_re, self.value_re)
-
-    def __init__(self, rule):
-        self.re_mode = rule.re != r"^.*$"  # Search by "re"
-        self.name = rule.name
-        try:
-            self.re = re.compile(rule.re)
-        except Exception, why:
-            raise InvalidPatternException("Error in '%s': %s" % (rule.re, why))
-        try:
-            self.key_re = re.compile(rule.key_re)
-        except Exception, why:
-            raise InvalidPatternException("Error in '%s': %s" % (rule.key_re,
-                                          why))
-        try:
-            self.value_re = re.compile(rule.value_re)
-        except Exception, why:
-            raise InvalidPatternException("Error in '%s': %s" % (rule.value_re,
-                                          why))
-        try:
-            self.rewrite_from = re.compile(rule.rewrite_from)
-        except Exception, why:
-            raise InvalidPatternException("Error in '%s': %s" % (
-                                          rule.rewrite_from, why))
-        self.rewrite_to = rule.rewrite_to
-
-    def match(self, rule):
-        """
-        Check cloning rule matches classification rule
-        :rtype: bool
-        """
-        if self.re_mode:
-            c = lambda x: (self.re.search(x.key_re) or
-                           self.re.search(x.value_re))
-        else:
-            c = lambda x: (self.key_re.search(x.key_re) and
-                           self.value_re.search(x.value_re))
-        return any(x for x in rule.rule.patterns if c(x))
-
-    def rewrite(self, pattern):
-        return CloningRule.Pattern(
-            self.rewrite_from.sub(self.rewrite_to, pattern.key_re),
-            self.rewrite_from.sub(self.rewrite_to, pattern.value_re))
-
-
-class Rule(object):
-    """
-    In-memory rule representation
-    """
-    
-    rx_escape = re.compile(r"\\(.)")
-    rx_exact = re.compile(r"^\^[a-zA-Z0-9%: \-_]+\$$")
-    rx_hex = re.compile(r"(?<!\\)\\x([0-9a-f][0-9a-f])", re.IGNORECASE)
-    
-    def __init__(self, classifier, rule, clone_rule=None):
-        self.classifier = classifier
-        self.rule = rule
-        self.name = rule.name
-        if clone_rule:
-            self.name += "(Clone %s)" % clone_rule.name
-            if classifier.dump_clone:
-                # Dump cloned rule
-                logging.debug("Rule '%s' cloned by rule '%s'" % (
-                    rule.name, clone_rule.name))
-                p0 = [(x.key_re, x.value_re) for x in rule.patterns]
-                p1 = [(y.key_re, y.value_re) for y in [
-                                clone_rule.rewrite(x) for x in rule.patterns]]
-                logging.debug("%s -> %s" % (p0, p1))
-        self.event_class = rule.event_class
-        self.event_class_name = self.event_class.name
-        self.is_unknown = self.event_class_name.startswith("Unknown | ")
-        self.datasources = {}  # name -> DS
-        self.vars = {}  # name -> value
-        # Parse datasources
-        for ds in rule.datasources:
-            self.datasources[ds.name] = eval(
-                    "lambda vars: datasource_registry['%s'](%s)" % (
-                        ds.datasource,
-                        ", ".join(["%s=vars['%s']" % (k, v)
-                                   for k, v in ds.search.items()])),
-                    {"datasource_registry": datasource_registry}, {})
-        # Parse vars
-        for v in rule.vars:
-            value = v["value"]
-            if value.startswith("="):
-                value = compile(value[1:], "<string>", "eval")
-            self.vars[v["name"]] = value
-        # Parse patterns
-        c1 = []
-        c2 = {}
-        c3 = []
-        c4 = []
-        self.rxp = {}
-        self.fixups = set()
-        self.profile = None
-        for x in rule.patterns:
-            if clone_rule:
-                # Rewrite, when necessary
-                x = clone_rule.rewrite(x)
-            x_key = None
-            rx_key = None
-            x_value = None
-            rx_value = None
-            # Store profile
-            if x.key_re in ("profile", "^profile$"):
-                self.profile = x.value_re
-                continue
-            # Process key pattern
-            if self.is_exact(x.key_re):
-                x_key = self.unescape(x.key_re[1:-1])
-            else:
-                try:
-                    rx_key = re.compile(self.unhex_re(x.key_re), re.MULTILINE | re.DOTALL)
-                except Exception, why:
-                    raise InvalidPatternException("Error in '%s': %s" % (x.key_re, why))
-            # Process value pattern
-            if self.is_exact(x.value_re):
-                x_value = self.unescape(x.value_re[1:-1])
-            else:
-                try:
-                    rx_value = re.compile(self.unhex_re(x.value_re), re.MULTILINE | re.DOTALL)
-                except Exception, why:
-                    raise InvalidPatternException("Error in '%s': %s" % (x.value_re, why))
-            # Save patterns
-            if x_key:
-                c1 += ["'%s' in vars" % x_key]
-                if x_value:
-                    c1 += ["vars['%s'] == '%s'" % (x_key, x_value)]
-                else:
-                    c2[x_key] = self.get_rx(rx_value)
-            else:
-                if x_value:
-                    c3 += [(self.get_rx(rx_key), x_value)]
-                else:
-                    c4 += [(self.get_rx(rx_key), self.get_rx(rx_value))]
-        self.to_drop = self.event_class.action == "D"
-        self.to_dispose = len(self.event_class.disposition) > 0
-        self.compile(c1, c2, c3, c4)
-
-    def __unicode__(self):
-        return self.name
-    
-    def __repr__(self):
-        return "<Rule '%s'>" % self.name
-    
-    def get_rx(self, rx):
-        n = len(self.rxp)
-        self.rxp[n] = rx.pattern
-        setattr(self, "rx_%d" % n, rx)
-        for match in rx_named_group.finditer(rx.pattern):
-            name = match.group(1)
-            if "__" in name:
-                self.fixups.add(name)
-        return n
-
-    def unescape(self, pattern):
-        return self.rx_escape.sub(lambda m: m.group(1), pattern)
-
-    def unhex_re(self, pattern):
-        return self.rx_hex.sub(lambda m: chr(int(m.group(1), 16)), pattern)
-
-    def is_exact(self, pattern):
-        return self.rx_exact.match(self.rx_escape.sub("", pattern)) is not None
-    
-    def compile(self, c1, c2, c3, c4):
-        """
-        Compile native python rule-matching function
-        and install it as .match() instance method
-        """
-        def pyq(s):
-            return s.replace("\\", "\\\\").replace("\"", "\\\"")
-
-        e_vars_used = c2 or c3 or c4
-        c = []
-        if e_vars_used:
-            c += ["e_vars = {}"]
-        if c1:
-            cc = " and ".join(["(%s)" % x for x in c1])
-            c += ["if not (%s):" % cc]
-            c += ["    return None"]
-        if c2:
-            cc = ""
-            for k in c2:
-                c += ["# %s" % self.rxp[c2[k]]]
-                c += ["match = self.rx_%s.search(vars['%s'])" % (c2[k], k)]
-                c += ["if not match:"]
-                c += ["    return None"]
-                c += ["e_vars.update(match.groupdict())"]
-        if c3:
-            for rx, v in c3:
-                c += ["found = False"]
-                c += ["for k in vars:"]
-                c += ["    # %s" % self.rxp[rx]]
-                c += ["    match = self.rx_%s.search(k)" % rx]
-                c += ["    if match:"]
-                c += ["        if vars[k] == '%s':" % v]
-                c += ["            e_vars.update(match.groupdict())"]
-                c += ["            found = True"]
-                c += ["            break"]
-                c += ["        else:"]
-                c += ["            return None"]
-                c += ["if not found:"]
-                c += ["    return None"]
-        if c4:
-            for rxk, rxv in c4:
-                c += ["found = False"]
-                c += ["for k in vars:"]
-                c += ["    # %s" % self.rxp[rxk]]
-                c += ["    match_k = self.rx_%s.search(k)" % rxk]
-                c += ["    if match_k:"]
-                c += ["        # %s" % self.rxp[rxv]]
-                c += ["        match_v = self.rx_%s.search(vars[k])" % rxv]
-                c += ["        if match_v:"]
-                c += ["            e_vars.update(match_k.groupdict())"]
-                c += ["            e_vars.update(match_v.groupdict())"]
-                c += ["            found = True"]
-                c += ["            break"]
-                c += ["        else:"]
-                c += ["            return None"]
-                c += ["if not found:"]
-                c += ["    return None"]
-        # Vars binding
-        if self.vars:
-            has_expressions = any(v for v in self.vars.values()
-                                  if not isinstance(v, basestring))
-            if has_expressions:
-                # Callculate vars context
-                c += ["var_context = {'event': event}"]
-                c += ["var_context.update(e_vars)"]
-            for k, v in self.vars.items():
-                if isinstance(v, basestring):
-                    c += ["e_vars[\"%s\"] = \"%s\"" % (k, pyq(v))]
-                else:
-                    c += ["e_vars[\"%s\"] = eval(self.vars[\"%s\"], {}, var_context)" % (k, k)]
-        if e_vars_used:
-            #c += ["return self.fixup(e_vars)"]
-            for name in self.fixups:
-                r = name.split("__")
-                if len(r) == 2:
-                    if r[1] in ("ifindex",):
-                        # call fixup with managed object
-                        c += ["e_vars[\"%s\"] = self.fixup_%s(event.managed_object, fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
-                    else:
-                        c += ["e_vars[\"%s\"] = self.fixup_%s(fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
-                else:
-                    c += ["args = [%s, fm_unescape(e_vars[\"%s\"])]" % (", ".join(["\"%s\"" % x for x in r[2:]]), name)]
-                    c += ["e_vars[\"%s\"] = self.fixup_%s(*args)" % (r[0], r[1])]
-                c += ["del e_vars[\"%s\"]" % name]
-            c += ["return e_vars"]
-        else:
-            c += ["return {}"]
-        c = ["    " + l for l in c]
-        
-        cc = ["# %s" % self.name]
-        cc += ["def match(self, event, vars):"]
-        cc += c
-        cc += ["rule.match = new.instancemethod(match, rule, rule.__class__)"]
-        c = "\n".join(cc)
-        code = compile(c, "<string>", "exec")
-        exec code in {"rule": self, "new": new,
-                      "logging": logging, "fm_unescape": fm_unescape}
-
-    def clone(self, rules):
-        """
-        Factory returning clone rules
-        """
-        pass
-
-    def fixup_int_to_ip(self, v):
-        v = long(v)
-        return "%d.%d.%d.%d" % (
-            v & 0xFF000000 >> 24,
-            v & 0x00FF0000 >> 16,
-            v & 0x0000FF00 >> 8,
-            v & 0x000000FF)
-
-    def fixup_bin_to_ip(self, v):
-        """
-        Fix 4-octet binary ip to dotted representation
-        """
-        if len(v) != 4:
-            return v
-        return "%d.%d.%d.%d" % (ord(v[0]), ord(v[1]), ord(v[2]), ord(v[3]))
-
-    def fixup_bin_to_mac(self, v):
-        """
-        Fix 6-octet binary to standard MAC address representation
-        """
-        if len(v) != 6:
-            return v
-        return ":".join(["%02X" % ord(x) for x in v])
-
-    def fixup_oid_to_str(self, v):
-        """
-        Fix N.c1. .. .cN into "c1..cN" string
-        """
-        x = [int(c) for c in v.split(".")]
-        return "".join([chr(c) for c in x[1:x[0] + 1]])
-
-    def fixup_enum(self, name, v):
-        """
-        Resolve v via enumeration name
-        @todo: not used?
-        """
-        return self.classifier.enumerations[name][v.lower()]
-
-    def fixup_ifindex(self, managed_object, v):
-        """
-        Resolve ifindex to interface name
-        """
-        ifindex = int(v)
-        # Try to resolve interface
-        i = Interface.objects.filter(
-            managed_object=managed_object.id, ifindex=ifindex).first()
-        if i:
-            return i.name
-        # Try to resolve subinterface
-        si = SubInterface.objects.filter(
-            managed_object=managed_object.id, ifindex=ifindex).first()
-        if si:
-            return si.name
-        return v
 
 CR_FAILED = 0
 CR_DELETED = 1
@@ -430,8 +53,11 @@ CR_UNKNOWN = 3
 CR_CLASSIFIED = 4
 CR_DISPOSED = 5
 CR_DUPLICATED = 6
+CR_UDUPLICATED = 7
 CR = ["failed", "deleted", "suppressed",
-      "unknown", "classified", "disposed", "duplicated"]
+      "unknown", "classified", "disposed", "duplicated",
+      "unk. duplicated"
+      ]
 
 
 class Classifier(Daemon):
@@ -453,6 +79,9 @@ class Classifier(Daemon):
         self.suppression = {}  # event_class_id -> (condition, suppress)
         self.dump_clone = False
         self.deduplication_window = 0
+        self.unclassified_codebook_depth = 5
+        self.unclassified_codebook = {}  # object id -> [<codebook>]
+        self.handlers = {}  # event class id -> [<handler>]
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         Daemon.__init__(self)
@@ -477,6 +106,7 @@ class Classifier(Daemon):
         self.load_triggers()
         self.load_suppression()
         self.load_link_action()
+        self.load_handlers()
 
     def load_rules(self):
         """
@@ -628,6 +258,36 @@ class Classifier(Daemon):
                 logging.info("Setting default link event action to %r" % p.link_events)
                 self.default_link_action = p.link_events
 
+    def load_handlers(self):
+        logging.info("Loading handlers")
+        self.handlers = {}
+        for ec in EventClass.objects.filter():
+            if not ec.handlers:
+                continue
+            hl = []
+            for h in ec.handlers:
+                # Resolve handler
+                hh = self.resolve_handler(h)
+                if hh:
+                    hl += [hh]
+            if hl:
+                self.handlers[ec.id] = hl
+        logging.info("Handlers are loaded")
+
+    @classmethod
+    def resolve_handler(cls, h):
+        mn, s = h.rsplit(".", 1)
+        try:
+            m = __import__(mn, {}, {}, s)
+        except ImportError:
+            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            return None
+        try:
+            return getattr(m, s)
+        except AttributeError:
+            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            return None
+
     ##
     ## Variable decoders
     ##
@@ -688,7 +348,7 @@ class Classifier(Daemon):
         """
         Generator iterating unclassified events in the queue
         """
-        for e in NewEvent.objects.order_by("id")[:max_chunk]:
+        for e in NewEvent.objects.order_by("seq")[:max_chunk]:
             yield e
 
     def mark_as_failed(self, event, traceback=None):
@@ -803,9 +463,20 @@ class Classifier(Daemon):
         resolved_vars = {
             "profile": event.managed_object.profile_name
         }
-        # For SNMP traps format values according to MIB definitions
         if event.source == "SNMP Trap":
+            # For SNMP traps format values according to MIB definitions
             resolved_vars.update(MIB.resolve_vars(event.raw_vars))
+        elif event.source == "syslog":
+            # Check for unclassified events flood
+            o_id = event.managed_object.id
+            if o_id in self.unclassified_codebook:
+                msg = event.raw_vars.get("message", "")
+                cb = self.get_msg_codebook(msg)
+                for pcb in self.unclassified_codebook[o_id]:
+                    if self.is_codebook_match(cb, pcb):
+                        # Signature is already seen, supress
+                        event.delete()
+                        return CR_UDUPLICATED
         # Find matched event class
         c_vars = event.raw_vars.copy()
         c_vars.update(dict([(k, fm_unescape(v)) for k, v in resolved_vars.items()]))
@@ -819,6 +490,16 @@ class Classifier(Daemon):
             # Silently drop event if declared by action
             event.delete()
             return CR_DELETED
+        if rule.is_unknown_syslog:
+            # Append codebook
+            msg = event.raw_vars.get("message", "")
+            cb = self.get_msg_codebook(msg)
+            o_id = event.managed_object.id
+            if not o_id in self.unclassified_codebook:
+                self.unclassified_codebook[o_id] = []
+            cbs = [cb] + self.unclassified_codebook[o_id]
+            cbs = cbs[:self.unclassified_codebook_depth]
+            self.unclassified_codebook[o_id] = cbs
         event_class = rule.event_class
         # Calculate rule variables
         vars = self.eval_rule_variables(event, event_class, vars)
@@ -895,6 +576,19 @@ class Classifier(Daemon):
         a_event.save()
         event.delete()
         event = a_event
+        # Call handlers
+        if event_class.id in self.handlers:
+            event_id = event.id
+            for h in self.handlers[event_class.id]:
+                try:
+                    h(event)
+                except:
+                    error_report()
+                if event.to_drop:
+                    logging.debug("Event dropped by handler")
+                    event.id = event_id  # Restore event id
+                    event.delete()
+                    return CR_DELETED
         # Call triggers if necessary
         if event_class.id in self.triggers:
             event_id = event.id
@@ -948,7 +642,7 @@ class Classifier(Daemon):
         st = {
             CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
             CR_UNKNOWN: 0, CR_CLASSIFIED: 0, CR_DISPOSED: 0,
-            CR_DUPLICATED:0
+            CR_DUPLICATED: 0, CR_UDUPLICATED: 0
         }
         # Enter main loop
         while True:
@@ -969,7 +663,8 @@ class Classifier(Daemon):
                 reset_queries()
             if n:
                 # Write performance report
-                dt = time.time() - t0
+                tt = time.time()
+                dt = tt - t0
                 if dt:
                     perf = n / dt
                 else:
@@ -977,7 +672,8 @@ class Classifier(Daemon):
                 s = [
                     "elapsed: %ss" % ("%10.4f" % dt).strip(),
                     "speed: %sev/s" % ("%10.1f" % perf).strip(),
-                    "events: %d" % n
+                    "events: %d" % n,
+                    "lag: %fs" % total_seconds(datetime.datetime.now() - e.timestamp)
                     ]
                 s += ["%s: %d" % (CR[i], sn[i]) for i in range(len(CR))]
                 s = ", ".join(s)
@@ -985,3 +681,20 @@ class Classifier(Daemon):
             else:
                 # No events classified this pass. Sleep
                 time.sleep(CHECK_EVERY)
+
+    rx_non_alpha = re.compile(r"[^a-z]+")
+    rx_spaces = re.compile(r"\s+")
+
+    def get_msg_codebook(self, s):
+        """
+        Generate message codebook vector
+        """
+        x = self.rx_non_alpha.sub(" ", s.lower())
+        x = self.rx_spaces.sub(" ", x)
+        return x.strip()
+
+    def is_codebook_match(self, cb1, cb2):
+        """
+        Check codebooks for match
+        """
+        return cb1 == cb2

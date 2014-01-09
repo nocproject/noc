@@ -1,0 +1,34 @@
+{
+    "name": "Cisco | ASR9k | A9K-MOD80-TR",
+    "uuid": "1ffc0f24-875b-44eb-98d3-de4a55c96952",
+    "vendor__code": "CISCO",
+    "description": "80G Modular Linecard, Packet Transport Optimized",
+    "connections": [
+        {
+            "description": "MPA 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "MPA0",
+            "type__name": "Cisco | ASR9k | MPA"
+        },
+        {
+            "description": "MPA 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "MPA1",
+            "type__name": "Cisco | ASR9k | MPA"
+        },
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR9k | Linecard"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "A9K-MOD80-TR"
+        }
+    }
+}

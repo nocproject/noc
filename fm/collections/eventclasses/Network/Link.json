@@ -156,6 +156,9 @@
                 "required": true
             }
         ],
+        "handlers": [
+            "noc.fm.handlers.event.link.oper_down"
+        ],
         "disposition": [
             {
                 "name": "dispose",
@@ -198,6 +201,9 @@
                 "type": "str",
                 "required": false
             }
+        ],
+        "handlers": [
+            "noc.fm.handlers.event.link.oper_up"
         ],
         "disposition": [
             {

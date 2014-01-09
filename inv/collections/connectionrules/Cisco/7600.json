@@ -1,0 +1,112 @@
+{
+    "name": "Cisco | 7600",
+    "uuid": "eaa17985-6b50-4cdb-8b30-bdab3f28f6f9",
+    "description": "Cisco 6500/7600 series connection rules",
+    "context": [
+        {
+            "reset_scopes": ["linecard", "sup"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "linecard",
+            "type": "LINECARD"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "sup",
+            "type": "SUP"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "CLK",
+            "scope": "chassis",
+            "target_connection": "clk{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "LINECARD",
+            "scope": "chassis",
+            "target_connection": "linecard{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SUP",
+            "scope": "chassis",
+            "target_connection": "sup{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "DFC",
+            "scope": "linecard",
+            "target_connection": "dfc",
+            "target_number": "",
+            "target_type": "LINECARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "sup",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "SUP"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "linecard",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "LINECARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "linecard",
+            "target_connection": "Te{N}_x2",
+            "target_number": "",
+            "target_type": "LINECARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "linecard",
+            "target_connection": "Te{N}_xfp",
+            "target_number": "",
+            "target_type": "LINECARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "linecard",
+            "target_connection": "Te{N}_xenpak",
+            "target_number": "",
+            "target_type": "LINECARD"
+        }
+    ]
+}

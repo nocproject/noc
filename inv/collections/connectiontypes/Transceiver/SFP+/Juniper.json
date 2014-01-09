@@ -1,0 +1,8 @@
+{
+    "name": "Transceiver | SFP+ | Juniper",
+    "uuid": "e8236695-3995-4482-83a2-a2f782869c59",
+    "description": "Juniper-compatible SFP+ transceiver slot",
+    "c_group": [],
+    "extend__name": "Transceiver | SFP+",
+    "genders": "mf"
+}

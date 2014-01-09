@@ -1,0 +1,36 @@
+{
+    "name": "Brocade | JetCore | B2x10G",
+    "uuid": "0b5d9e45-9ff5-4b67-a2e8-c89998967d14",
+    "vendor__code": "BROCADE",
+    "description": "B2x10G - 2 port 10G fiber module(2 XenPak)",
+    "connection_rule__name": "Brocade | JetCore",
+    "connections": [
+        {
+            "description": "XENPAK port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "xenpak1",
+            "type__name": "Transceiver | XENPAK"
+        },
+        {
+            "description": "XENPAK port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "xenpak2",
+            "type__name": "Transceiver | XENPAK"
+        },
+        {
+            "description": "backplane",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "B2x10G",
+            "part_no1": "J8174A"
+        }
+    }
+}

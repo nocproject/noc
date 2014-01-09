@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | PWR | ME34X-PWR-AC",
+    "uuid": "12e5bfd4-4024-4f54-b1ab-0c69c5afc019",
+    "vendor__code": "CISCO",
+    "description": "80 Watt AC PSU for Cisco ME3400E Series switches",
+    "connections": [
+        {
+            "description": "PSU connect to switch",
+            "direction": "o",
+            "gender": "m",
+            "group": "0",
+            "name": "in",
+            "type__name": "Cisco | ME3400E | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "ME34X-PWR-AC"
+        }
+    }
+}

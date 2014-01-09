@@ -1,0 +1,21 @@
+{
+    "name": "management",
+    "uuid": "2bfdfe3a-78dc-429c-99c7-a3db73d3e491",
+    "description": "ManagedObject binding",
+    "attrs": [
+        {
+            "name": "managed",
+            "type": "bool",
+            "description": "Object can be bind to the ManagedObject",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "managed_object",
+            "type": "int",
+            "description": "Managed Object id",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}

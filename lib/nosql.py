@@ -111,7 +111,10 @@ class PlainReferenceField(BaseField):
                 raise ValidationError("You can only reference documents once "
                                       "they have been saved to the database")
         else:
-            id_ = document
+            if document:
+                id_ = document
+            else:
+                return None
         id_field_name = self.document_type._meta["id_field"]
         id_field = self.document_type._fields[id_field_name]
         return id_field.to_mongo(id_)

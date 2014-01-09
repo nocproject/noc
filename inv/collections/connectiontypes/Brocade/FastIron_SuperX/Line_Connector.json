@@ -1,0 +1,7 @@
+{
+    "name": "Brocade | FastIron SuperX | Line Connector",
+    "uuid": "72a22a24-ffca-42f3-9916-338d1b3b585c",
+    "description": "Linecard module connector in SX chassis",
+    "c_group": [],
+    "genders": "mf"
+}

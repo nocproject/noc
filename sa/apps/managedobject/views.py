@@ -1,534 +1,616 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## ManagedObject Manager
+## sa.managedobject application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-import pprint
+from collections import defaultdict
+from ConfigParser import SafeConfigParser
 import os
-import urllib
 import datetime
 ## Django modules
-from django.utils.translation import ugettext as _
-from django.contrib import admin
-from django import forms
-from django.utils.safestring import SafeString
-from django.template import loader
+from django.http import HttpResponse
 ## NOC modules
-from noc.lib.app import (ModelApplication, site, Permit,
-                        HasPerm, PermissionDenied, view)
-from noc.main.models import CustomField
-from noc.sa.models import *
-from noc.settings import config
-from noc.lib.fileutils import in_dir
-from noc.lib.widgets import PasswordWidget
-from noc.lib.ip import IP
-from noc.fm.models import ActiveAlarm, AlarmSeverity
+from noc.lib.app import ExtModelApplication, view
+from noc.sa.models.managedobject import (ManagedObject,
+                                         ManagedObjectAttribute)
+from noc.sa.models.useraccess import UserAccess
+from noc.sa.models.reducetask import ReduceTask
+from noc.inv.models.link import Link
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.subinterface import SubInterface
+from noc.inv.models.pendinglinkcheck import PendingLinkCheck
+from noc.lib.app.modelinline import ModelInline
+from noc.lib.app.repoinline import RepoInline
+from noc.main.models.resourcestate import ResourceState
+from noc.project.models.project import Project
+from noc.vc.models.vcdomain import VCDomain
+from mongoengine.queryset import Q as MQ
+from noc.lib.serialize import json_decode
+from noc.lib.scheduler.utils import (get_job, refresh_schedule,
+                                     submit_job)
+from noc.lib.text import split_alnum
+from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 
 
-class ManagedObjectAdminForm(forms.ModelForm):
+class ManagedObjectApplication(ExtModelApplication):
     """
-    Validating form for managed object
+    ManagedObject application
     """
-    class Meta:
-        model = ManagedObject
-    
-    def clean_scheme(self):
-        if "profile_name" not in self.cleaned_data:
-            return self.cleaned_data["scheme"]
-        profile = profile_registry[self.cleaned_data["profile_name"]]
-        if self.cleaned_data["scheme"] not in profile.supported_schemes:
-            raise forms.ValidationError("Selected scheme is not supported for profile '%s'" % self.cleaned_data["profile_name"])
-        return self.cleaned_data["scheme"]
-    
-    # Check repo_path remains inside repo
-    def clean_repo_path(self):
-        repo = os.path.join(config.get("cm", "repo"), "config")
-        path = os.path.join(repo, self.cleaned_data["repo_path"])
-        if (self.cleaned_data["repo_path"]
-                and self.cleaned_data["repo_path"].startswith(".")):
-            raise forms.ValidationError("Invalid repo path")
-        if (not in_dir(path, repo)
-                or self.cleaned_data["repo_path"].startswith(os.sep)):
-            raise forms.ValidationError("Repo path must be relative path inside repo")
-        if os.path.isdir(path):
-            raise forms.ValidationError(_("Repo path cannot be a directory"))
-        return os.path.normpath(self.cleaned_data["repo_path"])
-    
-
-##
-## Display managed object's actions
-##
-def action_links(obj):
-    r = []
-    try:
-        r += [("Config", "cm:config:view", [obj.config.id])]
-    except:
-        pass
-    try:
-        obj.profile
-        r += [("Scripts", "sa:managedobject:scripts", [obj.id])]
-    except:
-        pass
-    r += [("Addresses", "sa:managedobject:addresses", [obj.id])]
-    r += [("Attributes", "sa:managedobject:attributes", [obj.id])]
-    s = (["<select onchange='document.location=this.options[this.selectedIndex].value;'>",
-          "<option>---</option>"] +
-        ["<option value='%s'>%s</option>" % (site.reverse(view, *params), title) for title, view, params in r] +
-        ["</select>"])
-    return "".join(s)
-action_links.short_description = "Actions"
-action_links.allow_tags = True
-
-
-def profile(obj):
-    """
-    Display profile and platform
-    :param obj:
-    :return:
-    """
-    r = ["<a href='?profile_name__exact=%s'>%s</a>" % (obj.profile_name, obj.profile_name)]
-    p = " ".join([x for x in [obj.get_attr("vendor"), obj.get_attr("platform")] if x])
-    if p:
-        r += [p]
-    return "<br/>".join(r)
-profile.short_description = SafeString("Profile<br/>Platform")
-profile.allow_tags = True
-
-
-def object_status(o):
-    """
-    Display object status
-    :param o:
-    :return:
-    """
-    s = []
-    status = o.get_status()
-    if status:
-        s += ["<img src='/media/admin/img/icon-yes.gif' title='Up' />"]
-    else:
-        s += ["<img src='/media/admin/img/icon-no.gif' title='Down' />"]
-    if o.is_managed:
-        try:
-            o.profile
-            s += ["<a href='%d/scripts/'><img src='/static/img/managed.png' title='Is Managed' /></a>" % o.id]
-        except:
-            s += ["<img src='/static/img/managed.png' title='Is Managed' />"]
-    if o.is_configuration_managed:
-        try:
-            s += ["<a href='/cm/config/%d/'><img src='/static/img/configuration.png' title='Configuration Managed' /></a>" % o.config.id]
-        except:
-            s += ["<img src='/static/img/configuration.png' title='Configuration Managed' />"]
-
-    return " ".join(s)
-object_status.short_description = SafeString(u"&nbsp;&nbsp;Status&nbsp;&nbsp;")
-object_status.allow_tags = True
-
-
-def alarms(o):
-    n = ActiveAlarm.objects.filter(managed_object=o.id).count()
-    if n:
-        return "<a href='%d/alarms/'>%d</a>" % (o.id, n)
-    else:
-        return "0"
-alarms.short_description = u"Alarms"
-alarms.allow_tags = True
-
-##
-## Administrative domain/activator
-##
-def domain_activator(o):
-    return u"%s/<br/>%s" % (o.administrative_domain.name, o.activator.name)
-domain_activator.short_description = SafeString("Adm. Domain/<br/>Activator")
-domain_activator.allow_tags = True
-##
-## Generic returning safe headers
-##
-def safe_header(name, header):
-    f = lambda o: getattr(o, name)
-    f.short_description = SafeString(header)
-    return f
-
-##
-## Reduce task for script results
-##
-class TaskFailed(object):
-    def __init__(self, msg):
-        self.msg = u"Task failed: %s" % msg
-    
-def script_reduce(task):
-    from noc.sa.apps.managedobject.views import TaskFailed
-    mt = task.maptask_set.all()[0]
-    if mt.status != "C":
-        msg = str(mt.script_result["text"]) if mt.script_result else ""
-        return mt.script_params, TaskFailed(msg)
-    return mt.script_params, mt.script_result
-
-##
-## Attributes inline form
-##
-class ManagedObjectAttributeInlineForm(forms.ModelForm):
-    class Meta:
-        model = ManagedObjectAttribute
-    
-##
-## Attributes inline
-##
-class ManagedObjectAttributeInline(admin.TabularInline):
-    form = ManagedObjectAttributeInlineForm
-    model = ManagedObjectAttribute
-    extra = 3
-
-##
-## ManagedObject admin
-##
-class ManagedObjectAdmin(admin.ModelAdmin):
-    form = ManagedObjectAdminForm
-    inlines = [ManagedObjectAttributeInline]
-    fieldsets = (
-        (None, {
-            "fields": ("name", "is_managed", "administrative_domain",
-                       "activator", "profile_name", "object_profile",
-                       "description", "shape")
-        }),
-        ("Access", {
-            "fields": ("scheme", "address", "port", "remote_path", "vrf")
-        }),
-        ("Credentials", {
-            "fields": ("user", "password", "super_password")
-        }),
-        ("SNMP", {
-            "fields": ("snmp_ro", "snmp_rw", "trap_source_ip", "trap_community")
-        }),
-        ("CM", {
-            "fields": ("is_configuration_managed", "repo_path")
-        }),
-        ("L2", {
-            "fields": ("vc_domain", )
-        }),
-        ("Rules", {
-            "fields": ("config_filter_rule", "config_diff_filter_rule",
-                       "config_validation_rule")
-        }),
-        ("Other", {
-            "fields": ("max_scripts", )
-        }),
-        ("Tags", {
-            "fields": ("tags",)
-        }),
-        ("Custom", {
-            "fields": tuple(f.name for f in
-                CustomField.table_fields("sa_managedobject"))
-        })
-    )
-    list_display = ["name", object_status, alarms, profile,
-                    "object_profile", "vrf", "address", "vc_domain",
-                    domain_activator,
-                    "description", "repo_path", action_links]
-    list_filter = ["is_managed", "is_configuration_managed",
-                   "activator__shard", "activator",
-                   "administrative_domain", "vrf", "profile_name",
-                   "object_profile", "vc_domain"]
-    search_fields = ["name", "address", "repo_path", "description"]
-    object_class = ManagedObject
-    actions = ["test_access", "bulk_change_activator",
-               "reschedule_discovery", "apply_config_filters"]
-    ##
-    ## Dirty hack to display PasswordInput in admin form
-    ##
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        if db_field.name in ("password", "super_password"):
-            kwargs["widget"] = PasswordWidget(render_value=True)
-            if "request" in kwargs:  # For Django 1.1 and later compatibility
-                kwargs.pop("request", None)
-            return db_field.formfield(**kwargs)
-        return super(ManagedObjectAdmin, self).formfield_for_dbfield(
-            db_field, **kwargs)
-    
-    ##
-    ## Row-level access control
-    ##
-    def has_change_permission(self, request, obj=None):
-        if obj:
-            return obj.has_access(request.user)
-        else:
-            return admin.ModelAdmin.has_change_permission(self, request)
-    
-    def has_delete_permission(self, request, obj=None):
-        if obj:
-            return obj.has_access(request.user)
-        else:
-            return admin.ModelAdmin.has_delete_permission(self, request)
-    
-    def save_model(self, request, obj, form, change):
-        # Save before checking
-        admin.ModelAdmin.save_model(self, request, obj, form, change)
-        # Then check
-        if not obj.has_access(request.user):
-            # Will be rolled back by exception handler
-            raise PermissionDenied("Permission denied")
-
-    def test_access(self, request, queryset):
-        """
-        Test access to the objects
-        """
-        return self.app.response_redirect("test/%s/" % ",".join([str(p.id) for p in queryset]))
-    test_access.short_description = _("Test selected object access")
-
-    def bulk_change_activator(self, request, queryset):
-        """
-        Bulk change activator form
-        """
-        return self.app.response_redirect("sa:managedobject:change_activator",
-                                    ",".join([str(p.id) for p in queryset]))
-    bulk_change_activator.short_description = _("Change activator for selected objects")
-
-    def reschedule_discovery(self, request, queryset):
-        """
-        Reschedule interface discovery
-        """
-        self.app.message_user(request, "Interface discovery has been rescheduled")
-        for o in queryset:
-            o.run_discovery()
-        return self.app.response_redirect("sa:managedobject:changelist")
-    reschedule_discovery.short_description = _("Run discovery now")
-
-    def apply_config_filters(self, request, queryset):
-        """
-        Apply config filter pyRule
-        """
-        self.app.message_user(request, "Config filters are reapplied")
-        for o in queryset.filter(config__isnull=False):
-            cfg = o.config.data
-            if cfg:
-                o.config.write(cfg)
-        return self.app.response_redirect("sa:managedobject:changelist")
-    apply_config_filters.short_description = _("Apply Config Filters")
-
-##
-## ManagedObject application
-##
-class ManagedObjectApplication(ModelApplication):
-    model = ManagedObject
-    model_admin = ManagedObjectAdmin
+    title = "Managed Objects"
     menu = "Managed Objects"
+    model = ManagedObject
     query_condition = "icontains"
+    # Inlines
+    attrs = ModelInline(ManagedObjectAttribute)
+    cfg = RepoInline("config")
 
-    @view(url=r"^(\d+)/delete/$", url_name="delete", access="delete")
-    def view_delete(self, request, object_id, extra_context=None):
-        """Delete object"""
-        self.message_user(request,
-            "Use './noc wipe managed_object %d' to wipe managed object" % int(object_id))
-        return self.response_redirect_to_referrer(request)
+    extra_permissions = ["alarm", "change_interface"]
 
-    @view(url=r"^(?P<object_id>\d+)/scripts/$",
-         url_name="scripts", access=HasPerm("change"))
-    def view_scripts(self, request, object_id):
-        """
-        Render scripts index
-        """
-        o = self.get_object_or_404(ManagedObject, id=int(object_id))
+    mrt_config = {
+        "console": {
+            "access": "console",
+            "map_script": "commands",
+            "timeout": 60
+        }
+    }
+
+    DISCOVERY_METHODS = [
+        ("enable_version_inventory", "version_inventory", None),
+        ("enable_id_discovery", "id_discovery", None),
+        ("enable_config_polling", "config_discovery", None),
+        ("enable_interface_discovery", "interface_discovery", None),
+        ("enable_asset_discovery", "asset_discovery", 1),
+        ("enable_vlan_discovery", "vlan_discovery", None),
+        ("enable_lldp_discovery", "lldp_discovery", "lldp"),
+        ("enable_bfd_discovery", "bfd_discovery", "bfd"),
+        ("enable_stp_discovery", "stp_discovery", "stp"),
+        ("enable_cdp_discovery", "cdp_discovery", "cdp"),
+        ("enable_oam_discovery", "oam_discovery", "oam"),
+        ("enable_rep_discovery", "rep_discovery", "rep"),
+        ("enable_ip_discovery", "ip_discovery", None),
+        ("enable_mac_discovery", "mac_discovery", "mac")
+    ]
+
+    def field_platform(self, o):
+        return o.platform
+
+    def field_row_class(self, o):
+        return o.object_profile.style.css_class_name if o.object_profile.style else ""
+
+    def field_interface_count(self, o):
+        return Interface.objects.filter(managed_object=o.id, type="physical").count()
+
+    def field_link_count(self, o):
+        return Link.object_links_count(o)
+
+    def queryset(self, request, query=None):
+        qs = super(ManagedObjectApplication, self).queryset(request, query)
+        if not request.user.is_superuser:
+            qs = qs.filter(UserAccess.Q(request.user))
+        return qs
+
+    @view(url="^(?P<id>\d+)/links/$", method=["GET"],
+          access="read", api=True)
+    def api_links(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        p = o.profile_name
-        profile = profile_registry[p]
-        has_html = lambda s: bool(profile.scripts[s].get_template())
-        scripts = sorted([("%s.%s" % (p, x), x, has_html(x))
-                          for x in profile.scripts])
-        return self.render(request, "scripts.html", object=o, scripts=scripts)
-    
-    @view(url=r"^(?P<object_id>\d+)/scripts/(?P<script>[^/]+)/(?P<format>RAW|HTML)/$",
-          url_name="script", access=HasPerm("change"))
-    def view_script(self, request, object_id, script, format):
-        """
-        Run script
-        """
-        # Run map/reduce task
-        def run_task(**kwargs):
-            task = ReduceTask.create_task([o], script_reduce, {}, script, kwargs, None)
-            return self.response_redirect("sa:managedobject:scriptresult",
-                                          object_id, script, task.id, format)
-        #
-        o = self.get_object_or_404(ManagedObject, id=int(object_id))
-        # Check user has access to object
-        if not o.has_access(request.user):
-            return self.response_forbidden("Access denied")
-        # Check script exists
-        if "." not in script:
-            script = "%s.%s" % (o.profile_name, script)
-        try:
-            scr = script_registry[script]
-        except:
-            return self.response_not_found("No script found")
-        if scr.implements and scr.implements[0].requires_input():
-            # Script requires additional parameters
-            if request.POST or request.GET:
-                form = scr.implements[0].get_form(request.POST or request.GET)  # @todo: need to combine interfaces
-                if form.is_valid():
-                    return run_task(**form.cleaned_data)
+        # Get links
+        result = []
+        for link in Link.object_links(o):
+            l = []
+            r = []
+            for i in link.interfaces:
+                if i.managed_object.id == o.id:
+                    l += [i]
+                else:
+                    r += [i]
+                for li, ri in zip(l, r):
+                    result += [{
+                        "id": str(link.id),
+                        "local_interface": str(li.id),
+                        "local_interface__label": li.name,
+                        "remote_object": ri.managed_object.id,
+                        "remote_object__label": ri.managed_object.name,
+                        "remote_interface": str(ri.id),
+                        "remote_interface__label": ri.name,
+                        "discovery_method": link.discovery_method,
+                        "commited": True,
+                        "local_description": li.description,
+                        "remote_description": ri.description
+                    }]
+        # Get pending links
+        q = MQ(local_object=o.id) | MQ(remote_object=o.id)
+        for link in PendingLinkCheck.objects.filter(q):
+            if link.local_object.id == o.id:
+                ro = link.remote_object
+                lin = link.local_interface
+                rin = link.remote_interface
             else:
-                form = scr.implements[0].get_form()
-        else:
-            # Run scripts without parameters
-            return run_task()
-        return self.render(request, "script_form.html", object=o,
-                           script=script, form=form)
-    
-    ##
-    ## Wait for script completion and show results
-    ##
-    @view(url=r"^(?P<object_id>\d+)/scripts/(?P<script>[^/]+)/(?P<task_id>\d+)/(?P<format>RAW|HTML)$",
-          url_name="scriptresult", access=HasPerm("change"))
-    def view_scriptresult(self, request, object_id, script, task_id, format):
-        object = self.get_object_or_404(ManagedObject, id=int(object_id))
-        task = self.get_object_or_404(ReduceTask, id=int(task_id))
-        # Check script exists
-        try:
-            scr = script_registry[script]
-        except:
-            return self.response_not_found("Script not found")
-        # Wait for task completion
-        try:
-            params, result = task.get_result(block=False)
-        except ReduceTask.NotReady:
-            return self.render_wait(request, subject="Script %s" % script,
-                                    text="Processing script. Please wait ...")
-        # Format result
-        display_box = True
-        refresh = self.site.reverse("sa:managedobject:script", object.id,
-            script, format)
-        if isinstance(result, TaskFailed):
-            result = result.msg
-        elif format == "RAW":
-            result = pprint.pformat(result)
-        elif format == "HTML":
-            # Render template
-            display_box = False
-            t_path = ["sa", "templates"] + scr.get_template().split("/")
-            paths = [os.sep.join(["local"] + t_path), os.sep.join(t_path)]
-            if params:
-                refresh += "?" + urllib.urlencode(params)
-            result = SafeString(loader.render_to_string(paths,
-                        {"object": object,
-                         "script": script,
-                         "params": params,
-                         "result": result}).encode("utf8"))
-        return self.render(request, "script_result.html", object=object,
-                           script=script, result=result, refresh=refresh,
-                           display_box=display_box)
+                ro = link.local_object
+                lin = link.remote_interface
+                rin = link.local_interface
+            li = Interface.objects.filter(managed_object=o.id, name=lin).first()
+            if not li:
+                continue
+            ri = Interface.objects.filter(managed_object=ro.id, name=rin).first()
+            if not ri:
+                continue
+            result += [{
+                "id": str(link.id),
+                "local_interface": str(li.id),
+                "local_interface__label": li.name,
+                "remote_object": ro.id,
+                "remote_object__label": ro.name,
+                "remote_interface": str(ri.id),
+                "remote_interface__label": ri.name,
+                "discovery_method": link.method,
+                "commited": False,
+                "local_description": li.description,
+                "remote_description": ri.description
+            }]
+        return result
 
-    ##
-    ## AJAX lookup
-    ##
-    @view(url=r"^lookup1/$", url_name="lookup1", access=Permit())
-    def view_lookup1(self, request):
-        def lookup_function(q):
-            for m in ManagedObject.objects.filter(name__istartswith=q):
-                yield m.name
-        return self.lookup(request, lookup_function)
-    
-    ##
-    ## Test managed objects access
-    ##
-    @view(url=r"^test/(?P<objects>\d+(?:,\d+)*)/$", access=HasPerm("change"))
-    def view_test(self, request, objects):
+    @view(url="^link/approve/$", method=["POST"],
+          access="change_link", api=True)
+    def api_link_approve(self, request):
+        d = json_decode(request.raw_post_data)
+        plc = self.get_object_or_404(PendingLinkCheck, id=d.get("link"))
+        li = Interface.objects.filter(
+            managed_object=plc.local_object.id,
+            name=plc.local_interface
+            ).first()
+        if not li:
+            return {
+                "success": False,
+                "error": "Interface not found: %s:%s" % (
+                    plc.local_object.name, plc.local_interface)
+            }
+        ri = Interface.objects.filter(
+            managed_object=plc.remote_object.id,
+            name=plc.remote_interface
+            ).first()
+        if not ri:
+            return {
+                "success": False,
+                "error": "Interface not found: %s:%s" % (
+                    plc.remote_object.name, plc.remote_interface)
+            }
+        li.link_ptp(ri, method=plc.method + "+manual")
+        plc.delete()
+        return {
+            "success": True
+        }
+
+    @view(url="^link/reject/$", method=["POST"],
+          access="change_link", api=True)
+    def api_link_reject(self, request):
+        d = json_decode(request.raw_post_data)
+        plc = self.get_object_or_404(PendingLinkCheck, id=d.get("link"))
+        plc.delete()
+        return {
+            "success": True
+        }
+
+    def check_mrt_access(self, request, name):
+        # @todo: Check object's access
+        return super(ManagedObjectApplication, self).check_mrt_access(request, name)
+
+    @view(url="^(?P<id>\d+)/discovery/$", method=["GET"],
+          access="read", api=True)
+    def api_discovery(self, request, id):
+        def iso(t):
+            if t:
+                return t.replace(tzinfo=self.TZ).isoformat()
+            else:
+                return None
+
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        link_count = defaultdict(int)
+        for link in Link.object_links(o):
+            m = link.discovery_method or ""
+            if "+" in m:
+                m = m.split("+")[0]
+            link_count[m] += 1
+        r = [{
+            "name": "ping",
+            "enable_profile": o.object_profile.enable_ping,
+            "status": o.get_status(),
+            "last_run": None,
+            "last_status": None,
+            "next_run": None,
+            "link_count": None
+        }]
+        for cfg, name, method in self.DISCOVERY_METHODS:
+            job = get_job("inv.discovery", name, o.id) or {}
+            d = {
+                "name": name,
+                "enable_profile": getattr(o.object_profile, cfg),
+                "status": job.get("s"),
+                "last_run": iso(job.get("last")),
+                "last_status": job.get("ls"),
+                "next_run": iso(job.get("ts")),
+                "link_count": link_count[method]
+            }
+            r += [d]
+        return r
+
+    @view(url="^(?P<id>\d+)/discovery/run/$", method=["POST"],
+          access="change_discovery", api=True)
+    def api_run_discovery(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        r = json_decode(request.raw_post_data).get("names", [])
+        d = 0
+        for cfg, name, method in self.DISCOVERY_METHODS:
+            if getattr(o.object_profile, cfg):
+                if name in r:
+                    self.ensure_discovery_job(name, o)
+                    refresh_schedule("inv.discovery",
+                                     name, o.id, delta=d)
+                    d += 1
+        return {
+            "success": True
+        }
+
+    @view(url="^(?P<id>\d+)/interface/$", method=["GET"],
+        access="read", api=True)
+    def api_interface(self, request, id):
+        """
+        GET interfaces
+        :param managed_object:
+        :return:
+        """
+        def sorted_iname(s):
+            return sorted(s, key=lambda x: split_alnum(x["name"]))
+
+        def get_style(i):
+            profile = i.profile
+            if profile:
+                try:
+                    return style_cache[profile.id]
+                except KeyError:
+                    pass
+                if profile.style:
+                    s = profile.style.css_class_name
+                else:
+                    s = ""
+                style_cache[profile.id] = s
+                return s
+            else:
+                return ""
+
+        def get_link(i):
+            link = i.link
+            if not link:
+                return None
+            if link.is_ptp:
+                # ptp
+                o = link.other_ptp(i)
+                label = "%s:%s" % (o.managed_object.name, o.name)
+            elif link.is_lag:
+                # unresolved LAG
+                o = [ii for ii in link.other(i)
+                     if ii.managed_object.id != i.managed_object.id]
+                label = "LAG %s: %s" % (o[0].managed_object.name,
+                                        ", ".join(ii.name for ii in o))
+            else:
+                # Broadcast
+                label = ", ".join(
+                    "%s:%s" % (ii.managed_object.name, ii.name)
+                               for ii in link.other(i))
+            return {
+                "id": str(link.id),
+                "label": label
+            }
+
+        # Get object
+        o = self.get_object_or_404(ManagedObject, id=int(id))
+        if not o.has_access(request.user):
+            return self.response_forbidden("Permission denied")
+        # Physical interfaces
+        # @todo: proper ordering
+        default_state = ResourceState.get_default()
+        style_cache = {}  ## profile_id -> css_style
+        l1 = [
+            {
+                "id": str(i.id),
+                "name": i.name,
+                "description": i.description,
+                "mac": i.mac,
+                "ifindex": i.ifindex,
+                "lag": (i.aggregated_interface.name
+                        if i.aggregated_interface else ""),
+                "link": get_link(i),
+                "profile": str(i.profile.id) if i.profile else None,
+                "profile__label": unicode(i.profile) if i.profile else None,
+                "enabled_protocols": i.enabled_protocols,
+                "project": i.project.id if i.project else None,
+                "project__label": unicode(i.project) if i.project else None,
+                "state": i.state.id if i.state else default_state.id,
+                "state__label": unicode(i.state if i.state else default_state),
+                "vc_domain": i.vc_domain.id if i.vc_domain else None,
+                "vc_domain__label": unicode(i.vc_domain) if i.vc_domain else None,
+                "row_class": get_style(i)
+            } for i in Interface.objects.filter(
+                managed_object=o.id, type="physical")
+        ]
+        # LAG
+        lag = [
+            {
+                "id": str(i.id),
+                "name": i.name,
+                "description": i.description,
+                "profile": str(i.profile.id) if i.profile else None,
+                "profile__label": unicode(i.profile) if i.profile else None,
+                "members": [j.name for j in Interface.objects.filter(
+                    managed_object=o.id, aggregated_interface=i.id)],
+                "row_class": get_style(i)
+            } for i in
+              Interface.objects.filter(managed_object=o.id,
+                                       type="aggregated")
+        ]
+        # L2 interfaces
+        l2 = [
+            {
+                "name": i.name,
+                "description": i.description,
+                "untagged_vlan": i.untagged_vlan,
+                "tagged_vlans": i.tagged_vlans
+            } for i in
+              SubInterface.objects.filter(managed_object=o.id,
+                  enabled_afi="BRIDGE")
+        ]
+        # L3 interfaces
+        q = MQ(enabled_afi="IPv4") | MQ(enabled_afi="IPv6")
+        l3 = [
+            {
+                "name": i.name,
+                "description": i.description,
+                "ipv4_addresses": i.ipv4_addresses,
+                "ipv6_addresses": i.ipv6_addresses,
+                "enabled_protocols": i.enabled_protocols,
+                "vlan": i.vlan_ids,
+                "vrf": i.forwarding_instance.name if i.forwarding_instance else "",
+                "mac": i.mac
+            } for i in
+              SubInterface.objects.filter(managed_object=o.id).filter(q)
+        ]
+        return {
+            "l1": sorted_iname(l1),
+            "lag": sorted_iname(lag),
+            "l2": sorted_iname(l2),
+            "l3": sorted_iname(l3)
+        }
+
+    @view(url="^(?P<id>\d+)/interface/$", method=["POST"],
+        access="change_interface", api=True)
+    def api_set_interface(self, request, id):
+        def get_or_none(c, v):
+            if not v:
+                return None
+            return c.objects.get(id=v)
+        o = self.get_object_or_404(ManagedObject, id=int(id))
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        d = json_decode(request.raw_post_data)
+        if "id" in d:
+            i = self.get_object_or_404(Interface, id=d["id"])
+            if i.managed_object.id != o.id:
+                return self.response_not_found()
+            # Set profile
+            if "profile" in d:
+                p = get_or_none(InterfaceProfile, d["profile"])
+                i.profile = p
+                if p:
+                    i.profile_locked = True
+            # Project
+            if "project" in d:
+                i.project = get_or_none(Project, d["project"])
+            # State
+            if "state" in d:
+                i.state = get_or_none(ResourceState, d["state"])
+            # VC Domain
+            if "vc_domain" in d:
+                i.vc_domain = get_or_none(VCDomain, d["vc_domain"])
+            #
+            i.save()
+        return {
+            "success": True
+        }
+
+    @view(method=["DELETE"], url="^(?P<id>\d+)/?$", access="delete", api=True)
+    def api_delete(self, request, id):
+        """
+        Override default method
+        :param request:
+        :param id:
+        :return:
+        """
+        try:
+            o = self.queryset(request).get(id=int(id))
+        except self.model.DoesNotExist:
+            return self.render_json({
+                "status": False,
+                "message": "Not found"
+            }, status=self.NOT_FOUND)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        # Run sa.wipe_managed_object job instead
+        o.name = "wiping-%d" % o.id
+        o.is_managed = False
+        o.description = "Wiping! Do not touch!"
+        o.save()
+        submit_job("main.jobs", "sa.wipe_managedobject", key=o.id)
+        return HttpResponse(status=self.DELETED)
+
+    @view(url="^actions/run_discovery/$", method=["POST"],
+          access="launch", api=True,
+          validate={
+              "ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)
+          })
+    def api_action_run_discovery(self, request, ids):
+        for o in ids:
+            if not o.has_access(request.user):
+                continue
+            d = 0
+            for cfg, name, method in self.DISCOVERY_METHODS:
+                if getattr(o.object_profile, cfg):
+                    self.ensure_discovery_job(name, o)
+                    refresh_schedule(
+                        "inv.discovery",
+                        name, o.id, delta=d)
+                    d += 1
+        return "Discovery processes has been scheduled"
+
+    def ensure_discovery_job(self, job_name, managed_object):
+        if not hasattr(self, "discovery_scheduler"):
+            from noc.inv.discovery.scheduler import DiscoveryScheduler
+            self.discovery_scheduler = DiscoveryScheduler()
+        self.discovery_scheduler.ensure_job(job_name, managed_object)
+
+    def get_nested_inventory(self, o):
+        r = {
+            "id": str(o.id),
+            "serial": o.get_data("asset", "serial"),
+            "description": o.model.description,
+            "model": o.model.name
+        }
+        children = []
+        for n in o.model.connections:
+            if n.direction == "i":
+                c, r_object, _ = o.get_p2p_connection(n.name)
+                if c is None:
+                    children += [{
+                        "id": None,
+                        "name": n.name,
+                        "leaf": True,
+                        "serial": None,
+                        "description": "--- EMPTY ---",
+                        "model": None
+                    }]
+                else:
+                    cc = self.get_nested_inventory(r_object)
+                    cc["name"] = n.name
+                    children += [cc]
+            elif n.direction == "s":
+                children += [{
+                    "id": None,
+                    "name": n.name,
+                    "leaf": True,
+                    "serial": None,
+                    "description": n.description,
+                    "model": ", ".join(n.protocols)
+                }]
+        if children:
+            to_expand = "Transceiver" not in o.model.name
+            r["children"] = children
+            r["expanded"] = to_expand
+        else:
+            r["leaf"] = True
+        return r
+
+    @view(url="^(?P<id>\d+)/inventory/$", method=["GET"],
+        access="read", api=True)
+    def api_inventory(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
         r = []
-        for mo in [ManagedObject.objects.get(id=int(x)) for x in objects.split(",")]:
-            r += [{
-                  "object": mo,
-                  "users": sorted([u.username for u in mo.granted_users]),
-                  "groups": sorted([g.name for g in mo.granted_groups]),
-                  }]
-        return self.render(request, "test.html", data=r)
+        for p in o.get_inventory():
+            c = self.get_nested_inventory(p)
+            c["name"] = p.model.description
+            r += [c]
+        return {
+            "expanded": True,
+            "children": r
+        }
 
-    class ChangeActivatorForm(forms.Form):
-        activator = forms.ModelChoiceField(label=_("New activator"),
-            queryset=Activator.objects.filter(is_active=True).order_by("name"))
+    @view(url="^(?P<id>\d+)/job_log/(?P<job>[a-zA-Z0-9_]+)/$", method=["GET"],
+        access="read", api=True)
+    def api_job_log(self, request, id, job):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        if not hasattr(self, "discovery_log_jobs"):
+            # Read config
+            self.discovery_log_jobs = None
+            config = SafeConfigParser()
+            config.read("etc/noc-discovery.conf")
+            if config.has_section("main") and config.has_option("main", "log_jobs"):
+                p = config.get("main", "log_jobs")
+                if os.path.isdir(p):
+                    self.discovery_log_jobs = p
+        if self.discovery_log_jobs:
+            p = os.path.join(self.discovery_log_jobs, job, id)
+            if os.path.exists(p):
+                with open(p) as f:
+                    return self.render_plain_text(f.read())
+        return self.render_plain_text("No data!")
 
-    @view(url=r"^change/activator/(?P<objects>\d+(?:,\d+)*)/$",
-          url_name="change_activator", access=HasPerm("change"))
-    def view_change_activator(self, request, objects):
-        """
-        Change activator for selected objects
-        """
-        user = request.user
-        o_list = [ManagedObject.objects.get(id=int(x))
-                  for x in objects.split(",")]
-        o_list = [o for o in o_list if o.has_access(user)]
-        if request.POST:
-            form = self.ChangeActivatorForm(request.POST)
-            if form.is_valid():
-                n = 0
-                activator = form.cleaned_data["activator"]
-                for o in o_list:
-                    o.activator = activator
-                    o.save()
-                    n += 1
-                self.message_user(request,
-                                  _("Activators for %(numobjects)d have been changed" % {"numobjects": n}))
-                return self.response_redirect("sa:managedobject:changelist")
-        else:
-            form = self.ChangeActivatorForm()
-        return self.render(request, "change_activator.html", objects=o_list,
-                           form=form)
+    @view(url="^(?P<id>\d+)/scripts/$", method=["GET"], access="script",
+          api=True)
+    def api_scripts(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        r = []
+        for s in sorted(o.profile.scripts):
+            script = o.profile.scripts[s]
+            interface = script.implements[0]
+            ss = {
+                "name": s,
+                "has_input": any(interface.gen_parameters()),
+                "require_input": interface.has_required_params,
+                "form": interface.get_form(),
+                "preview": interface.preview or "NOC.sa.managedobject.scripts.JSONPreview"
+            }
+            r += [ss]
+        return r
 
-    ##
-    ## Display all managed object's addresses
-    ##
-    @view(url=r"(?P<object_id>\d+)/addresses/", url_name="addresses",
-          access=HasPerm("change"))
-    def view_addresses(self, request, object_id):
-        o = self.get_object_or_404(ManagedObject, id=int(object_id))
-        # Group by parents
-        r = {}
-        for a in o.address_set.all():
-            p = a.prefix
-            try:
-                r[p] += [a]
-            except KeyError:
-                r[p] = [a]
-        # Order result
-        rr = [(p, sorted(r[p], key=lambda x: IP.prefix(x.address)))
-              for p in sorted(r, key=lambda x: IP.prefix(x.prefix))]
-        return self.render(request, "addresses.html",
-                           data=rr,
-                           object=o)
-    
-    ##
-    ## Display all attributes
-    ##
-    @view(url=r"(?P<object_id>\d+)/attributes/",
-          url_name="attributes", access=HasPerm("change"))
-    def view_attributes(self, request, object_id):
-        o = self.get_object_or_404(ManagedObject, id=int(object_id))
-        return self.render(request, "attributes.html",
-           attributes=o.managedobjectattribute_set.order_by("key"), object=o)
+    @view(url="^(?P<id>\d+)/scripts/(?P<name>[^/]+)/$",
+          method=["POST"], access="script", api=True)
+    def api_run_script(self, request, id, name):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        if name not in o.profile.scripts:
+            return self.response_not_found("Script not found: %s" % name)
+        task = ReduceTask.create_task(
+            o, "pyrule:mrt_result", {},
+            name, {},
+            None)
+        return task.id
 
-    @view(url=r"(?P<object_id>\d+)/alarms/", url_name="active_alarms",
-          access=HasPerm("change"))
-    def view_alarms(self, request, object_id):
-        o = self.get_object_or_404(ManagedObject, id=int(object_id))
-        u_lang = request.session["django_language"]
-        alarms = [(a, AlarmSeverity.get_severity(a.severity), a.get_translated_subject(u_lang))
-            for a in
-            ActiveAlarm.objects.filter(managed_object=o.id).order_by("-severity,timestamp")]
-        return self.render(request, "alarms.html",
-                           object=o, alarms=alarms)
-    
-    def user_access_list(self, user):
-        return [s.selector.name for s in UserAccess.objects.filter(user=user)]
-    
-    def user_access_change_url(self, user):
-        return self.site.reverse("sa:useraccess:changelist",
-                                 QUERY={"user__id__exact": user.id})
-    
-    def group_access_list(self, group):
-        return [s.selector.name for s in GroupAccess.objects.filter(group=group)]
-    
-    def group_access_change_url(self, group):
-        return "/sa/groupaccess/"
-        # return self.site.reverse("sa:groupaccess:changelist",
-        #                         QUERY={"group__id__exact": group.id})
+    @view(url="^(?P<id>\d+)/scripts/(?P<name>[^/]+)/(?P<task>\d+)/$",
+          method=["GET"], access="script", api=True)
+    def api_get_script_result(self, request, id, name, task):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        if name not in o.profile.scripts:
+            return self.response_not_found("Script not found: %s" % name)
+        t = self.get_object_or_404(ReduceTask, id=int(task))
+        try:
+            r = t.get_result(block=False)
+        except ReduceTask.NotReady:
+            # Not ready
+            return {
+                "ready": False,
+                "max_timeout": (t.stop_time - datetime.datetime.now()).seconds,
+                "result": None
+            }
+        # Return result
+        return {
+            "ready": True,
+            "max_timeout": 0,
+            "result": r[0]
+        }

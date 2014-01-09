@@ -6,8 +6,11 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
 ## NOC modules
 from gridvcs import GridVCS
+from noc.lib.fileutils import safe_rewrite
 
 
 class GridVCSField(object):
@@ -31,30 +34,53 @@ class GridVCSField(object):
     # Get diff between revision
     print o.data.diff(rev1, rev2)
     """
-    def __init__(self, repo):
+    def __init__(self, repo, mirror=None):
         self.repo = repo
         self.model = None
+        self.mirror = mirror
 
     def contribute_to_class(self, model, name):
+        """
+        Initialize Django's model
+        """
         self.model = model
-        setattr(model, name, GridVCSObjectDescriptor(self))
+        setattr(model, name, GridVCSObjectDescriptor(self, mirror=self.mirror))
+
+    def __get__(self, instance, owner):
+        """
+        Mongoengine shortcut
+        """
+        return GridVCSObjectProxy(
+            self.repo, instance.id, mirror=self.mirror)
 
 
 class GridVCSObjectDescriptor(object):
-    def __init__(self, field):
+    def __init__(self, field, mirror=None):
         self.field = field
         self.repo = field.repo
+        self.mirror = mirror
+        if self.mirror:
+            self.mirror = os.path.realpath(self.mirror)
 
     def __get__(self, instance, instance_type=None):
-        return GridVCSObjectProxy(self.repo, instance.id)
+        mpath = None
+        if self.mirror:
+            mpath = os.path.join(self.mirror, unicode(instance))
+            if not os.path.realpath(mpath).startswith(self.mirror):
+                # Security violation
+                mpath = None
+        return GridVCSObjectProxy(
+            self.repo, instance.id,
+            mirror=mpath)
 
 
 class GridVCSObjectProxy(object):
     _cache = {}
 
-    def __init__(self, repo, id):
+    def __init__(self, repo, id, mirror=None):
         self.repo = repo
         self.id = id
+        self.mirror = mirror
 
     def get_gridvcs(self):
         g = self._cache.get(self.repo)
@@ -67,7 +93,10 @@ class GridVCSObjectProxy(object):
         return self.get_gridvcs().get(self.id)
 
     def write(self, data):
-        return self.get_gridvcs().put(self.id, data)
+        r = self.get_gridvcs().put(self.id, data)
+        if r and self.mirror:
+            safe_rewrite(self.mirror, data)
+        return r
 
     def get_revision(self, r):
         g = self.get_gridvcs()

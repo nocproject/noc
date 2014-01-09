@@ -41,25 +41,23 @@ from noc.lib import nosql
 from noc.lib.validators import is_int
 ## Register periodics
 periodic_registry.register_all()
-##
-## A hash of Model.search classmethods.
-## Populated by "class_prepared" signal listener
-## Model.search is a generator taking parameters (user,query,limit)
-## And yielding a SearchResults (ordered by relevancy)
-##
-search_methods = set()
-search_models = set()
+## Full-text searchable models
+fts_models = {}  # name -> model
+from fts_queue import FTSQueue
+
+
+def update_fts(sender, instance, **kwargs):
+    FTSQueue.schedule_update(instance)
 
 
 def on_new_model(sender, **kwargs):
     """
     Register new search handler if model has .search() classmethod
     """
-    if hasattr(sender, "search"):
-        search_methods.add(getattr(sender, "search"))
-    if (hasattr(sender, "get_search_Q") and
-        hasattr(sender, "get_search_data")):
-        search_models.add(sender)
+    if hasattr(sender, "get_index"):
+        fts_models[str(sender._meta)] = sender
+        if settings.IS_WEB:
+            post_save.connect(update_fts, sender=sender)
 
 ##
 ## Attach to the 'class_prepared' signal
@@ -127,6 +125,7 @@ def audit_trail_delete(sender, instance, **kwargs):
     message = "\n".join(["%s = %s" % (f.name, f.value_to_string(instance))
                          for f in sender._meta.fields])
     AuditTrail.log(sender, instance, operation, message)
+    FTSQueue.schedule_delete(instance)
 
 ##
 ## Set up audit trail handlers
@@ -285,7 +284,7 @@ class MIMEType(models.Model):
         """
         r, ext = os.path.splitext(filename)
         try:
-            m = MIMEType.objects.get(extension=ext)
+            m = MIMEType.objects.get(extension=ext.lower())
             return m.mime_type
         except MIMEType.DoesNotExist:
             return "application/octet-stream"
@@ -496,30 +495,6 @@ class RefBook(models.Model):
                 self.last_updated = datetime.datetime.now()
                 self.next_update = self.last_updated + datetime.timedelta(days=self.refresh_interval)
                 self.save()
-
-    @classmethod
-    def search(cls, user, search, limit):
-        """
-        Search engine plugin
-        """
-        from noc.lib.search import SearchResult  # Must be inside method to prevent import loops
-
-        for b in RefBook.objects.filter(is_enabled=True):
-            field_names = [f.name for f in b.refbookfield_set.order_by("order")]
-            for f in b.refbookfield_set.filter(search_method__isnull=False):
-                x = f.get_extra(search)
-                if not x:
-                    continue
-                q = RefBookData.objects.filter(ref_book=b).extra(**x)
-                for r in q:
-                    text = "\n".join(["%s = %s" % (k, v)
-                                      for k, v in zip(field_names, r.value)])
-                    yield SearchResult(
-                        url=("main:refbook:item", b.id, r.id),
-                        title=u"Reference Book: %s, column %s" % (b.name, f.name),
-                        text=text,
-                        relevancy=1.0,
-                    )
 
     @property
     def can_search(self):
@@ -989,44 +964,3 @@ if settings.IS_WEB and not settings.IS_TEST:
 User._meta.get_field("username").max_length = User._meta.get_field("email").max_length
 User._meta.get_field("username").validators = [MaxLengthValidator(User._meta.get_field("username").max_length)]
 User._meta.ordering = ["username"]
-
-
-def search_tags(user, query, limit):
-    """
-    Search by tags
-    """
-    from noc.lib.search import SearchResult  # Must be inside method to prevent import loops
-
-    # Find tags
-    tags = []
-    for p in query.split(","):
-        p = p.strip()
-        t = Tag.objects.filter(tag=p).first()
-        if t:
-            tags += [t]
-        else:
-            return []  # Tag not found
-    if not tags:
-        return []
-    # Intersect tags
-    r = None
-    for t in tags:
-        o = t.get_objects()
-        if r is None:
-            r = set(o)
-        else:
-            r &= set(o)
-    if not r:
-        return []
-    rr = []
-    for i in r:
-        if hasattr(i, "get_absolute_url"):
-            rr += [SearchResult(
-                    url=i.get_absolute_url(),
-                    title=unicode(i),
-                    text=i.tags,
-                    relevancy=1.0,
-                )]
-    return rr
-
-search_methods.add(search_tags)

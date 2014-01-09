@@ -1,0 +1,40 @@
+{
+    "name": "Juniper | Transceiver | 1G | SFP SX",
+    "uuid": "8b2e420a-3464-40f5-a1f1-6800963c3cbf",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper SFP SX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASESX"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASESX"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "SFP-SX",
+            "part_no0": "740-031851",
+            "part_no1": "740-011782",
+            "part_no2": "740-011613"
+        }
+    }
+}

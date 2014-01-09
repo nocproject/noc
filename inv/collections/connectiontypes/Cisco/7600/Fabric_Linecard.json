@@ -1,0 +1,7 @@
+{
+    "name": "Cisco | 7600 | Fabric Linecard",
+    "uuid": "86277d7d-f062-451d-b592-b9344a425fe6",
+    "description": "Cisco 6500/7600 Linecard slot (swtich fabric)",
+    "c_group": ["7600_fabric"],
+    "genders": "mf"
+}

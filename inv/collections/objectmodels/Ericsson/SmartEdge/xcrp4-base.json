@@ -1,0 +1,21 @@
+{
+    "name": "Ericsson | SmartEdge | xcrp4-base",
+    "uuid": "9a4f4e60-bfae-47eb-9d0f-bab0e9ed8810",
+    "vendor__code": "ERICSSON",
+    "description": "Management module",
+    "connection_rule__name": "Ericsson | SmartEdge",
+    "connections": [
+        {
+            "description": "Line connector",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Ericsson | SE600 | MGMT"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "xcrp4-base"
+        }
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "name": "Juniper | Transceiver | 1G | SFP LX10",
+    "uuid": "b5deb0b0-75ba-4ba7-afd7-791959f3a62c",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper SFP LX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "SFP-LX10",
+            "part_no0": "740-011614"
+        }
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "name": "Rack Row",
+    "uuid": "1cf66a38-fa88-4ef9-b181-6e6a298c55cf",
+    "vendor__code": "NOC",
+    "description": "Rack Row",
+    "connections": [],
+    "data": {
+        "container": {
+            "container": true
+        }
+    }
+}

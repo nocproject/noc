@@ -14,7 +14,15 @@ Ext.define("NOC.sa.administrativedomain.Application", {
     columns: [
         {
             text: "Name",
-            dataIndex: "name"
+            dataIndex: "name",
+            width: 150
+        },
+        {
+            text: "Objects",
+            dataIndex: "object_count",
+            width: 50,
+            align: "right",
+            sortable: false
         },
         {
             text: "Description",

@@ -1,0 +1,29 @@
+{
+    "name": "Juniper | MX | PWR-MX480-1200-AC",
+    "uuid": "25a10884-710e-4789-a9b8-00d8de6ab1c9",
+    "vendor__code": "JUNIPER",
+    "description": "MX480 1200W Power Entry Module AC",
+    "connections": [
+        {
+            "description": "Internal power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX480 PEM"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "PWR-MX480-1200-AC-S",
+            "part_no0": "740-017330"
+        }
+    }
+}

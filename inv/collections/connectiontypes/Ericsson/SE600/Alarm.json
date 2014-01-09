@@ -1,0 +1,7 @@
+{
+    "name": "Ericsson | SE600 | Alarm",
+    "uuid": "2ba97fb4-c3ea-4ad9-b21b-a272206bfc4d",
+    "description": "Alarm module connector in SE600",
+    "c_group": [],
+    "genders": "mf"
+}

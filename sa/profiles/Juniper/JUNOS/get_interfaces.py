@@ -73,7 +73,7 @@ class Script(NOCScript):
                 iftype = "loopback"
             elif name.startswith("fxp"):
                 iftype = "management"
-            elif name.startswith("ae"):
+            elif name.startswith("ae") or name.startswith("reth"):
                 iftype = "aggregated"
             elif name.startswith("vlan"):
                 iftype = "SVI"
