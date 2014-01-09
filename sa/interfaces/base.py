@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Abstract script interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -15,13 +15,6 @@ from noc.lib.text import list_to_ranges, ranges_to_list
 from noc.lib.ip import IPv6
 from noc.lib.mac import MAC
 from noc.lib.validators import *
-
-try:
-    from django import forms
-    from noc.lib.forms import NOCForm
-except ImportError:
-    # No django. Interface.get_form() is meaningless
-    pass
 
 
 class InterfaceTypeError(Exception):
@@ -109,13 +102,14 @@ class Parameter(object):
         """
         Get appropriative form field
         """
-        return forms.CharField(required=self.required,
-                               initial=self.default, label=label)
-    
+        return {
+            "xtype": "textfield",
+            "name": label,
+            "fieldLabel": label,
+            "allowBlank": not self.required
+        }
 
-##
-##
-##
+
 class ORParameter(Parameter):
     """
     >>> ORParameter(IntParameter(),IPv4Parameter()).clean(10)
@@ -339,14 +333,15 @@ class BooleanParameter(Parameter):
         if type(value) in (types.StringType, types.UnicodeType):
             return value.lower() in ("true", "t", "yes", "y")
         self.raise_error(value)
-    ##
+
     def get_form_field(self, label=None):
-        return forms.BooleanField(required=self.required,
-                                  initial=self.default, label=label)
-    
-##
-##
-##
+        return {
+            "xtype": "checkboxfield",
+            "name": label,
+            "boxLabel": label
+        }
+
+
 class IntParameter(Parameter):
     """
     >>> IntParameter().clean(1)
@@ -1309,23 +1304,27 @@ class InterfaceBase(type):
         m = type.__new__(cls, name, bases, attrs)
         interface_registry[name] = m
         return m
-    
 
-##
-##
-##
+
 class Interface(object):
     __metaclass__ = InterfaceBase
     
     template = None  # Relative template path in sa/templates/
+    form = None
+    preview = None
+    RESERVED_NAMES = ("returns", "template", "form", "preview")
     
-    ##
-    ## Generator returning (parameter name, parameter instance) pairs
-    ##
     def gen_parameters(self):
+        """
+        Generator yielding (parameter name, parameter instance) pairs
+        """
         for n, p in self.__class__.__dict__.items():
-            if issubclass(p.__class__, Parameter) and n not in ("returns", "template"):
+            if issubclass(p.__class__, Parameter) and n not in self.RESERVED_NAMES:
                 yield (n, p)
+
+    @property
+    def has_required_params(self):
+        return any(p for n, p in self.gen_parameters() if p.required)
 
     def clean(self, __profile=None, **kwargs):
         """
@@ -1356,10 +1355,10 @@ class Interface(object):
                 out_kwargs[k] = v
         return out_kwargs
     
-    ##
-    ## Clean up returned result
-    ##
     def clean_result(self, result):
+        """
+        Clean up returned result
+        """
         try:
             rp = self.returns
         except AttributeError:
@@ -1383,23 +1382,14 @@ class Interface(object):
         for n, p in self.gen_parameters():
             return True
         return False
-    
-    def get_form(self, data=None):
-        def get_clean_field_wrapper(form, name, param):
-            def clean_field_wrapper(form, name, param):
-                data = form.cleaned_data[name]
-                if not param.required and not data:
-                    return None
-                try:
-                    return param.form_clean(data)
-                except InterfaceTypeError:
-                    raise forms.ValidationError("Invalid value")
-            return lambda: clean_field_wrapper(form, name, param)
-        f = NOCForm(data)
+
+    def get_form(self):
+        if self.form:
+            return self.form
+        r = []
         for n, p in self.gen_parameters():
-            f.fields[n] = p.get_form_field(n)
-            setattr(f, "clean_%s" % n, get_clean_field_wrapper(f, n, p))
-        return f
+            r += [p.get_form_field(n)]
+        return r
 
 
 def iparam(**params):

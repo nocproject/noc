@@ -19,4 +19,4 @@ class IGetARP(Interface):
         # NONE for incomplete entries
         "interface": InterfaceNameParameter(required=False),
     }))
-    template = "interfaces/igetarp.html"
+    preview = "NOC.sa.managedobject.scripts.ShowARP"

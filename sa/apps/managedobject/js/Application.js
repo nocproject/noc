@@ -55,7 +55,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             glyph: NOC.glyph.play,
             disabled: true,
             scope: me,
-            handler: me.onInterfaces
+            handler: me.onScripts
         });
 
         me.interfacesButton = Ext.create("Ext.button.Button", {
@@ -107,6 +107,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         );
         me.ITEM_INVENTORY = me.registerItem("NOC.sa.managedobject.InventoryPanel");
         me.ITEM_INTERFACE = me.registerItem("NOC.sa.managedobject.InterfacePanel");
+        me.ITEM_SCRIPTS = me.registerItem("NOC.sa.managedobject.ScriptPanel");
         me.ITEM_LINKS = me.registerItem("NOC.sa.managedobject.LinksPanel");
 
         me.ITEM_DISCOVERY = me.registerItem(
@@ -508,6 +509,11 @@ Ext.define("NOC.sa.managedobject.Application", {
     onInterfaces: function() {
         var me = this;
         me.previewItem(me.ITEM_INTERFACE, me.currentRecord);
+    },
+    //
+    onScripts: function() {
+        var me = this;
+        me.previewItem(me.ITEM_SCRIPTS, me.currentRecord);
     },
     //
     onLinks: function() {
