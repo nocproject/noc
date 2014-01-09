@@ -239,39 +239,31 @@ class Prefix(models.Model):
         # Unlink dual-stack allocations
         self.clear_transition()
         # Recursive delete
-        c = connection.cursor()
+        # Get nested prefixes
+        ids = Prefix.objects.filter(
+            vrf=self.vrf,
+            afi=self.afi
+        ).extra(
+            where=["prefix <<= %s"],
+            params=[self.prefix]
+        ).values_list("id", flat=True)
+        #
+        zones = set()
+        for a in Address.objects.filter(prefix__in=ids):
+            zones.add(a.address)
+            zones.add(a.fqdn)
         # Delete nested addresses
-        c.execute("""
-            DELETE FROM %s
-            WHERE
-                prefix_id IN
-                    (
-                    SELECT id
-                    FROM %s
-                    WHERE
-                            vrf_id=%%s
-                        AND afi=%%s
-                        AND prefix <<= %%s
-                    )""" % (Address._meta.db_table,
-                            Prefix._meta.db_table),
-            [self.vrf.id, self.afi, self.prefix]
-        )
+        Address.objects.filter(prefix__in=ids).delete()
         # Delete nested prefixes
-        c.execute("""
-            DELETE FROM %s
-            WHERE
-                    vrf_id=%%s
-                AND afi=%%s
-                AND prefix <<= %%s
-        """ % Prefix._meta.db_table, [self.vrf.id, self.afi, self.prefix])
+        Prefix.objects.filter(id__in=ids).delete()
         # Delete permissions
-        c.execute("""
-            DELETE FROM %s
-            WHERE
-                    vrf_id=%%s
-                AND afi=%%s
-                AND prefix=%%s
-        """ % PrefixAccess._meta.db_table, [self.vrf.id, self.afi, self.prefix])
+        PrefixAccess.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+            where=["prefix <<= %s"],
+            params=[self.prefix]
+        )
+        # Touch dns zones
+        for z in zones:
+            DNSZone.touch(z)
 
     @property
     def maintainers(self):
@@ -514,3 +506,4 @@ from address import Address
 from prefixaccess import PrefixAccess
 from prefixbookmark import PrefixBookmark
 from addressrange import AddressRange
+from noc.dns.models import DNSZone
