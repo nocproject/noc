@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## sa.managedobject application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from collections import defaultdict
 from ConfigParser import SafeConfigParser
 import os
+import datetime
 ## Django modules
 from django.http import HttpResponse
 ## NOC modules
@@ -17,6 +18,7 @@ from noc.lib.app import ExtModelApplication, view
 from noc.sa.models.managedobject import (ManagedObject,
                                          ManagedObjectAttribute)
 from noc.sa.models.useraccess import UserAccess
+from noc.sa.models.reducetask import ReduceTask
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -553,3 +555,62 @@ class ManagedObjectApplication(ExtModelApplication):
                 with open(p) as f:
                     return self.render_plain_text(f.read())
         return self.render_plain_text("No data!")
+
+    @view(url="^(?P<id>\d+)/scripts/$", method=["GET"], access="script",
+          api=True)
+    def api_scripts(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        r = []
+        for s in sorted(o.profile.scripts):
+            script = o.profile.scripts[s]
+            interface = script.implements[0]
+            ss = {
+                "name": s,
+                "has_input": any(interface.gen_parameters()),
+                "require_input": interface.has_required_params,
+                "form": interface.get_form(),
+                "preview": interface.preview or "NOC.sa.managedobject.scripts.JSONPreview"
+            }
+            r += [ss]
+        return r
+
+    @view(url="^(?P<id>\d+)/scripts/(?P<name>[^/]+)/$",
+          method=["POST"], access="script", api=True)
+    def api_run_script(self, request, id, name):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        if name not in o.profile.scripts:
+            return self.response_not_found("Script not found: %s" % name)
+        task = ReduceTask.create_task(
+            o, "pyrule:mrt_result", {},
+            name, {},
+            None)
+        return task.id
+
+    @view(url="^(?P<id>\d+)/scripts/(?P<name>[^/]+)/(?P<task>\d+)/$",
+          method=["GET"], access="script", api=True)
+    def api_get_script_result(self, request, id, name, task):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        if name not in o.profile.scripts:
+            return self.response_not_found("Script not found: %s" % name)
+        t = self.get_object_or_404(ReduceTask, id=int(task))
+        try:
+            r = t.get_result(block=False)
+        except ReduceTask.NotReady:
+            # Not ready
+            return {
+                "ready": False,
+                "max_timeout": (t.stop_time - datetime.datetime.now()).seconds,
+                "result": None
+            }
+        # Return result
+        return {
+            "ready": True,
+            "max_timeout": 0,
+            "result": r[0]
+        }
