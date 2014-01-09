@@ -21,6 +21,7 @@ from noc.inv.models.connectionrule import ConnectionRule
 from noc.inv.models.objectmodel import ObjectModel
 from noc.fm.models.oidalias import OIDAlias
 from noc.fm.models.syntaxalias import SyntaxAlias
+from noc.fm.models.mibalias import MIBAlias
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
 
@@ -77,7 +78,8 @@ class Command(BaseCommand):
         ("inv.objectmodels", ObjectModel),
         # Fault Management
         ("fm.oidaliases", OIDAlias),
-        ("fm.syntaxaliases", SyntaxAlias)
+        ("fm.syntaxaliases", SyntaxAlias),
+        ("fm.mibaliases", MIBAlias),
     ]
 
     def log(self, msg):

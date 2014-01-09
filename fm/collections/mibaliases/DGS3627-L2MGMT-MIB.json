@@ -1,0 +1,5 @@
+{
+    "rewrite_mib": "DGS3627-L2MGMT-MIB",
+    "to_mib": "DGS3612-L2MGMT-MIB",
+    "uuid": "3c46a312-10ae-40f9-bfb5-22a9bfff907f"
+}
