@@ -1,0 +1,115 @@
+{
+    "name": "Juniper | MX | MX480 Chassis",
+    "uuid": "be8387a2-f52f-4abf-a6b7-eb6657c2f063",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper MX480 chassis",
+    "connection_rule__name": "Juniper | MX",
+    "connections": [
+        {
+            "description": "Fan Slot #0",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan0",
+            "type__name": "Juniper | MX | MX480 Fan"
+        },
+        {
+            "description": "SCB Slot #0",
+            "direction": "i",
+            "gender": "f",
+            "name": "scb0",
+            "type__name": "Juniper | MX | SCB"
+        },
+        {
+            "description": "SCB Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "scb1",
+            "type__name": "Juniper | MX | SCB"
+        },
+        {
+            "description": "DPC Slot #0",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc0",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "DPC Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc1",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "DPC Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc2",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "DPC Slot #3",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc3",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "DPC Slot #4",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc4",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "DPC Slot #5",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc5",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "PEM Slot #0",
+            "direction": "i",
+            "gender": "f",
+            "name": "pem0",
+            "type__name": "Juniper | MX | MX480 PEM"
+        },
+        {
+            "description": "PEM Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "pem1",
+            "type__name": "Juniper | MX | MX480 PEM"
+        },
+        {
+            "description": "PEM Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "pem2",
+            "type__name": "Juniper | MX | MX480 PEM"
+        },
+        {
+            "description": "PEM Slot #3",
+            "direction": "i",
+            "gender": "f",
+            "name": "pem3",
+            "type__name": "Juniper | MX | MX480 PEM"
+        }
+    ],
+    "data": {
+        "airflow": {
+            "exhaust": "l",
+            "intake": "r"
+        },
+        "asset": {
+            "order_part_no0": "MX480"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 8
+        }
+    }
+}

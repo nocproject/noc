@@ -1,0 +1,25 @@
+{
+    "name": "NoName | Transceiver | 1G | SFP T",
+    "uuid": "b75fb86c-df34-4e60-b87e-59ebceaf215e",
+    "vendor__code": "NONAME",
+    "description": "NoName SFP T transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {}
+}

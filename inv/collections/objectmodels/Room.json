@@ -1,0 +1,12 @@
+{
+    "name": "Room",
+    "uuid": "c945e7dc-4c82-40c3-b8f9-65c62e85ed1d",
+    "vendor__code": "NOC",
+    "description": "Room",
+    "connections": [],
+    "data": {
+        "container": {
+            "container": true
+        }
+    }
+}

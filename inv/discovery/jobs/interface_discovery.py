@@ -122,6 +122,8 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                         ipv4_addresses=si.get("ipv4_addresses", []),
                         ipv6_addresses=si.get("ipv6_addresses", []),
                         iso_addresses=si.get("iso_addresses", []),
+                        vpi=si.get("vpi"),
+                        vci=si.get("vci"),
                         enabled_protocols=si.get("enabled_protocols", []),
                         untagged_vlan=si.get("untagged_vlan"),
                         tagged_vlans=si.get("tagged_vlans", []),

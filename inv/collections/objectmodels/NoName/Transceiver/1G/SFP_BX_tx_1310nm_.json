@@ -1,0 +1,25 @@
+{
+    "name": "NoName | Transceiver | 1G | SFP BX (tx 1310nm)",
+    "uuid": "dcbd9163-836e-4b4c-a18e-542130509eb1",
+    "vendor__code": "NONAME",
+    "description": "NoName SFP LX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "txrx",
+            "protocols": ["<1000BASELX-1310", ">1000BASELX-1490"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {}
+}

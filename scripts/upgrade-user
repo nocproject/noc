@@ -53,6 +53,7 @@ info "Syncronizing pyRules"
 ./noc sync-pyrules || error_exit "$LINENO: sync-pyrules failed"
 # Syncronize mongodb collections
 info "Syncronize collections"
+./noc collection --sync || error_exit "$LINENO: collection --sync failed"
 ./noc sync-collections || error_exit "$LINENO: sync-collections failed"
 # Syncronize refbooks
 info "Syncronizing refbooks"
@@ -60,4 +61,9 @@ info "Syncronizing refbooks"
 # Syncronize MIBS
 info "Syncronize MIBs"
 ./noc sync-mibs || error_exit "$LINENO: sync-mibs failed"
-#
+# Check FTS index
+info "Checking FTS index"
+./noc index --check
+if [ $? -ne 0 ]; then
+    ./noc index --reindex -v1 || error_exit "$LINENO: index failed"
+fi

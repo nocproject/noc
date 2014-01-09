@@ -1,0 +1,35 @@
+{
+    "name": "Juniper | Transceiver | 10G | XFP-10G-LR",
+    "uuid": "e337f204-f791-47c1-b027-e9fd6d02f738",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper XFP LR transceiver",
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "XFP-10G-L-OC192-SR1",
+            "part_no0": "740-011607"
+        }
+    }
+}

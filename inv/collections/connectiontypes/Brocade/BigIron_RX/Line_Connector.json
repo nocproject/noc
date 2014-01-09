@@ -1,0 +1,7 @@
+{
+    "name": "Brocade | BigIron RX | Line Connector",
+    "uuid": "bb71b0a4-b398-4908-b6cb-e38e3a47a0dc",
+    "description": "Linecard module connector in RX chassis",
+    "c_group": [],
+    "genders": "mf"
+}

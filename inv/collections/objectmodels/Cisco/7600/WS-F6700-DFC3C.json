@@ -1,0 +1,20 @@
+{
+    "name": "Cisco | 7600 | WS-F6700-DFC3C",
+    "uuid": "b02842f4-2993-40fe-b6c8-e7f618a36c33",
+    "vendor__code": "CISCO",
+    "description": "Cisco WS-F6700-DFC3C Distributed Forwarding Card 3",
+    "connections": [
+        {
+            "description": "DFC slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | DFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-F6700-DFC3C"
+        }
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "name": "Cisco | 7600 | Bus Linecard",
+    "uuid": "de7c5b2c-8c75-4546-a3f6-9a2e4a03c1cf",
+    "description": "Cisco 6500/7600 Linecard slot (shared bus)",
+    "c_group": ["7600_bus"],
+    "genders": "mf"
+}

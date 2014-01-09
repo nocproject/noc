@@ -315,3 +315,18 @@ def parse_kv(kmap, data, sep=":"):
         if k in kmap:
             r[kmap[k]] = v.strip()
     return r
+
+
+def str_dict(d):
+    """
+    Convert dict to key=value, key=value, .... string
+    :type d: dict
+    :rtype: str
+    """
+    return ", ".join("%s=%s" % (k, d[k]) for k in d)
+
+rx_safe_path = re.compile("[^a-z0-9\-\+]+", re.IGNORECASE)
+
+
+def quote_safe_path(d):
+    return rx_safe_path.sub("_", d)

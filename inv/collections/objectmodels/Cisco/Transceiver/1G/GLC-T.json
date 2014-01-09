@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | Transceiver | 1G | GLC-T",
+    "uuid": "37b32d6b-90b5-4f69-ba1d-efecf3525565",
+    "vendor__code": "CISCO",
+    "description": "Cisco SFP TX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "GLC-T"
+        }
+    }
+}

@@ -477,7 +477,8 @@ class Script(threading.Thread):
                     self.activator.save_result(self.error_traceback)
         else:
             # Shutdown session
-            if self.profile.shutdown_session and not self.activator.use_canned_session:
+            if (self.cli_provider and self.profile.shutdown_session and
+                    not self.activator.use_canned_session):
                 self.debug("Shutting down session")
                 self.profile.shutdown_session(self)
                 # Serialize result
@@ -1008,3 +1009,10 @@ class Script(threading.Thread):
                 }[scheme]
         except KeyError:
             raise UnknownAccessScheme(scheme)
+
+    def push_prompt_pattern(self, pattern):
+        self.request_cli_provider()
+        self.cli_provider.push_prompt_pattern(pattern)
+
+    def pop_prompt_pattern(self):
+        self.cli_provider.pop_prompt_pattern()

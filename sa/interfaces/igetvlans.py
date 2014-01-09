@@ -13,4 +13,4 @@ class IGetVlans(Interface):
         "vlan_id": VLANIDParameter(),
         "name": StringParameter(required=False)
     }))
-    template = "interfaces/igetvlans.html"
+    preview = "NOC.sa.managedobject.scripts.ShowVLANs"

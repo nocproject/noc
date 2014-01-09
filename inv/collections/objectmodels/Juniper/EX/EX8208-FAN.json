@@ -1,0 +1,20 @@
+{
+    "name": "Juniper | EX | EX8208-FAN",
+    "uuid": "19e795de-1650-4971-8fde-c4922ee0a85e",
+    "vendor__code": "JUNIPER",
+    "description": "EX8208 Fan Tray",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 8208 Fan"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "760-020967"
+        }
+    }
+}

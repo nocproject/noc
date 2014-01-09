@@ -1,0 +1,22 @@
+{
+    "name": "NoName | Rack | 19\" 42U 1000mm Shelf",
+    "uuid": "b85ca077-991d-463c-97a3-64995f4148c8",
+    "vendor__code": "NONAME",
+    "description": "19\" 42U 1000mm depth shelf",
+    "connections": [],
+    "data": {
+        "asset": {
+            "part_no0": "AR3100"
+        },
+        "container": {
+            "container": true
+        },
+        "rack": {
+            "depth": 1000,
+            "front_door": "l",
+            "rear_door": "l",
+            "units": 42,
+            "width": 600
+        }
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "name": "Power | IEC 60320 C8",
+    "uuid": "1078bad0-dcce-45f9-98de-f7b48e7cf710",
+    "description": "Dual-insulated power supplies (8-shape inlet)",
+    "c_group": ["power_c7"],
+    "genders": "f"
+}

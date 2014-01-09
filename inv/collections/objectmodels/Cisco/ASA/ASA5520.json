@@ -1,0 +1,106 @@
+{
+    "name": "Cisco | ASA | ASA5520",
+    "uuid": "1268022c-d600-45c5-9cc3-65e8e296f5c7",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASA5520 chassis",
+    "connection_rule__name": "Cisco | ASA",
+    "connections": [
+        {
+            "description": "Gi0/0 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0/0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Management port",
+            "direction": "s",
+            "gender": "f",
+            "name": "management",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "AUX port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["<USB10", "<USB11", "<USB20"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "USB Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb1",
+            "protocols": ["<USB10", "<USB11", "<USB20"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "AIP-SSM Slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "module0",
+            "type__name": "Cisco | ASA | AIP-SSM"
+        },
+        {
+            "description": "PSU0 Slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu0",
+            "type__name": "Cisco | ASA | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "ASA5520"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1
+        }
+    }
+}

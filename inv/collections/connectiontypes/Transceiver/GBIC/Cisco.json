@@ -1,0 +1,8 @@
+{
+    "name": "Transceiver | GBIC | Cisco",
+    "uuid": "a970b76a-e6d0-409c-a8a9-75923691f76c",
+    "description": "Cisco-compatible GBIC transceiver slot",
+    "c_group": [],
+    "extend__name": "Transceiver | GBIC",
+    "genders": "mf"
+}

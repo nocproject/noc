@@ -1,0 +1,35 @@
+{
+    "name": "Juniper | EX4200",
+    "uuid": "07e41325-c05c-4468-92f0-ee3f04ff01d1",
+    "description": "Juniper EX4200/3200 connection rules",
+    "context": [
+        {
+            "reset_scopes": ["pic"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "pic",
+            "type": "PIC"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "PEM",
+            "scope": "chassis",
+            "target_connection": "pem{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "{pic}/{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

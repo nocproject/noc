@@ -217,6 +217,7 @@ Ext.define("NOC.ip.vrf.Application", {
         NOC.mrt({
             url: "/ip/vrf/mrt/get_vrfs/",
             selector: managed_object,
+            loadMask: me,
             scope: me,
             success: me.processImportFromRouter,
             failure: function() {

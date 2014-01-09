@@ -1,0 +1,328 @@
+{
+    "name": "Cisco | 4500 | ME-4924-10GE",
+    "uuid": "b271f13b-61a6-4149-add2-775cc8d9e6e2",
+    "vendor__code": "CISCO",
+    "description": "Cisco ME4924-10GE Layer-3 ethernet aggregation switch",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "connections": [
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet management port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/1 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/2 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/3 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi3_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/4 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi4_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/5 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi5_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/6 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi6_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/7 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi7_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/8 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi8_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/9 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi9_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/10 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi10_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/11 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi11_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/12 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi12_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/13 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi13_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/14 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi14_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/15 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi15_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/16 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi16_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/17 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi17_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/18 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi18_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/19 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi19_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/20 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi20_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/21 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi21_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/22 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi22_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/23 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi23_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/24 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi24_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/25 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi25_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/26 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi26_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/27 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi27_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/28 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi28_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Te1/29 X2 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te29_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "Te1/30 X2 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te30_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "PSU1 slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "psu1",
+            "type__name": "Cisco | PWR-C49-300"
+        },
+        {
+            "description": "PSU2 slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "psu2",
+            "type__name": "Cisco | PWR-C49-300"
+        }
+    ],
+    "data": {
+        "airflow": {
+            "exhaust": "r",
+            "intake": "l"
+        },
+        "asset": {
+            "part_no0": "ME-4924-10GE"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1
+        }
+    }
+}

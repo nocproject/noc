@@ -1,0 +1,12 @@
+{
+    "name": "Group",
+    "uuid": "badce84e-b57a-4fe1-a386-fbbd0e1ba705",
+    "vendor__code": "NOC",
+    "description": "Group container",
+    "connections": [],
+    "data": {
+        "container": {
+            "container": true
+        }
+    }
+}

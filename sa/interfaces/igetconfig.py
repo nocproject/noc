@@ -13,4 +13,4 @@ class IGetConfig(Interface):
         "name": StringParameter(),
         "config": StringParameter()
     })) | StringParameter()
-    template = "interfaces/igetconfig.html"
+    preview = "NOC.sa.managedobject.scripts.TextPreview"

@@ -1,0 +1,27 @@
+{
+    "name": "Force10 | S | S50-01-24G-1S",
+    "uuid": "ab0afac1-6869-4b53-9dc3-ae73d96cd2b7",
+    "vendor__code": "FORCE10",
+    "description": "1-port 24 Gbps stacking module",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "i",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Force10 | S | Module"
+        },
+        {
+            "description": "Stack port 0",
+            "direction": "s",
+            "gender": "f",
+            "name": "port0",
+            "type__name": "Force10 | S | Stacking 24G"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "S50-01-24G-1S"
+        }
+    }
+}

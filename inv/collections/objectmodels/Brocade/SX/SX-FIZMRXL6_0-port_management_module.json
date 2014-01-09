@@ -1,0 +1,21 @@
+{
+    "name": "Brocade | SX | SX-FIZMRXL6 0-port management module",
+    "uuid": "f4a68d1d-f6cc-4be3-b857-de6bd573e3e4",
+    "vendor__code": "BROCADE",
+    "description": "0 port management module\n",
+    "connection_rule__name": "Brocade | SX",
+    "connections": [
+        {
+            "description": "mgmt connector",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Brocade | FastIron SuperX | Mgmt Connector"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SX-FIZMRXL6"
+        }
+    }
+}

@@ -17,12 +17,11 @@ from vrf import VRF
 from afi import AFI_CHOICES
 from noc.peer.models import AS
 from noc.vc.models.vc import VC
-from noc.main.models import Style, ResourceState, CustomField
+from noc.main.models import Style, ResourceState
 from noc.lib.fields import TagsField, CIDRField
 from noc.lib.app import site
-from noc.lib.search import SearchResult
-from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix,\
-    is_ipv4_prefix, is_ipv6_prefix, ValidationError
+from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
+                                ValidationError)
 from noc.lib.ip import IP, IPv4
 
 
@@ -387,33 +386,37 @@ class Prefix(models.Model):
             b.delete()
             return False
 
-    ##
-    ## Search engine plugin
-    ##
-    @classmethod
-    def search(cls, user, query, limit):
-        q = Q(description__icontains=query)
-        if is_ipv4_prefix(query):
-            q |= Q(afi="4", prefix=query)
-        elif is_ipv6_prefix(query):
-            q |= Q(afi="6", prefix=query)
-        cq = CustomField.table_search_Q(cls._meta.db_table, query)
-        if cq:
-            q |= cq
-        for o in cls.objects.filter(q):
-            if query == o.prefix:
-                relevancy = 1.0
-            elif query in o.description:
-                relevancy = float(len(query)) / float(len(o.description))
-            else:
-                relevancy = 0
-            yield SearchResult(
-                url=("ip:ipam:vrf_index", o.vrf.id, o.afi, o.prefix),
-                title="VRF %s (IPv%s): %s (%s)" % (
-                o.vrf.name, o.afi, o.prefix, o.description),
-                text=unicode(o),
-                relevancy=relevancy
-            )
+    def get_index(self):
+        """
+        Full-text search
+        """
+        content = [self.prefix]
+        card = "Prefix %s" % self.prefix
+        if self.description:
+            content += [self.description]
+            card += " (%s)" % self.description
+        r = {
+            "id": "ip.prefix:%s" % self.id,
+            "title": self.prefix,
+            "content": "\n".join(content),
+            "card": card
+        }
+        if self.tags:
+            r["tags"] = self.tags
+        return r
+
+    def get_search_info(self, user):
+        # @todo: Check user access
+        return (
+            "iframe",
+            None,
+            {
+                "title": "Assigned addresses",
+                "url": "/ip/ipam/%s/%s/%s/" % (
+                    self.vrf.id, self.afi, self.prefix
+                )
+            }
+        )
 
     ##
     ## All prefix-related address ranges

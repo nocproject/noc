@@ -19,6 +19,7 @@ from error import JobExists
 from job import Job
 from noc.lib.nosql import get_db
 from noc.lib.debug import error_report, get_traceback
+from noc.lib.fileutils import safe_rewrite
 
 
 class Scheduler(object):
@@ -60,6 +61,7 @@ class Scheduler(object):
         self.preserve_order = preserve_order
         self.running_lock = threading.Lock()
         self.running_count = defaultdict(int)  # Group -> Count
+        self.log_jobs = None
 
     def ensure_indexes(self):
         if self.preserve_order:
@@ -68,6 +70,8 @@ class Scheduler(object):
             k = [("ts", 1)]
         self.debug("Checking indexes: %s" % ", ".join(x[0] for x in k))
         self.collection.ensure_index(k)
+        self.debug("Checking indexes: jcls, key")
+        self.collection.ensure_index([("jcls", 1), ("key", 1)])
         self.debug("Indexes are ready")
 
     def debug(self, msg):
@@ -229,13 +233,20 @@ class Scheduler(object):
         }})
         #
         if job.map_task:
-            # Run in MRT mode
-            t = ReduceTask.create_task(
-                job.get_managed_object(),  # Managed object is in key
-                None, {},
-                job.map_task, job.get_map_task_params()
-            )
-            self.active_mrt[t] = job
+            if job.beef and job.key in job.beef:
+                # Do not run job, provide beef instead
+                self._run_job_handler(
+                    job,
+                    object=job.get_managed_object(),
+                    result=job.beef[job.key])
+            else:
+                # Run in MRT mode
+                t = ReduceTask.create_task(
+                    job.get_managed_object(),  # Managed object is in key
+                    None, {},
+                    job.map_task, job.get_map_task_params()
+                )
+                self.active_mrt[t] = job
         else:
             self._run_job_handler(job)
 
@@ -251,27 +262,36 @@ class Scheduler(object):
 
     def _job_wrapper(self, job, **kwargs):
         tb = None
+        t0 = time.time()
         try:
             r = job.handler(**kwargs)
         except Exception:
-            error_report()
+            # error_report()
+            tb = get_traceback()
+            job.error(tb)
             job.on_exception()
             s = job.S_EXCEPTION
-            tb = get_traceback()
         else:
             if r:
-                self.info("Job %s(%s) is completed successfully" % (
-                    job.name, job.get_display_key()))
+                self.info("Job %s(%s) is completed successfully (%fsec)" % (
+                    job.name, job.get_display_key(),
+                    time.time() - t0
+                ))
                 job.on_success()
                 s = job.S_SUCCESS
             else:
-                self.info("Job %s(%s) is failed" % (
-                    job.name, job.get_display_key()))
+                self.info("Job %s(%s) is failed (%fsec)" % (
+                    job.name, job.get_display_key(),
+                    time.time() - t0
+                ))
                 job.on_failure()
                 s = job.S_FAILED
         self._complete_job(job, s, tb)
 
     def _complete_job(self, job, status, tb):
+        if self.to_log_jobs:
+            path = os.path.join(self.log_jobs, job.name, str(job.key))
+            safe_rewrite(path, job.get_job_log())
         group = job.get_group()
         if group is not None:
             with self.running_lock:
@@ -418,6 +438,24 @@ class Scheduler(object):
 
     def can_run(self, job):
         return True
+
+    def get_job(self, job_class, key=None):
+        return self.collection.find_one({
+            self.ATTR_CLASS: job_class,
+            self.ATTR_KEY: key
+        })
+
+    @property
+    def to_log_jobs(self):
+        return self.log_jobs is not None
+
+    def set_job_log(self, path):
+        self.log_jobs = path
+        if self.log_jobs:
+            # Check job logs directory exists
+            if not os.path.isdir(self.log_jobs):
+                self.error("Jobs log directory does not exists: %s" % self.log_jobs)
+                self.log_jobs = None
 
 ## Avoid circular reference
 from noc.sa.models.reducetask import ReduceTask

@@ -23,7 +23,6 @@ from noc.lib.fileutils import rewrite_when_differ, read_file, is_differ, in_dir
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
 from noc.sa.models import AdministrativeDomain, ManagedObject
-from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.lib.app.site import site
 
@@ -186,9 +185,7 @@ class Object(models.Model):
 
     @classmethod
     def get_object_class(self, repo):
-        if repo == "config":
-            return Config
-        elif repo == "prefix-list":
+        if repo == "prefix-list":
             return PrefixList
         elif repo == "rpsl":
             return RPSL
@@ -317,143 +314,6 @@ class Object(models.Model):
                     )
             except UnicodeDecodeError:  # Skip unicode errors in configs
                 pass
-
-
-class Config(Object):
-    class Meta:
-        verbose_name = "Config"
-        verbose_name_plural = "Configs"
-
-    managed_object = models.OneToOneField(ManagedObject,
-                                          verbose_name="Managed Object",
-                                          unique=True)
-
-    repo_name = "config"
-
-    def _profile(self):
-        return profile_registry[self.profile_name]()
-
-    profile = property(_profile)
-
-    def has_access(self, user):
-        """
-        Check user has access to config
-        :param user:
-        :return:
-        """
-        return self.managed_object.has_access(user)
-
-    @classmethod
-    def user_objects(cls, user):
-        """
-        Get objects available to user
-
-        :param user: User
-        :type user: User instance
-        :rtype: Queryset
-        """
-        if user.is_superuser:
-            return cls.objects.all()
-        else:
-            return cls.objects.filter(
-                managed_object__in=ManagedObject.user_objects(user))
-
-    def get_notification_groups(self, immediately=False, delayed=False):
-        # @todo: Remove method
-        q = Q(type=self.repo_name)
-        if immediately:
-            q &= Q(notify_immediately=True)
-        if delayed:
-            q &= Q(notify_delayed=True)
-        q &= (
-            Q(administrative_domain__isnull=True) |
-            Q(administrative_domain=self.managed_object.administrative_domain)
-        )
-        # if self.managed_object.tags:
-        #    q &= (Q(tags__isnull=True) | Q(tags=""))
-        return set(
-            [n.notification_group for n in ObjectNotify.objects.filter(q)])
-
-    def write(self, data):
-        if isinstance(data, list):
-            # Convert list to plain text
-            r = []
-            for d in sorted(data, lambda x, y: cmp(x["name"], y["name"])):
-                r += ["==[ %s ]========================================\n%s" % (
-                d["name"], d["config"])]
-            data = "\n".join(r)
-        # Pass data through config filter, if given
-        if self.managed_object.config_filter_rule:
-            data = self.managed_object.config_filter_rule(
-                managed_object=self.managed_object, config=data)
-        # Pass data through the validation filter, if given
-        if self.managed_object.config_validation_rule:
-            warnings = self.managed_object.config_validation_rule(
-                managed_object=self.managed_object, config=data)
-            if warnings:
-                # There are some warnings. Notify responsible persons
-                self.managed_object.event(
-                    self.managed_object.EV_CONFIG_POLICY_VIOLATION,
-                    {
-                        "object": self.managed_object,
-                        "warnings": warnings
-                    }
-                )
-        # Save to the repo
-        super(Config, self).write(data)
-
-    def notification_diff(self, old_data, new_data):
-        """
-        Pass through notification diff filter
-        """
-        nf = self.managed_object.config_diff_filter_rule
-        if nf:
-            old_data = nf(managed_object=self.managed_object, config=old_data)
-            new_data = nf(managed_object=self.managed_object, config=new_data)
-            if old_data == new_data:
-                return None
-            # Calculate diff
-            return "".join(difflib.unified_diff(
-                old_data.splitlines(True),
-                new_data.splitlines(True),
-                fromfile=os.path.join("a", self.repo_path),
-                tofile=os.path.join("b", self.repo_path)
-            ))
-        return self.diff(old_data, new_data)
-
-    @property
-    def is_stale(self):
-        """
-        Check config is stale
-        """
-        if (self.managed_object.is_managed
-            and self.managed_object.is_configuration_managed):
-            now = datetime.datetime.now()
-            return self.last_pull is None or (now - self.last_pull).days >= 2
-        return False
-
-    def on_object_changed(self):
-        """
-        Temporary stub to use ObjectNotification
-        :return:
-        """
-        revs = self.revisions
-        is_new = len(revs) == 1
-        diff = None
-        if not is_new:
-            diff = self.notification_diff(revs[1], revs[0])
-            if not diff:
-                # No significant difference to notify
-                return
-        self.managed_object.event(
-            self.managed_object.EV_CONFIG_CHANGED,
-            {
-                "object": self.managed_object,
-                "is_new": is_new,
-                "config": self.data,
-                "diff": diff
-            }
-        )
 
 
 class PrefixList(Object):

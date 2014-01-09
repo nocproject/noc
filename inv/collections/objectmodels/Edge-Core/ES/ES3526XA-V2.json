@@ -1,0 +1,264 @@
+{
+    "name": "Edge-Core | ES | ES3526XA-V2",
+    "uuid": "3dfd3732-8197-4577-8410-e3d7ff7c8f59",
+    "vendor__code": "EDGECORE",
+    "description": "24 Ethernet 10/100 ports, 2 Combo Copper / SFP-based 10/100/1000 Ethernet ports",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "connections": [
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "m",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Ethernet 1/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/5 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/6 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/7 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/8 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/9 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/10 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth10",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/11 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth11",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/12 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth12",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/13 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth13",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/14 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth14",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/15 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth15",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/16 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth16",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/17 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth17",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/18 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth18",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/19 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth19",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/20 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth20",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/21 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth21",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/22 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth22",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/23 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth23",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/24 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth24",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/25 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Eth25",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 1/26 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "Eth26",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/25 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi25_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 1/26 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "name": "Gi26_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "Power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "ES3526XA-V2"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1
+        }
+    }
+}

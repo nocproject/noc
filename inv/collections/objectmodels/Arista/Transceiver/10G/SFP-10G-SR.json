@@ -1,0 +1,37 @@
+{
+    "name": "Arista | Transceiver | 10G | SFP-10G-SR",
+    "uuid": "945b77ec-1178-4741-8f0f-d9ce4ad0e2d9",
+    "vendor__code": "ARISTA",
+    "description": "10GBASE-SR 50u MMF / 300m SFP+ transceiver",
+    "connections": [
+        {
+            "description": "TX",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "RX",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-10G-SR"
+        }
+    }
+}

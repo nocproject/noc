@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Service Activation Engine Daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 from __future__ import with_statement
 import os
@@ -16,9 +15,10 @@ import threading
 import logging
 import random
 import cPickle
-import glob
 import sys
 import csv
+import itertools
+import struct
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
@@ -56,6 +56,8 @@ class SAE(Daemon):
         #
         self.mrt_log = False
         self.mrt_log_dir = None
+        #
+        self.event_seq = itertools.count()
         # Initialize daemon
         Daemon.__init__(self)
         logging.info("Running SAE")
@@ -221,12 +223,20 @@ class SAE(Daemon):
         if (self.strip_syslog_severity and "source" in data
             and data["source"] == "syslog" and "severity" in data):
             del data["severity"]
+        # Generate sequental number
+        seq = struct.pack(
+            "!II",
+            int(time.time()),
+            self.event_seq.next() & 0xFFFFFFFFL
+        )
+        # Write event
         NewEvent(
             timestamp=timestamp,
             managed_object=managed_object,
             raw_vars=data,
-            log=[]
-            ).save()
+            log=[],
+            seq=seq
+        ).save()
 
     def on_stream_close(self, stream):
         self.streams.unregister(stream)
@@ -463,9 +473,12 @@ class SAE(Daemon):
         throttled_shards = set()  # shard_id
         self.blocked_pools = set()  # Reset block status
         # Run tasks
-        for mt in MapTask.objects.filter(status="W", next_try__lte=t,
-                    managed_object__activator__shard__is_active=True,
-                    managed_object__activator__shard__name__in=self.shards).select_related():
+        for mt in MapTask.objects.filter(
+                status="W",
+                next_try__lte=t,
+                managed_object__activator__shard__is_active=True,
+                managed_object__activator__shard__name__in=self.shards
+                ).select_related().select_for_update():
             # Check for task timeouts
             if mt.task.stop_time < t:
                 mt.status = "F"

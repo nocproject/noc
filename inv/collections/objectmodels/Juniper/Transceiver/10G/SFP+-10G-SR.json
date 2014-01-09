@@ -1,0 +1,38 @@
+{
+    "name": "Juniper | Transceiver | 10G | SFP+-10G-SR",
+    "uuid": "1372bce3-e3f1-4086-8db7-ffee47795d22",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper SFP+ SR transceiver",
+    "connections": [
+        {
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "SFP+-10G-SR",
+            "part_no0": "740-021308"
+        }
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "name": "Juniper | MX | SCBE-MX-S",
+    "uuid": "2c2b8b59-e5e6-4613-a10c-9ea31b4bd24a",
+    "vendor__code": "JUNIPER",
+    "description": "MX Enhanced Switch Control Board",
+    "connections": [
+        {
+            "description": "Routing Engine slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "re",
+            "type__name": "Juniper | MX | RE"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | SCB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": "SCBE-MX-S",
+            "part_no0": "750-031391"
+        }
+    }
+}

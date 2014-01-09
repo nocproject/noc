@@ -1,0 +1,34 @@
+{
+    "name": "Force10 | S | S50-01-10GE-2C",
+    "uuid": "c4fd87c0-9fe6-4d4d-9ecb-ed2dfcfc8803",
+    "vendor__code": "FORCE10",
+    "description": "2-port 10 GbE CX4 module",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "i",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Force10 | S | Module"
+        },
+        {
+            "description": "CX4 port 0",
+            "direction": "s",
+            "gender": "f",
+            "name": "port0",
+            "type__name": "Electrical | SFF-8470"
+        },
+        {
+            "description": "CX4 port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "port1",
+            "type__name": "Electrical | SFF-8470"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "S50-01-10GE-2C"
+        }
+    }
+}

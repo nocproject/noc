@@ -1,0 +1,28 @@
+{
+    "name": "Cisco | 7600 | PWR-2700-AC",
+    "uuid": "39aa31be-5609-4a5d-beac-b70d585f30a8",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7600 AC Power Supply",
+    "connections": [
+        {
+            "description": "AC power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        },
+        {
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "PWR-2700-AC"
+        }
+    }
+}

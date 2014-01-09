@@ -1,0 +1,30 @@
+{
+    "name": "Juniper | MX | PWR-MX960-4100-AC",
+    "uuid": "336d4b77-338a-4389-82e0-edea14f68790",
+    "vendor__code": "JUNIPER",
+    "description": "4100W AC Power Supply",
+    "connections": [
+        {
+            "description": "Internal power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX960 PEM"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "PWR-MX960-4100-AC-R",
+            "order_part_no1": "PWR-MX960-4100-AC-BB",
+            "part_no0": "740-029344"
+        }
+    }
+}

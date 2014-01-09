@@ -1,0 +1,29 @@
+{
+    "name": "Arista | Transceiver | 1G | SFP-1G-T",
+    "uuid": "5bc911e4-1d42-4f90-b0a3-8f483d7d5e9f",
+    "vendor__code": "ARISTA",
+    "description": "1000Base-T",
+    "connections": [
+        {
+            "description": "1000Base-T port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-1G-T"
+        }
+    }
+}

@@ -1,0 +1,112 @@
+{
+    "name": "Juniper | MX | MX80",
+    "uuid": "105b4a26-db6b-41fe-b34c-d4ac35f2aef2",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper MX80 chassis",
+    "connection_rule__name": "Juniper | MX80",
+    "connections": [
+        {
+            "description": "MIC Slot #0",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic0",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "MIC Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic1",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0/0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0/1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0/2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0/3",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "PEM Slot #0",
+            "direction": "i",
+            "gender": "f",
+            "name": "pem0",
+            "type__name": "Juniper | MX | MX80 PEM"
+        },
+        {
+            "description": "PEM Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "pem1",
+            "type__name": "Juniper | MX | MX80 PEM"
+        },
+        {
+            "description": "Management",
+            "direction": "s",
+            "gender": "f",
+            "name": "ether",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "AUX serial port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB Port",
+            "direction": "i",
+            "gender": "f",
+            "name": "usb",
+            "protocols": [">USB1"],
+            "type__name": "Electrical | USB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "MX80"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "name": "NoName | Transceiver | 10G | SFP+ SR",
+    "uuid": "dd291a8b-2533-4972-b8a5-f0e67cac0762",
+    "vendor__code": "NONAME",
+    "description": "NoName SFP+ SR transceiver",
+    "connections": [
+        {
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {}
+}

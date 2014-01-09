@@ -49,7 +49,8 @@ class Command(BaseCommand):
         "INETField": ("string", "textfield", None),
         "MACField": ("string", "textfield", None),
         "AutoCompleteTagsField": ("auto", "tagsfield", "NOC.render.Tags"),
-        "ColorField": ("int", "numberfield", None)
+        "ColorField": ("int", "numberfield", None),
+        "TagsField": ("auto", "textfield", None)
     }
 
     # Document -> Ext type maps

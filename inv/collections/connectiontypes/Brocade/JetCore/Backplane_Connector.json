@@ -1,0 +1,7 @@
+{
+    "name": "Brocade | JetCore | Backplane Connector",
+    "uuid": "714e6a57-8b15-45a0-acc0-fb005437dfa5",
+    "description": "Backplane connector on JetCore modules/chassis",
+    "c_group": [],
+    "genders": "mf"
+}

@@ -63,6 +63,8 @@ class SubInterface(Document):
     ipv4_addresses = ListField(StringField(), default=[])
     ipv6_addresses = ListField(StringField(), default=[])
     iso_addresses = ListField(StringField(), default=[])
+    vpi = IntField(required=False)
+    vci = IntField(required=False)
     enabled_protocols = ListField(StringField(
         choices=[(x, x) for x in SUBINTERFACE_PROTOCOLS]
     ), default=[])
