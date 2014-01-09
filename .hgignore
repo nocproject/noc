@@ -26,3 +26,4 @@ atlassian-ide-plugin.xml
 ext_*
 etc/requirements/local.txt
 static/pkg/
+share/
