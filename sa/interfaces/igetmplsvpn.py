@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## IGetMPLSVPN interface
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -25,4 +25,4 @@ class IGetMPLSVPN(Interface):
         # List of interfaces
         "interfaces": ListOfParameter(element=InterfaceNameParameter())
     }))
-    template = "interfaces/igetmplsvpn.html"
+    preview = "NOC.sa.managedobject.scripts.ShowMPLSVPN"
