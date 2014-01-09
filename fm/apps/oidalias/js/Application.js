@@ -16,7 +16,7 @@ Ext.define("NOC.fm.oidalias.Application", {
         var me = this;
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/inv/modelinterface/{{id}}/json/",
+            restUrl: "/fm/oidalias/{{id}}/json/",
             previewName: "Model Interface: {{name}}"
         });
 
