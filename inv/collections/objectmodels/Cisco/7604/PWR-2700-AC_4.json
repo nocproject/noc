@@ -1,0 +1,28 @@
+{
+    "name": "Cisco | 7604 | PWR-2700-AC/4",
+    "uuid": "00b259d4-5d03-4555-83d6-26bf2b3ec407",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7604 AC Power Supply",
+    "connections": [
+        {
+            "description": "AC power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        },
+        {
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7604 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "PWR-2700-AC/4"
+        }
+    }
+}

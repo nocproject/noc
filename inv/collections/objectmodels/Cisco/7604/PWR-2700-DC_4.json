@@ -1,0 +1,59 @@
+{
+    "name": "Cisco | 7604 | PWR-2700-DC/4",
+    "uuid": "f3286404-7aa2-47cd-bc06-801d63b01225",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7604 DC Power Supply",
+    "connections": [
+        {
+            "description": "DC 1 input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "DC 1 input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "DC 2 input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "DC 2 input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Ground connection",
+            "direction": "i",
+            "gender": "m",
+            "name": "GND",
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7604 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "PWR-2700-DC/4"
+        }
+    }
+}
