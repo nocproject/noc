@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication
-from noc.gis.models import SRS
+from noc.gis.models.srs import SRS
 
 
 class SRSApplication(ExtModelApplication):
