@@ -1,0 +1,20 @@
+{
+    "name": "Cisco | SCE | SCE8000-FAN",
+    "uuid": "ecc500f1-a0f2-4904-af1d-f9e704ab1f78",
+    "vendor__code": "CISCO",
+    "description": "Cisco SCE 8000 Fan tray",
+    "connections": [
+        {
+            "description": "Fan slot 1",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | SCE | SCE8000 Fan"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SCE8000-FAN"
+        }
+    }
+}

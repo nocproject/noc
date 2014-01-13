@@ -5,6 +5,7 @@ Brocade | SX,3aefbe22-c0b6-421a-9bf7-5a4b49ff4a98,Brocade/SX.json,0a2a0f9e93018f
 Cisco | 7600,eaa17985-6b50-4cdb-8b30-bdab3f28f6f9,Cisco/7600.json,d177d5779d34e09b5356cf80a3d86d680056f48e7721c51587e32b345ebd6baf
 Cisco | ASA,dbd6557e-a3cd-496a-8f9d-1e6dfe1df492,Cisco/ASA.json,4e341867d398d64c4d75efc220ffcbfa2a6da21396f671463542decdcd80be9a
 Cisco | ASR9k,b1cea7b6-08f6-4bfd-a1b5-ce73cc8f3c56,Cisco/ASR9k.json,e2e640a3a0385515fd7b7d88fa8681ccc1ad79fb24e2a274e245c6d7cd97c357
+Cisco | SCE,8794af60-8d77-4c9d-97d5-1215abbd2602,Cisco/SCE.json,cb1375f55552b6ff171ed9b8fb60772d3013a0e50d394c34166756ce157316ae
 Ericsson | SmartEdge,a67b67ef-874a-463c-a982-ad06d241fd65,Ericsson/SmartEdge.json,3be500a14b6f906b25acf0d08a0aa5c619b43c7cfea09435f546bbf62b257dc5
 Generic | Switch SFP,15cd98dd-d9cc-4d55-b610-fc29c409421f,Generic/Switch_SFP.json,119f69e5480ce81499bf95eb4de39c7868ce9b902bad621cb013e2da886f9af3
 Generic | Switch SFP Prefixed,ae6edc55-6d07-46e6-b1e8-ab2b583a5fc9,Generic/Switch_SFP_Prefixed.json,1f0efe6781974b685841d48fc84a27a884fbf02dce776824f3ea2ee1014eee77

@@ -1,0 +1,78 @@
+{
+    "name": "Cisco | SCE | SCE8000 Chassis",
+    "uuid": "a36322b5-8649-4dea-b285-fc9bf69a734c",
+    "vendor__code": "CISCO",
+    "description": "Cisco SCE 8000 Service Control Engine",
+    "connection_rule__name": "Cisco | SCE",
+    "connections": [
+        {
+            "description": "Fan slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan1",
+            "type__name": "Cisco | SCE | SCE8000 Fan"
+        },
+        {
+            "description": "SCM slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "scm1",
+            "type__name": "Cisco | SCE | SCE8000 SCM"
+        },
+        {
+            "description": "SCM slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "scm2",
+            "type__name": "Cisco | SCE | SCE8000 SCM"
+        },
+        {
+            "description": "SIP slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "sip",
+            "type__name": "Cisco | SIP"
+        },
+        {
+            "description": "OPB slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "obp",
+            "type__name": "Cisco | SCE | SCE8000 OPB"
+        },
+        {
+            "description": "Power Supply  slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Cisco | 7604 | PSU"
+        },
+        {
+            "description": "Power Supply slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Cisco | 7604 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SCE8000"
+        },
+        "dimensions": {
+            "depth": 552,
+            "height": 222,
+            "units": 5,
+            "width": 444
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 5.0
+        },
+        "weight": {
+            "kg": "42.25"
+        }
+    }
+}
