@@ -1,0 +1,28 @@
+{
+    "name": "Cisco | SPA | SPA-1X10GE-L-V2",
+    "uuid": "d845961d-d249-4449-a436-be52ace4594d",
+    "vendor__code": "CISCO",
+    "description": "Cisco 1-Port XFP 10-GE Shared Port Adapter",
+    "connections": [
+        {
+            "description": "SPA connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | SPA"
+        },
+        {
+            "description": "XFP Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SPA-1X10GE-L-V2"
+        }
+    }
+}
