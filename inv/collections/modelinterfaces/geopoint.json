@@ -1,0 +1,49 @@
+{
+    "name": "geopoint",
+    "uuid": "18fccfab-16c0-498f-9f6c-ae034a361bcd",
+    "description": "Object to map binding",
+    "attrs": [
+        {
+            "name": "layer",
+            "type": "str",
+            "description": "Map layer code",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "srs",
+            "type": "str",
+            "description": "Spatial reference system, autority:code or LOCAL",
+            "required": true,
+            "is_const": false
+        },
+        {
+            "name": "x",
+            "type": "float",
+            "description": "x coordinate, in SRS units",
+            "required": true,
+            "is_const": false
+        },
+        {
+            "name": "y",
+            "type": "float",
+            "description": "y coordinate, in SRS units",
+            "required": true,
+            "is_const": false
+        },
+        {
+            "name": "z",
+            "type": "float",
+            "description": "Height above ellipsoid, in meters",
+            "required": false,
+            "is_const": false
+        },
+        {
+            "name": "angle",
+            "type": "float",
+            "description": "Rotation angle, in degrees",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}
