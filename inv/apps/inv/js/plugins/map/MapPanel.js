@@ -28,7 +28,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         me.zoomInButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom in",
             glyph: NOC.glyph.zoom_in,
-            //disabled: true,
+            disabled: true,
             scope: me,
             handler: me.onZoomIn
         });
@@ -36,7 +36,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         me.zoomOutButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom out",
             glyph: NOC.glyph.zoom_out,
-            //disabled: true,
+            disabled: true,
             scope: me,
             handler: me.onZoomOut
         });
@@ -142,15 +142,25 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                 me.projGeo, me.projMap),
             me.objectZoom
         );
+        me.updateZoomButtons();
     },
     //
     onZoomIn: function() {
         var me = this;
         me.olMap.zoomIn();
+        me.updateZoomButtons();
     },
     //
     onZoomOut: function() {
         var me = this;
         me.olMap.zoomOut();
+        me.updateZoomButtons();
+    },
+    //
+    updateZoomButtons: function() {
+        var me = this,
+            z = me.olMap.zoom;
+        me.zoomInButton.setDisabled(z > 16);
+        me.zoomOutButton.setDisabled(z <= 2);
     }
 });
