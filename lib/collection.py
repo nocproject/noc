@@ -320,7 +320,7 @@ class Collection(object):
             except ValueError:
                 pass
 
-    def install_item(self, data):
+    def install_item(self, data, load=False):
         o = self.doc(**self.dereference(self.doc, data))
         self.log("    ... installing %s" % unicode(o))
         if not o.uuid:
@@ -339,3 +339,6 @@ class Collection(object):
             dd,
             mode=0644
         )
+        if load:
+            # Save to database
+            self.update_item(mi)

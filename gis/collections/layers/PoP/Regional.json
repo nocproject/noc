@@ -1,0 +1,11 @@
+{
+    "name": "PoP | Regional",
+    "uuid": "3c502af3-8207-41fc-8edd-575b165c9017",
+    "description": "Regional level points of presence",
+    "code": "pop_regional",
+    "default_zoom": 6,
+    "fill_color": 10682368,
+    "max_zoom": 16,
+    "min_zoom": 5,
+    "stroke_color": 13369344
+}

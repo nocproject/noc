@@ -87,6 +87,10 @@ class Migration:
                                     "postgis_comments.sql")
             if os.path.exists(comments):
                 self.exec_file(comments)
+            legacy_gist = os.path.join(self.get_postgis_root(),
+                                       "legacy_gist.sql")
+            if os.path.exists(legacy_gist):
+                self.exec_file(legacy_gist)
         if not check_srs():
             print "Trying to install spatial_ref_sys"
             self.exec_file(os.path.join(self.get_postgis_root(),
