@@ -1,15 +1,15 @@
 {
-    "name": "Building",
-    "uuid": "9e67029a-d694-41bb-b07c-b241a18c69b9",
+    "name": "PoP | Access",
+    "uuid": "fa4c228d-b99c-48ae-b241-0ef7a2cc6ec6",
     "vendor__code": "NOC",
-    "description": "Building",
+    "description": "Access level Point of Presence.",
     "connections": [],
     "data": {
         "container": {
             "container": true
         },
         "geopoint": {
-            "layer": "addresses"
+            "layer": "pop_access"
         }
     }
 }

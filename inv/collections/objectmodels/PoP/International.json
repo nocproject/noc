@@ -1,0 +1,15 @@
+{
+    "name": "PoP | International",
+    "uuid": "9b6cb3a3-bb84-4ee2-a1a3-f872726fbf8d",
+    "vendor__code": "NOC",
+    "description": "International level Point of Presence.",
+    "connections": [],
+    "data": {
+        "container": {
+            "container": true
+        },
+        "geopoint": {
+            "layer": "pop_international"
+        }
+    }
+}

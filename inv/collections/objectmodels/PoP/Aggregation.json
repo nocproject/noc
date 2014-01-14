@@ -1,0 +1,15 @@
+{
+    "name": "PoP | Aggregation",
+    "uuid": "178f5f78-2d47-475d-9085-01a8194b3c4b",
+    "vendor__code": "NOC",
+    "description": "Aggregation level Point of Presence.",
+    "connections": [],
+    "data": {
+        "container": {
+            "container": true
+        },
+        "geopoint": {
+            "layer": "pop_aggregation"
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "name": "PoP | National",
+    "uuid": "242d2695-0be3-4be9-93b4-183a86aa252b",
+    "vendor__code": "NOC",
+    "description": "National level Point of Presence.",
+    "connections": [],
+    "data": {
+        "container": {
+            "container": true
+        },
+        "geopoint": {
+            "layer": "pop_national"
+        }
+    }
+}
