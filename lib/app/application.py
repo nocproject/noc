@@ -140,6 +140,9 @@ class Application(object):
         else:
             setattr(cls, name, value)
 
+    def set_app(self, app):
+        pass
+
     @classmethod
     def add_view(cls, name, func, url, access, url_name=None,
                  menu=None, method=None, validate=None, api=False):
