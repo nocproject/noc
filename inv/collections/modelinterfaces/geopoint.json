@@ -11,7 +11,7 @@
             "is_const": true
         },
         {
-            "name": "srs",
+            "name": "srid",
             "type": "str",
             "description": "Spatial reference system, autority:code or LOCAL",
             "required": true,

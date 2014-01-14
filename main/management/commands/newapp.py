@@ -66,7 +66,8 @@ class Command(BaseCommand):
         "DictField": "auto",
         "RawDictField": "auto",
         "ListField": "auto",
-        "ObjectIdField": "string"
+        "ObjectIdField": "string",
+        "UUIDField": "string"
     }
     # Document -> Ext type widgets
     document_ext_widget = {
@@ -81,7 +82,8 @@ class Command(BaseCommand):
         "DictField": "textfield",
         "RawDictField": "textfield",
         "ListField": "textfield",
-        "ObjectIdField": "textfield"
+        "ObjectIdField": "textfield",
+        "UUIDField": "displayfield"
     }
 
     def compact(self, s):

@@ -1,0 +1,11 @@
+{
+    "name": "PoP | Core",
+    "uuid": "1632ff88-02c4-40da-8787-20774b4ff90e",
+    "description": "Core level points of presence",
+    "code": "pop_core",
+    "default_zoom": 10,
+    "fill_color": 16737792,
+    "max_zoom": 16,
+    "min_zoom": 9,
+    "stroke_color": 16737792
+}

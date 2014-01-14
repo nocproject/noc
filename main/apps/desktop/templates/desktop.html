@@ -41,7 +41,8 @@
                 logo_width: {{setup.logo_width}},
                 logo_height: {{setup.logo_height}},
                 branding_color: "{{ setup.branding_color }}",
-                branding_background_color: "{{ setup.branding_background_color }}"
+                branding_background_color: "{{ setup.branding_background_color }}",
+                install_collection: {% if setup.install_collection %}true{% else %}false{% endif %}
             };
             NOC.templates = {};
             Ext.Loader.setConfig({

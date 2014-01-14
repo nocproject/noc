@@ -22,6 +22,7 @@ from noc.lib.nosql import PlainReferenceField
 from noc.lib.utils import deep_merge
 from noc.lib.middleware import get_user
 from noc.lib.gridvcs.manager import GridVCSField
+from noc.gis.map import map
 
 
 class Object(Document):
@@ -338,7 +339,35 @@ class Object(Document):
         """
         return list(self.iter_outer_connections())
 
+    @classmethod
+    def set_geo_point(cls, sender, document, target=None, **kwargs):
+        """
+        Update map point
+        """
+        # Check geopoint interface is supported
+        layer = document.get_data("geopoint", "layer")
+        if not layer:
+            return
+        x = document.get_data("geopoint", "x")
+        y = document.get_data("geopoint", "y")
+        srid = document.get_data("geopoint", "srid")
+        if not x or not y:
+            map.delete_point(document.id, layer)
+        else:
+            map.set_point(document.id, layer, x, y, srid=srid, label=document.name)
+
+    @classmethod
+    def delete_geo_point(cls, sender, document, target=None):
+        # Check geopoint interface is supported
+        layer = document.get_data("geopoint", "layer")
+        if not layer:
+            return
+        map.delete_point(document.id)
+
+
 signals.pre_delete.connect(Object.detach_children, sender=Object)
+signals.pre_delete.connect(Object.delete_geo_point, sender=Object)
+signals.post_save.connect(Object.set_geo_point, sender=Object)
 
 ## Avoid circular references
 from objectconnection import ObjectConnection, ObjectConnectionItem

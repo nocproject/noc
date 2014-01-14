@@ -108,7 +108,8 @@ class DesktopApplication(ExtApplication):
             "branding_background_color": config.get("customization", "branding_background_color"),
             "favicon_url": favicon_url,
             "favicon_mime": favicon_mime,
-            "debug_js": config.getboolean("main", "debug_js")
+            "debug_js": config.getboolean("main", "debug_js"),
+            "install_collection": config.getboolean("develop", "install_collection")
         }
         return self.render(request, "desktop.html", apps=apps, setup=setup,
                            theme_css=self.themes[self.default_theme]["css"])
