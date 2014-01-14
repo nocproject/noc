@@ -27,13 +27,14 @@ class ExtDocApplication(ExtApplication):
     query_fields = []  # Use all unique fields by default
     query_condition = "startswith"
     int_query_fields = []  # Integer fields for exact match
+    clean_fields = {}  # field name -> Parameter instance
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
         self.pk = "id"  # @todo: detect properly
         self.has_uuid = False
         # Prepare field converters
-        self.clean_fields = {}  # name -> Parameter
+        self.clean_fields = self.clean_fields.copy()  # name -> Parameter
         for name, f in self.model._fields.items():
             if isinstance(f, BooleanField):
                 self.clean_fields[name] = BooleanParameter()
@@ -64,6 +65,29 @@ class ExtDocApplication(ExtApplication):
             h = getattr(self, fn)
             if callable(h):
                 self.custom_fields[fn[6:]] = h
+        # Install JSON API call when necessary
+        self.json_collection = self.model._meta.get("json_collection")
+        if (self.has_uuid and
+                hasattr(self.model, "to_json") and
+                not hasattr(self, "api_to_json") and
+                not hasattr(self, "api_json")):
+            self.add_view(
+                "api_json",
+                self._api_to_json,
+                url="^(?P<id>[0-9a-f]{24})/json/$",
+                method=["GET"], access="read", api=True)
+            if self.json_collection and self.config.getboolean("develop", "install_collection"):
+                self.add_view(
+                    "api_install_json",
+                    self._api_install_json,
+                    url="^(?P<id>[0-9a-f]{24})/json/$",
+                    method=["POST"], access="create", api=True)
+
+    def get_launch_info(self, request):
+        li = super(ExtDocApplication, self).get_launch_info(request)
+        if self.json_collection:
+            li["params"]["collection"] = self.json_collection
+        return li
 
     def get_Q(self, request, query):
         """
@@ -254,3 +278,21 @@ class ExtDocApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         o.delete()
         return HttpResponse(status=self.DELETED)
+
+    def _api_to_json(self, request, id):
+        """
+        Expose JSON collection item when available
+        """
+        o = self.get_object_or_404(self.model, id=id)
+        return o.to_json()
+
+    def _api_install_json(self, request, id):
+        """
+        Expose JSON collection item when available
+        """
+        from noc.lib.collection import Collection
+        o = self.get_object_or_404(self.model, id=id)
+        dc = Collection(self.json_collection, self.model)
+        dc.install_item(o.json_data)
+        dc.save()
+        return True
