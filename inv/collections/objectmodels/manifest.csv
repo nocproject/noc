@@ -29,7 +29,7 @@ Brocade | SX | SX-FI-24HF 24 SFP Linecard1,0d2895b7-1076-411b-8104-bd5d305465e2,
 Brocade | SX | SX-FI-2XG 2SFP+ Linecard,bcc931e4-58e6-45d0-926d-850db06186f0,Brocade/SX/SX-FI-2XG_2SFP+_Linecard.json,58bc7762768d1cabb185958bd88fea52afae6235473d4453dce8cd82da3259d4
 Brocade | SX | SX-FIZMRXL6 0-port management module,f4a68d1d-f6cc-4be3-b857-de6bd573e3e4,Brocade/SX/SX-FIZMRXL6_0-port_management_module.json,6143487c88e931f5af2f4d9c6201f621d9bd3288f19ba806a7c74c2b29a7cb6c
 Brocade | TurboIron x24,17edc5e8-15cf-4e58-8cbf-fa8fba6be867,Brocade/TurboIron_x24.json,d6c824c74f7b0a957a61ad713356a3d0e1cf0dc9fc01215fa33ab755985034ef
-Building,9e67029a-d694-41bb-b07c-b241a18c69b9,Building.json,1f0ca201b098c469e3ad25369755a191f320c9ee89ecb26211dd721d74cb4998
+Building,9e67029a-d694-41bb-b07c-b241a18c69b9,Building.json,de934cf3c224e90cebff7e260e29d60719d751c4da8c68ca61813c05bb396846
 Carelink | Transceiver | 1G | CL-SFP-WDM-10-31,9fc8baef-f958-4e44-93e7-d57f2971761c,Carelink/Transceiver/1G/CL-SFP-WDM-10-31.json,d50b97f1203d28bed7dc81490957546ca522ba18ea10c3ce9c36090136fd51e9
 Carelink | Transceiver | 1G | CL-SFP-WDM-10-55,eafaf118-1378-4065-9e3b-d84966dbf713,Carelink/Transceiver/1G/CL-SFP-WDM-10-55.json,3c6e47ed9b1e54ea186e28079d5b0a44d74164f8ce61b18302bb0d6cee9df730
 Cisco | 4500 | ME-4924-10GE,b271f13b-61a6-4149-add2-775cc8d9e6e2,Cisco/4500/ME-4924-10GE.json,b25620ed8dc6361438837b11fc790daad1568f8916e2848f97617d0d8eb4190c
@@ -213,6 +213,11 @@ NoName | Transceiver | 1G | SFP ZX,f486bb38-71a8-4688-bac4-62fc9c3dd183,NoName/T
 NoName | Transceiver | Unknown SFP,2ba9fd2c-1a6e-44f9-b59b-0305f9f893ff,NoName/Transceiver/Unknown_SFP.json,84643893c6386f079be486357c08fb5414883f2daacfcd7fad4f3219d7fa3228
 NoName | Transceiver | Unknown SFP | Cisco,f52610b5-718c-4e8d-a4c1-7585588cd8c0,NoName/Transceiver/Unknown_SFP/Cisco.json,b9c8249a88efac4f378ecdca6ae177484a06db257838adfbd9ab24a11d77ac59
 Optostar | Transceiver | 1G | OP-MP413L1SN-10,57d4d724-619f-43a5-a82e-ad6fbaee468b,Optostar/Transceiver/1G/OP-MP413L1SN-10.json,ea0c342d51d52c5bec740a05f2784a320940260660cb7ef7a2858a45ba9eaf4a
+PoP | Access,fa4c228d-b99c-48ae-b241-0ef7a2cc6ec6,PoP/Access.json,1050d2b777f54cfa66a2fc7615f93cd16534bafb73d04872c893bc8aa3df8eb3
+PoP | Aggregation,178f5f78-2d47-475d-9085-01a8194b3c4b,PoP/Aggregation.json,4f9a896dc5bb339c3b3827c62987343d2157b2334af593efc267f30bcf43bdad
+PoP | Core,d3595e44-1282-4b97-a9ff-7439e667b684,PoP/Core.json,0c478f7fafde1a155a5dc942584b4a2ec51baacd24252c1b97385a924b4457f6
+PoP | International,9b6cb3a3-bb84-4ee2-a1a3-f872726fbf8d,PoP/International.json,ffd14967ec0bba78ac06a30451a43c5792cd3532be5211cb322b0b1fdce826ee
+PoP | National,242d2695-0be3-4be9-93b4-183a86aa252b,PoP/National.json,eea182b9b052b325c4abf981dc024463c8a6d10efd173d5ee39cc81287c8ae20
 Rack Row,1cf66a38-fa88-4ef9-b181-6e6a298c55cf,Rack_Row.json,0c31a7ca30958d35e929b474936643d9859144b5ed9154f31550004261a3fa68
 Room,c945e7dc-4c82-40c3-b8f9-65c62e85ed1d,Room.json,61885056aec43caad30616d71d8d17895713592977c7202cd1687435bca619de
 Root,0f1b7c90-c611-4046-9a83-b120377eb6e0,Root.json,4910992ac340ddf78eecc465816f3d5efa34c8a33fd9e21c631b4493b7bfe5e1
