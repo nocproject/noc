@@ -87,7 +87,8 @@ class ObjectModel(Document):
     meta = {
         "collection": "noc.objectmodels",
         "allow_inheritance": False,
-        "indexes": []
+        "indexes": [],
+        "json_collection": "inv.objectmodels"
     }
 
     name = StringField(unique=True)

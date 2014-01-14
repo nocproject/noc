@@ -19,6 +19,7 @@ from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
                                ModelParameter, ListOfParameter,
                                EmbeddedDocumentParameter)
 from noc.lib.validators import is_int
+from noc.lib.serialize import json_decode
 
 
 class ExtDocApplication(ExtApplication):
@@ -292,7 +293,8 @@ class ExtDocApplication(ExtApplication):
         """
         from noc.lib.collection import Collection
         o = self.get_object_or_404(self.model, id=id)
+        data = json_decode(self.to_json())
         dc = Collection(self.json_collection, self.model)
-        dc.install_item(o.json_data)
+        dc.install_item(data)
         dc.save()
         return True

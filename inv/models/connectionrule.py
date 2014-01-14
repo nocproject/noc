@@ -91,7 +91,8 @@ class ConnectionRule(Document):
     meta = {
         "collection": "noc.connectionrules",
         "allow_inheritance": False,
-        "indexes": []
+        "indexes": [],
+        "json_collection": "inv.connectionrules"
     }
 
     name = StringField(unique=True)
