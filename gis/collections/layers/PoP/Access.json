@@ -1,0 +1,11 @@
+{
+    "name": "PoP | Access",
+    "uuid": "532da5c0-70ba-49d1-b1cc-0e8bb61e4af6",
+    "description": "Access level points of presense",
+    "code": "pop_access",
+    "default_zoom": 14,
+    "fill_color": 13390336,
+    "max_zoom": 16,
+    "min_zoom": 13,
+    "stroke_color": 13390336
+}
