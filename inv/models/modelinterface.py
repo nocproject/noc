@@ -83,6 +83,7 @@ class ModelInterface(Document):
     meta = {
         "collection": "noc.modelinterfaces",
         "allow_inheritance": False,
+        "json_collection": "inv.modelinterfaces"
     }
 
     name = StringField(unique=True)
