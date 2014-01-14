@@ -1,0 +1,11 @@
+{
+    "name": "Addresses",
+    "uuid": "2effbac5-3f72-4feb-b798-613a22a86586",
+    "description": "Address objects",
+    "code": "addresses",
+    "default_zoom": 14,
+    "fill_color": 3368703,
+    "max_zoom": 16,
+    "min_zoom": 14,
+    "stroke_color": 52479
+}

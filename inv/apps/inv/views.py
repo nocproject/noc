@@ -109,6 +109,8 @@ class InvApplication(ExtApplication):
                 n["plugins"] += [self.get_plugin_data("rack")]
             if o.model.connections:
                 n["plugins"] += [self.get_plugin_data("inventory")]
+            if o.get_data("geopoint", "layer"):
+                n["plugins"] += [self.get_plugin_data("map")]
             n["plugins"] += [
                 self.get_plugin_data("data"),
                 self.get_plugin_data("comment"),
