@@ -31,7 +31,7 @@ SERVER_EMAIL = config.get("main", "server_email")
 DATABASE_ENGINE = config.get("database", "engine")
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends." + config.get("database", "engine"),
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
         "NAME": config.get("database", "name"),
         "USER": config.get("database", "user"),
         "PASSWORD": config.get("database", "password"),
