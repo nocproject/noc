@@ -17,6 +17,7 @@ class SRS(models.Model):
     class Meta:
         verbose_name = "SRS"
         verbose_name_plural = "SRS"
+        app_label = "gis"
         db_table = "spatial_ref_sys"
 
     srid = models.IntegerField(primary_key=True)
