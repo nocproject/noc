@@ -15,21 +15,35 @@ Ext.define("NOC.core.JSONPreview", {
     previewName: null,
 
     initComponent: function() {
-        var me = this;
+        var me = this,
+            tb = [],
+            collection = me.app.noc.collection;
+
+        // Close button
+        tb.push(Ext.create("Ext.button.Button", {
+            text: "Close",
+            glyph: NOC.glyph.arrow_left,
+            scope: me,
+            handler: me.onClose
+        }));
+        //
+        if(collection && NOC.settings.install_collection && NOC.hasPermission("create")) {
+            tb.push("-");
+            tb.push(
+                Ext.create("Ext.button.Button", {
+                    text: "Install",
+                    glyph: NOC.glyph.download_alt,
+                    scope: me,
+                    handler: me.onInstallJSON
+                })
+            );
+        }
 
         Ext.apply(me, {
             dockedItems: [{
                 xtype: "toolbar",
                 dock: "top",
-                items: [
-                    {
-                        itemId: "close",
-                        text: "Close",
-                        glyph: NOC.glyph.arrow_left,
-                        scope: me,
-                        handler: me.onClose
-                    }
-                ]
+                items: tb
             }],
             items: [{
                 xtype: "container",
@@ -47,6 +61,7 @@ Ext.define("NOC.core.JSONPreview", {
         var me = this,
             url = me.urlTemplate(record.data);
         me.setTitle(me.titleTemplate(record.data));
+        me.currentRecord = record;
         Ext.Ajax.request({
             url: url,
             method: "GET",
@@ -66,5 +81,27 @@ Ext.define("NOC.core.JSONPreview", {
     onClose: function() {
         var me = this;
         me.app.showForm();
+    },
+    //
+    onInstallJSON: function() {
+        var me = this;
+        Ext.Msg.show({
+            title: "Add to collections?",
+            msg: Ext.String.format("Would you like to add object to your local {0} collection?", me.app.noc.collection),
+            buttons: Ext.Msg.YESNO,
+            modal: true,
+            fn: function(button) {
+                if(button === "yes") {
+                    Ext.Ajax.request({
+                        url: me.urlTemplate(me.currentRecord.data),
+                        method: "POST",
+                        scope: me,
+                        failure: function() {
+                            NOC.error("Failed to save JSON");
+                        }
+                    });
+                }
+            }
+        });
     }
 });

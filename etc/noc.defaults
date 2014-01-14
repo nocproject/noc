@@ -328,6 +328,13 @@ keep_day_of_week   = 6
 keep_months        = 12
 keep_day_of_month  = 1
 #
+# Developers settings
+#
+[develop]
+# Enable <install collection> button
+install_collection = false
+
+#
 # PGP Settings
 #
 [pgp]
