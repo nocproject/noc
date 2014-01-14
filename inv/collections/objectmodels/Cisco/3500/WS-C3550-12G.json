@@ -1,0 +1,150 @@
+{
+    "name": "Cisco | 3500 | WS-C3550-12G",
+    "uuid": "ce28cc7f-d583-4fa9-ba47-48507bc178d3",
+    "vendor__code": "CISCO",
+    "description": "Cisco WS-C3550-12G Layer-3 ethernet switch",
+    "connection_rule__name": "Generic | Switch GBIC Prefixed",
+    "connections": [
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/1 gbic port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet 1/2 gbic port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi2_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet 1/3 gbic port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi3_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet 1/4 gbic port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi4_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet 1/5 gbic port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi5_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet 1/6 gbic port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi6_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet 1/7 gbic port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi7_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet 1/8 gbic port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi8_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet 1/9 gbic port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi9_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet 1/10 gbic port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi10_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet 1/11 copper port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi11",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/12 copper port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi12",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "airflow": {
+            "exhaust": "r",
+            "intake": "l"
+        },
+        "asset": {
+            "part_no0": "WS-C3550-12G"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2
+        }
+    }
+}
