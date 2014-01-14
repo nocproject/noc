@@ -14,6 +14,7 @@ import stat
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.lib.collection import Collection
+from noc.gis.models.layer import Layer
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.modelinterface import ModelInterface
 from noc.inv.models.connectiontype import ConnectionType
@@ -71,6 +72,8 @@ class Command(BaseCommand):
     )
 
     collections = [
+        # Gis
+        ("gis.layers", Layer),
         # Inventory
         ("inv.vendors", Vendor),
         ("inv.modelinterfaces", ModelInterface),
@@ -159,7 +162,7 @@ class Command(BaseCommand):
                 data = json_decode(read_file(f))
             except ValueError:
                 raise CommandError("Unable to parse JSON file: %s" % f)
-            dc.install_item(data)
+            dc.install_item(data, load=True)
         self.log("    ... saving manifest.csv")
         dc.save()
 
