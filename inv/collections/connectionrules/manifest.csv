@@ -7,6 +7,7 @@ Cisco | ASA,dbd6557e-a3cd-496a-8f9d-1e6dfe1df492,Cisco/ASA.json,4e341867d398d64c
 Cisco | ASR9k,b1cea7b6-08f6-4bfd-a1b5-ce73cc8f3c56,Cisco/ASR9k.json,e2e640a3a0385515fd7b7d88fa8681ccc1ad79fb24e2a274e245c6d7cd97c357
 Cisco | SCE,8794af60-8d77-4c9d-97d5-1215abbd2602,Cisco/SCE.json,cb1375f55552b6ff171ed9b8fb60772d3013a0e50d394c34166756ce157316ae
 Ericsson | SmartEdge,a67b67ef-874a-463c-a982-ad06d241fd65,Ericsson/SmartEdge.json,3be500a14b6f906b25acf0d08a0aa5c619b43c7cfea09435f546bbf62b257dc5
+Generic | Switch GBIC Prefixed,fd2a51b5-b7bb-4d16-a863-df89588cf63c,Generic/Switch_GBIC_Prefixed.json,e133274bd41a8b28201a3fddea5917c5e155aa6aedbdaed8d0bfc9f73ebfad6e
 Generic | Switch SFP,15cd98dd-d9cc-4d55-b610-fc29c409421f,Generic/Switch_SFP.json,119f69e5480ce81499bf95eb4de39c7868ce9b902bad621cb013e2da886f9af3
 Generic | Switch SFP Prefixed,ae6edc55-6d07-46e6-b1e8-ab2b583a5fc9,Generic/Switch_SFP_Prefixed.json,1f0efe6781974b685841d48fc84a27a884fbf02dce776824f3ea2ee1014eee77
 Juniper | EX2200,bc65f05e-83c1-41e8-bdfe-01c28a9a2be5,Juniper/EX2200.json,a0e829249cd3b7e482a0d69f9fc89af9e86ac303e8502e3dcfd8877160f460e2
