@@ -24,6 +24,7 @@ from noc.fm.models.oidalias import OIDAlias
 from noc.fm.models.syntaxalias import SyntaxAlias
 from noc.fm.models.mibalias import MIBAlias
 from noc.fm.models.mibpreference import MIBPreference
+from noc.fm.models.enumeration import Enumeration
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
 
@@ -85,6 +86,7 @@ class Command(BaseCommand):
         ("fm.syntaxaliases", SyntaxAlias),
         ("fm.mibaliases", MIBAlias),
         ("fm.mibpreferences", MIBPreference),
+        ("fm.enumerations", Enumeration)
     ]
 
     def log(self, msg):

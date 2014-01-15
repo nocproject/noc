@@ -1,13 +1,12 @@
-[
-    {
-        "name": "bgp_state",
-        "values": {
-            "IDLE": ["idle"],
-            "CONNECT": ["connect"],
-            "ACTIVE": ["active"],
-            "OPENSENT": ["opensent"],
-            "OPENCONFIRM": ["openconfirm"],
-            "ESTABLISHED": ["established"]
-        }
+{
+    "name": "bgp_state",
+    "uuid": "173d7028-c86b-4216-840d-0cb337ef35d5",
+    "values": {
+        "ACTIVE": ["active"],
+        "CONNECT": ["connect"],
+        "ESTABLISHED": ["established"],
+        "IDLE": ["idle"],
+        "OPENCONFIRM": ["openconfirm"],
+        "OPENSENT": ["opensent"]
     }
-]
+}
