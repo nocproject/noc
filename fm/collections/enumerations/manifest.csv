@@ -1,0 +1,4 @@
+name,uuid,path,hash
+bgp_state,173d7028-c86b-4216-840d-0cb337ef35d5,bgp_state.json,74969e2ff9e7f09b9967b61939fb14b62ddd0a2e455c9a042c6482e826aaeaef
+ospf_state,b230e50f-70ee-4c8b-9eee-dae11326d3f8,ospf_state.json,c713f5b00f0cb6a62602ce7e024afde85f088fb8da468052e4fc6266fc5d3fb9
+stp_state,2f358b97-2212-488a-b726-9f9d6227852d,stp_state.json,5bb28acfe2f8eea51f9ee082649bcfda2dd9390880739d2bbb6c2a559f74c0a6
