@@ -220,7 +220,6 @@ class Command(BaseCommand):
     collections = [
         ("fm", [
             # Fault management
-            ("alarmseverities", AlarmSeverity),
             ("alarmclasses", AlarmClass),
             ("eventclasses", EventClass),
             ("eventclassificationrules", EventClassificationRule),
