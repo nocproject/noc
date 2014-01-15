@@ -8,6 +8,7 @@
 
 ## Python modules
 import re
+from itertools import groupby
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -80,7 +81,8 @@ class Script(NOCScript):
                     number = name.split("/")[-1]
             else:
                 number = None
-            if pid in ("", "N/A", "Unspecified") or self.rx_trans.search(pid):
+            if pid in ("", "N/A", "Unspecified") or self.rx_trans.search(pid) \
+            or len(list(groupby(pid))) == 1:
                 # Non-Cisco transceivers
                 pid = self.get_transceiver_pid(descr)
                 if not pid:
