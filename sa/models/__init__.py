@@ -22,6 +22,7 @@ script_registry.register_all()
 from administrativedomain import AdministrativeDomain
 from activator import Activator
 from managedobjectprofile import ManagedObjectProfile
+from authprofile import AuthProfile
 from managedobject import ManagedObject, ManagedObjectAttribute
 from managedobjectselector import (ManagedObjectSelector,
                                    ManagedObjectSelectorByAttribute)

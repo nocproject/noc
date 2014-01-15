@@ -34,6 +34,15 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "auth_profile",
+            type: "int"
+        },
+        {
+            name: "auth_profile__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "activator",
             type: "int"
         },
