@@ -66,7 +66,8 @@ class Script(NOCScript):
         if ("Transceiver" in descr or
                 name.startswith("GigabitEthernet") or
                 name.startswith("TenGigabitEthernet") or
-                pid.startswith("X2-")):
+                pid.startswith("X2-") or
+                pid.startswith("XENPAK")):
             # Transceivers
             # Get number
             if name.startswith("Transceiver "):
@@ -74,7 +75,7 @@ class Script(NOCScript):
                 _, number = name.rsplit("/", 1)
             elif name.startswith("GigabitEthernet"):
                 number = name.split(" ", 1)[0].split("/")[-1]
-            elif name.startswith("TenGigabitEthernet"):
+            elif name.startswith("Te"):
                 if " " in name:
                     number = name.split(" ", 1)[0].split("/")[-1]
                 else:
@@ -103,7 +104,11 @@ class Script(NOCScript):
                 return "SUP", name[7:], pid
             else:
                 return "LINECARD", name[7:], pid
-        elif "-DFC" in pid or "-CFC" in pid:
+        elif pid.startswith("WS-X67") and "port" in descr:
+                return "LINECARD", name[7:], pid
+        elif pid.startswith("WS-SUP") and "Supervisor Engine" in descr:
+                return "SUP", name[7:], pid
+        elif "-DFC" in pid or "-CFC" in pid or "sub-module" in name:
             # DFC subcard
             return "DFC", None, pid
         elif name.startswith("PS "):
