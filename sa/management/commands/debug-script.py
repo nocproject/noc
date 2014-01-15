@@ -308,20 +308,21 @@ class Command(BaseCommand):
         except ManagedObject.DoesNotExist:
             raise CommandError("Object not found: %s" % obj)
         # Fill access profile
+        credentials = o.credentials
         access_profile.profile = o.profile_name
         access_profile.scheme = o.scheme
         access_profile.address = o.address
         if o.port:
             access_profile.port = o.port
-        access_profile.user = o.user
-        access_profile.password = o.password
+        access_profile.user = credentials.user
+        access_profile.password = credentials.password
         if o.super_password:
             access_profile.super_password = o.super_password
         if snmp_ro_community:
             if snmp_ro_community != "-":
                 access_profile.snmp_ro = snmp_ro_community
             elif o.snmp_ro:
-                access_profile.snmp_ro = o.snmp_ro
+                access_profile.snmp_ro = credentials.snmp_ro
         if o.remote_path:
             access_profile.path = o.remote_path
         attrs = [(a.key, a.value) for a in o.managedobjectattribute_set.all()]

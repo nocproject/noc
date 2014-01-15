@@ -20,7 +20,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.ip.vrf.LookupField",
         "NOC.main.pyrule.LookupField",
         "NOC.main.ref.profile.LookupField",
-        "NOC.main.ref.stencil.LookupField"
+        "NOC.main.ref.stencil.LookupField",
+        "NOC.sa.authprofile.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
@@ -148,6 +149,12 @@ Ext.define("NOC.sa.managedobject.Application", {
                     dataIndex: "administrative_domain",
                     renderer: NOC.render.Lookup("administrative_domain"),
                     width: 120
+                },
+                {
+                    text: "Auth Profile",
+                    dataIndex: "auth_profile",
+                    renderer: NOC.render.Lookup("auth_profile"),
+                    width: 100
                 },
                 {
                     text: "VRF",
@@ -307,6 +314,12 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 padding: 4
                             },
                             items: [
+                                {
+                                    name: "auth_profile",
+                                    xtype: "sa.authprofile.LookupField",
+                                    fieldLabel: "Auth Profile",
+                                    allowBlank: true
+                                },
                                 {
                                     name: "user",
                                     xtype: "textfield",

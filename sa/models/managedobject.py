@@ -10,6 +10,7 @@
 import os
 import re
 import difflib
+from collections import namedtuple
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -18,6 +19,7 @@ from django.db import IntegrityError
 from django.contrib.auth.models import User, Group
 ## NOC modules
 from administrativedomain import AdministrativeDomain
+from authprofile import AuthProfile
 from managedobjectprofile import ManagedObjectProfile
 from activator import Activator
 from objectstatus import ObjectStatus
@@ -35,7 +37,8 @@ from noc.settings import config
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
 CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
-
+Credentials = namedtuple("Credentials", [
+    "user", "password", "super_password", "snmp_ro", "snmp_rw"])
 
 class ManagedObject(models.Model):
     """
@@ -63,6 +66,8 @@ class ManagedObject(models.Model):
     description = models.CharField(_("Description"),
             max_length=256, null=True, blank=True)
     # Access
+    auth_profile = models.ForeignKey(
+        AuthProfile, verbose_name="Auth Profile", null=True, blank=True)
     scheme = models.IntegerField(_("Scheme"), choices=scheme_choices)
     address = models.CharField(_("Address"), max_length=64)
     port = models.IntegerField(_("Port"), blank=True, null=True)
@@ -538,6 +543,28 @@ class ManagedObject(models.Model):
         )
         # Save config
         self.config.write(data)
+
+    @property
+    def credentials(self):
+        """
+        Get effective credentials
+        """
+        if self.auth_profile:
+            return Credentials(
+                user=self.auth_profile.user,
+                password=self.auth_profile.password,
+                super_password=self.auth_profile.super_password,
+                snmp_ro=self.auth_profile.snmp_ro,
+                snmp_rw=self.auth_profile.snmp_rw
+            )
+        else:
+            return Credentials(
+                user=self.user,
+                password=self.password,
+                super_password=self.super_password,
+                snmp_ro=self.snmp_ro,
+                snmp_rw=self.snmp_rw
+            )
 
 
 class ManagedObjectAttribute(models.Model):

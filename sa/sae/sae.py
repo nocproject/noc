@@ -333,20 +333,21 @@ class SAE(Daemon):
         r.access_profile.profile = object.profile_name
         r.access_profile.scheme = object.scheme
         r.access_profile.address = object.address
+        credentials = object.credentials
         if object.port:
             r.access_profile.port = object.port
         if object.user:
-            r.access_profile.user = object.user
+            r.access_profile.user = credentials.user
         if object.password:
-            r.access_profile.password = object.password
+            r.access_profile.password = credentials.password
         if object.super_password:
-            r.access_profile.super_password = object.super_password
+            r.access_profile.super_password = credentials.super_password
         if object.remote_path:
             r.access_profile.path = object.remote_path
         if object.snmp_ro:
-            r.access_profile.snmp_ro = object.snmp_ro
+            r.access_profile.snmp_ro = credentials.snmp_ro
         if object.snmp_rw:
-            r.access_profile.snmp_rw = object.snmp_rw
+            r.access_profile.snmp_rw = credentials.snmp_rw
         attrs = [(a.key, a.value) for a in object.managedobjectattribute_set.all()]
         for k, v in attrs:
             a = r.access_profile.attrs.add()
