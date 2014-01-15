@@ -26,9 +26,6 @@ class LayerApplication(ExtDocApplication):
         "fill_color": ColorParameter()
     }
 
-    def field_is_builtin(self, o):
-        return bool(CollectionCache.objects.filter(uuid=o.uuid))
-
     def field_stroke_color(self, o):
         if o is None:
             return None

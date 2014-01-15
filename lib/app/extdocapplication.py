@@ -20,6 +20,7 @@ from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
                                EmbeddedDocumentParameter)
 from noc.lib.validators import is_int
 from noc.lib.serialize import json_decode
+from noc.main.models.collectioncache import CollectionCache
 
 
 class ExtDocApplication(ExtApplication):
@@ -60,12 +61,6 @@ class ExtDocApplication(ExtApplication):
         self.unique_fields = [
             n for n, f in self.model._fields.items() if f.unique
         ]
-        # Find field_* and populate custom fields
-        self.custom_fields = {}
-        for fn in [n for n in dir(self) if n.startswith("field_")]:
-            h = getattr(self, fn)
-            if callable(h):
-                self.custom_fields[fn[6:]] = h
         # Install JSON API call when necessary
         self.json_collection = self.model._meta.get("json_collection")
         if (self.has_uuid and
@@ -83,6 +78,14 @@ class ExtDocApplication(ExtApplication):
                     self._api_install_json,
                     url="^(?P<id>[0-9a-f]{24})/json/$",
                     method=["POST"], access="create", api=True)
+        if self.json_collection:
+            self.field_is_builtin = self._field_is_builtin
+        # Find field_* and populate custom fields
+        self.custom_fields = {}
+        for fn in [n for n in dir(self) if n.startswith("field_")]:
+            h = getattr(self, fn)
+            if callable(h):
+                self.custom_fields[fn[6:]] = h
 
     def get_launch_info(self, request):
         li = super(ExtDocApplication, self).get_launch_info(request)
@@ -298,3 +301,9 @@ class ExtDocApplication(ExtApplication):
         dc.install_item(data)
         dc.save()
         return True
+
+    def _field_is_builtin(self, o):
+        """
+        Expose is_builtin field for JSON collections
+        """
+        return bool(CollectionCache.objects.filter(uuid=o.uuid))
