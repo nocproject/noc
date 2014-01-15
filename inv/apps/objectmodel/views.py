@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## inv.objectmodel application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,8 +11,6 @@ from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.modelinterface import ModelInterface
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
-from noc.lib.prettyjson import to_json
-from noc.main.models.collectioncache import CollectionCache
 
 
 class ObjectModelApplication(ExtDocApplication):
@@ -23,9 +21,6 @@ class ObjectModelApplication(ExtDocApplication):
     menu = "Setup | Object Models"
     model = ObjectModel
     query_fields = ["name__icontains", "description__icontains"]
-
-    def field_is_builtin(self, o):
-        return bool(CollectionCache.objects.filter(uuid=o.uuid))
 
     def clean(self, data):
         if "data" in data:
@@ -38,12 +33,6 @@ class ObjectModelApplication(ExtDocApplication):
             q["name__ne"] = "Root"
             del q["is_container"]
         return super(ObjectModelApplication, self).cleaned_query(q)
-
-    @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"],
-          access="read", api=True)
-    def api_to_json(self, request, id):
-        o = self.get_object_or_404(ObjectModel, id=id)
-        return o.to_json()
 
     @view(url="^(?P<id>[0-9a-f]{24})/compatible/$", method=["GET"],
           access="read", api=True)
