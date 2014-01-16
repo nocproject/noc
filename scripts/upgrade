@@ -54,7 +54,7 @@ if [ "$ENABLED" != "yes" ]; then
     error_exit "Upgrade is disabled. Please edit etc/upgrade.conf and run $0 again"
 fi
 ## Run pre-upgrade local script
-if [ -x ./local/bin/pre-upgrade ];
+if [ -x ./local/bin/pre-upgrade ]; then
     info "Running ./local/bin/pre-upgrade"
     ./local/bin/pre-upgrade
 fi
@@ -208,7 +208,7 @@ else
     su $NOC_USER -c "./scripts/upgrade-user"
 fi
 ## Run post-upgrade local script
-if [ -x ./local/bin/ost-upgrade ];
+if [ -x ./local/bin/ost-upgrade ]; then
     info "Running ./local/bin/post-upgrade"
     ./local/bin/post-upgrade
 fi
