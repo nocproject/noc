@@ -11,7 +11,7 @@ from whoosh.qparser import QueryParser
 from whoosh.index import open_dir
 ## NOC modules
 from noc.lib.app import ExtApplication, view
-from noc.sa.interfaces.base import StringParameter
+from noc.sa.interfaces.base import UnicodeParameter
 from noc.main.models import fts_models
 
 
@@ -26,7 +26,7 @@ class SearchApplication(ExtApplication):
 
     @view(url="^$", method=["POST"], access="launch", api=True,
           validate={
-              "query": StringParameter()
+              "query": UnicodeParameter()
           })
     def api_search(self, request, query):
         user = request.user
