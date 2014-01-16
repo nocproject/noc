@@ -18,6 +18,13 @@
             "is_const": false
         },
         {
+            "name": "zoom",
+            "type": "int",
+            "description": "Default zoom level (override layer's default)",
+            "required": false,
+            "is_const": false
+        },
+        {
             "name": "x",
             "type": "float",
             "description": "x coordinate, in SRS units",
