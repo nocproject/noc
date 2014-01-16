@@ -208,7 +208,7 @@ else
     su $NOC_USER -c "./scripts/upgrade-user"
 fi
 ## Run post-upgrade local script
-if [ -x ./local/bin/ost-upgrade ]; then
+if [ -x ./local/bin/post-upgrade ]; then
     info "Running ./local/bin/post-upgrade"
     ./local/bin/post-upgrade
 fi
