@@ -104,7 +104,12 @@ class Command(BaseCommand):
             return self.handle_upgrade(args)
         elif options["cmd"] == "install":
             if len(args) < 2:
-                raise CommandError("Usage: <collection> <file1> .. <fileN>")
+                parts = args[0].split(os.path.sep)
+                if parts[1] != "collections":
+                    raise CommandError("Usage: <collection> <file1> .. <fileN>")
+                # Generate collection name from path
+                name = "%s.%s" % (parts[0], parts[2])
+                args = [name] + list(args)
             return self.handle_install(args[0], args[1:])
         elif options["cmd"] == "remove":
             return self.handle_remove(args[0])
