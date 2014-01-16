@@ -104,7 +104,7 @@ Cisco | Transceiver | 1G | GLC-LH-SM,e848a84b-0e8a-4184-930f-baf93ebfd4f7,Cisco/
 Cisco | Transceiver | 1G | GLC-LH-SMD,1724b01e-e07c-47ad-a4e7-5dce23000251,Cisco/Transceiver/1G/GLC-LH-SMD.json,d400275b8792a7b27b7b3a6a906d44e184d73075e5ba745c2f20e058930be008
 Cisco | Transceiver | 1G | GLC-T,37b32d6b-90b5-4f69-ba1d-efecf3525565,Cisco/Transceiver/1G/GLC-T.json,f41f5d05dd4d8f324481acdbeb247812265ce2497ac9b81cfab87407fa22a109
 Cisco | Transceiver | 1G | SFP-GE-L,aa50f7d4-fb20-42d8-bdc6-e5c036d98e40,Cisco/Transceiver/1G/SFP-GE-L.json,1db6753339e4afd0001484a6edf6a552e2a66ce1996bc97ed876124d0b4723be
-City,f75b9b29-702e-4525-b748-498aca1c8739,City.json,7b8057ac6d3b38751ef9ee78e7e89cde3bd32e1ea1032a3adbe0d4fab3f88c19
+City,f75b9b29-702e-4525-b748-498aca1c8739,City.json,93c9f92d0d04e940c6921cc7cb52b911ea2ac782483f47845ef962c18b01a7f1
 Country,cf775661-9287-4f5a-ae13-86693c1a2a79,Country.json,e15469e7d3bf069d3ae07fde467f981ecda8d597a09ee602dbd962d4f06fda5e
 Edge-Core | ES | ES3510,e4935dff-8f94-407b-a1d3-419ec5027565,Edge-Core/ES/ES3510.json,71d5d7f0b663d6a6e5846a992af8ebbfda69d8aa5ae6a806575f9d2cbfbb5d62
 Edge-Core | ES | ES3510MA,28f3c0d8-9cb8-4a78-a533-f40500002144,Edge-Core/ES/ES3510MA.json,17c12f3472c234facef5d3bef344b1d5d243f3be698da2b32f88d17b1e177151
