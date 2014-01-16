@@ -43,6 +43,39 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
     initComponent: function() {
         var me = this;
+        // Base Layers
+        me.requireGoogleAPI = false;
+        me.baseLayers = [];
+
+        if(NOC.settings.gis.base.enable_osm) {
+            // OpenStreetMap layer
+            me.baseLayers.push({
+                text: "OpenStreetMap",
+                layerType: "osm",
+                scope: me,
+                handler: me.onSelectBaseLayer
+            });
+        }
+        if(NOC.settings.gis.base.enable_google_sat) {
+            // Google sattelite layer
+            me.baseLayers.push({
+                text: "Google Sattelite",
+                layerType: "google_sat",
+                scope: me,
+                handler: me.onSelectBaseLayer
+            });
+            me.requireGoogleAPI = true;
+        }
+        if(NOC.settings.gis.base.enable_google_roadmap) {
+            // Google roadmap layer
+            me.baseLayers.push({
+                text: "Google Roadmap",
+                layerType: "google_roadmap",
+                scope: me,
+                handler: me.onSelectBaseLayer
+            });
+            me.requireGoogleAPI = true;
+        }
         //
         me.centerButton = Ext.create("Ext.button.Button", {
             tooltip: "Center to object",
@@ -82,6 +115,14 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             }
         });
 
+        me.baseLayerButton = Ext.create("Ext.button.Button", {
+            tooltip: "Select base layer",
+            text: me.baseLayers[0].text,
+            menu: {
+                items: me.baseLayers
+            }
+        });
+
         // Map panel
         Ext.apply(me, {
             dockedItems: [{
@@ -91,7 +132,9 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                     me.centerButton,
                     me.zoomInButton,
                     me.zoomOutButton,
-                    me.zoomLevelButton
+                    me.zoomLevelButton,
+                    "->",
+                    me.baseLayerButton
                 ]
             }],
             items: [
@@ -130,6 +173,30 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                 }),
                 new OpenLayers.Control.Graticule({visible: false})
             ]
+        });
+        // Create base layers
+        Ext.each(me.baseLayers, function(v) {
+            switch(v.layerType) {
+                case "osm":
+                    me.olMap.addLayer(new OpenLayers.Layer.OSM(v.text));
+                    break;
+                case "google_sat":
+                    me.olMap.addLayer(
+                        new OpenLayers.Layer.Google(v.text, {
+                            type: "satellite"
+                        })
+                    );
+                    break;
+                case "google_roadmap":
+                    me.olMap.addLayer(
+                        new OpenLayers.Layer.Google(v.text, {
+                            type: "roadmap"
+                        })
+                    );
+                    break;
+                default:
+                    console.log("Invalid base layer " + v.layerType);
+            }
         });
         // Create OSM layer
         me.olMap.addLayer(
@@ -171,6 +238,9 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             urls = [];
         me.currentId = data.id;
         urls.push("/static/pkg/openlayers/OpenLayers.js");
+        if(me.requireGoogleAPI) {
+            urls.push("@http://maps.google.com/maps/api/js?sensor=false&callback=_noc_load_callback");
+        }
         load_scripts(urls, me, function() {
             me.createMap(data.zoom, data.x, data.y, data.layers);
         });
@@ -210,5 +280,11 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         var me = this;
         me.olMap.zoomTo(item.zoomLevel);
         me.updateZoomButtons();
+    },
+    //
+    onSelectBaseLayer: function(item, e) {
+        var me = this;
+        me.baseLayerButton.setText(item.text);
+        me.olMap.setBaseLayer(me.olMap.getLayersByName(item.text)[0]);
     }
 });
