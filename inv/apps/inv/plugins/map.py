@@ -38,7 +38,10 @@ class MapPlugin(InvPlugin):
         ]
         return {
             "id": str(o.id),
-            "zoom": map.get_default_zoom(o.get_data("geopoint", "layer")),
+            "zoom": map.get_default_zoom(
+                o.get_data("geopoint", "layer"),
+                object=o
+            ),
             "x": o.get_data("geopoint", "x"),
             "y": o.get_data("geopoint", "y"),
             "layers": layers

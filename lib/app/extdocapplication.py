@@ -296,7 +296,7 @@ class ExtDocApplication(ExtApplication):
         """
         from noc.lib.collection import Collection
         o = self.get_object_or_404(self.model, id=id)
-        data = json_decode(self.to_json())
+        data = json_decode(o.to_json())
         dc = Collection(self.json_collection, self.model)
         dc.install_item(data)
         dc.save()

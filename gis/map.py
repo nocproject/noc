@@ -76,10 +76,15 @@ class Map(object):
         else:
             return int(srid)
 
-    def get_default_zoom(self, layer):
+    def get_default_zoom(self, layer, object=None):
         layer = Layer.objects.filter(code=layer).first()
-        if layer:
-            return layer.default_zoom
+        if not layer:
+            return None
+        if object is not None:
+            zl = object.get_data("geopoint", "zoom")
+            if zl:
+                return zl
+        return layer.default_zoom
 
     def get_layer_objects(self, layer, x0, y0, x1, y1, srid):
         """
