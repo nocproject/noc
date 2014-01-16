@@ -14,6 +14,32 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     closable: false,
     layout: "fit",
     autoScroll: true,
+    minZoomLevel: 0,
+    maxZoomLevel: 19,
+    // Zoom levels according to
+    // http://wiki.openstreetmap.org/wiki/Zoom_levels
+    zoomLevels: [
+        "1:500 000 000",
+        "1:250 000 000 (Whole world)",
+        "1:150 000 000",
+        "1:70 000 000",
+        "1:35 000 000",
+        "1:15 000 000",
+        "1:10 000 000",
+        "1:4 000 000 (Region)",
+        "1:2 000 000",
+        "1:1 000 000",
+        "1:500 000",
+        "1:250 000 (Large city)",
+        "1:150 000",
+        "1:70 000",
+        "1:35 000",
+        "1:15 000 (Block)",
+        "1:8 000",
+        "1:4 000 (Building)",
+        "1:2 000",
+        "1:1 000"
+    ],
 
     initComponent: function() {
         var me = this;
@@ -41,6 +67,21 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             handler: me.onZoomOut
         });
 
+        me.zoomLevelButton = Ext.create("Ext.button.Button", {
+            tooltip: "Zoom to level",
+            text: "1:100 000",
+            menu: {
+                items: me.zoomLevels.map(function(z, index) {
+                    return {
+                        text: z,
+                        zoomLevel: index,
+                        scope: me,
+                        handler: me.onZoomLevel
+                    }
+                })
+            }
+        });
+
         // Map panel
         Ext.apply(me, {
             dockedItems: [{
@@ -49,7 +90,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                 items: [
                     me.centerButton,
                     me.zoomInButton,
-                    me.zoomOutButton
+                    me.zoomOutButton,
+                    me.zoomLevelButton
                 ]
             }],
             items: [
@@ -129,7 +171,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             urls = [];
         me.currentId = data.id;
         urls.push("/static/pkg/openlayers/OpenLayers.js");
-        console.log(">>>", data);
         load_scripts(urls, me, function() {
             me.createMap(data.zoom, data.x, data.y, data.layers);
         });
@@ -160,7 +201,14 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     updateZoomButtons: function() {
         var me = this,
             z = me.olMap.zoom;
-        me.zoomInButton.setDisabled(z > 16);
-        me.zoomOutButton.setDisabled(z <= 2);
+        me.zoomInButton.setDisabled(z >= me.maxZoomLevel);
+        me.zoomOutButton.setDisabled(z <= me.minZoomLevel);
+        me.zoomLevelButton.setText(me.zoomLevels[z]);
+    },
+    //
+    onZoomLevel: function(item, e) {
+        var me = this;
+        me.olMap.zoomTo(item.zoomLevel);
+        me.updateZoomButtons();
     }
 });
