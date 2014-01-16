@@ -1,0 +1,11 @@
+{
+    "name": "Cities",
+    "uuid": "498821e6-c34d-4828-94b0-482555929596",
+    "description": "Cities",
+    "code": "cities",
+    "default_zoom": 14,
+    "fill_color": 3381606,
+    "max_zoom": 14,
+    "min_zoom": 4,
+    "stroke_color": 10079232
+}
