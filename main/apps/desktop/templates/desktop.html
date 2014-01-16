@@ -42,7 +42,14 @@
                 logo_height: {{setup.logo_height}},
                 branding_color: "{{ setup.branding_color }}",
                 branding_background_color: "{{ setup.branding_background_color }}",
-                install_collection: {% if setup.install_collection %}true{% else %}false{% endif %}
+                install_collection: {% if setup.install_collection %}true{% else %}false{% endif %},
+                gis: {
+                    base: {
+                        "enable_osm": {% if setup.enable_gis_base_osm %}true{% else %}false{% endif %},
+                        "enable_google_sat": {% if setup.enable_gis_base_google_sat %}true{% else %}false{% endif %},
+                        "enable_google_roadmap": {% if setup.enable_gis_base_google_roadmap %}true{% else %}false{% endif %}
+                    }
+                }
             };
             NOC.templates = {};
             Ext.Loader.setConfig({

@@ -351,22 +351,13 @@ active_window = 86400
 # GIS Settings
 #
 [gis]
-# Minimal zoom level
-min_zoom_level = 0
-# Maximal zoom level
-max_zoom_level = 18
-# Render additional N tiles around area
-tilecache_padding = 0
-# Enable XYZ access to tile maps
-enable_xyz_maps = true
-# Enable TMS access to tile maps
-enable_tms_maps = true
-# Enable OpenStreetMap external tile maps
-enable_osm_maps = true
-# Enable Google Roadmap external maps
-enable_google_roadmap_maps = false
-# Enable Google Sattelite external maps
-enable_google_satellite_maps = false
+# Enable OpenStreetMap base layer
+enable_osm = true
+# Enable Google Sattelite base layer
+enable_google_sat = false
+# Eanble Google Roadmap base layer
+enable_google_roadmap = false
+
 #
 # Proxy settings
 #

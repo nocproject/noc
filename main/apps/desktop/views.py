@@ -109,7 +109,10 @@ class DesktopApplication(ExtApplication):
             "favicon_url": favicon_url,
             "favicon_mime": favicon_mime,
             "debug_js": config.getboolean("main", "debug_js"),
-            "install_collection": config.getboolean("develop", "install_collection")
+            "install_collection": config.getboolean("develop", "install_collection"),
+            "enable_gis_base_osm": config.getboolean("gis", "enable_osm"),
+            "enable_gis_base_google_sat": config.getboolean("gis", "enable_google_sat"),
+            "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap")
         }
         return self.render(request, "desktop.html", apps=apps, setup=setup,
                            theme_css=self.themes[self.default_theme]["css"])
