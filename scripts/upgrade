@@ -53,6 +53,11 @@ PROGNAME=`basename $0`
 if [ "$ENABLED" != "yes" ]; then
     error_exit "Upgrade is disabled. Please edit etc/upgrade.conf and run $0 again"
 fi
+## Run pre-upgrade local script
+if [ -x ./local/bin/pre-upgrade ];
+    info "Running ./local/bin/pre-upgrade"
+    ./local/bin/pre-upgrade
+fi
 ## Determine NOC user
 if [ -z "$NOC_USER" ]; then
     NOC_USER=`id -n -u`
@@ -201,6 +206,11 @@ if [ "$NOC_USER" = `id -n -u` ]; then
     ./scripts/upgrade-user
 else
     su $NOC_USER -c "./scripts/upgrade-user"
+fi
+## Run post-upgrade local script
+if [ -x ./local/bin/ost-upgrade ];
+    info "Running ./local/bin/post-upgrade"
+    ./local/bin/post-upgrade
 fi
 # Done
 info "$PROGNAME complete"
