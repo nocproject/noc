@@ -3,7 +3,7 @@
 ## Vendor: Qtech
 ## OS:     QSW
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -20,7 +20,11 @@ class Profile(NOCProfile):
     pattern_more = [
         (r"^\.\.\.\.press ENTER to next line, CTRL_C to break, other key to next page\.\.\.\.", "\n"),
         (r"^Startup config in flash will be updated, are you sure\(y/n\)\? \[n\]", "y"),
-        (r"^ --More-- $", " ")
+        (r"^ --More-- $", " "),
+        (r"^Confirm to overwrite current startup-config configuration","\ny\n"),
+        (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
+        (r"^Begin to receive file, please wait", " "),
+        (r"#####"," ")
         ]
     pattern_unpriveleged_prompt = r"^\S+>"
     pattern_syntax_error = r"% (Unrecognized command, and error|Invalid input) detected at '\^' marker.|% Ambiguous command:"
