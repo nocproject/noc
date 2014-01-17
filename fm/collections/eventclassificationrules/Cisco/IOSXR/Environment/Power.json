@@ -1,8 +1,8 @@
 [
     {
-        "name": "Cisco | IOSXR | Environment | DC Voltage Out of Range (SYSLOG)",
+        "name": "Cisco | IOSXR | Environment | Chassis Voltage Out of Range (SYSLOG)",
         "description": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM : Voltage sensor alarm slot 0/RSP1/CPU0, sensor VP1P2_SERDES_PLL_DAO measured 2499 mV and out of operational range 1165 - 1235 mV",
-        "event_class__name": "Environment | DC Voltage Out of Range",
+        "event_class__name": "Environment | Chassis Voltage Out of Range",
         "preference": 1000,
         "patterns": [
             {
@@ -21,9 +21,9 @@
     },
 
     {
-        "name": "Cisco | IOSXR | Environment | DC Voltage Returned to Normal Range (SYSLOG)",
+        "name": "Cisco | IOSXR | Environment | Chassis Voltage Returned to Normal Range (SYSLOG)",
         "description": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM_CLEAR : Voltage sensor alarm cleared slot 0/RSP1/CPU0, sensor VP1P2_SERDES_PLL_DAO measured 1200 mV and returned to operational range",
-        "event_class__name": "Environment | DC Voltage Returned to Normal Range",
+        "event_class__name": "Environment | Chassis Voltage Returned to Normal Range",
         "preference": 1000,
         "patterns": [
             {
