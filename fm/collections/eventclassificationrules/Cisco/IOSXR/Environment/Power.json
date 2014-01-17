@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM : Voltage sensor alarm (?P<name>slot \\S+, sensor\\S+) measured (?P<measure>\\d+ mV) and out of operational range (?P<min>\\d+) - (?P<max>\\d+ mV)"
+                "value_re": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM : Voltage sensor alarm (?P<name>slot \\S+, sensor \\S+) measured (?P<measure>\\d+ mV) and out of operational range (?P<min>\\d+) - (?P<max>\\d+ mV)"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM_CLEAR : Voltage sensor alarm cleared (?P<name>slot \\S+, sensor\\S+) measured (?P<measure>\\d+ mV) and returned to operational range"
+                "value_re": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM_CLEAR : Voltage sensor alarm cleared (?P<name>slot \\S+, sensor \\S+) measured (?P<measure>\\d+ mV) and returned to operational range"
             }
         ]
     }
