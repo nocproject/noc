@@ -1,6 +1,6 @@
 [
     {
-        "name": "Cisco | IOSXR | Unknown | Ignore PLATFORM-ENVMON-2-ENV_CONDITION (SYSLOG)",
+        "name": "Cisco | IOSXR | Unknown | Ignore PLATFORM-ENVMON-2-ENV_CONDITION #1 (SYSLOG)",
         "description": "%PLATFORM-ENVMON-2-ENV_CONDITION : An environmental condition on slot 19 exists",
         "event_class__name": "Unknown | Ignore",
         "preference": 1000,
@@ -16,6 +16,27 @@
             {
                 "key_re": "^message$",
                 "value_re": "%PLATFORM-ENVMON-2-ENV_CONDITION : An environmental condition on .+ (?:exists|is cleared)"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOSXR | Unknown | Ignore PLATFORM-ENVMON-2-ENV_CONDITION #2 (SYSLOG)",
+        "description": "%PLATFORM-ENVMON-2-ENV_CONDITION : Outstanding environmental condition exists in the chassis",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOSXR$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PLATFORM-ENVMON-2-ENV_CONDITION : Outstanding environmental condition (?:exists|cleared) in the chassis"
             }
         ]
     }
