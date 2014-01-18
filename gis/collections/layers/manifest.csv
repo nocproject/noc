@@ -1,2 +1,9 @@
 name,uuid,path,hash
+Addresses,2effbac5-3f72-4feb-b798-613a22a86586,Addresses.json,6ee2cc39d87f35dcd4075d4bc4f0805fdada183d5a902dfa3fce1cb21e32b8eb
 Cities,498821e6-c34d-4828-94b0-482555929596,Cities.json,0d3d2dcb448499671cd23b5400a7423ead24e8ce00f7e929733672d2cf547b6a
+PoP | Access,532da5c0-70ba-49d1-b1cc-0e8bb61e4af6,PoP/Access.json,9a4f625cbd0120801549df01a1a9a99a0d0d4be5d6a535a691891523cfadd096
+PoP | Aggregation,65b65bd9-bb6b-450f-94a9-edcb8ae1d372,PoP/Aggregation.json,873952dc6719d71f474acf4675dce4d4c97b08197e35acc063583ba0398fc7e1
+PoP | Core,1632ff88-02c4-40da-8787-20774b4ff90e,PoP/Core.json,6e57b945d40093f45d1d906a9e0ce6fd49c330ae11083161a6935fa1935615ae
+PoP | International,265c6560-3f46-4250-848b-e5465491dce4,PoP/International.json,20b359d68f01739141a2c590101e01e2c262f1e77ec5a4f5b7bdab4d8469fb31
+PoP | National,0b728824-2159-4fae-8419-f9b94e93c9d8,PoP/National.json,a82cb2cdc85ccf14e9217e25576b547ca98df55b168b1af8c64a22a3d837e4f4
+PoP | Regional,3c502af3-8207-41fc-8edd-575b165c9017,PoP/Regional.json,d2f54db5aed474eb50751a70394fd547ac4e7b766e6dedd42882a39ea953a348
