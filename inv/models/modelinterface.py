@@ -63,7 +63,10 @@ class ModelInterfaceAttr(EmbeddedDocument):
         return int(value)
 
     def clean_float(self, value):
-        return float(value.replace(",", "."))
+        if isinstance(value, basestring):
+            return float(value.replace(",", "."))
+        else:
+            return float(value)
 
     def clean_bool(self, value):
         value = value.lower()
