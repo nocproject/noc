@@ -298,6 +298,7 @@ class ExtDocApplication(ExtApplication):
         o = self.get_object_or_404(self.model, id=id)
         data = json_decode(o.to_json())
         dc = Collection(self.json_collection, self.model)
+        dc.load()
         dc.install_item(data)
         dc.save()
         return True
