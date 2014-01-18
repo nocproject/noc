@@ -79,7 +79,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         //
         me.centerButton = Ext.create("Ext.button.Button", {
             tooltip: "Center to object",
-            glyph: NOC.glyph.map_marker,
+            glyph: NOC.glyph.location_arrow,
             scope: me,
             handler: me.centerToObject
         });
@@ -115,6 +115,14 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             }
         });
 
+        me.setPositionButton = Ext.create("Ext.button.Button", {
+            tooltip: "Set position",
+            glyph: NOC.glyph.map_marker,
+            enableToggle: true,
+            scope: me,
+            handler: me.onSetPosition
+        });
+
         me.baseLayerButton = Ext.create("Ext.button.Button", {
             tooltip: "Select base layer",
             text: me.baseLayers[0].text,
@@ -133,6 +141,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                     me.zoomInButton,
                     me.zoomOutButton,
                     me.zoomLevelButton,
+                    "-",
+                    me.setPositionButton,
                     "->",
                     me.baseLayerButton
                 ]
@@ -149,7 +159,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     },
     //
     //
-    createMap: function(zoom, x, y, layers) {
+    createMap: function(zoom, x, y, objectLayer, layers) {
         var me = this,
             mapDiv = "ol-map-" + me.id;
 
@@ -159,6 +169,15 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
         me.projGeo = new OpenLayers.Projection("EPSG:4326");
         me.projMap = new OpenLayers.Projection("EPSG:900913");
+        //
+        me.graticuleControl = new OpenLayers.Control.Graticule({
+            visible: false
+        });
+        //
+        me.setPositionControl = new OpenLayers.Control.Click({
+            scope: me,
+            fn: me.onSetPositionClick
+        });
         // Create OpenLayers map
         me.olMap = new OpenLayers.Map(mapDiv, {
             projection: me.projMap,
@@ -171,7 +190,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                 new OpenLayers.Control.MousePosition({
                     displayProjection: me.projGeo
                 }),
-                new OpenLayers.Control.Graticule({visible: false})
+                me.graticuleControl,
+                me.setPositionControl
             ]
         });
         // Create base layers
@@ -205,6 +225,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         // Center map
         me.centerToObject();
         // Create vector layers
+        me.objectLayer = null;
         for(var i in layers) {
             var ld = layers[i],
                 layer = new OpenLayers.Layer.Vector(ld.name, {
@@ -230,6 +251,9 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                     })
                 });
             me.olMap.addLayer(layer);
+            if(ld.code == objectLayer) {
+                me.objectLayer = layer;
+            }
         }
     },
     //
@@ -241,8 +265,9 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         if(me.requireGoogleAPI) {
             urls.push("@http://maps.google.com/maps/api/js?sensor=false&callback=_noc_load_callback");
         }
+        urls.push("/static/js/noc/OpenLayers.js");
         load_scripts(urls, me, function() {
-            me.createMap(data.zoom, data.x, data.y, data.layers);
+            me.createMap(data.zoom, data.x, data.y, data.layer, data.layers);
         });
     },
     //
@@ -286,5 +311,37 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         var me = this;
         me.baseLayerButton.setText(item.text);
         me.olMap.setBaseLayer(me.olMap.getLayersByName(item.text)[0]);
+    },
+    //
+    onSetPosition: function() {
+        var me = this;
+        me.setPositionControl.activate();
+    },
+    //
+    onSetPositionClick: function(e) {
+        var me = this,
+            mc = me.olMap.getLonLatFromPixel(e.xy);
+        me.setPositionControl.deactivate();
+        mc.transform(me.projMap, me.projGeo);
+        Ext.Ajax.request({
+            url: "/inv/inv/" + me.currentId + "/plugin/map/set_geopoint/",
+            method: "POST",
+            jsonData: {
+                srid: me.projGeo.projCode,
+                x: mc.lon,
+                y: mc.lat
+            },
+            scope: me,
+            success: function() {
+                me.setPositionButton.toggle(false);
+                me.objectLayer.loaded = false;
+                me.objectLayer.setVisibility(true);
+                me.objectLayer.refresh({force: true});
+            },
+            failure: function(response) {
+                NOC.error("Failed to set position");
+                me.setPositionButton.toggle(false);
+            }
+        });
     }
 });
