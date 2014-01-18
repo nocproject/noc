@@ -1,0 +1,61 @@
+#!./bin/python
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## ./scripts/apply-patches
+## Apply local patches
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+from distutils.sysconfig import get_python_lib
+import hashlib
+import shutil
+import py_compile
+## Third-party packages
+from pip.util import get_installed_distributions
+
+
+PATCHES_ROOT = "patches"
+SITE_PACKAGES = get_python_lib()
+
+def scan_packages():
+    """
+    Scan installed packages and run apply_patches
+    """
+    for d in get_installed_distributions():
+        p_root = os.path.join(PATCHES_ROOT, d.project_name, d.version)
+        if os.path.isdir(p_root):
+            apply_patches(project=d.project_name, version=d.version)
+
+
+def apply_patches(project, version):
+    print "Patching %s %s" % (project, version)
+    patch_root = os.path.join(PATCHES_ROOT, project, version)
+    for root, dirnames, files in os.walk(patch_root):
+        for f in files:
+            rpath = root.split(os.sep)[3:]
+            patch = os.path.join(root, f)
+            t_root = os.sep.join([SITE_PACKAGES] + rpath)
+            target = os.path.join(t_root, f)
+            # Check file needs patching
+            if not os.path.exists(target):
+                print "   WARNING: File does not exists", target
+                continue
+            if file_hash(patch) != file_hash(target):
+                # Apply patch
+                print "   patching", target
+                shutil.copyfile(patch, target)
+                if target.endswith(".py"):
+                    py_compile.compile(target)
+
+
+def file_hash(path):
+    with open(path) as f:
+        return hashlib.sha1(f.read()).hexdigest()
+
+
+if __name__ == "__main__":
+    scan_packages()
