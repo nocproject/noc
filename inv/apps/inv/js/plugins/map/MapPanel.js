@@ -228,6 +228,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         me.centerToObject();
         // Create vector layers
         me.objectLayer = null;
+        me.layerZoom = []; // [<layer>, <min zoom>, <max zoom>]
         for(var i in layers) {
             var ld = layers[i],
                 layer = new OpenLayers.Layer.Vector(ld.name, {
@@ -256,7 +257,18 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             if(ld.code == objectLayer) {
                 me.objectLayer = layer;
             }
+            // Set up zoom levels
+            me.layerZoom.push({
+                layer: layer,
+                minZoom: ld.min_zoom,
+                maxZoom: ld.max_zoom
+            });
         }
+        //
+        me.olMap.events.on({
+            zoomend: Ext.bind(me.setLayerVisibility, me)
+        });
+        me.setLayerVisibility();
     },
     //
     preview: function(data) {
@@ -347,5 +359,14 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         } else {
             me.setPositionControl.deactivate();
         }
+    },
+    // Adjust vector layers visibility
+    setLayerVisibility: function() {
+        var me = this,
+            zoom = me.olMap.getZoom();
+        Ext.each(me.layerZoom, function(l) {
+            l.layer.setVisibility((zoom >= l.minZoom) && (zoom <= l.maxZoom));
+            console.log("setVisibility", l.layer.name, (zoom >= l.minZoom) && (zoom <= l.maxZoom));
+        });
     }
 });
