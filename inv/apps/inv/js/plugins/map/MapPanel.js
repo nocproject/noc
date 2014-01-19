@@ -250,6 +250,11 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                             labelXOffset: 7,
                             labelOutlineColor: "white",
                             labelOutlineWidth: 3
+                        },
+                        select: {
+                            labelAlign: "lb",
+                            labelOutlineColor: "#FFFFCC",
+                            strokeColor: "yellow"
                         }
                     })
                 });
@@ -266,7 +271,10 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         }
         //
         me.olMap.events.on({
-            zoomend: Ext.bind(me.setLayerVisibility, me)
+            zoomend: Ext.bind(me.setLayerVisibility, me),
+            featureclick: Ext.bind(me.onFeatureClick, me),
+            featureover: Ext.bind(me.onFeatureOver, me),
+            featureout: Ext.bind(me.onFeatureOut, me)
         });
         me.setLayerVisibility();
     },
@@ -368,5 +376,23 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             l.layer.setVisibility((zoom >= l.minZoom) && (zoom <= l.maxZoom));
             console.log("setVisibility", l.layer.name, (zoom >= l.minZoom) && (zoom <= l.maxZoom));
         });
+    },
+    //
+    onFeatureClick: function(e) {
+        var me = this;
+        console.log("Click", e.feature.attributes.object);
+    },
+    //
+    onFeatureOver: function(e) {
+        var me = this;
+        e.feature.renderIntent = "select";
+        e.feature.layer.drawFeature(e.feature);
+    },
+    //
+    onFeatureOut: function(e) {
+        var me = this;
+        e.feature.renderIntent = "default";
+        e.feature.layer.drawFeature(e.feature);
     }
+
 });
