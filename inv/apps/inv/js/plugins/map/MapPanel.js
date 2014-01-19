@@ -119,8 +119,10 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             tooltip: "Set position",
             glyph: NOC.glyph.map_marker,
             enableToggle: true,
-            scope: me,
-            handler: me.onSetPosition
+            listeners: {
+                scope: me,
+                toggle: me.onSetPositionToggle
+            }
         });
 
         me.baseLayerButton = Ext.create("Ext.button.Button", {
@@ -313,15 +315,10 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         me.olMap.setBaseLayer(me.olMap.getLayersByName(item.text)[0]);
     },
     //
-    onSetPosition: function() {
-        var me = this;
-        me.setPositionControl.activate();
-    },
-    //
     onSetPositionClick: function(e) {
         var me = this,
             mc = me.olMap.getLonLatFromPixel(e.xy);
-        me.setPositionControl.deactivate();
+        me.setPositionButton.toggle(false);
         mc.transform(me.projMap, me.projGeo);
         Ext.Ajax.request({
             url: "/inv/inv/" + me.currentId + "/plugin/map/set_geopoint/",
@@ -333,15 +330,22 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             },
             scope: me,
             success: function() {
-                me.setPositionButton.toggle(false);
                 me.objectLayer.loaded = false;
                 me.objectLayer.setVisibility(true);
                 me.objectLayer.refresh({force: true});
             },
             failure: function(response) {
                 NOC.error("Failed to set position");
-                me.setPositionButton.toggle(false);
             }
         });
+    },
+    //
+    onSetPositionToggle: function(button, pressed, eOpts) {
+        var me = this;
+        if(pressed) {
+            me.setPositionControl.activate();
+        } else {
+            me.setPositionControl.deactivate();
+        }
     }
 });
