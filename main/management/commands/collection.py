@@ -70,6 +70,13 @@ class Command(BaseCommand):
             dest="cmd",
             const="check",
             help="check_collections"
+        ),
+        make_option(
+            "--status", "-S",
+            action="store_const",
+            dest="cmd",
+            const="status",
+            help="Show status"
         )
     )
 
@@ -115,6 +122,8 @@ class Command(BaseCommand):
             return self.handle_remove(args[0])
         elif options["cmd"] == "check":
             return self.handle_check()
+        elif options["cmd"] == "status":
+            return self.handle_status(args[1:])
 
     def get_collection(self, name):
         for n, d in self.collections:
@@ -191,3 +200,14 @@ class Command(BaseCommand):
                             print "    %s" % x
         except ValueError, why:
             raise CommandError(why)
+
+    def handle_status(self, collections=None):
+        if not collections:
+            collections = [c[0] for c in self.collections]
+        for c in collections:
+            d = self.get_collection(c)
+            dc = Collection(c, d)
+            dc.load()
+            print "*", c
+            for status, ci in dc.get_status():
+                print status, ci

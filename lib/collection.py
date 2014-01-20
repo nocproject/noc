@@ -342,3 +342,28 @@ class Collection(object):
         if load:
             # Save to database
             self.update_item(mi)
+
+    def get_status(self):
+        # Reindex items
+        items = {}  # Path -> CollectionItem
+        for ci in self.items.itervalues():
+            items[ci.path] = ci
+        prefix = os.path.join(self.module, "collections", self.name)
+        for root, dirnames, files in os.walk(prefix):
+            r = os.path.sep.join(root.split(os.path.sep)[3:])
+            for f in files:
+                if f.endswith(".json"):
+                    path = os.path.join(r, f)
+                    if path in items:
+                        rpath = os.path.join(root, f)
+                        if os.path.exists(rpath):
+                            with open(rpath) as f:
+                                h = self.get_hash(f.read())
+                            if h == items[path].hash:
+                                continue  # Not changed
+                            else:
+                                yield "M", path  # Modified
+                        else:
+                            yield "!", path  # Removed
+                    else:
+                        yield "?", path
