@@ -1,0 +1,150 @@
+{
+    "name": "Cisco | C3560 | WS-C3560-12PS",
+    "uuid": "d3d5b2eb-a535-424f-9269-076ee791ce02",
+    "vendor__code": "CISCO",
+    "description": "12 Ethernet 10/100 ports with PoE 1 dual-purpose 10/100/1000 and SFP port",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "connections": [
+        {
+            "description": "Fa0/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa1",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa2",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa3",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/4",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa4",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/5",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa5",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/6",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa6",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/7",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa7",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/8",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa8",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/9",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa9",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/10",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa10",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/11",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa11",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/12",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa12",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/1 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-C3560-12PS-S",
+            "part_no1": "WS-C3560-12PS"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1
+        }
+    }
+}
