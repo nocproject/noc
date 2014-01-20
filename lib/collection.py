@@ -325,6 +325,7 @@ class Collection(object):
         self.log("    ... installing %s" % unicode(o))
         if not o.uuid:
             o.uuid = str(uuid.uuid4())
+            load = False  # Cannot load due to uuid collision
         dd = o.to_json()
         mi = CollectionItem(
             name=self.get_name(o),
