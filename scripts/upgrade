@@ -192,7 +192,7 @@ info "Installing noc.pth"
 ##
 ## Apply local patches
 ##
-import "Apply local patches"
+info "Apply local patches"
 ./scripts/apply-patches || error_exit "$LINENO: Cannot apply patches"
 ##
 ## Compile bytecode
