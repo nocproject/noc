@@ -9,8 +9,6 @@
 ## Python modules
 import Queue
 ## Third-party modules
-from pysnmp.carrier.asynsock.dispatch import AsynsockDispatcher
-from pysnmp.carrier.asynsock.dgram import udp
 from pyasn1.codec.ber import encoder, decoder
 from pysnmp.proto import api
 ## NOC modules
