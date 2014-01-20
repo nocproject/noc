@@ -158,6 +158,11 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             ]
         });
         me.callParent();
+        //
+        me.infoTemplate = Handlebars.compile(
+            "<b>{{name}}</b><br>" +
+            "<i>{{model}}</i>"
+        );
     },
     //
     //
@@ -277,6 +282,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             featureout: Ext.bind(me.onFeatureOut, me)
         });
         me.setLayerVisibility();
+        me.infoPopup = null;
     },
     //
     preview: function(data) {
@@ -378,13 +384,43 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         });
     },
     //
+    showObjectPopup: function(feature, data) {
+        var me = this,
+            text = me.infoTemplate(data);
+        if(me.infoPopup) {
+            me.olMap.removePopup(me.infoPopup);
+            me.infoPopup.destroy();
+            me.infoPopup = null;
+        }
+        me.infoPopup = new OpenLayers.Popup.FramedCloud(
+            "popup",
+            OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
+            null,
+            text,
+            null,
+            true
+        );
+        me.olMap.addPopup(me.infoPopup);
+    },
+    //
     onFeatureClick: function(e) {
         var me = this;
-        console.log("Click", e.feature.attributes.object);
+        Ext.Ajax.request({
+            url: "/inv/inv/" + e.feature.attributes.object + "/plugin/map/object_data/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                me.showObjectPopup(e.feature, Ext.decode(response.responseText));
+            },
+            failure: function() {
+                NOC.error("Failed to get data");
+            }
+        });
     },
     //
     onFeatureOver: function(e) {
-        var me = this;
+        var me = this,
+            text = "text";
         e.feature.renderIntent = "select";
         e.feature.layer.drawFeature(e.feature);
     },
@@ -394,5 +430,4 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         e.feature.renderIntent = "default";
         e.feature.layer.drawFeature(e.feature);
     }
-
 });
