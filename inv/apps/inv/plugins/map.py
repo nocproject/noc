@@ -27,6 +27,12 @@ class MapPlugin(InvPlugin):
             method=["GET"]
         )
         self.add_view(
+            "api_plugin_%s_object_data" % self.name,
+            self.api_object_data,
+            url="^(?P<id>[0-9a-f]{24})/plugin/%s/object_data/" % self.name,
+            method=["GET"]
+        )
+        self.add_view(
             "api_plugin_%s_set_geopoint" % self.name,
             self.api_set_geopoint,
             url="^(?P<id>[0-9a-f]{24})/plugin/%s/set_geopoint/" % self.name,
@@ -103,3 +109,11 @@ class MapPlugin(InvPlugin):
         o.set_data("geopoint", "y", y)
         o.save()
         return {"status": True}
+
+    def api_object_data(self, request, id):
+        o = self.app.get_object_or_404(Object, id=id)
+        return {
+            "id": str(o.id),
+            "name": o.name,
+            "model": o.model.name
+        }
