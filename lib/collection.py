@@ -324,7 +324,7 @@ class Collection(object):
         o = self.doc(**self.dereference(self.doc, data))
         self.log("    ... installing %s" % unicode(o))
         if not o.uuid:
-            o.uuid = uuid.uuid4()
+            o.uuid = str(uuid.uuid4())
         dd = o.to_json()
         mi = CollectionItem(
             name=self.get_name(o),
