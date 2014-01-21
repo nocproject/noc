@@ -106,6 +106,23 @@ class Object(Document):
         # Strange things happen
         return None, None, None
 
+    def get_genderless_connections(self, name):
+        r = []
+        for c in ObjectConnection.objects.filter(
+            __raw__={
+                "connection": {
+                    "$elemMatch": {
+                        "object": self.id,
+                        "name": name
+                    }
+                }
+            }
+        ):
+            for x in c.connection:
+                if x.object.id != self.id:
+                    r += [[c, x.object, x.name]]
+        return r
+
     def disconnect_p2p(self, name):
         """
         Remove connection *name*
@@ -180,6 +197,41 @@ class Object(Document):
             self.container = None
             self.save()
         return c
+
+    def connect_genderless(self, name, remote_object, remote_name,
+                           data=None):
+        """
+        Connect two genderless connections
+        """
+        lc = self.model.get_model_connection(name)
+        if lc is None:
+            raise ConnectionError("Local connection not found: %s" % name)
+        name = lc.name
+        rc = remote_object.model.get_model_connection(remote_name)
+        if rc is None:
+            raise ConnectionError("Remote connection not found: %s" % remote_name)
+        remote_name = rc.name
+        if lc.gender != "s":
+            raise ConnectionError("Local connection '%s' must be genderless" % name)
+        if rc.gender != "s":
+            raise ConnectionError("Remote connection '%s' must be genderless" % remote_name)
+        # Check for connection
+        for c, ro, rname in self.get_genderless_connections(name):
+            if ro.id == remote_object.id and rname == remote_name:
+                c.data = data or {}
+                c.save()
+                return
+        # Create connection
+        ObjectConnection(
+            connection=[
+                ObjectConnectionItem(object=self, name=name),
+                ObjectConnectionItem(object=remote_object,
+                                     name=remote_name)
+            ],
+            data=data or {}
+        ).save()
+        self.log("%s:%s -> %s:%s" % (self, name, remote_object, remote_name),
+                 system="CORE", op="CONNECT")
 
     def put_into(self, container):
         """
