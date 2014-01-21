@@ -93,6 +93,8 @@ class InvApplication(ExtApplication):
             (name, o) for name, o, _ in container.get_inner_connections()
         ]
         # Build node interface
+        m_plugins = o.model.plugins or []
+        disabled_plugins = set(p[1:] for p in m_plugins if p.startswith("-"))
         for name, o in children:
             n = {
                 "id": str(o.id),
@@ -111,11 +113,17 @@ class InvApplication(ExtApplication):
                 n["plugins"] += [self.get_plugin_data("inventory")]
             if o.get_data("geopoint", "layer"):
                 n["plugins"] += [self.get_plugin_data("map")]
+            # Append model's plugins
+            for p in m_plugins:
+                if not p.startswith("-"):
+                    n["plugins"] += [self.get_plugin_data(p)]
             n["plugins"] += [
                 self.get_plugin_data("data"),
                 self.get_plugin_data("comment"),
                 self.get_plugin_data("file")
             ]
+            # Process disabled plugins
+            n["plugins"] = [p for p in n["plugins"] if p["name"] not in disabled_plugins]
             r += [n]
         return r
 
