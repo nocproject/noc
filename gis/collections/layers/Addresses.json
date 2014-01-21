@@ -5,7 +5,12 @@
     "code": "addresses",
     "default_zoom": 14,
     "fill_color": 3368703,
-    "max_zoom": 16,
+    "max_zoom": 19,
     "min_zoom": 14,
-    "stroke_color": 52479
+    "point_radius": 5,
+    "show_labels": true,
+    "stroke_color": 52479,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 0
 }
