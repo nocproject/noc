@@ -233,18 +233,18 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         me.centerToObject();
         // Create vector layers
         me.objectLayer = null;
+        var zoom = me.olMap.getZoom();
         me.layerZoom = []; // [<layer>, <min zoom>, <max zoom>]
         for(var i in layers) {
             var ld = layers[i],
                 layer = new OpenLayers.Layer.Vector(ld.name, {
-                    minZoomLevel: ld.min_zoom,
-                    maxZoomLevel: ld.max_zoom,
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: "/inv/inv/plugin/map/layers/" + ld.code + "/",
                         format: new OpenLayers.Format.GeoJSON({}),
                         srsInBBOX: true
                     }),
                     strategies: [new OpenLayers.Strategy.BBOX()],
+                    visibility: (zoom >= ld.min_zoom) && (zoom <= ld.max_zoom),
                     styleMap: new OpenLayers.StyleMap({
                         default: {
                             pointRadius: ld.point_radius,
