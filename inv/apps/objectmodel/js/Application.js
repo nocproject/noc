@@ -123,6 +123,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "plugins",
+                    xtype: "textfield",
+                    fieldLabel: "Plugins",
+                    allowBlank: true
+                },
+                {
                     name: "data",
                     xtype: "modeldatafield",
                     fieldLabel: "Model Data",
