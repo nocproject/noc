@@ -2,7 +2,7 @@
     "name": "NoName | Transceiver | 1G | SFP BX (tx 1310nm)",
     "uuid": "dcbd9163-836e-4b4c-a18e-542130509eb1",
     "vendor__code": "NONAME",
-    "description": "NoName SFP LX transceiver",
+    "description": "NoName SFP BX transceiver",
     "connections": [
         {
             "description": "SFP Connector",
