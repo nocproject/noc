@@ -98,6 +98,7 @@ class ObjectModel(Document):
     data = DictField()
     connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
     uuid = UUIDField(binary=True)
+    plugins = ListField(StringField(), required=False)
 
     def __unicode__(self):
         return self.name
@@ -176,13 +177,16 @@ class ObjectModel(Document):
         }
         if self.connection_rule:
             r["connection_rule__name"] = self.connection_rule.name
+        if self.plugins:
+            r["plugins"] = self.plugins
         return r
 
     def to_json(self):
         return to_json(self.json_data,
                        order=["name", "uuid", "vendor__code",
                               "description",
-                              "connection_rule__name"])
+                              "connection_rule__name",
+                              "plugins"])
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
