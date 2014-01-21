@@ -25,7 +25,8 @@ class ConnectionType(Document):
     meta = {
         "collection": "noc.connectiontypes",
         "allow_inheritance": False,
-        "indexes": ["extend", "data", "c_group"]
+        "indexes": ["extend", "data", "c_group"],
+        "json_collection": "inv.connectiontypes"
     }
 
     name = StringField(unique=True)
@@ -61,7 +62,8 @@ class ConnectionType(Document):
     def __unicode__(self):
         return self.name
 
-    def to_json(self):
+    @property
+    def json_data(self):
         r = {
             "name": self.name,
             "uuid": self.uuid,
@@ -71,7 +73,11 @@ class ConnectionType(Document):
         }
         if self.extend:
             r["extend__name"] = self.extend.name
-        return to_json(r, order=["name", "uuid", "description"])
+        return r
+
+    def to_json(self):
+        return to_json(self.json_data,
+                       order=["name", "uuid", "description"])
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

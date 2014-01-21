@@ -24,12 +24,6 @@ class ConnectionTypeApplication(ExtDocApplication):
     def field_is_builtin(self, o):
         return bool(CollectionCache.objects.filter(uuid=o.uuid))
 
-    @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"],
-          access="read", api=True)
-    def api_to_json(self, request, id):
-        o = self.get_object_or_404(ConnectionType, id=id)
-        return o.to_json()
-
     @view(url="^(?P<id>[0-9a-f]{24})/compatible/$", method=["GET"],
           access="read", api=True)
     def api_compatible(self, request, id):
