@@ -1,0 +1,20 @@
+{
+    "name": "Cisco | 7600 | WS-C6000-CL",
+    "uuid": "95f1a5b8-956a-432e-9ea4-930268dc569b",
+    "vendor__code": "CISCO",
+    "description": "Cisco C6K Clock FRU",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | CLK"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-C6000-CL"
+        }
+    }
+}

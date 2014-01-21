@@ -1,8 +1,8 @@
 {
-    "name": "Cisco | 7600 | PWR-2700-DC",
-    "uuid": "5bc50667-95db-4a99-89ff-acc676c21ae8",
+    "name": "Cisco | 7600 | PWR-4000-DC",
+    "uuid": "24c22597-ac06-4edb-8605-8256e62716c0",
     "vendor__code": "CISCO",
-    "description": "2700 Watt DC Power Supply for Cisco 7600",
+    "description": "4000 Watt DC Power Supply for Cisco 7600",
     "connections": [
         {
             "description": "DC 1 input Positive contact",
@@ -53,8 +53,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "PWR-2700-DC",
-            "part_no1": "PWR-2700-DC/4"
+            "part_no0": "PWR-4000-DC"
         }
     }
 }
