@@ -26,6 +26,10 @@ class ObjectModelApplication(ExtDocApplication):
     def clean(self, data):
         if "data" in data:
             data["data"] = ModelInterface.clean_data(data["data"])
+        if "plugins" in data and data["plugins"]:
+            data["plugins"] = [x.strip() for x in data["plugins"].split(",") if x.strip()]
+        else:
+            data["plugins"] = None
         return super(ObjectModelApplication, self).clean(data)
 
     def cleaned_query(self, q):
