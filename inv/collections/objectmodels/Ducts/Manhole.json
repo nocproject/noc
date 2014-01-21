@@ -1,0 +1,24 @@
+{
+    "name": "Ducts | Manhole",
+    "uuid": "edf46d3b-841c-4d2f-bc85-6301a4d0c6d8",
+    "vendor__code": "NONAME",
+    "description": "Manhole",
+    "plugins": ["-inventory"],
+    "connections": [
+        {
+            "description": "Ducts conduits connections",
+            "direction": "s",
+            "gender": "s",
+            "name": "conduits",
+            "type__name": "Conduits"
+        }
+    ],
+    "data": {
+        "container": {
+            "container": true
+        },
+        "geopoint": {
+            "layer": "manholes"
+        }
+    }
+}
