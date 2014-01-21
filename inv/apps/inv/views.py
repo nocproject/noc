@@ -93,9 +93,9 @@ class InvApplication(ExtApplication):
             (name, o) for name, o, _ in container.get_inner_connections()
         ]
         # Build node interface
-        m_plugins = o.model.plugins or []
-        disabled_plugins = set(p[1:] for p in m_plugins if p.startswith("-"))
         for name, o in children:
+            m_plugins = o.model.plugins or []
+            disabled_plugins = set(p[1:] for p in m_plugins if p.startswith("-"))
             n = {
                 "id": str(o.id),
                 "name": name,

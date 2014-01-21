@@ -247,14 +247,16 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                     strategies: [new OpenLayers.Strategy.BBOX()],
                     styleMap: new OpenLayers.StyleMap({
                         default: {
-                            pointRadius: 5,
+                            pointRadius: ld.point_radius,
+                            strokeWidth: ld.stroke_width,
                             strokeColor: ld.stroke_color,
                             fillColor: ld.fill_color,
-                            label: "${label}",
+                            label: ld.show_labels ? "${label}" : "",
                             labelAlign: "lb",
                             labelXOffset: 7,
                             labelOutlineColor: "white",
-                            labelOutlineWidth: 3
+                            labelOutlineWidth: 3,
+                            strokeDashstyle: ld.strokeDashstyle
                         },
                         select: {
                             labelAlign: "lb",
@@ -380,7 +382,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             zoom = me.olMap.getZoom();
         Ext.each(me.layerZoom, function(l) {
             l.layer.setVisibility((zoom >= l.minZoom) && (zoom <= l.maxZoom));
-            console.log("setVisibility", l.layer.name, (zoom >= l.minZoom) && (zoom <= l.maxZoom));
         });
     },
     //

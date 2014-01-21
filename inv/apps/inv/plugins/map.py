@@ -6,10 +6,17 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Django modules
+from django.contrib.gis.geos import Polygon, LineString
+from django.contrib.gis.gdal.srs import SpatialReference, CoordTransform
+## Third-party modules
+from vectorformats.Formats.GeoJSON import GeoJSON
+from vectorformats.Feature import Feature
 ## NOC modules
 from base import InvPlugin
 from noc.gis.map import map
 from noc.gis.models.layer import Layer
+from noc.gis.models.geodata import GeoData
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import StringParameter, FloatParameter
 
@@ -65,8 +72,12 @@ class MapPlugin(InvPlugin):
                 "min_zoom": l.min_zoom,
                 "max_zoom": l.max_zoom,
                 "stroke_color": "#%06x" % l.stroke_color,
-                "fill_color": "#%06x" % l.fill_color
-            } for l in Layer.objects.all()
+                "fill_color": "#%06x" % l.fill_color,
+                "stroke_width": l.stroke_width,
+                "point_radius": l.point_radius,
+                "show_labels": l.show_labels,
+                "stroke_dashstyle": l.stroke_dashstyle
+            } for l in Layer.objects.order_by("zindex")
         ]
         srid = o.get_data("geopoint", "srid")
         x = o.get_data("geopoint", "x")
@@ -98,8 +109,12 @@ class MapPlugin(InvPlugin):
         x1 = float(bbox[2])
         y1 = float(bbox[3])
         srid = bbox[4]
+        if layer == "conduits":
+            builder = self.get_conduits_layer
+        else:
+            builder = map.get_layer_objects
         return self.app.render_response(
-            map.get_layer_objects(layer, x0, y0, x1, y1, srid),
+            builder(layer, x0, y0, x1, y1, srid),
             content_type="text/json")
 
     def api_set_geopoint(self, request, id, srid=None, x=None, y=None):
@@ -117,3 +132,64 @@ class MapPlugin(InvPlugin):
             "name": o.name,
             "model": o.model.name
         }
+
+    def get_conduits_layer(self, layer, x0, y0, x1, y1, srid):
+        """
+        Build conduits layer
+        """
+        manholes_layer = Layer.objects.filter(code="manholes").first()
+        if not manholes_layer:
+            return {}
+        layers = [manholes_layer.id]
+        conduits = {}  # id ->
+        # Build bounding box
+        dst_srid = SpatialReference(srid)
+        from_transform = CoordTransform(
+            dst_srid,
+            map.srid
+        )
+        bbox = Polygon.from_bbox((x0, y0, x1, y1))
+        bbox.srid = dst_srid.srid
+        bbox.transform(from_transform)
+        # Get all objects from *manholes* layer
+        points = {}  # Object.id, point
+        conduits = set()  # (object1, object2)
+        for gd in GeoData.objects.filter(
+                layer__in=layers, data__intersects=bbox
+        ).transform(dst_srid.srid):
+            object = Object.objects.get(id=gd.object)
+            points[str(object.id)] = gd.data
+            # Get all conduits connections
+            for c, remote, remote_name in object.get_genderless_connections("conduits"):
+                if (remote, object) not in conduits:
+                    conduits.add((object, remote))
+        # Find and resolve missed points
+        missed_points = set()
+        for o1, o2 in conduits:
+            o1_id = str(o1.id)
+            if o1_id not in points:
+                missed_points.add(o1_id)
+            o2_id = str(o2.id)
+            if o2_id not in points:
+                missed_points.add(o2_id)
+        if missed_points:
+            for gd in GeoData.objects.filter(
+                    layer__in=layers, objects__in=missed_points
+            ).transform(dst_srid.srid):
+                points[gd.object] = gd.data
+        cdata = []
+        for o1, o2 in conduits:
+            o1_id = str(o1.id)
+            o2_id = str(o2.id)
+            if o1_id not in points or o2_id not in points:
+                continue  # Skip unresolved conduit
+            ls = LineString(points[o1_id], points[o2_id])
+            f = Feature(len(cdata))
+            f.geometry = {
+                "type": ls.geom_type,
+                "coordinates": ls.coords
+            }
+            cdata += [f]
+        gj = GeoJSON()
+        gj.crs = srid
+        return gj.encode(cdata)
