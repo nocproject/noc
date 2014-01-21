@@ -5,7 +5,12 @@
     "code": "pop_national",
     "default_zoom": 12,
     "fill_color": 13369344,
-    "max_zoom": 16,
+    "max_zoom": 19,
     "min_zoom": 2,
-    "stroke_color": 16711680
+    "point_radius": 5,
+    "show_labels": true,
+    "stroke_color": 16711680,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 500
 }

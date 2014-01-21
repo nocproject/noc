@@ -1,0 +1,16 @@
+{
+    "name": "Conduits",
+    "uuid": "bcdc8aa9-059a-4fbb-b031-e0fd55926410",
+    "description": "Ducts conduits",
+    "code": "conduits",
+    "default_zoom": 13,
+    "fill_color": 0,
+    "max_zoom": 19,
+    "min_zoom": 14,
+    "point_radius": 5,
+    "show_labels": false,
+    "stroke_color": 0,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 3,
+    "zindex": 10
+}
