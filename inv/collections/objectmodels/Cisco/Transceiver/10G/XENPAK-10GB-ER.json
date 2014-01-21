@@ -1,0 +1,37 @@
+{
+    "name": "Cisco | Transceiver | 10G | XENPAK-10GB-ER",
+    "uuid": "233e0c03-1872-4543-bf97-87a4abb74fa0",
+    "vendor__code": "CISCO",
+    "description": "Cisco XENPAK 10G ER transceiver",
+    "connections": [
+        {
+            "description": "XENPAK Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XENPAK | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASEER-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASEER-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "XENPAK-10GB-ER"
+        }
+    }
+}
