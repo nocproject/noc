@@ -56,6 +56,26 @@ Ext.define("NOC.gis.layer.Model", {
         {
             name: "description",
             type: "string"
-        }
+        },
+        {
+            name: "zindex",
+            type: "int"
+        },
+        {
+            name: "stroke_width",
+            type: "int"
+        },
+        {
+            name: "point_radius",
+            type: "int"
+        },
+        {
+            name: "show_labels",
+            type: "boolean"
+        },
+        {
+            name: "stroke_dashstyle",
+            type: "string"
+        },
     ]
 });

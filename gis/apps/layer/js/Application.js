@@ -43,6 +43,12 @@ Ext.define("NOC.gis.layer.Application", {
                     width: 50
                 },
                 {
+                    text: "zIndex",
+                    dataIndex: "zindex",
+                    width: 50,
+                    align: "right"
+                },
+                {
                     text: "Min Zoom",
                     dataIndex: "min_zoom",
                     width: 50,
@@ -92,6 +98,12 @@ Ext.define("NOC.gis.layer.Application", {
                     allowBlank: true
                 },
                 {
+                    xtype: "numberfield",
+                    name: "zindex",
+                    fieldLabel: "zIndex",
+                    minValue: 0
+                },
+                {
                     xtype: "fieldset",
                     title: "Zoom",
                     layout: "hbox",
@@ -134,6 +146,53 @@ Ext.define("NOC.gis.layer.Application", {
                             xtype: "colorfield",
                             fieldLabel: "Fill Color",
                             allowBlank: false
+                        },
+                        {
+                            name: "stroke_width",
+                            xtype: "numberfield",
+                            fieldLabel: "Stroke Width",
+                            allowBlank: true
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: "Point Style",
+                    items: [
+                        {
+                            name: "point_radius",
+                            xtype: "numberfield",
+                            minValue: 0,
+                            allowBlank: true
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: "Line Style",
+                    items: [
+                        {
+                            name: "stroke_dashstyle",
+                            xtype: "combobox",
+                            allowBlank: true,
+                            store: [
+                                ["solid", "solid"],
+                                ["dash", "dash"],
+                                ["dashdot", "dashdot"],
+                                ["longdash", "longdash"],
+                                ["longdashdot", "longdashdot"]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: "Text Style",
+                    items: [
+                        {
+                            name: "show_labels",
+                            xtype: "checkboxfield",
+                            boxLabel: "Show Labels"
                         }
                     ]
                 }

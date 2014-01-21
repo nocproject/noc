@@ -10,7 +10,8 @@
 import os
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, UUIDField, IntField
+from mongoengine.fields import (StringField, UUIDField, IntField,
+                                BooleanField)
 ## NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
@@ -30,9 +31,20 @@ class Layer(Document):
     min_zoom = IntField(min_value=0, max_value=20)
     max_zoom = IntField(min_value=0, max_value=20)
     default_zoom = IntField(min_value=0, max_value=20)
-    # Style
+    # z-index. Layers with greater zindex always shown on top
+    zindex = IntField(default=0)
+    # Point and line symbolizers
     stroke_color = IntField(min_value=0, max_value=0x00FFFFFF)
     fill_color = IntField(min_value=0, max_value=0x00FFFFFF)
+    stroke_width = IntField(default=1)
+    # Point symbolizer
+    point_radius = IntField(default=5)
+    # Line symbolizer
+    stroke_dashstyle = StringField(choices=[
+        "solid", "dash", "dashdot", "longdash",
+        "longdashdot"], default="solid")
+    # Text symbolizers
+    show_labels = BooleanField(default=True)
 
     def __unicode__(self):
         return self.name
@@ -46,8 +58,13 @@ class Layer(Document):
             "min_zoom": self.min_zoom,
             "max_zoom": self.max_zoom,
             "default_zoom": self.default_zoom,
+            "zindex": self.zindex,
+            "stroke_width": self.stroke_width,
             "stroke_color": self.stroke_color,
-            "fill_color": self.fill_color
+            "fill_color": self.fill_color,
+            "point_radius": self.point_radius,
+            "show_labels": self.show_labels,
+            "stroke_dashstyle": self.stroke_dashstyle
         }
         if self.description:
             r["description"] = self.description
