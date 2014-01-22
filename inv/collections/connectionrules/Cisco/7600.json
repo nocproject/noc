@@ -30,6 +30,14 @@
         },
         {
             "match_connection": "in",
+            "match_type": "VTT",
+            "scope": "chassis",
+            "target_connection": "vtt{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
             "match_type": "LINECARD",
             "scope": "chassis",
             "target_connection": "linecard{N}",
