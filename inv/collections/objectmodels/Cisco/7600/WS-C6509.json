@@ -20,6 +20,27 @@
             "type__name": "Cisco | 7600 | CLK"
         },
         {
+            "description": "VTT module slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "vtt1",
+            "type__name": "Cisco | 7600 | VTT"
+        },
+        {
+            "description": "VTT module slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "vtt2",
+            "type__name": "Cisco | 7600 | VTT"
+        },
+        {
+            "description": "VTT module slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "vtt3",
+            "type__name": "Cisco | 7600 | VTT"
+        },
+        {
             "description": "Fan slot 1",
             "direction": "i",
             "gender": "f",
