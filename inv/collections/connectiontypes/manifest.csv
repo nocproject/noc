@@ -12,6 +12,10 @@ Brocade | FastIron SuperX | PS Connector DC,fbdfffb6-f894-4cb7-8aff-f0f11325070f
 Brocade | FastIron SuperX | SFM Connector,e25e43f7-64a0-4891-82cf-c6bd897d7a78,Brocade/FastIron_SuperX/SFM_Connector.json,1da516a5d597e85eae6e7602916191595c02aa6261433666ad6d64a48c30067f
 Brocade | JetCore | Backplane Connector,714e6a57-8b15-45a0-acc0-fb005437dfa5,Brocade/JetCore/Backplane_Connector.json,00785fcb5c976c1947fa82e693b1394099540d6d74b6c8ecde05d7112f85981f
 Brocade | JetCore | PS Connector,11c0312e-7761-42c3-af60-af698a669a98,Brocade/JetCore/PS_Connector.json,18aa1d2600e3b070a950ef752b20ee4de8a4231a14059f49a73d738d9a698795
+Cisco | 6500 | CLK,dd7f8ef7-77fa-4145-b5c9-0b78b5dd5e1e,Cisco/6500/CLK.json,77f82808dcfb9bcdfda61bac871c1454a3a7362d33e9ad242fd2d27a104b824a
+Cisco | 6500 | DFC,5edcd942-237d-40d7-86d5-a317f11dc9b4,Cisco/6500/DFC.json,204287644a5d6d246bfe53609b3f6311c9dffef37354b384df03735db94e5d70
+Cisco | 6500 | PSU,ff568a7e-b4e6-40fc-820d-f3737263f055,Cisco/6500/PSU.json,314651d16036d47c7da0306e685aeee52e331e24a890d483f5ea9d942d91ea18
+Cisco | 6500 | VTT,522e4335-5384-4d2c-aa5c-4b8a45fb92cf,Cisco/6500/VTT.json,5df87ddb4f79a4ee23702dd8034b6a2aed942332408f2eceeaf963f96e67a241
 Cisco | 7200 | 7201 PWR,60bd80ff-7bb2-4313-a1d3-2f0e7d522bcc,Cisco/7200/7201_PWR.json,89e10daf95be78699e2dfe4ade03a4ea94e09eff7c5c1a6163a8943dfc4d04bd
 Cisco | 7600 | 7606 Fan,463a22b7-2a1b-42dc-ab07-df99bb4edfff,Cisco/7600/7606_Fan.json,d6f91ebe1436adeb81b7a5a354b9ac751c4f3181e8617232444a9c8e607c2bc8
 Cisco | 7600 | Bus Linecard,de7c5b2c-8c75-4546-a3f6-9a2e4a03c1cf,Cisco/7600/Bus_Linecard.json,df1bd56f6f697bbf004d68e4a67df1856843f545f253b783a69a4480ef515a42
