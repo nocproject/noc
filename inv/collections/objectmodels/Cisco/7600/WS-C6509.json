@@ -58,6 +58,7 @@
             "description": "Linecard 5/Supervisor slot 1",
             "direction": "i",
             "gender": "f",
+            "internal_name": "sup5",
             "name": "linecard5",
             "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
@@ -65,6 +66,7 @@
             "description": "Linecard 6/Supervisor slot 2",
             "direction": "i",
             "gender": "f",
+            "internal_name": "sup6",
             "name": "linecard6",
             "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
