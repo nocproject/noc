@@ -103,8 +103,8 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C6509",
-            "part_no1": "WS-C6509-E"
+            "part_no0": "WS-C6506",
+            "part_no1": "WS-C6506-E"
         },
         "management": {
             "managed": true
