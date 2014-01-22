@@ -68,10 +68,9 @@ class Layer(Document):
             "stroke_color": self.stroke_color,
             "fill_color": self.fill_color,
             "point_radius": self.point_radius,
-            "point_grephic": self.point_graphic,
+            "point_graphic": self.point_graphic,
             "show_labels": self.show_labels,
-            "stroke_dashstyle": self.stroke_dashstyle,
-            "point_graphic": self.point_graphic
+            "stroke_dashstyle": self.stroke_dashstyle
         }
         if self.description:
             r["description"] = self.description
