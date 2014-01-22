@@ -1,0 +1,17 @@
+{
+    "name": "Cable Entries",
+    "uuid": "22cb5a15-ad39-4fdd-a677-263974943749",
+    "description": "Buildings' cable entries",
+    "code": "cableentries",
+    "default_zoom": 17,
+    "fill_color": 16776960,
+    "max_zoom": 19,
+    "min_zoom": 16,
+    "point_graphic": "diamond",
+    "point_radius": 5,
+    "show_labels": false,
+    "stroke_color": 16750848,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 20
+}
