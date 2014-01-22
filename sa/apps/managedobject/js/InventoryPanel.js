@@ -56,7 +56,8 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
                 },
                 {
                     text: "Description",
-                    dataIndex: "description"
+                    dataIndex: "description",
+                    width: 400
                 },
                 {
                     text: "Serial",
