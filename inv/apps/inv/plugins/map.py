@@ -16,9 +16,11 @@ from vectorformats.Feature import Feature
 from base import InvPlugin
 from noc.gis.map import map
 from noc.gis.models.layer import Layer
+from noc.gis.models.layerusersettings import LayerUserSettings
 from noc.gis.models.geodata import GeoData
 from noc.inv.models.object import Object
-from noc.sa.interfaces.base import StringParameter, FloatParameter
+from noc.sa.interfaces.base import (StringParameter, FloatParameter,
+                                    BooleanParameter)
 
 
 class MapPlugin(InvPlugin):
@@ -50,6 +52,16 @@ class MapPlugin(InvPlugin):
                 "y": FloatParameter()
             }
         )
+        self.add_view(
+            "api_plugin_%s_set_layer_visibility" % self.name,
+            self.api_set_layer_visibility,
+            url="^plugin/%s/layer_visibility/" % self.name,
+            method=["POST"],
+            validate={
+                "layer": StringParameter(),
+                "status": BooleanParameter()
+            }
+        )
 
     def get_parent(self, o):
         """
@@ -76,7 +88,8 @@ class MapPlugin(InvPlugin):
                 "stroke_width": l.stroke_width,
                 "point_radius": l.point_radius,
                 "show_labels": l.show_labels,
-                "stroke_dashstyle": l.stroke_dashstyle
+                "stroke_dashstyle": l.stroke_dashstyle,
+                "is_visible": LayerUserSettings.is_visible_by_user(request.user, l)
             } for l in Layer.objects.order_by("zindex")
         ]
         srid = o.get_data("geopoint", "srid")
@@ -193,3 +206,8 @@ class MapPlugin(InvPlugin):
         gj = GeoJSON()
         gj.crs = srid
         return gj.encode(cdata)
+
+    def api_set_layer_visibility(self, request, layer, status):
+        l = self.app.get_object_or_404(Layer, code=layer)
+        LayerUserSettings.set_layer_visibility(request.user, l, status)
+        return {"status": True}
