@@ -125,6 +125,15 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             }
         });
 
+        me.layersButton = Ext.create("Ext.button.Button", {
+            tooltip: "Setup layers",
+            text: "Layers",
+            glyph: NOC.glyph.align_justify,
+            menu: {
+                items: []
+            }
+        });
+
         me.baseLayerButton = Ext.create("Ext.button.Button", {
             tooltip: "Select base layer",
             text: me.baseLayers[0].text,
@@ -146,6 +155,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                     "-",
                     me.setPositionButton,
                     "->",
+                    me.layersButton,
                     me.baseLayerButton
                 ]
             }],
@@ -233,8 +243,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         me.centerToObject();
         // Create vector layers
         me.objectLayer = null;
-        var zoom = me.olMap.getZoom();
-        me.layerZoom = []; // [<layer>, <min zoom>, <max zoom>]
+        zoom = me.olMap.getZoom();
+        me.layerZoom = []; // {<layer>, <min zoom>, <max zoom>, isVisible}
         for(var i in layers) {
             var ld = layers[i],
                 layer = new OpenLayers.Layer.Vector(ld.name, {
@@ -244,7 +254,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                         srsInBBOX: true
                     }),
                     strategies: [new OpenLayers.Strategy.BBOX()],
-                    visibility: (zoom >= ld.min_zoom) && (zoom <= ld.max_zoom),
+                    visibility: ld.is_visible && (zoom >= ld.min_zoom) && (zoom <= ld.max_zoom),
                     styleMap: new OpenLayers.StyleMap({
                         default: {
                             pointRadius: ld.point_radius,
@@ -272,8 +282,18 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             // Set up zoom levels
             me.layerZoom.push({
                 layer: layer,
+                code: ld.code,
                 minZoom: ld.min_zoom,
-                maxZoom: ld.max_zoom
+                maxZoom: ld.max_zoom,
+                isVisible: ld.is_visible
+            });
+            // Add to layers menu
+            me.layersButton.menu.add({
+                text: ld.name,
+                checked: ld.is_visible,
+                scope: me,
+                checkHandler: me.onChangeLayerVisibility,
+                layerCode: ld.code
             });
         }
         //
@@ -381,7 +401,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         var me = this,
             zoom = me.olMap.getZoom();
         Ext.each(me.layerZoom, function(l) {
-            l.layer.setVisibility((zoom >= l.minZoom) && (zoom <= l.maxZoom));
+            l.layer.setVisibility(l.isVisible && (zoom >= l.minZoom) && (zoom <= l.maxZoom));
         });
     },
     //
@@ -430,5 +450,29 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         var me = this;
         e.feature.renderIntent = "default";
         e.feature.layer.drawFeature(e.feature);
+    },
+    //
+    onChangeLayerVisibility: function(item, checked) {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/inv/inv/plugin/map/layer_visibility/",
+            method: "POST",
+            jsonData: {
+                layer: item.layerCode,
+                status: checked
+            },
+            scope: me,
+            success: function() {
+                Ext.each(me.layerZoom, function(v) {
+                    if(v.code == item.layerCode) {
+                        v.isVisible = checked;
+                        me.setLayerVisibility();
+                    }
+                });
+            },
+            failure: function() {
+                NOC.error("Failed to change layer settings");
+            }
+        });
     }
 });
