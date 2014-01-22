@@ -92,7 +92,9 @@ class Script(NOCScript):
                     return "XCVR", number, pid
             else:
                 return "XCVR", number, pid
-        elif lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"):
+        elif ((lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
+        and not pid.startswith("WS-CAC-") and not "Clock" in descr
+        and not "VTT FRU" in descr):
             try:
                 number = int(name)
             except ValueError:
@@ -105,9 +107,17 @@ class Script(NOCScript):
             else:
                 return "LINECARD", name[7:], pid
         elif pid.startswith("WS-X67") and "port" in descr:
-                return "LINECARD", name[7:], pid
+            try:
+                number = int(name)
+            except ValueError:
+                number = None
+            return "LINECARD", number, pid
         elif pid.startswith("WS-SUP") and "Supervisor Engine" in descr:
-                return "SUP", name[7:], pid
+            try:
+                number = int(name)
+            except ValueError:
+                number = None
+            return "SUP", number, pid
         elif "-DFC" in pid or "-CFC" in pid or "sub-module" in name:
             # DFC subcard
             return "DFC", None, pid
@@ -119,6 +129,12 @@ class Script(NOCScript):
         elif pid.startswith("FAN"):
             # Fan module
             return "FAN", name.split()[1], pid
+        elif "Clock FRU" in descr:
+            # Clock module
+            return "CLK", name.split()[1], pid
+        elif "VTT FRU" in descr:
+            # Clock module
+            return "VTT", name.split()[1], pid
         # Unknown
         return None, None, None
 
