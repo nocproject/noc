@@ -162,8 +162,24 @@ Ext.define("NOC.gis.layer.Application", {
                         {
                             name: "point_radius",
                             xtype: "numberfield",
+                            fieldLabel: "Point Radius",
                             minValue: 0,
                             allowBlank: true
+                        },
+                        {
+                            name: "point_graphic",
+                            xtype: "combobox",
+                            fieldLabel: "Graphic",
+                            allowBlank: true,
+                            store: [
+                                ["circle", "circle"],
+                                ["triangle", "triangle"],
+                                ["cross", "cross"],
+                                ["x", "x"],
+                                ["square", "square"],
+                                ["star", "star"],
+                                ["diamond", "diamond"]
+                            ]
                         }
                     ]
                 },
@@ -174,6 +190,7 @@ Ext.define("NOC.gis.layer.Application", {
                         {
                             name: "stroke_dashstyle",
                             xtype: "combobox",
+                            fieldLabel: "Line Style",
                             allowBlank: true,
                             store: [
                                 ["solid", "solid"],

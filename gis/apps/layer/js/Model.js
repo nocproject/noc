@@ -77,5 +77,9 @@ Ext.define("NOC.gis.layer.Model", {
             name: "stroke_dashstyle",
             type: "string"
         },
+        {
+            name: "point_graphic",
+            type: "string"
+        }
     ]
 });

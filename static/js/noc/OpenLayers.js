@@ -26,3 +26,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         );
     }
 });
+
+// Renderer symbols
+OpenLayers.Renderer.symbol.diamond = [-5,0, 0,5, 5,0, 0,-5];

@@ -39,10 +39,15 @@ class Layer(Document):
     stroke_width = IntField(default=1)
     # Point symbolizer
     point_radius = IntField(default=5)
+    point_graphic = StringField(
+        choices=[(x, x) for x in
+            ("circle", "triangle", "cross", "x", "square", "star", "diamond")
+        ], default="circle"
+    )
     # Line symbolizer
-    stroke_dashstyle = StringField(choices=[
+    stroke_dashstyle = StringField(choices=[(x, x) for x in (
         "solid", "dash", "dashdot", "longdash",
-        "longdashdot"], default="solid")
+        "longdashdot")], default="solid")
     # Text symbolizers
     show_labels = BooleanField(default=True)
 
@@ -63,8 +68,10 @@ class Layer(Document):
             "stroke_color": self.stroke_color,
             "fill_color": self.fill_color,
             "point_radius": self.point_radius,
+            "point_grephic": self.point_graphic,
             "show_labels": self.show_labels,
-            "stroke_dashstyle": self.stroke_dashstyle
+            "stroke_dashstyle": self.stroke_dashstyle,
+            "point_graphic": self.point_graphic
         }
         if self.description:
             r["description"] = self.description
