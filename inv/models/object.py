@@ -249,8 +249,8 @@ class Object(Document):
         self.container = container.id
         # Reset previous rack position
         if self.data.get("rackmount"):
-            for k in ("position", "side"):
-                if self.data.get("rackmount", k):
+            for k in ("position", "side", "shift"):
+                if k in self.data["rackmount"]:
                     del self.data["rackmount"][k]
         self.save()
         self.log(
