@@ -1,8 +1,8 @@
 {
-    "name": "Cisco | 7600 | WS-C6509",
-    "uuid": "aeb463c3-d585-4f70-a90d-09d0e3ed0683",
+    "name": "Cisco | 7600 | WS-C6506",
+    "uuid": "b50204ce-5d2a-41b4-be7c-5b51a2cfdcfe",
     "vendor__code": "CISCO",
-    "description": "Cisco C6509 9-slot Chassis",
+    "description": "Cisco C6506 6-slot Chassis",
     "connection_rule__name": "Cisco | 7600",
     "connections": [
         {
@@ -41,18 +41,20 @@
             "type__name": "Cisco | 7600 | VTT"
         },
         {
-            "description": "Linecard slot 1",
+            "description": "Linecard slot 1/Supervisor slot 1",
             "direction": "i",
             "gender": "f",
+            "internal_name": "sup1",
             "name": "linecard1",
-            "type__name": "Cisco | 7600 | Fabric Linecard"
+            "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
         {
-            "description": "Linecard slot 2",
+            "description": "Linecard slot 2/Supervisor slot 2",
             "direction": "i",
             "gender": "f",
+            "internal_name": "sup2",
             "name": "linecard2",
-            "type__name": "Cisco | 7600 | Fabric Linecard"
+            "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
         {
             "description": "Linecard slot 3",
@@ -69,7 +71,7 @@
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
-            "description": "Linecard 5/Supervisor slot 1",
+            "description": "Linecard 5/Supervisor slot 5",
             "direction": "i",
             "gender": "f",
             "internal_name": "sup5",
@@ -77,33 +79,12 @@
             "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
         {
-            "description": "Linecard 6/Supervisor slot 2",
+            "description": "Linecard 6/Supervisor slot 6",
             "direction": "i",
             "gender": "f",
             "internal_name": "sup6",
             "name": "linecard6",
             "type__name": "Cisco | 7600 | Linecard/Supervisor"
-        },
-        {
-            "description": "Linecard slot 7",
-            "direction": "i",
-            "gender": "f",
-            "name": "linecard7",
-            "type__name": "Cisco | 7600 | Fabric Linecard"
-        },
-        {
-            "description": "Linecard slot 8",
-            "direction": "i",
-            "gender": "f",
-            "name": "linecard8",
-            "type__name": "Cisco | 7600 | Fabric Linecard"
-        },
-        {
-            "description": "Linecard slot 9",
-            "direction": "i",
-            "gender": "f",
-            "name": "linecard9",
-            "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
             "description": "Power Supply  slot 1",
