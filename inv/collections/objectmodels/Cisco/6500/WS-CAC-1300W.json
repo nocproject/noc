@@ -1,8 +1,8 @@
 {
-    "name": "Cisco | 7600 | WS-CAC-2500W",
-    "uuid": "7464b565-0bf1-4a56-ab4e-67a9a6727f74",
+    "name": "Cisco | 6500 | WS-CAC-1300W",
+    "uuid": "0c6c2776-463c-450c-89c8-25d29e0bd110",
     "vendor__code": "CISCO",
-    "description": "Cisco 110/220v AC power supply, 2500 watt",
+    "description": "Cisco 110/220v AC power supply, 1300 watt",
     "connections": [
         {
             "description": "AC power inlet",
@@ -17,12 +17,12 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Cisco | 7600 | PSU"
+            "type__name": "Cisco | 6500 | PSU"
         }
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-CAC-2500W"
+            "part_no0": "WS-CAC-1300W"
         }
     }
 }

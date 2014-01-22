@@ -1,5 +1,5 @@
 {
-    "name": "Cisco | 7600 | WS-C6K-VTT",
+    "name": "Cisco | 6500 | WS-C6K-VTT",
     "uuid": "30d290de-bf49-411a-b224-133ca3951259",
     "vendor__code": "CISCO",
     "description": "Voltage termination module Cisco Catalyst 6500",
@@ -9,7 +9,7 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Cisco | 7600 | VTT"
+            "type__name": "Cisco | 6500 | VTT"
         }
     ],
     "data": {
