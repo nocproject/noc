@@ -27,6 +27,8 @@ class MapPlugin(InvPlugin):
     name = "map"
     js = "NOC.inv.inv.plugins.map.MapPanel"
 
+    CONDUITS_LAYERS = ["manholes", "cableentries"]
+
     def init_plugin(self):
         super(MapPlugin, self).init_plugin()
         self.add_view(
@@ -89,6 +91,7 @@ class MapPlugin(InvPlugin):
                 "point_radius": l.point_radius,
                 "show_labels": l.show_labels,
                 "stroke_dashstyle": l.stroke_dashstyle,
+                "point_graphic": l.point_graphic,
                 "is_visible": LayerUserSettings.is_visible_by_user(request.user, l)
             } for l in Layer.objects.order_by("zindex")
         ]
@@ -146,15 +149,23 @@ class MapPlugin(InvPlugin):
             "model": o.model.name
         }
 
+    def get_conduits_layers(self):
+        """
+        Returns a list of ids of conduits-related layers
+        manholes/cableentries/etc
+        """
+        if not hasattr(self, "_conduit_layers_ids"):
+            self._conduit_layers_ids = Layer.objects.filter(
+                code__in=self.CONDUITS_LAYERS).values_list("id")
+        return self._conduit_layers_ids
+
     def get_conduits_layer(self, layer, x0, y0, x1, y1, srid):
         """
         Build conduits layer
         """
-        manholes_layer = Layer.objects.filter(code="manholes").first()
-        if not manholes_layer:
+        layers = self.get_conduits_layers()
+        if not layers:
             return {}
-        layers = [manholes_layer.id]
-        conduits = {}  # id ->
         # Build bounding box
         dst_srid = SpatialReference(srid)
         from_transform = CoordTransform(

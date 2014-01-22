@@ -266,7 +266,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                             labelXOffset: 7,
                             labelOutlineColor: "white",
                             labelOutlineWidth: 3,
-                            strokeDashstyle: ld.strokeDashstyle
+                            strokeDashstyle: ld.strokeDashstyle,
+                            graphicName: ld.point_graphic
                         },
                         select: {
                             labelAlign: "lb",
