@@ -351,6 +351,12 @@ active_window = 86400
 # GIS Settings
 #
 [gis]
+# Ellipsoids for distance calculations
+# Possible values:
+#     WGS-84
+#     Krass
+#     ПЗ-90
+ellipsoid = ПЗ-90
 # Enable OpenStreetMap base layer
 enable_osm = true
 # Enable Google Sattelite base layer
