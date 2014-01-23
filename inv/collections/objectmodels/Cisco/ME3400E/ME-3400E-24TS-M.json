@@ -288,7 +288,7 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "PSU1",
+            "name": "psu1",
             "type__name": "Cisco | ME3400E | PSU"
         },
         {
@@ -296,7 +296,7 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "PSU2",
+            "name": "psu2",
             "type__name": "Cisco | ME3400E | PSU"
         },
         {
