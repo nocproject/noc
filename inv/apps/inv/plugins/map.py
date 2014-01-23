@@ -27,8 +27,6 @@ class MapPlugin(InvPlugin):
     name = "map"
     js = "NOC.inv.inv.plugins.map.MapPanel"
 
-    CONDUITS_LAYERS = ["manholes", "cableentries"]
-
     def init_plugin(self):
         super(MapPlugin, self).init_plugin()
         self.add_view(
@@ -149,21 +147,11 @@ class MapPlugin(InvPlugin):
             "model": o.model.name
         }
 
-    def get_conduits_layers(self):
-        """
-        Returns a list of ids of conduits-related layers
-        manholes/cableentries/etc
-        """
-        if not hasattr(self, "_conduit_layers_ids"):
-            self._conduit_layers_ids = Layer.objects.filter(
-                code__in=self.CONDUITS_LAYERS).values_list("id")
-        return self._conduit_layers_ids
-
     def get_conduits_layer(self, layer, x0, y0, x1, y1, srid):
         """
         Build conduits layer
         """
-        layers = self.get_conduits_layers()
+        layers = map.get_conduits_layers()
         if not layers:
             return {}
         # Build bounding box
@@ -198,7 +186,7 @@ class MapPlugin(InvPlugin):
                 missed_points.add(o2_id)
         if missed_points:
             for gd in GeoData.objects.filter(
-                    layer__in=layers, objects__in=missed_points
+                    layer__in=layers, object__in=missed_points
             ).transform(dst_srid.srid):
                 points[gd.object] = gd.data
         cdata = []

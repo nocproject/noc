@@ -19,6 +19,8 @@ from noc.gis.models.srs import SRS
 
 
 class Map(object):
+    CONDUITS_LAYERS = ["manholes", "cableentries"]
+
     def __init__(self):
         self.layers = {}
         self.srid_map = {}
@@ -108,5 +110,16 @@ class Map(object):
         gj = vfGeoJSON()
         gj.crs = srid
         return gj.encode(dj.decode(qs))
+
+    def get_conduits_layers(self):
+        """
+        Returns a list of ids of conduits-related layers
+        manholes/cableentries/etc
+        """
+        if not hasattr(self, "_conduit_layers_ids"):
+            self._conduit_layers_ids = Layer.objects.filter(
+                code__in=self.CONDUITS_LAYERS).values_list("id")
+        return self._conduit_layers_ids
+
 
 map = Map()
