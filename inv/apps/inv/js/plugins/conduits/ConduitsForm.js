@@ -46,7 +46,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
             fields: [
                 "target_id", "target_name",
                 "target_model", "map_distance", "project_distance",
-                "n_conduits"
+                "n_conduits", "bearing", "s_bearing"
             ]
         });
 
@@ -79,6 +79,11 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
                     width: 100,
                     align: "right",
                     renderer: me.renderSize
+                },
+                {
+                    text: "Bearing",
+                    dataIndex: "s_bearing",
+                    width: 50
                 },
                 {
                     text: "Conduits",

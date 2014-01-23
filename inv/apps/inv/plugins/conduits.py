@@ -12,7 +12,7 @@ from django.contrib.gis.measure import D
 from base import InvPlugin
 from noc.gis.models.geodata import GeoData
 from noc.inv.models.object import Object
-from noc.lib.geo import distance
+from noc.lib.geo import distance, bearing, bearing_sym
 from noc.gis.map import map
 from noc.sa.interfaces.base import DocumentParameter, FloatParameter
 
@@ -56,10 +56,14 @@ class ConduitsPlugin(InvPlugin):
             gd = None
         for c, remote, _ in object.get_genderless_connections("conduits"):
             map_distance = None
+            br = None
+            sbr = None
             if gd:
                 try:
                     rgd = GeoData.objects.get(object=str(remote.id))
                     map_distance = distance(gd.data, rgd.data)
+                    br = bearing(gd.data, rgd.data)
+                    sbr = bearing_sym(gd.data, rgd.data)
                 except GeoData.DoesNotExist:
                     pass
             conduits += [{
@@ -69,7 +73,9 @@ class ConduitsPlugin(InvPlugin):
                 "target_model_name": remote.model.name,
                 "map_distance": map_distance,
                 "project_distance": c.data.get("project_distance"),
-                "n_conduits": len(c.data.get("conduits", []))
+                "n_conduits": len(c.data.get("conduits", [])),
+                "bearing": br,
+                "s_bearing": sbr
             }]
         return {
             "id": str(object.id),
