@@ -29,3 +29,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
 // Renderer symbols
 OpenLayers.Renderer.symbol.diamond = [-5,0, 0,5, 5,0, 0,-5];
+OpenLayers.Renderer.symbol.antenna = [
+    7, 7, 7, 15, 9, 15, 9, 7,
+    15, 0, 14, 0, 9, 5,
+    9, 0, 7, 0, 7, 5,
+    1, 0, 0, 0, 7, 7];
+OpenLayers.Renderer.symbol.flag = [
+    0, 0, 0, 15, 1, 15, 1, 10,
+    15, 10, 15, 1, 1, 1, 1, 0, 0, 0
+];
