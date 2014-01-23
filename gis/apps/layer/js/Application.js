@@ -178,7 +178,9 @@ Ext.define("NOC.gis.layer.Application", {
                                 ["x", "x"],
                                 ["square", "square"],
                                 ["star", "star"],
-                                ["diamond", "diamond"]
+                                ["diamond", "diamond"],
+                                ["antenna", "antenna"],
+                                ["flag", "flag"]
                             ]
                         }
                     ]

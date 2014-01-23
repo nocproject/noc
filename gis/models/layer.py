@@ -41,7 +41,8 @@ class Layer(Document):
     point_radius = IntField(default=5)
     point_graphic = StringField(
         choices=[(x, x) for x in
-            ("circle", "triangle", "cross", "x", "square", "star", "diamond")
+            ("circle", "triangle", "cross", "x", "square", "star",
+             "diamond", "antenna", "flag")
         ], default="circle"
     )
     # Line symbolizer
