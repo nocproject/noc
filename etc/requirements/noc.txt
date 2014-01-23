@@ -2,6 +2,7 @@ Mercurial>=2.5.2
 psycopg2>=2.5
 pymongo==2.6.3
 gmpy==1.16
+geopy==0.97
 pycrypto>=2.6
 python-cjson>=1.0.5
 netifaces>=0.8
