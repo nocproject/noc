@@ -3,7 +3,7 @@
     "uuid": "ae6a7aff-af07-489e-b222-8cf71b62b5b4",
     "vendor__code": "NONAME",
     "description": "Building's cable entry",
-    "plugins": ["-inventory"],
+    "plugins": ["-inventory", "conduits"],
     "connections": [
         {
             "description": "Ducts conduits connections",
