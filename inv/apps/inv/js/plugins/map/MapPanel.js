@@ -171,7 +171,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         //
         me.infoTemplate = Handlebars.compile(
             "<b>{{name}}</b><br>" +
-            "<i>{{model}}</i>"
+            "<i>{{model}}</i><br><hr>" +
+            "<a id='{{showLinkId}}' href='#'>Show...</a>"
         );
     },
     //
@@ -408,7 +409,10 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     //
     showObjectPopup: function(feature, data) {
         var me = this,
-            text = me.infoTemplate(data);
+            showLinkId = "noc-ol-tip-show-link-" + me.id,
+            text, ttEl, showLink;
+        data = Ext.merge({showLinkId: showLinkId}, data);
+        text = me.infoTemplate(data);
         if(me.infoPopup) {
             me.olMap.removePopup(me.infoPopup);
             me.infoPopup.destroy();
@@ -423,10 +427,18 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             true
         );
         me.olMap.addPopup(me.infoPopup);
+        ttEl = Ext.get(me.infoPopup.contentDiv);
+        showLink = ttEl.select("#" + showLinkId).elements[0];
+        showLink.onclick = function() {
+            me.app.showObject(data.id);
+        }
     },
     //
     onFeatureClick: function(e) {
         var me = this;
+        if(!e.feature.attributes.object) {
+            return;
+        }
         Ext.Ajax.request({
             url: "/inv/inv/" + e.feature.attributes.object + "/plugin/map/object_data/",
             method: "GET",
