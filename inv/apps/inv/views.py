@@ -175,3 +175,20 @@ class InvApplication(ExtApplication):
             for x in o:
                 x.put_into(cc)
         return True
+
+    @view("^(?P<id>[0-9a-f]{24})/path/$", method=["GET"],
+          access="read", api=True)
+    def api_get_path(self, request, id):
+        o = self.get_object_or_404(Object, id=id)
+        path = [{
+            "id": str(o.id),
+            "name": o.name
+        }]
+        root = self.get_root().id
+        while o.container and o.container != root:
+            o = Object.objects.get(id=o.container)
+            path = [{
+                "id": str(o.id),
+                "name": o.name
+            }] + path
+        return path

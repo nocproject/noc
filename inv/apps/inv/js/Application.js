@@ -106,6 +106,15 @@ Ext.define("NOC.inv.inv.Application", {
             ]
         });
         me.callParent();
+        // Process commands
+        if(me.noc.cmd) {
+            switch(me.noc.cmd.cmd) {
+                case "history":
+                    me.restoreHistory(me.noc.cmd.args);
+                    return;
+                    break;
+            }
+        }
     },
     //
     onReloadNav: function() {
@@ -113,31 +122,59 @@ Ext.define("NOC.inv.inv.Application", {
         me.store.reload({node: me.store.getRootNode()});
     },
     //
+    runPlugin: function(objectId, pData) {
+        var me = this,
+            plugin = Ext.create(pData.xtype, {app: me});
+        me.tabPanel.add(plugin);
+        Ext.Ajax.request({
+            url: "/inv/inv/" + objectId + "/plugin/" + pData.name + "/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                plugin.preview(data);
+            },
+            failure: function() {
+                NOC.error("Failed to get data for plugin " + pData.name);
+            }
+        });
+    },
+    //
     onSelectNav: function(panel, record, index, eOpts) {
         var me = this,
-            plugins = record.get("plugins"),
-            plugin,
-            runPlugin = function(id, pData) {
-                var plugin = Ext.create(pData.xtype, {app: me});
-                me.tabPanel.add(plugin);
-                Ext.Ajax.request({
-                    url: "/inv/inv/" + id + "/plugin/" + pData.name + "/",
-                    method: "GET",
-                    scope: me,
-                    success: function(response) {
-                        var data = Ext.decode(response.responseText);
-                        plugin.preview(data);
-                    },
-                    failure: function() {
-                        NOC.error("Failed to get data for plugin " + p.name);
-                    }
-                });
-            };
+            objectId = record.get("id"),
+            plugins = record.get("plugins");
         me.addButton.setDisabled(!record.get("can_add"));
         me.tabPanel.removeAll();
         Ext.each(plugins, function(p) {
-            runPlugin(record.get("id"), p);
+            me.runPlugin(objectId, p);
         });
+        me.setHistoryHash(objectId);
+    },
+    // Expand nav tree to object
+    showObject: function(objectId) {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/inv/inv/" + objectId + "/path/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText),
+                    path = [,me.navTree.getRootNode().get("id")];
+                path = path.concat(data.map(function(v) {return v.id}));
+                me.navTree.selectPath(
+                    path.join("/"), "id", "/",
+                    function(success, lastNode) {
+                        if(!success) {
+                            NOC.error("Failed to find node");
+                        }
+                    }, me
+                );
+            },
+            failure: function(response) {
+                NOC.error("Failed to get path");
+            }
+        })
     },
     //
     onAddGroup: function() {
@@ -208,5 +245,11 @@ Ext.define("NOC.inv.inv.Application", {
                 }
             });
         }
+    },
+    //
+    restoreHistory: function(args) {
+        var me = this,
+            objectId = args[0];
+        me.showObject(args[0]);
     }
 });
