@@ -24,6 +24,7 @@ class Script(NOCScript):
         r"(GigabitEthernet|TenGigabitEthernet|AggregatePort)", re.MULTILINE)
     rx_line_vlan = re.compile(r"\w*==========================\s+VLAN",
                               re.MULTILINE)
+    rx_ifindex = re.compile(r"Index\(dec\):(?P<ifindex>\d+) \(hex\):\d+")
     rx_name = re.compile(r"(?P<name>.+) is (?P<status>.\S+)(|\s+),",
                          re.MULTILINE)
     rx_descr = re.compile(
@@ -114,6 +115,10 @@ class Script(NOCScript):
         for s in self.rx_line.split(v)[1:]:
             n = {}
             enabled_protocols = []
+            ifindex = 0
+            match = self.rx_ifindex.search(s)
+            if match:
+                ifindex = int(match.group("ifindex"))
             match = self.rx_name.search(s)
             if not match:
                 continue
@@ -138,6 +143,8 @@ class Script(NOCScript):
                 "oper_status": status,
                 "enabled_afi": ["BRIDGE"],
             }]
+            if ifindex != 0:
+                n["snmp_ifindex"] = ifindex
             if lldp_enable and iface in lldp:
                 enabled_protocols += ["LLDP"]
             n["enabled_protocols"] = enabled_protocols
@@ -151,6 +158,10 @@ class Script(NOCScript):
             r += [n]
         for s in self.rx_line_vlan.split(v)[1:]:
             n = {}
+            ifindex = 0
+            match = self.rx_ifindex.search(s)
+            if match:
+                ifindex = int(match.group("ifindex"))
             match = self.rx_name.search(s)
             if not match:
                 continue
@@ -191,5 +202,7 @@ class Script(NOCScript):
                              "enabled_protocols": enabled_protocols,
                              "vlan_ids": vlan_ids,
                      }]}
+            if ifindex != 0:
+                iface["snmp_ifindex"] = ifindex
             r += [iface]
         return [{"interfaces": r}]
