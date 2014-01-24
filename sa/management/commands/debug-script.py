@@ -316,12 +316,12 @@ class Command(BaseCommand):
             access_profile.port = o.port
         access_profile.user = credentials.user
         access_profile.password = credentials.password
-        if o.super_password:
-            access_profile.super_password = o.super_password
+        if credentials.super_password:
+            access_profile.super_password = credentials.super_password
         if snmp_ro_community:
             if snmp_ro_community != "-":
                 access_profile.snmp_ro = snmp_ro_community
-            elif o.snmp_ro:
+            elif credentials.snmp_ro:
                 access_profile.snmp_ro = credentials.snmp_ro
         if o.remote_path:
             access_profile.path = o.remote_path
