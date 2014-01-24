@@ -336,17 +336,17 @@ class SAE(Daemon):
         credentials = object.credentials
         if object.port:
             r.access_profile.port = object.port
-        if object.user:
+        if credentials.user:
             r.access_profile.user = credentials.user
-        if object.password:
+        if credentials.password:
             r.access_profile.password = credentials.password
-        if object.super_password:
+        if credentials.super_password:
             r.access_profile.super_password = credentials.super_password
         if object.remote_path:
             r.access_profile.path = object.remote_path
-        if object.snmp_ro:
+        if credentials.snmp_ro:
             r.access_profile.snmp_ro = credentials.snmp_ro
-        if object.snmp_rw:
+        if credentials.snmp_rw:
             r.access_profile.snmp_rw = credentials.snmp_rw
         attrs = [(a.key, a.value) for a in object.managedobjectattribute_set.all()]
         for k, v in attrs:
