@@ -14,6 +14,7 @@ Ext.define("NOC.inv.inv.Application", {
     ],
     initComponent: function() {
         var me = this;
+        me.invPlugins = {};
         // Navigation tree
         me.defaultRoot = {
             text: ".",
@@ -126,6 +127,7 @@ Ext.define("NOC.inv.inv.Application", {
         var me = this,
             plugin = Ext.create(pData.xtype, {app: me});
         me.tabPanel.add(plugin);
+        me.invPlugins[pData.name] = plugin;
         Ext.Ajax.request({
             url: "/inv/inv/" + objectId + "/plugin/" + pData.name + "/",
             method: "GET",
@@ -145,6 +147,7 @@ Ext.define("NOC.inv.inv.Application", {
             objectId = record.get("id"),
             plugins = record.get("plugins");
         me.addButton.setDisabled(!record.get("can_add"));
+        me.invPlugins = {};
         me.tabPanel.removeAll();
         Ext.each(plugins, function(p) {
             me.runPlugin(objectId, p);

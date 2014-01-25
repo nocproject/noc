@@ -163,6 +163,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
             scope: me,
             success: function() {
                 me.reload();
+                me.reloadMapLayer();
             },
             failure: function() {
                 NOC.error("Failed to remove conduits");
@@ -197,5 +198,10 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         var me = this;
         me.app.reload();
         me.deleteButton.setDisabled(true);
+    },
+    //
+    reloadMapLayer: function() {
+        var me = this;
+        me.app.app.invPlugins.map.reloadLayer("conduits");
     }
 });
