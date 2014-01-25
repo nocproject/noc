@@ -152,8 +152,17 @@ Ext.define("NOC.inv.inv.Application", {
         me.setHistoryHash(objectId);
     },
     // Expand nav tree to object
-    showObject: function(objectId) {
+    showObject: function(objectId, reload) {
         var me = this;
+        if(reload) {
+            me.store.on("load", function() {
+                me.showObject(objectId)
+            }, {
+                scope: me,
+                single: true
+            });
+            me.onReloadNav();
+        }
         Ext.Ajax.request({
             url: "/inv/inv/" + objectId + "/path/",
             method: "GET",

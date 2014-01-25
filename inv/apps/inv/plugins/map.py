@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Django modules
-from django.contrib.gis.geos import Polygon, LineString
+from django.contrib.gis.geos import Polygon, LineString, Point
 from django.contrib.gis.gdal.srs import SpatialReference, CoordTransform
 ## Third-party modules
 from vectorformats.Formats.GeoJSON import GeoJSON
@@ -18,9 +18,11 @@ from noc.gis.map import map
 from noc.gis.models.layer import Layer
 from noc.gis.models.layerusersettings import LayerUserSettings
 from noc.gis.models.geodata import GeoData
+from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import (StringParameter, FloatParameter,
-                                    BooleanParameter)
+                                    BooleanParameter, DocumentParameter,
+                                    UnicodeParameter)
 
 
 class MapPlugin(InvPlugin):
@@ -38,13 +40,13 @@ class MapPlugin(InvPlugin):
         self.add_view(
             "api_plugin_%s_object_data" % self.name,
             self.api_object_data,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/object_data/" % self.name,
+            url="^(?P<id>[0-9a-f]{24})/plugin/%s/object_data/$" % self.name,
             method=["GET"]
         )
         self.add_view(
             "api_plugin_%s_set_geopoint" % self.name,
             self.api_set_geopoint,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/set_geopoint/" % self.name,
+            url="^(?P<id>[0-9a-f]{24})/plugin/%s/set_geopoint/$" % self.name,
             method=["POST"],
             validate={
                 "srid": StringParameter(),
@@ -55,11 +57,25 @@ class MapPlugin(InvPlugin):
         self.add_view(
             "api_plugin_%s_set_layer_visibility" % self.name,
             self.api_set_layer_visibility,
-            url="^plugin/%s/layer_visibility/" % self.name,
+            url="^plugin/%s/layer_visibility/$" % self.name,
             method=["POST"],
             validate={
                 "layer": StringParameter(),
                 "status": BooleanParameter()
+            }
+        )
+
+        self.add_view(
+            "api_plugin_%s_create" % self.name,
+            self.api_create,
+            url="^plugin/%s/$" % self.name,
+            method=["POST"],
+            validate={
+                "model": DocumentParameter(ObjectModel),
+                "name": UnicodeParameter(),
+                "srid": StringParameter(),
+                "x": FloatParameter(),
+                "y": FloatParameter()
             }
         )
 
@@ -103,7 +119,7 @@ class MapPlugin(InvPlugin):
                 x = p.get_data("geopoint", "x")
                 y = p.get_data("geopoint", "y")
         # @todo: Coordinates transform
-
+        # Feed result
         return {
             "id": str(o.id),
             "zoom": map.get_default_zoom(
@@ -113,7 +129,8 @@ class MapPlugin(InvPlugin):
             "x": x,
             "y": y,
             "layer": o.get_data("geopoint", "layer"),
-            "layers": layers
+            "layers": layers,
+            "add_menu": self.get_add_menu()
         }
 
     def api_get_layer(self, request, layer):
@@ -210,3 +227,79 @@ class MapPlugin(InvPlugin):
         l = self.app.get_object_or_404(Layer, code=layer)
         LayerUserSettings.set_layer_visibility(request.user, l, status)
         return {"status": True}
+
+    def get_add_menu(self):
+        def get_menu_item(d):
+            r = []
+            for i in sorted(d):
+                item = {"text": i}
+                if isinstance(d[i], dict):
+                    # Submenu
+                    item["menu"] = get_menu_item(d[i])
+                else:
+                    # Item
+                    item["objectTypeId"] = d[i]
+                r += [item]
+            return r
+
+        d = {}
+        # All models with geopoint interface
+        for mt in ObjectModel.objects.filter(data__geopoint__layer__exists=True):
+            parts = mt.name.split(" | ")
+            m = d
+            for p in parts[:-1]:
+                if p not in m:
+                    m[p] = {}
+                m = m[p]
+            m[parts[-1]] = str(mt.id)
+        #
+        return get_menu_item(d)
+
+    def api_create(self, request, model=None, name=None,
+                   srid=None, x=None, y=None):
+        # Find container
+        container = None
+        p = Point(x, y, srid=srid)
+        np = None
+        if model.name == "Ducts | Cable Entry":
+            # Cable entries are attached to nearest PoP
+            pop_layers = [
+                str(x) for x in
+                Layer.objects.filter(code__startswith="pop_").values_list("id")
+            ]
+            nps = list(GeoData.objects.filter(layer__in=pop_layers).distance(p).order_by("distance")[:1])
+            if nps:
+                np = nps[0]
+        else:
+            # Or to the objects on same layer
+            layer = Layer.objects.get(code=model.get_data("geopoint", "layer"))
+            nps = list(GeoData.objects.filter(layer=str(layer.id)).distance(p).order_by("distance")[:1])
+            if nps:
+                np = nps[0]
+        # Check nearest area
+        layer = Layer.objects.get(code="areas")
+        nps = list(GeoData.objects.filter(layer=str(layer.id)).distance(p).order_by("distance")[:1])
+        if nps:
+            ap = nps[0]
+            if not np or ap.distance < np.distance:
+                np = ap
+        # Check nearest city
+        layer = Layer.objects.get(code="cities")
+        nps = list(GeoData.objects.filter(layer=str(layer.id)).distance(p).order_by("distance")[:1])
+        if nps:
+            ap = nps[0]
+            if not np or ap.distance < np.distance:
+                np = ap
+        # Get best nearest container
+        co = Object.objects.get(id=np.object)
+        container = co.container
+        # Create object
+        o = Object(name=name, model=model, container=container)
+        o.save()
+        o.set_data("geopoint", "srid", srid)
+        o.set_data("geopoint", "x", x)
+        o.set_data("geopoint", "y", y)
+        o.save()
+        return {
+            "id": str(o.id)
+        }
