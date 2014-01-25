@@ -307,12 +307,16 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         });
         me.setLayerVisibility();
         me.infoPopup = null;
+        // Install context menu
+        me.mapDom = Ext.select("#" + mapDiv).elements[0];
+        me.mapDom.oncontextmenu = Ext.bind(me.onContextMenu, me);
     },
     //
     preview: function(data) {
         var me = this,
             urls = [];
         me.currentId = data.id;
+        me.contextMenuData = data.add_menu;
         urls.push("/static/pkg/openlayers/OpenLayers.js");
         if(me.requireGoogleAPI) {
             urls.push("@http://maps.google.com/maps/api/js?sensor=false&callback=_noc_load_callback");
@@ -487,5 +491,71 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                 NOC.error("Failed to change layer settings");
             }
         });
+    },
+    //
+    getContextMenuAddItems: function(items) {
+        var me = this;
+        Ext.each(items, function(i) {
+            if(i.menu) {
+                i.menu = me.getContextMenuAddItems(i.menu);
+            } else if(i.objectTypeId) {
+                i.listeners = {
+                    scope: me,
+                    click: me.onContextMenuAdd
+                }
+            }
+        });
+        return items;
+    },
+    //
+    getContextMenu: function() {
+        var me = this;
+        // Return cached
+        if(me.contextMenu) {
+            return me.contextMenu;
+        }
+        // create new
+        // @todo: Install handlers?
+        me.contextMenu = Ext.create("Ext.menu.Menu", {
+            renderTo: me.mapDom,
+            items: [
+                {
+                    text: "Add",
+                    menu: me.getContextMenuAddItems(me.contextMenuData)
+                }
+            ]
+        });
+        return me.contextMenu;
+    },
+    //
+    onContextMenu: function(e) {
+        var me = this,
+            m = me.getContextMenu();
+        //
+        e = e ? e : window.event;
+        // Calculate map position
+        console.log(e.layerX, e.layerY);
+        me.newPosition = me.olMap.getLonLatFromPixel(new OpenLayers.Pixel(e.layerX, e.layerY));
+        me.newPosition.transform(me.projMap, me.projGeo);
+        // Show context menu
+        m.setLocalXY(e.layerX, e.layerY);
+        m.show();
+        // Disable default context menu
+        if(e.preventDefault) {
+            e.preventDefault(); // normal browsers
+        } else {
+            return false; // MSIE
+        }
+    },
+    //
+    onContextMenuAdd: function(item, e, eOpts) {
+        var me = this;
+        Ext.create("NOC.inv.inv.plugins.map.AddObjectForm", {
+            app: me,
+            objectModelId: item.objectTypeId,
+            objectModelName: item.text,
+            newPosition: me.newPosition,
+            positionSRID: me.projGeo.projCode
+        }).show();
     }
 });
