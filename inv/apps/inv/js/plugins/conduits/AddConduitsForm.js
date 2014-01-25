@@ -84,6 +84,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.AddConduitsForm", {
             scope: me,
             success: function() {
                 me.app.reload();
+                me.app.reloadMapLayer();
                 me.close();
             },
             failure: function() {

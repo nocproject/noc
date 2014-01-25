@@ -557,5 +557,15 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             newPosition: me.newPosition,
             positionSRID: me.projGeo.projCode
         }).show();
+    },
+    //
+    reloadLayer: function(code) {
+        var me = this;
+        Ext.each(me.layerZoom, function(l) {
+            if(l.code == code) {
+                l.layer.loaded = false;
+                l.layer.refresh({force: true});
+            }
+        });
     }
 });

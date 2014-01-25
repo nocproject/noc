@@ -14,6 +14,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsPanel", {
     closable: false,
     layout: "fit",
     autoScroll: true,
+    app: null,
 
     initComponent: function() {
         var me = this;
