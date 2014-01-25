@@ -22,6 +22,7 @@ class ConduitsPlugin(InvPlugin):
     js = "NOC.inv.inv.plugins.conduits.ConduitsPanel"
 
     MAX_CONDUIT_LENGTH = 1000
+    SINGLE_CONNECTION_MODELS = set(["Ducts | Cable Entry"])
 
     def init_plugin(self):
         super(ConduitsPlugin, self).init_plugin()
@@ -83,6 +84,9 @@ class ConduitsPlugin(InvPlugin):
             "conduits": conduits
         }
 
+    def is_single_connection(self, o):
+        return o.model.name in self.SINGLE_CONNECTION_MODELS
+
     def api_get_neighbors(self, request, id):
         o = self.app.get_object_or_404(Object, id=id)
         try:
@@ -92,6 +96,9 @@ class ConduitsPlugin(InvPlugin):
         layers = map.get_conduits_layers()
         connected = set(
             str(ro.id) for _, ro, _ in o.get_genderless_connections("conduits"))
+        if self.is_single_connection(o) and connected:
+            # Connection limits exceed
+            return []
         r = []
         for g in GeoData.objects.filter(
                 layer__in=layers,
@@ -104,6 +111,11 @@ class ConduitsPlugin(InvPlugin):
             ro = Object.objects.filter(id=g.object).first()
             if not ro:
                 continue
+            # Exclude already connected cable entries
+            if (self.is_single_connection(ro) and
+                    len(ro.get_genderless_connections("conduits"))):
+                continue
+            # Feed data
             d = distance(og.data, g.data)
             sbr = bearing_sym(og.data, g.data)
             r += [{
