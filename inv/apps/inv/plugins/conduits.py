@@ -105,9 +105,10 @@ class ConduitsPlugin(InvPlugin):
             if not ro:
                 continue
             d = distance(og.data, g.data)
+            sbr = bearing_sym(og.data, g.data)
             r += [{
                 "id": str(g.object),
-                "label": "%s (%dm)" % (ro.name, d)
+                "label": "%s (%s, %dm)" % (ro.name, sbr, d)
             }]
         return r
 
