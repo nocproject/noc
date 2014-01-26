@@ -264,7 +264,7 @@ class MapPlugin(InvPlugin):
         if model.name == "Ducts | Cable Entry":
             # Cable entries are attached to nearest PoP
             pop_layers = [
-                str(x) for x in
+                str(lid) for lid in
                 Layer.objects.filter(code__startswith="pop_").values_list("id")
             ]
             nps = list(GeoData.objects.filter(layer__in=pop_layers).distance(p).order_by("distance")[:1])
