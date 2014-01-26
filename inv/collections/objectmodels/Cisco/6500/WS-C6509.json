@@ -41,18 +41,20 @@
             "type__name": "Cisco | 6500 | VTT"
         },
         {
-            "description": "Linecard slot 1",
+            "description": "Linecard/Supervisor slot 1",
             "direction": "i",
             "gender": "f",
+            "internal_name": "sup1",
             "name": "linecard1",
-            "type__name": "Cisco | 7600 | Fabric Linecard"
+            "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
         {
-            "description": "Linecard slot 2",
+            "description": "Linecard/Supervisor slot 2",
             "direction": "i",
             "gender": "f",
+            "internal_name": "sup2",
             "name": "linecard2",
-            "type__name": "Cisco | 7600 | Fabric Linecard"
+            "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
         {
             "description": "Linecard slot 3",
@@ -69,7 +71,7 @@
             "type__name": "Cisco | 7600 | Fabric Linecard"
         },
         {
-            "description": "Linecard 5/Supervisor slot 1",
+            "description": "Linecard 5/Supervisor slot 5",
             "direction": "i",
             "gender": "f",
             "internal_name": "sup5",
@@ -77,7 +79,7 @@
             "type__name": "Cisco | 7600 | Linecard/Supervisor"
         },
         {
-            "description": "Linecard 6/Supervisor slot 2",
+            "description": "Linecard 6/Supervisor slot 6",
             "direction": "i",
             "gender": "f",
             "internal_name": "sup6",
@@ -125,11 +127,16 @@
             "part_no0": "WS-C6509",
             "part_no1": "WS-C6509-E"
         },
+        "dimensions": {
+            "depth": 460,
+            "height": 640,
+            "width": 438
+        },
         "management": {
             "managed": true
         },
         "rackmount": {
-            "units": 9
+            "units": 15.0
         }
     }
 }
