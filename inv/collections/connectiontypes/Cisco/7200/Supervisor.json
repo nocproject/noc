@@ -1,0 +1,7 @@
+{
+    "name": "Cisco | 7200 | Supervisor",
+    "uuid": "f0aaaf95-2646-4a60-bbe0-8fa3f7139143",
+    "description": "Cisco 7200 Supervisor slot",
+    "c_group": ["7200_bus"],
+    "genders": "mf"
+}

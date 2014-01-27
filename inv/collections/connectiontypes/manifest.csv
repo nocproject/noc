@@ -17,6 +17,9 @@ Cisco | 6500 | DFC,5edcd942-237d-40d7-86d5-a317f11dc9b4,Cisco/6500/DFC.json,2042
 Cisco | 6500 | PSU,ff568a7e-b4e6-40fc-820d-f3737263f055,Cisco/6500/PSU.json,314651d16036d47c7da0306e685aeee52e331e24a890d483f5ea9d942d91ea18
 Cisco | 6500 | VTT,522e4335-5384-4d2c-aa5c-4b8a45fb92cf,Cisco/6500/VTT.json,5df87ddb4f79a4ee23702dd8034b6a2aed942332408f2eceeaf963f96e67a241
 Cisco | 7200 | 7201 PWR,60bd80ff-7bb2-4313-a1d3-2f0e7d522bcc,Cisco/7200/7201_PWR.json,89e10daf95be78699e2dfe4ade03a4ea94e09eff7c5c1a6163a8943dfc4d04bd
+Cisco | 7200 | Linecard,4c4d2acf-79ee-4990-9c11-d6e0028c2829,Cisco/7200/Linecard.json,f05e21477b062f244e7d6aa9a71752561cdbb22ecadd531de7728fca06e8a49e
+Cisco | 7200 | PWR-7200,e527ad85-23af-47db-95d8-610748177d20,Cisco/7200/PWR-7200.json,cc25f92f6b1646b2a554c8db2c38f3a946b7df7d11c4428d3af2ae4b60dbbe13
+Cisco | 7200 | Supervisor,f0aaaf95-2646-4a60-bbe0-8fa3f7139143,Cisco/7200/Supervisor.json,a055ca467f5ab5be096e779bce3a102feaf4519b796cd1c1c4c2f5dbc8fb7d0e
 Cisco | 7600 | 7606 Fan,463a22b7-2a1b-42dc-ab07-df99bb4edfff,Cisco/7600/7606_Fan.json,d6f91ebe1436adeb81b7a5a354b9ac751c4f3181e8617232444a9c8e607c2bc8
 Cisco | 7600 | Bus Linecard,de7c5b2c-8c75-4546-a3f6-9a2e4a03c1cf,Cisco/7600/Bus_Linecard.json,df1bd56f6f697bbf004d68e4a67df1856843f545f253b783a69a4480ef515a42
 Cisco | 7600 | Bus/Fabric Linecard,c7387cf5-dd0d-46f8-a3d6-8ecc169de993,Cisco/7600/Bus_Fabric_Linecard.json,13a8b6e3ece17970500d581795c8bfeff9a8fe63545ffd41b90ae07c10c752ec
@@ -39,6 +42,7 @@ Cisco | ASR9k | RSP,a39f10a0-1239-4735-8204-2c7ecb56655d,Cisco/ASR9k/RSP.json,4a
 Cisco | Electrical | StackWise,1bf4cdf7-0063-4a58-b33b-4369ef5f6916,Cisco/Electrical/StackWise.json,4e2b2adce3af83294c27a90e3d0f714c0d28b527abcfc8bed147854f655dd477
 Cisco | Electrical | StackWise Plus,f3ed397f-f3a9-4522-a7b7-4e7e230460da,Cisco/Electrical/StackWise_Plus.json,e6b5e6104a29b0c7806714f31e3f32306de397e30f23c391f162ce85faa2a4e2
 Cisco | ME3400E | PSU,343d7a6d-00e3-4936-af1c-9e0698f011fd,Cisco/ME3400E/PSU.json,d4b88aa1ea4c87874297ebe086c9df5fcf737b4c0654fa67d04aaca029b677bb
+Cisco | ME3600 | PSU,cef0c7dc-3ff1-49e2-abce-d4611c8e0867,Cisco/ME3600/PSU.json,f6b3a3c42c330646632af4a8cfde2081b544df1ec98d065cce09dbffb3e336d2
 Cisco | PWR-C49-300,3fb7b6cf-2671-405b-874d-4ba2f96393ba,Cisco/PWR-C49-300.json,433aa1da87a2f871d873dbd32a844c18b5a70896361fdccfa44f1e3d2995726c
 Cisco | SCE | SCE8000 Fan,adf75164-03ca-4ba2-8ed0-2f9b3f421c97,Cisco/SCE/SCE8000_Fan.json,eee4c0c194edde64b943700aed61adf30b9daa7cb451b14ed10edebda50f395e
 Cisco | SCE | SCE8000 OPB,2f8e75be-b431-466c-9d8d-db3d50306cd3,Cisco/SCE/SCE8000_OPB.json,5444becfa902530e73ce79e5c815a3dc37a2f6aacfb962a89a77d036a4a0cf44
@@ -141,6 +145,7 @@ SIM | mini-SIM,41d47933-930d-4b59-a96b-87bf246fae67,SIM/mini-SIM.json,4fcf7cfc59
 SIM | nano-SIM,a698542a-27c4-4da4-8764-49389d92eb68,SIM/nano-SIM.json,b4b8efccf625be58f54b08ba2033ebc93c128534128c6a4adcc4b722606e9877
 Transceiver | GBIC,1eb3aa41-ac7c-4ed3-a227-2c565b83e8ad,Transceiver/GBIC.json,0601325c89d3e9a1a9745f22b2dc0208933f85fa6709d1ca1ffdefa4cc844209
 Transceiver | GBIC | Cisco,a970b76a-e6d0-409c-a8a9-75923691f76c,Transceiver/GBIC/Cisco.json,5cd021107ded0b87222dcf7353749e5e657962d7c903ead8c3fb58d87f33bc1d
+Transceiver | QSFP+,8730ba07-e0e8-4022-a2cb-103400651a2f,Transceiver/QSFP+.json,012fd33c4a0dd52156fd6249e5e0d519f7e0a0a47ac6ec8a9c213b89093e9694
 Transceiver | SFP,5571ccae-fb7f-4733-961b-cefc75de3285,Transceiver/SFP.json,eed54ec9ecbc68fec9e69309f410bdc031d6604a1fe8a4aee5d39aac71d183c6
 Transceiver | SFP | Cisco,6403c26d-82f0-4c3e-bc79-2a57422b1375,Transceiver/SFP/Cisco.json,e7f340368ae09b3df1ec33815c4f6d711da29d52dcedae6b89641ceb9e0c5118
 Transceiver | SFP+,6086d594-515d-400c-8351-aceff54e6d2b,Transceiver/SFP+.json,d7dedbb4f7e3bb76c395c74fa52be8214e4712da87fa4b36a0ff98489cc9f8c2
