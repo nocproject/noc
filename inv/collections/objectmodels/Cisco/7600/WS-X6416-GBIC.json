@@ -1,0 +1,148 @@
+{
+    "name": "Cisco | 7600 | WS-X6416-GBIC",
+    "uuid": "5d5ce12b-fdbd-4f0b-8885-695d3139c3ac",
+    "vendor__code": "CISCO",
+    "description": "Cisco WS-X6416-GBIC 16 port 1000mb GBIC ethernet",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "GigabitEthernet X/1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/3",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi3_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/4",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi4_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/5",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi5_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/6",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi6_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/7",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi7_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/8",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi8_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/9",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi9_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/10",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi10_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/11",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi11_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/12",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi12_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/13",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi13_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/14",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi14_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/15",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi15_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/16",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi16_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-X6416-GBIC"
+        }
+    }
+}
