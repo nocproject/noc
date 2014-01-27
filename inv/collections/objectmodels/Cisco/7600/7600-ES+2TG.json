@@ -1,0 +1,43 @@
+{
+    "name": "Cisco | 7600 | 7600-ES+2TG",
+    "uuid": "59f730d5-e097-4777-8a63-191b441f94bb",
+    "vendor__code": "CISCO",
+    "description": "7600-ES+2TG 2x10G ports 7600 ES+",
+    "connections": [
+        {
+            "description": "DFC Slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "dfc",
+            "type__name": "Cisco | 7600 | DFC"
+        },
+        {
+            "description": "TeX/1 XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te1_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "TeX/2 XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te2_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "7600-ES+2TG"
+        }
+    }
+}
