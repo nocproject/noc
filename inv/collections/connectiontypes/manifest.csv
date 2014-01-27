@@ -66,6 +66,7 @@ Electrical | S-Video,dffb5f01-cbad-4106-94ec-ee81d85ffab6,Electrical/S-Video.jso
 Electrical | SCART,3ef85ada-9585-4404-8a13-07fbff59fd1b,Electrical/SCART.json,0c9aeed6cb62ef554ac6f5cfeccd6fefb737606c784c9a03f912eeb8b4270f0e
 Electrical | SFF-8470,e18c7653-7402-4abf-9105-e371e269b71d,Electrical/SFF-8470.json,a62b7bfa27602503946d5a28201cdfac40b8a822d2671876e8c1a47e5fccdcc5
 Electrical | USB,5e1d3fcc-dac1-44b7-8d56-38cf4bc2fb73,Electrical/USB.json,2f4a27cc416e90094c39b0f0edf6fb6fb6966c84daeaf42197d63c341ac1ee93
+Electrical | V35,b4bed690-60fe-403b-b358-0c8e09c5daa1,Electrical/V35.json,731af31b7a26b34c5645ccb4d20374e70b3829e4c80576db0a9a9af9b4d18efd
 Electrical | XLR,b1ba0dab-8bea-45f2-8325-ad3627b40aa6,Electrical/XLR.json,47263cb7304e9aa1deeae02b9ca3db5fe922a68750025d7b0fda616a75c0a298
 Electrical | micro-USB,12bd9834-e953-45b7-afa6-0c59be402efa,Electrical/micro-USB.json,0e0a3eb6d150d635c742e712308319af4d84de4782a0fe36bc39d5e7604f4916
 Electrical | mini-DVI,74376cab-b1fb-462a-9e99-23bcc31a83c8,Electrical/mini-DVI.json,67a224d53cf9a2f38dffd14050d4b17845af8ae723a1d3eb5002c55f840ad028
