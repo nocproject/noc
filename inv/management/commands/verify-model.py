@@ -75,5 +75,5 @@ class Command(BaseCommand):
 
     def check_ct_sfp(self, c):
         self.check_protocols(c, [
-            "TransEth100M", "TransEth1G", "TransEth10G"
+            "TransEth100M", "TransEth1G", "TransEth10G", "TransEth40G"
         ])

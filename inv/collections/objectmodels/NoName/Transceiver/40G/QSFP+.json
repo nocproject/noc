@@ -1,0 +1,17 @@
+{
+    "name": "NoName | Transceiver | 40G | QSFP+",
+    "uuid": "583eac62-9f6e-4121-87a2-53efc44a86cf",
+    "vendor__code": "NONAME",
+    "description": "NoName QSFP+ transceiver",
+    "connections": [
+        {
+            "description": "QSFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        }
+    ],
+    "data": {}
+}

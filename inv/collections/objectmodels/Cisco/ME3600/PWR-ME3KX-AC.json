@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ME3600 | PWR-ME3KX-AC",
+    "uuid": "89d6a0cb-88fc-4db2-9b78-c4736cde6514",
+    "vendor__code": "CISCO",
+    "description": "Cisco ME3600X / ME3800X Series AC power supply and fan module",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "group": "0",
+            "name": "in",
+            "type__name": "Cisco | ME3600 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "PWR-ME3KX-AC"
+        }
+    }
+}
