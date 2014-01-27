@@ -1,0 +1,51 @@
+{
+    "name": "Cisco | 6500 | WS-X6K-S2U-MSFC2",
+    "uuid": "5f32f1a8-d14b-48bf-bcd0-b368c1827ef8",
+    "vendor__code": "CISCO",
+    "description": "WS-X6K-S2U-MSFC2 2 ports Catalyst 6000 supervisor 2",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Supervisor"
+        },
+        {
+            "description": "Compact flash slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk1",
+            "type__name": "Flash | CF"
+        },
+        {
+            "description": "GigabitEthernet X/1 Gbic port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "GigabitEthernet X/2 Gbic port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "Management console",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-X6K-S2U-MSFC2"
+        }
+    }
+}

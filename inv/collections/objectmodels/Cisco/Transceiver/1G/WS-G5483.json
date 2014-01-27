@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | Transceiver | 1G | WS-G5483",
+    "uuid": "4c7d3dc0-b897-42f8-8dd9-6957b998802e",
+    "vendor__code": "CISCO",
+    "description": " Cisco 1000BASE-T GBIC Copper",
+    "connections": [
+        {
+            "description": "GBIC Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC | Cisco"
+        },
+        {
+            "description": "1000BASE-T Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASET"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-G5483"
+        }
+    }
+}
