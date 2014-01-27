@@ -14,7 +14,9 @@ from noc.gis.models.geodata import GeoData
 from noc.inv.models.object import Object
 from noc.lib.geo import distance, bearing, bearing_sym
 from noc.gis.map import map
-from noc.sa.interfaces.base import DocumentParameter, FloatParameter
+from noc.sa.interfaces.base import (DocumentParameter, FloatParameter,
+                                    DictListParameter, IntParameter,
+                                    BooleanParameter)
 
 
 class ConduitsPlugin(InvPlugin):
@@ -33,20 +35,23 @@ class ConduitsPlugin(InvPlugin):
             method=["GET"]
         )
         self.add_view(
-            "api_plugin_%s_create_conduits" % self.name,
-            self.api_create_conduits,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/conduits/$" % self.name,
-            method=["POST"],
-            validate={
-                "connect_to": DocumentParameter(Object),
-                "project_distance": FloatParameter()
-            }
-        )
-        self.add_view(
-            "api_plugin_%s_delete_conduits" % self.name,
-            self.api_delete_conduits,
-            url="^(?P<id>[0-9a-f]{24})/plugin/%s/conduits/(?P<remote_id>[0-9a-f]{24})/$" % self.name,
-            method=["DELETE"]
+             "api_plugin_%s_create_conduits" % self.name,
+             self.api_create_conduits,
+             url="^(?P<id>[0-9a-f]{24})/plugin/%s/$" % self.name,
+             method=["POST"],
+             validate={
+                 "conduits": DictListParameter(attrs={
+                     "target": DocumentParameter(Object),
+                     "project_distance": FloatParameter(),
+                     "conduits": DictListParameter(attrs={
+                         "n": IntParameter(),
+                         "x": IntParameter(),
+                         "y": IntParameter(),
+                         "d": IntParameter(),
+                         "status": BooleanParameter()
+                     })
+                 })
+             }
         )
 
     def get_data(self, request, object):
@@ -75,6 +80,7 @@ class ConduitsPlugin(InvPlugin):
                 "map_distance": map_distance,
                 "project_distance": c.data.get("project_distance"),
                 "n_conduits": len(c.data.get("conduits", [])),
+                "conduits": c.data.get("conduits", []),
                 "bearing": br,
                 "s_bearing": sbr
             }]
@@ -120,23 +126,39 @@ class ConduitsPlugin(InvPlugin):
             sbr = bearing_sym(og.data, g.data)
             r += [{
                 "id": str(g.object),
-                "label": "%s (%s, %dm)" % (ro.name, sbr, d)
+                "label": "%s (%s, %dm)" % (ro.name, sbr, d),
+                "s_bearing": sbr,
+                "map_distance": d,
+                "name": ro.name
             }]
         return r
 
-    def api_create_conduits(self, request, id,
-                            connect_to=None, project_distance=None):
+    def api_create_conduits(self, request, id, conduits=None):
         o = self.app.get_object_or_404(Object, id=id)
-        o.connect_genderless("conduits", connect_to, "conduits", {
-            "project_distance": project_distance,
-            "conduits": []
-        })
+        conns = {}  # target -> conneciton
+        for c, t, _ in o.get_genderless_connections("conduits"):
+            conns[t] = c
+        left = set(conns)
+        for cd in conduits:
+            target = cd["target"]
+            if target not in left:
+                # New record
+                print "NEW", cd
+                o.connect_genderless("conduits", target, "conduits", {
+                    "project_distance": cd["project_distance"],
+                    "conduits": cd["conduits"]
+                })
+            else:
+                c = conns[target]
+                # Updated
+                if (cd["project_distance"] != c.data.get("project_distance") or
+                    cd["conduits"] != c.data.get("conduits")):
+                    # Updated
+                    c.data["project_distance"] = cd["project_distance"]
+                    c.data["conduits"] = cd["conduits"]
+                    c.save()
+                left.remove(target)
+        # Deleted
+        for x in left:
+            conns[x].delete()
         return {"status": True}
-
-    def api_delete_conduits(self, request, id, remote_id):
-        o = self.app.get_object_or_404(Object, id=id)
-        ro = self.app.get_object_or_404(Object, id=remote_id)
-        for c, r, rn in o.get_genderless_connections("conduits"):
-            if rn == "conduits" and r.id == ro.id:
-                c.delete()
-                break

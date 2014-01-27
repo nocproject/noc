@@ -12,7 +12,10 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
     ],
     title: "Conduits",
     closable: false,
-    layout: "fit",
+    layout: {
+        type: "hbox",
+        align: "stretch"
+    },
     autoScroll: true,
     app: null,
 
@@ -24,6 +27,14 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.onClose
+        });
+
+        me.saveButton = Ext.create("Ext.button.Button", {
+            text: "Save",
+            glyph: NOC.glyph.save,
+            scope: me,
+            disabled: true,
+            handler: me.onSaveConduits
         });
 
         me.addButton = Ext.create("Ext.button.Button", {
@@ -44,18 +55,27 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         me.conduitsStore = Ext.create("Ext.data.Store", {
             model: null,
             fields: [
+                "connection_id",
                 "target_id", "target_name",
                 "target_model", "map_distance", "project_distance",
+                "conduits",
                 "n_conduits", "bearing", "s_bearing"
-            ]
+            ],
+            listeners: {
+                scope: me,
+                update: me.onUpdateConduits
+            }
         });
 
         me.conduitsGrid = Ext.create("Ext.grid.Panel", {
             store: me.conduitsStore,
+            width: 400,
             dockedItems: [{
                 xtype: "toolbar",
                 dock: "top",
                 items: [
+                    me.saveButton,
+                    "-",
                     me.addButton,
                     me.deleteButton
                 ]
@@ -78,7 +98,8 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
                     dataIndex: "project_distance",
                     width: 100,
                     align: "right",
-                    renderer: me.renderSize
+                    renderer: me.renderSize,
+                    editor: "textfield"
                 },
                 {
                     text: "Bearing",
@@ -92,10 +113,20 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
                     align: "right"
                 }
             ],
+            selType: "cellmodel",
+            plugins: [
+                Ext.create("Ext.grid.plugin.CellEditing", {
+                    clicksToEdit: 2
+                })
+            ],
             listeners: {
                 scope: me,
                 select: me.onSelectConduit
             }
+        });
+        //
+        me.conduitsLayout = Ext.create("NOC.inv.inv.plugins.conduits.ConduitsLayoutPanel", {
+            app: me
         });
         //
         Ext.apply(me, {
@@ -110,7 +141,8 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
                 }
             ],
             items: [
-                me.conduitsGrid
+                me.conduitsGrid,
+                me.conduitsLayout
             ]
         });
 
@@ -121,6 +153,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         var me = this;
         me.currentId = data.id;
         me.conduitsStore.loadData(data.conduits);
+        me.saveButton.setDisabled(true);
     },
     //
     onClose: function() {
@@ -133,6 +166,21 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         } else {
             return "-";
         }
+    },
+    //
+    addConduits: function(config) {
+        var me = this;
+        console.log("ADD", config);
+        me.conduitsStore.add({
+            target_id: config.target_id,
+            target_name: config.target_name,
+            project_distance: config.project_distance,
+            map_distance: config.map_distance,
+            s_bearing: config.s_bearing,
+            n_conduits: 0,
+            conduits: []
+        });
+        me.saveButton.setDisabled(false);
     },
     //
     onAddConduits: function() {
@@ -155,20 +203,11 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         })
     },
     //
-    deleteConduits: function(remoteId) {
+    deleteConduits: function(record) {
         var me = this;
-        Ext.Ajax.request({
-            url: "/inv/inv/" + me.currentId + "/plugin/conduits/conduits/" + remoteId + "/",
-            method: "DELETE",
-            scope: me,
-            success: function() {
-                me.reload();
-                me.reloadMapLayer();
-            },
-            failure: function() {
-                NOC.error("Failed to remove conduits");
-            }
-        });
+        me.conduitsStore.remove(record);
+        me.saveButton.setDisabled(false);
+        me.conduitsLayout.createBlockButton.setDisabled(true);
     },
     //
     onDeleteConduits: function() {
@@ -178,12 +217,12 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
             remoteId = selection[0].get("target_id");
         Ext.Msg.show({
             title: "Remove conduits to " + selection[0].get("target_name") + "?",
-            msg: "Would you like to remove conduits? Operation cannot be undone",
+            msg: "Would you like to remove conduits?",
             buttons: Ext.Msg.YESNO,
             glyph: NOC.glyph.question_sign,
             fn: function(rec) {
                 if(rec == "yes") {
-                    me.deleteConduits(remoteId);
+                    me.deleteConduits(selection[0]);
                 }
             }
         });
@@ -192,6 +231,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
     onSelectConduit: function(grid, record, index, eOpts) {
         var me = this;
         me.deleteButton.setDisabled(false);
+        me.conduitsLayout.preview(record);
     },
     //
     reload: function() {
@@ -203,5 +243,37 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
     reloadMapLayer: function() {
         var me = this;
         me.app.app.invPlugins.map.reloadLayer("conduits");
+    },
+    //
+    onSaveConduits: function() {
+        var me = this,
+            data = [];
+        me.conduitsStore.each(function(v) {
+            data.push({
+                target: v.get("target_id"),
+                project_distance: v.get("project_distance"),
+                conduits: v.get("conduits")
+            });
+        });
+        Ext.Ajax.request({
+            url: "/inv/inv/" + me.currentId + "/plugin/conduits/",
+            method: "POST",
+            jsonData: {
+                conduits: data
+            },
+            scope: me,
+            success: function() {
+                me.reloadMapLayer();
+                me.reload();
+            },
+            failure: function() {
+                NOC.error("Failed to save conduits");
+            }
+        });
+    },
+    //
+    onUpdateConduits: function() {
+        var me = this;
+        me.saveButton.setDisabled(false);
     }
 });
