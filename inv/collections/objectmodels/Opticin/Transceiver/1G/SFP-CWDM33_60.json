@@ -1,0 +1,37 @@
+{
+    "name": "Opticin | Transceiver | 1G | SFP-CWDM33.60",
+    "uuid": "959b91a0-1de7-4279-90f5-ffabf664f761",
+    "vendor__code": "OPTICIN",
+    "description": "Opticin CWDM SFP, 1330nm, DDM, LC, 60km, ZX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASEZX L"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASEZX-1330"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-CWDM33.60"
+        }
+    }
+}

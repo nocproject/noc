@@ -1,0 +1,37 @@
+{
+    "name": "Opticin | Transceiver | 1G | SFP-SX.LC.05",
+    "uuid": "e7234cc2-78e8-449a-803f-baaea5d6920d",
+    "vendor__code": "OPTICIN",
+    "description": "Opticin SFP, 850nm, LC, 500m, SX transceiver",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-850"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-850"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-SX.LC.05"
+        }
+    }
+}
