@@ -112,7 +112,8 @@ class Script(NOCScript):
             except ValueError:
                 number = None
             return "LINECARD", number, pid
-        elif pid.startswith("WS-SUP") and "Supervisor Engine" in descr:
+        elif ((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
+        and "Supervisor Engine" in descr):
             try:
                 number = int(name)
             except ValueError:
