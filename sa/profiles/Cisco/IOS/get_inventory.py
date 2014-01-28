@@ -102,7 +102,9 @@ class Script(NOCScript):
             return "CHASSIS", number, pid
         elif name.startswith("module "):
             # Linecards or supervisors
-            if pid.startswith("RSP"):
+            if (pid.startswith("RSP")
+            or ((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
+            and "Supervisor Engine" in descr)):
                 return "SUP", name[7:], pid
             else:
                 return "LINECARD", name[7:], pid
