@@ -143,11 +143,14 @@ class ConduitsPlugin(InvPlugin):
             target = cd["target"]
             if target not in left:
                 # New record
-                print "NEW", cd
-                o.connect_genderless("conduits", target, "conduits", {
-                    "project_distance": cd["project_distance"],
-                    "conduits": cd["conduits"]
-                })
+                o.connect_genderless(
+                    "conduits", target, "conduits",
+                    data={
+                        "project_distance": cd["project_distance"],
+                        "conduits": cd["conduits"]
+                    },
+                    type="conduits"
+                )
             else:
                 c = conns[target]
                 # Updated
@@ -156,6 +159,7 @@ class ConduitsPlugin(InvPlugin):
                     # Updated
                     c.data["project_distance"] = cd["project_distance"]
                     c.data["conduits"] = cd["conduits"]
+                    c.type = "conduits"
                     c.save()
                 left.remove(target)
         # Deleted
