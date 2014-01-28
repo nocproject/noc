@@ -41,6 +41,7 @@ class ObjectConnection(Document):
     # 2 or more items
     connection = ListField(EmbeddedDocumentField(ObjectConnectionItem))
     data = DictField()
+    type = StringField(required=False)
 
     def __unicode__(self):
-        return "<%s>" % ", ".join(unicode(c) for c in self.connection)
+        return u"<%s>" % ", ".join(unicode(c) for c in self.connection)

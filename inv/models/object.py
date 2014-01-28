@@ -199,7 +199,7 @@ class Object(Document):
         return c
 
     def connect_genderless(self, name, remote_object, remote_name,
-                           data=None):
+                           data=None, type=None):
         """
         Connect two genderless connections
         """
@@ -228,7 +228,8 @@ class Object(Document):
                 ObjectConnectionItem(object=remote_object,
                                      name=remote_name)
             ],
-            data=data or {}
+            data=data or {},
+            type=type or None
         ).save()
         self.log("%s:%s -> %s:%s" % (self, name, remote_object, remote_name),
                  system="CORE", op="CONNECT")
