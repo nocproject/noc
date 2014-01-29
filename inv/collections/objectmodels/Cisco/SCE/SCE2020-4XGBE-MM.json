@@ -1,0 +1,93 @@
+{
+    "name": "Cisco | SCE | SCE2020-4XGBE-MM",
+    "uuid": "eae66cf8-f394-4c9d-a9d0-bb8bf5aa56f2",
+    "vendor__code": "CISCO",
+    "description": "Cisco SCE2020-4XGBE-MM Service Control Engine Platform",
+    "connection_rule__name": "Cisco | SCE",
+    "connections": [
+        {
+            "description": "GBE1_rx",
+            "direction": "s",
+            "gender": "f",
+            "name": "GBE1_rx",
+            "protocols": [">1000BASESX"],
+            "type__name": "Optical | SC"
+        },
+        {
+            "description": "GBE1_tx",
+            "direction": "s",
+            "gender": "f",
+            "name": "GBE1_tx",
+            "protocols": ["<1000BASESX"],
+            "type__name": "Optical | SC"
+        },
+        {
+            "description": "GBE2_rx",
+            "direction": "s",
+            "gender": "f",
+            "name": "GBE2_rx",
+            "protocols": [">1000BASESX"],
+            "type__name": "Optical | SC"
+        },
+        {
+            "description": "GBE2_tx",
+            "direction": "s",
+            "gender": "f",
+            "name": "GBE2_tx",
+            "protocols": ["<1000BASESX"],
+            "type__name": "Optical | SC"
+        },
+        {
+            "description": "Console connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Aux connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "Aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Mng1 connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "Mng1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Mng2 connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "Mng2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SCE2020-4XGBE-MM"
+        },
+        "dimensions": {
+            "depth": 460,
+            "height": 90,
+            "units": 2,
+            "width": 440
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2.0
+        },
+        "weight": {
+            "kg": "15"
+        }
+    }
+}
