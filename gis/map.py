@@ -26,6 +26,12 @@ class Map(object):
         self.srid_map = {}
         self.srid = SpatialReference("EPSG:4326")
 
+    def __del__(self):
+        # @todo: Remove dirty hack
+        # Override SpatialReference.__del__ exception
+        self.srid._ptr = None
+        self.srid = None
+
     def set_point(self, object, layer, x, y, srid=None, label=None):
         # Convert object to ObjectId
         if hasattr(object, "id"):
