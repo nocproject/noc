@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | Transceiver | 10G | XENPAK-10GB-CX4",
+    "uuid": "e0748813-8335-4826-b972-880c0e43b9ec",
+    "vendor__code": "CISCO",
+    "description": "Cisco XENPAK 10G CX4 transceiver",
+    "connections": [
+        {
+            "description": "XENPAK Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XENPAK | Cisco"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "XENPAK-10GB-CX4"
+        }
+    }
+}
