@@ -3,6 +3,7 @@
     "uuid": "8500e380-1c13-4b15-af8e-e17a3f690b33",
     "vendor__code": "CISCO",
     "description": "Cisco SCE 8000 Service Control Module",
+    "connection_rule__name": "Cisco | SCE",
     "connections": [
         {
             "description": "SCM Connector",
@@ -13,46 +14,46 @@
         },
         {
             "description": "GBE1 Port",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "Gi1",
-            "protocols": ["TransEth1G"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
             "description": "GBE2 Port",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "Gi2",
-            "protocols": ["TransEth1G"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
             "description": "Console Port",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "Console",
-            "protocols": [">RS232"],
+            "protocols": [">RS232", "<RS232"],
             "type__name": "Electrical | RJ45"
         },
         {
             "description": "Aux Port",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "Aux",
-            "protocols": [">RS232"],
+            "protocols": [">RS232", "<RS232"],
             "type__name": "Electrical | RJ45"
         },
         {
             "description": "Bypass Port 1",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "Bypass1",
             "type__name": "Electrical | RJ11"
         },
         {
             "description": "Bypass Port 2",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "Bypass2",
             "type__name": "Electrical | RJ11"
