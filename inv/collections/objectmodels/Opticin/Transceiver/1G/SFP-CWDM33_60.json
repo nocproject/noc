@@ -17,7 +17,7 @@
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1000BASEZX L"],
+            "protocols": [">1000BASEZX"],
             "type__name": "Optical | LC"
         },
         {
