@@ -3,22 +3,8 @@
     "uuid": "21185ab6-f251-414c-96cd-f4417466f790",
     "vendor__code": "ALU",
     "description": "OS6850-U24X L3 Switch witch 24 G SFP + 2 10 G",
-    "connection_rule__name": "Generic | Switch SFP",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
     "connections": [
-        {
-            "description": "10G XFP port",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/25",
-            "type__name": "Transceiver | XFP"
-        },
-        {
-            "description": "10G XFP port",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/26",
-            "type__name": "Transceiver | XFP"
-        },
         {
             "description": "Management console",
             "direction": "s",
@@ -27,218 +13,228 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Ethernet1/24 interface - copper",
-            "direction": "s",
-            "gender": "f",
-            "group": "1",
-            "name": "1/24C",
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Ethernet1/24 interface - fiber",
+            "description": "Ethernet1/10 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "group": "1",
-            "name": "1/24F",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/23 interface - copper",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "1/23C",
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Ethernet1/23 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "group": "0",
-            "name": "1/23F",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/22 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/22",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/21 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/21",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/20 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/20",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/19 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/19",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/18 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/18",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/17 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/17",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/16 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/16",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/15 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/15",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/14 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/14",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/13 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/13",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/12 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/12",
+            "name": "Gi10_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "Ethernet1/11 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "1/11",
+            "name": "Gi11_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Ethernet1/10 interface - fiber",
+            "description": "Ethernet1/12 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "1/10",
+            "name": "Gi12_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Ethernet1/9 interface - fiber",
+            "description": "Ethernet1/13 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "1/9",
+            "name": "Gi13_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Ethernet1/8 interface - fiber",
+            "description": "Ethernet1/14 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "1/8",
+            "name": "Gi14_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Ethernet1/7 interface - fiber",
+            "description": "Ethernet1/15 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "1/7",
+            "name": "Gi15_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Ethernet1/6 interface - fiber",
+            "description": "Ethernet1/16 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "1/6",
+            "name": "Gi16_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Ethernet1/5 interface - fiber",
+            "description": "Ethernet1/17 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "1/5",
+            "name": "Gi17_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Ethernet1/4 interface - fiber",
+            "description": "Ethernet1/18 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "1/4",
+            "name": "Gi18_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Ethernet1/3 interface - fiber",
+            "description": "Ethernet1/19 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "1/3",
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Ethernet1/2 interface - fiber",
-            "direction": "i",
-            "gender": "f",
-            "name": "1/2",
+            "name": "Gi19_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "Ethernet1/1 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "1/1",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Primary power supply",
-            "direction": "i",
-            "gender": "m",
-            "name": "Primary PS1",
-            "type__name": "Electrical | DB25"
-        },
-        {
-            "description": "Backup power supply",
-            "direction": "i",
-            "gender": "m",
-            "name": "Backup PS1",
-            "type__name": "Electrical | DB25"
-        },
-        {
-            "description": "Slot for Stack module",
+            "description": "Ethernet1/20 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "StackA",
-            "type__name": "Alcatel | OS | Stack"
+            "name": "Gi20_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Slot for Stack module",
+            "description": "Ethernet1/21 interface - fiber",
             "direction": "i",
             "gender": "f",
-            "name": "StackB",
-            "type__name": "Alcatel | OS | Stack"
+            "name": "Gi21_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/22 interface - fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi22_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/23 interface - copper",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi23",
+            "protocols": ["TransEth1G"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/23 interface - fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi23_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/24 interface - copper",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi24",
+            "protocols": ["TransEth1G"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/24 interface - fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi24_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/2 interface - fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/3 interface - fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi3_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/4 interface - fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi4_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/5 interface - fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi5_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/6 interface - fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi6_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/7 interface - fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi7_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/8 interface - fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi8_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/9 interface - fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi9_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "10G XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te25_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "10G XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te26_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
         }
     ],
     "data": {
@@ -255,6 +251,12 @@
             "height": 44,
             "units": 1,
             "width": 440
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
         },
         "weight": {
             "weight	": "6.24"
