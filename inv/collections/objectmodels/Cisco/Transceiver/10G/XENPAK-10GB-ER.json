@@ -17,7 +17,7 @@
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">10GBASEER-1310"],
+            "protocols": [">10GBASEER-1550"],
             "type__name": "Optical | LC"
         },
         {
@@ -25,13 +25,14 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<10GBASEER-1310"],
+            "protocols": ["<10GBASEER-1550"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no0": "XENPAK-10GB-ER"
+            "part_no0": "XENPAK-10GB-ER",
+            "part_no1": "XENPAK-10GB-ER+"
         }
     }
 }

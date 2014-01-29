@@ -1,8 +1,8 @@
 {
-    "name": "Cisco | Transceiver | 10G | XENPAK-10GB-LR+",
-    "uuid": "ff87c01f-389a-4ca8-a085-54fa1e66222e",
+    "name": "Cisco | Transceiver | 10G | XENPAK-10GB-LX4",
+    "uuid": "c394973a-4e50-493c-9120-b89059c22ca9",
     "vendor__code": "CISCO",
-    "description": "Cisco XENPAK 10G LR transceiver",
+    "description": "Cisco XENPAK 10G LX4 transceiver",
     "connections": [
         {
             "description": "XENPAK Connector",
@@ -31,8 +31,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "XENPAK-10GB-LR+",
-            "part_no1": "XENPAK-10GB-LR"
+            "part_no0": "XENPAK-10GB-LX4"
         }
     }
 }
