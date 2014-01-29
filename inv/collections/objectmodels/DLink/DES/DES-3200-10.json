@@ -1,0 +1,133 @@
+{
+    "name": "DLink | DES | DES-3200-10",
+    "uuid": "a85f20fa-ac75-4ba4-b251-264502922254",
+    "vendor__code": "DLINK",
+    "description": "DES-3200-10 xStack L2 Managed Switch witch 8 ports 10/100BASE-TX, 2 ports 100/1000 SFP, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "connections": [
+        {
+            "description": "port 1",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 2",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 3",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 4",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 5",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 6",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 7",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 8",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 9",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "console",
+            "protocols": [">RJ45"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 9",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "name": "9",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Fiber port 10",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "10",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "DES-3200-10"
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
