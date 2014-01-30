@@ -79,11 +79,12 @@ Ext.define("NOC.core.Rack", {
         for(var u = 1; u <= opts.units; u++) {
             out.push({
                 type: "text",
-                x: n_left + me.TEXT_PADDING,
+                x: n_left + me.N_WIDTH - me.TEXT_PADDING,
                 y: n_bottom - (u - 1) * me.U_HEIGH - me.U_HEIGH / 2,
                 text: "" + u,
                 fill: "#e0e0e0",
-                font: me.N_FONT
+                font: me.N_FONT,
+                "text-anchor": "end"
             });
         }
         // Unit rulers
@@ -116,10 +117,11 @@ Ext.define("NOC.core.Rack", {
             out.push({
                 type: "text",
                 text: c.name,
-                x: x + me.SIDE_WIDTH + 10,
+                x: x + me.SIDE_WIDTH + i_width / 2,
                 y: n_bottom - (c.pos + c.units / 2 - 1)* me.U_HEIGH - shift,
                 stroke: "black",
-                font: me.B_FONT
+                font: me.B_FONT,
+                "text-anchor": "middle"
             });
         }
         // Near side
@@ -141,10 +143,11 @@ Ext.define("NOC.core.Rack", {
             out.push({
                 type: "text",
                 text: c.name,
-                x: x + me.SIDE_WIDTH + 10,
+                x: x + me.SIDE_WIDTH + i_width / 2,
                 y: n_bottom - (c.pos + c.units / 2 - 1)* me.U_HEIGH - shift,
                 stroke: "black",
-                font: me.B_FONT
+                font: me.B_FONT,
+                "text-anchor": "middle"
             });
         }
         return out;
