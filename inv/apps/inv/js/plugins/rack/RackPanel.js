@@ -142,7 +142,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     //
     preview: function(data) {
         var me = this,
-            r = NOC.core.Rack.getRack(5, 5, data.rack, data.content, me.getSide()),
+            r = NOC.core.Rack.getRack(5, 5, data.rack, data.content, me.getSide(), data.name),
             dc = Ext.create("Ext.draw.Component", {
                 viewBox: false,
                 items: r,

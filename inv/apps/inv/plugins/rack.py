@@ -34,6 +34,7 @@ class RackPlugin(InvPlugin):
     def get_data(self, request, o):
         r = {
             "id": str(o.id),
+            "name": o.name,
             "rack": dict(
                 (k, o.get_data("rack", k))
                 for k in ("units", "width", "depth")
