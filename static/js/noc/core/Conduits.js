@@ -33,7 +33,8 @@ Ext.define("NOC.core.Conduits", {
                 x: v.x / scale,
                 y: v.y / scale,
                 text: "" + v.n,
-                stroke: me.defaultStroke
+                stroke: me.defaultStroke,
+                "text-anchor": "middle"
             });
         });
         return out;
