@@ -51,6 +51,8 @@ class Profile(NOCProfile):
         il = interface.lower()
         if il.startswith("dot11radio"):
             return "Dot11Radio" + interface[10:]
+        if il.startswith("bdi"):
+            return "BDI" + interface[3:]
         if il.startswith("bvi"):
             return "BVI" + interface[3:]
         if il.startswith("e1"):

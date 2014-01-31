@@ -52,7 +52,8 @@ class Script(NOCScript):
            "As": "physical",    # Async
            "AT": "physical",    # ATM
            "At": "physical",    # ATM
-           "Br": "physical",  # ISDN Basic Rate Interface
+           "Br": "physical",    # ISDN Basic Rate Interface
+           "BD": "physical",    # Bridge Domain Interface
            "BV": "aggregated",  # BVI
            "Bu": "aggregated",  # Bundle
            "C": "physical",     # @todo: fix
