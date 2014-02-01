@@ -153,6 +153,10 @@ if [ -x ./bin/hg ]; then
 else
     HG=`which hg`
 fi
+if [ ! -z "$NOC_BRANCH" ]; then
+    info "Forcefully set NOC branch to $NOC_BRANCH"
+    BRANCH=$NOC_BRANCH
+fi
 if [ $BRANCH != "none" ]; then
     $HG pull -u $REPO || error_exit "$LINENO: Failed to pull repo $REPO"
     if [ `$HG branch` = "$BRANCH" ]; then
