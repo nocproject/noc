@@ -1015,7 +1015,7 @@ Ext.define("NOC.core.ModelApplication", {
                 records.length),
             buttons: [{
                 text: "Run",
-                iconCls: "icon_tick",
+                glyph: NOC.glyph.play,
                 handler: function() {
                     var form = w.items.first().getForm();
                     if(!form.isValid()) {
