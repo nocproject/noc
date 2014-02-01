@@ -216,10 +216,6 @@ access.name = Access
 access.css = /static/pkg/extjs/resources/css/ext-all-access.css
 access.enabled = true
 
-scoped.name = Scoped
-scoped.css = /static/pkg/extjs/resources/css/ext-all-scoped.css
-scoped.enabled = true
-
 #
 # cm module setup
 #
