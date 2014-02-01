@@ -15,6 +15,7 @@ etc/certs/*
 etc/ssh/id_*
 include/*
 lib/python*
+lib64
 local/*
 static/doc/*
 contrib/lib/*
