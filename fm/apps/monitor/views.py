@@ -58,7 +58,7 @@ class FMMonitorApplication(ExtApplication):
         active_events = db.noc.events.active.count()
         archived_events = db.noc.events.archive.count()
         active_alarms = db.noc.alarms.active.count()
-        archived_alarms = db.noc.alarms.archive.count()
+        archived_alarms = db.noc.alarms.archived.count()
         r += [
             ("events", "new_events", new_events),
             ("events", "active_events", active_events),
