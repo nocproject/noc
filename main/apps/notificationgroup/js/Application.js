@@ -106,13 +106,15 @@ Ext.define("NOC.main.notificationgroup.Application", {
                     name: "subject",
                     xtype: "textfield",
                     fieldLabel: "Subject",
-                    allowBlank: false
+                    allowBlank: false,
+                    width: 600
                 },
                 {
                     name: "body",
                     xtype: "textarea",
                     fieldLabel: "Body",
-                    allowBlank: false
+                    allowBlank: false,
+                    width: 600
                 }
             ]
         }
