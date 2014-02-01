@@ -12,7 +12,7 @@ from noc.main.models import (NotificationGroup, NotificationGroupUser,
                              NotificationGroupOther)
 from noc.lib.app.modelinline import ModelInline
 from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
-                                    StringParameter)
+                                    UnicodeParameter)
 
 
 class NotificationGroupApplication(ExtModelApplication):
@@ -30,8 +30,8 @@ class NotificationGroupApplication(ExtModelApplication):
         access="update", api=True,
         validate={
             "ids": ListOfParameter(element=ModelParameter(NotificationGroup)),
-            "subject": StringParameter(),
-            "body": StringParameter()
+            "subject": UnicodeParameter(),
+            "body": UnicodeParameter()
         })
     def api_action_test(self, request, ids, subject, body):
         for g in ids:
