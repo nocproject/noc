@@ -23,6 +23,9 @@ Ext.define("NOC.core.LookupField", {
     stateful: false,
     autoSelect: false,
     pageSize: 25,
+    listConfig: {
+        minWidth: 240
+    },
 
     initComponent: function() {
         var me = this,
