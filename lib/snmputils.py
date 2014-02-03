@@ -10,7 +10,13 @@
 import re
 
 
-rx_os_format = re.compile(r"(?P<repeat>[*]?)(?P<size>\d+)(?P<format>[xdoat])(?P<dsep>[^*0-9]?)(?P<rt>[^*0-9]?)")
+rx_os_format = re.compile(
+    r"(?P<repeat>[*]?)"
+    r"(?P<size>\d+)"
+    r"(?P<format>[xdoat])"
+    r"(?P<dsep>[^*0-9]?)"
+    r"(?P<rt>[^*0-9]?)"
+)
 
 def render_tc(value, base_type, format=None):
     """
@@ -57,6 +63,8 @@ def render_tc(value, base_type, format=None):
     'UTF8'
     >>> render_tc("abcdef", "OctetString", "1x:")
     '61:62:63:64:65:66'
+    >>> render_tc("\x07\xde\x02\x02\x03*\x0b\x01+\x01\x01", "OctetString", "2d-1d-1d,1d:1d:1d.1d,1a1d:1d")
+    '2014-2-2,3:42:11.1,+1:1'
     """
     if format is None:
         #if base_type == "OctetString":
@@ -87,40 +95,45 @@ def render_tc(value, base_type, format=None):
     elif base_type == "OctetString":
         value = [ord(c) for c in value]
         r = ""
-        for match in rx_os_format.finditer(format):
-            repeat, size, format, dsep, rt = match.groups()
-            size = int(size)
-            if repeat:
-                repeat = value.pop(0)
-            else:
-                repeat = 1
-            rr = []
-            for i in range(repeat):
-                if format == "a":
-                    rr += [chr(v) for v in value[:size]]
-                    value = value[size:]
-                elif format == "t":
-                    s = "".join([chr(v) for v in value[:size]])
-                    value = value[size:]
-                    rr += [unicode(s, "utf8", "ignore").encode("utf8")]
+        while value:
+            for match in rx_os_format.finditer(format):
+                if not value:
+                    break
+                repeat, size, fmt, dsep, rt = match.groups()
+                if repeat and rt:
+                    dsep = ""
+                size = int(size)
+                if repeat:
+                    repeat = value.pop(0)
                 else:
-                    parts = []
-                    while value:
+                    repeat = 1
+                rr = []
+                for i in range(repeat):
+                    if not value:
+                        break
+                    if fmt == "a":
+                        rr += [chr(v) for v in value[:size]]
+                        value = value[size:]
+                    elif fmt == "t":
+                        s = "".join([chr(v) for v in value[:size]])
+                        value = value[size:]
+                        rr += [unicode(s, "utf8", "ignore").encode("utf8")]
+                    else:
                         v = 0
                         for j in range(size):
                             v = (v << 8) + value.pop(0)
-                        parts += [v]
-                    if format == "x":
-                        rr += ["%x" % v for v in parts]
-                    elif format == "d":
-                        rr += ["%d" % v for v in parts]
-                    elif format == "o":
-                        rr += ["%o" % v for v in parts]
-                    else:
-                        raise ValueError("Unknown format: %s" % format)
-            # Join with repeat separator
-            r += dsep.join(rr)
-            #
-            r += rt
+                        if fmt == "x":
+                            rr += ["%02x" % v]
+                        elif fmt == "d":
+                            rr += ["%d" % v]
+                        elif fmt == "o":
+                            rr += ["%03o" % v]
+                        else:
+                            raise ValueError("Unknown format: %s" % fmt)
+                # Join with repeat separator
+                r += rt.join(rr)
+                #
+                if value and dsep:
+                    r += dsep
         return r
     return str(value)
