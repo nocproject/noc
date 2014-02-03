@@ -501,6 +501,7 @@ class AssetReport(Report):
             # Speed and media
             speed, ot = name[24:].upper().replace("-", "").split("BASE")
             spd = {
+                "100": "100M",
                 "1000": "1G",
                 "10G": "10G"
             }[speed]
