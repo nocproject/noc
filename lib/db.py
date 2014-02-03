@@ -116,6 +116,19 @@ def pg_sharedir():
     return p.stdout.read().strip()
 
 
+def pg_bindir():
+    """
+    Returns PostgreSQL bin/ directory path or None
+    :return:
+    """
+    try:
+        p = subprocess.Popen(["pg_config", "--bindir"],
+                             stdout=subprocess.PIPE)
+    except OSError:
+        return None
+    return p.stdout.read().strip()
+
+
 def check_pg_superuser():
     """
     Check NOC's PostgreSQL user is superuser
