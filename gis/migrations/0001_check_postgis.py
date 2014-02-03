@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from __future__ import with_statement
 import sys
 import os
-from south.db import db
+import subprocess
 from noc.lib.db import *
 from noc.settings import config
+from noc import settings
+from noc.lib.fileutils import safe_rewrite
 
 
 class Migration:
@@ -24,13 +25,47 @@ class Migration:
         sys.exit(1)
 
     def exec_file(self, path):
+        def pgpass_quote(s):
+            return s.replace("\\", "\\\\").replace(":", "\\:")
+
         if not os.path.exists(path):
             self.fail("File not found: %s" % path)
-        c = connection.cursor()
-        with open(path) as f:
-            sql = f.read().replace("%", "%%")
+        if not hasattr(self, "psql"):
+            bindir = pg_bindir() or ""
+            self.psql = os.path.join(bindir, "psql")
+        # Prepare pgpass file
+        pgpass = ["*", "*", "*", "*", ""]
+        if settings.DATABASES["default"]["USER"]:
+            pgpass[3] = settings.DATABASES["default"]["USER"]
+        if settings.DATABASES["default"]["PASSWORD"]:
+            pgpass[4] = settings.DATABASES["default"]["PASSWORD"]
+        if settings.DATABASES["default"]["HOST"]:
+            pgpass[0] = settings.DATABASES["default"]["HOST"]
+        if settings.DATABASES["default"]["PORT"]:
+            pgpass[1] = settings.DATABASES["default"]["PORT"]
+        pgpass[2] = settings.DATABASES["default"]["NAME"]
+        # Create temporary .pgpass
+        pgpass_data = ":".join([pgpass_quote(x) for x in pgpass])
+        pgpass_path = os.path.join(os.getcwd(), "local", "cache", "pgpass", ".pgpass")
+        safe_rewrite(pgpass_path, pgpass_data, mode=0600)
         print "Executing: %s" % path
-        c.execute(sql)
+        env = os.environ.copy()
+        env["PGPASSFILE"] = pgpass_path
+        try:
+            subprocess.check_call([
+                self.psql,
+                "-f", path,
+                "-U", config.get("database", "user"),
+                "-w",
+                config.get("database", "name")
+            ], env=env)
+        except OSError:
+            self.fail("psql binary not found at: %s" % self.psql)
+        finally:
+            try:
+                os.unlink(pgpass_data)
+            except:
+                pass
 
     def get_postgis_root(self):
         """
