@@ -65,31 +65,42 @@ class Script(NOCScript):
                         if match:
                             number = match.group("number")
                             match = self.rx_trans_pid.search(t)
-                            pid = match.group("pid").strip() if match else ""
+                            pid = match.group("pid").strip() \
+                                if match else ""
                             match = self.rx_trans_vend.search(t)
-                            vendor = match.group("vend").strip() if match else "NONAME"
+                            vendor = match.group("vend").strip() \
+                                if match else "NONAME"
                             match = self.rx_trans_rev.search(t)
-                            revision = match.group("rev").strip() if match else None
+                            revision = match.group("rev").strip() \
+                                if match else None
                             match = self.rx_trans_sn.search(t)
-                            serial = match.group("sn").strip() if match else None
+                            serial = match.group("sn").strip() \
+                                if match else None
                             #Noname transceiver
                             if (pid in ("", "N/A", "Unspecified") or
-                                "\\x" in repr(pid).strip("'") or
-                                "NONAME" in vendor):
-                                   pid = self.get_transceiver_pid(i.group("type").upper())
+                                    "\\x" in repr(pid).strip("'") or
+                                    "NONAME" in vendor):
+                                pid = self.get_transceiver_pid(
+                                    i.group("type").upper())
                             if not pid:
                                 print "!!! UNKNOWN SFP: Eth", number
                                 continue
                             else:
+                                if "\\x" in repr(vendor).strip("'"):
+                                    vendor = "NONAME"
+                                if "\\x" in repr(serial).strip("'"):
+                                    serial = None
+                                if "\\x" in repr(revision).strip("'"):
+                                    revision = None
                                 # Add transceiver
                                 objects += [{
                                     "type": "XCVR",
                                     "number": i.group("int").split("/")[-1],
                                     "vendor": vendor,
-                                    "serial": unicode(repr(serial), "utf-8").strip("'"),
+                                    "serial": serial,
                                     "description": "SFP Transceiver",
                                     "part_no": [pid],
-                                    "revision": unicode(repr(revision), "utf-8").strip("'"),
+                                    "revision": revision,
                                     "builtin": False
                                 }]
 
