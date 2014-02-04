@@ -76,6 +76,7 @@ aptinstall libgmp-dev
 aptinstall nginx
 aptinstall postgresql
 aptinstall libpq-dev
+aptinstall libgdal1
 aptinstall postgresql-9.1-postgis
 aptinstall postgis
 aptinstall mongodb
