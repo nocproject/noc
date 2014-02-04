@@ -25,6 +25,9 @@ info ( ) {
 # Check configuration files
 info "Checking configuration files"
 ./scripts/check-conf || error_exit "$LINENO: configuration check failed"
+# Check PostGIS
+info "Checking PostGIS installation"
+./scripts/check-postgis.py || error_exit "$LINENO: Failed to check PostGIS installation. Check noc.conf settings"
 # Check postgresql database
 info "Checking postgresql database connection"
 ./scripts/check-db.py --pg || error_exit "$LINENO: Unable to connect to postgresql database. Check noc.conf settings"
