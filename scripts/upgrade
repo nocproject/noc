@@ -208,7 +208,7 @@ info "Apply local patches"
 info "Looking for hanging .pyc files"
 ./scripts/check-pyc.py || error_exit "$LINENO: Inconsistent .pyc files found"
 ##
-## Run rest with $NOC_USER credentials
+## Run REST with $NOC_USER credentials
 ##
 info "Running the rest of upgrade process with user $NOC_USER credentials"
 if [ "$NOC_USER" = `id -n -u` ]; then
