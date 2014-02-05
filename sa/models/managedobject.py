@@ -451,6 +451,8 @@ class ManagedObject(models.Model):
             ("enable_asset_discovery", "asset_discovery", 1),
             ("enable_vlan_discovery", "vlan_discovery", 1),
             ("enable_lldp_discovery", "lldp_discovery", 1),
+            ("enable_oam_discovery", "oam_discovery", 1),
+            ("enable_udld_discovery", "udld_discovery", 1),
             ("enable_bfd_discovery", "bfd_discovery", 1),
             ("enable_stp_discovery", "stp_discovery", 1),
             ("enable_cdp_discovery", "cdp_discovery", 1),
@@ -528,8 +530,8 @@ class ManagedObject(models.Model):
             diff = "".join(difflib.unified_diff(
                 old_data.splitlines(True),
                 new_data.splitlines(True),
-                fromfile=os.path.join("a", self.name),
-                tofile=os.path.join("b", self.name)
+                fromfile=os.path.join("a", self.name.encode("utf8")),
+                tofile=os.path.join("b", self.name.encode("utf8"))
             ))
         # Notify changes
         self.event(
