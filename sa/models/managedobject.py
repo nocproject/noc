@@ -451,7 +451,6 @@ class ManagedObject(models.Model):
             ("enable_asset_discovery", "asset_discovery", 1),
             ("enable_vlan_discovery", "vlan_discovery", 1),
             ("enable_lldp_discovery", "lldp_discovery", 1),
-            ("enable_oam_discovery", "oam_discovery", 1),
             ("enable_udld_discovery", "udld_discovery", 1),
             ("enable_bfd_discovery", "bfd_discovery", 1),
             ("enable_stp_discovery", "stp_discovery", 1),
