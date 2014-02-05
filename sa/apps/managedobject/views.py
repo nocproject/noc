@@ -67,7 +67,6 @@ class ManagedObjectApplication(ExtModelApplication):
         ("enable_asset_discovery", "asset_discovery", 1),
         ("enable_vlan_discovery", "vlan_discovery", None),
         ("enable_lldp_discovery", "lldp_discovery", "lldp"),
-        ("enable_oam_discovery", "oam_discovery", "oam"),
         ("enable_udld_discovery", "udld_discovery", "udld"),
         ("enable_bfd_discovery", "bfd_discovery", "bfd"),
         ("enable_stp_discovery", "stp_discovery", "stp"),
