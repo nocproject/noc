@@ -342,7 +342,6 @@ class Object(Document):
         (name, remote_object, remote_name)
         """
         ic = set(c.name for c in self.model.connections if c.direction == direction)
-        r = []
         for c in ObjectConnection.objects.filter(
                 connection__object=self.id):
             sn = None
@@ -417,9 +416,22 @@ class Object(Document):
             return
         map.delete_point(document.id)
 
+    @classmethod
+    def delete_disconnect(cls, sender, document, target=None):
+        for c in ObjectConnection.objects.filter(
+                connection__object=document.id):
+            left = [cc for cc in c.connection
+                    if cc.object.id != document.id]
+            if len(left) < 2:
+                c.delete()  # Remove connection
+            else:
+                # Wipe object
+                c.connection = left
+                c.save()
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_geo_point, sender=Object)
+signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
 signals.post_save.connect(Object.set_geo_point, sender=Object)
 
 ## Avoid circular references
