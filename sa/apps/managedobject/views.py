@@ -527,7 +527,7 @@ class ManagedObjectApplication(ExtModelApplication):
         r = []
         for p in o.get_inventory():
             c = self.get_nested_inventory(p)
-            c["name"] = p.model.description
+            c["name"] = p.name or o.name
             r += [c]
         return {
             "expanded": True,
