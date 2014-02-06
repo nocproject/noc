@@ -1,0 +1,436 @@
+{
+    "name": "Cisco | C2960 | WS-C2960-48TC-L",
+    "uuid": "fb3ad246-9a77-4945-afa2-2d9e91de430f",
+    "vendor__code": "CISCO",
+    "description": "48 Ethernet 10/100 ports",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "connections": [
+        {
+            "description": "Fa0/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/4",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/5",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/6",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/7",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/8",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/9",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/10",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa10",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/11",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa11",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/12",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa12",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/13",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa13",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/14",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa14",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/15",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa15",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/16",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa16",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/17",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa17",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/18",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa18",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/19",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa19",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/20",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa20",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/21",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa21",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/22",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa22",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/23",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa23",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/24",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa24",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/25",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa25",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/26",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa26",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/27",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa27",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/28",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa28",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/29",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa29",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/30",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa30",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/31",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa31",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/32",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa32",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/33",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa33",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/34",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa34",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/35",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa35",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/36",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa36",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/37",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa37",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/38",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa38",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/39",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa39",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/40",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa40",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/41",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa41",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/42",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa42",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/43",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa43",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/44",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa44",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/45",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa45",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/46",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa46",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/47",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa47",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/48",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa48",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi0/1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Gi0/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-C2960-48TC-L"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
