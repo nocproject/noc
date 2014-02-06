@@ -249,7 +249,6 @@
         "dimensions": {
             "depth": 270,
             "height": 44,
-            "units": 1,
             "width": 440
         },
         "management": {
@@ -259,7 +258,7 @@
             "units": 1.0
         },
         "weight": {
-            "weight	": "6.24"
+            "weight": 6.24
         }
     }
 }
