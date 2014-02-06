@@ -36,6 +36,8 @@ class Script(NOCScript):
     rx_ip_iface = re.compile(r"(?P<vlan_name>.+)",
                              re.MULTILINE | re.IGNORECASE)
     rx_vlan = re.compile(r"VLAN\s+(?P<vlan>\d+)", re.MULTILINE | re.IGNORECASE)
+    rx_des = re.compile(r"Description:\s+(?P<des>.+)",
+                       re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Interface address is:\s+(?P<ip>.+)",
                        re.MULTILINE | re.IGNORECASE)
     rx_ospf_gs = re.compile(r"Routing Protocol is \"ospf \d+\"")
@@ -76,7 +78,6 @@ class Script(NOCScript):
 
         ospf = []
         ospf_enable = self.rx_ospf_gs.search(c_proto) is not None
-        print ospf_enable
         if ospf_enable:
             try:
                 c = self.cli("show ip ospf interface")
@@ -86,7 +87,6 @@ class Script(NOCScript):
                 if_ospf = match.group("if_ospf")
                 iface_ospf = self.profile.convert_interface_name(if_ospf)
                 ospf += [if_ospf]
-            print ospf
 
         r = []
         try:
@@ -128,6 +128,8 @@ class Script(NOCScript):
 
             match = self.rx_descr.search(s)
             description = match.group("description")
+            if description:
+                description = description.decode("ascii","ignore")
             if iface in portchannel_members:
                 ai, is_lacp = portchannel_members[iface]
                 n["aggregated_interface"] = ai
@@ -159,6 +161,7 @@ class Script(NOCScript):
         for s in self.rx_line_vlan.split(v)[1:]:
             n = {}
             ifindex = 0
+            description = None
             match = self.rx_ifindex.search(s)
             if match:
                 ifindex = int(match.group("ifindex"))
@@ -177,23 +180,21 @@ class Script(NOCScript):
             ip_list = [ip]
             match = self.rx_mac_local.search(s)
             mac = match.group("mac")
+            match = self.rx_des.search(s)
+            if match:
+                description = match.group("des").decode("ascii","ignore")
 
-            description = iface
             enabled_protocols = []
-            print iface
             if ospf_enable and iface in ospf:
                 enabled_protocols += ["OSPF"]
-                print enabled_protocols
 
             iface = {"name": iface,
                      "type": "SVI",
                      "admin_status": True,
                      "oper_status": True,
                      "mac": mac,
-                     "description": description,
                      "subinterfaces": [{
                              "name": iface,
-                             "description": description,
                              "admin_status": True,
                              "oper_status": True,
                              "enabled_afi": ["IPv4"],
@@ -204,5 +205,8 @@ class Script(NOCScript):
                      }]}
             if ifindex != 0:
                 iface["snmp_ifindex"] = ifindex
+            if description:
+                iface["description"] = description
+                iface["subinterfaces"][0]["description"] = description
             r += [iface]
         return [{"interfaces": r}]
