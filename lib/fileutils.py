@@ -32,6 +32,8 @@ def safe_rewrite(path, text, mode=None):
     """
     Create new file filled with "text" safely
     """
+    if isinstance(text, unicode):
+        text = text.encode("utf-8")
     d = os.path.dirname(path)
     if d and not os.path.exists(d):
         os.makedirs(d)
