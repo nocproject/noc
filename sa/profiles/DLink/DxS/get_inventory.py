@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## DLink.DxS.get_interfaces
+## DLink.DxS.get_inventory
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
