@@ -15,8 +15,8 @@ from noc.sa.protocols.sae_pb2 import TELNET, SSH
 class Profile(noc.sa.profiles.Profile):
     name = "HP.ProCurve"
     supported_schemes = [TELNET, SSH]
-    pattern_prompt = r"\S+?(\(\S+\))?# "
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_prompt = r"^[a-zA-Z0-9- ]+?(\(\S+\))?# "
+    pattern_unpriveleged_prompt = r"^[a-zA-Z0-9- ]+?> "
     pattern_more = [
         ("Press any key to continue", "\n"),
         ("-- MORE --, next page: Space, next line: Enter, quit: Control-C", " ")
