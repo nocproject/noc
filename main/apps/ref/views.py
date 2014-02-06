@@ -133,11 +133,12 @@ class RefAppplication(ExtApplication):
                     if ql in x["label"].lower()]
         else:
             data = [x for x in self.refs[ref]]
+        total = len(data)
         if start is not None and limit is not None:
             data = data[int(start):int(start) + int(limit)]
         if format == "ext":
             return {
-                "total": len(data),
+                "total": total,
                 "success": True,
                 "data": data
             }
