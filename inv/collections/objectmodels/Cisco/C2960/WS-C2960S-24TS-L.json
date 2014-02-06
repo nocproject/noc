@@ -1,0 +1,260 @@
+{
+    "name": "Cisco | C2960 | WS-C2960S-24TS-L",
+    "uuid": "819f5bd5-dd45-4587-b369-cde94a45c030",
+    "vendor__code": "CISCO",
+    "description": "24 Ethernet 10/100/1000 ports and 4 one gigabit SFP ports",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "connections": [
+        {
+            "description": "Gi1/0/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/4",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/5",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/6",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/7",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/8",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/9",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/10",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/11",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/12",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/13",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/14",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/15",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/16",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi16",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/17",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/18",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/19",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi19",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/20",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi20",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/21",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi21",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/22",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi22",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/23",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi23",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/24",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi24",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi1/0/25",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi25_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Gi1/0/26",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi26_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Gi1/0/27",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi27_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Gi1/0/28",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi28_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no1": "WS-C2960S-24TS-L"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
