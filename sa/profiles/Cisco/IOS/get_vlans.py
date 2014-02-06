@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOS.get_vlans
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -52,15 +52,16 @@ class Script(NOCScript):
         return r
 
     ##
-    ## 18xx/28xx/37xx/38xx/72xx/73xx/75xx/107xx with EtherSwitch module;
-    ## C17xx, C181X, C26xx, C29xx, C39xx, C8xx series
+    ## 18xx/28xx/36xx/37xx/38xx/72xx/73xx/75xx/107xx with EtherSwitch module;
+    ## C17xx, C18XX, C26xx, C29xx, C39xx, C8xx series
     ##
     rx_vlan_dot1q = re.compile(
         r"^Total statistics for 802.1Q VLAN (?P<vlan_id>\d{1,4}):",
         re.MULTILINE)
 
-    @NOCScript.match(platform__regex=r"^([123][78]\d\d|7[235]\d\d|107\d\d|"
-        r"C[23][69]00|C8[75]0|C1700|C181X|C2951|ASR\d+)")
+    @NOCScript.match(platform__regex=r"^([123][678]\d\d|7[235]\d\d|107\d\d|"
+        r"C[23][69]00[a-z]?$|C8[75]0|C1700|C18[01]X|C1900|C2951|ASR\d+)")
+
     def execute_vlan_switch(self):
         try:
             vlans = self.cli("show vlan-switch")
@@ -78,6 +79,25 @@ class Script(NOCScript):
             return r
         vlans, _ = vlans.split("\nVLAN Type", 1)
         return self.extract_vlans(vlans)
+
+    rx_5350_vlans = re.compile(
+        r"^Virtual LAN ID: \s+(?P<vlan_id>\d{1,4})",
+        re.MULTILINE)
+
+    # Cisco 5350/5350XM:
+    @NOCScript.match(platform__regex=r"^5350")
+    def execute_vlans(self):
+        r = []
+        try:
+            vlans = self.cli("show vlans")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
+        for match in self.rx_5350_vlans.finditer(vlans):
+            vlan_id = int(match.group("vlan_id"))
+            r += [{
+                "vlan_id": vlan_id
+            }]
+        return r
 
     ##
     ## Other
