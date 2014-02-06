@@ -1,0 +1,75 @@
+{
+    "name": "Cisco | 6500 | VS-S720-10G",
+    "uuid": "619a4fb8-a4a5-4eab-b3f2-3aec491188de",
+    "vendor__code": "CISCO",
+    "description": "Cisco VS-S720-10G 5 ports Supervisor Engine 720 10GE",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Supervisor"
+        },
+        {
+            "description": "Compact flash slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk1",
+            "type__name": "Flash | CF"
+        },
+        {
+            "description": "GigabitEthernet X/1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet X/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet X/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "TenGigabitEthernet X/4",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te4_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "TenGigabitEthernet X/5",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te5_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "Management console",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "VS-S720-10G"
+        }
+    }
+}
