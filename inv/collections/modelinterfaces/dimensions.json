@@ -4,13 +4,6 @@
     "description": "Object dimension properties",
     "attrs": [
         {
-            "name": "units",
-            "type": "int",
-            "description": "Object's height in units. 0 - if not rackmountable",
-            "required": true,
-            "is_const": true
-        },
-        {
             "name": "depth",
             "type": "int",
             "description": "Object's depth in mm",

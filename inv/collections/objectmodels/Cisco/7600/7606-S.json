@@ -92,14 +92,13 @@
         "dimensions": {
             "depth": 546,
             "height": 310,
-            "units": 7,
             "width": 438
         },
         "management": {
             "managed": true
         },
         "rackmount": {
-            "units": 7
+            "units": 7.0
         }
     }
 }

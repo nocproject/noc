@@ -293,13 +293,15 @@
             "part_no0": "S5328C-EI"
         },
         "dimensions": {
-            "depth": "420",
-            "height": "45",
-            "units": "1",
-            "width": "442"
+            "depth": 420,
+            "height": 45,
+            "width": 442
         },
         "power": {
-            "power": "63"
+            "power": 63.0
+        },
+        "rackmount": {
+            "units": 1.0
         }
     }
 }
