@@ -1,0 +1,52 @@
+{
+    "name": "DLink | Modules | DEM-340MG",
+    "uuid": "a7e008b2-4343-449b-b270-207521a4fdb9",
+    "vendor__code": "DLINK",
+    "description": "4 Port SFP Module",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "DLink | DGS32-33 | Module"
+        },
+        {
+            "description": "port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "port 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi3_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "port 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi4_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "DEM-340MG"
+        }
+    }
+}

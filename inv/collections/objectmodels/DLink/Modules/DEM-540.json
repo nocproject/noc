@@ -1,0 +1,20 @@
+{
+    "name": "DLink | Modules | DEM-540",
+    "uuid": "b42574e6-c536-4ac1-abe6-2bc716f63910",
+    "vendor__code": "DLINK",
+    "description": "Stack Module",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "DLink | DGS32-33 | Module"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "DEM-540"
+        }
+    }
+}

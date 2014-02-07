@@ -1,0 +1,36 @@
+{
+    "name": "DLink | Modules | DEM-320GH",
+    "uuid": "850204fe-821d-41db-929b-7cc7ad75a10b",
+    "vendor__code": "DLINK",
+    "description": "2 Port GBIC Module",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "DLink | DES32-33 | Module"
+        },
+        {
+            "description": "port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "DEM-320GH"
+        }
+    }
+}

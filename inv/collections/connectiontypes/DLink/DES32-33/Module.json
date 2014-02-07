@@ -1,6 +1,7 @@
 {
-    "name": "DLink | DGS32-33 | Module",
-    "description": "DGS-3212SR/3312SR module slot",
+    "name": "DLink | DES32-33 | Module",
+    "uuid": "dac0eacf-c401-49ef-9d9c-156bf6d9e083",
+    "description": "DES-3226/3226S/3326SR module slot",
     "c_group": [],
     "genders": "mf"
 }
