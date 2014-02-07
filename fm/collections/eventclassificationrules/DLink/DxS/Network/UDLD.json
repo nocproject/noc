@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "message",
-                "value_re": "(?:INFO:|INFO\\(6\\)) Port: (?P<interface>\\S+) is unidirectional"
+                "value_re": "(?:INFO:|INFO\\(6\\)|WARN\\(4\\)) [Pp]ort: (?P<interface>\\S+) is unidirectional"
             }
         ]
     }

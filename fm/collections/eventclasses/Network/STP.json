@@ -396,5 +396,28 @@
                 "required": false
             }
         ]
+    },
+
+    {
+        "name": "Network | STP | STP instances exceeded",
+        "description": "Platform limit of STP instances exceeded",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "Platform limit of {% if limit %}{{limit}} {%endif %}STP instances exceeded",
+                "body_template": "Platform limit of {% if limit %}{{limit}} {%endif %}STP instances exceeded",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "limit",
+                "description": "Platform limit",
+                "type": "int",
+                "required": false
+            }
+        ]
     }
 ]
