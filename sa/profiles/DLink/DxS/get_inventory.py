@@ -32,6 +32,12 @@ class Script(NOCScript):
     rx_mod3 = re.compile(
         r"\s+(?P<number>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+"
         r"(?P<serial>(\xFF)+)\s+(?P<descr>.+?)\s*$")
+    rx_ip = re.compile(r"Internal Power\s*: (OK|Active)")
+    rx_ep = re.compile(r"External Power\s*: (OK|Active)")
+    rx_lf = re.compile(r"Left Fan\s*: OK")
+    rx_rf = re.compile(r"Right Fan\s*: OK")
+    rx_bf = re.compile(r"Back Fan\s*: OK")
+    rx_cf = re.compile(r"CPU Fan\s*: OK")
 
     """
 3026
@@ -124,4 +130,69 @@ DGS-3627G:admin#
                     r += [p]
         except self.CLISyntaxError:
             pass
+        try:
+            l = self.cli("show device_status\nq\n")
+            match = self.rx_ip.search(l)
+            if match:
+                p = {
+                    "type": "PWR",
+                    "number": "",
+                    "vendor": "DLINK",
+                    "part_no": ["Int-PWR"],
+                    "description": ["Internal Power"],
+                }
+                r += [p]
+            match = self.rx_ep.search(l)
+            if match:
+                p = {
+                    "type": "PWR",
+                    "number": "",
+                    "vendor": "DLINK",
+                    "part_no": ["Ext-PWR"],
+                    "description": ["External Power"],
+                }
+                r += [p]
+            match = self.rx_lf.search(l)
+            if match:
+                p = {
+                    "type": "FAN",
+                    "number": "",
+                    "vendor": "DLINK",
+                    "part_no": ["L-Fan"],
+                    "description": ["Left Fan"],
+                }
+                r += [p]
+            match = self.rx_rf.search(l)
+            if match:
+                p = {
+                    "type": "FAN",
+                    "number": "",
+                    "vendor": "DLINK",
+                    "part_no": ["R-Fan"],
+                    "description": ["Right Fan"],
+                }
+                r += [p]
+            match = self.rx_bf.search(l)
+            if match:
+                p = {
+                    "type": "FAN",
+                    "number": "",
+                    "vendor": "DLINK",
+                    "part_no": ["B-Fan"],
+                    "description": ["Back Fan"],
+                }
+                r += [p]
+            match = self.rx_cf.search(l)
+            if match:
+                p = {
+                    "type": "FAN",
+                    "number": "",
+                    "vendor": "DLINK",
+                    "part_no": ["C-Fan"],
+                    "description": ["CPU Fan"],
+                }
+                r += [p]
+        except self.CLISyntaxError:
+            pass
+
         return r
