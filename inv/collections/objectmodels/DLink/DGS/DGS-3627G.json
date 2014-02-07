@@ -1,0 +1,279 @@
+{
+    "name": "DLink | DGS | DGS-3627G",
+    "uuid": "9ec5e114-8640-44b5-999c-b3bc19efed73",
+    "vendor__code": "DLINK",
+    "description": "DGS-3627G xStack L3 Managed Switch witch 24 ports 1000 SFP, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 3 module slot",
+    "connections": [
+        {
+            "description": "1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "3",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi3_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "4",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi4_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "5",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi5_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "6",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi6_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "7",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi7_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "8",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi8_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "9",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi9_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "10",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi10_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "11",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi11_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "12",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi12_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "13",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi13_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "14",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi14_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "15",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi15_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "16",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi16_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "17",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi17_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "18",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi18_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "19",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi19_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "20",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi20_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "21",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi21",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "21",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi21_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "22",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi22",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "22",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi22_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "23",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi23",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "23",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi23_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "24",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi24",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "24",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi24_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "25",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te25",
+            "type__name": "DLink | DGS34-36 | Module"
+        },
+        {
+            "description": "26",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te26",
+            "type__name": "DLink | DGS34-36 | Module"
+        },
+        {
+            "description": "27",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te27",
+            "type__name": "DLink | DGS34-36 | Module"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "IPWR",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "DGS-3627G"
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

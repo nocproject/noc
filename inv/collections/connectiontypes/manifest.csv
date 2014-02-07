@@ -51,6 +51,7 @@ Cisco | SIP,c9f1ef78-12c6-4f9f-abf9-1de8d5d39d1b,Cisco/SIP.json,2b8a9f530356f680
 Cisco | SPA,866b5026-45ab-4346-911f-1837b9157767,Cisco/SPA.json,c41be9f8773ea254c97ed9b782a9fcf98ca0167ec558f475c2340a88fafe5a51
 Conduits,376c9a7d-d810-42cc-9672-f6194efb4b1e,Conduits.json,622693e6086f260895cb9bc70d60f4c1ea0ef4cf218fc0989248be5403cafd5e
 DLink | DES30 | Module,a15c4ef0-dd7c-43cb-9c6d-3556a2e8cbaa,DLink/DES30/Module.json,ad8d2607e3478815408340de13a9d6ee0e65f074be023054d076a00189c9e50a
+DLink | DES32-33 | Module,dac0eacf-c401-49ef-9d9c-156bf6d9e083,DLink/DES32-33/Module.json,0c69e1d5e9a10668809ae8a612777c38e66a9c6fe1e094c38abde0f7c1273b35
 DLink | DGS32-33 | Module,9a0a1d7f-5475-4c25-83df-aacf7d5fd169,DLink/DGS32-33/Module.json,3c17d0de2c46ebca4717e118c15611cae0a6899d52041c7d991147a4cdcf6fbe
 DLink | DGS34-36 | Module,01247664-2a85-4b58-bae5-d35f7b3aa148,DLink/DGS34-36/Module.json,665a25a40926b99d8cbab73b25cae4bfb7c0ad4e19af0685e1e02de508ac2b1e
 DLink | DGS3610 | Module,68feb8cb-5737-4b63-825c-b78097d7eb2e,DLink/DGS3610/Module.json,8d51ecf707168f7deba64c78131b51434e6e950a7cdbf84d8a5da301621d98d8

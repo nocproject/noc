@@ -1,0 +1,36 @@
+{
+    "name": "DLink | Modules | DES-132GB",
+    "uuid": "ad2f4760-ac4a-45b0-a993-5c03f0ee921a",
+    "vendor__code": "DLINK",
+    "description": "2 Port GBIC Module",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "DLink | DES32-33 | Module"
+        },
+        {
+            "description": "port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "DES-132GB"
+        }
+    }
+}

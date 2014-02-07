@@ -1,0 +1,28 @@
+{
+    "name": "DLink | Modules | DEM-412X",
+    "uuid": "9d9bd60e-8c66-4b65-8f4c-5c7c2244bf49",
+    "vendor__code": "DLINK",
+    "description": "1 Port XFP Module",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "DLink | DGS3610 | Module"
+        },
+        {
+            "description": "TeX XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te1_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "DEM-412X"
+        }
+    }
+}
