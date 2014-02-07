@@ -1,0 +1,149 @@
+{
+    "name": "DLink | DxS",
+    "uuid": "08b5f8e4-345c-434a-9811-9753d6a1e6cd",
+    "description": "D-Link DxS switches",
+    "context": [
+        {
+            "reset_scopes": ["module"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "module",
+            "type": "MODULE"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "card",
+            "type": "CARD"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "alarm",
+            "type": "ALARM"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "MODULE",
+            "scope": "chassis",
+            "target_connection": "module{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "FAN{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "ALRM",
+            "scope": "chassis",
+            "target_connection": "ALARM",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SD",
+            "scope": "card",
+            "target_connection": "card{N}",
+            "target_number": "",
+            "target_type": "CARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "HDMI",
+            "scope": "chassis",
+            "target_connection": "hdmi{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "Fa{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "Te{N}_sfp+",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "Te{N}_sfp+",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "module",
+            "target_connection": "Gi{N}_gbic",
+            "target_number": "",
+            "target_type": "MODULE"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "module",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "MODULE"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "module",
+            "target_connection": "Te{N}_sfp+",
+            "target_number": "",
+            "target_type": "MODULE"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "module",
+            "target_connection": "Te{N}_xfp",
+            "target_number": "",
+            "target_type": "MODULE"
+        }
+    ]
+}
