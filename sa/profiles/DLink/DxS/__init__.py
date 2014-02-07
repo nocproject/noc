@@ -4,7 +4,7 @@
 ## OS:     DxS
 ## Compatible:
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -78,7 +78,7 @@ class Profile(NOCProfile):
         r"((?P<trap_state>Enabled|Disabled)\s*)?"
         r"((?P<asd>\-)\s*)?"
         r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?"
-        r"\n\s+Desc(ription)?:\s*?(?P<desc>.*?)$",
+        r"(\n\s+Desc(ription)?:\s*?(?P<desc>.*?))?$",
         re.MULTILINE)
 
     def parse_interface(self, s):
@@ -86,6 +86,11 @@ class Profile(NOCProfile):
         if match:
             port = match.group("port")
             media_type = match.group("media_type")
+            descr = match.group("desc")
+            if descr:
+                descr = descr.strip()
+            else:
+                descr = ''
             obj = {
                 "port": port,
                 "media_type": media_type,
@@ -100,7 +105,7 @@ class Profile(NOCProfile):
                 "address_learning": match.group("addr_learning").strip(),
                 "mdix": match.group("mdix"),
                 "trap_state": match.group("trap_state"),
-                "desc": match.group("desc").strip()
+                "desc": descr
             }
             key = "%s-%s" % (port, media_type)
             return key, obj, s[match.end():]
@@ -136,6 +141,11 @@ class Profile(NOCProfile):
             objects = script.cli_object_stream(
                 "show ports description", parser=self.parse_interface,
                 cmd_next="n", cmd_stop="q")
+            # DES-3226S does not support `show ports description` command
+            if objects == []:
+                objects = script.cli_object_stream(
+                    "show ports", parser=self.parse_interface,
+                    cmd_next="n", cmd_stop="q")
         prev_i = None
         ports = []
         for i in objects:
@@ -238,3 +248,16 @@ def DGS3620(v):
     :return:
     """
     return v["platform"].startswith("DGS-3620")
+
+def DxS_L2(v):
+    if v["platform"].startswith("DES-12") \
+    or v["platform"].startswith("DES-30") \
+    or v["platform"].startswith("DES-32") \
+    or v["platform"].startswith("DES-35") \
+    or v["platform"].startswith("DGS-12") \
+    or v["platform"].startswith("DGS-30") \
+    or v["platform"].startswith("DGS-32"):
+        return True
+    else:
+        return False
+

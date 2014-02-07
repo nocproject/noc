@@ -39,6 +39,10 @@ class Script(NOCScript):
         re.MULTILINE | re.IGNORECASE)
     rx_remote_port_id2 = re.compile(r"RMON Port (.*[/])*(?P<port>\d+)",
         re.IGNORECASE)
+    rx_remote_port_id3 = re.compile(
+        r"Port Description\s+: D-Link D[EGX]S-\S+ \S+ Port\s+(?P<port>\d+)")
+    rx_remote_port_id4 = re.compile(
+        r"Port Description\s+: (?P<port>((Ten)?Gigabit|Fast)?Ethernet\d+\S+)")
     rx_remote_system_name = re.compile(r"System Name\s+: (?P<name>.+)",
         re.MULTILINE | re.IGNORECASE)
     rx_remote_capabilities = re.compile(
@@ -73,7 +77,7 @@ class Script(NOCScript):
                 match = self.rx_remote_chassis_id_subtype.search(s1)
                 if not match:
                     # Debug string
-                    print "\n\n\n\n\nremote_chassis_id_subtype\n\n\n\n\n"
+                    self.debug('remote_chassis_id_subtype is empty!')
                     continue
                 remote_chassis_id_subtype = match.group("subtype").strip()
                 # TODO: Find other subtypes
@@ -100,7 +104,7 @@ class Script(NOCScript):
                 match = self.rx_remote_chassis_id.search(s1)
                 if not match:
                     # Debug string
-                    print "\n\n\n\n\nremote_chassis_id\n\n\n\n\n"
+                    self.debug('remote_chassis_id is empty!')
                     continue
                 n["remote_chassis_id"] = match.group("id").strip()
 
@@ -108,7 +112,7 @@ class Script(NOCScript):
                 match = self.rx_remote_port_id_subtype.search(s1)
                 if not match:
                     # Debug string
-                    print "\n\n\n\n\nremote_port_id_subtype\n\n\n\n\n"
+                    self.debug('remote_port_id_subtype is empty!')
                     continue
                 remote_port_subtype = match.group("subtype").strip()
                 # TODO: Find other subtypes
@@ -141,15 +145,26 @@ class Script(NOCScript):
                 # remote_port
                 match = self.rx_remote_port_id.search(s1)
                 if not match:
-                    # Debug string
-                    print "\n\n\n\n\nremote_port_id\n\n\n\n\n"
-                    continue
+                    # Try to parse string like
+                    # Port Description : D-Link DGS-3627G R3.00.B27 Port 23
+                    # Port Description : D-Link DGS-3120-24SC R2.00.B01 Port 2 on Unit 1
+                    match = self.rx_remote_port_id3.search(s1)
+                    if match:
+                        n["remote_port_subtype"] = 7
+                    else:
+                        # Debug string
+                        self.debug('remote_port_id is empty!')
+                        continue
 
                 n["remote_port"] = match.group("port").strip()
+                if n["remote_port_subtype"] == 1:
+                    match = self.rx_remote_port_id4.search(s1)
+                    if match:
+                        # Dirty hack !
+                        n["remote_port"] = match.group("port")
                 if n["remote_port_subtype"] == 3:
                     n["remote_port"] = \
                         MACAddressParameter().clean(match.group("port"))
-
                 '''
                 Possible variants of Port ID, if Remote Port ID is "Local":
                 Big thanks to D-Link developers :)
@@ -167,7 +182,7 @@ class Script(NOCScript):
                     match = self.rx_remote_port_id2.search(n["remote_port"])
                     if not match:
                         # Debug string
-                        print "\n\n\n\n\nInvalid remote_port_id\n\n\n\n\n"
+                        self.debug('Invalid remote_port_id!')
                         continue
                     n["remote_port"] = match.group("port")
 

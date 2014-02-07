@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
  
@@ -12,6 +12,8 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
 from noc.lib.ip import IPv4
+from noc.sa.profiles.DLink.DxS import DxS_L2
+from noc.sa.profiles.DLink.DxS import DGS3620
 
 
 class Script(NOCScript):
@@ -48,6 +50,14 @@ class Script(NOCScript):
     r"(IPv6 Link-Local Address\s+:\s+\S+\s*\n)?"
     r"(IPv6 Global Unicast Address\s+:\s+(?P<ipv6_address>\S+) \(\S+\)\s*\n)?"
     r"(IP MTU\s+:\s+(?P<mtu>\d+)\s+\n)?",
+    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+
+    rx_ipmgmt = re.compile(r"IP Interface\s+:\s+(?P<ifname>mgmt_ipif)\s*\n"
+    r"Status\s+:\s+(?P<admin_state>Enabled|Disabled)\s*\n"
+    r"IP Address\s+:\s+(?P<ip_address>\S+)\s*\n"
+    r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n"
+    r"(Gateway\s+:\s+\S+\s*\n)?"
+    r"Link Status\s+:\s+(?P<oper_status>Link\s*UP|Link\s*Down)\s*\n",
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     rx_link_up = re.compile(r"Link\s*UP", re.IGNORECASE)
@@ -90,25 +100,49 @@ class Script(NOCScript):
             return None
 
     def execute(self):
-        rip = []
-        try:
-            c = self.cli("show rip")
-        except self.CLISyntaxError:
-            c = ""
-        rip_enable = self.rx_rip_gs.search(c) is not None
-        if rip_enable:
-            for match in self.rx_rip.finditer(c):
-                rip += [match.group("ipif")]
+        if self.match_version(DxS_L2):
+            L2_Switch = True
+        else:
+            L2_Switch = False
 
-        ospf = []
-        try:
-            c = self.cli("show ospf")
-        except self.CLISyntaxError:
-            c = ""
-        ospf_enable = self.rx_ospf_gs.search(c) is not None
-        if ospf_enable:
-            for match in self.rx_ospf.finditer(c):
-                ospf += [match.group("ipif")]
+            rip = []
+            try:
+                c = self.cli("show rip")
+            except self.CLISyntaxError:
+                c = ""
+            rip_enable = self.rx_rip_gs.search(c) is not None
+            if rip_enable:
+                for match in self.rx_rip.finditer(c):
+                    rip += [match.group("ipif")]
+
+            ospf = []
+            try:
+                c = self.cli("show ospf")
+            except self.CLISyntaxError:
+                c = ""
+            ospf_enable = self.rx_ospf_gs.search(c) is not None
+            if ospf_enable:
+                for match in self.rx_ospf.finditer(c):
+                    ospf += [match.group("ipif")]
+
+            pim = []
+            try:
+                c = self.cli("show pim")
+            except self.CLISyntaxError:
+                c = ""
+            pim_enable = self.rx_pim_gs.search(c) is not None
+            if pim_enable:
+                for match in self.rx_pim.finditer(c):
+                    pim += [match.group("ipif")]
+
+            igmp = []
+            try:
+                c = self.cli("show igmp")
+            except self.CLISyntaxError:
+                c = ""
+            for match in self.rx_igmp.finditer(c):
+                igmp += [match.group("ipif")]
+
 
         lldp = []
         try:
@@ -154,23 +188,6 @@ class Script(NOCScript):
                 if i['state'] == 'Enabled':
                     ctp += [i['port']]
 
-        pim = []
-        try:
-            c = self.cli("show pim")
-        except self.CLISyntaxError:
-            c = ""
-        pim_enable = self.rx_pim_gs.search(c) is not None
-        if pim_enable:
-            for match in self.rx_pim.finditer(c):
-                pim += [match.group("ipif")]
-
-        igmp = []
-        try:
-            c = self.cli("show igmp")
-        except self.CLISyntaxError:
-            c = ""
-        for match in self.rx_igmp.finditer(c):
-            igmp += [match.group("ipif")]
 
         ports = self.profile.get_ports(self)
         vlans = self.profile.get_vlans(self)
@@ -316,15 +333,39 @@ class Script(NOCScript):
                             i['subinterfaces'][0].update({"mac": f['mac']})
                             break
                     break
-            if rip_enable and ifname in rip:
-                enabled_protocols += ["RIP"]
-            if ospf_enable and ifname in ospf:
-                enabled_protocols += ["OSPF"]
-            if pim_enable and ifname in pim:
-                enabled_protocols += ["PIM"]
-            if ifname in igmp:
-                enabled_protocols += ["IGMP"]
-            i['subinterfaces'][0]["enabled_protocols"] = enabled_protocols
+            if not L2_Switch:
+                if rip_enable and ifname in rip:
+                    enabled_protocols += ["RIP"]
+                if ospf_enable and ifname in ospf:
+                    enabled_protocols += ["OSPF"]
+                if pim_enable and ifname in pim:
+                    enabled_protocols += ["PIM"]
+                if ifname in igmp:
+                    enabled_protocols += ["IGMP"]
+                i['subinterfaces'][0]["enabled_protocols"] = enabled_protocols
             interfaces += [i]
+        if self.match_version(DGS3620):
+            match = self.rx_ipmgmt.search(ipif)
+            if match:
+                admin_status = match.group("admin_state") == "Enabled"
+                o_status = match.group("oper_status")
+                oper_status = re.match(self.rx_link_up, o_status) is not None
+                i = {
+                    "name": match.group("ifname"),
+                    "type": "management",
+                    "admin_status": admin_status,
+                    "oper_status": oper_status,
+                    "subinterfaces": [{
+                        "name": match.group("ifname"),
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "enabled_afi": ["IPv4"]
+                    }]
+                }
+                ip_address = match.group("ip_address")
+                ip_subnet = match.group("ip_subnet")
+                ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
+                i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+                interfaces += [i]
 
         return [{"interfaces": interfaces}]
