@@ -31,7 +31,10 @@ def get_version():
     if not os.path.isdir(".hg"):
         return v
     # Get branch
-    from mercurial import ui, localrepo
+    try:
+        from mercurial import ui, localrepo
+    except ImportError:
+        return v
     repo = localrepo.localrepository(ui.ui(), path=".")
     tip = repo.changelog.rev(repo.changelog.tip())
     branch = repo.dirstate.branch()
