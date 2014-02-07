@@ -18,5 +18,47 @@
                 "value_re": "%IP-4-DUPADDR: Duplicate address (?P<ip>\\S+) on (?P<interface>\\S+), sourced by (?P<mac>\\S+)$" 
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | IP | Route Limit Warning (SYSLOG)",
+        "description": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - 1010:6699",
+        "event_class__name": "Network | IP | Route Limit Warning",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$" 
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - (?P<reason>\\.+)$" 
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | IP | Route Limit Exceeded (SYSLOG)",
+        "description": "%IPRT-3-ROUTELIMITEXCEEDED: IP routing table limit exceeded - 1010:6699, 0.0.0.0/0",
+        "event_class__name": "Network | IP | Route Limit Exceeded",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$" 
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%IPRT-3-ROUTELIMITEXCEEDED: IP routing table limit exceeded - (?P<reason>\\.+)$" 
+            }
+        ]
     }
 ]
