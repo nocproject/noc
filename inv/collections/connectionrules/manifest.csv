@@ -8,7 +8,7 @@ Cisco | 7600,eaa17985-6b50-4cdb-8b30-bdab3f28f6f9,Cisco/7600.json,ffca8f9f34ba20
 Cisco | ASA,dbd6557e-a3cd-496a-8f9d-1e6dfe1df492,Cisco/ASA.json,4e341867d398d64c4d75efc220ffcbfa2a6da21396f671463542decdcd80be9a
 Cisco | ASR9k,b1cea7b6-08f6-4bfd-a1b5-ce73cc8f3c56,Cisco/ASR9k.json,e2e640a3a0385515fd7b7d88fa8681ccc1ad79fb24e2a274e245c6d7cd97c357
 Cisco | SCE,8794af60-8d77-4c9d-97d5-1215abbd2602,Cisco/SCE.json,cb1375f55552b6ff171ed9b8fb60772d3013a0e50d394c34166756ce157316ae
-DLink | DxS,08b5f8e4-345c-434a-9811-9753d6a1e6cd,DLink/DxS.json,d1cf47ae04d4a8f72b94b21f31bdd85dc5699cb8db72d64049f1efbade2a3c49
+DLink | DxS,08b5f8e4-345c-434a-9811-9753d6a1e6cd,DLink/DxS.json,9f279a9eeb1a0ddee615f34f8c3a5fc47d86e6cc7e6845ea4d0970b80a00ad5e
 Ericsson | SmartEdge,a67b67ef-874a-463c-a982-ad06d241fd65,Ericsson/SmartEdge.json,3be500a14b6f906b25acf0d08a0aa5c619b43c7cfea09435f546bbf62b257dc5
 Generic | Switch GBIC Prefixed,fd2a51b5-b7bb-4d16-a863-df89588cf63c,Generic/Switch_GBIC_Prefixed.json,e133274bd41a8b28201a3fddea5917c5e155aa6aedbdaed8d0bfc9f73ebfad6e
 Generic | Switch SFP,15cd98dd-d9cc-4d55-b610-fc29c409421f,Generic/Switch_SFP.json,26fdcd953340676beea60d1337cac2ee8fcb93f51a18bd86657518e9ddca6e4b
