@@ -115,10 +115,10 @@ class Activator(Daemon, FSM):
         self.service = Service()
         self.service.activator = self
         self.factory = SocketFactory(
-            tick_callback=self.tick, controller=self)
+            tick_callback=self.tick, controller=self, write_delay=False)
         self.children = {}
         self.sae_stream = None
-        self.to_listen = False  # To start or not to start collectors
+        self.to_listen = self.config.get("activator", "listen_instance") == self.instance_id
         self.ping_count = self.config.getint("activator", "ping_count")
         self.ping_timeout = self.config.getint("activator", "ping_timeout")
         self.to_ping = self.config.get("activator", "ping_instance") == self.instance_id  # To start or not to start ping checks
@@ -146,8 +146,11 @@ class Activator(Daemon, FSM):
         self.next_crashinfo_check = None
         self.next_heartbeat = None
         self.script_threads = {}
-        self.max_script_threads = self.config.getint("activator",
-                                                     "max_scripts")
+        if ((self.to_listen and self.config.getboolean("activator", "dedicated_collector")) or (
+            self.to_ping and self.config.getboolean("activator", "dedicated_ping"))):
+            self.max_script_threads = 0
+        else:
+            self.max_script_threads = self.config.getint("activator", "max_scripts")
         self.scripts_processed = 0
         self.scripts_failed = 0
         self.script_lock = RLock()
@@ -275,7 +278,6 @@ class Activator(Daemon, FSM):
         self.scripts_processed = 0
         self.scripts_failed = 0
         # Check does our instance is designated to listen
-        self.to_listen = self.config.get("activator", "listen_instance") == self.instance_id
         if self.to_listen:
             if self.config.get("activator", "listen_traps"):
                 self.start_trap_collectors()
