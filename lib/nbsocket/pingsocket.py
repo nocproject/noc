@@ -11,6 +11,7 @@ import socket
 from errno import *
 import struct
 import time
+import os
 ## NOC modules
 from noc.lib.nbsocket.basesocket import Socket
 
@@ -35,6 +36,7 @@ class PingSocket(Socket):
         self.out_buffer = []  # (address, size, count)
         # Running pings
         self.sessions = {}  # Request Id -> PingSession
+        self.req_id = os.getpid() & 0xFFFF
         super(PingSocket, self).__init__(factory)
 
     def _create_socket(self):
@@ -53,15 +55,17 @@ class PingSocket(Socket):
         return self.sessions.get((addr, req_id))
 
     def handle_write(self):
-        while self.out_buffer:
+        self.debug("%d packets to send" % len(self.out_buffer))
+        n = 0
+        while self.out_buffer and n < 50:  # @todo: Configurable
+            n += 1
             session = self.out_buffer.pop(0)
-            self.sessions[self.get_session_id(session)] = session
             msg = session.build_echo_request()
+            self.sessions[self.get_session_id(session)] = session
             try:
                 # Port is irrelevant for icmp
                 self.socket.sendto(msg, (session.address, 1))
             except socket.error, why:  # ENETUNREACH
-                self.debug("Socket error: %s" % why)
                 session.register_miss()
                 return
         self.set_status(w=bool(self.out_buffer))
@@ -72,13 +76,19 @@ class PingSocket(Socket):
 
     def handle_read(self):
         self.update_status()
-        try:
-            msg, addr = self.socket.recvfrom(MAX_RECV)
-        except socket.error, why:
-            if why[0] in (EINTR, EAGAIN):
-                return
-            raise socket.error, why
-        self.parse_reply(msg, addr[0])
+        while True:
+            try:
+                msg, addr = self.socket.recvfrom(MAX_RECV)
+            except socket.error, why:
+                if why[0] in (EINTR, EAGAIN):
+                    break
+                raise socket.error, why
+            self.parse_reply(msg, addr[0])
+
+    def ping_session(self, session):
+        self.out_buffer += [session]
+        if self.socket:
+            self.set_status(w=True)
 
     def ping(self, addr, size=64, count=1, timeout=3, callback=None,
              stop_on_success=False):
@@ -93,13 +103,11 @@ class PingSocket(Socket):
         :param callback:
         :return:
         """
-        self.out_buffer += [
+        self.ping_session(
             PingSession(self, address=addr, size=size,
                 count=count, timeout=timeout, callback=callback,
                 stop_on_success=stop_on_success)
-        ]
-        if self.socket:
-            self.set_status(w=True)
+        )
 
     def get_session_class(self):
         raise NotImplementedError
@@ -119,11 +127,19 @@ class PingSocket(Socket):
                    if self.sessions[r].expire and
                       self.sessions[r].expire <= t]
         for s in expired:
+            self.debug("Ping timeout: %s" % s.address)
             s.register_miss()
+        if self.sessions:
+            self.debug("Current sessions: %d" % len(self.sessions))
         return False
 
     def on_error(self, exc):
         self.error("Failed to create ping socket. Check process permissions")
+
+    def get_req_id(self):
+        r = self.req_id
+        self.req_id = (self.req_id + 1) & 0xFFFF
+        return r
 
 
 class Ping4Socket(PingSocket):
@@ -176,7 +192,7 @@ class Ping6Socket(PingSocket):
         (icmp_type, icmp_code, icmp_checksum,
          req_id, seq) = struct.unpack("!BBHHH", icmp_header)
         payload = msg[8:]
-        if icmp_type == ICMPv4_ECHOREPLY:
+        if icmp_type == ICMPv6_ECHOREPLY:
             session = self.get_session(addr, req_id)
             if session:
                 session.register_reply(address=src_ip, seq=seq, ttl=ttl,
@@ -196,7 +212,7 @@ class PingSession(object):
         self.stop_on_success = stop_on_success
         self.to_stop = False
         self.expire = None
-        self.req_id = id(self) & 0xFFFF
+        self.req_id = self.ping_socket.get_req_id()
         self.seq = 0
         self.payload = None
         self.result = []
@@ -208,6 +224,7 @@ class PingSession(object):
 
     def register_reply(self, address, seq, ttl, payload):
         if seq != self.seq or payload != self.payload:
+            self.ping_socket.debug("Sequence number mismatch. Ignoring")
             return
         # @todo: Check checksum
         t = time.time()
@@ -229,8 +246,7 @@ class PingSession(object):
                 self.callback(self.address, self.result)
         else:
             # Next round
-            self.ping_socket.out_buffer += [self]
-            self.ping_socket.set_status(w=True)
+            self.ping_socket.ping_session(self)
 
     def get_checksum(self, msg):
         """
@@ -253,7 +269,6 @@ class PingSession(object):
 
     def build_echo_request(self):
         checksum = 0
-        self.req_id = id(self) & 0xFFFF
         # Fake header with zero checksum
         header = struct.pack("!BBHHH",
             self.ping_socket.ECHO_TYPE, 0,
