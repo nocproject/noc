@@ -48,6 +48,7 @@ class Rule(object):
         self.is_unknown_syslog = self.event_class_name.startswith("Unknown | Syslog")
         self.datasources = {}  # name -> DS
         self.vars = {}  # name -> value
+        self.chain = None
         # Parse datasources
         for ds in rule.datasources:
             self.datasources[ds.name] = eval(
@@ -82,6 +83,14 @@ class Rule(object):
             if x.key_re in ("profile", "^profile$"):
                 self.profile = x.value_re
                 continue
+            elif x.key_re in ("source", "^source$"):
+                if x.value_re == "^syslog$":
+                    self.chain = "syslog"
+                elif x.value_re == "^SNMP Trap$":
+                    self.chain = "snmp_trap"
+                else:
+                    self.chain = "other"
+                continue
             # Process key pattern
             if self.is_exact(x.key_re):
                 x_key = self.unescape(x.key_re[1:-1])
@@ -100,10 +109,11 @@ class Rule(object):
                     raise InvalidPatternException("Error in '%s': %s" % (x.value_re, why))
             # Save patterns
             if x_key:
-                c1 += ["'%s' in vars" % x_key]
                 if x_value:
-                    c1 += ["vars['%s'] == '%s'" % (x_key, x_value)]
+                    c1 += ["vars.get('%s') == '%s'" % (x_key, x_value)]
                 else:
+                    if not (self.chain == "syslog" and x_key == "message"):
+                        c1 += ["'%s' in vars" % x_key]
                     c2[x_key] = self.get_rx(rx_value)
             else:
                 if x_value:
@@ -149,14 +159,13 @@ class Rule(object):
 
         e_vars_used = c2 or c3 or c4
         c = []
-        if e_vars_used:
-            c += ["e_vars = {}"]
         if c1:
             cc = " and ".join(["(%s)" % x for x in c1])
             c += ["if not (%s):" % cc]
             c += ["    return None"]
+        if e_vars_used:
+            c += ["e_vars = {}"]
         if c2:
-            cc = ""
             for k in c2:
                 c += ["# %s" % self.rxp[c2[k]]]
                 c += ["match = self.rx_%s.search(vars['%s'])" % (c2[k], k)]
@@ -232,8 +241,8 @@ class Rule(object):
         cc += ["def match(self, event, vars):"]
         cc += c
         cc += ["rule.match = new.instancemethod(match, rule, rule.__class__)"]
-        c = "\n".join(cc)
-        code = compile(c, "<string>", "exec")
+        self.code = "\n".join(cc)
+        code = compile(self.code, "<string>", "exec")
         exec code in {"rule": self, "new": new,
                       "logging": logging, "fm_unescape": fm_unescape}
 
