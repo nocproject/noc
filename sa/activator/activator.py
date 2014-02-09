@@ -115,7 +115,7 @@ class Activator(Daemon, FSM):
         self.service = Service()
         self.service.activator = self
         self.factory = SocketFactory(
-            tick_callback=self.tick, controller=self, write_delay=False)
+            tick_callback=self.tick, controller=self)
         self.children = {}
         self.sae_stream = None
         self.to_listen = self.config.get("activator", "listen_instance") == self.instance_id
