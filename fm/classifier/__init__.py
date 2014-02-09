@@ -161,7 +161,7 @@ class Classifier(Daemon):
             logging.info("%d rules are cloned" % cn)
         logging.info("%d rules are loaded in the %d profiles" % (
             n, len(self.rules)))
-    
+
     def load_triggers(self):
         logging.info("Loading triggers")
         self.triggers = {}
@@ -479,7 +479,7 @@ class Classifier(Daemon):
                         return CR_UDUPLICATED
         # Find matched event class
         c_vars = event.raw_vars.copy()
-        c_vars.update(dict([(k, fm_unescape(v)) for k, v in resolved_vars.items()]))
+        c_vars.update(dict((k, fm_unescape(resolved_vars[k])) for k in resolved_vars))
         rule, vars = self.find_matching_rule(event, c_vars)
         if rule is None:
             # Something goes wrong.
@@ -628,12 +628,27 @@ class Classifier(Daemon):
             q["vars__%s" % v] = vars[v]
         return ActiveEvent.objects.filter(**q).first()
 
+    def consume_event(self, e):
+        """
+        Consume single event and return classification status
+        """
+        try:
+            return self.classify_event(e)
+        except EventProcessingFailed, why:
+            self.mark_as_failed(e, why[0])
+            return CR_FAILED
+        except:
+            self.mark_as_failed(e)
+            return CR_FAILED
+        finally:
+            reset_queries()
+
     def run(self):
         """
         Main daemon loop
         """
         # @todo: move to configuration
-        CHECK_EVERY = 3  # Recheck queue every N seconds
+        CHECK_EVERY = 1  # Recheck queue every N seconds
         REPORT_INTERVAL = 1000  # Performance report interval
         # Try to classify events which processing failed
         # on previous versions of classifier
@@ -650,17 +665,9 @@ class Classifier(Daemon):
             sn = st.copy()
             t0 = time.time()
             for e in self.iter_new_events(REPORT_INTERVAL):
-                try:
-                    s = self.classify_event(e)
-                    sn[s] += 1
-                except EventProcessingFailed, why:
-                    self.mark_as_failed(e, why[0])
-                    sn[CR_FAILED] += 1
-                except:
-                    self.mark_as_failed(e)
-                    sn[CR_FAILED] += 1
+                s = self.consume_event(e)
+                sn[s] += 1
                 n += 1
-                reset_queries()
             if n:
                 # Write performance report
                 tt = time.time()
@@ -674,7 +681,7 @@ class Classifier(Daemon):
                     "speed: %sev/s" % ("%10.1f" % perf).strip(),
                     "events: %d" % n,
                     "lag: %fs" % total_seconds(datetime.datetime.now() - e.timestamp)
-                    ]
+                ]
                 s += ["%s: %d" % (CR[i], sn[i]) for i in range(len(CR))]
                 s = ", ".join(s)
                 logging.info("REPORT: %s" % s)
