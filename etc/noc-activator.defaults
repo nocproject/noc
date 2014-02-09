@@ -20,6 +20,10 @@ log_snmp_traps = false
 
 [activator]
 name            = unknown
+# Disable running scripts if listening for traps
+dedicated_collector = false
+# Disable running scripts if pinging objects
+dedicated_ping = false
 listen_instance = 0
 ping_instance   = 0
 ping_count = 3
