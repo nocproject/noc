@@ -119,7 +119,7 @@ class Classifier(Daemon):
         self.rules = {}
         # Initialize profiles
         for p in profiles:
-            self.rules[p] = []
+            self.rules[p] = {}
         # Load cloning rules
         cloning_rules = []
         for cr in CloneClassificationRule.objects.all():
@@ -155,7 +155,9 @@ class Classifier(Daemon):
                 rx = re.compile(profile_re)
                 for p in profiles:
                     if rx.search(p):
-                        self.rules[p] += [rule]
+                        if rule.chain not in self.rules[p]:
+                            self.rules[p][rule.chain] = []
+                        self.rules[p][rule.chain] += [rule]
                 n += 1
         if cn:
             logging.info("%d rules are cloned" % cn)
@@ -387,7 +389,20 @@ class Classifier(Daemon):
         :returns: Event class and extracted variables
         :rtype: tuple of (EventClass, dict)
         """
-        for r in self.rules[event.managed_object.profile_name]:
+        # Get chain
+        src = event.raw_vars.get("source")
+        if src == "syslog":
+            chain = "syslog"
+            if "message" not in event.raw_vars:
+                return None, None
+        elif src == "SNMP Trap":
+            chain = "snmp_trap"
+        else:
+            chain = "other"
+        # Find rules chain
+        rc = self.rules.get(event.managed_object.profile_name, {})
+        #
+        for r in rc.get(chain, []):
             # Try to match rule
             v = r.match(event, vars)
             if v is not None:
@@ -688,6 +703,7 @@ class Classifier(Daemon):
             else:
                 # No events classified this pass. Sleep
                 time.sleep(CHECK_EVERY)
+            break
 
     rx_non_alpha = re.compile(r"[^a-z]+")
     rx_spaces = re.compile(r"\s+")
