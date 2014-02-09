@@ -29,10 +29,20 @@ def loop():
         ip = ip.strip()
         if not ip:
             continue
+        if "*" in ip:
+            ip, count = ip.split("*")
+            ip = ip.strip()
+            try:
+                count = int(count.strip())
+            except ValueError:
+                print "%% ERROR: Invald count"
+        else:
+            count = 1
         if not is_ipv4(ip):
             print "%% ERROR: Invalid IPv4"
             continue
-        ps.ping(ip, count=3, callback=cb)
+        for i in range(count):
+            ps.ping(ip, count=3, callback=cb)
 
 if __name__ == "__main__":
     loop()
