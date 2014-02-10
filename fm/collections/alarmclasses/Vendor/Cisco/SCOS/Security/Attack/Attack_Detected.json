@@ -1,0 +1,48 @@
+{
+    "name": "Vendor | Cisco | SCOS | Security | Attack | Attack Detected",
+    "uuid": "53b4f0da-3915-4573-adc3-3084a22e5516",
+    "desciption": "Attack Detected",
+    "is_unique": true,
+    "discriminator": ["from_ip"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "from_ip",
+            "description": "From IP"
+        },
+        {
+            "name": "to_ip",
+            "description": "To IP"
+        },
+        {
+            "name": "from_side",
+            "description": "From Side"
+        },
+        {
+            "name": "proto",
+            "description": "Protocol"
+        },
+        {
+            "name": "open_flows",
+            "description": "Open Flows"
+        },
+        {
+            "name": "suspected_flows",
+            "description": "Suspected Flows"
+        },
+        {
+            "name": "action",
+            "description": "Action"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Attack detected from IP {{from_ip}}, {% if to_ip %}to address {{to_ip}}, {% endif %}from {{from_side}} side, proto {{proto}}.\n{{open_flows}} open flows per second detected, {{suspected_flows}} DDoS/DoS suspected flows per second detected.\nAction is: {{action}}.",
+            "body_template": "Attack detected from IP address {{from_ip}}, {% if to_ip %}to address {{to_ip}}, {% endif %}from {{from_side}} side, proto {{proto}}.\n{{open_flows}} open flows per second detected, {{suspected_flows}} DDoS/DoS suspected flows per second detected.\nAction is: {{action}}.",
+            "symptoms": "Possible DoS/DDoS traffic from source",
+            "probable_causes": "Virus/Botnet activity or malicious actions",
+            "recommended_actions": "Negotiate the source if it is your customer, or ignore"
+        }
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "name": "Environment | UPS | Battery Power Low",
+    "uuid": "1cc92f54-813d-4038-a8cc-8303538f026b",
+    "desciption": "Battery Power Low",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars ": [
+
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Battery power low",
+            "body_template": "Battery power low",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": "Change old battery"
+        }
+    }
+}

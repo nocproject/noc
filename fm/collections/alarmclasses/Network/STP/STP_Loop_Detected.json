@@ -1,0 +1,39 @@
+{
+    "name": "Network | STP | STP Loop Detected",
+    "uuid": "a9c7d32b-9640-4755-a05b-8095b33eaa80",
+    "desciption": "STP Loop Detected",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "interface"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "STP Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %}",
+            "body_template": "STP Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

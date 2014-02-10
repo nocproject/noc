@@ -1,0 +1,24 @@
+{
+    "name": "Chassis | Fabric | CRC Errors",
+    "uuid": "00d2fdb9-6684-4a6b-8ebe-c3c1cf6657b7",
+    "desciption": "Exessive number of CRC errors on fabric module",
+    "is_unique": true,
+    "discriminator": ["name"],
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Fabric Module"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Fabric CRC Errors: {{name}}",
+            "body_template": "Excessive number of CRC errors has been detected on fabric module {{name}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

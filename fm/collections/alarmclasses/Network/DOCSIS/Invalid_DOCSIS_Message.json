@@ -1,0 +1,31 @@
+{
+    "name": "Network | DOCSIS | Invalid DOCSIS Message",
+    "uuid": "c3b73a9c-e6ed-47fa-a970-5765584339c2",
+    "desciption": "Invalid DOCSIS Message received from a Cable Modem",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Cable interface"
+        },
+        {
+            "name": "mac",
+            "description": "Cable Modem MAC"
+        },
+        {
+            "name": "sid",
+            "description": "Cable Modem SID"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Invalid DOCSIS Message received from a Cable Modem{% if mac %} {{mac}},{% endif %}{% if sid %} {{sid}},{% endif %} {% if interface %}interface {{interface}}{% endif %}",
+            "body_template": "Invalid DOCSIS Message received from a Cable Modem{% if mac %} {{mac}},{% endif %}{% if sid %} {{sid}},{% endif %} {% if interface %}interface {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "A cable modem that is not DOCSIS-compliant has attempted to send an invalid DOCSIS message.",
+            "recommended_actions": "Locate the cable modem that sent this message and replace it with DOCSIS-compliant modem."
+        }
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "Security | Attack | Blat Attack",
+    "uuid": "da287612-26d3-4086-a11b-67b0b52595b1",
+    "desciption": "Blat Attack Detected",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface"
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Blat Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+            "body_template": "Blat Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

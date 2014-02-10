@@ -1,0 +1,23 @@
+{
+    "name": "Chassis | TCAM | TCAM Error",
+    "uuid": "ab8660e7-b14f-4d2f-adfc-8738d51c3e19",
+    "desciption": "TCAM Error",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars ": [
+        {
+            "name": "reason",
+            "description": "Reason"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "TCAM error{% if reason %}: {{reason}}{% endif %}",
+            "body_template": "TCAM error{% if reason %}: {{reason}}{% endif %}",
+            "symptoms": "From random instability to complete operation failure",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

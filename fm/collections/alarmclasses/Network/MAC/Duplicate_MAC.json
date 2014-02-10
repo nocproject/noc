@@ -1,0 +1,61 @@
+{
+    "name": "Network | MAC | Duplicate MAC",
+    "uuid": "c7ecc87a-070b-469a-9434-ffe3e924a76b",
+    "desciption": "Duplicate MAC Detected",
+    "is_unique": true,
+    "discriminator": ["mac"],
+    "user_clearable": true,
+    "default_severity__name": "MINOR",
+    "datasources": [
+        {
+            "name": "oneInterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "one_interface",
+                "managed_object": "managed_object"
+                }
+            },
+
+        {
+            "name": "twoInterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "two_interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "MAC Address"
+        },
+        {
+            "name": "one_interface",
+            "description": "First interface"
+        },
+        {
+            "name": "two_interface",
+            "description": "Second interface"
+        },
+        {
+            "name": "one_description",
+            "description": "Interface description"
+            "default": "=oneInterfaceDS.description"
+        },
+        {
+            "name": "two_description",
+            "description": "Interface description"
+            "default": "=twoInterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}}{% if one_description %} ({{one_description}}){% endif %} and {{two_interface}}{% if two_description %} ({{two_description}}){% endif %}",
+            "body_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}}{% if one_description %} ({{one_description}}){% endif %} and {{two_interface}}{% if two_description %} ({{two_description}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

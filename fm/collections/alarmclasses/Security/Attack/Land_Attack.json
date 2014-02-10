@@ -1,0 +1,43 @@
+{
+    "name": "Security | Attack | Land Attack",
+    "uuid": "35e9d7f3-b6ba-483b-8fb1-d504d6c29295",
+    "desciption": "Land Attack Detected",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface"
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Land Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+            "body_template": "Land Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

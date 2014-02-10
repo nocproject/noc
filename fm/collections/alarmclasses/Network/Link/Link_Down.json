@@ -1,0 +1,44 @@
+{
+    "name": "Network | Link | Link Down",
+    "uuid": "9b5d51e7-ada9-4721-b13e-2f61835b5c8e",
+    "desciption": "Link down",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "interface name"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        },
+        {
+            "name": "link",
+            "description": "Link ID"
+            "default": "=InterfaceDS.link"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Link down: {{interface}}{% if description %} ({{description}}){% endif %}",
+            "body_template": "Link down: {{interface}}{% if description %} ({{description}}){% endif %}",
+            "symptoms": "Connection lost",
+            "probable_causes": "Administrative action, cable damage, hardware or software error either from this or from another side",
+            "recommended_actions": "Check configuration, both sides of links and hardware"
+        }
+    }
+}

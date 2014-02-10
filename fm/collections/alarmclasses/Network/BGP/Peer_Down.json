@@ -1,0 +1,66 @@
+{
+    "name": "Network | BGP | Peer Down",
+    "uuid": "1b01710e-b3e7-4ff5-b718-2b6925bc6537",
+    "desciption": "A",
+    "is_unique": true,
+    "discriminator": ["peer"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "PeerDS",
+            "datasource": "peer.Peer",
+            "search": {
+                "peer": "peer"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "peer",
+            "description": "BGP Peer"
+        },
+        {
+            "name": "vrf",
+            "description": "VRF"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
+        },
+        {
+            "name": "as",
+            "description": "BGP Peer AS"
+            "default": "=PeerDS.remote_asn"
+        },
+        {
+            "name": "local_as",
+            "description": "Local AS"
+            "default": "=PeerDS.local_asn"
+        },
+        {
+            "name": "description",
+            "description": "BGP Peer Description"
+            "default": "=PeerDS.description"
+        },
+        {
+            "name": "import_filter",
+            "description": "BGP Import Filter"
+            "default": "=PeerDS.import_filter"
+        },
+        {
+            "name": "export_filter",
+            "description": "BGP Export Filter"
+            "default": "=PeerDS.export_filter"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}{% if description %}, {{description}}{% endif %}){% endif %} session down{%if reason %} - {{reason}}{% endif %}",
+            "body_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}{% if description %}, {{description}}{% endif %}){% endif %} session down{%if reason %}\nReason - {{reason}}{% endif %}\n{% if local_as %}Local AS: AS{{local_as}}\nRemote AS: AS{{as}} ({{description}})\nImport Filter: {{import_filter}}\nExport Filter: {{export_filter}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

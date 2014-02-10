@@ -1,0 +1,39 @@
+{
+    "name": "Network | Storm Control | Broadcast Storm Detected",
+    "uuid": "5b11cdab-c51f-4f28-8785-11ed0fc55de7",
+    "desciption": "Broadcast Storm Detected",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "interface"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Broadcast Storm detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
+            "body_template": "Broadcast Storm detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

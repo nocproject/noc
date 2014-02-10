@@ -1,0 +1,47 @@
+{
+    "name": "Security | Attack | Teardrop Attack",
+    "uuid": "a0f6d92d-9988-434d-8e3e-f07d6622a5f7",
+    "desciption": "Teardrop attack detected",
+    "is_unique": true,
+    "discriminator": ["src_ip", "interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface"
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP"
+        },
+        {
+            "name": "src_mac",
+            "description": "Source MAC"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Teardrop attack detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+            "body_template": "Teardrop attack detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

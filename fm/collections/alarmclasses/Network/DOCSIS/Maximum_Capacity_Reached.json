@@ -1,0 +1,36 @@
+{
+    "name": "Network | DOCSIS | Maximum Capacity Reached",
+    "uuid": "b1fea1e4-8b4c-4116-af4d-850ce41a79fe",
+    "desciption": "Current total reservation exceeds maximum configured reservation",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "MAJOR",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Cable interface"
+        },
+        {
+            "name": "upstream",
+            "description": "Upstream"
+        },
+        {
+            "name": "cur_bps",
+            "description": "Current bps reservation"
+        },
+        {
+            "name": "res_bps",
+            "description": "Reserved bps"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Current total reservation{% if cur_bps %} {{cur_bps}} bps{% endif %} on iterface {{interface}}{% if upstream %} U {{upstream}}{% endif %} exceeds its maximum configured reservation limit{% if res_bps %} of {{res_bps}} bps{% endif %}",
+            "body_template": "Current total reservation{% if cur_bps %} {{cur_bps}} bps{% endif %} on iterface {{interface}}{% if upstream %} U {{upstream}}{% endif %} exceeds its maximum configured reservation limit{% if res_bps %} of {{res_bps}} bps{% endif %}",
+            "symptoms": "",
+            "probable_causes": "The currently reserved capacity on the upstream channel already exceeds its virtual reservation capacity, based on the configured subscription level limit. Increasing the subscription level limit on the current upstream channel will place you at risk of being unable to guarantee the individual reserved rates for modems since this upstream channel is already oversubscribed.",
+            "recommended_actions": "Load-balance the modems that are requesting the reserved upstream rate on another upstream channel."
+        }
+    }
+}

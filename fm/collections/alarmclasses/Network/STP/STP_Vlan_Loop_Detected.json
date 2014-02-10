@@ -1,0 +1,67 @@
+{
+    "name": "Network | STP | STP Vlan Loop Detected",
+    "uuid": "4841c76c-8b00-4a70-bfd0-adafc80800f4",
+    "desciption": "STP Vlan Loop Detected",
+    "is_unique": true,
+    "discriminator": ["interface", "vlan"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            },
+
+        {
+            "name": "VCDS",
+            "datasource": "vc.VCDS",
+            "search": {
+                "l1": "vlan",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "interface"
+        },
+        {
+            "name": "vlan",
+            "description": "vlan"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        },
+        {
+            "name": "vlan_name",
+            "description": "Vlan name"
+            "default": "=VCDS.name"
+        },
+        {
+            "name": "vlan_description",
+            "description": "Vlan description"
+            "default": "=VCDS.description"
+        },
+        {
+            "name": "vlan_vc_domain",
+            "description": "VC domain"
+            "default": "=VCDS.vc_domain"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}",
+            "body_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}{% if vlan_vc_domain %}\nVC Domain: {{vlan_vc_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

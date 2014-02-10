@@ -1,0 +1,24 @@
+{
+    "name": "Chassis | Hardware | Hardware Port Error",
+    "uuid": "358f89fa-6c04-4556-a25b-33728ad61217",
+    "desciption": "Hardware port or slot error occured",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Hardware port"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Hardware port error occured: {{interface}}",
+            "body_template": "Hardware port or slot error occured: {{interface}}",
+            "symptoms": "Link becomes unstable or is not responding",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

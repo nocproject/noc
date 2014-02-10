@@ -1,0 +1,47 @@
+{
+    "name": "Security | Attack | Ping Of Death",
+    "uuid": "52b4012f-83cf-4fe8-a35b-1e850d3a34ef",
+    "desciption": "Ping Of Death detected",
+    "is_unique": true,
+    "discriminator": ["src_ip", "interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface"
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP"
+        },
+        {
+            "name": "src_mac",
+            "description": "Source MAC"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Ping Of Death detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+            "body_template": "Ping Of Death detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

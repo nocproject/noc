@@ -1,0 +1,57 @@
+{
+    "name": "Network | MAC | MAC Flood",
+    "uuid": "b761d498-a29f-41e0-9e8d-20ce696394a2",
+    "desciption": "Flooding MAC Detected",
+    "is_unique": true,
+    "discriminator": ["mac"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "VCDS",
+            "datasource": "vc.VCDS",
+            "search": {
+                "l1": "vlan",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "MAC Address"
+        },
+        {
+            "name": "vlan",
+            "description": "VLAN"
+        },
+        {
+            "name": "interface",
+            "description": "Interface"
+        },
+        {
+            "name": "vlan_name",
+            "description": "Vlan name"
+            "default": "=VCDS.name"
+        },
+        {
+            "name": "vlan_description",
+            "description": "Vlan description"
+            "default": "=VCDS.description"
+        },
+        {
+            "name": "vlan_vc_domain",
+            "description": "VC domain"
+            "default": "=VCDS.vc_domain"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "The flooding MAC is detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
+            "body_template": "The flooding MAC is detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

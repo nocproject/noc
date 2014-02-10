@@ -1,0 +1,20 @@
+{
+    "name": "NOC | Managed Object | Ping Failed",
+    "uuid": "ec26e28d-0b64-4738-8c07-5ee3daca16f4",
+    "desciption": "Failed to ping managed object",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Ping Failed",
+            "body_template": "Failed to ping managed object {{event.managed_object.name}} (IP: {{event.managed_object.address}}). All SA tasks to this object is temporary suspended",
+            "symptoms": "Cannot execute SA tasks on the object",
+            "probable_causes": "The object is not responding to ICMP echo-requests",
+            "recommended_actions": "Check object is alive. Check routing to this object. Check firewalls"
+        }
+    }
+}

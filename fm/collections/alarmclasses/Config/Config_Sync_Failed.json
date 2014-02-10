@@ -1,0 +1,23 @@
+{
+    "name": "Config | Config Sync Failed",
+    "uuid": "16c2b30a-4378-40ae-889f-c78e09f5c335",
+    "desciption": "Configuration synchronization failed with redundant module",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "config",
+            "description": "Config type"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Configuration Synchronization Failed",
+            "body_template": "Configuration synchronization failed{% if service %}: {{config}} config{% endif %}.",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

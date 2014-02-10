@@ -1,0 +1,47 @@
+{
+    "name": "Security | Attack | IP Spoofing",
+    "uuid": "e08eedd4-f661-419c-9529-0e475628239a",
+    "desciption": "IP Spoofing detected",
+    "is_unique": true,
+    "discriminator": ["src_ip", "interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface"
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP"
+        },
+        {
+            "name": "src_mac",
+            "description": "Source MAC"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "IP Spoofing detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+            "body_template": "IP Spoofing detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

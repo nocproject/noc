@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Collections management
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -26,6 +26,7 @@ from noc.fm.models.mibalias import MIBAlias
 from noc.fm.models.mibpreference import MIBPreference
 from noc.fm.models.enumeration import Enumeration
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.alarmclass import AlarmClass
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
 
@@ -95,7 +96,8 @@ class Command(BaseCommand):
         ("fm.mibaliases", MIBAlias),
         ("fm.mibpreferences", MIBPreference),
         ("fm.enumerations", Enumeration),
-        ("fm.alarmseverities", AlarmSeverity)
+        ("fm.alarmseverities", AlarmSeverity),
+        ("fm.alarmclasses", AlarmClass)
     ]
 
     def log(self, msg):
@@ -150,22 +152,23 @@ class Command(BaseCommand):
             cr = "%s/collections/%s" % (dc.module, dc.name)
             if os.path.exists(os.path.join(cr, "manifest.csv")):
                 raise CommandError("Collection %s is already upgraded" % c)
+            fl = []
             for root, dirs, files in os.walk(cr):
                 for f in files:
-                    if not f.endswith(".json"):
-                        continue
-                    p = os.path.join(root, f)
-                    s = os.stat(p)
-                    data = json_decode(read_file(p))
-                    if isinstance(data, list):
-                        for o in data:
-                            dc.install_item(o)
-                    elif isinstance(data, dict):
-                        dc.install_item(data)
-                    if os.stat(p)[stat.ST_MTIME] == s[stat.ST_MTIME]:
-                        # Remove stale file
-                        self.log("    ... removing %s" % p)
-                        os.unlink(p)
+                    if f.endswith(".json"):
+                        fl += [os.path.join(root, f)]
+            for p in fl:
+                s = os.stat(p)
+                data = json_decode(read_file(p))
+                if isinstance(data, list):
+                    for o in data:
+                        dc.install_item(o)
+                elif isinstance(data, dict):
+                    dc.install_item(data)
+                if os.stat(p)[stat.ST_MTIME] == s[stat.ST_MTIME]:
+                    # Remove stale file
+                    self.log("    ... removing %s" % p)
+                    os.unlink(p)
             self.log("    ... saving manifest.csv")
             dc.save()
         self.log("   ... done")

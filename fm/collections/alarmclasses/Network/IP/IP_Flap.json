@@ -1,45 +1,36 @@
-[
-    {
-        "name": "Network | IP | IP Flap",
-        "description": "IP Flapped between interfaces",
-        "is_unique": true,
-        "discriminator": ["ip", "from_interface", "to_interface"],
-        "user_clearable": true,
-        "default_severity__name": "INFO",
-        "vars": [
-            {
-                "name": "ip",
-                "description": "Flapped IP",
-                "type": "ip_address",
-                "required": true
-            },
-            {
-                "name": "from_interface",
-                "description": "From interface",
-                "type": "interface_name",
-                "required": true
-            },
-            {
-                "name": "to_interface",
-                "description": "To interface",
-                "type": "interface_name",
-                "required": true
-            },
-            {
-                "name": "mac",
-                "description": "MAC",
-                "type": "mac",
-                "required": true
-            }
-        ],
-        "text": {
-            "en": {
-                "subject_template": "IP {{ip}} moved from {{from_interface}} to{% if mac %} {{mac}} on {% endif %}{{to_interface}}",
-                "body_template": "IP {{ip}} moved from {{from_interface}} to{% if mac %} {{mac}} on {% endif %}{{to_interface}}",
-                "symptoms": "",
-                "probable_causes": "",
-                "recommended_actions": ""
-            }
+{
+    "name": "Network | IP | IP Flap",
+    "uuid": "7a98aeaf-a2d3-473f-80f5-44040d4f0e1e",
+    "desciption": "IP Flapped between interfaces",
+    "is_unique": true,
+    "discriminator": ["ip", "from_interface", "to_interface"],
+    "user_clearable": true,
+    "default_severity__name": "INFO",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "Flapped IP"
+        },
+        {
+            "name": "from_interface",
+            "description": "From interface"
+        },
+        {
+            "name": "to_interface",
+            "description": "To interface"
+        },
+        {
+            "name": "mac",
+            "description": "MAC"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "IP {{ip}} moved from {{from_interface}} to{% if mac %} {{mac}} on {% endif %}{{to_interface}}",
+            "body_template": "IP {{ip}} moved from {{from_interface}} to{% if mac %} {{mac}} on {% endif %}{{to_interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
         }
     }
-]
+}

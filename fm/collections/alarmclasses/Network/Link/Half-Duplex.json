@@ -1,0 +1,39 @@
+{
+    "name": "Network | Link | Half-Duplex",
+    "uuid": "2b7c3501-a858-4296-afa5-512131a51cc9",
+    "desciption": "Link going into half-duplex state",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "MINOR",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "interface name"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Link going into half-duplex state: {{interface}}{% if description %} ({{description}}){% endif %}",
+            "body_template": "Link going into half-duplex state: {{interface}}{% if description %} ({{description}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

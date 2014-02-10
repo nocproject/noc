@@ -1,0 +1,24 @@
+{
+    "name": "Vendor | f5 | BIGIP | Network | Load Balance | Node Down",
+    "uuid": "34ceeb58-db4a-401b-a98b-0a446ad8f4bb",
+    "desciption": "Node Down",
+    "is_unique": true,
+    "discriminator": ["node"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "node",
+            "description": "IP or hostname"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Node down: {{node}}",
+            "body_template": "Node down: {{node}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

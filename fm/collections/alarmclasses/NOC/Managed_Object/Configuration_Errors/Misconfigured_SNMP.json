@@ -1,0 +1,24 @@
+{
+    "name": "NOC | Managed Object | Configuration Errors | Misconfigured SNMP",
+    "uuid": "fad2b0ca-b717-404c-af00-7489baf6b15b",
+    "desciption": "SNMP configuration error detected",
+    "is_unique": true,
+    "discriminator": ["ip"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "Request source"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "SNMP configuration error detected",
+            "body_template": "NOC is unable to interact with object using SNMP protocol. SA tasks will fall back to CLI, possible loosing some functionality. Check SNMP is opened for {{ip}}",
+            "symptoms": "NOC cannot interact with the box over SNMP protocol",
+            "probable_causes": "SNMP server is misconfigured, community mismatch or misconfigured ACL",
+            "recommended_actions": "Check SNMP configuration"
+        }
+    }
+}

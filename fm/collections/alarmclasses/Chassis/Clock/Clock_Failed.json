@@ -1,0 +1,24 @@
+{
+    "name": "Chassis | Clock | Clock Failed",
+    "uuid": "eeee96eb-77c0-436f-af37-1ef1d7513d92",
+    "desciption": "Failed Clock module or linecard",
+    "is_unique": true,
+    "discriminator": ["name"],
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Clock Name"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Clock failed: {{name}}",
+            "body_template": "Clock failed: {{name}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

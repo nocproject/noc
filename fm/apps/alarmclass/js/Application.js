@@ -40,9 +40,9 @@ Ext.define("NOC.fm.alarmclass.Application", {
             allowBlank: false
         },
         {
-            name: "is_builtin",
-            xtype: "checkboxfield",
-            boxLabel: "Builtin"
+            name: "uuid",
+            xtype: "displayfield",
+            fieldLabel: "UUID"
         },
         {
             name: "description",

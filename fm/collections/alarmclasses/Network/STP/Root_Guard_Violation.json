@@ -1,0 +1,39 @@
+{
+    "name": "Network | STP | Root Guard Violation",
+    "uuid": "ca261ef8-3d29-4270-8fd2-eb616d9e6e76",
+    "desciption": "Root Guard Violation",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "MAJOR",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "interface"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "STP Root Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %}",
+            "body_template": "STP Root Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

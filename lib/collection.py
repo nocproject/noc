@@ -228,6 +228,7 @@ class Collection(object):
             try:
                 field = doc._fields[k]
             except KeyError:
+                continue
                 self.die("Unknown field: '%s'" % k)
             # Dereference ListFields
             if (type(field) == ListField and
