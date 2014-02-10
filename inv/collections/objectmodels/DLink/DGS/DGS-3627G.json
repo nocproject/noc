@@ -9,7 +9,7 @@
             "description": "1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1_sfp",
+            "name": "sfp1",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -17,7 +17,7 @@
             "description": "2",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2_sfp",
+            "name": "sfp2",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -25,7 +25,7 @@
             "description": "3",
             "direction": "i",
             "gender": "f",
-            "name": "Gi3_sfp",
+            "name": "sfp3",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -33,7 +33,7 @@
             "description": "4",
             "direction": "i",
             "gender": "f",
-            "name": "Gi4_sfp",
+            "name": "sfp4",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -41,7 +41,7 @@
             "description": "5",
             "direction": "i",
             "gender": "f",
-            "name": "Gi5_sfp",
+            "name": "sfp5",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -49,7 +49,7 @@
             "description": "6",
             "direction": "i",
             "gender": "f",
-            "name": "Gi6_sfp",
+            "name": "sfp6",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -57,7 +57,7 @@
             "description": "7",
             "direction": "i",
             "gender": "f",
-            "name": "Gi7_sfp",
+            "name": "sfp7",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -65,7 +65,7 @@
             "description": "8",
             "direction": "i",
             "gender": "f",
-            "name": "Gi8_sfp",
+            "name": "sfp8",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -73,7 +73,7 @@
             "description": "9",
             "direction": "i",
             "gender": "f",
-            "name": "Gi9_sfp",
+            "name": "sfp9",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -81,7 +81,7 @@
             "description": "10",
             "direction": "i",
             "gender": "f",
-            "name": "Gi10_sfp",
+            "name": "sfp10",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -89,7 +89,7 @@
             "description": "11",
             "direction": "i",
             "gender": "f",
-            "name": "Gi11_sfp",
+            "name": "sfp11",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -97,7 +97,7 @@
             "description": "12",
             "direction": "i",
             "gender": "f",
-            "name": "Gi12_sfp",
+            "name": "sfp12",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -105,7 +105,7 @@
             "description": "13",
             "direction": "i",
             "gender": "f",
-            "name": "Gi13_sfp",
+            "name": "sfp13",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -113,7 +113,7 @@
             "description": "14",
             "direction": "i",
             "gender": "f",
-            "name": "Gi14_sfp",
+            "name": "sfp14",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -121,7 +121,7 @@
             "description": "15",
             "direction": "i",
             "gender": "f",
-            "name": "Gi15_sfp",
+            "name": "sfp15",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -129,7 +129,7 @@
             "description": "16",
             "direction": "i",
             "gender": "f",
-            "name": "Gi16_sfp",
+            "name": "sfp16",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -137,7 +137,7 @@
             "description": "17",
             "direction": "i",
             "gender": "f",
-            "name": "Gi17_sfp",
+            "name": "sfp17",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -145,7 +145,7 @@
             "description": "18",
             "direction": "i",
             "gender": "f",
-            "name": "Gi18_sfp",
+            "name": "sfp18",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -153,7 +153,7 @@
             "description": "19",
             "direction": "i",
             "gender": "f",
-            "name": "Gi19_sfp",
+            "name": "sfp19",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -161,7 +161,7 @@
             "description": "20",
             "direction": "i",
             "gender": "f",
-            "name": "Gi20_sfp",
+            "name": "sfp20",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -169,7 +169,7 @@
             "description": "21",
             "direction": "s",
             "gender": "f",
-            "name": "Gi21",
+            "name": "21",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -177,7 +177,7 @@
             "description": "21",
             "direction": "i",
             "gender": "f",
-            "name": "Gi21_sfp",
+            "name": "sfp21",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -185,7 +185,7 @@
             "description": "22",
             "direction": "s",
             "gender": "f",
-            "name": "Gi22",
+            "name": "22",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -193,7 +193,7 @@
             "description": "22",
             "direction": "i",
             "gender": "f",
-            "name": "Gi22_sfp",
+            "name": "sfp22",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -201,7 +201,7 @@
             "description": "23",
             "direction": "s",
             "gender": "f",
-            "name": "Gi23",
+            "name": "23",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -209,7 +209,7 @@
             "description": "23",
             "direction": "i",
             "gender": "f",
-            "name": "Gi23_sfp",
+            "name": "sfp23",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -217,7 +217,7 @@
             "description": "24",
             "direction": "s",
             "gender": "f",
-            "name": "Gi24",
+            "name": "24",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
@@ -225,7 +225,7 @@
             "description": "24",
             "direction": "i",
             "gender": "f",
-            "name": "Gi24_sfp",
+            "name": "sfp24",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
