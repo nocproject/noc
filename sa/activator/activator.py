@@ -2,12 +2,11 @@
 ##----------------------------------------------------------------------
 ## Service Activator Daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 import os
 import logging
 import time
@@ -18,6 +17,7 @@ import bisect
 import Queue
 import cPickle
 from threading import RLock
+from collections import defaultdict
 ## NOC modules
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
@@ -129,6 +129,8 @@ class Activator(Daemon, FSM):
         self.ping_time = []  # (time, address)
         self.ping_offset = {}  # address -> 0..1
         self.ping_interval = {}  # address -> interval
+        self.ping_failures = defaultdict(int)  # address -> failure count
+        self.ping_failure_threshold = self.config.getint("activator", "ping_failure_threshold")
         self.running_pings = set()  # address
         self.status_change_queue = []  # [(object_id, new status)]
         self.ignore_event_rules = []  # [(left_re,right_re)]
@@ -786,6 +788,14 @@ class Activator(Daemon, FSM):
                 self.ping_time,
                 (self.get_next_ping_time(address), address))
         old_status = self.object_status.get(address)
+        if old_status is False and status is True:
+            # Reset failures count
+            self.ping_failures[address] = 0
+        elif old_status is True and status is False:
+            # Check failure threshold
+            self.ping_failures[address] += 1
+            if self.ping_failures[address] < self.ping_failure_threshold:
+                status = True  # Failure confirmation needed
         self.debug("PING %s: Result %s [%s -> %s]" % (
             address, result, old_status, status))
         if status != old_status:
