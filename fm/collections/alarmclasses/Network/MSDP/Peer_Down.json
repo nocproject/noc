@@ -1,0 +1,32 @@
+{
+    "name": "Network | MSDP | Peer Down",
+    "uuid": "5109bea9-c7da-4132-98b5-35f1767d4421",
+    "desciption": "MSDP peer down",
+    "is_unique": true,
+    "discriminator": ["peer"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "peer",
+            "description": "Peer's IP"
+        },
+        {
+            "name": "vrf",
+            "description": "VRF"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}",
+            "body_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %}\n Reason: {{reason}}.{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": "Check msdp peer aviability, check msdp peer configuration changes"
+        }
+    }
+}

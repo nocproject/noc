@@ -1,0 +1,24 @@
+{
+    "name": "Security | Access | Door Open",
+    "uuid": "cceea535-e9b4-4bce-a419-9bdf1f0c3ffb",
+    "desciption": "Door Open",
+    "is_unique": true,
+    "discriminator": ["name"],
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Name"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Door {{name}} is open",
+            "body_template": "Door {{name}} is open",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

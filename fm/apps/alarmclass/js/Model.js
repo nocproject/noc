@@ -76,7 +76,13 @@ Ext.define("NOC.fm.alarmclass.Model", {
         */
         {
             name: "is_builtin",
-            type: "boolean"
+            type: "boolean",
+            persist: false
+        },
+        {
+            name: "uuid",
+            type: "string",
+            persist: false
         },
         {
             name: "is_unique",

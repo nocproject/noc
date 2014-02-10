@@ -1,0 +1,24 @@
+{
+    "name": "Security | Authentication | TACACS+ server failed",
+    "uuid": "2e5a0caf-d984-498e-9cdf-974fa74997c5",
+    "desciption": "TACACS+ server failed",
+    "is_unique": true,
+    "discriminator": ["ip"],
+    "user_clearable": true,
+    "default_severity__name": "MINOR",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "TACACS+ server address"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is not responding",
+            "body_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is not responding",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

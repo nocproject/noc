@@ -1,0 +1,39 @@
+{
+    "name": "Environment | Chassis Voltage Out of Range",
+    "uuid": "a4ff5329-9339-406b-bf60-caf575197df3",
+    "desciption": "Chassis voltage out of range",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Name"
+        },
+        {
+            "name": "measure",
+            "description": "Current State"
+        },
+        {
+            "name": "min",
+            "description": "Min State"
+        },
+        {
+            "name": "max",
+            "description": "Max State"
+        },
+        {
+            "name": "threshold",
+            "description": "Threshold"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Chassis voltage measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "body_template": "Chassis voltage measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

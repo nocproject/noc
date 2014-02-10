@@ -1,0 +1,28 @@
+{
+    "name": "Chassis | Linecard | LC Down",
+    "uuid": "c79bdd80-f835-42e3-b6bc-e44ad60bb04b",
+    "desciption": "Linecard Down",
+    "is_unique": true,
+    "discriminator": ["number"],
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars ": [
+        {
+            "name": "number",
+            "description": "Slot number"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Linecard {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
+            "body_template": "Linecard {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "name": "Network | DNS | Bad Query",
+    "uuid": "df739179-a360-422b-9f38-efd8c898a0e2",
+    "desciption": "Bad DNS query",
+    "is_unique": true,
+    "discriminator": ["ip"],
+    "user_clearable": true,
+    "default_severity__name": "INFO",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "Source IP"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Bad DNS query from {{ip}}",
+            "body_template": "Bad DNS query from {{ip}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

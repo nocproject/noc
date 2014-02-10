@@ -1,0 +1,43 @@
+{
+    "name": "Security | Attack | TCP SYNFIN Scan",
+    "uuid": "b5db13a5-ec54-4296-bac6-c296aa985d12",
+    "desciption": "TCP SYNFIN Scan",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface"
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "TCP SYNFIN Scan detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+            "body_template": "TCP SYNFIN Scan detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

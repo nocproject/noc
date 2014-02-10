@@ -1,0 +1,39 @@
+{
+    "name": "Network | Storm Control | Storm Detected",
+    "uuid": "be893ec6-d9c7-41c5-b4d6-c37f2f95ae69",
+    "desciption": "Storm Detected",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "interface"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Storm detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
+            "body_template": "Storm detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

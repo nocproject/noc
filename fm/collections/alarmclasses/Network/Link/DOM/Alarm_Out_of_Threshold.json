@@ -1,0 +1,55 @@
+{
+    "name": "Network | Link | DOM | Alarm: Out of Threshold",
+    "uuid": "e36bece7-964c-4267-8b5a-ef60faa46e24",
+    "desciption": "DOM above or below threshold exceeded",
+    "is_unique": true,
+    "discriminator": ["interface", "sensor"],
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Physical port"
+        },
+        {
+            "name": "threshold",
+            "description": "Threshold type"
+        },
+        {
+            "name": "sensor",
+            "description": "Measured name"
+        },
+        {
+            "name": "ovalue",
+            "description": "Operating value"
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold value"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}{% if description %} ({{description}}){% endif %}",
+            "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}{% if description %} ({{description}}){% endif %}{% if ovalue %}, Operating value {{ovalue}}{% endif %}{% if tvalue %}, Threshold value {{tvalue}}{% endif %}",
+            "symptoms": "Connection lost",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "name": "Chassis | Supervisor | Supervisor Down",
+    "uuid": "e4faaa3f-e50c-4eb2-a420-5ec5143e6512",
+    "desciption": "Supervisor Down",
+    "is_unique": true,
+    "discriminator": ["name"],
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Supervisor name"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
+            "body_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

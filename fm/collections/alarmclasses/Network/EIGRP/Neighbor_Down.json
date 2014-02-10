@@ -1,0 +1,51 @@
+{
+    "name": "Network | EIGRP | Neighbor Down",
+    "uuid": "51ce8295-470a-4fde-b721-9a5271adeb9b",
+    "desciption": "EIGRP neighbor down",
+    "is_unique": true,
+    "discriminator": ["interface", "neighbor"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "as",
+            "description": "EIGRP autonomus system"
+        },
+        {
+            "name": "interface",
+            "description": "Interface"
+        },
+        {
+            "name": "neighbor",
+            "description": "Neighbor's Router ID"
+        },
+        {
+            "name": "reason",
+            "description": "Adjacency lost reason"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "EIGRP {% if as %} as {{as}} {% endif %} {{neighbor}} down on {{interface}}{% if description %} ({{description}}){% endif %}. {% if reason %} Reason: {{reason}}{% endif %}",
+            "body_template": "EIGRP {% if as %} as {{as}} {% endif %} {{neighbor}} down on {{interface}}{% if description %} ({{description}}){% endif %}. {% if reason %} Reason: {{reason}}{% endif %}",
+            "symptoms": "Routing table changes and possible lost of connectivity",
+            "probable_causes": "Link failure or protocol misconfiguration",
+            "recommended_actions": "Check links and local and neighbor router configuration"
+        }
+    }
+}

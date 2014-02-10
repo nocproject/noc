@@ -1,0 +1,32 @@
+{
+    "name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
+    "uuid": "c4ebe882-c66b-42ec-9c33-47bb6caa25c3",
+    "desciption": "SLB vserver out of service",
+    "is_unique": true,
+    "discriminator": ["module", "name"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "module",
+            "description": "Module name"
+        },
+        {
+            "name": "name",
+            "description": "vserver name"
+        },
+        {
+            "name": "farm",
+            "description": "serverfarm name"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "SLB vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
+            "body_template": "SLB vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

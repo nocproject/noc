@@ -1,0 +1,43 @@
+{
+    "name": "Network | Link | Err-Disable",
+    "uuid": "a567754e-8be6-498b-a790-97f34aa4d52b",
+    "desciption": "Link in err-disable state",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "interface name"
+        },
+        {
+            "name": "reason",
+            "description": "err-disable reason"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Link err-disable: {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
+            "body_template": "Link err-disable: {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

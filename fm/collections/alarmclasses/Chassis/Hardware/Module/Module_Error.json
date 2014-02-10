@@ -1,0 +1,32 @@
+{
+    "name": "Chassis | Hardware | Module | Module Error",
+    "uuid": "f3d81e67-27fc-4100-ba8d-4f9f01e772da",
+    "desciption": "Hardware module error",
+    "is_unique": true,
+    "discriminator": ["module"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "module",
+            "description": "Module type"
+        },
+        {
+            "name": "interface",
+            "description": "Hardware port or slot"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Hardware module {{module}} error{% if interface %}, interface {{interface}}{% endif %}",
+            "body_template": "Hardware module {{module}} error{% if interface %}, interface {{interface}}{% endif %}{% if reason %}\nReason: {{reason}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "name": "Network | DOCSIS | Invalid QoS",
+    "uuid": "68746449-10e4-44f6-9c81-66569fc22e78",
+    "desciption": "Invalid or unsupported QoS setting",
+    "is_unique": true,
+    "discriminator": ["mac"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "Cable Modem MAC"
+        },
+        {
+            "name": "sid",
+            "description": "Cable Modem SID"
+        },
+        {
+            "name": "interface",
+            "description": "Cable interface"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Registration failed for Cable Modem {{mac}}{% if sid %} SID {{sid}}{% endif %}{% if interface %} on interface {{interface}}{% endif %}",
+            "body_template": "Registration failed for Cable Modem {{mac}}{% if sid %} SID {{sid}}{% endif %}{% if interface %} on interface {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "The registration of the specified modem has failed because of an invalid or unsupported QoS setting.",
+            "recommended_actions": "Ensure that the QoS fields in the configuration file are set correctly."
+        }
+    }
+}

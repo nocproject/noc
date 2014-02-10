@@ -1,0 +1,32 @@
+{
+    "name": "Network | IP | Address Conflict",
+    "uuid": "ef2b8f0a-3959-4bce-99b8-5eb5298409b9",
+    "desciption": "Conflicted addresses",
+    "is_unique": true,
+    "discriminator": ["ip"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "Conflicting IP"
+        },
+        {
+            "name": "mac",
+            "description": "MAC"
+        },
+        {
+            "name": "interface",
+            "description": "Interface"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Address conflict detected for {{ip}}{% if mac %} MAC: {{mac}}{% endif %}{% if interface %} on {{interface}}{% endif %}",
+            "body_template": "Address conflict detected for {{ip}}{% if mac %} MAC: {{mac}}{% endif %}{% if interface %} on {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

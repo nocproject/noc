@@ -1,0 +1,20 @@
+{
+    "name": "Config | Invalid Config",
+    "uuid": "55475472-e013-4c73-94da-15a7b1380991",
+    "desciption": "Some lines in config are invalid",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Invalid config",
+            "body_template": "Invalid config",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

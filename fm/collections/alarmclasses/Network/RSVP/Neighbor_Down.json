@@ -1,0 +1,32 @@
+{
+    "name": "Network | RSVP | Neighbor Down",
+    "uuid": "a1086b80-e78b-4efe-b462-2ee0f2808a85",
+    "desciption": "RSVP Neighbor down",
+    "is_unique": true,
+    "discriminator": ["neighbor"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface"
+        },
+        {
+            "name": "neighbor",
+            "description": "Neighbor's NSAP or name"
+        },
+        {
+            "name": "reason",
+            "description": "Neighbor lost reason"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "RSVP neighbor {{neighbor}} down on {{interface}}. Reason: {{reason}}",
+            "body_template": "RSVP neighbor {{neighbor}} down on {{interface}}. Reason: {{reason}}",
+            "symptoms": "Routing table changes and possible lost of connectivity",
+            "probable_causes": "Link failure or protocol misconfiguration",
+            "recommended_actions": "Check links and local and neighbor router configuration"
+        }
+    }
+}

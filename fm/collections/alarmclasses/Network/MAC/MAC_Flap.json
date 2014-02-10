@@ -1,0 +1,89 @@
+{
+    "name": "Network | MAC | MAC Flap",
+    "uuid": "211d9e04-9595-465b-9257-7fd0d68ff10a",
+    "desciption": "Flapping MAC Detected",
+    "is_unique": true,
+    "discriminator": ["mac"],
+    "user_clearable": true,
+    "default_severity__name": "INFO",
+    "datasources": [
+        {
+            "name": "fromInterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "from_interface",
+                "managed_object": "managed_object"
+                }
+            },
+
+        {
+            "name": "toInterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "to_interface",
+                "managed_object": "managed_object"
+                }
+            },
+
+        {
+            "name": "VCDS",
+            "datasource": "vc.VCDS",
+            "search": {
+                "l1": "vlan",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "MAC Address"
+        },
+        {
+            "name": "vlan",
+            "description": "VLAN"
+        },
+        {
+            "name": "from_interface",
+            "description": "From interface"
+        },
+        {
+            "name": "to_interface",
+            "description": "To interface"
+        },
+        {
+            "name": "from_description",
+            "description": "Interface description"
+            "default": "=fromInterfaceDS.description"
+        },
+        {
+            "name": "to_description",
+            "description": "Interface description"
+            "default": "=toInterfaceDS.description"
+        },
+        {
+            "name": "vlan_name",
+            "description": "Vlan name"
+            "default": "=VCDS.name"
+        },
+        {
+            "name": "vlan_description",
+            "description": "Vlan description"
+            "default": "=VCDS.description"
+        },
+        {
+            "name": "vlan_vc_domain",
+            "description": "VC domain"
+            "default": "=VCDS.vc_domain"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MAC {{mac}} Flap detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}: {{from_interface}}{% if from_description %} ({{from_description}}){% endif %} -> {{to_interface}}{% if to_description %} ({{to_description}}){% endif %}",
+            "body_template": "MAC {{mac}} Flap detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}: {{from_interface}}{% if from_description %} ({{from_description}}){% endif %} -> {{to_interface}}{% if to_description %} ({{to_description}}){% endif %}{% if vlan_vc_domain %}\nVC Domain: {{vlan_vc_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "The system found the specified host moving between the specified ports.",
+            "recommended_actions": "Examine the network for possible loops."
+        }
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "name": "Network | PIM | MSDP Peer Down",
+    "uuid": "4b308283-0654-4568-99ff-07f4c4ef37e8",
+    "desciption": "MSDP peer down",
+    "is_unique": true,
+    "discriminator": ["peer"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "peer",
+            "description": "Peer's IP"
+        },
+        {
+            "name": "vrf",
+            "description": "VRF"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}",
+            "body_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %}\n Reason: {{reason}}.{% endif %}",
+            "symptoms": "Multicast flows lost",
+            "probable_causes": "Link failure or protocol misconfiguration",
+            "recommended_actions": "Check links and local and neighbor router configuration"
+        }
+    }
+}

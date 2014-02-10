@@ -1,0 +1,39 @@
+{
+    "name": "Environment | AC Voltage Out of Range",
+    "uuid": "bb4ae098-e4f6-4fa2-b618-03af9de53443",
+    "desciption": "AC voltage out of range",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Name"
+        },
+        {
+            "name": "measure",
+            "description": "Current State"
+        },
+        {
+            "name": "min",
+            "description": "Min State"
+        },
+        {
+            "name": "max",
+            "description": "Max State"
+        },
+        {
+            "name": "threshold",
+            "description": "Threshold"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "AC voltage measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "body_template": "AC voltage measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

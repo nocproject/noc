@@ -1,0 +1,55 @@
+{
+    "name": "Network | OSPF | Neighbor Down",
+    "uuid": "7bd05776-7d5e-4eae-9401-2e45e290756f",
+    "desciption": "OSPF neighbor down",
+    "is_unique": true,
+    "discriminator": ["interface", "neighbor"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "area",
+            "description": "OSPF area"
+        },
+        {
+            "name": "interface",
+            "description": "Interface"
+        },
+        {
+            "name": "neighbor",
+            "description": "Neighbor's Router ID"
+        },
+        {
+            "name": "reason",
+            "description": "Adjacency lost reason"
+        },
+        {
+            "name": "vrf",
+            "description": "VRF"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "OSPF lost{% if area %} area {{area}}{% endif %} adjacency to {{neighbor}}. Interface {{interface}}{% if description %} ({{description}}){% endif %}. Reason: {{reason}}",
+            "body_template": "OSPF lost{% if area %} area {{area}}{% endif %}{% if vrf %} VRF {{vrf}}{% endif %} adjacency to {{neighbor}}\nInterface {{interface}}{% if description %} ({{description}}){% endif %}\nReason: {{reason}}",
+            "symptoms": "Routing table changes and possible lost of connectivity",
+            "probable_causes": "Link failure or protocol misconfiguration",
+            "recommended_actions": "Check links and local and neighbor router configuration"
+        }
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "Network | BFD | Session Down",
+    "uuid": "6b3a8cff-44fa-461a-8cb2-454ea2d7b2c6",
+    "desciption": "BFD Session Down",
+    "is_unique": true,
+    "discriminator": ["interface", "peer"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "BFD interface"
+        },
+        {
+            "name": "peer",
+            "description": "BFD Peer"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "BFD Session Down: {{peer}} on {{interface}}{% if description %} ({{description}}){% endif %}",
+            "body_template": "BFD Session Down: {{peer}} on {{interface}}{% if description %} ({{description}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "Network | MAC | Invalid MAC",
+    "uuid": "c32378e8-a6e6-4a00-928f-96b3a7cb5f77",
+    "desciption": "Invalid MAC Detected",
+    "is_unique": true,
+    "discriminator": ["mac"],
+    "user_clearable": true,
+    "default_severity__name": "INFO",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+                }
+            }
+    ]
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "MAC Address"
+        },
+        {
+            "name": "interface",
+            "description": "Affected interface"
+        },
+        {
+            "name": "vlan",
+            "description": "Affected vlan"
+        },
+        {
+            "name": "description",
+            "description": "Interface description"
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if description %} ({{description}}){% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+            "body_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if description %} ({{description}}){% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "name": "Network | BGP | Prefix Limit Exceeded",
+    "uuid": "8a0ffe77-c3c0-4327-b52b-7b482e710aec",
+    "desciption": "A",
+    "is_unique": true,
+    "discriminator": ["peer"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "peer",
+            "description": "BGP Peer"
+        },
+        {
+            "name": "vrf",
+            "description": "VRF"
+        },
+        {
+            "name": "as",
+            "description": "BGP Peer AS"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "BGP Peer {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} prefix limit exceeded",
+            "body_template": "BGP Peer {{peer}}{%if vrf %}vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} prefix limit exceeded",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

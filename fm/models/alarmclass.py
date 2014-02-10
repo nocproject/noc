@@ -8,6 +8,7 @@
 
 ## Python modules
 import hashlib
+import os
 ## Third-party modules
 from mongoengine import fields
 ## NOC modules
@@ -20,6 +21,7 @@ from alarmclasscategory import AlarmClassCategory
 from alarmclassjob import AlarmClassJob
 from alarmplugin import AlarmPlugin
 from noc.lib.escape import json_escape as q
+from noc.lib.text import quote_safe_path
 
 
 class AlarmClass(nosql.Document):
@@ -28,11 +30,12 @@ class AlarmClass(nosql.Document):
     """
     meta = {
         "collection": "noc.alarmclasses",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "json_collection": "fm.alarmclasses"
     }
 
     name = fields.StringField(required=True, unique=True)
-    is_builtin = fields.BooleanField(default=False)
+    uuid = fields.UUIDField(binary=True)
     description = fields.StringField(required=False)
     # Create or not create separate Alarm
     # if is_unique is True and there is active alarm
@@ -98,61 +101,64 @@ class AlarmClass(nosql.Document):
         else:
             return hashlib.sha1("").hexdigest()
 
-    @property
-    def json(self):
+    def to_json(self):
         c = self
-        r = ["["]
-        r += ["    {"]
-        r += ["        \"name\": \"%s\"," % q(c.name)]
-        r += ["        \"desciption\": \"%s\"," % q(c.description)]
-        r += ["        \"is_unique\": %s," % q(c.is_unique)]
+        r = ["{"]
+        r += ["    \"name\": \"%s\"," % q(c.name)]
+        r += ["    \"uuid\": \"%s\"," % c.uuid]
+        if c.description:
+            r += ["    \"desciption\": \"%s\"," % q(c.description)]
+        r += ["    \"is_unique\": %s," % q(c.is_unique)]
         if c.is_unique and c.discriminator:
-            r += ["        \"discriminator\": [%s]," % ", ".join(["\"%s\"" % q(d) for d in c.discriminator])]
-        r += ["        \"user_clearable\": %s," % q(c.user_clearable)]
-        r += ["        \"default_severity__name\": \"%s\"," % q(c.default_severity.name)]
+            r += ["    \"discriminator\": [%s]," % ", ".join(["\"%s\"" % q(d) for d in c.discriminator])]
+        r += ["    \"user_clearable\": %s," % q(c.user_clearable)]
+        r += ["    \"default_severity__name\": \"%s\"," % q(c.default_severity.name)]
         # datasources
         if c.datasources:
-            r += ["        \"datasources\": ["]
+            r += ["    \"datasources\": ["]
             jds = []
             for ds in c.datasources:
                 x = []
-                x += ["                \"name\": \"%s\"" % q(ds.name)]
-                x += ["                \"datasource\": \"%s\"" % q(ds.datasource)]
+                x += ["            \"name\": \"%s\"" % q(ds.name)]
+                x += ["            \"datasource\": \"%s\"" % q(ds.datasource)]
                 ss = []
                 for k in sorted(ds.search):
-                    ss += ["                    \"%s\": \"%s\"" % (q(k), q(ds.search[k]))]
-                x += ["                \"search\": {\n%s\n                }" % (",\n".join(ss))]
-                jds += ["            {\n%s\n            }" % ",\n".join(x)]
+                    ss += ["                \"%s\": \"%s\"" % (q(k), q(ds.search[k]))]
+                x += ["            \"search\": {\n%s\n                }" % (",\n".join(ss))]
+                jds += ["        {\n%s\n            }" % ",\n".join(x)]
             r += [",\n\n".join(jds)]
-            r += ["        ]"]
+            r += ["    ]"]
         # vars
         vars = []
         for v in c.vars:
-            vd = ["            {"]
-            vd += ["                \"name\": \"%s\"," % q(v.name)]
-            vd += ["                \"description\": \"%s\"" % q(v.description)]
+            vd = ["        {"]
+            vd += ["            \"name\": \"%s\"," % q(v.name)]
+            vd += ["            \"description\": \"%s\"" % q(v.description)]
             if v.default:
-                vd += ["                \"default\": \"%s\"" % q(v.default)]
-            vd += ["            }"]
+                vd += ["            \"default\": \"%s\"" % q(v.default)]
+            vd += ["        }"]
             vars += ["\n".join(vd)]
-        r += ["        \"vars \": ["]
-        r += [",\n\n".join(vars)]
-        r += ["        ],"]
+        r += ["    \"vars \": ["]
+        r += [",\n".join(vars)]
+        r += ["    ],"]
         # text
-        r += ["        \"text\": {"]
+        r += ["    \"text\": {"]
         t = []
         for lang in c.text:
-            l = ["            \"%s\": {" % lang]
+            l = ["        \"%s\": {" % lang]
             ll = []
             for v in ["subject_template", "body_template", "symptoms",
                       "probable_causes", "recommended_actions"]:
                 if v in c.text[lang]:
-                    ll += ["                \"%s\": \"%s\"" % (v, q(c.text[lang][v]))]
+                    ll += ["            \"%s\": \"%s\"" % (v, q(c.text[lang][v]))]
             l += [",\n".join(ll)]
-            l += ["            }"]
+            l += ["        }"]
             t += ["\n".join(l)]
         r += [",\n\n".join(t)]
-        r += ["        }"]
         r += ["    }"]
-        r += ["]"]
+        r += ["}"]
         return "\n".join(r)
+
+    def get_json_path(self):
+        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        return os.path.join(*p) + ".json"

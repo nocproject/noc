@@ -1,0 +1,24 @@
+{
+    "name": "Network | MPLS | Path Down",
+    "uuid": "f9c4c5bb-b584-4586-a188-533130d7a40c",
+    "desciption": "MPLS Path down",
+    "is_unique": true,
+    "discriminator": ["name"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Path name"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MPLS Path Down: {{name}}",
+            "body_template": "MPLS Path Down: {{name}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

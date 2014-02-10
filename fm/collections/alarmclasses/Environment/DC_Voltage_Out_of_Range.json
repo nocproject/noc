@@ -1,0 +1,39 @@
+{
+    "name": "Environment | DC Voltage Out of Range",
+    "uuid": "721168eb-a95b-48cd-9b9a-4a7d2ce9491a",
+    "desciption": "DC voltage out of range",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Name"
+        },
+        {
+            "name": "measure",
+            "description": "Current State"
+        },
+        {
+            "name": "min",
+            "description": "Min State"
+        },
+        {
+            "name": "max",
+            "description": "Max State"
+        },
+        {
+            "name": "threshold",
+            "description": "Threshold"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "DC voltage measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "body_template": "DC voltage measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}
