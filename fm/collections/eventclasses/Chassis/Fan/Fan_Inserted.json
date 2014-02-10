@@ -1,0 +1,31 @@
+{
+    "name": "Chassis | Fan | Fan Inserted",
+    "uuid": "ba84a846-4897-4108-bfee-7dbc589ffdcd",
+    "desciption": "Fan inserted",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Fan Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Fan Inserted: {{name}}",
+            "body_template": "Fan Inserted: {{name}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Chassis | Fan | Fan Removed"
+        }
+    ]
+}

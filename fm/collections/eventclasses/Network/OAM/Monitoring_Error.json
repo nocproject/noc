@@ -1,0 +1,29 @@
+{
+    "name": "Network | OAM | Monitoring Error",
+    "uuid": "c35534c5-159c-423e-a7d5-f3c6f7ef9b46",
+    "desciption": "Monitored error has been detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "error",
+            "description": "Error type",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "{{error}} detected on interface {{interface}}",
+            "body_template": "{{error}} detected on interface {{interface}}",
+            "symptoms": "",
+            "probable_causes": "A monitored error has been detected to have crossed the user-specified threshold.",
+            "recommended_actions": "No action is required."
+        }
+    }
+}

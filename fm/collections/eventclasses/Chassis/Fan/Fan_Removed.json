@@ -1,0 +1,31 @@
+{
+    "name": "Chassis | Fan | Fan Removed",
+    "uuid": "ace93730-0292-4e01-91ad-48f1c64474c5",
+    "desciption": "Fan removed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Fan Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Fan Removed: {{name}}",
+            "body_template": "Fan Unit Inserted: {{name}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Fan | Fan Removed"
+        }
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "name": "Vendor | Cisco | IOS | Network | Load Balance | vserver In Service",
+    "uuid": "05ecce37-99c6-4eee-b181-1bba2a026fa4",
+    "desciption": "vserver in service",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "module",
+            "description": "Module name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "name",
+            "description": "vserver name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "farm",
+            "description": "serverfarm name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "vserver {{name}} is in service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
+            "body_template": "vserver {{name}} is in service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service"
+        }
+    ]
+}

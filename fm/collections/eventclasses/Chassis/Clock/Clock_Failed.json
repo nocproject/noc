@@ -1,0 +1,31 @@
+{
+    "name": "Chassis | Clock | Clock Failed",
+    "uuid": "e62dab88-9d94-490d-b3c0-1c60981b07fd",
+    "desciption": "Failed Clock module or linecard",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Clock Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Clock failed: {{name}}",
+            "body_template": "Clock module failed: {{name}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Clock | Clock Failed"
+        }
+    ]
+}

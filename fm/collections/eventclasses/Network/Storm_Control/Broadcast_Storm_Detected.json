@@ -1,0 +1,31 @@
+{
+    "name": "Network | Storm Control | Broadcast Storm Detected",
+    "uuid": "97d08f1f-c051-4f4d-9f0d-66ec968feb0d",
+    "desciption": "Broadcast Storm Detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Broadcast Storm Detected on port {{interface}}",
+            "body_template": "Broadcast Storm Detected on port {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | Storm Control | Broadcast Storm Detected"
+        }
+    ]
+}

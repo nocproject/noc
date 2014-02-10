@@ -1,0 +1,23 @@
+{
+    "name": "Network | LLDP | LLDP Aged Out",
+    "uuid": "3380c0aa-97cc-4f8e-b350-c50afaa23a45",
+    "desciption": "LLDP Aged Out",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "LLDP: Neighbor on interface {{interface}} aged out.",
+            "body_template": "LLDP: Neighbor on interface {{interface}} aged out.",
+            "symptoms": "",
+            "probable_causes": " ",
+            "recommended_actions": ""
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "name": "Network | STP | STP instances exceeded",
+    "uuid": "eb0110f6-b102-4adb-83a4-b30a7524ffb5",
+    "desciption": "Platform limit of STP instances exceeded",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "limit",
+            "description": "Platform limit",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Platform limit of {% if limit %}{{limit}} {%endif %}STP instances exceeded",
+            "body_template": "Platform limit of {% if limit %}{{limit}} {%endif %}STP instances exceeded",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

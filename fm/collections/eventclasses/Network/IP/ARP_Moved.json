@@ -1,0 +1,49 @@
+{
+    "name": "Network | IP | ARP Moved",
+    "uuid": "c7b07703-98e0-42e7-b43e-afdfd3492cef",
+    "desciption": "ARP Moved",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "BFD interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "ip",
+            "description": "IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "from_mac",
+            "description": "From MAC",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "to_mac",
+            "description": "To MAC",
+            "type": "mac",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
+            "body_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | IP | ARP Moved"
+        }
+    ]
+}

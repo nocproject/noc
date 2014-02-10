@@ -1,0 +1,49 @@
+{
+    "name": "Network | MAC | MAC Flap",
+    "uuid": "fa9cc838-9ec4-4080-907a-13390b5b1285",
+    "desciption": "MAC Flap detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "MAC Address",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "vlan",
+            "description": "VLAN",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "from_interface",
+            "description": "From interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "to_interface",
+            "description": "To interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
+            "body_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
+            "symptoms": "",
+            "probable_causes": "The system found the specified host moving between the specified ports.",
+            "recommended_actions": "Examine the network for possible loops."
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | MAC | MAC Flap"
+        }
+    ]
+}

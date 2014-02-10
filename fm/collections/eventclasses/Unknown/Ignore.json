@@ -1,0 +1,18 @@
+{
+    "name": "Unknown | Ignore",
+    "uuid": "5987a346-7d84-420f-9b8b-ff590d9ac3a5",
+    "desciption": "Delete event and stop processing",
+    "action": "D",
+    "vars ": [
+
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Ignored event",
+            "body_template": "Ignored event",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "Event without any usable information for FM",
+            "recommended_actions": "No specific action needed"
+        }
+    }
+}

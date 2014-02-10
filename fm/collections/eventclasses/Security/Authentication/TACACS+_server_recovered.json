@@ -1,0 +1,31 @@
+{
+    "name": "Security | Authentication | TACACS+ server recovered",
+    "uuid": "46e7f27a-caea-41db-87b3-fc2e7ac766db",
+    "desciption": "TACACS+ server recovered",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "TACACS+ server address",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is being marked alive",
+            "body_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is being marked alive",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Security | Authentication | TACACS+ server failed"
+        }
+    ]
+}

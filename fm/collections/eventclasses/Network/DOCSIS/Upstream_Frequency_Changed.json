@@ -1,0 +1,35 @@
+{
+    "name": "Network | DOCSIS | Upstream Frequency Changed",
+    "uuid": "d997c32e-27e6-43da-87be-13253e6fd4b6",
+    "desciption": "The upstream channel frequency has been changed.",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Cable interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "upstream",
+            "description": "Upstream",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "frequency",
+            "description": "Frequency",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} frequency changed to {{frequency}} MHz",
+            "body_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} frequency changed to {{frequency}} MHz",
+            "symptoms": "",
+            "probable_causes": "The upstream channel frequency has been changed.",
+            "recommended_actions": ""
+        }
+    }
+}

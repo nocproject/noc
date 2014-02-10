@@ -1,0 +1,37 @@
+{
+    "name": "Network | LBD | Vlan Loop Cleared",
+    "uuid": "47a0fb97-5b04-406d-bc27-4f31c1df8399",
+    "desciption": "LBD Vlan Loop Cleared",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "LBD interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "vlan",
+            "description": "Vlan",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "LBD Loop cleared on {{interface}} vlan {{vlan}}",
+            "body_template": "LBD Loop cleared on {{interface}} vlan {{vlan}}",
+            "symptoms": "Connection restore on a specific vlan",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | LBD | Vlan Loop Detected"
+        }
+    ]
+}

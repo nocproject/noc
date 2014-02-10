@@ -1,0 +1,23 @@
+{
+    "name": "Environment | UPS | Self-Test Passed",
+    "uuid": "edc2dfa1-b51a-4a65-a061-a6f88d8b665e",
+    "desciption": "Self-Test Passed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Test name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "The Self-Test {% if name %}{{name}} {% endif %}passed",
+            "body_template": "The Self-Test {% if name %}{{name}} {% endif %}passed",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

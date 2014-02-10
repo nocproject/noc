@@ -1,0 +1,29 @@
+{
+    "name": "Chassis | Hardware | Module | Module Inserted",
+    "uuid": "6e70a64d-9932-4d1d-a516-a099d7899f59",
+    "desciption": "Hardware module inserted",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "module",
+            "description": "Module type",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Hardware port or slot",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Hardware module {{module}} inserted{% if interface %}, interface {{interface}}{% endif %}",
+            "body_template": "Hardware module {{module}} inserted{% if interface %}, interface {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

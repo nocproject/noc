@@ -1,0 +1,37 @@
+{
+    "name": "Network | MPLS | LDP Neighbor Down",
+    "uuid": "188f5509-7498-4039-a4e3-41eb5d504585",
+    "desciption": "MPLS LDP Neighbor Down",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "neighbor",
+            "description": "LDP Neighbor",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+            "body_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | MPLS | LDP Neighbor Down"
+        }
+    ]
+}

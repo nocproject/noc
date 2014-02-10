@@ -1,0 +1,49 @@
+{
+    "name": "Network | BGP | Backward Transition",
+    "uuid": "df53d877-2473-4074-a9a0-0a7352731784",
+    "desciption": "BGP Backward Transition",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "peer",
+            "description": "Peer",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "vrf",
+            "description": "VRF",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "as",
+            "description": "Peer AS",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "state",
+            "description": "Transition from state",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "BGP Backward transition {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
+            "body_template": "BGP Backward transition {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | BGP | Peer Down"
+        }
+    ]
+}

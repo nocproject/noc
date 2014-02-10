@@ -1,0 +1,26 @@
+{
+    "name": "Environment | UPS | Input Power Failed",
+    "uuid": "5cf54a01-24e4-45fa-97f1-20dbda62401f",
+    "desciption": "Input Power Failed",
+    "action": "A",
+    "vars ": [
+
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Input power failed, going into on battery mode",
+            "body_template": "Input power failed, going into on battery mode",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Environment | UPS | Input Power Failed"
+        }
+    ]
+}

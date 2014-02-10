@@ -1,0 +1,43 @@
+{
+    "name": "Config | Config Download Failed",
+    "uuid": "956dc864-cc0b-4598-8f8d-abfd05f82477",
+    "desciption": "Config Download Failed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "Server IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "service",
+            "description": "Service name (ftp, tftp)",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "user",
+            "description": "User name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+            "body_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Config | Config Download Failed"
+        }
+    ]
+}

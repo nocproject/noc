@@ -1,42 +1,41 @@
-[
-    {
-        "name": "NOC | Unknown Event Source",
-        "description": "Unknown Event Source",
-        "action": "L",
-        "text" : {
-            "en": {
-                "subject_template": "Unknown Event Source: {{ip}}",
-                "body_template": "Event has been received from unknown source {{ip}} by collector {{collector}} (Activator pool {{activator}})",
-                "symptoms": "Events from particular device are ignored by Fault Management",
-                "probable_causes": "Event's source address does not belong to any Managed Object's trap_source",
-                "recommended_actions": "Add appropriative Managed Object or fix trap_source"
-            }
+{
+    "name": "NOC | Unknown Event Source",
+    "uuid": "764bd643-9c5a-41bc-bf9b-89a1e44abe70",
+    "desciption": "Unknown Event Source",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "Event SRC IP",
+            "type": "ip_address",
+            "required": true
         },
-        "vars": [
-            {
-                "name": "ip",
-                "description": "Event SRC IP",
-                "type": "ip_address",
-                "required": true
-            },
-            {
-                "name": "collector_ip",
-                "description": "Collector's IP address",
-                "type": "ip_address",
-                "required": true
-            },
-            {
-                "name": "collector_port",
-                "description": "Collector's port",
-                "type": "int",
-                "required": true
-            },
-            {
-                "name": "activator",
-                "description": "Activator pool",
-                "type": "str",
-                "required": true
-            }
-        ]
+        {
+            "name": "collector_ip",
+            "description": "Collector's IP address",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "collector_port",
+            "description": "Collector's port",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "activator",
+            "description": "Activator pool",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Unknown Event Source: {{ip}}",
+            "body_template": "Event has been received from unknown source {{ip}} by collector {{collector}} (Activator pool {{activator}})",
+            "symptoms": "Events from particular device are ignored by Fault Management",
+            "probable_causes": "Event's source address does not belong to any Managed Object's trap_source",
+            "recommended_actions": "Add appropriative Managed Object or fix trap_source"
+        }
     }
-]
+}

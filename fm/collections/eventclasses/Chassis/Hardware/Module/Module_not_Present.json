@@ -1,0 +1,29 @@
+{
+    "name": "Chassis | Hardware | Module | Module not Present",
+    "uuid": "e4d717fc-b951-4651-8288-72a31cc9a678",
+    "desciption": "Hardware module not present",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "module",
+            "description": "Module type",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Hardware port or slot",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Hardware module {{module}} not present{% if interface %}, interface {{interface}}{% endif %}",
+            "body_template": "Hardware module {{module}} not present{% if interface %}, interface {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

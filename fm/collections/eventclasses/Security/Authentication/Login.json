@@ -1,183 +1,29 @@
-[
-    {
-        "name": "Security | Authentication | Login",
-        "description": "Successful Login",
-        "action": "L",
-        "text" : {
-            "en": {
-                "subject_template": "Login successful:{% if user %} {{user}}{% endif %}{% if ip %} ({{ip}}){% endif %}",
-                "body_template": "Login successful!\n{% if user %}User: {{user}}{% endif %}{% if ip %}\nIP: {{ip}}{% endif %}",
-                "symptoms": "No specific symptoms",
-                "probable_causes": "User successfully logged in",
-                "recommended_actions": "No reaction needed"
-            }
+{
+    "name": "Security | Authentication | Login",
+    "uuid": "e2a34691-21e7-4585-a8e7-fc006dd131ed",
+    "desciption": "Successful Login",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "User",
+            "type": "str",
+            "required": false
         },
-        "vars": [
-            {
-                "name": "user",
-                "description": "User",
-                "type": "str",
-                "required": false
-            },
-
-            {
-                "name": "ip",
-                "description": "User address",
-                "type": "ip_address",
-                "required": false
-            }
-        ],
-        "disposition": [
-        ]
-    },
-    
-    {
-        "name": "Security | Authentication | Logout",
-        "description": "Successful Logout",
-        "action": "L",
-        "text" : {
-            "en": {
-                "subject_template": "Logged out:{% if user %} {{user}}{% endif %}{% if ip %} ({{ip}}){% endif %}",
-                "body_template": "Logged out!\n{% if user %}User: {{user}}{% endif %}{% if ip %}\nIP: {{ip}}{% endif %}",
-                "symptoms": "No specific symptoms",
-                "probable_causes": "User successfully logged out. Session terminated",
-                "recommended_actions": "No reaction needed"
-            }
-        },
-        "vars": [
-            {
-                "name": "user",
-                "description": "User",
-                "type": "str",
-                "required": false
-            },
-
-            {
-                "name": "ip",
-                "description": "User address",
-                "type": "ip_address",
-                "required": false
-            }
-        ],
-        "disposition": [
-        ]
-    },
-
-    {
-        "name": "Security | Authentication | Login Failed",
-        "description": "Failed Login",
-        "action": "L",
-        "text" : {
-            "en": {
-                "subject_template": "Login failed:{% if user %} {{user}}{% endif %}{% if ip %} ({{ip}}){% endif %}",
-                "body_template": "Login failed!\n{% if user %}User: {{user}}{% endif %}{% if ip %}\nIP: {{ip}}{% endif %}",
-                "symptoms": "No specific symptoms",
-                "probable_causes": "User failed to log in. Username or password mismatch",
-                "recommended_actions": "No reaction needed"
-            }
-        },
-        "vars": [
-            {
-                "name": "user",
-                "description": "User",
-                "type": "str",
-                "required": false
-            },
-
-            {
-                "name": "ip",
-                "description": "User address",
-                "type": "ip_address",
-                "required": false
-            }
-        ],
-        "disposition": [
-        ]
-    },
-
-    {
-        "name": "Security | Authentication | Privilege Level Changed",
-        "description": "User privilege level changed",
-        "action": "L",
-        "text" : {
-            "en": {
-                "subject_template": "User{% if user %} {{user}}{% endif %} privilege level changed{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
-                "body_template": "User{% if user %} {{user}}{% endif %} privilege level changed{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
-                "symptoms": "No specific symptoms",
-                "probable_causes": "User privilege level changed",
-                "recommended_actions": "No reaction needed"
-            }
-        },
-        "vars": [
-            {
-                "name": "user",
-                "description": "User",
-                "type": "str",
-                "required": false
-            },
-            {
-                "name": "ip",
-                "description": "User address",
-                "type": "ip_address",
-                "required": false
-            },
-            {
-                "name": "from_priv",
-                "description": "Old privilegies",
-                "type": "str",
-                "required": false
-            },
-            {
-                "name": "to_priv",
-                "description": "Current privilegies",
-                "type": "str",
-                "required": false
-            }
-        ],
-        "disposition": [
-        ]
-    },
-
-    {
-        "name": "Security | Authentication | Privilege Level Change Fail",
-        "description": "Failed to change user privilege level",
-        "action": "L",
-        "text" : {
-            "en": {
-                "subject_template": "User{% if user %} {{user}}{% endif %} fail to change privilege level{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
-                "body_template": "User{% if user %} {{user}}{% endif %} fail to change privilege level{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
-                "symptoms": "No specific symptoms",
-                "probable_causes": "User privilege level changed",
-                "recommended_actions": "No reaction needed"
-            }
-        },
-        "vars": [
-            {
-                "name": "user",
-                "description": "User",
-                "type": "str",
-                "required": false
-            },
-            {
-                "name": "ip",
-                "description": "User address",
-                "type": "ip_address",
-                "required": false
-            },
-            {
-                "name": "from_priv",
-                "description": "Old privilegies",
-                "type": "str",
-                "required": false
-            },
-            {
-                "name": "to_priv",
-                "description": "Current privilegies",
-                "type": "str",
-                "required": false
-            }
-        ],
-        "disposition": [
-        ]
+        {
+            "name": "ip",
+            "description": "User address",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Login successful:{% if user %} {{user}}{% endif %}{% if ip %} ({{ip}}){% endif %}",
+            "body_template": "Login successful!\n{% if user %}User: {{user}}{% endif %}{% if ip %}\nIP: {{ip}}{% endif %}",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "User successfully logged in",
+            "recommended_actions": "No reaction needed"
+        }
     }
-]
+}

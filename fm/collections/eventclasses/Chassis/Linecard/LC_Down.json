@@ -1,0 +1,37 @@
+{
+    "name": "Chassis | Linecard | LC Down",
+    "uuid": "cea6abfb-7327-49b3-8525-de42e5e6809a",
+    "desciption": "Linecard Down",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "number",
+            "description": "Slot number",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Linecard {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
+            "body_template": "Linecard {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Linecard | LC Down"
+        }
+    ]
+}

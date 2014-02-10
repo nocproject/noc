@@ -1,0 +1,31 @@
+{
+    "name": "Network | MPLS | Path Down",
+    "uuid": "2a5f5a0c-55f2-4804-9e00-7394f442cd88",
+    "desciption": "MPLS Path Down",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Path name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MPLS Path Down: {{name}}",
+            "body_template": "MPLS Path Down: {{name}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | MPLS | Path Down"
+        }
+    ]
+}

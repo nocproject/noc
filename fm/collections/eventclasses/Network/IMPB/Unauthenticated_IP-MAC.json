@@ -1,0 +1,43 @@
+{
+    "name": "Network | IMPB | Unauthenticated IP-MAC",
+    "uuid": "9ef43611-4a64-4e61-9e96-dd0f4cc8caa1",
+    "desciption": "Unauthenticated IP-MAC",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "User IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "mac",
+            "description": "User MAC",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
+            "body_template": "Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
+            "symptoms": "Discard user connection attempts",
+            "probable_causes": "",
+            "recommended_actions": "Check user IP and MAC, check IMPB entry, check topology"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | IMPB | Unauthenticated IP-MAC"
+        }
+    ]
+}

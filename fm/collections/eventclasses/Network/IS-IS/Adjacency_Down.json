@@ -1,0 +1,49 @@
+{
+    "name": "Network | IS-IS | Adjacency Down",
+    "uuid": "87e5b0e2-43de-4983-99fc-0af4029ff305",
+    "desciption": "IS-IS adjacency down",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "level",
+            "description": "Level",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "neighbor",
+            "description": "Neighbor's NSAP or name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "Adjacency lost reason",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "IS-IS lost {{level}} adjacency to {{neighbor}} on {{interface}}. Reason: {{reason}}",
+            "body_template": "IS-IS lost {{level}} adjacency to {{neighbor}} on {{interface}}\nReason: {{reason}}",
+            "symptoms": "Routing table changes and possible lost of connectivity",
+            "probable_causes": "ISIS successfully established adjacency with neighbor",
+            "recommended_actions": "Check links and local and neighbor's router configuration"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | IS-IS | Adjacency Down"
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "name": "Network | MPLS | Path Up",
+    "uuid": "aa523bd6-e5d1-4676-9665-e97c4a5054e6",
+    "desciption": "MPLS Path Up",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Path name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "bandwidth",
+            "description": "Bandwidth (bps)",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MPLS Path Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){%endif%}",
+            "body_template": "MPLS Path Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){%endif%}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | MPLS | Path Down"
+        }
+    ]
+}

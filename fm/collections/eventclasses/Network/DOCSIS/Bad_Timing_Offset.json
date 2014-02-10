@@ -1,0 +1,43 @@
+{
+    "name": "Network | DOCSIS | Bad Timing Offset",
+    "uuid": "7798679b-61e6-40b3-8adb-5d0c5b35de69",
+    "desciption": "Bad timing offset detected for Cable Modem",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "Cable Modem MAC",
+            "type": "mac",
+            "required": false
+        },
+        {
+            "name": "sid",
+            "description": "Cable Modem SID",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "offset",
+            "description": "Time offset",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Bad timing offset {% if offset %}{{offset}}{% endif %} detected for Cable Modem{% if mac %} {{mac}}{% endif %}{% if sid %} {{sid}}{% endif %}",
+            "body_template": "Bad timing offset {% if offset %}{{offset}}{% endif %} detected for Cable Modem{% if mac %} {{mac}}{% endif %}{% if sid %} {{sid}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "The cable modem is not using the correct starting offset during initial ranging, causing a zero, negative timing offset to be recorded by the CMTS for this modem. The CMTS internal algorithms that rely on the timing offset parameter will not analyze any modems that do not use the correct starting offset. The modems may not be able to function, depending on their physical location on the cable plant.",
+            "recommended_actions": "Locate the cable modem based on the MAC address and report the initial timing offset problem to the cable modem vendor."
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | DOCSIS | Bad Timing Offset"
+        }
+    ]
+}

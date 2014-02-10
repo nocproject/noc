@@ -1,0 +1,49 @@
+{
+    "name": "Network | BGP | Established",
+    "uuid": "132e470f-6dae-4e85-915f-d861934a56ab",
+    "desciption": "BGP Session Established",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "peer",
+            "description": "Peer",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "vrf",
+            "description": "VRF",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "as",
+            "description": "Peer AS",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "BGP Session established {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
+            "body_template": "BGP Session established {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | BGP | Peer Down"
+        },
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | BGP | Prefix Limit Exceeded"
+        }
+    ]
+}

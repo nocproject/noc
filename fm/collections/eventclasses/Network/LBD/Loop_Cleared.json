@@ -1,0 +1,31 @@
+{
+    "name": "Network | LBD | Loop Cleared",
+    "uuid": "f0739e3d-12ee-4a12-98fe-290819163582",
+    "desciption": "LBD Loop Cleared",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "LBD interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "LBD Loop cleared on {{interface}}",
+            "body_template": "LBD Loop cleared on {{interface}}",
+            "symptoms": "Connection restored",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | LBD | Loop Detected"
+        }
+    ]
+}

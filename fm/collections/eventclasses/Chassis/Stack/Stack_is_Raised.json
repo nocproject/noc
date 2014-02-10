@@ -1,0 +1,31 @@
+{
+    "name": "Chassis | Stack | Stack is Raised",
+    "uuid": "5e182458-098f-4673-a369-956219393846",
+    "desciption": "One or more unit is joined to stack",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "unit",
+            "description": "Unit number",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Unit {{unit}} is joined to stack",
+            "body_template": "Unit {{unit}} is joined to stack",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Chassis | Stack | Stack Degraded"
+        }
+    ]
+}

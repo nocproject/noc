@@ -1,0 +1,43 @@
+{
+    "name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm is Operate",
+    "uuid": "7e2a83e1-59db-49f8-a497-1e9697fe3b5b",
+    "desciption": "SLB Server Farm Degraded",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "farm",
+            "description": "SLB server farm name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "real",
+            "description": "Real IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "state",
+            "description": "Real state",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Real {{real}} on SLB server farm {{farm}} has changed state to {{state}}",
+            "body_template": "Real {{real}} on SLB server farm {{farm}} has changed state to {{state}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded"
+        }
+    ]
+}

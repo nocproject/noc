@@ -1,0 +1,37 @@
+{
+    "name": "Network | PIM | MSDP Peer Up",
+    "uuid": "9f18d201-55fd-4020-b32f-94532bb8e2cb",
+    "desciption": "MSDP peer up",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "peer",
+            "description": "Peer's IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "vrf",
+            "description": "VRF",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
+            "body_template": "MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
+            "symptoms": "Multicast flows send successfully",
+            "probable_causes": "MSDP successfully established connect with peer",
+            "recommended_actions": "No reaction needed"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | PIM | MSDP Peer Down"
+        }
+    ]
+}

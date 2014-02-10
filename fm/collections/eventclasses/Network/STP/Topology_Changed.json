@@ -1,0 +1,35 @@
+{
+    "name": "Network | STP | Topology Changed",
+    "uuid": "d1dfc1e4-0a1d-4b03-8663-67bb6d00280e",
+    "desciption": "STP Topology changed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "vlan",
+            "description": "VLAN ID",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "instance",
+            "description": "MST instance",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "STP Topology changed on {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %}{% if instance %}, MST Instance {{instance}}{% endif %}",
+            "body_template": "STP Topology changed on {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %}{% if instance %}, MST Instance {{instance}}{% endif %}",
+            "symptoms": "Unexpected MAC address table cleanups, short-time traffic disruptions",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

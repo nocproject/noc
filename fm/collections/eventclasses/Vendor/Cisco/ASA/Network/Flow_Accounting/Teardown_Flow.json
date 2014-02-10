@@ -1,0 +1,71 @@
+{
+    "name": "Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow",
+    "uuid": "3b96cf7a-392a-4ce4-92e1-f5d5d6cfb1a4",
+    "desciption": "Teardown Flow",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "proto",
+            "description": "Protocol",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "user",
+            "description": "VPN User",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "src_interface",
+            "description": "Source Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "src_port",
+            "description": "Source port",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "dst_interface",
+            "description": "Destination Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "dst_ip",
+            "description": "Destination IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "dst_port",
+            "description": "Destination port",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "bytes",
+            "description": "Bytes count",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Teardown flow {{user}}: {{proto}} {{src_interface}}:{{src_ip}}:{{src_port}} -> {{dst_interface}}:{{dst_ip}}:{{dst_port}}. Bytes {{bytes}}",
+            "body_template": "Teardown flow {{user}}: {{proto}} {{src_interface}}:{{src_ip}}:{{src_port}} -> {{dst_interface}}:{{dst_ip}}:{{dst_port}}. Bytes {{bytes}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

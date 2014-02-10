@@ -1,0 +1,31 @@
+{
+    "name": "Network | DNS | Bad Query",
+    "uuid": "0d08ba3d-ea83-42ac-9f96-102a16f624d2",
+    "desciption": "Bad DNS query",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "Source IP",
+            "type": "ip_address",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Bad DNS query from {{ip}}",
+            "body_template": "Bad DNS query from {{ip}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | DNS | Bad Query"
+        }
+    ]
+}

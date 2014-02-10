@@ -1,0 +1,23 @@
+{
+    "name": "Network | 802.11 | Max Retries",
+    "uuid": "6f1e5281-7954-47df-8017-8b6ab1866f12",
+    "desciption": "Maximum retries reached",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "Station MAC",
+            "type": "mac",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Packet to {{mac}} reached max retries. Removing client",
+            "body_template": "Packet to {{mac}} reached max retries. Removing client",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

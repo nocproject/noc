@@ -1,0 +1,37 @@
+{
+    "name": "Network | MPLS | TDP Neighbor Up",
+    "uuid": "10f28e29-5945-4fdc-99dd-9791e21fac39",
+    "desciption": "MPLS TDP Neighbor Up",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "neighbor",
+            "description": "TDP Neighbor",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MPLS TDP Neighbor Up: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+            "body_template": "MPLS TDP Neighbor Up: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | MPLS | TDP Neighbor Down"
+        }
+    ]
+}

@@ -1,0 +1,55 @@
+{
+    "name": "Network | Link | DOM | Warning: Out of Threshold",
+    "uuid": "71faba70-4890-455b-af5b-295215979359",
+    "desciption": "DOM above or below threshold exceeded",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Physical port",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "threshold",
+            "description": "Threshold type",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "sensor",
+            "description": "Measured name",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Operating value",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold value",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}",
+            "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}{% if ovalue %}, Operating value {{ovalue}}{% endif %}{% if tvalue %}, Threshold value {{tvalue}}{% endif %}",
+            "symptoms": "Connection lost",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | Link | DOM | Warning: Out of Threshold"
+        }
+    ]
+}

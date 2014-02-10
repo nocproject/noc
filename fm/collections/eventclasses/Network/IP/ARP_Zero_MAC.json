@@ -1,0 +1,29 @@
+{
+    "name": "Network | IP | ARP Zero MAC",
+    "uuid": "3ee0c0ea-e0db-4048-8315-2379cfb88ca0",
+    "desciption": "ARP Zero MAC",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Zero MAC address for {{ip}}{% if interface %} on {{interface}}{% endif %}",
+            "body_template": "Zero MAC addres for {{ip}}{% if interface %} on {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

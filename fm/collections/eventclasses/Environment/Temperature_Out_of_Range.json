@@ -1,0 +1,55 @@
+{
+    "name": "Environment | Temperature Out of Range",
+    "uuid": "bff63c3c-ab86-4eea-8615-4acb234b028a",
+    "desciption": "Temperature out of range",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "measure",
+            "description": "Current State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "min",
+            "description": "Min State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "max",
+            "description": "Max State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "threshold",
+            "description": "Threshold",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "The temperature measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "body_template": "The temperature measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Environment | Temperature Out of Range"
+        }
+    ]
+}

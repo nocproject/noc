@@ -1,0 +1,29 @@
+{
+    "name": "Chassis | Hardware | Module | Module Present",
+    "uuid": "3425bd20-bc9f-4a5d-910d-1955ab9cc3ef",
+    "desciption": "Hardware module present",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "module",
+            "description": "Module type",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Hardware port or slot",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Hardware module {{module}} present{% if interface %}, interface {{interface}}{% endif %}",
+            "body_template": "Hardware module {{module}} present{% if interface %}, interface {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

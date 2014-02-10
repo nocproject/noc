@@ -1,0 +1,35 @@
+{
+    "name": "Network | LLDP | Native Vlan Not Match",
+    "uuid": "4bd59007-3c2e-4449-b06d-cd1554524afd",
+    "desciption": "LLDP Native Vlan Not Match",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "vlan",
+            "description": "VLAN ID",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "vlan_neighbor",
+            "description": "VLAN NEI ID",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "LLDP: Native Vlan not mach on {{interface}}. Port native vlan {{vlan}}, neighbor port native vlan {{vlan_neighbor}}",
+            "body_template": "LLDP: Native Vlan not mach on {{interface}}. Port native vlan {{vlan}}, neighbor port native vlan {{vlan_neighbor}}",
+            "symptoms": "",
+            "probable_causes": " ",
+            "recommended_actions": "check configuration ports"
+        }
+    }
+}

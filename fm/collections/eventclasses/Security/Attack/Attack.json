@@ -1,0 +1,55 @@
+{
+    "name": "Security | Attack | Attack",
+    "uuid": "dcb43df5-cca3-4945-b3f1-b7d4140fdb4e",
+    "desciption": "Attack in progress detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Attack name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "src_mac",
+            "description": "Source MAC",
+            "type": "mac",
+            "required": false
+        },
+        {
+            "name": "vlan",
+            "description": "Vlan ID",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "{{name}} attack detected{% if interface %} at interface {{interface}}{% endif %}{% if src_ip %} from {{src_ip}}{% endif %}",
+            "body_template": "{{name}} attack detected.{% if interface %}\nInterface: {{interface}}{% endif %}{% if src_ip %}\nSource IP: {{src_ip}}{% endif %}{% if src_mac %}\nSource MAC: {{src_mac}}{% endif %}{% if vlan %}\nVlan: {{vlan}}{% endif %}",
+            "symptoms": "Unsolicitized traffic from source",
+            "probable_causes": "Virus/Botnet activity or malicious actions",
+            "recommended_actions": "Negotiate the source if it is your customer, or ignore"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Security | Attack | Attack"
+        }
+    ]
+}

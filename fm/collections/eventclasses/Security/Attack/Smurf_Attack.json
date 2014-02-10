@@ -1,0 +1,37 @@
+{
+    "name": "Security | Attack | Smurf Attack",
+    "uuid": "7edc00c7-fafc-4eef-9144-ef6f08a2b1da",
+    "desciption": "Smurf Attack detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Smurf Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+            "body_template": "Smurf Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Security | Attack | Smurf Attack"
+        }
+    ]
+}

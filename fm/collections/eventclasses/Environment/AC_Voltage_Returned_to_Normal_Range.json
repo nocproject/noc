@@ -1,0 +1,55 @@
+{
+    "name": "Environment | AC Voltage Returned to Normal Range",
+    "uuid": "52f8a54a-e06c-4fe1-9054-12ef8d894e09",
+    "desciption": "AC voltage returned to normal range",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "measure",
+            "description": "Current State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "min",
+            "description": "Min State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "max",
+            "description": "Max State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "threshold",
+            "description": "Threshold",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "The AC voltage measured at {{name}}, returned to the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "body_template": "The AC voltage measured at {{name}}, returned to the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Environment | AC Voltage Out of Range"
+        }
+    ]
+}

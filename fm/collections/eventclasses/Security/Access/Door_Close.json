@@ -1,0 +1,31 @@
+{
+    "name": "Security | Access | Door Close",
+    "uuid": "16615d0e-17f1-43aa-a896-353b4436588c",
+    "desciption": "Door is closed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Door {{name}} is closed",
+            "body_template": "Door {{name}} is closed",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Security | Access | Door Open"
+        }
+    ]
+}

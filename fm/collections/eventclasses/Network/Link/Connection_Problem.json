@@ -1,0 +1,23 @@
+{
+    "name": "Network | Link | Connection Problem",
+    "uuid": "215f43d2-9abd-461b-9f8f-4332ce00740b",
+    "desciption": "Link or carrier problem",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Connection problem: {{interface}}",
+            "body_template": "Connection problem: {{interface}}",
+            "symptoms": "Poor rate, connection interrupts",
+            "probable_causes": "Cable damage, hardware or software error either from this or from another side",
+            "recommended_actions": "Check configuration, both sides of links and hardware"
+        }
+    }
+}

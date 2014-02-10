@@ -1,0 +1,43 @@
+{
+    "name": "Network | MAC | Duplicate MAC",
+    "uuid": "81215d7f-71b8-491e-8492-7e5734660eb1",
+    "desciption": "Duplicate MAC detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "MAC Address",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "one_interface",
+            "description": "First interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "two_interface",
+            "description": "Second interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}} and {{two_interface}}",
+            "body_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}} and {{two_interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | MAC | Duplicate MAC"
+        }
+    ]
+}

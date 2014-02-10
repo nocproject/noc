@@ -1,0 +1,29 @@
+{
+    "name": "Security | Audit | Cron",
+    "uuid": "1e575996-02d8-4e57-ba20-223067fcd705",
+    "desciption": "Scheduled Command Executed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "User",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "command",
+            "description": "Command",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Scheduled command executed{% if user %} by {{user}}{% endif %}: {{command}}",
+            "body_template": "Scheduled command executed{% if user %} by {{user}}{% endif %}: {{command}}",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "Command executed by cron",
+            "recommended_actions": "No reaction needed"
+        }
+    }
+}

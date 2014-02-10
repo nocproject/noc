@@ -1,0 +1,53 @@
+{
+    "name": "Vendor | Cisco | ASA | Network | Flow Accounting | Duplicate TCP SYN",
+    "uuid": "591747d8-2a2b-4cd2-8d67-349463e24501",
+    "desciption": "Duplicate TCP SYN",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "src_interface",
+            "description": "Source Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "src_port",
+            "description": "Source port",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "dst_interface",
+            "description": "Destination Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "dst_ip",
+            "description": "Destination IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "dst_port",
+            "description": "Destination port",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Duplicate TCP SYN: {{src_interface}}:{{src_ip}}:{{src_port}} -> {{dst_interface}}:{{dst_ip}}:{{dst_port}}",
+            "body_template": "Duplicate TCP SYN: {{src_interface}}:{{src_ip}}:{{src_port}} -> {{dst_interface}}:{{dst_ip}}:{{dst_port}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

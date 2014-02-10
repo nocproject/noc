@@ -1,0 +1,31 @@
+{
+    "name": "Environment | UPS | Self-Test Failed",
+    "uuid": "5cab11d8-df89-483b-9fab-6477ccdf93c1",
+    "desciption": "Self-Test Failed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Test name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "The Self-Test {% if name %}{{name}} {% endif %}failed",
+            "body_template": "The Self-Test {% if name %}{{name}} {% endif %}failed",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Environment | UPS | Self-Test Failed"
+        }
+    ]
+}

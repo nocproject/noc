@@ -1,0 +1,26 @@
+{
+    "name": "Chassis | Hardware | Hardware Error",
+    "uuid": "054ce5c4-feb0-4edb-b2b3-8ea8e88fbc2a",
+    "desciption": "Hardware error occured",
+    "action": "A",
+    "vars ": [
+
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Hardware error occured",
+            "body_template": "Hardware error occured",
+            "symptoms": "Device becomes unstable or is not responding",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Hardware | Hardware Error"
+        }
+    ]
+}

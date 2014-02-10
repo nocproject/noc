@@ -1,0 +1,43 @@
+{
+    "name": "Network | DOCSIS | BPI Unautorized",
+    "uuid": "0cbcf3cf-c124-49c8-9a87-38f3fa20fea3",
+    "desciption": "Invalid Shared Secret",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "Cable Modem MAC",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "sid",
+            "description": "Cable Modem SID",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "interface",
+            "description": "Cable interface",
+            "type": "interface_name",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "BPI authorization failed for Cable Modem {{mac}}{% if sid %} SID {{sid}}{% endif %}{% if interface %} on interface {{interface}}{% endif %}",
+            "body_template": "BPI authorization failed for Cable Modem {{mac}}{% if sid %} SID {{sid}}{% endif %}{% if interface %} on interface {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "An unauthorized cable modem has been deleted to enforce BPI authorization for the specified cable modem. The specified cable modem was not performing BPI negotiation.",
+            "recommended_actions": "Check the modem interface configuration for privacy mandatory, or check for errors in the TFTP configuration file."
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | DOCSIS | BPI Unautorized"
+        }
+    ]
+}

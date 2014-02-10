@@ -1,0 +1,31 @@
+{
+    "name": "Network | Storm Control | Unicast Storm Detected",
+    "uuid": "48a75b5d-79b1-4c6b-afc3-576c59acab11",
+    "desciption": "Unicast (DLF) Storm Detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Unicast (DLF) Storm Detected on port {{interface}}",
+            "body_template": "Unicast (DLF) Storm Detected on port {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": "Enable DLF (destination lookup failure) filter"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | Storm Control | Unicast Storm Detected"
+        }
+    ]
+}

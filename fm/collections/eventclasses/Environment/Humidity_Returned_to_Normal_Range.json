@@ -1,0 +1,55 @@
+{
+    "name": "Environment | Humidity Returned to Normal Range",
+    "uuid": "c4a71081-bdc6-4f6d-b38d-8ba176833430",
+    "desciption": "Humidity returned to normal range",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "measure",
+            "description": "Current State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "min",
+            "description": "Min State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "max",
+            "description": "Max State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "threshold",
+            "description": "Threshold",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "The humidity measured at {{name}}, returned to the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "body_template": "The humidity measured at {{name}}, returned to the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Environment | Humidity Out of Range"
+        }
+    ]
+}

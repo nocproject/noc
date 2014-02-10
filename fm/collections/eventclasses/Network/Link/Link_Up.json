@@ -1,0 +1,64 @@
+{
+    "name": "Network | Link | Link Up",
+    "uuid": "82d72502-974a-4c42-8fe4-c4d2aae71d5c",
+    "desciption": "Link Up",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "speed",
+            "description": "Link speed",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "duplex",
+            "description": "Duplex mode",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "handlers": [
+        "noc.fm.handlers.event.link.oper_up"
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Link Up: {{interface}}{% if speed %}, Speed: {{speed}}{% endif %}{% if duplex %}, Duplex: {{duplex}}{% endif %}",
+            "body_template": "Link Up: {{interface}}{% if speed %}, Speed: {{speed}}{% endif %}{% if duplex %}, Duplex: {{duplex}}{% endif %}",
+            "symptoms": "Connection restored",
+            "probable_causes": "Administrative action, cable or hardware replacement",
+            "recommended_actions": "Check interfaces on both sides for possible errors"
+        }
+    },
+    "disposition": [
+        {
+            "name": "Clear Link Down",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | Link | Link Down"
+        },
+        {
+            "name": "Clear Err-Disable",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | Link | Err-Disable"
+        },
+        {
+            "name": "Clear BPDU Guard Violation",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | STP | BPDU Guard Violation"
+        },
+        {
+            "name": "Clear Root Guard Violation",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | STP | Root Guard Violation"
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "name": "Network | STP | STP Vlan Loop Cleared",
+    "uuid": "0e4f62a1-36a2-4e42-9907-ad5f8614084e",
+    "desciption": "STP Vlan Loop Cleared",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "vlan",
+            "description": "vlan",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "STP Vlan Loop Cleared on {{interface}} vlan {{vlan}}",
+            "body_template": "STP Vlan Loop Cleared on {{interface}} vlan {{vlan}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | STP | STP Vlan Loop Detected"
+        }
+    ]
+}

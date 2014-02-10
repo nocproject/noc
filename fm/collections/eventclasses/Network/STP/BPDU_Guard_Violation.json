@@ -1,0 +1,31 @@
+{
+    "name": "Network | STP | BPDU Guard Violation",
+    "uuid": "9bb007b3-1049-4a39-9594-a1def3c9308d",
+    "desciption": "BPDU Guard Violation",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "BPDU Guard Violation on {{interface}}",
+            "body_template": "BPDU Guard Violation on {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | STP | BPDU Guard Violation"
+        }
+    ]
+}

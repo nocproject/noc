@@ -1,0 +1,77 @@
+{
+    "name": "Security | ACL | ACL Permit",
+    "uuid": "025058a2-881d-4a53-b572-f07dd37c0772",
+    "desciption": "Packet permitted by ACL",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "ACL Name",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "proto",
+            "description": "Protocol",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "src_interface",
+            "description": "Source Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "src_port",
+            "description": "Source port",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "src_mac",
+            "description": "Source MAC",
+            "type": "mac",
+            "required": false
+        },
+        {
+            "name": "dst_interface",
+            "description": "Destination Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "dst_ip",
+            "description": "Destination IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "dst_port",
+            "description": "Destination port",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "count",
+            "description": "Packets count",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "ACL Permit {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}",
+            "body_template": "ACL Permit {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}. Count {{count}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

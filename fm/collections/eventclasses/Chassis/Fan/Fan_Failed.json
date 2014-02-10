@@ -1,0 +1,31 @@
+{
+    "name": "Chassis | Fan | Fan Failed",
+    "uuid": "c606a185-2ace-43c5-8a4d-58f0cbf0e4b8",
+    "desciption": "Fan failed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Fan Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Fan Failed: {{name}}",
+            "body_template": "Fan Unit Failed: {{name}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Fan | Fan Failed"
+        }
+    ]
+}

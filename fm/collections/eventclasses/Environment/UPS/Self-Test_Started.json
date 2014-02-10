@@ -1,0 +1,23 @@
+{
+    "name": "Environment | UPS | Self-Test Started",
+    "uuid": "55fdfa39-53ed-4cf0-ab85-f3fbe4e2d759",
+    "desciption": "Self-Test Started",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Test name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "The Self-Test {% if name %}{{name}} {% endif %}started",
+            "body_template": "The Self-Test {% if name %}{{name}} {% endif %}started",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

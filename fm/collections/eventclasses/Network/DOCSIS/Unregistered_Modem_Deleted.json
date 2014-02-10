@@ -1,0 +1,23 @@
+{
+    "name": "Network | DOCSIS | Unregistered Modem Deleted",
+    "uuid": "a14aadb9-e0c9-4d8c-adf6-569f721322f8",
+    "desciption": "CMTS deleted unregistered Cable Modem",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "Cable Modem MAC",
+            "type": "mac",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "CMTS deleted unregistered Cable Modem {{mac}}",
+            "body_template": "CMTS deleted unregistered Cable Modem {{mac}}",
+            "symptoms": "",
+            "probable_causes": "An unregistered cable modem has been deleted to avoid unaccounted bandwidth usage.",
+            "recommended_actions": "Check the cable modem interface configuration for registration bypass, or check for errors in the TFTP configuration file. "
+        }
+    }
+}

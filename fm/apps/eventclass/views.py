@@ -20,9 +20,3 @@ class EventClassApplication(ExtDocApplication):
     model = EventClass
     query_fields = ["name", "description"]
     query_condition = "icontains"
-
-    @view(url=r"^(?P<id>[0-9a-f]{24})/json/", method=["GET"],
-          access="read", api=True)
-    def api_json(self, request, id):
-        ec = self.get_object_or_404(EventClass, id=id)
-        return ec.json

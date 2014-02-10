@@ -1,0 +1,55 @@
+{
+    "name": "Network | EIGRP | Neighbor Down",
+    "uuid": "c720e355-84dd-44a2-b7fd-5cb4f6ca5f0e",
+    "desciption": "EIGRP adjacency down",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "as",
+            "description": "EIGRP automonus system",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "neighbor",
+            "description": "Neighbor's Router ID",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "Adjacency lost reason",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "to_state",
+            "description": "to state",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "EIGRP {% if as %} {{as}} {% endif %} neighbor {{neighbor}} change state to {{to_state}}. Reason: {{reason}}",
+            "body_template": "EIGRP{% if as %} {{as}} {% endif %}\nNeighbor {{neighbor}}\nInterface: {{interface}}\nChange state -> {{to_state}}\nReason: {{reason}}",
+            "symptoms": "Routing table changes and possible lost of connectivity",
+            "probable_causes": "Link failure or protocol misconfiguration",
+            "recommended_actions": "Check links and local and neighbor router configuration"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | EIGRP | Neighbor Down"
+        }
+    ]
+}

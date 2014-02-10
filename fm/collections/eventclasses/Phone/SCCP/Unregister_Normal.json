@@ -1,0 +1,47 @@
+{
+    "name": "Phone | SCCP | Unregister Normal",
+    "uuid": "21f27e43-8267-4c4a-b6c1-d16108bdac31",
+    "desciption": "SCCP phone normal unregister sequence",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Device name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "type",
+            "description": "Device type",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "sn",
+            "description": "Device Serial Number",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "ip",
+            "description": "Device IP address",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "socket",
+            "description": "Socket number",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "SCCP {{type}} unregistered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
+            "body_template": "SCCP {{type}} unregistered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "name": "Security | Authentication | RADIUS server failed",
+    "uuid": "4c8ae9b3-472f-4aa4-9fe0-201fdff4a523",
+    "desciption": "RADIUS server failed",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "RADIUS server address",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "RADIUS server{% if ip %} {{ip}}{% endif %} is not responding",
+            "body_template": "RADIUS server{% if ip %} {{ip}}{% endif %} is not responding",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Security | Authentication | RADIUS server failed"
+        }
+    ]
+}

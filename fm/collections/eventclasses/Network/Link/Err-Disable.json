@@ -1,0 +1,37 @@
+{
+    "name": "Network | Link | Err-Disable",
+    "uuid": "7b9be94a-143f-45b6-bf02-3aa5620d90cb",
+    "desciption": "Link in err-disable state",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "interface name",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "err-disable reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Link err-disable: {{interface}} ({{reason}})",
+            "body_template": "Link err-disable: {{interface}} ({{reason}})",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | Link | Err-Disable"
+        }
+    ]
+}

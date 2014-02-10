@@ -1,0 +1,35 @@
+{
+    "name": "Chassis | CPU | CoPP Drop",
+    "uuid": "402a3e7f-ea3a-430b-ad69-af2d34bcca28",
+    "desciption": "CoPP drops exceeded threshold",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "cpu",
+            "description": "CPU Name",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "proto",
+            "description": "Dropped packets protocol",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "count",
+            "description": "Dropped packets count",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}{% if count %}, dropped {{count}} packets{% endif %}{% if proto %}, protocol {{proto}}{% endif %}",
+            "body_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}{% if count %}, dropped {{count}} packets{% endif %}{% if proto %}, protocol {{proto}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "CoPP protects control plane by dropping traffic exceeding thresholds",
+            "recommended_actions": ""
+        }
+    }
+}

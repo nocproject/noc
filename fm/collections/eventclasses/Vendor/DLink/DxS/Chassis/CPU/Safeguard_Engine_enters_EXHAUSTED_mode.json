@@ -1,0 +1,31 @@
+{
+    "name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode",
+    "uuid": "7e3511aa-2e12-4c02-b05e-98920ea86604",
+    "desciption": "Safeguard Engine enters EXHAUSTED mode",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "unit",
+            "description": "Unit number in stack",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "{% if unit %}Unit {{unit}}, {% endif %}Safeguard Engine enters EXHAUSTED mode",
+            "body_template": "{% if unit %}Unit {{unit}}, {% endif %}Safeguard Engine enters EXHAUSTED mode",
+            "symptoms": "Device not responce, can not establish new connections",
+            "probable_causes": "High CPU utilization",
+            "recommended_actions": "Lower storm detect threshold, filter waste traffic on connected devices, restrict SNMP Views"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | CPU | CPU Exhausted"
+        }
+    ]
+}

@@ -1,0 +1,31 @@
+{
+    "name": "Network | STP | STP Loop Cleared",
+    "uuid": "92261078-fe4b-42f7-8d41-216fe05c124b",
+    "desciption": "STP Loop Cleared",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "STP Loop Cleared on {{interface}}",
+            "body_template": "STP Loop Cleared on {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | STP | STP Loop Detected"
+        }
+    ]
+}

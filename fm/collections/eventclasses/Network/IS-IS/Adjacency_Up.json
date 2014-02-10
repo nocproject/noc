@@ -1,0 +1,43 @@
+{
+    "name": "Network | IS-IS | Adjacency Up",
+    "uuid": "a4af4dd8-4139-4577-85e6-236d85e4d838",
+    "desciption": "ISIS adjacency up",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "level",
+            "description": "Level",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "neighbor",
+            "description": "Neighbor's NSAP or name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "New {{level}} IS-IS adjacency to {{neighbor}} on {{interface}}",
+            "body_template": "{{level}} IS-IS adjancency to {{neighbor}} established on {{interface}}",
+            "symptoms": "Routing table changes",
+            "probable_causes": "IS-IS successfully established adjacency with neighbor",
+            "recommended_actions": "No reaction needed"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | IS-IS | Adjacency Down"
+        }
+    ]
+}

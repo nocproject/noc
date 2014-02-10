@@ -1,0 +1,23 @@
+{
+    "name": "Network | OAM | Discovery Timeout",
+    "uuid": "0ced5d24-225f-422b-8c9c-8d8ae5c480a5",
+    "desciption": "Client discovery timeout",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Discovery timeout on interface {{interface}}",
+            "body_template": "Discovery timeout on interface {{interface}}",
+            "symptoms": "",
+            "probable_causes": "The Ethernet OAM client on the specified interface has not received any OAMPDUs in the number of seconds for timeout that were configured by the user. The client has exited the OAM session.",
+            "recommended_actions": "No action is required."
+        }
+    }
+}

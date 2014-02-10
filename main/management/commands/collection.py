@@ -27,8 +27,10 @@ from noc.fm.models.mibpreference import MIBPreference
 from noc.fm.models.enumeration import Enumeration
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.eventclass import EventClass
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
+from noc.lib.debug import error_report
 
 
 class Command(BaseCommand):
@@ -97,7 +99,8 @@ class Command(BaseCommand):
         ("fm.mibpreferences", MIBPreference),
         ("fm.enumerations", Enumeration),
         ("fm.alarmseverities", AlarmSeverity),
-        ("fm.alarmclasses", AlarmClass)
+        ("fm.alarmclasses", AlarmClass),
+        ("fm.eventclasses", EventClass),
     ]
 
     def log(self, msg):
@@ -105,7 +108,15 @@ class Command(BaseCommand):
             return
         print msg
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **kwargs):
+        try:
+            self._handle(*args, **kwargs)
+        except CommandError:
+            raise
+        except:
+            error_report()
+
+    def _handle(self, *args, **options):
         self.verbose = bool(options.get("verbosity"))
         if options["cmd"] == "sync":
             return self.handle_sync()
@@ -162,8 +173,12 @@ class Command(BaseCommand):
                 data = json_decode(read_file(p))
                 if isinstance(data, list):
                     for o in data:
+                        if "__aliases" in o:
+                            del o["__aliases"]
                         dc.install_item(o)
                 elif isinstance(data, dict):
+                    if "__aliases" in data:
+                        del data["__aliases"]
                     dc.install_item(data)
                 if os.stat(p)[stat.ST_MTIME] == s[stat.ST_MTIME]:
                     # Remove stale file

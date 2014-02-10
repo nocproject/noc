@@ -1,0 +1,23 @@
+{
+    "name": "System | Reboot",
+    "uuid": "757ec9c1-68cb-40d4-8cce-1524c971e51f",
+    "desciption": "System rebooting",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "Username",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+            "body_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

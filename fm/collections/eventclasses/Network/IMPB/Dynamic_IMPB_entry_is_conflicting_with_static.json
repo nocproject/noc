@@ -1,0 +1,35 @@
+{
+    "name": "Network | IMPB | Dynamic IMPB entry is conflicting with static",
+    "uuid": "ea244bae-6d36-40ec-bc24-e69a2c03a23b",
+    "desciption": "Dynamic IMPB entry is conflicting with static",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "User IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "mac",
+            "description": "User MAC",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Dynamic IMPB entry is conflicting with static IMPB(IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
+            "body_template": "Dynamic IMPB entry is conflicting with static IMPB(IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
+            "symptoms": "Discard user connection attemps",
+            "probable_causes": "",
+            "recommended_actions": "Check user IP and MAC, check DHCP database"
+        }
+    }
+}

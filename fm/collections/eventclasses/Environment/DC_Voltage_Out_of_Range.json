@@ -1,0 +1,55 @@
+{
+    "name": "Environment | DC Voltage Out of Range",
+    "uuid": "945ffe6c-075c-4629-a65a-45d0a896eddc",
+    "desciption": "DC voltage out of range",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "measure",
+            "description": "Current State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "min",
+            "description": "Min State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "max",
+            "description": "Max State",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "threshold",
+            "description": "Threshold",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "The DC voltage measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "body_template": "The DC voltage measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Environment | DC Voltage Out of Range"
+        }
+    ]
+}

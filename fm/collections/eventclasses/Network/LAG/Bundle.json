@@ -1,0 +1,29 @@
+{
+    "name": "Network | LAG | Bundle",
+    "uuid": "09b69b0d-e7dc-4d24-9fb8-4828f7d3c6cf",
+    "desciption": "Interface joined LAG",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Port",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "lag_interface",
+            "description": "LAG interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Interface {{interface}} joined LAG {{lag_interface}}",
+            "body_template": "Interface {{interface}} joined LAG {{lag_interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

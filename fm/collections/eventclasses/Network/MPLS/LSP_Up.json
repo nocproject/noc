@@ -1,0 +1,37 @@
+{
+    "name": "Network | MPLS | LSP Up",
+    "uuid": "4c583d7b-8546-4504-8900-27c6d22ad217",
+    "desciption": "MPLS LSP Up",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "LSP name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "bandwidth",
+            "description": "Bandwidth (bps)",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MPLS LSP Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){% endif %}",
+            "body_template": "MPLS LSP Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | MPLS | LSP Down"
+        }
+    ]
+}

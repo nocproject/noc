@@ -1,0 +1,31 @@
+{
+    "name": "Chassis | RAM | RAM Failed",
+    "uuid": "e9b3e884-e0cd-4f3d-a00a-324f6df951e9",
+    "desciption": "Failed RAM module",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "bank",
+            "description": "Bank Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
+            "body_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
+            "symptoms": "From random instability to complete operation failure",
+            "probable_causes": "",
+            "recommended_actions": "Replace faulty RAM module"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | RAM | RAM Failed"
+        }
+    ]
+}

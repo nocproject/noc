@@ -1,0 +1,37 @@
+{
+    "name": "Network | BFD | Session Up",
+    "uuid": "c81f31b9-f8a6-425a-a5b4-d4d3653f62f8",
+    "desciption": "BFD Session Up",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "BFD interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "peer",
+            "description": "BFD Peer",
+            "type": "ip_address",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "BFD Session Up: {{peer}} on {{interface}}",
+            "body_template": "BFD Session Up: {{peer}} on {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | BFD | Session Down"
+        }
+    ]
+}
