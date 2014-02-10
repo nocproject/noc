@@ -168,8 +168,11 @@ class Script(NOCScript):
                         n["remote_port"] = \
                             MACAddressParameter().clean(match.group("port"))
                     except:
-                        n["remote_port"] = \
-                            binascii.unhexlify('' . join(match.group("port").split('-')))
+                        match = self.rx_remote_port_id3.search(s1)
+                        if match:
+                            # Dirty hack !
+                            n["remote_port"] = match.group("port")
+                            n["remote_port_subtype"] = 1
 
                 '''
                 Possible variants of Port ID, if Remote Port ID is "Local":
