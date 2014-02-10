@@ -703,7 +703,6 @@ class Classifier(Daemon):
             else:
                 # No events classified this pass. Sleep
                 time.sleep(CHECK_EVERY)
-            break
 
     rx_non_alpha = re.compile(r"[^a-z]+")
     rx_spaces = re.compile(r"\s+")
