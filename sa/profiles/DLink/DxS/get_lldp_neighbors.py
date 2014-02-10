@@ -17,6 +17,7 @@ from noc.sa.interfaces import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4
 import re
+import binascii
 
 
 class Script(NOCScript):
@@ -163,8 +164,13 @@ class Script(NOCScript):
                         # Dirty hack !
                         n["remote_port"] = match.group("port")
                 if n["remote_port_subtype"] == 3:
-                    n["remote_port"] = \
-                        MACAddressParameter().clean(match.group("port"))
+                    try:
+                        n["remote_port"] = \
+                            MACAddressParameter().clean(match.group("port"))
+                    except:
+                        n["remote_port"] = \
+                            binascii.unhexlify('' . join(match.group("port").split('-')))
+
                 '''
                 Possible variants of Port ID, if Remote Port ID is "Local":
                 Big thanks to D-Link developers :)
