@@ -28,6 +28,7 @@ listen_instance = 0
 ping_instance   = 0
 ping_count = 3
 ping_timeout = 5
+ping_failure_threshold = 3
 listen_traps    =
 listen_syslog   =
 listen_pm_data  = 127.0.0.1
