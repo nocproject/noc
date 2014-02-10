@@ -73,6 +73,7 @@ DGS-3627G:admin#
             part_no = "%s/%s" % (part_no, revision)
         p = {
             "type": "CHASSIS",
+            "number": "1",
             "vendor": "DLINK",
             "part_no": [part_no],
             "revision": revision
@@ -86,7 +87,7 @@ DGS-3627G:admin#
         match = self.rx_mod.search(s)
         if match:
             p = {
-                "type": "CHASSIS",
+                "type": "MODULE",
                 "vendor": "DLINK",
                 "part_no": [match.group("part_no")],
             }
@@ -96,7 +97,7 @@ DGS-3627G:admin#
         match = self.rx_mod1.search(s)
         if match and match.group("part_no") != "None":
             p = {
-                "type": "CHASSIS",
+                "type": "MODULE",
                 "number": "1",
                 "vendor": "DLINK",
                 "part_no": [match.group("part_no")],
@@ -107,7 +108,7 @@ DGS-3627G:admin#
         match = self.rx_mod2.search(s)
         if match and match.group("part_no") != "None":
             p = {
-                "type": "CHASSIS",
+                "type": "MODULE",
                 "number": "2",
                 "vendor": "DLINK",
                 "part_no": [match.group("part_no")],
@@ -121,7 +122,7 @@ DGS-3627G:admin#
                 match = self.rx_mod3.search(l)
                 if match and match.group("part_no") != "-":
                     p = {
-                        "type": "CHASSIS",
+                        "type": "MODULE",
                         "number": match.group("number"),
                         "vendor": "DLINK",
                         "part_no": [match.group("part_no")],
@@ -131,6 +132,7 @@ DGS-3627G:admin#
         except self.CLISyntaxError:
             pass
         try:
+            """
             l = self.cli("show device_status\nq\n")
             match = self.rx_ip.search(l)
             if match:
@@ -192,6 +194,7 @@ DGS-3627G:admin#
                     "description": ["CPU Fan"],
                 }
                 r += [p]
+            """
         except self.CLISyntaxError:
             pass
 

@@ -3,6 +3,7 @@
     "uuid": "9ec5e114-8640-44b5-999c-b3bc19efed73",
     "vendor__code": "DLINK",
     "description": "DGS-3627G xStack L3 Managed Switch witch 24 ports 1000 SFP, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 3 module slot",
+    "connection_rule__name": "DLink | DxS",
     "connections": [
         {
             "description": "1",

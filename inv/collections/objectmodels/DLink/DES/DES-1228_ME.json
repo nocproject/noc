@@ -3,6 +3,7 @@
     "uuid": "9b0b3929-c470-424b-90f3-8d64eb224f57",
     "vendor__code": "DLINK",
     "description": "DES-1228/ME 24 ports 10/100Base-TX + 2 ports SFP + 2 combo 1000Base-T/SFP",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
     "connections": [
         {
             "description": "port 1",
