@@ -271,7 +271,10 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "DGS-3627G"
+            "part_no0": "DGS-3627G"
+        },
+        "management": {
+            "managed": true
         },
         "rackmount": {
             "units": 1.0
