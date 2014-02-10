@@ -1,0 +1,35 @@
+{
+    "name": "Network | STP | STP Port State Changed",
+    "uuid": "d714bd19-7877-4c6b-8d75-985415d43078",
+    "desciption": "STP Port state changed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "state",
+            "description": "Port State",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "vlan",
+            "description": "VLAN ID",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "STP state of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{state}}",
+            "body_template": "STP state of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{state}}",
+            "symptoms": "possible start of spanning tree rebuilding or interface oper status change",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

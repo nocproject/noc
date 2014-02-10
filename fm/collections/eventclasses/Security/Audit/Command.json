@@ -1,0 +1,29 @@
+{
+    "name": "Security | Audit | Command",
+    "uuid": "2046e3d3-d3f7-40d7-8a60-3334941cd7ee",
+    "desciption": "Command Executed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "User",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "command",
+            "description": "Command",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Command executed{% if user %} by {{user}}{% endif %}: {{command}}",
+            "body_template": "Command executed{% if user %} by {{user}}{% endif %}: {{command}}",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "Command executed by user logged by audit system",
+            "recommended_actions": "No reaction needed"
+        }
+    }
+}

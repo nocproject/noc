@@ -1,0 +1,29 @@
+{
+    "name": "Network | VLAN | VLAN Deleted",
+    "uuid": "3cb7e546-aa5a-4b47-a62c-5e0503ea4ede",
+    "desciption": "VLAN Deleted",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "vlan",
+            "description": "VLAN ID",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "name",
+            "description": "VLAN Name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "VLAN {{vlan}}{% if name %}({{name}}){% endif %} deleted",
+            "body_template": "VLAN {{vlan}}{% if name %}({{name}}){% endif %} deleted",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

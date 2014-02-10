@@ -1,0 +1,37 @@
+{
+    "name": "Network | DHCP | Untrusted Server",
+    "uuid": "7884729e-f04a-4fc2-8ed9-05ebcefa20a0",
+    "desciption": "Untrusted DHCP server detected",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "Source IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Source interface",
+            "type": "interface_name",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Detected untrusted DHCP server {{ip}}{% if interface %}, port {{interface}}{% endif %}",
+            "body_template": "Detected untrusted DHCP server {{ip}}{% if interface %}, port {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | DHCP | Untrusted Server"
+        }
+    ]
+}

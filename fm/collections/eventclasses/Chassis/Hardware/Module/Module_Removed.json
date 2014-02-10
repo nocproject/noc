@@ -1,0 +1,29 @@
+{
+    "name": "Chassis | Hardware | Module | Module Removed",
+    "uuid": "9f9381ee-28e1-41ee-a9ad-6fd33fc0f14c",
+    "desciption": "Hardware module has been removed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "module",
+            "description": "Module type",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Hardware port or slot",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Hardware module {{module}} removed{% if interface %}, interface {{interface}}{% endif %}",
+            "body_template": "Hardware module {{module}} has been removed{% if interface %}, interface {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

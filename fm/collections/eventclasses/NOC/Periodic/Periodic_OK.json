@@ -1,0 +1,31 @@
+{
+    "name": "NOC | Periodic | Periodic OK",
+    "uuid": "d0b731d7-e9f1-4fdb-9c21-32ecf5ce0137",
+    "desciption": "Periodic task has been completed successfully",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "task",
+            "description": "Task's name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Periodic OK: {{task}}",
+            "body_template": "Periodic task {{task}} has been completed successfully",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "noc-scheduler daemon successfully completed periodic task",
+            "recommended_actions": "No reaction needed"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "NOC | Periodic | Periodic Failed"
+        }
+    ]
+}

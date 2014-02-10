@@ -48,8 +48,13 @@ Ext.define("NOC.fm.eventclass.Model", {
             type: "string"
         },
         {
+            name: "uuid",
+            type: "string"
+        },
+        {
             name: "is_builtin",
-            type: "boolean"
+            type: "boolean",
+            persist: false
         },
         {
             name: "repeat_suppression",

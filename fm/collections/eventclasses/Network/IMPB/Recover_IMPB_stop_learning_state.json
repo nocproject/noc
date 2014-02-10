@@ -1,0 +1,31 @@
+{
+    "name": "Network | IMPB | Recover IMPB stop learning state",
+    "uuid": "3f84402f-4968-439b-902b-1d1b1519aa78",
+    "desciption": "Port 28 recovers from IMPB stop learning state",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Port {{interface}} recovers from IMPB stop learning state",
+            "body_template": "Port {{interface}} recovers from IMPB stop learning state",
+            "symptoms": "Restore ability for incoming connections",
+            "probable_causes": "",
+            "recommended_actions": "Check IMPB entry, check topology"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | IMPB | Unauthenticated IP-MAC"
+        }
+    ]
+}

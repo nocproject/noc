@@ -1,0 +1,43 @@
+{
+    "name": "Security | Attack | Teardrop Attack",
+    "uuid": "6d3a2f8c-9768-4447-9f9a-46e37a26b85d",
+    "desciption": "Teardrop attack detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "src_mac",
+            "description": "Source MAC",
+            "type": "mac",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Teardrop attack detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+            "body_template": "Teardrop attack detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Security | Attack | Teardrop Attack"
+        }
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "name": "Network | Link | DOM | Warning: Out of Threshold Recovered",
+    "uuid": "ed2b35df-5a77-42e9-a583-f35a655c8610",
+    "desciption": "DOM above or below threshold recovered",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Physical port",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "threshold",
+            "description": "Threshold type",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "sensor",
+            "description": "Measured name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}",
+            "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | Link | DOM | Warning: Out of Threshold"
+        }
+    ]
+}

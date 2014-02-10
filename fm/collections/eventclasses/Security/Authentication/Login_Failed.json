@@ -1,0 +1,29 @@
+{
+    "name": "Security | Authentication | Login Failed",
+    "uuid": "572419ce-4aa6-4169-8958-caedb0e22e0d",
+    "desciption": "Failed Login",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "User",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "ip",
+            "description": "User address",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Login failed:{% if user %} {{user}}{% endif %}{% if ip %} ({{ip}}){% endif %}",
+            "body_template": "Login failed!\n{% if user %}User: {{user}}{% endif %}{% if ip %}\nIP: {{ip}}{% endif %}",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "User failed to log in. Username or password mismatch",
+            "recommended_actions": "No reaction needed"
+        }
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "name": "Security | Authentication | Logout",
+    "uuid": "78ca650e-fb0a-4018-81cb-29a746be97e3",
+    "desciption": "Successful Logout",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "User",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "ip",
+            "description": "User address",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Logged out:{% if user %} {{user}}{% endif %}{% if ip %} ({{ip}}){% endif %}",
+            "body_template": "Logged out!\n{% if user %}User: {{user}}{% endif %}{% if ip %}\nIP: {{ip}}{% endif %}",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "User successfully logged out. Session terminated",
+            "recommended_actions": "No reaction needed"
+        }
+    }
+}

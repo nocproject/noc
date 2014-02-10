@@ -1,0 +1,29 @@
+{
+    "name": "Security | Authentication | Authentication Failed",
+    "uuid": "30c1362f-e94c-4c72-977d-c9b2d31d717c",
+    "desciption": "Authentication Failed",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "User",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "ip",
+            "description": "User address",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Authentication failed{% if user %} for {{user}}{% endif %}{% if ip %} ({{ip}}){% endif %}",
+            "body_template": "Login failed!\n{% if user %}User: {{user}}{% endif %}{% if ip %}\nIP: {{ip}}{% endif %}",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "",
+            "recommended_actions": "No reaction needed"
+        }
+    }
+}

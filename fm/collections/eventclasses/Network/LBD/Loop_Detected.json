@@ -1,0 +1,31 @@
+{
+    "name": "Network | LBD | Loop Detected",
+    "uuid": "15160239-5d9f-433c-911a-5a582fab50fb",
+    "desciption": "LBD Loop Detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "LBD interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "LBD Loop detected on {{interface}}",
+            "body_template": "LBD Loop detected on {{interface}}",
+            "symptoms": "Connection lost",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | LBD | Loop Detected"
+        }
+    ]
+}

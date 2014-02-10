@@ -1,0 +1,47 @@
+{
+    "name": "Network | BGP | Max Prefixes Warning",
+    "uuid": "65556dfa-77c5-4840-9306-30dd8d3d0164",
+    "desciption": "Max prefixes warning",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "peer",
+            "description": "Peer",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "vrf",
+            "description": "VRF",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "as",
+            "description": "Peer AS",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "recv",
+            "description": "Prefixes recieved",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "max",
+            "description": "Maximum prefixes",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Number of prefixes received from {{peer}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} reaches {{recv}}{% if max %}, max {{max}}{% endif %}",
+            "body_template": "Number of prefixes received from {{peer}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} reaches {{recv}}{% if max %}, max {{max}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

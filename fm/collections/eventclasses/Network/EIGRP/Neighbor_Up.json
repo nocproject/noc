@@ -1,0 +1,55 @@
+{
+    "name": "Network | EIGRP | Neighbor Up",
+    "uuid": "ae8f0855-4d07-407d-9443-c29dee762288",
+    "desciption": "EIGRP neighbor up",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "as",
+            "description": "EIGRP autonomus system",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "neighbor",
+            "description": "Neighbor's Router ID",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "Adjacency lost reason",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "to_state",
+            "description": "to state",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "EIGRP{% if as %} {{as}} {% endif %}neighbor {{neighbor}} change state -> {{to_state}}. Reason: {{reason}}",
+            "body_template": "EIGRP{% if as %} {{as}} {% endif %}\nNeighbor {{neighbor}}\nInterface: {{interface}}\nChange state -> {{to_state}}\nReason: {{reason}}",
+            "symptoms": "Routing table changes",
+            "probable_causes": "An EIGRP adjacency was established with the indicated neighboring router. The local router can now exchange information with it.",
+            "recommended_actions": "No specific actions needed"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "('to_state' not in event.vars) or (event.vars['to_state'].lower() in ['full', 'up'])",
+            "action": "clear",
+            "alarm_class__name": "Network | EIGRP | Neighbor Down"
+        }
+    ]
+}

@@ -1,0 +1,31 @@
+{
+    "name": "Chassis | Hardware | Hardware Port Warning Recover",
+    "uuid": "7f83d8ec-161c-41e1-8ab3-09f84f7470f0",
+    "desciption": "Hardware port or slot warning recovered",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Hardware port or slot",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Hardware port or slot warning recovered: {{interface}}",
+            "body_template": "Hardware port or slot warning recovered: {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Chassis | Hardware | Hardware Port Warning"
+        }
+    ]
+}

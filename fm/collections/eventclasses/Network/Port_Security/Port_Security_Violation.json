@@ -1,0 +1,37 @@
+{
+    "name": "Network | Port Security | Port Security Violation",
+    "uuid": "c0e272fd-7a5d-4f32-950d-86bfe75c53c4",
+    "desciption": "Port Security Violation",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "mac",
+            "description": "MAC Address",
+            "type": "mac",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Port Security violation on port {{interface}}{% if mac %}, MAC {{mac}} {% endif %}",
+            "body_template": "Port Security violation on port {{interface}}{% if mac %}, MAC {{mac}} {% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | Port Security | Port Security Violation"
+        }
+    ]
+}

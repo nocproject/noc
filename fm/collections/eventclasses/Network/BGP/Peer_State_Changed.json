@@ -1,0 +1,67 @@
+{
+    "name": "Network | BGP | Peer State Changed",
+    "uuid": "b4ab69c1-15d3-4dd9-a6c8-aecb25c249b0",
+    "desciption": "BGP Peer State Changed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "peer",
+            "description": "Peer",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "vrf",
+            "description": "VRF",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "as",
+            "description": "Peer AS",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "from_state",
+            "description": "Initial state",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "to_state",
+            "description": "Final state",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} state changed: {% if from_state %}{{from_state}} -> {% else %} to {% endif %}{{to_state}}",
+            "body_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} state changed: {% if from_state %}{{from_state}} -> {% else %} to {% endif %}{{to_state}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "raise",
+            "condition": "event.vars['to_state'] != 'ESTABLISHED'",
+            "action": "raise",
+            "alarm_class__name": "Network | BGP | Peer Down"
+        },
+        {
+            "name": "clear_peer_down",
+            "condition": "event.vars['to_state'] == 'ESTABLISHED'",
+            "action": "clear",
+            "alarm_class__name": "Network | BGP | Peer Down"
+        },
+        {
+            "name": "clear_maxprefix",
+            "condition": "event.vars['to_state'] == 'ESTABLISHED'",
+            "action": "clear",
+            "alarm_class__name": "Network | BGP | Prefix Limit Exceeded"
+        }
+    ]
+}

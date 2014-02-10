@@ -1,0 +1,23 @@
+{
+    "name": "Config | Entering Configuration Mode",
+    "uuid": "d7e6f005-1e8d-444f-b8b1-b7b0e6c84a8b",
+    "desciption": "Entering configuration mode",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "Username",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "{% if user %}User {{user}} entered{% else %}Entering{% endif %} configuration mode",
+            "body_template": "{% if user %}User {{user}} entered{% else %}Entering{% endif %} configuration mode",
+            "symptoms": "Behavior of the network can be changed",
+            "probable_causes": "User switched to configuration mode",
+            "recommended_actions": "No specific action needed"
+        }
+    }
+}

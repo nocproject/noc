@@ -1,0 +1,67 @@
+{
+    "name": "Vendor | Cisco | SCOS | Security | Attack | End-of-attack detected",
+    "uuid": "44947cd0-638a-4bdf-a1e8-5341249ea5eb",
+    "desciption": "End-of-attack detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "from_ip",
+            "description": "From IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "to_ip",
+            "description": "To IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "from_side",
+            "description": "From Side",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "proto",
+            "description": "Protocol",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "flows",
+            "description": "Flows",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "duration",
+            "description": "Duration",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "action",
+            "description": "Action",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "End-of-attack detected from IP {{from_ip}}, {% if to_ip %}to address {{to_ip}}, {% endif %}from {{from_side}} side, proto {{proto}}.\nAction is: {{action}}.\nDuration {{duration}}, attack comprised of {{flows}} flows.",
+            "body_template": "End-of-attack detected from IP address {{from_ip}}, {% if to_ip %}to address {{to_ip}}, {% endif %}from {{from_side}} side, proto {{proto}}.\nAction is: {{action}}.\nDuration {{duration}}, attack comprised of {{flows}} flows.",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "Clear Attack Detected",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Vendor | Cisco | SCOS | Security | Attack | Attack Detected"
+        }
+    ]
+}

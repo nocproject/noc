@@ -1,0 +1,31 @@
+{
+    "name": "Security | Authentication | RADIUS server recovered",
+    "uuid": "d39a3fb7-68d0-4e6a-bda6-4efacddf6f89",
+    "desciption": "RADIUS server recovered",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "RADIUS server address",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "RADIUS server{% if ip %} {{ip}}{% endif %} is being marked alive",
+            "body_template": "RADIUS server{% if ip %} {{ip}}{% endif %} is being marked alive",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Security | Authentication | RADIUS server failed"
+        }
+    ]
+}

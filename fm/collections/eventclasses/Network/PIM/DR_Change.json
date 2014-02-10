@@ -1,0 +1,49 @@
+{
+    "name": "Network | PIM | DR Change",
+    "uuid": "8f8892fe-cc85-4c4f-b8e9-4a0a168e6149",
+    "desciption": "Designated Router Change",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "from_dr",
+            "description": "From DR",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "to_dr",
+            "description": "To DR",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "vrf",
+            "description": "VRF",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "PIM DR change from neighbor {{from_dr}} to {{to_dr}} on interface {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}",
+            "body_template": "PIM DR change from neighbor {{from_dr}} to {{to_dr}} on interface {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}",
+            "symptoms": "Some multicast flows lost",
+            "probable_causes": "PIM protocol configuration problem or link failure",
+            "recommended_actions": "Check links and local and neighbor's router configuration"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | PIM | DR Change"
+        }
+    ]
+}

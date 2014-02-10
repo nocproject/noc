@@ -1,0 +1,31 @@
+{
+    "name": "Security | Authentication | SNMP Authentication Failure",
+    "uuid": "91094f01-18a3-4fdf-849b-26de6e751b61",
+    "desciption": "SNMP authentication failure",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "Request source address",
+            "type": "ip_address",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "SNMP Authentication Failure for {{ip}}",
+            "body_template": "SNMP request from {{ip}} has been denied by security policy",
+            "symptoms": "NOC, NMS and monitoring systems cannot interact with the box over SNMP protocol",
+            "probable_causes": "SNMP server is misconfigured, community mismatch, misconfigured ACL or brute-force attack in progress",
+            "recommended_actions": "Check SNMP configuration"
+        }
+    },
+    "disposition": [
+        {
+            "name": "misconfiguration",
+            "condition": "event.vars['ip'] in NOC_ACTIVATORS",
+            "action": "raise",
+            "alarm_class__name": "NOC | Managed Object | Configuration Errors | Misconfigured SNMP"
+        }
+    ]
+}

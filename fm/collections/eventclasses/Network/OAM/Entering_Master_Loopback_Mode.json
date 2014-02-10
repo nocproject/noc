@@ -1,0 +1,23 @@
+{
+    "name": "Network | OAM | Entering Master Loopback Mode",
+    "uuid": "3e278c87-af70-481d-a894-93786d156aaa",
+    "desciption": "Interface has entered the master loopback mode",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Interface {{interface}} has entered the master loopback mode",
+            "body_template": "Interface {{interface}} has entered the master loopback mode",
+            "symptoms": "",
+            "probable_causes": "The specified interface has entered or exited loopback mode because of protocol control or an external event, such as the interface link going down.",
+            "recommended_actions": "No action is required."
+        }
+    }
+}

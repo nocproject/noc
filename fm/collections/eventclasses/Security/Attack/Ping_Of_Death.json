@@ -1,0 +1,43 @@
+{
+    "name": "Security | Attack | Ping Of Death",
+    "uuid": "c4d6aa0c-03e2-4e44-9784-ebc597e3dbce",
+    "desciption": "Ping Of Death detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "src_ip",
+            "description": "Source IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "src_mac",
+            "description": "Source MAC",
+            "type": "mac",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Ping Of Death detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+            "body_template": "Ping Of Death detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Security | Attack | Ping Of Death"
+        }
+    ]
+}

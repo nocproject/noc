@@ -1,0 +1,35 @@
+{
+    "name": "Network | 802.11 | Disassociated",
+    "uuid": "60ad685a-f25b-4701-9019-c85138cdc35d",
+    "desciption": "Client disassociated",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Radio interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "mac",
+            "description": "Station MAC",
+            "type": "mac",
+            "required": false
+        },
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Station {{mac}} disassociated on {{interface}}: {{reason}}",
+            "body_template": "Station {{mac}} disassociated on {{interface}}: {{reason}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

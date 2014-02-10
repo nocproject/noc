@@ -1,0 +1,23 @@
+{
+    "name": "Network | IP | Route Limit Exceeded",
+    "uuid": "64654abe-bea8-47e2-822f-2d57614f5c9a",
+    "desciption": "Route Limit Exceeded",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "IP routing table limit exceeded{% if reason %} - {{reason}}{% endif %}",
+            "body_template": "IP routing table limit exceeded{% if reason %} - {{reason}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

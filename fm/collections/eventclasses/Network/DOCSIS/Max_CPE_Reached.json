@@ -1,0 +1,55 @@
+{
+    "name": "Network | DOCSIS | Max CPE Reached",
+    "uuid": "1679a32f-74cb-4567-af15-65e817df02c7",
+    "desciption": "Maximum number of CPE reached",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "CPE MAC",
+            "type": "mac",
+            "required": false
+        },
+        {
+            "name": "ip",
+            "description": "CPE IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "modem_mac",
+            "description": "Cable Modem MAC",
+            "type": "mac",
+            "required": false
+        },
+        {
+            "name": "sid",
+            "description": "Cable Modem SID",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "interface",
+            "description": "Cable interface",
+            "type": "interface_name",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "New host with{% if ip %} IP {{ip}}{% endif %}{% if mac %} MAC {{mac}}{% endif %} on modem{% if modem_mac %} MAC {{modem_mac}}{% endif %}{% if sid %} SID {{sid}}{% endif %}{% if interface %} on interface {{interface}}{% endif %} is ignored",
+            "body_template": "New host with{% if ip %} IP {{ip}}{% endif %}{% if mac %} MAC {{mac}}{% endif %} on modem{% if modem_mac %} MAC {{modem_mac}}{% endif %}{% if sid %} SID {{sid}}{% endif %}{% if interface %} on interface {{interface}}{% endif %} is ignored",
+            "symptoms": "",
+            "probable_causes": "The maximum number of devices that can be attached to the cable modem has been exceeded. Therefore, the device with the specified IP address will not be added to the modem with the specified SID.",
+            "recommended_actions": "Locate the specified device and place the device on a different cable modem with another SID."
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | DOCSIS | Max CPE Reached"
+        }
+    ]
+}

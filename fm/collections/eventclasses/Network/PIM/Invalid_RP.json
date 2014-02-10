@@ -1,0 +1,37 @@
+{
+    "name": "Network | PIM | Invalid RP",
+    "uuid": "86b92bf2-706e-4900-880d-f1c9c253b206",
+    "desciption": "Received Register or Join for invalid RP",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "pim_router",
+            "description": "PIM Router IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "invalid_rp",
+            "description": "Invalid RP IP",
+            "type": "ip_address",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Received Register or Join from PIM router {{pim_router}} for invalid RP {{invalid_rp}}.",
+            "body_template": "Received Register or Join from PIM router {{pim_router}} for invalid RP {{invalid_rp}}.",
+            "symptoms": "",
+            "probable_causes": "A PIM router received a register message from another PIM router that identifies itself as the rendezvous point. If the router is not configured for another rendezvous point, it will not accept the register message.",
+            "recommended_actions": "Configure all leaf routers (first-hop routers to multicast sources) with the IP address of the valid rendezvous point."
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | PIM | Invalid RP"
+        }
+    ]
+}

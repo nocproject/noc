@@ -1,0 +1,31 @@
+{
+    "name": "Network | MPLS | LSP Down",
+    "uuid": "4c0a6d84-f613-4141-8b24-f57c684e3699",
+    "desciption": "MPLS LSP Down",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "LSP name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MPLS LSP Down: {{name}}",
+            "body_template": "MPLS LSP Down: {{name}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | MPLS | LSP Down"
+        }
+    ]
+}

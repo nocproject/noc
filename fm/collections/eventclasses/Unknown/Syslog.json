@@ -1,0 +1,23 @@
+{
+    "name": "Unknown | Syslog",
+    "uuid": "b1810b6f-bbaf-4883-81ec-ddc208097a1a",
+    "desciption": "All rules have been failed to classify this SYSLOG message",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "syslog_message",
+            "description": "Full syslog message",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "SYSLOG: {{syslog_message}}",
+            "body_template": "noc-classifier is failed to find appropriative classification rule for following syslog message:\n{{syslog_message}}",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "No matching classification rule found",
+            "recommended_actions": "Grab this event, create appropriative classification rule and reclassify the event again"
+        }
+    }
+}

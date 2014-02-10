@@ -1,0 +1,35 @@
+{
+    "name": "System | Process Exited",
+    "uuid": "2ed4c9de-0fec-42a8-a139-1a3a220f8f2c",
+    "desciption": "Process exited",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Process name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "pid",
+            "description": "Process PID",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "status",
+            "description": "Exit status",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Process exited: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
+            "body_template": "Process exited: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

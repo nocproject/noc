@@ -1,0 +1,31 @@
+{
+    "name": "Network | Link | Link Flap Error Detected",
+    "uuid": "10747532-86a8-4ed2-8e81-fa92a571b310",
+    "desciption": "Link-flap error detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Link-flap error detected on {{interface}}",
+            "body_template": "Link-flap error detected on {{interface}}",
+            "symptoms": "Connection lost",
+            "probable_causes": "Cable damage, hardware or software error either from this or from another side",
+            "recommended_actions": "Check both sides of links and hardware"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | Link | Err-Disable"
+        }
+    ]
+}

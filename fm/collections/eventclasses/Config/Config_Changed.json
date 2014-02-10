@@ -1,0 +1,26 @@
+{
+    "name": "Config | Config Changed",
+    "uuid": "bef2ecc6-1cfd-412c-b03e-3bca6fa93ecf",
+    "desciption": "Configuration has been changed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "Username",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "handlers": [
+        "noc.fm.handlers.event.discovery.schedule_discovery"
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Configuration changed",
+            "body_template": "Device configuration has been changed{% if user %} by user {{user}}{% endif %}",
+            "symptoms": "Behavior of the network can be changed",
+            "probable_causes": "Device configuration has been changed by user or SA subsystem",
+            "recommended_actions": "No specific action needed unless the change caused unexpected consequences"
+        }
+    }
+}

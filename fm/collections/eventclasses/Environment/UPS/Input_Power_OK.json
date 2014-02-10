@@ -1,0 +1,32 @@
+{
+    "name": "Environment | UPS | Input Power OK",
+    "uuid": "9b534412-2cb2-4826-b12c-e29d4a7ed1a8",
+    "desciption": "Input power returned to normal state",
+    "action": "A",
+    "vars ": [
+
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Input power returned to normal state",
+            "body_template": "Input power returned to normal state",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Environment | UPS | Input Power Failed"
+        },
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Environment | UPS | Input Power Low"
+        }
+    ]
+}

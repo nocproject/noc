@@ -1,0 +1,29 @@
+{
+    "name": "Unknown | SNMP Trap",
+    "uuid": "fc2dc1b2-25b2-482d-9c0f-13325f0b48c4",
+    "desciption": "All rules have been failed to classify this SNMP TRAP",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "trap_oid",
+            "description": "SNMP Trap OID",
+            "type": "oid",
+            "required": true
+        },
+        {
+            "name": "trap_name",
+            "description": "SNMP Trap name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "SNMP TRAP: {{trap_oid}}{% if trap_name %}({{trap_name}}){% endif %}",
+            "body_template": "noc-classifier is failed to find appropriative classification rule for following SNMP Trap OID:\n{{trap_oid}}{% if trap_name %}({{trap_name}}){% endif %}",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "No matching classification rule found",
+            "recommended_actions": "Grab this event, create appropriative classification rule and reclassify the event again"
+        }
+    }
+}

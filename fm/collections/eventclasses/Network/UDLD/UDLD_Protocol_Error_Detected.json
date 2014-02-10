@@ -1,0 +1,31 @@
+{
+    "name": "Network | UDLD | UDLD Protocol Error Detected",
+    "uuid": "887d87fd-903d-43b7-8067-99cab2ae8a24",
+    "desciption": "UniDirectional Link Detection (UDLD) Protocol Error Detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "UDLD Protocol Error Detected on {{interface}}",
+            "body_template": "UDLD Protocol Error Detected on {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | UDLD | UDLD Protocol Error Detected"
+        }
+    ]
+}

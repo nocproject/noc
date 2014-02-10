@@ -1,0 +1,23 @@
+{
+    "name": "Config | Exiting Configuration Mode",
+    "uuid": "f053aeb1-af41-427c-b92e-8d5d2609a900",
+    "desciption": "Exitin configuration mode",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "Username",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "{% if user %}User {{user}} exited{% else %}Exiting{% endif %} configuration mode",
+            "body_template": "{% if user %}User {{user}} exited{% else %}Exiting{% endif %} configuration mode",
+            "symptoms": "Behavior of the network can be changed",
+            "probable_causes": "User switched off configuration mode",
+            "recommended_actions": "No specific action needed"
+        }
+    }
+}

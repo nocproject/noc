@@ -1,0 +1,43 @@
+{
+    "name": "Network | MAC | Invalid MAC",
+    "uuid": "66a6a42d-8511-47b5-a738-f28ff359cc6d",
+    "desciption": "Invalid MAC detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "MAC Address",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "vlan",
+            "description": "Affected vlan",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if vlan %}, vlan {{vlan}}{% endif %}",
+            "body_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if vlan %}, vlan {{vlan}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | MAC | Invalid MAC"
+        }
+    ]
+}

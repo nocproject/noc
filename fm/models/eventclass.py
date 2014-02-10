@@ -2,12 +2,13 @@
 ##----------------------------------------------------------------------
 ## EventClass model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import re
+import os
 ## Third-party modules
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
@@ -15,6 +16,7 @@ from mongoengine.document import EmbeddedDocument, Document
 from noc.lib import nosql
 from alarmclass import AlarmClass
 from noc.lib.escape import json_escape as q
+from noc.lib.text import quote_safe_path
 
 
 class EventClassVar(EmbeddedDocument):
@@ -193,10 +195,11 @@ class EventClass(Document):
     """
     meta = {
         "collection": "noc.eventclasses",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "json_collection": "fm.eventclasses"
     }
     name = fields.StringField(required=True, unique=True)
-    is_builtin = fields.BooleanField(default=False)
+    uuid = fields.UUIDField(binary=True)
     description = fields.StringField(required=False)
     # Event processing action:
     #     D - Drop
@@ -259,67 +262,72 @@ class EventClass(Document):
     def conditional_pyrule_name(self):
         return ("fm_dc_" + rulename_quote(self.name)).lower()
 
-    @property
-    def json(self):
+    def to_json(self):
         c = self
-        r = ["["]
-        r += ["    {"]
-        r += ["        \"name\": \"%s\"," % q(c.name)]
-        r += ["        \"desciption\": \"%s\"," % q(c.description)]
-        r += ["        \"action\": \"%s\"," % q(c.action)]
+        r = ["{"]
+        r += ["    \"name\": \"%s\"," % q(c.name)]
+        r += ["    \"uuid\": \"%s\"," % c.uuid]
+        if c.description:
+            r += ["    \"desciption\": \"%s\"," % q(c.description)]
+        r += ["    \"action\": \"%s\"," % q(c.action)]
         # vars
         vars = []
         for v in c.vars:
-            vd = ["            {"]
-            vd += ["                \"name\": \"%s\"," % q(v.name)]
-            vd += ["                \"description\": \"%s\"," % q(v.description)]
-            vd += ["                \"type\": \"%s\"," % q(v.type)]
-            vd += ["                \"required\": %s," % q(v.required)]
-            vd += ["            }"]
+            vd = ["        {"]
+            vd += ["            \"name\": \"%s\"," % q(v.name)]
+            vd += ["            \"description\": \"%s\"," % q(v.description)]
+            vd += ["            \"type\": \"%s\"," % q(v.type)]
+            vd += ["            \"required\": %s" % q(v.required)]
+            vd += ["        }"]
             vars += ["\n".join(vd)]
-        r += ["        \"vars \": ["]
-        r += [",\n\n".join(vars)]
-        r += ["        ],"]
+        r += ["    \"vars \": ["]
+        r += [",\n".join(vars)]
+        r += ["    ],"]
         # Handlers
-        hh = ["            \"%s\"" % h for h in self.handlers]
+        hh = ["        \"%s\"" % h for h in self.handlers]
         if self.handlers:
-            r += ["        \"handlers\": ["]
+            r += ["    \"handlers\": ["]
             r += [",\n\n".join(hh)]
-            r += ["        ],"]
+            r += ["    ],"]
         # text
-        r += ["        \"text\": {"]
+        r += ["    \"text\": {"]
         t = []
         for lang in c.text:
-            l = ["            \"%s\": {" % lang]
+            l = ["        \"%s\": {" % lang]
             ll = []
             for v in ["subject_template", "body_template", "symptoms",
                       "probable_causes", "recommended_actions"]:
                 if v in c.text[lang]:
-                    ll += ["                \"%s\": \"%s\"" % (v, q(c.text[lang][v]))]
+                    ll += ["            \"%s\": \"%s\"" % (v, q(c.text[lang][v]))]
             l += [",\n".join(ll)]
-            l += ["            }"]
+            l += ["        }"]
             t += ["\n".join(l)]
         r += [",\n\n".join(t)]
         # Disposition rules
         if c.disposition:
-            r += ["        },"]
-            r += ["        \"disposition\": ["]
+            r += ["    },"]
+            r += ["    \"disposition\": ["]
             l = []
             for d in c.disposition:
-                ll = ["            {"]
-                lll = ["                \"name\": \"%s\"" % q(d.name)]
-                lll += ["                \"condition\": \"%s\"" % q(d.condition)]
-                lll += ["                \"action\": \"%s\"" % q(d.action)]
+                ll = ["        {"]
+                lll = ["            \"name\": \"%s\"" % q(d.name)]
+                lll += ["            \"condition\": \"%s\"" % q(d.condition)]
+                lll += ["            \"action\": \"%s\"" % q(d.action)]
                 if d.alarm_class:
-                    lll += ["                \"alarm_class__name\": \"%s\"" % q(d.alarm_class.name)]
+                    lll += ["            \"alarm_class__name\": \"%s\"" % q(d.alarm_class.name)]
                 ll += [",\n".join(lll)]
-                ll += ["            }"]
+                ll += ["        }"]
                 l += ["\n".join(ll)]
             r += [",\n".join(l)]
-            r += ["        ]"]
-        r += ["    }"]
-        r += ["]"]
+            r += ["    ]"]
+        else:
+            r += ["    }"]
+        r += ["}"]
         return "\n".join(r)
+
+    def get_json_path(self):
+        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        return os.path.join(*p) + ".json"
 
 rx_rule_name_quote = re.compile("[^a-zA-Z0-9]+")
 

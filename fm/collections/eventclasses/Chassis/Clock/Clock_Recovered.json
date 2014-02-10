@@ -1,0 +1,31 @@
+{
+    "name": "Chassis | Clock | Clock Recovered",
+    "uuid": "37c6f703-22de-4ea3-a778-87892da3d3bd",
+    "desciption": "Clock module or linecard recovered",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Clock Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Clock recovered: {{name}}",
+            "body_template": "Clock recovered: {{name}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Chassis | Clock | Clock Failed"
+        }
+    ]
+}

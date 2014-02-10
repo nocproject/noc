@@ -1,47 +1,41 @@
-[
-    {
-        "name": "NOC | Unhandled Exception",
-        "description": "Unhandled Exception in NOC",
-        "action": "A",
-        "text" : {
-            "en": {
-                "subject_template": "Unhandled exception in {{component}}",
-                "body_template": "Unhandled exception in {{component}}\nFile: {{file}}, Line: {{line}}\nTraceback:\n{{traceback}}",
-                "symptoms": "Unexpected behavior of NOC",
-                "probable_causes": "Bug in NOC",
-                "recommended_actions": "Grab this event, clear valuable data and submit an issue at http://nocproject.org/"
-            }
+{
+    "name": "NOC | Unhandled Exception",
+    "uuid": "1d279004-cd09-4382-a405-acea050775be",
+    "desciption": "Unhandled Exception in NOC",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "component",
+            "description": "NOC's component",
+            "type": "str",
+            "required": true
         },
-        "vars": [
-            {
-                "name": "component",
-                "description": "NOC's component",
-                "type": "str",
-                "required": true
-            },
-            {
-                "name": "traceback",
-                "description": "Exception traceback",
-                "type": "str",
-                "required": true
-            },
-            {
-                "name": "file",
-                "description": "Failed module",
-                "type": "str",
-                "required": false
-            },
-            {
-                "name": "line",
-                "description": "Failed line",
-                "type": "int",
-                "required": false
-            }
-        ],
-        "plugins": [
-            {
-                "name": "traceback"
-            }
-        ]
+        {
+            "name": "traceback",
+            "description": "Exception traceback",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "file",
+            "description": "Failed module",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "line",
+            "description": "Failed line",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Unhandled exception in {{component}}",
+            "body_template": "Unhandled exception in {{component}}\nFile: {{file}}, Line: {{line}}\nTraceback:\n{{traceback}}",
+            "symptoms": "Unexpected behavior of NOC",
+            "probable_causes": "Bug in NOC",
+            "recommended_actions": "Grab this event, clear valuable data and submit an issue at http://nocproject.org/"
+        }
     }
-]
+}

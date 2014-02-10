@@ -1,0 +1,31 @@
+{
+    "name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters NORMAL mode",
+    "uuid": "d4f7e158-9547-4428-b729-b19a4533b279",
+    "desciption": "Safeguard Engine enters NORMAL mode",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "unit",
+            "description": "Unit number in stack",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "{% if unit %}Unit {{unit}}, {% endif %}Safeguard Engine enters NORMAL mode",
+            "body_template": "{% if unit %}Unit {{unit}}, {% endif %}Safeguard Engine enters NORMAL mode",
+            "symptoms": "Device returned to work in normal mode",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Chassis | CPU | CPU Exhausted"
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "name": "Network | LBD | Vlan Loop Detected",
+    "uuid": "654c492d-cb7f-46ce-b948-f4f8c718c36d",
+    "desciption": "LBD Vlan Loop Detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "LBD interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "vlan",
+            "description": "Vlan",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "LBD Loop detected on {{interface}} vlan {{vlan}}",
+            "body_template": "LBD Loop detected on {{interface}} vlan {{vlan}}",
+            "symptoms": "Connection lost on a specific vlan",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | LBD | Vlan Loop Detected"
+        }
+    ]
+}

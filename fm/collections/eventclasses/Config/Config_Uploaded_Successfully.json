@@ -1,0 +1,35 @@
+{
+    "name": "Config | Config Uploaded Successfully",
+    "uuid": "e338914f-afc1-4e2c-8511-877c4ba67ad9",
+    "desciption": "Config Uploaded Successfully",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "Server IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "service",
+            "description": "Service name (ftp, tftp)",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "user",
+            "description": "User name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Config upload {% if service %}to {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+            "body_template": "Config upload {% if service %}to {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

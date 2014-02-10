@@ -1,0 +1,31 @@
+{
+    "name": "Network | UDLD | UDLD Protocol Recovery",
+    "uuid": "2928373c-8de8-46f5-8eec-aebfe3e5a7e4",
+    "desciption": "UniDirectional Link Detection (UDLD) Protocol Recovery",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "UDLD Protocol Recovery on {{interface}}",
+            "body_template": "UDLD Protocol Recovery on {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | UDLD | UDLD Protocol Error Detected"
+        }
+    ]
+}

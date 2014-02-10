@@ -33,11 +33,6 @@ Ext.define("NOC.fm.eventclass.Application", {
     ],
     filters: [
         {
-            title: "By Builtin",
-            name: "is_builtin",
-            ftype: "boolean"
-        },
-        {
             title: "By Link Event",
             name: "link_event",
             ftype: "boolean"
@@ -64,9 +59,9 @@ Ext.define("NOC.fm.eventclass.Application", {
                     allowBlank: false
                 },
                 {
-                    name: "is_builtin",
-                    xtype: "checkboxfield",
-                    boxLabel: "Builtin"
+                    name: "uuid",
+                    xtype: "displayfield",
+                    fieldLabel: "UUID"
                 },
                 {
                     name: "description",

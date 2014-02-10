@@ -1,0 +1,37 @@
+{
+    "name": "Network | MSDP | Peer Up",
+    "uuid": "2175cc38-9d47-4351-8b17-3a601e59b5e9",
+    "desciption": "MSDP peer up",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "peer",
+            "description": "Peer's IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "vrf",
+            "description": "VRF",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
+            "body_template": "MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | MSDP | Peer Down"
+        }
+    ]
+}

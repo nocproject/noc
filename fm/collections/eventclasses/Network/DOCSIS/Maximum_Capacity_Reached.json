@@ -1,0 +1,49 @@
+{
+    "name": "Network | DOCSIS | Maximum Capacity Reached",
+    "uuid": "3fe3f173-f7e5-44bb-89fc-7d9bf81ea22d",
+    "desciption": "Current total reservation exceeds maximum configured reservation",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Cable interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "upstream",
+            "description": "Upstream",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "cur_bps",
+            "description": "Current bps reservation",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "res_bps",
+            "description": "Reserved bps",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Current total reservation{% if cur_bps %} {{cur_bps}} bps{% endif %} on iterface {{interface}}{% if upstream %} U {{upstream}}{% endif %} exceeds its maximum configured reservation limit{% if res_bps %} of {{res_bps}} bps{% endif %}",
+            "body_template": "Current total reservation{% if cur_bps %} {{cur_bps}} bps{% endif %} on iterface {{interface}}{% if upstream %} U {{upstream}}{% endif %} exceeds its maximum configured reservation limit{% if res_bps %} of {{res_bps}} bps{% endif %}",
+            "symptoms": "",
+            "probable_causes": "The currently reserved capacity on the upstream channel already exceeds its virtual reservation capacity, based on the configured subscription level limit. Increasing the subscription level limit on the current upstream channel will place you at risk of being unable to guarantee the individual reserved rates for modems since this upstream channel is already oversubscribed.",
+            "recommended_actions": "Load-balance the modems that are requesting the reserved upstream rate on another upstream channel."
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | DOCSIS | Maximum Capacity Reached"
+        }
+    ]
+}

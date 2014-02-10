@@ -1,0 +1,55 @@
+{
+    "name": "NOC | IPAM | VRF Group Address Collision",
+    "uuid": "913a40f4-b51a-42c5-b490-ad03f4b7edd7",
+    "desciption": "VRF Group address collision detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "address",
+            "description": "Address",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "vrf",
+            "description": "VRF",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "existing_vrf",
+            "description": "Existing VRF",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "existing_object",
+            "description": "Existing Object",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "VRF Group Address Collision detected for {{vrf}}:{{address}}",
+            "body_template": "NOC detects address collision for VRF group. {{vrf}}:{{address}} is already presents in IPAM in VRF {{existing_vrf}}{% if existing_object %} ({{existing_object}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "Equipment misconfiguration of IP address misallocation",
+            "recommended_actions": "Check address allocation and equipment configuration"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "NOC | IPAM | VRF Group Address Collision"
+        }
+    ]
+}

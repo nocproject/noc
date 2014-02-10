@@ -1,0 +1,23 @@
+{
+    "name": "Network | LLDP | Created New Neighbor",
+    "uuid": "bb1db4da-a0d0-4ec1-a6eb-391cccb0beb7",
+    "desciption": "LLDP Created New Neighbore",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "LLDP Created New Neighbor: {{interface}}",
+            "body_template": "LLDP Created New Neighbor:\n{{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

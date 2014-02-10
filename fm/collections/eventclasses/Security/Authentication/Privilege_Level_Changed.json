@@ -1,0 +1,41 @@
+{
+    "name": "Security | Authentication | Privilege Level Changed",
+    "uuid": "601bc6a1-e7a4-4652-998e-a42a214967d8",
+    "desciption": "User privilege level changed",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "User",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "ip",
+            "description": "User address",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "from_priv",
+            "description": "Old privilegies",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "to_priv",
+            "description": "Current privilegies",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "User{% if user %} {{user}}{% endif %} privilege level changed{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
+            "body_template": "User{% if user %} {{user}}{% endif %} privilege level changed{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "User privilege level changed",
+            "recommended_actions": "No reaction needed"
+        }
+    }
+}

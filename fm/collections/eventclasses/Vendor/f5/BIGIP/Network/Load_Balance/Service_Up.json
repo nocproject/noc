@@ -1,0 +1,37 @@
+{
+    "name": "Vendor | f5 | BIGIP | Network | Load Balance | Service Up",
+    "uuid": "55cbc147-3f59-4acd-addc-64ad30d8fa93",
+    "desciption": "Service Down",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "node",
+            "description": "IP or hostname",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "port",
+            "description": "Service port",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Service up: {{node}}:{{port}}",
+            "body_template": "Service up: {{node}}:{{port}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Vendor | f5 | BIGIP | Network | Load Balance | Service Down"
+        }
+    ]
+}

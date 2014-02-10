@@ -1,0 +1,31 @@
+{
+    "name": "Network | Storm Control | Multicast Storm Detected",
+    "uuid": "8387cfc5-c049-497f-b73a-3c97af83f9dc",
+    "desciption": "Multicast Storm Detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Multicast Storm Detected on port {{interface}}",
+            "body_template": "Multicast Storm Detected on port {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | Storm Control | Multicast Storm Detected"
+        }
+    ]
+}

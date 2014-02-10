@@ -1,0 +1,36 @@
+{
+    "name": "Chassis | Hardware | Hardware Port Error",
+    "uuid": "618bb86b-c606-4e00-a675-b659ca5930a5",
+    "desciption": "Hardware port or slot error occured",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Hardware port",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Hardware port error occured: {{interface}}",
+            "body_template": "Hardware port or slot error occured: {{interface}}",
+            "symptoms": "Link becomes unstable or is not responding",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "ignore",
+            "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
+            "action": "ignore"
+        },
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Hardware | Hardware Port Error"
+        }
+    ]
+}

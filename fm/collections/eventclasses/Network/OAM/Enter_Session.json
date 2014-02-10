@@ -1,0 +1,23 @@
+{
+    "name": "Network | OAM | Enter Session",
+    "uuid": "bccbe42f-9786-4ab6-9161-771de340ef8a",
+    "desciption": "Client has entered the OAM session",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "The client on interface {{interface}} has entered the OAM session",
+            "body_template": "The client on interface {{interface}} has entered the OAM session",
+            "symptoms": "",
+            "probable_causes": "Ethernet OAM client on the specified interface has detected a remote client and has entered the OAM session.",
+            "recommended_actions": "No action is required. "
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "name": "Chassis | CPU | CPU Usage Above Threshold",
+    "uuid": "40dd3c2c-12f5-49c7-b978-ee5ca769d5da",
+    "desciption": "CPU Usage Above Threshold",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "cpu",
+            "description": "CPU Name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "{% if cpu %}{{cpu}} {% endif %} CPU Usage is above threshold",
+            "body_template": "{% if cpu %}{{cpu}} {% endif %} CPU Usage is above threshold",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

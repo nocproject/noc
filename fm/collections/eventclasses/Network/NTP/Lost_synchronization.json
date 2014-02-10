@@ -1,0 +1,29 @@
+{
+    "name": "Network | NTP | Lost synchronization",
+    "uuid": "67353603-b8d2-4887-bf80-19496713747d",
+    "desciption": "NTP synchronization with its peer has been lost",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "server_name",
+            "description": "NTP server name",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "server_address",
+            "description": "NTP server IP address",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "NTP Synchronization has been lost",
+            "body_template": "NTP Synchronization has been lost",
+            "symptoms": "",
+            "probable_causes": "NTP synchronization with its peer has been lost",
+            "recommended_actions": "Perform the following actions:\n   Check the network connection to the peer.\n   Check to ensure that NTP is running on the peer.\n   Check that the peer is synchronized to a stable time source.\n   Check to see if the NTP packets from the peer have passed the validity tests specified in RFC1305."
+        }
+    }
+}

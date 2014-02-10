@@ -1,0 +1,29 @@
+{
+    "name": "Network | OAM | Client Recieved Remote Failure",
+    "uuid": "bc075da2-7292-4335-976c-61594c45bc85",
+    "desciption": "Client has received a remote failure indication from its remote peer",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "Failure reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "The client on interface {{interface}} has received a remote failure indication from its remote peer",
+            "body_template": "The client on interface {{interface}} has received a remote failure indication from its remote peer{% if reason %}\nFailure reason: {{reason}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "The remote client indicates a Link Fault, or a Dying Gasp (an unrecoverable local failure), or a Critical Event in the OAMPDU. In the event of Link Fault, the Fnetwork administrator may consider shutting down the link.",
+            "recommended_actions": "In the event of a link fault, consider shutting down the link."
+        }
+    }
+}

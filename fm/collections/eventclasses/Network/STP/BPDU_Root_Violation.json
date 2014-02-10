@@ -1,0 +1,31 @@
+{
+    "name": "Network | STP | BPDU Root Violation",
+    "uuid": "414ef94c-78a3-4b74-98bf-b64449925036",
+    "desciption": "BPDU Root Violation",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "BPDU Root Violation on {{interface}}",
+            "body_template": "BPDU Root Violation on {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | STP | Root Guard Violation"
+        }
+    ]
+}

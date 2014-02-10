@@ -1,0 +1,35 @@
+{
+    "name": "Network | MAC | MAC Aged",
+    "uuid": "82203fbf-480b-421a-baa0-fe8070b9ce41",
+    "desciption": "MAC address aged",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "MAC Address",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "vlan",
+            "description": "VLAN",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MAC aged: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+            "body_template": "MAC aged: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

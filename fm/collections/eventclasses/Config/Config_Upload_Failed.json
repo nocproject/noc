@@ -1,0 +1,43 @@
+{
+    "name": "Config | Config Upload Failed",
+    "uuid": "44a8e9b7-dc88-4072-aa9b-2a7d20d63137",
+    "desciption": "Config Upload Failed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "ip",
+            "description": "Server IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "service",
+            "description": "Service name (ftp, tftp)",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "user",
+            "description": "User name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+            "body_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Config | Config Upload Failed"
+        }
+    ]
+}

@@ -1,47 +1,41 @@
-[
-    {
-        "name": "Network | IP | Port Exhaustion",
-        "description": "Port Exchaustion",
-        "action": "L",
-        "text" : {
-            "en": {
-                "subject_template": "Port Exhaustion{% if src_ip %} on {{src_ip}}{% endif %}{% if dst_ip %} while connecting to {{dst_ip}}:{{dst_port}}{% endif %}",
-                "body_template": "Unable to connect {% if src_ip %} from {{src_ip}}{% endif %}{% if dst_ip %} to {{dst_ip}}:{{dst_port}}{% endif %} due to port exchaution",
-                "symptoms": "Failed to establish outgoung connection",
-                "probable_causes": "No free TCP/UDP ports for outgoung connection",
-                "recommended_actions": "Check applications and aging intervals"
-            }
+{
+    "name": "Network | IP | Port Exhaustion",
+    "uuid": "c10a55e0-29ed-44ae-89b1-0d6019a23bd7",
+    "desciption": "Port Exchaustion",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "src_ip",
+            "description": "Source address",
+            "type": "ip_address",
+            "required": false
         },
-        "vars": [
-            {
-                "name": "src_ip",
-                "description": "Source address",
-                "type": "ip_address",
-                "required": false
-            },
-            
-            {
-                "name": "dst_ip",
-                "description": "Destination address",
-                "type": "ip_address",
-                "required": false
-            },
-
-            {
-                "name": "dst_port",
-                "description": "Destination port",
-                "type": "int",
-                "required": false
-            },
-            
-            {
-                "name": "proto",
-                "description": "Protocol",
-                "type": "int",
-                "required": false
-            }
-
-        ],
-        "disposition": []
+        {
+            "name": "dst_ip",
+            "description": "Destination address",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "dst_port",
+            "description": "Destination port",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "proto",
+            "description": "Protocol",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Port Exhaustion{% if src_ip %} on {{src_ip}}{% endif %}{% if dst_ip %} while connecting to {{dst_ip}}:{{dst_port}}{% endif %}",
+            "body_template": "Unable to connect {% if src_ip %} from {{src_ip}}{% endif %}{% if dst_ip %} to {{dst_ip}}:{{dst_port}}{% endif %} due to port exchaution",
+            "symptoms": "Failed to establish outgoung connection",
+            "probable_causes": "No free TCP/UDP ports for outgoung connection",
+            "recommended_actions": "Check applications and aging intervals"
+        }
     }
-]
+}

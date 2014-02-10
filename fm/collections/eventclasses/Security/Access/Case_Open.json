@@ -1,0 +1,31 @@
+{
+    "name": "Security | Access | Case Open",
+    "uuid": "e1f7d295-8b53-4643-81cd-1f1380029db1",
+    "desciption": "Case or cover is open",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Case {{name}} is open",
+            "body_template": "Case {{name}} is open",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Security | Access | Case Open"
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "name": "System | Process Started",
+    "uuid": "33fe3b20-a71d-4265-9c19-2d98bbf17b43",
+    "desciption": "Process started",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Process name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "pid",
+            "description": "Process PID",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Process started: {{name}}{% if pid %}[{{pid}}]{% endif %}",
+            "body_template": "Process started: {{name}}{% if pid %}[{{pid}}]{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

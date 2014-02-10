@@ -1,0 +1,43 @@
+{
+    "name": "Chassis | Hardware | Module | Module Error",
+    "uuid": "8cc009d5-3d92-4f5f-a12e-678a1a4a29d9",
+    "desciption": "Hardware module error",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "module",
+            "description": "Module type",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Hardware port or slot",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Hardware module {{module}} error{% if interface %}, interface {{interface}}{% endif %}",
+            "body_template": "Hardware module {{module}} error{% if interface %}, interface {{interface}}{% endif %}{% if reason %}\nReason: {{reason}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Hardware | Module | Module Error"
+        }
+    ]
+}

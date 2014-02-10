@@ -1,0 +1,35 @@
+{
+    "name": "Network | MAC | MAC Moved",
+    "uuid": "69b2b776-1f65-4289-9b42-6e975679ba23",
+    "desciption": "MAC address moved",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "MAC Address",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "vlan",
+            "description": "VLAN",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+            "body_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

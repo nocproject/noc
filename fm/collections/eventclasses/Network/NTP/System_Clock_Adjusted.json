@@ -1,0 +1,35 @@
+{
+    "name": "Network | NTP | System Clock Adjusted",
+    "uuid": "1d7e89f7-b77f-470e-b8d4-250ead2848b9",
+    "desciption": "System clock was adjusted",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "adjustment_ms",
+            "description": "Time adjustment in msec",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "server_name",
+            "description": "NTP server name",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "server_address",
+            "description": "NTP server IP address",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "System clock adjusted {% if adjustment_ms %}{{adjustment_ms}}ms{% endif %} from NTP server{% if server_name %} {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
+            "body_template": "System clock adjusted {% if adjustment_ms %}{{adjustment_ms}}ms{% endif %} from NTP server{% if server_name %} {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

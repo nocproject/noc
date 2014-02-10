@@ -1,0 +1,31 @@
+{
+    "name": "Chassis | RAM | Insufficient Memory",
+    "uuid": "8860b0f1-4ffd-4602-b109-8454c6867a26",
+    "desciption": "Insufficient Memory",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
+            "body_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | RAM | Insufficient Memory"
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "name": "Network | OAM | Exiting Slave Loopback Mode",
+    "uuid": "1fb7d5d2-f9e4-48a4-8f38-3d70ca863dd7",
+    "desciption": "Interface has exited the slave loopback mode",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Interface {{interface}} has exited the slave loopback mode",
+            "body_template": "Interface {{interface}} has exited the slave loopback mode",
+            "symptoms": "",
+            "probable_causes": "The specified interface has entered or exited loopback mode because of protocol control or an external event, such as the interface link going down.",
+            "recommended_actions": "No action is required."
+        }
+    }
+}

@@ -1,0 +1,37 @@
+{
+    "name": "Chassis | Supervisor | Supervisor Down",
+    "uuid": "3a8fb640-c871-4eae-8247-9abf230b28d0",
+    "desciption": "Supervisor Down",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Supervisor name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
+            "body_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Supervisor | Supervisor Down"
+        }
+    ]
+}

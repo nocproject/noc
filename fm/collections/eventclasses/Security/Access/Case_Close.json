@@ -1,0 +1,31 @@
+{
+    "name": "Security | Access | Case Close",
+    "uuid": "12adb4ea-83b3-4233-91ff-1695c0bc6390",
+    "desciption": "Case or cover is closed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "name",
+            "description": "Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Case {{name}} is closed",
+            "body_template": "Case {{name}} is closed",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Security | Access | Case Open"
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "name": "Network | 802.11 | Roamed",
+    "uuid": "40e20900-b25e-48df-8ca4-e80a58fc84c3",
+    "desciption": "Client roamed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "Station MAC",
+            "type": "mac",
+            "required": false
+        },
+        {
+            "name": "station",
+            "description": "Receiving station's MAC",
+            "type": "mac",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Station {{mac}} roamed to {{station}}",
+            "body_template": "Station {{mac}} roamed to {{station}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}

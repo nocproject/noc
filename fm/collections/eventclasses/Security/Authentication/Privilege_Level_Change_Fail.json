@@ -1,0 +1,41 @@
+{
+    "name": "Security | Authentication | Privilege Level Change Fail",
+    "uuid": "5d099c4d-42bc-47ab-b91a-dac20cc25bfd",
+    "desciption": "Failed to change user privilege level",
+    "action": "L",
+    "vars ": [
+        {
+            "name": "user",
+            "description": "User",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "ip",
+            "description": "User address",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "from_priv",
+            "description": "Old privilegies",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "to_priv",
+            "description": "Current privilegies",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "User{% if user %} {{user}}{% endif %} fail to change privilege level{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
+            "body_template": "User{% if user %} {{user}}{% endif %} fail to change privilege level{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "User privilege level changed",
+            "recommended_actions": "No reaction needed"
+        }
+    }
+}

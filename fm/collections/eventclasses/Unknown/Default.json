@@ -1,0 +1,18 @@
+{
+    "name": "Unknown | Default",
+    "uuid": "8406c855-6af0-405c-b2f9-4ce56c623984",
+    "desciption": "All rules have been failed to classify event",
+    "action": "L",
+    "vars ": [
+
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Failed to classify event",
+            "body_template": "noc-classifier is failed to find appropriative classification rule",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "No matching classification rule found",
+            "recommended_actions": "Grab this event, create appropriative classification rule and reclassify the event again"
+        }
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "Network | MAC | MAC Flood",
+    "uuid": "97f7cbff-e6e6-4e12-86ad-c6caaf46fc1c",
+    "desciption": "Flooding MAC Detected",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "mac",
+            "description": "MAC Address",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "vlan",
+            "description": "VLAN",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "The flooding MAC is detected on vlan {{vlan}}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
+            "body_template": "The flooding MAC is detected on vlan {{vlan}}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | MAC | MAC Flood"
+        }
+    ]
+}

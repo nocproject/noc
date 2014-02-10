@@ -1,0 +1,31 @@
+{
+    "name": "NOC | Periodic | Periodic Failed",
+    "uuid": "919bf2f9-bc5e-43a1-8df8-f462ab4ea025",
+    "desciption": "Periodic task has been failed",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "task",
+            "description": "Task's name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Periodic Failed: {{task}}",
+            "body_template": "Periodic task {{task}} has been failed",
+            "symptoms": "No specific symptoms",
+            "probable_causes": "Failure occured when noc-scheduler tried to execute periodic task",
+            "recommended_actions": "Check noc-scheduler, noc-sae and noc-activator logs"
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "NOC | Periodic | Periodic Failed"
+        }
+    ]
+}

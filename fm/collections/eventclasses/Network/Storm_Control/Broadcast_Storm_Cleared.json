@@ -1,0 +1,31 @@
+{
+    "name": "Network | Storm Control | Broadcast Storm Cleared",
+    "uuid": "704b51e6-54e0-4c95-b997-f7f3916101e3",
+    "desciption": "Broadcast Storm Cleared",
+    "action": "A",
+    "vars ": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Broadcast Storm Cleared on port {{interface}}",
+            "body_template": "Broadcast Storm Cleared on port {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | Storm Control | Broadcast Storm Detected"
+        }
+    ]
+}
