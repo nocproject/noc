@@ -233,21 +233,21 @@
             "description": "25",
             "direction": "i",
             "gender": "f",
-            "name": "Te25",
+            "name": "module1",
             "type__name": "DLink | DGS34-36 | Module"
         },
         {
             "description": "26",
             "direction": "i",
             "gender": "f",
-            "name": "Te26",
+            "name": "module2",
             "type__name": "DLink | DGS34-36 | Module"
         },
         {
             "description": "27",
             "direction": "i",
             "gender": "f",
-            "name": "Te27",
+            "name": "module3",
             "type__name": "DLink | DGS34-36 | Module"
         },
         {
