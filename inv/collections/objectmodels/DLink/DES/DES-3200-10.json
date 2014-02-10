@@ -109,7 +109,7 @@
             "direction": "i",
             "gender": "f",
             "group": "1",
-            "name": "9",
+            "name": "sfp9",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -118,7 +118,7 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "10",
+            "name": "sfp10",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         }

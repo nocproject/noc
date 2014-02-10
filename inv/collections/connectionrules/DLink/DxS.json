@@ -133,7 +133,7 @@
             "match_connection": "in",
             "match_type": "XCVR",
             "scope": "chassis",
-            "target_connection": "{N}_sfp",
+            "target_connection": "sfp{N}",
             "target_number": "",
             "target_type": "CHASSIS"
         },
@@ -141,7 +141,7 @@
             "match_connection": "in",
             "match_type": "XCVR",
             "scope": "chassis",
-            "target_connection": "{N}_sfp+",
+            "target_connection": "sfp+{N}",
             "target_number": "",
             "target_type": "CHASSIS"
         },

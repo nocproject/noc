@@ -262,7 +262,7 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "25",
+            "name": "sfp25",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -271,7 +271,7 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "26",
+            "name": "sfp26",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -280,7 +280,7 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "27",
+            "name": "sfp27",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -289,7 +289,7 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "28",
+            "name": "sfp28",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
