@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Chassis | Supervisor | Supervisor Up (SYSLOG)",
+    "uuid": "3d85f6f8-4665-4c51-ab65-28c611c45ffe",
+    "description": "%C4K_REDUNDANCY-6-DUPLEX_MODE: The peer Supervisor has beendetected",
+    "event_class__name": "Chassis | Supervisor | Supervisor Up",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "Supervisor"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:C4K_)?REDUNDANCY-6-DUPLEX_MODE: The peer Supervisor has beendetected-6-DUPLEX_MODE: The peer Supervisor has been\\s*detected"
+        }
+    ]
+}

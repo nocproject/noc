@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Environment | Temperature Out of Range (SYSLOG)",
+    "uuid": "98474b3b-54df-4aef-8c13-349f7fd857c7",
+    "description": "WARN: Temperatrue Sensor:2 enter alarm state.(current temperatrue:0)",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\))( Unit \\d+)? (?P<name>Temperat(?:ur|ru)e Sensor:\\s*\\d+) enter alarm state.\\s*\\(current temperat(?:ur|ru)e:\\s*(?P<measure>\\d+)\\)"
+        }
+    ]
+}

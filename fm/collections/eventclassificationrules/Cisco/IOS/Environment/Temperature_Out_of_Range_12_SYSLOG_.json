@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Out of Range #12 (SYSLOG)",
+    "uuid": "a136e2cc-588e-424c-9b7e-db4cbf905984",
+    "description": "%ENVIRONMENTAL-1-ALERT: Temp: Left Ext, Location: F0, State: Minor, Reading: 57 Celsius",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "ENVIRONMENTAL-\\d+-ALERT.+[Tt]emp: (?P<name>.+), [Ll]ocation.+State.+Reading: (?P<measure>\\S+) Celsius"
+        }
+    ]
+}

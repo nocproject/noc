@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Out of Range #4 (SYSLOG)",
+    "uuid": "9a117e9f-7d46-4c5d-a9d4-9f97dcc84172",
+    "description": "%SYS-0-MOD_THERMALSHUTDOWN: Module 2 'shutdown' temperature threshold exceeded on CPU 1",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-0-MOD_THERMAL(?:SHUTDOWN|WARNING):\\s*(?P<name>Module \\S+) '(?P<threshold>shutdown|warning)' temperature threshold exceeded on CPU \\d+"
+        }
+    ]
+}

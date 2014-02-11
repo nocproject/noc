@@ -1,0 +1,21 @@
+{
+    "name": "HP | ProCurve | Security | Authentication | RADIUS server failed (SYSLOG)",
+    "uuid": "12f4d775-0a00-46f2-9b5e-5f75d14708b3",
+    "description": "radius: Can't reach RADIUS server 192.168.34.10",
+    "event_class__name": "Security | Authentication | RADIUS server failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.ProCurve$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "radius: Can't reach RADIUS server (?P<ip>\\S+)"
+        }
+    ]
+}

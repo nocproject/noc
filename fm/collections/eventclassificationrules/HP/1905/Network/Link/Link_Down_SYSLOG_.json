@@ -1,0 +1,21 @@
+{
+    "name": "HP | 1905 | Network | Link | Link Down (SYSLOG)",
+    "uuid": "33e02c9e-775e-40f1-9e63-058c444e1411",
+    "description": "Dec 25 18:03:21 2012 Office [PHY]/5/PORT LINK STATUS CHANGE: Ethernet0/11 turns into DOWN state",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1905$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "\\[PHY\\]/5/PORT LINK STATUS CHANGE: (?P<interface>\\S+) turns into DOWN state$"
+        }
+    ]
+}

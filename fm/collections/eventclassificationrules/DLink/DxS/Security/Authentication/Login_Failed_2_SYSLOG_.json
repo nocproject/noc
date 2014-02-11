@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Login Failed #2 (SYSLOG)",
+    "uuid": "2d93de64-af80-40f5-b0b7-adc5c418e025",
+    "description": "INFO: Login failed through Console (Username: Anonymous)",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)|WARN:|WARN\\(4\\)) Login failed through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)$"
+        }
+    ]
+}

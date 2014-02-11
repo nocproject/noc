@@ -1,0 +1,33 @@
+{
+    "name": "Cisco | IOS | Network | STP | STP Vlan Loop Cleared (SNMP)",
+    "uuid": "ca672a39-d718-4a2e-9c65-39fac4b4429c",
+    "description": "CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix",
+    "event_class__name": "Network | STP | STP Vlan Loop Cleared",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix$"
+        },
+        {
+            "key_re": "^CISCO-SYSLOG-MIB::clogHistFacility\\.\\d+$",
+            "value_re": "^SPANTREE-SP$"
+        },
+        {
+            "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgName\\.\\d+$",
+            "value_re": "^LOOPGUARD_(?:UN)?BLOCK$"
+        },
+        {
+            "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgText\\.\\d+$",
+            "value_re": "^Loop guard unblocking port (?P<interface>\\S+) on VLAN(?P<vlan>\\d+)\\.$"
+        }
+    ]
+}

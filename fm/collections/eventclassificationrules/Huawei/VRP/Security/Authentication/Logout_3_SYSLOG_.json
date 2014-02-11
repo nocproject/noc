@@ -1,0 +1,17 @@
+{
+    "name": "Huawei | VRP | Security | Authentication | Logout #3 (SYSLOG)",
+    "uuid": "4c204dd8-25e8-42cd-9fc7-b024c55a0c35",
+    "description": "Aug  2 2012 06:32:06 od-agg-1-arnautskaya15 %%01SHELL/5/TIMEOUT(l)[670]:VTY login from 10.48.63.2 is time out.",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "SHELL/\\d/TIMEOUT.+VTY login from (?P<ip>\\S+) is time out"
+        }
+    ]
+}

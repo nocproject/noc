@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Login #1 (SYSLOG)",
+    "uuid": "879df97a-e6ac-4d29-b979-7e7ca364cb34",
+    "description": "INFO: Successful login through Telnet (Username: noc, IP: 172.16.7.56)",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Successful login through (?:Web|Telnet|SSH) \\(Username: (?P<user>.+?),\\s*IP: (?P<ip>\\S+)(?:,\\s*MAC: \\S+)?\\)$"
+        }
+    ]
+}

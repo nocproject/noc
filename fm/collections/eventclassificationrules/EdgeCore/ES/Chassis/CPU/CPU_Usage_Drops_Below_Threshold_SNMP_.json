@@ -1,0 +1,21 @@
+{
+    "name": "EdgeCore | ES | Chassis | CPU | CPU Usage Drops Below Threshold (SNMP)",
+    "uuid": "63c11eaf-6a21-4ba3-8c88-a90420856650",
+    "description": "ES3528MO-MIB::swCpuUtiFallingNotification",
+    "event_class__name": "Chassis | CPU | CPU Usage Drops Below Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^ES3528MO-MIB::swCpuUtiFallingNotification$"
+        }
+    ]
+}

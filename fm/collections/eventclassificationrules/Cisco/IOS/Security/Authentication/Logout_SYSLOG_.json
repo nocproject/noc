@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | Authentication | Logout (SYSLOG)",
+    "uuid": "1c4c0a70-254c-4bc2-a34e-943f98998173",
+    "description": "%SYS-6-EXIT_CONFIG: User has exited tty ",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-6-EXIT_CONFIG: User (?P<user>.+?) has exited tty session \\d+\\s*\\((?P<ip>\\S+)\\)$"
+        }
+    ]
+}

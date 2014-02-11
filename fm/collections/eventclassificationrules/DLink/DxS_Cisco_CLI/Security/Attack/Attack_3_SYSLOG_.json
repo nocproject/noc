@@ -1,0 +1,27 @@
+{
+    "name": "DLink | DxS_Cisco_CLI | Security | Attack | Attack #3 (SYSLOG)",
+    "uuid": "e183b725-5c8f-4943-adc0-ecc7c05cda45",
+    "description": "%NFPP_ARP_GUARD-4-DOS_DETECTED: Host<IP=N/A,MAC=0024.54bf.6f67,port=Gi0/4,VLAN=74> was detected.",
+    "event_class__name": "Security | Attack | Attack",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "ARP DoS"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS_Cisco_CLI$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%NFPP_ARP_GUARD-4-DOS_DETECTED: Host<IP=N/A,MAC=(?P<src_mac>\\S+),port=(?P<interface>\\S+),VLAN=(?P<vlan>\\d+)> was detected."
+        }
+    ]
+}

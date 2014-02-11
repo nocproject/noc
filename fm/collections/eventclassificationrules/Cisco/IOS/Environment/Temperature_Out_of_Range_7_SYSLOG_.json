@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Out of Range #7 (SYSLOG)",
+    "uuid": "347dde04-e438-4b56-a2ed-dc5ed126ee23",
+    "description": "%SYS-0-TEMP_CRITFAIL: Temp critical failure",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "redundant supervisor engine"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-0-TEMP_CRITFAIL: Temp (?P<threshold>critical) failure"
+        }
+    ]
+}

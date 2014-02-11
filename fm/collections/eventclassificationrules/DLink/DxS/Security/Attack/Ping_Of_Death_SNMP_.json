@@ -1,0 +1,33 @@
+{
+    "name": "DLink | DxS | Security | Attack | Ping Of Death (SNMP)",
+    "uuid": "79033983-f274-4fa5-8243-570624115861",
+    "description": "DOS-PREV-MIB::swDoSAttackDetected",
+    "event_class__name": "Security | Attack | Ping Of Death",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^DOS-PREV-MIB::swDoS(?:AttackDetected|Notify)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
+            "value_re": "^(?P<src_ip__bin_to_ip>.+)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSNotifyVarPortNumber\\.0$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSCtrlType\\.16$",
+            "value_re": "^ping-death-attack$"
+        }
+    ]
+}

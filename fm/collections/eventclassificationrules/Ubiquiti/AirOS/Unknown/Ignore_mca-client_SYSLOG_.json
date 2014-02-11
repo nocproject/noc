@@ -1,0 +1,21 @@
+{
+    "name": "Ubiquiti | AirOS | Unknown | Ignore mca-client (SYSLOG)",
+    "uuid": "655b81f9-b364-4c40-b8cb-1753c4b7bda5",
+    "description": "Jan 12 03:07:00 syslog: mca-client.service(): Sending request to '/tmp/.mcad'",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Ubiquiti\\.AirOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* syslog: mca-client\\..*"
+        }
+    ]
+}

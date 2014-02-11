@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Recovered #3 (SYSLOG)",
+    "uuid": "18f98511-b6b7-4bfb-8b68-b83fd7557b83",
+    "description": "%SYS-2-FAN_FAIL: Fan failed",
+    "event_class__name": "Chassis | Fan | Fan Recovered",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "Chassis Fan"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "SYS-2-FAN_OK: Fan okay"
+        }
+    ]
+}

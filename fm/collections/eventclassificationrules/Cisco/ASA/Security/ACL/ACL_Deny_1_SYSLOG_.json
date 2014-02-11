@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Security | ACL | ACL Deny #1 (SYSLOG)",
+    "uuid": "5ff8a0f1-7ede-4c1c-a654-a79f6826d3ea",
+    "description": "Aug 08 2011 20:22:33: %PIX-4-106023: Deny tcp src outside:10.12.101.85/50791 dst inside:10.12.121.152/18367 by access-group \"outside_access_in\" [0x0, 0x0]",
+    "event_class__name": "Security | ACL | ACL Deny",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:ASA|PIX)-4-106023: Deny (?P<proto>\\S+) src (?P<interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) dst (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) by access-group \"(?P<name>\\S+)\""
+        }
+    ]
+}

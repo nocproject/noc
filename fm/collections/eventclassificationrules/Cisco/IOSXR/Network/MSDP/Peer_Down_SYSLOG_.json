@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | MSDP | Peer Down (SYSLOG)",
+    "uuid": "6b7d690d-f0f6-46de-968b-9b4689a167c2",
+    "description": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer down:  1.1.1.1 : User clearing peer",
+    "event_class__name": "Network | MSDP | Peer Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "^Cisco.IOSXR$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer down:\\s+(?P<peer>\\S+) : (?P<reason>.+)"
+        }
+    ]
+}

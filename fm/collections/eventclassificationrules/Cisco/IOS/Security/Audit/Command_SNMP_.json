@@ -1,0 +1,35 @@
+{
+    "name": "Cisco | IOS | Security | Audit | Command (SNMP)",
+    "uuid": "e13adb65-077d-4308-9622-88702fc6011a",
+    "description": "SNMPv2-MIB::snmpTraps",
+    "event_class__name": "Security | Audit | Command",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "command"
+            "value": "='interface %s shutdown' % iface"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^SNMPv2-MIB::snmpTraps$"
+        },
+        {
+            "key_re": "^OLD-CISCO-INTERFACES-MIB::locIfReason\\.\\d+$",
+            "value_re": "^administratively down$"
+        },
+        {
+            "key_re": "^IF-MIB::ifDescr\\.\\d+$",
+            "value_re": "^(?P<iface>\\S+)$"
+        }
+    ]
+}

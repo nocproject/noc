@@ -1,0 +1,21 @@
+{
+    "name": "Vyatta | Vyatta | System | Reboot (SYSLOG)",
+    "uuid": "80addaad-39d4-4a10-a1d2-e5de141e405b",
+    "description": "Aug 11 20:00:06 vyatta shutdown[4848]: shutting down for system reboot",
+    "event_class__name": "System | Reboot",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Vyatta\\.Vyatta$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "shutdown\\[\\d+\\]: shutting down for system reboot$"
+        }
+    ]
+}

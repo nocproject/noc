@@ -1,0 +1,27 @@
+{
+    "name": "Zyxel | ZyNOS | Chassis | Fan | Fan Recovered (SYSLOG)",
+    "uuid": "119c4ac7-ed88-42be-bc25-4163be4fb55d",
+    "description": "Aug  5 10: 9:12 sw1 system: The RPM of the fan has recovered to normal state",
+    "event_class__name": "Chassis | Fan | Fan Recovered",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "FAN1"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "The RPM of the fan has recovered to normal state$"
+        }
+    ]
+}

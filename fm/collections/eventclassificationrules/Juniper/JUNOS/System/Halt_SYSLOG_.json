@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | System | Halt (SYSLOG)",
+    "uuid": "bd9f1d99-4dc3-44cb-bc86-bdb7ef995ec8",
+    "description": "Jul 22 14:49:39 shutdown: halt by noc:",
+    "event_class__name": "System | Halt",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "shutdown: halt by (?P<user>.+?):$"
+        }
+    ]
+}

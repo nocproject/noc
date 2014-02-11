@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #10 (SYSLOG)",
+    "uuid": "40d31679-17bc-44d7-ac19-91ee57cb9014",
+    "description": "%IOSXE_PEM-6-PEMOK: The PEM in slot 1 is functioning properly",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IOSXE_PEM-6-PEMOK: The (?P<name>PEM in slot \\d+) is functioning properly"
+        }
+    ]
+}

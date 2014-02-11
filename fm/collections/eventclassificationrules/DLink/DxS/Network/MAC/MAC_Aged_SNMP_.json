@@ -1,0 +1,31 @@
+{
+    "name": "DLink | DxS | Network | MAC | MAC Aged (SNMP)",
+    "uuid": "a0070971-27d8-45e9-a4d3-3b2bf2ace58e",
+    "description": "DES3028-L2MGMT-MIB::swL2FloodMacDetectedTrap",
+    "event_class__name": "Network | MAC | MAC Aged",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "interface"
+            "value": "=str(ord(iface[1]))"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2(?:macNotification|NotifyPrefix)$"
+        },
+        {
+            "key_re": "^D[EG]S-?\\d{4}.+-MIB::sw(?:l2NotificationBin?dings|L2macNotifyInfo)$",
+            "value_re": "^\\x02(?P<mac__bin_to_mac>.{6}).{2}(?P<iface>.{2})"
+        }
+    ]
+}

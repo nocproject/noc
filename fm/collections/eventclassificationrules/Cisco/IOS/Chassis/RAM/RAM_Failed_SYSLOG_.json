@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Chassis | RAM | RAM Failed (SYSLOG)",
+    "uuid": "b9453dcb-bbdf-4b65-b540-61c0d5b7dcab",
+    "description": "%MISTRAL-SP-3-ERROR: Error condition detected: TM_NPP_PARITY_ERROR",
+    "event_class__name": "Chassis | RAM | RAM Failed",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "bank"
+            "value": "Mistral ASIC"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%MISTRAL-SP-3-ERROR:"
+        }
+    ]
+}

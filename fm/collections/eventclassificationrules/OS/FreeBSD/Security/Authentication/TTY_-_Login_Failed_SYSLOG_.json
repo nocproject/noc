@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | Authentication | TTY - Login Failed (SYSLOG)",
+    "uuid": "4fd00f8d-a5ff-4b07-be71-cd63fb6abcf8",
+    "description": "login: 2 LOGIN FAILURES ON ttyv3, mitya",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "login: 2 LOGIN FAILURES ON tty\\S+, (?P<user>.+?)$"
+        }
+    ]
+}

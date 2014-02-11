@@ -1,0 +1,27 @@
+{
+    "name": "EdgeCore | ES | Network | Link | Link Up (SYSLOG)",
+    "uuid": "41bd6ba0-a71f-463b-8cf9-a9146329f64e",
+    "description": "Unit 1, Port  1 link-up 100M FD notification.",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "interface"
+            "value": "='Eth %s/%s' % (unit, port)"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Unit (?P<unit>\\S+), Port\\s+(?P<port>\\d+) link-up\\s*(?P<speed>10M|100M|1G)\\s*(?P<duplex>FD|HD)? notification\\.$"
+        }
+    ]
+}

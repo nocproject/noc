@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Failed #1 (SYSLOG)",
+    "uuid": "3d4e67e8-fc9d-4033-a593-63ffc689e3e3",
+    "description": "%PLATFORM_ENV-1-DUAL_PWR: Faulty internal power supply A detected",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PLATFORM_ENV-1-(?:DUAL_)?PWR: Faulty (?P<name>\\S+ power supply.*) detected$"
+        }
+    ]
+}

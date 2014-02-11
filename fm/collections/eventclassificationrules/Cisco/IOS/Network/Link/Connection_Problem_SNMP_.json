@@ -1,0 +1,33 @@
+{
+    "name": "Cisco | IOS | Network | Link | Connection Problem (SNMP)",
+    "uuid": "5cc91d44-b361-4e52-924f-5ec28269d3c1",
+    "description": "SNMPv2-MIB::snmpTraps",
+    "event_class__name": "Network | Link | Connection Problem",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^SNMPv2-MIB::snmpTraps$"
+        },
+        {
+            "key_re": "^OLD-CISCO-INTERFACES-MIB::locIfReason\\.\\d+$",
+            "value_re": "^Lost Carrier$"
+        },
+        {
+            "key_re": "^IF-MIB::ifType\\.\\d+$",
+            "value_re": "^ethernetCsmacd$"
+        },
+        {
+            "key_re": "^IF-MIB::ifDescr\\.\\d+$",
+            "value_re": "^(?P<interface>\\S+)$"
+        }
+    ]
+}

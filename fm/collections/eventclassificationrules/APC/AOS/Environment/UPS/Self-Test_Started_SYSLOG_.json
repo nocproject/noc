@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Environment | UPS | Self-Test Started (SYSLOG)",
+    "uuid": "d4fe28a5-eef7-4887-a021-06da6984918a",
+    "description": "UPS: Started a self-test. 0x0137",
+    "event_class__name": "Environment | UPS | Self-Test Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: Started a self-test. 0x0137"
+        }
+    ]
+}

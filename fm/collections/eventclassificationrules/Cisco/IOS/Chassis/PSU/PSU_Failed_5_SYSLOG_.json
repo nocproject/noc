@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Failed #5 (SYSLOG)",
+    "uuid": "04a04722-3656-4598-b72b-1c6960fe9822",
+    "description": "%SYS-0-VTT_MAJORFAIL: VTT major alarm. Two VTT modules failed",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "VTT (voltage termination)"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-0-VTT_(?:MINOR|MAJOR)FAIL: VTT (?:minor|major) alarm. (?:A VTT module failed|Two VTT modules failed)"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Network | NTP | NTP Server Reachable (SYSLOG)",
+    "uuid": "076ebd0e-6ae8-4165-b920-e73d9d374ac5",
+    "description": "Jul 20 2012 10:59:48 od-agg-1-vavilova6 %%01NTP/4/PEER_SELE(l): The peer selected by the system is 10.48.63.2.",
+    "event_class__name": "Network | NTP | NTP Server Reachable",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "NTP/\\d+/PEER_SELE\\(l\\): The peer selected by the system is (?P<server_address>\\S+)."
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | MAC | MAC Flood (SYSLOG)",
+    "uuid": "06c2dedd-0a67-4f0b-b34b-f0bda77704fb",
+    "description": "WARN: The flooding MAC is detected (VID: 23, MAC: 00-1E-8C-A4-A6-96)",
+    "event_class__name": "Network | MAC | MAC Flood",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) The flooding MAC is detected \\(VID: (?P<vlan>\\d+), MAC: (?P<mac>\\S+)\\)"
+        }
+    ]
+}

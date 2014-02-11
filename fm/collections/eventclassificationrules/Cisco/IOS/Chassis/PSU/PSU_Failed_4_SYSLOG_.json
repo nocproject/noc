@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Failed #4 (SYSLOG)",
+    "uuid": "ac426b8f-a6fb-4c93-85a7-6f244b05d643",
+    "description": "%ENVMON-5-48V_STATUS: -48V supply failed",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ENVMON-5-\\S+V_STATUS: (?P<name>\\S+V) supply failed"
+        }
+    ]
+}

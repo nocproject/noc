@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Config | Config Changed (SYSLOG)",
+    "uuid": "299ee483-f632-41f1-9f3d-cb1c583f635f",
+    "description": "%SYS-5-CONFIG_I: Configured from 192.168.167.124 by snmp",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-5-CONFIG_I: Configured from \\S+ by snmp"
+        }
+    ]
+}

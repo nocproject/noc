@@ -1,0 +1,21 @@
+{
+    "name": "EdgeCore | ES | Chassis | CPU | CPU Usage Drops Below Threshold (SYSLOG)",
+    "uuid": "fda20894-a51b-45f2-b3c5-586e0a2ea6ea",
+    "description": "Sep 19 14:59:37 Rybatsk-17-1 snmp CPU falling trap.",
+    "event_class__name": "Chassis | CPU | CPU Usage Drops Below Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "CPU falling trap\\.$"
+        }
+    ]
+}

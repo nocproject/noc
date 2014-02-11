@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | DNS | Bad Query (SYSLOG)",
+    "uuid": "0910f46e-1db4-436c-a6d4-97f3bb3098bf",
+    "description": "%DNSSERVER-3-BADQUERY: Bad DNS query from 7.2.1.2",
+    "event_class__name": "Network | DNS | Bad Query",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%DNSSERVER-3-BADQUERY: Bad DNS query from (?P<ip>\\S+)$"
+        }
+    ]
+}

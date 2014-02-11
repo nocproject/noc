@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Network | Link | Link Up #1 (SYSLOG)",
+    "uuid": "02d3c467-73f3-41c1-8c3c-bb4a281d0e9b",
+    "description": "%%01IFNET/4/IF_STATE(l)[1479]:Interface GigabitEthernet2/0/9 has turned into UP state.",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Interface (?P<interface>\\S+)( has)? turned into UP state\\."
+        }
+    ]
+}

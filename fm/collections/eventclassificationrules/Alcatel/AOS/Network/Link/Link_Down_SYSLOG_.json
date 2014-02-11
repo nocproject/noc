@@ -1,0 +1,21 @@
+{
+    "name": "Alcatel | AOS | Network | Link | Link Down (SYSLOG)",
+    "uuid": "2892cc0b-9022-4d68-b94a-4dcb4761ada3",
+    "description": "Jul 20 15:57:35 Alcatel6850 INTERFACE(6) Data: 1/3: link DOWN",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Alcatel\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "INTERFACE\\(6\\) Data: (?P<interface>.+): link DOWN"
+        }
+    ]
+}

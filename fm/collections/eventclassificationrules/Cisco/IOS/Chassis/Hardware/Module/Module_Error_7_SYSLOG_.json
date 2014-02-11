@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #7 (SYSLOG)",
+    "uuid": "c87a5cb1-5e9e-4938-89ab-f1004f5cef9b",
+    "description": "%PM_SCP-SP-2-LCP_FW_ERR_INFORM: Module 4 is experiencing the following error: Bus Asic #0 transient Pb error",
+    "event_class__name": "Chassis | Hardware | Module | Module Error",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PM_SCP(-SP)?-2-LCP_FW_ERR_INFORM: Module (?P<module>\\d+) is experiencing the following error: (?P<reason>.+)"
+        }
+    ]
+}

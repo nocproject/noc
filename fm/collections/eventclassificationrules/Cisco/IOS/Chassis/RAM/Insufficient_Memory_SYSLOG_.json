@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | RAM | Insufficient Memory (SYSLOG)",
+    "uuid": "0cfcd4a9-9927-4292-bc99-a7bb7d3fcac1",
+    "description": "%SYS-2-MALLOCFAIL: Memory allocation of 65536 bytes failed from 0x4183958C, alignment 0",
+    "event_class__name": "Chassis | RAM | Insufficient Memory",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:SYS-(?:SP-)?2-MALLOCFAIL|MCAST-SP-STDBY-6-GC_LIMIT_EXCEEDED|EARL_NETFLOW-SP-4-TCAM_THRLD|SYS-2-CHUNKEXPANDFAIL|SYS-4-FREEMEMLOW): (?P<reason>.+)"
+        }
+    ]
+}

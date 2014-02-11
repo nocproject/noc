@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | OSPF | Neighbor Up (SYSLOG)",
+    "uuid": "6f2e6275-ccc9-4650-8875-0c7436cbacbe",
+    "description": "%ROUTING-OSPF-5-ADJCHG : Process 1, Nbr 172.18.244.46 on TenGigE0/0/1/0 in area 0 from LOADING to FULL, Loading Done, vrf shpd vrfid 0x60000003",
+    "event_class__name": "Network | OSPF | Neighbor Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ROUTING-OSPF-5-ADJCHG : Process \\d+, Nbr (?P<neighbor>\\S+) on (?P<interface>.+) in area (?P<area>\\d+) from (?P<from_state>LOADING) to (?P<to_state>FULL), Loading Done, vrf (?P<vrf>\\S+)"
+        }
+    ]
+}

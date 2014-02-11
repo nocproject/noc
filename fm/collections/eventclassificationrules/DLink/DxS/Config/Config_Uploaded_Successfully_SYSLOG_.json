@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Config | Config Uploaded Successfully (SYSLOG)",
+    "uuid": "39da9454-acc5-47d0-9bf8-29b71093257e",
+    "description": "INFO: Configuration successfully uploaded (Username: admin, IP: 172.16.0.1)",
+    "event_class__name": "Config | Config Uploaded Successfully",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Configuration successfully uploaded \\(Username: (?P<user>.+), IP: (?P<ip>\\S+)\\)$"
+        }
+    ]
+}

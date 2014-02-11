@@ -1,0 +1,21 @@
+{
+    "name": "Linksys | SPS2xx | Unknown | Ignore Logging started (SYSLOG)",
+    "uuid": "ef9d2376-b9b0-42a3-8bc3-efc8ecc819bb",
+    "description": "%SYSLOG-N-LOGGING: Logging started.",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Linksys\\.SPS2xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%SYSLOG-N-LOGGING: Logging started\\.$"
+        }
+    ]
+}

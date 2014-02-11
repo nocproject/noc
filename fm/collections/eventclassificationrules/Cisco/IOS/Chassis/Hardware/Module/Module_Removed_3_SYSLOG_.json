@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Removed #3 (SYSLOG)",
+    "uuid": "ab4f9299-205c-459c-b776-e5430c4e8c60",
+    "description": "%TRANSCEIVER-DFC2-6-REMOVED: Transceiver module removed from TenGigabitEthernet2/0/0",
+    "event_class__name": "Chassis | Hardware | Module | Module Removed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%TRANSCEIVER-DFC\\d+-6-REMOVED: [Tt]ransceiver module removed from \\D+(?P<module>\\d+)/(?P<interface>\\S+)"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Unknown | Cron Message #3 (SYSLOG)",
+    "uuid": "b9e683ae-1b83-4f5b-82a9-a27e6eb65bdd",
+    "description": "/usr/sbin/cron[95217]: (operator) CMD (/usr/libexec/save-entropy)",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "/usr/sbin/cron\\[\\d+\\]: \\(operator\\) CMD \\(/usr/libexec/save-entropy\\)"
+        }
+    ]
+}

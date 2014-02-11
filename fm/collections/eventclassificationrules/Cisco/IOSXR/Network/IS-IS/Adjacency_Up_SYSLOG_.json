@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | IS-IS | Adjacency Up (SYSLOG)",
+    "uuid": "e52c14aa-3417-4132-92a1-b3b5eadd96f6",
+    "description": "%ROUTING-ISIS-5-ADJCHANGE : Adjacency to bb (TenGigE0/0/1/0) (L2) Up, New adjacency",
+    "event_class__name": "Network | IS-IS | Adjacency Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ROUTING-ISIS-5-ADJCHANGE : Adjacency to (?P<neighbor>\\S+)\\s+\\((?P<interface>.+)\\)\\s\\((?P<level>\\S+)\\) Up, New adjacency"
+        }
+    ]
+}

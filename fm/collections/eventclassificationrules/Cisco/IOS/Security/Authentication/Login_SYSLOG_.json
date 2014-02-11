@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | Authentication | Login (SYSLOG)",
+    "uuid": "43b3a842-e2b7-4bae-a343-ff5fc231fd6a",
+    "description": "%SEC_LOGIN-5-LOGIN_SUCCESS: Login Success [user: admin] [Source: 172.16.0.22] [localport: 22] at 13:14:14 MSK Wed Aug 3 2011",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SEC_LOGIN-5-LOGIN_SUCCESS: Login Success \\[user: (?P<user>.*)\\] \\[Source: (?P<ip>\\S+)\\] \\[localport: (?P<lport>\\d+)\\]"
+        }
+    ]
+}

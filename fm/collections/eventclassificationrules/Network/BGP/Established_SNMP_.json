@@ -1,0 +1,21 @@
+{
+    "name": "Network | BGP | Established (SNMP)",
+    "uuid": "befab725-16e1-411e-9362-d701ae27368c",
+    "description": "BGP4-MIB::bgpEstablished",
+    "event_class__name": "Network | BGP | Established",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^BGP4-MIB::bgpPeerState\\.(?P<peer>\\S+)$",
+            "value_re": "^established$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^BGP4-MIB::bgpEstablished$"
+        }
+    ]
+}

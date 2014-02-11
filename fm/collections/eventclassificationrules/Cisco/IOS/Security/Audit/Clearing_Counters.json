@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | Audit | Clearing Counters",
+    "uuid": "b26d2ae7-56f3-4e49-b4e5-2bce4fb75098",
+    "description": "%CLEAR-5-COUNTERS: Clear counter on interface FastEthernet0/3 by username1 on vty0 (10.10.10.10)",
+    "event_class__name": "Security | Audit | Clearing Counters",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CLEAR-5-COUNTERS: Clear counter on interface (?P<interface>\\S+) by (?P<user>\\S+) on\\s*\\S+ \\((?P<ip>\\S+)\\)"
+        }
+    ]
+}

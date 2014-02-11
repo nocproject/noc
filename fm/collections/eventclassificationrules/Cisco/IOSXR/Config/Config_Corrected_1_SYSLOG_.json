@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Config | Config Corrected #1 (SYSLOG)",
+    "uuid": "893fcb32-c83c-4226-b63f-ef9faedc8adf",
+    "description": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Misconfiguration cleared, re-enabling Node 195.98.32.93 in IG 1.",
+    "event_class__name": "Config | Config Corrected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "^Cisco.IOSXR$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Misconfiguration cleared"
+        }
+    ]
+}

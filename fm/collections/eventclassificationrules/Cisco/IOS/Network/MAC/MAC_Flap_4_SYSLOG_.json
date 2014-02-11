@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Network | MAC | MAC Flap #4 (SYSLOG)",
+    "uuid": "a0bab3cd-bb25-4519-9c22-cf83dc6d84aa",
+    "description": "%SW_MATM-4-MACFLAP_NOTIF: Host 0017.0e82.0850 in vlan 254 is flapping between port and port Gi0/25",
+    "event_class__name": "Network | MAC | MAC Flap",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "from_interface"
+            "value": "Null0"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:MAC_MOVE-SP-4-NOTIF|SW_MATM-4-MACFLAP_NOTIF|C4K_EBM-4-HOSTFLAPPING): Host (?P<mac>\\S+) in vlan (?P<vlan>\\d+) is (?:flapping between|moving from) port (?:and|to) port (?P<to_interface>\\S+)$"
+        }
+    ]
+}

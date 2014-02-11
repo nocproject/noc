@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Unknown | Ignore UI_CHILD_STATUS (SYSLOG)",
+    "uuid": "3b91d0cd-73e3-4516-8881-4e54858aa179",
+    "description": "UI_CHILD_STATUS",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UI_CHILD_STATUS"
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "name": "Juniper | JUNOS | Environment | Temperature Out of Range (SYSLOG)",
+    "uuid": "e8162023-298b-4cf3-a2d6-b347461f9d84",
+    "description": "CHASSISD_HIGH_TEMP_CONDITION: Chassis temperature over 65 degrees C (but no fan/impeller failure detected)",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "chassis"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "CHASSISD_HIGH_TEMP_CONDITION: Chassis temperature over (?P<measure>\\d+) degrees C \\(but no fan/impeller failure detected\\)$"
+        }
+    ]
+}

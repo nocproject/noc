@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | Link | Link Down (SYSLOG)",
+    "uuid": "4b06593f-16fc-4440-a0ec-a86df4a60769",
+    "description": "%PKT_INFRA-LINK-3-UPDOWN : Interface TenGigE0/2/1/0.60, changed state to Down",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PKT_INFRA-LINK-3-UPDOWN\\s*: Interface (?P<interface>.+), changed state to Down$"
+        }
+    ]
+}

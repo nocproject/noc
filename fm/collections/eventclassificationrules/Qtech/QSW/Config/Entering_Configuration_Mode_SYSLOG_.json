@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Config | Entering Configuration Mode (SYSLOG)",
+    "uuid": "9597234c-9973-43cc-9dc8-95309c9963fd",
+    "description": "0000000003: Jan  8 22:32:40: %CMDLINE-6-COMMAND: (1) configure terminal",
+    "event_class__name": "Config | Entering Configuration Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CMDLINE-6-COMMAND: \\(1\\)( (?P<user>\\S+):|) configure terminal$"
+        }
+    ]
+}

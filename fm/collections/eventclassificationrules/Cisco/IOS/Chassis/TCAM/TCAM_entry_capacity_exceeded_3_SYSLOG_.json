@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | TCAM | TCAM entry capacity exceeded #3 (SYSLOG)",
+    "uuid": "f9128d99-7eba-4d33-ba80-e21ba1a9cea7",
+    "description": "%PLATFORM_UCAST-4-PREFIX: One or more, more specific prefixes could not be programmed into TCAM and are being covered by a less specific prefix, and the packets may be software forwarded",
+    "event_class__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PLATFORM_UCAST-4-PREFIX: (?P<reason>.+could not be programmed into TCAM.+)"
+        }
+    ]
+}

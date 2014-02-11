@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Failed #3 (SYSLOG)",
+    "uuid": "6603bb54-25d5-4db1-8749-a80da0845078",
+    "description": "%SYS-2-FAN_FAIL: Fan failed",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "Chassis Fan"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-2-FAN_FAIL: Fan failed"
+        }
+    ]
+}

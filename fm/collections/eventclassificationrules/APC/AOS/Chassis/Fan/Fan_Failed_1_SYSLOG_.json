@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Chassis | Fan | Fan Failed #1 (SYSLOG)",
+    "uuid": "168b25e8-d6b5-415f-aef5-3a26a2b09f5d",
+    "description": "UPS: A base module fan fault exists. 0x0120",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: (?P<name>A base module fan) fault exists. 0x0120"
+        }
+    ]
+}

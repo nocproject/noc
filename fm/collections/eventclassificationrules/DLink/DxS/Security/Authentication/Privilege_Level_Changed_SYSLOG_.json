@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Privilege Level Changed (SYSLOG)",
+    "uuid": "411e2467-3d80-4400-a33a-b46c86a4532f",
+    "description": "INFO: Successful Enable Admin through Telnet from 192.168.133.100 authenticated by AAA local_enable method (Username: admin)",
+    "event_class__name": "Security | Authentication | Privilege Level Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Successful Enable (?P<to_priv>Admin) through (?:Web|Telnet|SSH|Console) from (?P<ip>\\S+) authenticated by AAA \\S+ \\S+ \\(Username: (?P<user>.+?)\\)"
+        }
+    ]
+}

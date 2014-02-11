@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Attack | Blat Attack (SYSLOG)",
+    "uuid": "0ee7cf9a-0eb6-4334-8d5c-ca2926fdb2dc",
+    "description": "CRIT: Blat Attack is detected from (IP: 193.239.74.146 Port: 23)",
+    "event_class__name": "Security | Attack | Blat Attack",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Blat Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+        }
+    ]
+}

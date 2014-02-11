@@ -1,0 +1,25 @@
+{
+    "name": "Cisco | IOS | Security | Authentication | Authentication Failed (SNMP)",
+    "uuid": "c6c58a36-00ce-4618-bd17-e279d5cbc333",
+    "description": "SNMPv2-MIB::authenticationFailure",
+    "event_class__name": "Security | Authentication | Authentication Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^OLD-CISCO-SYSTEM-MIB::authAddr\\.0$",
+            "value_re": "^(?P<ip__bin_to_ip>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^(?:SNMPv2-MIB::authenticationFailure|SNMPv2-MIB::snmpTraps)$"
+        }
+    ]
+}

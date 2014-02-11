@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | STP | STP instances exceeded (SYSLOG)",
+    "uuid": "a4268d04-10c1-4470-806a-21cb457c2692",
+    "description": "%SPANTREE_VLAN_SW-2-MAX_INSTANCE: Platform limit of 128 STP instances exceeded. No instance created for VLAN192 (port Gi0/1).",
+    "event_class__name": "Network | STP | STP instances exceeded",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SPANTREE_VLAN_SW-2-MAX_INSTANCE: Platform limit of (?P<limit>\\d+) STP instances exceeded"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | DOCSIS | Invalid CoS (SYSLOG)",
+    "uuid": "94b8f070-071d-4c10-bff6-31f794c930e3",
+    "description": "%UBR7200-5-CLASSFAIL: Registration failed for Cable Modem 0018.c0d8.9614 on interface Cable1/0/U0: abcd",
+    "event_class__name": "Network | DOCSIS | Invalid CoS",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%UBR\\d+00-5-CLASSFAIL: Registration failed for Cable Modem (?P<mac>\\S+) on interface (?P<interface>.+):"
+        }
+    ]
+}

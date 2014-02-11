@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Out of Range #10 (SYSLOG)",
+    "uuid": "9476f811-eb96-406a-b135-8d0f422d004f",
+    "description": "%C6KENV-SP-4-MINORTEMPALARM: RP 1/0 inlet temperature crossed threshold #1(=50C). It has exceeded normal operating temperature range.",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C6KENV-SP-4-(?:MINOR|MAJOR)TEMPALARM: (?P<name>.+) temperature crossed threshold #1\\(=(?P<threshold>\\d+)C\\). It has exceeded normal operating temperature range."
+        }
+    ]
+}

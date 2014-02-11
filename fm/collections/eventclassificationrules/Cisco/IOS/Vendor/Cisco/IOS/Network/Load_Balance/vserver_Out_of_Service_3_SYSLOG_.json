@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service #3 (SYSLOG)",
+    "uuid": "2c1c1798-626b-4fa8-b028-0b885d06c90c",
+    "description": "%CSM_SLB-6-RSERVERSTATE: Module 4 server state changed: server x.x.x.x:443 in serverfarm 'WEB_SEAL2' has reached configured inband health retries",
+    "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CSM_SLB-6-RSERVERSTATE: Module (?P<module>\\d+) server state changed: server (?P<name>.+?) in serverfarm '(?P<farm>.+)' has reached configured .+ health retries"
+        }
+    ]
+}

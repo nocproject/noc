@@ -1,0 +1,17 @@
+{
+    "name": "System | Started #2 (SNMP)",
+    "uuid": "e6589c65-fff7-495a-ab15-6d8bd0a02005",
+    "description": "SNMPv2-MIB::coldStart",
+    "event_class__name": "System | Started",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^SNMPv2-MIB::warmStart$"
+        }
+    ]
+}

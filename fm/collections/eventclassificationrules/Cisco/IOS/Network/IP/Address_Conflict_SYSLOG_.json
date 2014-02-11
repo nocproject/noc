@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | IP | Address Conflict (SYSLOG)",
+    "uuid": "686e6e16-ab18-4b61-8fd1-0de312a4f9e9",
+    "description": "%IP-4-DUPADDR: Duplicate address 10.21.91.1 on Vlan1197, sourced by 0024.8ca2.ba6d",
+    "event_class__name": "Network | IP | Address Conflict",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IP-4-DUPADDR: Duplicate address (?P<ip>\\S+) on (?P<interface>\\S+), sourced by (?P<mac>\\S+)$"
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Huawei | VRP | Unknown | Ignore repeats (SYSLOG)",
+    "uuid": "c0ae34b8-ffe7-4973-a0d4-466f4c05f6a4",
+    "description": "Jul 19 2012 17:10:41 od-agg-4-ivanafranka55 %%01INFO/6/SUPPRESS_LOG(l)[18]:Last message repeated 2 times.(InfoID=1079578628, ModuleName=NTP, InfoAlias=LEAP_CHANGE)",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "[Ll]ast message repeated \\d+ times"
+        }
+    ]
+}

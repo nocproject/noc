@@ -1,0 +1,25 @@
+{
+    "name": "Juniper | JUNOS | Config | Config Changed (SNMP)",
+    "uuid": "5341d9a1-8304-42d3-b689-6a9fd532ad6c",
+    "description": "JUNIPER-CFGMGMT-MIB::jnxCmCfgChange",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^JUNIPER-CFGMGMT-MIB::jnxCmCfgChgEventUser\\.\\d+$",
+            "value_re": "^(?P<user>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-CFGMGMT-MIB::jnxCmCfgChange$"
+        }
+    ]
+}

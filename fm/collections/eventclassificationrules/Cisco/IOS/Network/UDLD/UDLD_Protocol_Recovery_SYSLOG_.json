@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | UDLD | UDLD Protocol Recovery (SYSLOG)",
+    "uuid": "5a719664-0234-404c-ac5c-1f5a162a20e4",
+    "description": "%PM-4-ERR_RECOVER: Attempting to recover from udld err-disable state on Gi0/24",
+    "event_class__name": "Network | UDLD | UDLD Protocol Recovery",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PM(-SP)?-4-ERR_RECOVER: Attempting to recover from udld err-disable state on (?P<interface>\\S+)"
+        }
+    ]
+}

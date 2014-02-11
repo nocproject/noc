@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | Port Security | Port Security Violation #3 (SYSLOG)",
+    "uuid": "6428b870-1d47-4d6e-9919-f0805fa3d4cd",
+    "description": "WARN(4) Port security violation mac addrss 04-35-46-25-E2-2F on locking address full port 21",
+    "event_class__name": "Network | Port Security | Port Security Violation",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) Port security violation mac (?:addrss|address) (?P<mac>\\S+) on locking address full port (?P<interface>\\S+)"
+        }
+    ]
+}

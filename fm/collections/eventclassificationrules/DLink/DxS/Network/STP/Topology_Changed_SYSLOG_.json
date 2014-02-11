@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | STP | Topology Changed (SYSLOG)",
+    "uuid": "d55e9104-b49f-4af0-bedc-120a9a5b0352",
+    "description": "INFO(6) Topology changed  (Instance:0, Port:24,MAC:00-22-B0-13-84-00)",
+    "event_class__name": "Network | STP | Topology Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\))?\\s*Topology changed\\s+\\(Instance:(?P<instance>\\d+),? [Pp]ort:(?P<interface>\\S+?)(,.+)?\\)"
+        }
+    ]
+}

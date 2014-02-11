@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | ACL | ACL Deny #3 (SYSLOG)",
+    "uuid": "31dc7f8b-f47b-46e4-bb9d-e49b8e24a1af",
+    "description": "%SEC-6-IPACCESSLOGS: list 50 denied 118.61.236.12 1 packet",
+    "event_class__name": "Security | ACL | ACL Deny",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SEC-6-IPACCESSLOGS: list (?P<name>\\S+) denied (?P<src_ip>\\S+) (?P<count>\\d+) packets?$"
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Failed #9 (SYSLOG)",
+    "uuid": "29cc3ffd-397e-401b-908f-151434b81142",
+    "description": "%HARDWARE-2-FAN_ERROR: Fan Failure.",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "Chassis Fan"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%HARDWARE-2-FAN_ERROR: Fan(.+)? Failure."
+        }
+    ]
+}

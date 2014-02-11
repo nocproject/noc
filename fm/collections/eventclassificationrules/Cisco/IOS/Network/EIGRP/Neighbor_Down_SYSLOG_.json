@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | EIGRP | Neighbor Down (SYSLOG)",
+    "uuid": "5bf72a3b-1e55-472f-a35e-0ad32061c41a",
+    "description": "%DUAL-5-NBRCHANGE: IP-EIGRP(0) 100: Neighbor 172.16.8.62 (FastEthernet0/0.14) is down: holding time expired",
+    "event_class__name": "Network | EIGRP | Neighbor Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%DUAL-5-NBRCHANGE: (?:IP-EIGRP(\\(\\d+\\))?|EIGRP-IPv4)(:\\(\\d+\\))? (?P<as>\\d+): Neighbor (?P<neighbor>\\S+) \\((?P<interface>.+?)\\) is (?P<to_state>down): (?P<reason>.*)$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #8 (SYSLOG)",
+    "uuid": "dc190845-5b29-46b6-bc91-2b7569b1f3e0",
+    "description": "%C6KPWR-SP-4-PSOK: power supply 1 turned on.",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C(?:6K|7600_)PWR-SP-4-PSOK: (?P<name>power supply \\d+) turned on.$"
+        }
+    ]
+}

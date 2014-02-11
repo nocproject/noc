@@ -1,0 +1,33 @@
+{
+    "name": "f5 | BIGIP | Vendor | f5 | BIGIP | Network | Load Balance | Service Up (SNMP)",
+    "uuid": "478db49c-ce18-4cca-8249-8fd7769c15e6",
+    "description": "F5-BIGIP-COMMON-MIB::bigipServiceUp",
+    "event_class__name": "Vendor | f5 | BIGIP | Network | Load Balance | Service Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^f5\\.BIGIP$"
+        },
+        {
+            "key_re": "^F5-BIGIP-COMMON-MIB::bigipNotifyObjNode$",
+            "value_re": "^(?P<node>.+)$"
+        },
+        {
+            "key_re": "^F5-BIGIP-COMMON-MIB::bigipNotifyObjPort$",
+            "value_re": "^(?P<port>\\d+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapEnterprise\\.0$",
+            "value_re": "^F5-BIGIP-COMMON-MIB::bigipNotification$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^F5-BIGIP-COMMON-MIB::bigipServiceUp$"
+        }
+    ]
+}

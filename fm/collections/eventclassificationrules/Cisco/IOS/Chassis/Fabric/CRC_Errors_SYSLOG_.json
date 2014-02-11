@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Fabric | CRC Errors (SYSLOG)",
+    "uuid": "07e646c2-f659-402f-ae3c-f79a2d709b1a",
+    "description": "%FABRIC-3-CRC: Switch card 1",
+    "event_class__name": "Chassis | Fabric | CRC Errors",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%FABRIC-3-CRC: Switch card (?P<name>\\S+)$"
+        }
+    ]
+}

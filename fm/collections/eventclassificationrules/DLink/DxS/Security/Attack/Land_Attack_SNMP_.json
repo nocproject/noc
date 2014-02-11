@@ -1,0 +1,33 @@
+{
+    "name": "DLink | DxS | Security | Attack | Land Attack (SNMP)",
+    "uuid": "39d8bdbe-29f2-4be1-9109-b2a70021b792",
+    "description": "DOS-PREV-MIB::swDoSAttackDetected",
+    "event_class__name": "Security | Attack | Land Attack",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^DOS-PREV-MIB::swDoS(?:AttackDetected|Notify)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
+            "value_re": "^(?P<src_ip__bin_to_ip>.+)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSNotifyVarPortNumber\\.0$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSCtrlType\\.1$",
+            "value_re": "^land-attack$"
+        }
+    ]
+}

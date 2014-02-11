@@ -1,0 +1,39 @@
+{
+    "name": "DLink | DGS3100 | Network | Link | Link Up (SNMP)",
+    "uuid": "f19f2f5f-3e8c-44de-a09b-c67ebdaca8e6",
+    "description": "SNMPv2-MIB::snmpTraps",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "interface"
+            "value": "='%s:%s' % ((int(int(iface)/50)+1), ((int(iface)+50)%50))"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "(?:SNMPv2-MIB::snmpTraps|IF-MIB::linkUp)$"
+        },
+        {
+            "key_re": "^IF-MIB::ifAdminStatus\\.\\d+$",
+            "value_re": "up$"
+        },
+        {
+            "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
+            "value_re": "up$"
+        },
+        {
+            "key_re": "^IF-MIB::ifIndex\\.\\d+$",
+            "value_re": "(?P<iface>\\d+)$"
+        }
+    ]
+}

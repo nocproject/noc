@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Recovered #9 (SYSLOG)",
+    "uuid": "12326642-2432-440d-844e-16ad770a1a14",
+    "description": "%HARDWARE-5-FAN_OK: Fan works fine.",
+    "event_class__name": "Chassis | Fan | Fan Recovered",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "Chassis Fan"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%HARDWARE-5-FAN_OK: Fan works fine."
+        }
+    ]
+}

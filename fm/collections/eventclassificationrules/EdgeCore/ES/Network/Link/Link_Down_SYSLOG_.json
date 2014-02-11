@@ -1,0 +1,27 @@
+{
+    "name": "EdgeCore | ES | Network | Link | Link Down (SYSLOG)",
+    "uuid": "42e0b1ac-57f0-41d7-bae1-673f7f87ff26",
+    "description": "Unit 1, Port 25 link-down notification.",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "interface"
+            "value": "='Eth %s/%s' % (unit, port)"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Unit (?P<unit>\\S+), Port\\s+(?P<port>\\d+) link-down notification\\.$"
+        }
+    ]
+}

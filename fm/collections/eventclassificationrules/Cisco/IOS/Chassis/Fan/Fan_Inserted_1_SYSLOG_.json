@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Inserted #1 (SYSLOG)",
+    "uuid": "30d1515b-de2e-453d-8061-cc50a0fd84df",
+    "description": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present",
+    "event_class__name": "Chassis | Fan | Fan Inserted",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "Chassis Fan"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present"
+        }
+    ]
+}

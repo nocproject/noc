@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Config | Entering Configuration Mode",
+    "uuid": "fde68ee3-ca62-4461-bbfc-c180415ab3e0",
+    "description": "Jul 21 08:04:55 mgd[1106]: UI_DBASE_LOGIN_EVENT: User 'noc' entering configuration mode",
+    "event_class__name": "Config | Entering Configuration Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UI_DBASE_LOGIN_EVENT: User '(?P<user>.+?)' entering configuration mode$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Chassis | PSU | PSU Failed (SYSLOG)",
+    "uuid": "446cf090-2454-4995-a37f-a060864f5905",
+    "description": "%Box-W-PS-STAT-CHNG: PS# 1 status is - not operational.",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:Environment|Box)-W-PS-STAT-CHNG: (?P<name>PS# \\d) (?:status is|status changed) - not operational.$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Environment | Chassis Voltage Returned to Normal Range (SYSLOG)",
+    "uuid": "360cd1b2-82f9-44d4-bdc0-2ba96331a277",
+    "description": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM_CLEAR : Voltage sensor alarm cleared slot 0/RSP1/CPU0, sensor VP1P2_SERDES_PLL_DAO measured 1200 mV and returned to operational range",
+    "event_class__name": "Environment | Chassis Voltage Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PLATFORM-ENVMON-4-CARD_VOLTAGE_ALARM_CLEAR : Voltage sensor alarm cleared (?P<name>slot \\S+, sensor \\S+) measured (?P<measure>\\d+ mV) and returned to operational range"
+        }
+    ]
+}

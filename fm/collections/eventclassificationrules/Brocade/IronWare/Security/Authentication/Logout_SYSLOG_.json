@@ -1,0 +1,21 @@
+{
+    "name": "Brocade | IronWare | Security | Authentication | Logout (SYSLOG)",
+    "uuid": "34c71dde-692a-45c8-8fc0-e5174f67eb96",
+    "description": "Aug 7 07:11:00 nechaeva-4 Security: SSH logout by USER from src IP 10.200.201.137, src MAC 000c.db44.e900",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Brocade\\.IronWare$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* Security: (?:SSH|telnet) logout by (?P<user>\\S+) from src IP (?P<ip>\\S+),.*"
+        }
+    ]
+}

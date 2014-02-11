@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Network | Link | Link Up (SYSLOG)",
+    "uuid": "09f7feb3-c1da-4140-9f1e-6598aeae707a",
+    "description": "kernel: re0: link state changed to UP",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "kernel: (?P<interface>\\S+): link state changed to UP$"
+        }
+    ]
+}
