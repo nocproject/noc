@@ -39,30 +39,6 @@ class Script(NOCScript):
     rx_bf = re.compile(r"Back Fan\s*: OK")
     rx_cf = re.compile(r"CPU Fan\s*: OK")
 
-    """
-3026
-Module 1 Type      : DEM-301G\\nModule 2 Type      : None\\n
-3326sr
-Module Type       : DES-132T   2-port 1000BASE-T Gigabit Ethernet Module\\n
-3226s
-Module Type       : DES-132GB  2-port GBIC-based Gigabit Ethernet Module\\n
-3312sr
-Module 1 Type     : DEM-340MG 4-port mini-GBIC (SFP) module\\nModule 2 Type     : DEM-340MG 4-port mini-GBIC (SFP) module\\n
-
-DGS-3627G:admin#show module_info   
-Command: show module_info
-
-ID Module Name   Rev. Serial             Description
-                       No.        
--- ------------- ---- ------------------ --------------------------------
- 1 -             -    -                  -                               
- 2 -             -    -                  -                               
- 3 DEM-410X      1A1  ���������������    1 Port XFP Module               
-
-DGS-3627G:admin#
-
-    """
-
     def execute(self):
         r = []
         s = self.cli("show switch", cached=True)
