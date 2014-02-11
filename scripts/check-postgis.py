@@ -27,7 +27,7 @@ class PGDriver(object):
                      "raster_comments.sql",
                      "topology/topology.sql", "topology.sql",
                      "topology/topology_comments.sql", "topology_comments.sql",
-                     "legacy.sql"]
+                     "legacy.sql", "legacy_gist.sql"]
 
     REQUIRED_POSTGIS_FILES = ["postgis.sql", "spatial_ref_sys.sql"]
 
