@@ -169,6 +169,8 @@ fi
 ##
 ## Update required python modules
 ##
+info "Upgrading PIP"
+./bin/pip install pip --upgrade
 info "Updating python libraries"
 PIP_REQUIREMENTS=etc/requirements/noc.txt
 PIP_FLAG=local/.pip
@@ -180,7 +182,7 @@ if [ -f "etc/requirements/local.txt" ]; then
     PIP_ARGS="$PIP_ARGS -r etc/requirements/local.txt"
 fi
 if [ ! -z "$PIP_FIND_LINKS" ]; then
-    PIP_ARGS="$PIP_ARGS --find-links $PIP_FIND_LINKS"
+    PIP_ARGS="$PIP_ARGS --find-links $PIP_FIND_LINKS --allow-all-external"
 fi
 if [ $PIP_REQUIREMENTS -nt $PIP_FLAG ]; then
     PIP_ARGS="$PIP_ARGS --upgrade"
