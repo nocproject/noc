@@ -3,7 +3,7 @@
 ## CentOS 6.4 bootstrap0.sh
 ## Initialize system and install all prerequisites to NOC
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -113,10 +113,6 @@ ALTER USER noc WITH PASSWORD 'thenocproject';
 CREATE DATABASE noc WITH OWNER=noc ENCODING='UTF8';
 __EOF__
 [ $? -eq 0 ] || error_exit "Failed to initialize PostgreSQL database and user"
-su - postgres << __EOF__
-psql -f /usr/pgsql-9.3/share/contrib/postgis-2.1/postgis.sql -d noc
-psql -f /usr/pgsql-9.3/share/contrib/postgis-2.1/spatial_ref_sys.sql -d noc
-__EOF__
 ##
 ## Set up mongodb user
 ##
