@@ -37,7 +37,7 @@ class Script(NOCScript):
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     rx_ipif2 = re.compile(r"IP Interface\s+:\s+(?P<ifname>.+?)\s*\n"
-    r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
+    r"VLAN Name\s+:\s+(?P<vlan_name>\S*)\s*\n"
     r"Interface Admin.? State\s+:\s+(?P<admin_state>Enabled|Disabled)\s*\n"
     r"(DHCPv6 Client State\s+:\s+(?:Enabled|Disabled)\s*\n)?"
     r"(Link Status\s+:\s+(?P<oper_status>Link\s*UP|Link\s*Down)\s*\n)?"
@@ -50,6 +50,18 @@ class Script(NOCScript):
     r"(IPv6 Link-Local Address\s+:\s+\S+\s*\n)?"
     r"(IPv6 Global Unicast Address\s+:\s+(?P<ipv6_address>\S+) \(\S+\)\s*\n)?"
     r"(IP MTU\s+:\s+(?P<mtu>\d+)\s+\n)?",
+    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+
+    # Work only on DES-1210-XX/ME/BX
+    rx_ipif3 = re.compile(r"IP Interface\s+:\s+(?P<ifname>.+?)\s*\n"
+    r"VLAN Name\s+:\s+(?P<vlan_name>\S*)\s*\n"
+    r"Interface Admin.? State\s+:\s+(?P<admin_state>Enabled|Disabled)\s*\n"
+    r"(IPv4 Address\s+:\s+(?P<ipv4_address>\S+)\s+\(\S+\)\s*\n)?"
+    r"(IPv6 Link-Local Address\s+:\s+\S+\s*\n)?"
+    r"(IPv6 Global Unicast Address\s+:\s+(?P<ipv6_address>\S+) \(\S+\)\s*\n)?"
+    r"(DHCPv6 Client State\s+:\s+(?:Enabled|Disabled)\s*\n)?"
+    r"(IPv4 State\s+:\s+(?P<is_ipv4>Enabled|Disabled)\s*\n)?"
+    r"(IPv6 State\s+:\s+(?P<is_ipv6>Enabled|Disabled)\s*\n)?",
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     rx_ipmgmt = re.compile(r"IP Interface\s+:\s+(?P<ifname>mgmt_ipif)\s*\n"
@@ -322,6 +334,10 @@ class Script(NOCScript):
                 enabled_afi += ["IPv6"]
             i['subinterfaces'][0].update({"enabled_afi": enabled_afi})
             vlan_name = match.group("vlan_name")
+            # Found illegal stuff in DES-1210-28/ME/B2
+            # In this rotten device System interface always in vlan 1
+            if not vlan_name:
+                vlan_name = "default"
             for v in vlans:
                 if vlan_name == v['vlan_name']:
                     vlan_id = v['vlan_id']

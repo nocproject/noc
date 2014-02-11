@@ -19,11 +19,12 @@ class Profile(NOCProfile):
     supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
     pattern_password = "[Pp]ass[Ww]ord:"
-    pattern_more = "CTRL\+C.+?a All"
+    pattern_more = "CTRL\+C.+?a A[Ll][Ll]"
     pattern_unpriveleged_prompt = r"^\S+:(3|6|user|operator)#"
-    pattern_syntax_error = r"(Available commands|Next possible completions|Ambiguous token):"
+    pattern_syntax_error = \
+        r"(Available commands|Next possible completions|Ambiguous token):"
     command_super = "enable admin"
-    pattern_prompt = r"^(?P<hostname>\S+(:\S+)*)#"
+    pattern_prompt = r"(?P<hostname>\S+(:\S+)*)#"
     command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
@@ -73,7 +74,7 @@ class Profile(NOCProfile):
         r"((?P<admin_duplex>Half|Full)/)?"
         r"(?P<admin_flowctrl>Enabled|Disabled)\s+"
         r"(?P<status>LinkDown|Link\sDown)?((?P<speed>10M|100M|1000M|10G)/"
-        r"(?P<duplex>Half|Full)/(?P<flowctrl>None|802.3x))?\s+"
+        r"(?P<duplex>Half|Full)/(?P<flowctrl>None|Disabled|802.3x))?\s+"
         r"(?P<addr_learning>Enabled|Disabled)\s*"
         r"((?P<trap_state>Enabled|Disabled)\s*)?"
         r"((?P<asd>\-)\s*)?"
@@ -168,9 +169,17 @@ class Profile(NOCProfile):
     r"(?P<untagged_ports>\S*?)\s*\n",
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
+    rx_vlan1 = re.compile(r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
+    r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
+    r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
+    r"^Member Ports\s+:\s*(?P<member_ports>\S*?)\s*\n"
+    r"^Untagged ports\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
+    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+
     def get_vlans(self, script):
         vlans = []
-        for match in self.rx_vlan.finditer(script.cli("show vlan")):
+        c = script.cli("show vlan")
+        for match in self.rx_vlan.finditer(c):
             tagged_ports = \
                 script.expand_interface_range(match.group("tagged_ports"))
             untagged_ports = \
@@ -182,6 +191,24 @@ class Profile(NOCProfile):
                 "tagged_ports": tagged_ports,
                 "untagged_ports": untagged_ports
             }]
+        if vlans == []:
+            for match in self.rx_vlan1.finditer(c):
+                tagged_ports = []
+                member_ports = \
+                    script.expand_interface_range(match.group("member_ports"))
+                untagged_ports = \
+                    script.expand_interface_range(
+                    match.group("untagged_ports"))
+                for port in member_ports:
+                    if port not in untagged_ports:
+                        tagged_ports +=[port]
+                vlans += [{
+                    "vlan_id": int(match.group("vlan_id")),
+                    "vlan_name": match.group("vlan_name"),
+                    "vlan_type": match.group("vlan_type"),
+                    "tagged_ports": tagged_ports,
+                    "untagged_ports": untagged_ports
+                }]
         return vlans
 
 
@@ -192,6 +219,7 @@ def DES3028(v):
     :return:
     """
     return v["platform"].startswith("DES-3028")
+
 
 def DES3200(v):
     """
@@ -249,6 +277,7 @@ def DGS3620(v):
     """
     return v["platform"].startswith("DGS-3620")
 
+
 def DxS_L2(v):
     if v["platform"].startswith("DES-12") \
     or v["platform"].startswith("DES-30") \
@@ -260,4 +289,3 @@ def DxS_L2(v):
         return True
     else:
         return False
-
