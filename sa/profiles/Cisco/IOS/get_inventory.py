@@ -34,12 +34,11 @@ class Script(NOCScript):
         r"\s*Vendor (SN|Serial No.|Serial Number)\s+(:|=)(\s+)?(?P<t_sn>\S+)(\s+)?\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL
     )
-
     rx_ver = re.compile(
-        r"Model revision number\s+:\s+(?P<revision>)\s*\n"
+        r"Model revision number\s+:\s+(?P<revision>\S+)\s*\n"
         r"Motherboard revision number\s+:\s+\S+\s*\n"
-        r"Model number\s+:\s+(?P<part_no>)\s*\n"
-        r"System serial number\s+:\s+(?P<serial>)\s*\n",
+        r"Model number\s+:\s+(?P<part_no>\S+)\s*\n"
+        r"System serial number\s+:\s+(?P<serial>\S+)\s*\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL
     )
 
