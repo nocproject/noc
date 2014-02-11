@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #12 (SYSLOG)",
+    "uuid": "8921de9e-5281-48d4-8925-793200a0c455",
+    "description": "%C7600_PWR-SP-4-PSREDUNDANTBOTHSUPPLY: in power-redundancy mode, system is operating on both power supplies.",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "Dummy PSU"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C7600_PWR-SP-4-PSREDUNDANTBOTHSUPPLY: in power-redundancy mode, system is operating on both power supplies."
+        }
+    ]
+}

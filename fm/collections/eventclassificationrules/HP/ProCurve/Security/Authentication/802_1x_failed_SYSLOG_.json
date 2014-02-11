@@ -1,0 +1,21 @@
+{
+    "name": "HP | ProCurve | Security | Authentication | 802.1x failed (SYSLOG)",
+    "uuid": "9d2a8907-0b89-4e5c-a0a0-2410e25b762c",
+    "description": "802.1x: 1 auth-timeouts for the last 60 sec.",
+    "event_class__name": "Security | Authentication | 802.1x failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.ProCurve$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "802.1x: \\d+ auth-timeouts for the last \\d+ sec."
+        }
+    ]
+}

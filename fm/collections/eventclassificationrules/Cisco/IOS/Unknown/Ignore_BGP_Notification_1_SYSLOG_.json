@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Unknown | Ignore BGP Notification #1 (SYSLOG)",
+    "uuid": "90198911-507e-46e2-85de-8fa2b1a2be53",
+    "description": "%BGP-3-NOTIFICATION: sent to neighbor 10.110.0.81 4/0 (hold time expired) 0 bytes",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%BGP-3-NOTIFICATION: sent to neighbor .+ \\(hold time expired\\) \\d+ bytes"
+        }
+    ]
+}

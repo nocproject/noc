@@ -1,0 +1,29 @@
+{
+    "name": "DLink | DxS | Network | Port Security | Port Security Violation (SNMP)",
+    "uuid": "c45b7f51-f6c1-45eb-911a-6ba7d621ddf6",
+    "description": "DGS3612-L2MGMT-MIB::swL2PortSecurityViolationTrap",
+    "event_class__name": "Network | Port Security | Port Security Violation",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^D[EG]S-?\\d{4}.+-MIB::sw(?:L2PortSecurityViolationTrap|l2NotifyPortSecurity.+)$"
+        },
+        {
+            "key_re": "^D[EG]S-?\\d{4}.+-MIB::swL2PortSecurityPortIndex(\\.\\d+)?$",
+            "value_re": "^(?P<interface>\\S+)$"
+        },
+        {
+            "key_re": "^D[EG]S-?\\d{4}.+-MIB::swL2PortSecurityViolationMac(\\.\\d+)?$",
+            "value_re": "^(?P<mac__bin_to_mac>.+)$"
+        }
+    ]
+}

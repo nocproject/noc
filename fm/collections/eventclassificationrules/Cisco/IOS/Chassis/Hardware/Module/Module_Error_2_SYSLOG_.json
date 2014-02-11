@@ -1,0 +1,32 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #2 (SYSLOG)",
+    "uuid": "1433cbe3-20b6-434c-b935-34306894603f",
+    "description": "%PM_SCP-SP-3-TRANSCEIVER_BAD_EEPROM: Integrity check on transceiver in LAN port 5/1 failed: bad key",
+    "event_class__name": "Chassis | Hardware | Module | Module Error",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "module"
+            "value": "GBIC"
+        },
+
+        {
+            "name": "reason"
+            "value": "Bad eeprom"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PM_SCP-SP-3-TRANSCEIVER_(?:BAD_EEPROM|UNSUPPORTED): (?:Integrity check on|Unsupported) transceiver in LAN port (?P<interface>\\S+)( failed: .+)?"
+        }
+    ]
+}

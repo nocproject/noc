@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | DOCSIS | Bad Timing Offset (SYSLOG)",
+    "uuid": "a9b9c663-c09a-4eb6-99f1-f8c0a372aabc",
+    "description": "%UBR7200-4-BADTXOFFSET: Bad timing offset 1000 detected for cable modem 0018.c0d8.9614.",
+    "event_class__name": "Network | DOCSIS | Bad Timing Offset",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%UBR\\d+00-4-BADTXOFFSET: Bad timing offset \\d+ detected for cable modem (?P<mac>\\S+)\\.$"
+        }
+    ]
+}

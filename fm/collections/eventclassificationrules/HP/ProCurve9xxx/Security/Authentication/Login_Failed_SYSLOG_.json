@@ -1,0 +1,21 @@
+{
+    "name": "HP | ProCurve9xxx | Security | Authentication | Login Failed (SYSLOG)",
+    "uuid": "0fc3f194-29d0-4d92-82ae-80dd49312db4",
+    "description": "hp93_1, Security: SSH access by user roshin from src IP 192.168.205.40, src MAC 000c.db7b.6c00 rejected, 26 attempt(s)",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.ProCurve9xxx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^\\S+ Security: (?P<proto>\\w+) access by user (?P<user>.+?) from src IP (?P<ip>\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}), src MAC (?P<mac>\\w{4}\\.\\w{4}\\.\\w{4}) rejected, (?P<attemps>\\d+) attempt\\(s\\)$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | Power Failed (SYSLOG)",
+    "uuid": "56d3b44b-28f6-4c96-8951-3bc0bfeeb3db",
+    "description": "%DYINGGASP-0-POWER_LOSS: Shutdown due to power loss",
+    "event_class__name": "Chassis | PSU | Power Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%DYINGGASP-0-POWER_LOSS: Shutdown due to power loss"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Eltex | MES | Unknown | Ignore Logging started (SYSLOG)",
+    "uuid": "25983f52-6d81-4c49-9e8f-307590362916",
+    "description": "%SYSLOG-N-LOGGING: Logging started.",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%SYSLOG-N-LOGGING: Logging started\\.$"
+        }
+    ]
+}

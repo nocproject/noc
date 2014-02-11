@@ -1,0 +1,21 @@
+{
+    "name": "Zyxel | ZyNOS | System | Started #1 (SYSLOG)",
+    "uuid": "ca48050e-fb46-4325-a9a2-f631f7e51378",
+    "description": "Jan  1  0: 1:41 sw-name system: System cold start",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "system: System (cold|warm) start$"
+        }
+    ]
+}

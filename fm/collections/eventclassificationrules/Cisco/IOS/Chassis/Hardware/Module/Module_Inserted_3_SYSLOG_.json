@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Inserted #3 (SYSLOG)",
+    "uuid": "e8d5b7ad-0815-42eb-a715-8b94c20da870",
+    "description": "%TRANSCEIVER-DFC2-6-INSERTED: transceiver module inserted in TenGigabitEthernet2/0/0",
+    "event_class__name": "Chassis | Hardware | Module | Module Inserted",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%TRANSCEIVER-DFC\\d+-6-INSERTED: [Tt]ransceiver module inserted in \\D+(?P<module>\\d+)/(?P<interface>\\S+)"
+        }
+    ]
+}

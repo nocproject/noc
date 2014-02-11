@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | Storm Control | Multicast Storm Detected #1 (SYSLOG)",
+    "uuid": "7cc335e6-d30c-49d2-acab-ffa5aeebcaf1",
+    "description": "WARN(4) Port 9 Multicast storm is occurring",
+    "event_class__name": "Network | Storm Control | Multicast Storm Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) Port (?P<interface>.+) Multicast storm is occurring"
+        }
+    ]
+}

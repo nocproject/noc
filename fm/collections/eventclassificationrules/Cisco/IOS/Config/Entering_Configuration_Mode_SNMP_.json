@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOS | Config | Entering Configuration Mode (SNMP)",
+    "uuid": "11da5f5e-f56b-487a-92f1-2b3e4c2b17cd",
+    "description": "CISCO-CONFIG-MAN-MIB::ciscoConfigManEvent",
+    "event_class__name": "Config | Entering Configuration Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^CISCO-CONFIG-MAN-MIB::ccmHistoryEventConfigDestination\\.\\d+$",
+            "value_re": "^running$"
+        },
+        {
+            "key_re": "^CISCO-CONFIG-MAN-MIB::ccmHistoryEventConfigSource\\.\\d+$",
+            "value_re": "^commandSource$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-CONFIG-MAN-MIB::ciscoConfigManEvent$"
+        }
+    ]
+}

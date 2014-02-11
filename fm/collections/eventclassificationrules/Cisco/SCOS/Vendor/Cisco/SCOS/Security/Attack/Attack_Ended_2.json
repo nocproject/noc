@@ -1,0 +1,25 @@
+{
+    "name": "Cisco | SCOS | Vendor | Cisco | SCOS | Security | Attack | Attack Ended #2",
+    "uuid": "e18ad4e3-e9fc-497f-be46-94cb6025f1e0",
+    "description": "PCUBE-SE-MIB::moduleAttackFilterDeactivatedTrap",
+    "event_class__name": "Vendor | Cisco | SCOS | Security | Attack | End-of-attack detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.SCOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^PCUBE-SE-MIB::moduleAttackFilterDeactivatedTrap$"
+        },
+        {
+            "key_re": "^PCUBE-SE-MIB::pcubeSeEventGenericString1$",
+            "value_re": "^End-of-attack detected: Attack from IP address (?P<from_ip>\\S+), from (?P<from_side>\\S+) side, protocol (?P<proto>\\S+)\\. Action is: (?P<action>\\S+)\\. Duration (?P<duration>\\S+\\sseconds), attack comprised of (?P<flows>\\d+) flows\\.$"
+        }
+    ]
+}

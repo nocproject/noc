@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #4 (SYSLOG)",
+    "uuid": "9f0489dd-c4a5-42a5-b4dc-797d77681745",
+    "description": "%DIAG-SP-3-MINOR_HW: Module 1: Online Diagnostics detected Minor Hardware Error",
+    "event_class__name": "Chassis | Hardware | Module | Module Error",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "reason"
+            "value": "Online diagnostic failed"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%DIAG-SP-3-(?:MINOR|MAJOR)_HW: (?P<module>Module \\S+) Online Diagnostics detected (?:Minor|Major) Hardware Error"
+        }
+    ]
+}

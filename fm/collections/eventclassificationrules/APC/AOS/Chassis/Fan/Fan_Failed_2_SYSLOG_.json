@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Chassis | Fan | Fan Failed #2 (SYSLOG)",
+    "uuid": "16923701-cc63-4892-9d2c-f966fd9f4b38",
+    "description": "UPS: An electronics unit fan fault exists. 0x013B",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: (?P<name>An electronics unit fan) fault exists. 0x013B"
+        }
+    ]
+}

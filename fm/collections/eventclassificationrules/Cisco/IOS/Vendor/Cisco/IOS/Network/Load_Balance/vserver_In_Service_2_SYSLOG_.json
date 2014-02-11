@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | vserver In Service #2 (SYSLOG)",
+    "uuid": "ddb3cea1-07b2-463d-af23-4e7671118c9f",
+    "description": "%CSM_SLB-6-RSERVERSTATE: Module 5 server state changed: SLB-NETMGT: TCP health probe re-activated server 10.20.220.10:80 in serverfarm 'WEBFARM'",
+    "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver In Service",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CSM_SLB-6-RSERVERSTATE: Module (?P<module>\\d+) server state changed: SLB-NETMGT: .+ health probe re-activated( for)? server (?P<name>.+?) in serverfarm '(?P<farm>.+)'"
+        }
+    ]
+}

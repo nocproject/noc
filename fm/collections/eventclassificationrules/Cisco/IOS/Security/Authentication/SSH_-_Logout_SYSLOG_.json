@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | Authentication | SSH - Logout (SYSLOG)",
+    "uuid": "e682e2d2-8bf7-4915-833d-80411fe79871",
+    "description": "%SSH-5-SSH2_CLOSE: SSH2 Session from 172.16.0.22 (tty = 1) for user 'admin' using crypto cipher 'aes256-cbc', hmac 'hmac-sha1' closed",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SSH-5-SSH2_CLOSE: SSH2 Session from (?P<ip>\\S+) \\(tty = (?P<vty>\\d+)\\) for user '(?P<user>.*)' using crypto cipher '\\S+', hmac '\\S+' closed$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Ubiquiti | AirOS | Unknown | Ignore ace_reporter (SYSLOG)",
+    "uuid": "05372f17-6e8a-4637-87c4-251b23cce022",
+    "description": "Jan 11 01:19:08 syslog: ace_reporter.stun_recv(): mapped_address=172.16.45.29:1027",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Ubiquiti\\.AirOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* syslog: ace_reporter\\..*"
+        }
+    ]
+}

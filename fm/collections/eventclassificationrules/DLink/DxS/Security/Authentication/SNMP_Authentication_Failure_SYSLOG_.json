@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | SNMP Authentication Failure (SYSLOG)",
+    "uuid": "043487f1-bed7-4c21-8763-83b4421cbc71",
+    "description": "INFO: SNMP request received from 172.16.2.2 with invalid community string!",
+    "event_class__name": "Security | Authentication | SNMP Authentication Failure",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|INFO:|INFO\\(6\\)) SNMP request received from (?P<ip>\\S+) with invalid community string"
+        }
+    ]
+}

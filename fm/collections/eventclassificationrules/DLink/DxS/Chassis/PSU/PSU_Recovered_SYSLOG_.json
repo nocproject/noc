@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Chassis | PSU | PSU Recovered (SYSLOG)",
+    "uuid": "02e2b9b7-661f-4254-879a-b3902961fb1b",
+    "description": "INFO: Internal Power is recovered",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)|CRIT:|CRIT\\(2\\)) (?P<name>Internal|Redundant) Power is (?:recovered|working)"
+        }
+    ]
+}

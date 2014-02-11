@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Security | Authentication | SNMP Authentication Failure (SYSLOG)",
+    "uuid": "b0b57db2-6ef6-447f-8a2a-2df545495998",
+    "description": "Jul 29 11:30:57 snmpd[1379]: SNMPD_AUTH_FAILURE: nsa_log_community: unauthorized SNMP community from 10.10.65.11 to unknown community name (br-2-xz/default@public)",
+    "event_class__name": "Security | Authentication | SNMP Authentication Failure",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "SNMPD_AUTH_FAILURE: nsa_log_community: unauthorized SNMP community from (?P<ip>\\S+) to unknown community name \\(.+\\)$"
+        }
+    ]
+}

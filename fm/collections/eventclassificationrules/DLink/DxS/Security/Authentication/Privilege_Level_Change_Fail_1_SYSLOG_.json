@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Privilege Level Change Fail #1 (SYSLOG)",
+    "uuid": "19c7a9d3-3401-4f6a-b0a4-5eb24b015935",
+    "description": "WARN: Enable Admin failed through Telnet from 192.168.133.100 authenticated by AAA local_enable method (Username: admin)",
+    "event_class__name": "Security | Authentication | Privilege Level Change Fail",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) Enable (?P<to_priv>Admin) failed through (?:Web|Telnet|SSH) from (?P<ip>\\S+) authenticated by AAA \\S+ \\S+ \\(Username: (?P<user>.+?)\\)"
+        }
+    ]
+}

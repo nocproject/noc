@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | Link | Half-Duplex (SYSLOG)",
+    "uuid": "0a60acb2-a4dd-461e-8e09-84a11ca3876e",
+    "description": "%CDP-4-DUPLEX_MISMATCH: duplex mismatch discovered on GigabitEthernet3/16 (not half duplex), with SEP001193222F48 Port 1 (half duplex).",
+    "event_class__name": "Network | Link | Half-Duplex",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CDP-4-DUPLEX_MISMATCH: duplex mismatch discovered on (?P<interface>\\S+) .+"
+        }
+    ]
+}

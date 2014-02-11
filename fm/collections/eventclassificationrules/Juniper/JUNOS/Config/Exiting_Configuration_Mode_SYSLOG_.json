@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Config | Exiting Configuration Mode (SYSLOG)",
+    "uuid": "a6adc959-d964-4361-a89e-173e681f914a",
+    "description": "Jul 21 14:02:24 mgd[1109]: UI_DBASE_LOGOUT_EVENT: User &#39;noc&#39; exiting configuration mode",
+    "event_class__name": "Config | Exiting Configuration Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UI_DBASE_LOGOUT_EVENT: User '(?P<user>.+?)' exiting configuration mode$"
+        }
+    ]
+}

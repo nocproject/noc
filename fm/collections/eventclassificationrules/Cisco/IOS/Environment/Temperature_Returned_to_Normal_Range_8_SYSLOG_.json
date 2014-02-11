@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #8 (SYSLOG)",
+    "uuid": "206f745c-a709-4834-b4ac-2a451b8e9243",
+    "description": "%THERMOK-3-PS: Power System THERMAL condition is now normal.",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:THERMAL-3-PS|PS-3-THERMAL): (?P<name>.+) THERMAL condition is now normal."
+        }
+    ]
+}

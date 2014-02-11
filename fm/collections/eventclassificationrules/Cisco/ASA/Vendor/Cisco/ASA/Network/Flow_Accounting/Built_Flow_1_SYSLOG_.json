@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Built Flow #1 (SYSLOG)",
+    "uuid": "1bf0c80d-0e14-4244-b951-b2ec0923c9fb",
+    "description": "Aug 09 2011 00:31:57: %ASA-6-302013: Built inbound TCP connection 1919992 for inside:10.10.112.11/17493 (10.10.112.11/17493) to outside:10.10.170.5/22 (10.10.170.35/22)",
+    "event_class__name": "Vendor | Cisco | ASA | Network | Flow Accounting | Built Flow",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:ASA|PIX)-6-302013: Built \\S+ (?P<proto>\\S+) connection \\d+ for (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) \\(.+?\\) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) \\(\\S+\\)(?: \\((?P<user>\\S+)\\))?$"
+        }
+    ]
+}

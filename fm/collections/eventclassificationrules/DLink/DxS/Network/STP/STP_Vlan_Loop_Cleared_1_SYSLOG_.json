@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | STP | STP Vlan Loop Cleared #1 (SYSLOG)",
+    "uuid": "d1ea4b3b-ba10-46b0-86d7-466b0b7a0365",
+    "description": "INFO(6) Port 24 VID 10 LBD recovered. Loop detection restarted",
+    "event_class__name": "Network | STP | STP Vlan Loop Cleared",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>\\S+) VID (?P<vlan>\\d+) LBD recovered. Loop detection restarted"
+        }
+    ]
+}

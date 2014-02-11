@@ -1,0 +1,31 @@
+{
+    "name": "APC | AOS | Chassis | PSU | PSU Failed (SNMP)",
+    "uuid": "5aecfb26-7bd1-4648-bffa-d0c80260ec8b",
+    "description": "PowerNet-MIB::apc",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "AC/DC input power"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^PowerNet-MIB::apc$"
+        },
+        {
+            "key_re": "^PowerNet-MIB::mtrapargsString\\.0$",
+            "value_re": "^UPS: On battery power in response to an input power problem.$"
+        }
+    ]
+}

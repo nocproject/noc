@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | System | Started (SYSLOG)",
+    "uuid": "8ba48808-f698-40eb-9aba-489a016b0a35",
+    "description": "0000000015: Jan  1 00:01:02: %SYS-4-RESTART: System ColdStart.",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-4-RESTART: System ColdStart\\.$"
+        }
+    ]
+}

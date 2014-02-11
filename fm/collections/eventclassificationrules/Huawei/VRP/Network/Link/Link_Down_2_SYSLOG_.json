@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Network | Link | Link Down #2 (SYSLOG)",
+    "uuid": "f71d22c3-eaba-4186-b7f7-0bc534846d48",
+    "description": "%%01IFNET/4/UPDOWN(l): The state of interface Ethernet0/0/16 was changed to DOWN.",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "The state of interface (?P<interface>\\S+) was changed to DOWN."
+        }
+    ]
+}

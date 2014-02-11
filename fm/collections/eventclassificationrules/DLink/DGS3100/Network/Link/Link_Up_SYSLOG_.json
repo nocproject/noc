@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Network | Link | Link Up (SYSLOG)",
+    "uuid": "785aad88-1a3e-4028-bda3-849212d8d409",
+    "description": "%LINK-I-Up:  1:22",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LINK-I-Up:\\s+(?P<interface>(?:\\d:|ch)\\d+)$"
+        }
+    ]
+}

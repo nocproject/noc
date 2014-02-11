@@ -1,0 +1,21 @@
+{
+    "name": "MikroTik | RouterOS | System | Reboot (SYSLOG)",
+    "uuid": "79311f14-7420-44c7-83da-c28fbc62446c",
+    "description": "router rebooted without proper shutdown, probably power outage",
+    "event_class__name": "System | Reboot",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^MikroTik\\.RouterOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "router rebooted without proper shutdown"
+        }
+    ]
+}

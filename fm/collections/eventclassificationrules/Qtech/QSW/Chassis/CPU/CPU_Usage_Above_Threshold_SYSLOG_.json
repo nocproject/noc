@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Chassis | CPU | CPU Usage Above Threshold (SYSLOG)",
+    "uuid": "ce2ce83b-8b6b-4bb9-b976-bf2db3338cbb",
+    "description": "0000000046: Aug  9 23:05:47: %OAM-5-CPU_BUSY: cpu is busy.",
+    "event_class__name": "Chassis | CPU | CPU Usage Above Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%OAM-5-CPU_BUSY: cpu is busy\\.$"
+        }
+    ]
+}

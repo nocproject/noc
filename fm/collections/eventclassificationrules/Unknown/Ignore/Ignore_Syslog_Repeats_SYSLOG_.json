@@ -1,0 +1,17 @@
+{
+    "name": "Unknown | Ignore | Ignore Syslog Repeats (SYSLOG)",
+    "uuid": "2c365036-4bd2-4829-8b3b-924dc260cbdf",
+    "description": "Jul 22 08:40:00 last message repeated 42 times",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "last message repeated \\d+ times$"
+        }
+    ]
+}

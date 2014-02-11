@@ -1,0 +1,33 @@
+{
+    "name": "DLink | DxS | Security | Attack | Smurf Attack (SNMP)",
+    "uuid": "00c6220f-6c38-4c26-8e16-ea475c463f9d",
+    "description": "DOS-PREV-MIB::swDoSAttackDetected",
+    "event_class__name": "Security | Attack | Smurf Attack",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^DOS-PREV-MIB::swDoS(?:AttackDetected|Notify)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
+            "value_re": "^(?P<src_ip__bin_to_ip>.+)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSNotifyVarPortNumber\\.0$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSCtrlType\\.3$",
+            "value_re": "^smurf-attack$"
+        }
+    ]
+}

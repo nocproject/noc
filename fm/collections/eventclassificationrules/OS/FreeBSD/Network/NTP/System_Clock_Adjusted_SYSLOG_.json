@@ -1,0 +1,27 @@
+{
+    "name": "OS | FreeBSD | Network | NTP | System Clock Adjusted (SYSLOG)",
+    "uuid": "a7fad1a9-30dc-439d-9138-cb270cbec6f7",
+    "description": "ntpd[11213]: time reset +0.320022 s",
+    "event_class__name": "Network | NTP | System Clock Adjusted",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "adjustment_ms"
+            "value": "=str(int(float(adjustment_s) * 1000))"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "ntpd\\[\\d+\\]: time reset (?P<adjustment_s>\\S+) s$"
+        }
+    ]
+}

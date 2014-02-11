@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP3 | Network | Link | Link Down (SYSLOG)",
+    "uuid": "c0b573ab-4391-4d9e-81a3-acaa7b312bb1",
+    "description": "L2INF/5/PORT LINK STATUS CHANGE: Ethernet0/1: turns into DOWN state",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP3$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "LINK STATUS CHANGE:\\s*(?P<interface>\\S+): turns into DOWN state"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Zyxel | ZyNOS | Network | Link | Link Down (SYSLOG)",
+    "uuid": "57a8394a-0f9a-4fa2-b1d7-3c1ff191e18f",
+    "description": "Link Down",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "interface: Port (?P<interface>\\S+) link down$"
+        }
+    ]
+}

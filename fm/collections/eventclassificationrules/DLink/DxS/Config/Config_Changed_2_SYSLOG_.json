@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Config | Config Changed #2 (SYSLOG)",
+    "uuid": "08e6da4b-b201-4a4e-8bcb-737ac81f2cde",
+    "description": "INFO(6) Configuration and log saved to flash (Username: fenomen_krog)",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Configuration (and log )*saved to flash \\(Username: (?P<user>.+)\\)$"
+        }
+    ]
+}

@@ -28,6 +28,7 @@ from noc.fm.models.enumeration import Enumeration
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.eventclass import EventClass
+from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
 from noc.lib.debug import error_report
@@ -101,6 +102,7 @@ class Command(BaseCommand):
         ("fm.alarmseverities", AlarmSeverity),
         ("fm.alarmclasses", AlarmClass),
         ("fm.eventclasses", EventClass),
+        ("fm.eventclassificationrules", EventClassificationRule)
     ]
 
     def log(self, msg):

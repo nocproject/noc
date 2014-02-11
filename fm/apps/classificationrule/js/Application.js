@@ -43,11 +43,6 @@ Ext.define("NOC.fm.classificationrule.Application", {
     ],
     filters: [
         {
-            title: "Builtin",
-            name: "is_builtin",
-            ftype: "boolean"
-        },
-        {
             title: "By Event Class",
             name: "event_class",
             ftype: "lookup",
@@ -84,6 +79,11 @@ Ext.define("NOC.fm.classificationrule.Application", {
                     name: "name",
                     fieldLabel: "Name",
                     allowBlank: false
+                },
+                {
+                    xtype: "displayfield",
+                    name: "uuid",
+                    fieldLabel: "UUID"
                 },
                 {
                     xtype: "textarea",

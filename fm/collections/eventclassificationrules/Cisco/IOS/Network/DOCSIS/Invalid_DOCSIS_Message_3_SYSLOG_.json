@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | DOCSIS | Invalid DOCSIS Message #3 (SYSLOG)",
+    "uuid": "2291aa74-b3ee-4829-93a0-e9e85be7f1eb",
+    "description": "First fragment is lost or discarded.  Discard fragment.  SID = 50",
+    "event_class__name": "Network | DOCSIS | Invalid DOCSIS Message",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "First fragment is lost or discarded.  Discard fragment.  SID = (?P<sid>\\d+)$"
+        }
+    ]
+}

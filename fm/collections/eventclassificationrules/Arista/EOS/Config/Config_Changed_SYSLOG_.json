@@ -1,0 +1,21 @@
+{
+    "name": "Arista | EOS | Config | Config Changed (SYSLOG)",
+    "uuid": "c4cde40b-8157-46f0-8b4e-9c229eff4010",
+    "description": "May 15 20:10:49 arista1 Cli: %SYS-5-CONFIG_I: Configured from console by user on vty3 (10.1.4.14)",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Arista\\.EOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-5-CONFIG_I: Configured from \\S+ by (?P<user>\\S+) on"
+        }
+    ]
+}

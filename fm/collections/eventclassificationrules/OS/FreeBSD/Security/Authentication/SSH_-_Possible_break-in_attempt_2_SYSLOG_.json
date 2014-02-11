@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | Authentication | SSH - Possible break-in attempt #2 (SYSLOG)",
+    "uuid": "bf760970-5fad-40d5-a75a-d3f3f45cc73f",
+    "description": "sshd[82921]: reverse mapping checking getaddrinfo for 94-76-229-166.static.as29550.net [94.76.229.166] failed - POSSIBLE BREAK-IN ATTEMPT!",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "sshd\\[\\d+\\]: reverse mapping checking getaddrinfo for \\S+ \\[(?P<ip>\\S+)\\] failed - POSSIBLE BREAK-IN ATTEMPT!$"
+        }
+    ]
+}

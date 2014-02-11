@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | BGP | Peer Down #1 (SYSLOG)",
+    "uuid": "f23e7f01-8249-4c15-bf21-e06ca873e84c",
+    "description": "%BGP-5-ADJCHANGE: neighbor 10.110.0.83 Down BGP Notification sent",
+    "event_class__name": "Network | BGP | Peer Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+)( vpn vrf (?P<vrf>\\S+))? Down"
+        }
+    ]
+}

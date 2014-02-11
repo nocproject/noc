@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Config | Config Sync Failed (SYSLOG)",
+    "uuid": "391d2d69-3bae-4c5c-bcc8-ad70faf7bc6f",
+    "description": "%PFINIT-SP-1-CONFIG_SYNC_FAIL: Sync'ing the startup configuration to the standby Router FAILED",
+    "event_class__name": "Config | Config Synced",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PFINIT-SP-1-CONFIG_SYNC_FAIL(?:_RETRY)?: Sync'ing the (?P<config>startup|private) configuration to the standby Router FAILED.*"
+        }
+    ]
+}

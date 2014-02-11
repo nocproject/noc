@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOSXR | Security | Audit | Command #1 (SYSLOG)",
+    "uuid": "b445dd3d-2395-429e-bba0-1335cd53136a",
+    "description": "%OS-SYSMGR-4-PROC_RESTART_NAME : User cisco (vty1) requested a restart of process msdp at 0/RSP0/CPU0",
+    "event_class__name": "Security | Audit | Command",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "command"
+            "value": "process restart msdp"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%OS-SYSMGR-4-PROC_RESTART_NAME : User (?P<user>.+) \\(vty\\d+\\) requested a restart of process msdp at .+"
+        }
+    ]
+}

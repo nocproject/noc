@@ -1,0 +1,29 @@
+{
+    "name": "DLink | DxS | Network | LBD | Vlan Loop Detected (SNMP)",
+    "uuid": "fd7df265-499f-4e0a-bef5-bbd3083f2381",
+    "description": "LOOPBACK-DETECT-MIB::swVlanLoopOccurred",
+    "event_class__name": "Network | LBD | Vlan Loop Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": ".+-MIB::sw(L2)?VlanLoopOccurred"
+        },
+        {
+            "key_re": "^.+-MIB::sw(L2)?LoopDetectPortIndex$",
+            "value_re": "^(?P<interface>\\S+)$"
+        },
+        {
+            "key_re": "^.+-MIB::sw(L2)?VlanLoopDetectVID$",
+            "value_re": "^(?P<vlan>\\S+)$"
+        }
+    ]
+}

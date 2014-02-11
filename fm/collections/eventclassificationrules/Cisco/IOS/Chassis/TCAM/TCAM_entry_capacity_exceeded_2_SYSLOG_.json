@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | TCAM | TCAM entry capacity exceeded #2 (SYSLOG)",
+    "uuid": "253de048-2ea6-4991-b8d0-8ce8b91c70a6",
+    "description": "%EARL_NETFLOW-SP-STDBY-4-TCAM_THRLD: Netflow TCAM threshold exceeded, TCAM Utilization [99%]",
+    "event_class__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%EARL_NETFLOW-SP(-STDBY)?-4-TCAM_THRLD: (?P<reason>.+ threshold exceeded(, TCAM Utilization \\[\\d+%\\])?)"
+        }
+    ]
+}

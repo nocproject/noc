@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | PIM | Neighbor Down #1 (SYSLOG)",
+    "uuid": "f1fa9cb9-1212-4e23-882e-87a7f9774dab",
+    "description": "%PIM-5-NBRCHG: neighbor 10.110.0.60 DOWN on interface Vlan255 (vrf default) non DR",
+    "event_class__name": "Network | PIM | Neighbor Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PIM-5-NBRCHG: neighbor (?P<neighbor>\\S+) DOWN on interface (?P<interface>\\S+)( \\(vrf (?P<vrf>\\S+)\\))?( non)? DR"
+        }
+    ]
+}

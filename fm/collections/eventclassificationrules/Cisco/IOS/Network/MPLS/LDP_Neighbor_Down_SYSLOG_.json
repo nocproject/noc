@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | MPLS | LDP Neighbor Down (SYSLOG)",
+    "uuid": "bd8fd649-6bda-408c-b4c4-3f37bbac2f2d",
+    "description": "%LDP-5-NBRCHG: LDP Neighbor 10.10.66.129:0 (4) is DOWN (Received error notification from peer: Holddown time expired)",
+    "event_class__name": "Network | MPLS | LDP Neighbor Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LDP-5-NBRCHG: LDP Neighbor (?P<neighbor>\\S+):.* is DOWN( \\((?P<reason>.+)\\))?"
+        }
+    ]
+}

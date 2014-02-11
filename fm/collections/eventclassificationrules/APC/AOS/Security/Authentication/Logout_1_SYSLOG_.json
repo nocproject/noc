@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Security | Authentication | Logout #1 (SYSLOG)",
+    "uuid": "a870900a-ddb3-449b-b385-272694051cea",
+    "description": "System: Console user 'admin' logged out from 192.168.220.54. 0x001E",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "System: \\S+ user '(?P<user>.+?)' logged out from (?P<ip>\\S+). \\S+"
+        }
+    ]
+}

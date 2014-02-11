@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Built Flow #2 (SYSLOG)",
+    "uuid": "ca6be289-8457-4850-a9b4-4b24519c6fd5",
+    "description": "Aug 08 2011 09:09:52: %ASA-6-302015: Built inbound UDP connection 1902040 for outside:10.17.106.115/62969 (10.17.106.115/62969) to inside:10.15.121.5/53 (10.15.121.5/53) (joe)",
+    "event_class__name": "Vendor | Cisco | ASA | Network | Flow Accounting | Built Flow",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:ASA|PIX)-6-302015: Built \\S+ (?P<proto>\\S+) connection \\d+ for (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) \\(.+?\\) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) \\(\\S+\\)(?: \\((?P<user>\\S+)\\))?$"
+        }
+    ]
+}

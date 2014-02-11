@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Security | ACL | ACL Deny #4 (SYSLOG)",
+    "uuid": "3b4c31e2-71d8-44df-88aa-d8a1079604ef",
+    "description": "Aug 10 2011 16:25:44: %ASA-3-313001: Denied ICMP type=8, code=0 from 93.119.241.226 on interface outside",
+    "event_class__name": "Security | ACL | ACL Deny",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ASA-3-313001: Denied (?P<proto>\\S+) type=\\d+, code=\\d+ from (?P<src_ip>\\S+) on interface (?P<src_interface>\\S+)$"
+        }
+    ]
+}

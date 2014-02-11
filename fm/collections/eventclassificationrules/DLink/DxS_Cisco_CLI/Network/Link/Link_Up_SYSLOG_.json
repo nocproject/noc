@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS_Cisco_CLI | Network | Link | Link Up (SYSLOG)",
+    "uuid": "e1d21c9f-43f5-4ee8-9c6b-ba7e4230411c",
+    "description": "%LINK-3-UPDOWN: Interface TenGigabitEthernet 1/1, changed state to up.",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS_Cisco_CLI$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LINK-3-UPDOWN: Interface (?P<interface>.+), changed state to up."
+        }
+    ]
+}

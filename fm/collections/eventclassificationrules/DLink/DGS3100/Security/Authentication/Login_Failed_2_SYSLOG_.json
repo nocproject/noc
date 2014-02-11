@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Security | Authentication | Login Failed #2 (SYSLOG)",
+    "uuid": "8590ed1c-ce05-4691-9cff-01756963b89d",
+    "description": "%AAA-W-REJECT: New telnet connection for user admin, source 172.16.16.1 destination 172.16.17.153 REJECTED",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination\\s+\\S+\\s+REJECTED"
+        }
+    ]
+}

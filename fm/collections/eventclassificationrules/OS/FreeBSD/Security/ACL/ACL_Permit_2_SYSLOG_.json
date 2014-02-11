@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | ACL | ACL Permit #2 (SYSLOG)",
+    "uuid": "eb4c7ce4-ca45-4039-b912-418d92ace002",
+    "description": "ipfw: 400 Accept TCP 78.189.188.92:2661 193.34.20.247:135 out via fxp0",
+    "event_class__name": "Security | ACL | ACL Permit",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "ipfw: (?P<name>\\d+) Accept (?P<proto>\\S+) (?P<src_ip>\\S+):(?P<src_port>\\d+) (?P<dst_ip>\\S+):(?P<dst_port>\\d+) out via (?P<dst_interface>\\S+)"
+        }
+    ]
+}

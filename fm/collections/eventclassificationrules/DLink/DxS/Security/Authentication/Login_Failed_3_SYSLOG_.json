@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Login Failed #3 (SYSLOG)",
+    "uuid": "50f7244a-4565-483b-92f0-230f0a328386",
+    "description": "WARN: Login failed through SSH from 0.0.0.0 due to AAA server timeout or improper configuration (Username: noc, MAC: 00-00-00-00-00-00)",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)|WARN:|WARN\\(4\\)) Login failed through (?:Web|Telnet|SSH) from (?P<ip>\\S+) \\S.+ \\(Username: (?P<user>.+?)(, MAC: (?P<mac>\\S+))?\\)$"
+        }
+    ]
+}

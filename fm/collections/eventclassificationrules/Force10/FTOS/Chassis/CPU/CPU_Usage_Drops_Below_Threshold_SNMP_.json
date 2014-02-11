@@ -1,0 +1,25 @@
+{
+    "name": "Force10 | FTOS | Chassis | CPU | CPU Usage Drops Below Threshold (SNMP)",
+    "uuid": "3dfaedc4-d674-4242-8334-7e7f578a7ddc",
+    "description": "F10-CHASSIS-MIB::chAlarmClrCpuThreshold",
+    "event_class__name": "Chassis | CPU | CPU Usage Drops Below Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Force10\\.FTOS$"
+        },
+        {
+            "key_re": "^F10-CHASSIS-MIB::chAlarmVarString$",
+            "value_re": "^CPU_THRESHOLD_CLR: Overall (?P<cpu>\\S+) cpu usage drops below threshold\\."
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^F10-CHASSIS-MIB::chAlarmClrCpuThreshold$"
+        }
+    ]
+}

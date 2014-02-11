@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | LAG | Unbundle (SYSLOG)",
+    "uuid": "ace36c61-f05f-468c-aa9e-8fb073ab1df1",
+    "description": "%EC-5-UNBUNDLE: Interface Gi1/0/1 left the port-channel Po1.",
+    "event_class__name": "Network | LAG | Unbundle",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%EC-5-UNBUNDLE: Interface (?P<interface>\\S+) left the port-channel (?P<lag_interface>\\S+)\\.$"
+        }
+    ]
+}

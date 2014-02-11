@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | STP | STP Loop Detected #1 (SYSLOG)",
+    "uuid": "26567164-90dc-4bf6-a41c-6616b08cad92",
+    "description": "WARN(4) BPDU Loop Back on Port 24",
+    "event_class__name": "Network | STP | STP Loop Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) BPDU Loop Back on Port (?P<interface>\\S+)"
+        }
+    ]
+}

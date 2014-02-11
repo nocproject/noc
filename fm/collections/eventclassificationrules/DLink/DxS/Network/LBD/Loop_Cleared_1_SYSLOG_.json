@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | LBD | Loop Cleared #1 (SYSLOG)",
+    "uuid": "de1867bf-906c-4c1f-a2c4-608f4a2d4c94",
+    "description": "INFO: Port 11 LBD port recovered. Loop detection restarted",
+    "event_class__name": "Network | LBD | Loop Cleared",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) LBD port recovered. Loop detection restarted"
+        }
+    ]
+}

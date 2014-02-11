@@ -1,0 +1,21 @@
+{
+    "name": "Brocade | IronWare | Security | Authentication | Login #1 (SYSLOG)",
+    "uuid": "27c1cb70-efb0-4558-abfd-2ecc692f358d",
+    "description": "Aug 7 07:10:04 21Kv-10d-BigIron8000 Security: SSH login by USER from src IP 10.200.201.137, src MAC 000c.dbb7.3600 to PRIVILEGE EXEC mode",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Brocade\\.IronWare$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* Security: (?:SSH|telnet) login by (?P<user>\\S+) from src IP (?P<ip>\\S+), src MAC \\S+ to PRIVILEGE EXEC mode"
+        }
+    ]
+}

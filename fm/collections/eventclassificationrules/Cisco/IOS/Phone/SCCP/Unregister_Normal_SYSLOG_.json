@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Phone | SCCP | Unregister Normal (SYSLOG)",
+    "uuid": "9909984d-3dae-4c17-9ab8-70b2ab5c2b02",
+    "description": "Aug 16 02:48:39.256: %IPPHONE-6-UNREGISTER_NORMAL: ephone-8:SEP002414B1D30A IP:192.168.61.20 Socket:6 DeviceType:Phone has unregistered normally.",
+    "event_class__name": "Phone | SCCP | Unregister Normal",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IPPHONE-6-UNREGISTER_NORMAL: (?P<name>\\S+?):(?P<sn>\\S+) IP:(?P<ip>\\S+) Socket:(?P<socket>\\d+) DeviceType:(?P<type>\\S+) has unregistered normally"
+        }
+    ]
+}

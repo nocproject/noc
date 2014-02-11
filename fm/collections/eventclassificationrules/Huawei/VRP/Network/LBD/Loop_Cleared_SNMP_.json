@@ -1,0 +1,29 @@
+{
+    "name": "Huawei | VRP | Network | LBD | Loop Cleared (SNMP)",
+    "uuid": "4342c8ff-3212-4d3d-9e4b-5e7522d43810",
+    "description": "HUAWEI-L2IF-MIB::hwLoopDetectStatusAlarm",
+    "event_class__name": "Network | LBD | Loop Cleared",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "HUAWEI-L2IF-MIB::hwLoopDetectStatusAlarm"
+        },
+        {
+            "key_re": "^IF-MIB::ifDescr\\.\\d+$",
+            "value_re": "^(?P<interface>\\S+)"
+        },
+        {
+            "key_re": "^HUAWEI-L2IF-MIB::hwL2IfPortLoopDetectStatus\\.\\d+$",
+            "value_re": "^normal$"
+        }
+    ]
+}

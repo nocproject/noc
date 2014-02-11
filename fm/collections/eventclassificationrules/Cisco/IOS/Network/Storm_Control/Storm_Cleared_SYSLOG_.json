@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | Storm Control | Storm Cleared (SYSLOG)",
+    "uuid": "a0b0f6a4-032e-4c1a-98c3-733aab217537",
+    "description": "%PM-4-ERR_RECOVER: Attempting to recover from storm-control err-disable state on Gi0/24",
+    "event_class__name": "Network | Storm Control | Storm Cleared",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PM(-SP)?-4-ERR_RECOVER: Attempting to recover from storm-control err-disable state on (?P<interface>\\S+)"
+        }
+    ]
+}

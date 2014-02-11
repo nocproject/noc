@@ -1,0 +1,31 @@
+{
+    "name": "APC | AOS | Chassis | PSU | PSU Recovered (SNMP)",
+    "uuid": "63f91382-2049-47e3-ac1b-f04bc05f0107",
+    "description": "PowerNet-MIB::apc",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "AC/DC input power"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^PowerNet-MIB::apc$"
+        },
+        {
+            "key_re": "^PowerNet-MIB::mtrapargsString\\.0$",
+            "value_re": "^UPS: No longer on battery power.$"
+        }
+    ]
+}

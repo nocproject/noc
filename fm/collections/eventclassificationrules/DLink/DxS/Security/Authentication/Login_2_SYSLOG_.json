@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Login #2 (SYSLOG)",
+    "uuid": "c2b334ab-403e-4429-a279-359dd7fb99b1",
+    "description": "INFO: Successful login through Console (Username: noc)",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Successful login through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)"
+        }
+    ]
+}

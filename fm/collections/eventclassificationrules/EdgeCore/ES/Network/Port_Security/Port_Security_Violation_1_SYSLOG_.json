@@ -1,0 +1,27 @@
+{
+    "name": "EdgeCore | ES | Network | Port Security | Port Security Violation #1 (SYSLOG)",
+    "uuid": "d7aa5e45-d2ac-41cb-8ca3-7b41a62a00a2",
+    "description": "Sep 20 17:12:33 172.16.3.100 snmp Unit 1, Port 1 have intrusion mac address.",
+    "event_class__name": "Network | Port Security | Port Security Violation",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "interface"
+            "value": "='Eth %s/%s' % (unit, port)"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Unit (?P<unit>\\S+), Port\\s+(?P<port>\\d+) have intrusion mac address\\.$"
+        }
+    ]
+}

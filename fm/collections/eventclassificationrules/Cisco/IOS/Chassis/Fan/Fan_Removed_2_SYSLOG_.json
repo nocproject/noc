@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Removed #2 (SYSLOG)",
+    "uuid": "37ecce5e-b8aa-4583-8232-49dcff404fbb",
+    "description": "%OIR-SP-6-REMFAN: Fan 1 removed",
+    "event_class__name": "Chassis | Fan | Fan Removed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%OIR-SP-6-REMFAN: (?P<name>.+) removed"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | NTP | System Clock Synchronized (SYSLOG)",
+    "uuid": "d7e6f8ef-a49c-4e4e-83ca-e82c3f509c30",
+    "description": "xntpd[1433]: synchronized to 10.30.99.111, stratum=1",
+    "event_class__name": "Network | NTP | System Clock Synchronized",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "xntpd\\[\\d+\\]: synchronized to (?P<server_address>\\S+), stratum=(?P<stratum>\\d+)$"
+        }
+    ]
+}

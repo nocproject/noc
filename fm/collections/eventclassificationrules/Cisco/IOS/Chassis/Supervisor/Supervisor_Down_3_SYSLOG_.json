@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Chassis | Supervisor | Supervisor Down #3 (SYSLOG)",
+    "uuid": "0fa0ea19-731c-4fb5-976e-d39f54a0388b",
+    "description": "%PFREDUN-SP-6-ACTIVE: Standby processor removed or reloaded, changing to Simplex mode",
+    "event_class__name": "Chassis | Supervisor | Supervisor Down",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name"
+            "value": "Standby Supervisor"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PFREDUN-SP-6-ACTIVE: Standby processor removed or reloaded, changing to Simplex mode"
+        }
+    ]
+}

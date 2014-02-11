@@ -1,0 +1,21 @@
+{
+    "name": "Zyxel | ZyNOS | Environment | Temperature Out of Range (SYSLOG)",
+    "uuid": "e7b2a89d-9590-4315-93ad-db1ce87b763b",
+    "description": "MAC temperature value 132 exceeds its limit temperature value",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?P<name>\\S+) temperature value (?P<measure>\\-\\d+) exceeds its limit temperature value"
+        }
+    ]
+}

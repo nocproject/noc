@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Unknown | Ignore auth messages #1 (SYSLOG)",
+    "uuid": "02d6e7de-ee51-4a69-8e71-2200561a5341",
+    "description": "Jul 20 2012 13:06:40 od-agg-1-dobrovolskogo126 %%01SHELL/5/AUTHCMDNONEED(l): 'User alex doesn't need command authorization.' from 10.48.63.2 by VTY.",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "SHELL/\\d+/AUTHCMDNONEED"
+        }
+    ]
+}

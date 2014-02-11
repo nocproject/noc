@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | Storm Control | Broadcast Storm Cleared #1 (SYSLOG)",
+    "uuid": "ac191861-6729-4c7f-87f8-639d05f37d5c",
+    "description": "INFO(6) Port 22 Broadcast storm has cleared",
+    "event_class__name": "Network | Storm Control | Broadcast Storm Cleared",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) Broadcast storm has cleared"
+        }
+    ]
+}

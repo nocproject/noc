@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Failed #7 (SYSLOG)",
+    "uuid": "5a06612a-6101-40df-baec-4e03b874486f",
+    "description": "%PS-3-MULTFAIL: There is more than one failure with the Power System 1; please resolve problems immediately.",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PS-3-MULTFAIL: There is more than one failure with the (?P<name>Power System) \\d+; please resolve problems immediately\\.$"
+        }
+    ]
+}

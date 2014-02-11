@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Out of Range #2 (SYSLOG)",
+    "uuid": "f3fb4a3d-080c-4859-81d1-6f944ce8786b",
+    "description": "%SYS-0-SUP_TEMPMAJORFAIL:Supervisor in slot 5 EARL major temperature threshold exceeded ",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-0-SUP_TEMP(?:MINOR|MAJOR)FAIL:\\s*(?P<name>Supervisor in slot \\d+) \\S+ (?P<threshold>minor|major) temperature threshold exceeded"
+        }
+    ]
+}

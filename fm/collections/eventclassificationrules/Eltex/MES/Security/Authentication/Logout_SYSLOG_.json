@@ -1,0 +1,21 @@
+{
+    "name": "Eltex | MES | Security | Authentication | Logout (SYSLOG)",
+    "uuid": "49d50c9b-8903-4f45-a3b4-91fcc5583f5a",
+    "description": "%AAA-I-DISCONNECT: User CLI session for user admin over telnet , source 10.8.4.19 destination  10.8.2.13  TERMINATED. The Telnet/SSH session may still be connected.",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%AAA-I-DISCONNECT: User CLI session for user (?P<user>.+?) over (telnet|ssh) ?, source (?P<ip>\\S+) destination  \\S+  TERMINATED\\. The Telnet/SSH session may still be connected\\.$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | Authentication | SSH - Logout (SYSLOG)",
+    "uuid": "226e3e1a-ce13-4d21-99f8-be3e69247d82",
+    "description": "sshd[69551]: Received disconnect from 193.34.22.119: 11: disconnected by user",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "sshd\\[\\d+\\]: Received disconnect from (?P<ip>\\S+): 11: disconnected by user$"
+        }
+    ]
+}

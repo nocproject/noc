@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #1 (SYSLOG)",
+    "uuid": "97a72b44-a110-434b-9650-e15b091f4448",
+    "description": "%PM_SCP-SP-3-GBIC_BAD: GBIC integrity check on port 1/2 failed: bad key",
+    "event_class__name": "Chassis | Hardware | Module | Module Error",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PM_SCP-SP-3-GBIC_BAD: (?P<module>\\S+) integrity check on port (?P<interface>\\S+) failed: (?P<reason>.+)"
+        }
+    ]
+}

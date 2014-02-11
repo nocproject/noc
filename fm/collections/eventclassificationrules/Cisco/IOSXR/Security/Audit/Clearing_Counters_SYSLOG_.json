@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOSXR | Security | Audit | Clearing Counters (SYSLOG)",
+    "uuid": "e596f642-213c-416d-b5b1-ce79d9e5707d",
+    "description": "%MGBL-IFSTATS-6-CLEAR_COUNTERS : Clear counters on TenGigE0/0/1/2",
+    "event_class__name": "Security | Audit | Clearing Counters",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "command"
+            "value": "='clear counter interface %s' % iface"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "Cisco.IOSXR"
+        },
+        {
+            "key_re": "source",
+            "value_re": "syslog"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%MGBL-IFSTATS-6-CLEAR_COUNTERS : Clear counters on (?P<iface>.+)"
+        }
+    ]
+}

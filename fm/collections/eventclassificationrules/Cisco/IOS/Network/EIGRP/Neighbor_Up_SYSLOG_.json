@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | EIGRP | Neighbor Up (SYSLOG)",
+    "uuid": "9c3fca87-b1e8-47c0-b91d-1bbd4af29ce8",
+    "description": "%DUAL-5-NBRCHANGE: IP-EIGRP(0) 100: Neighbor 172.16.8.62 (FastEthernet0/0.14) is up: new adjacency",
+    "event_class__name": "Network | EIGRP | Neighbor Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%DUAL-5-NBRCHANGE: (?:IP-EIGRP(\\(\\d+\\))?|EIGRP-IPv4)(:\\(\\d+\\))? (?P<as>\\d+): Neighbor (?P<neighbor>\\S+) \\((?P<interface>.+?)\\) is (?P<to_state>up): (?P<reason>.*)$"
+        }
+    ]
+}

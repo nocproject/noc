@@ -1,0 +1,27 @@
+{
+    "name": "Cisco | IOS | Security | Audit | Command #2 (SYSLOG)",
+    "uuid": "595b5c77-0af9-4dbb-b1dd-9e4138dc70b2",
+    "description": "%LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
+    "event_class__name": "Security | Audit | Command",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "command"
+            "value": "='interface %s shutdown' % iface"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LINK-5-CHANGED: Interface (?P<iface>.+?), changed state to administratively down"
+        }
+    ]
+}

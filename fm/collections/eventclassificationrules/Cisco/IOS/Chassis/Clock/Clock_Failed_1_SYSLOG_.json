@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Clock | Clock Failed #1 (SYSLOG)",
+    "uuid": "09cd53cf-955c-4c39-94cf-8d5d7d66a685",
+    "description": "%SYS-2-REDUNDANTCLOCK_FAIL: Redundant clock failed",
+    "event_class__name": "Chassis | Clock | Clock Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-2-REDUNDANTCLOCK_FAIL: (?P<name>Redundant clock) failed$"
+        }
+    ]
+}
