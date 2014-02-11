@@ -1,9 +1,9 @@
-!/bin/sh
+#!/bin/sh
 ##----------------------------------------------------------------------
 ## CentOS 6.4 bootstrap.sh
 ## Install, initialize and run NOC
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -44,11 +44,10 @@ cp $DIST/files/nginx.conf /etc/nginx/conf.d/noc.conf || error_exit "Cannot copy 
 # Put init script
 cp $DIST/files/noc-launcher /etc/init.d/ || error_exit "Cannot install init file"
 chkconfig noc-launcher on
-service noc-launcher start
 #
 if [ $TEST -eq 0 ]; then
     echo "Stopping all NOC processes"
-    /etc/init.d/noc-launcher stop
+    service noc-launcher stop
 fi
 # Run NOC's upgrade process
 ./scripts/upgrade || error_exit "Failed to upgrade NOC"
@@ -68,6 +67,6 @@ if [ $TEST -eq 1 ]; then
     # Run nginx
     /etc/init.d/nginx restart
     # Run NOC
-    /etc/init.d/noc-launcher start
+    service noc-launcher start
 fi
 
