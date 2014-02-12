@@ -8,7 +8,8 @@
 
 ## NOC modules
 from noc.lib.datasource import DataSource
-from noc.inv.models import *
+from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
 
 
 class InterfaceDS(DataSource):
@@ -25,7 +26,16 @@ class InterfaceDS(DataSource):
             q["name"] = managed_object.profile.convert_interface_name(interface)
         if ifindex:
             q["ifindex"] = int(ifindex)
+        self._description = None
         self._interface = Interface.objects.filter(**q).first()
+        if self._interface:
+            self._description = self._interface.description
+        else:
+            # Try to find subinterface
+            si = SubInterface.objects.filter(**q).first()
+            if si:
+                self._description = si.description
+                self._interface = si.interface
 
     @property
     def name(self):
@@ -35,9 +45,7 @@ class InterfaceDS(DataSource):
 
     @property
     def description(self):
-        if not self._interface:
-            return None
-        return self._interface.description
+        return self._description
 
     @property
     def link(self):
