@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Collections management
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -26,13 +26,8 @@ from noc.fm.models.mibalias import MIBAlias
 from noc.fm.models.mibpreference import MIBPreference
 from noc.fm.models.enumeration import Enumeration
 from noc.fm.models.alarmseverity import AlarmSeverity
-from noc.fm.models.alarmclass import AlarmClass
-from noc.fm.models.eventclass import EventClass
-from noc.fm.models.eventclassificationrule import EventClassificationRule
-from noc.fm.models.cloneclassificationrule import CloneClassificationRule
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
-from noc.lib.debug import error_report
 
 
 class Command(BaseCommand):
@@ -67,14 +62,14 @@ class Command(BaseCommand):
             action="store_const",
             dest="cmd",
             const="remove",
-            help="Remove file to collection"
+            help="Remove file from collection"
         ),
         make_option(
             "--check", "-c",
             action="store_const",
             dest="cmd",
             const="check",
-            help="check_collections"
+            help="Check collections"
         ),
         make_option(
             "--status", "-S",
@@ -100,11 +95,7 @@ class Command(BaseCommand):
         ("fm.mibaliases", MIBAlias),
         ("fm.mibpreferences", MIBPreference),
         ("fm.enumerations", Enumeration),
-        ("fm.alarmseverities", AlarmSeverity),
-        ("fm.alarmclasses", AlarmClass),
-        ("fm.eventclasses", EventClass),
-        ("fm.eventclassificationrules", EventClassificationRule),
-        ("fm.cloneclassificationrules", CloneClassificationRule)
+        ("fm.alarmseverities", AlarmSeverity)
     ]
 
     def log(self, msg):
@@ -112,15 +103,7 @@ class Command(BaseCommand):
             return
         print msg
 
-    def handle(self, *args, **kwargs):
-        try:
-            self._handle(*args, **kwargs)
-        except CommandError:
-            raise
-        except:
-            error_report()
-
-    def _handle(self, *args, **options):
+    def handle(self, *args, **options):
         self.verbose = bool(options.get("verbosity"))
         if options["cmd"] == "sync":
             return self.handle_sync()
@@ -167,27 +150,22 @@ class Command(BaseCommand):
             cr = "%s/collections/%s" % (dc.module, dc.name)
             if os.path.exists(os.path.join(cr, "manifest.csv")):
                 raise CommandError("Collection %s is already upgraded" % c)
-            fl = []
             for root, dirs, files in os.walk(cr):
                 for f in files:
-                    if f.endswith(".json"):
-                        fl += [os.path.join(root, f)]
-            for p in fl:
-                s = os.stat(p)
-                data = json_decode(read_file(p))
-                if isinstance(data, list):
-                    for o in data:
-                        if "__aliases" in o:
-                            del o["__aliases"]
-                        dc.install_item(o)
-                elif isinstance(data, dict):
-                    if "__aliases" in data:
-                        del data["__aliases"]
-                    dc.install_item(data)
-                if os.stat(p)[stat.ST_MTIME] == s[stat.ST_MTIME]:
-                    # Remove stale file
-                    self.log("    ... removing %s" % p)
-                    os.unlink(p)
+                    if not f.endswith(".json"):
+                        continue
+                    p = os.path.join(root, f)
+                    s = os.stat(p)
+                    data = json_decode(read_file(p))
+                    if isinstance(data, list):
+                        for o in data:
+                            dc.install_item(o)
+                    elif isinstance(data, dict):
+                        dc.install_item(data)
+                    if os.stat(p)[stat.ST_MTIME] == s[stat.ST_MTIME]:
+                        # Remove stale file
+                        self.log("    ... removing %s" % p)
+                        os.unlink(p)
             self.log("    ... saving manifest.csv")
             dc.save()
         self.log("   ... done")
