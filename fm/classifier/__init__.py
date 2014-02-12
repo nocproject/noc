@@ -65,6 +65,7 @@ class Classifier(Daemon):
     noc-classifier daemon
     """
     daemon_name = "noc-classifier"
+    DEFAULT_RULE = "Unknown | Default"
 
     # SNMP OID pattern
     rx_oid = re.compile(r"^(\d+\.){6,}")
@@ -82,6 +83,7 @@ class Classifier(Daemon):
         self.unclassified_codebook_depth = 5
         self.unclassified_codebook = {}  # object id -> [<codebook>]
         self.handlers = {}  # event class id -> [<handler>]
+        self.default_rule = None
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         Daemon.__init__(self)
@@ -161,6 +163,7 @@ class Classifier(Daemon):
                 n += 1
         if cn:
             logging.info("%d rules are cloned" % cn)
+        self.default_rule = EventClassificationRule.objects.filter(name=self.DEFAULT_RULE).first()
         logging.info("%d rules are loaded in the %d profiles" % (
             n, len(self.rules)))
 
@@ -409,6 +412,8 @@ class Classifier(Daemon):
                 logging.debug("Matching class for event %s found: %s (Rule: %s)" % (
                     event.id, r.event_class_name, r.name))
                 return r, v
+        if self.default_rule:
+            return self.default_rule, {}
         return None, None
 
     def eval_rule_variables(self, event, event_class, vars):
