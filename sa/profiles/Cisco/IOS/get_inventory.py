@@ -70,8 +70,12 @@ class Script(NOCScript):
                 if not part_no:
                     if "XCVR" in type:
                         # Last chance to get idprom
+                        if match.group("name").startswith("Transceiver"): 
+                            int = match.group("name").split()[1]
+                        else:
+                            int = match.group("name")
                         vendor, t_sn, t_rev, part_no = self.get_idprom(
-                        match.group("name"), match.group("descr").upper()
+                        int, match.group("descr").upper()
                         )
                         if not serial:
                             serial = t_sn
