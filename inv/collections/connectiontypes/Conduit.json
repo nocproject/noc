@@ -1,7 +1,7 @@
 {
-    "name": "Conduits",
+    "name": "Conduit",
     "uuid": "376c9a7d-d810-42cc-9672-f6194efb4b1e",
     "description": "Inter-manhole conduits",
     "c_group": [],
-    "genders": "ss"
+    "genders": "s"
 }

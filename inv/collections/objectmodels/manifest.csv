@@ -162,8 +162,9 @@ DLink | Modules | DEM-420CX,8d44af10-0aff-49cf-9cc8-3d6ea8aa3a94,DLink/Modules/D
 DLink | Modules | DEM-420X,3e4a7ec7-1b07-4437-ad6d-bd53df12fc7c,DLink/Modules/DEM-420X.json,0fb714642fb4fa416ded5eb629c962532063eebd6271154144f8d40823b6f8a3
 DLink | Modules | DEM-540,b42574e6-c536-4ac1-abe6-2bc716f63910,DLink/Modules/DEM-540.json,22342ac462d27dec85e8317f8e77de24690d8f76a2b629cb698cf32425acc80b
 DLink | Modules | DES-132GB,ad2f4760-ac4a-45b0-a993-5c03f0ee921a,DLink/Modules/DES-132GB.json,71634436c0ee623aae1b545bdc3efb4d2a95ca7bc4ffd5d958c189b065742fdc
-Ducts | Cable Entry,ae6a7aff-af07-489e-b222-8cf71b62b5b4,Ducts/Cable_Entry.json,01c4a509402aa737b3d37686eee791c68017c448cb30a4d931ed8519bba66f35
-Ducts | Manhole,edf46d3b-841c-4d2f-bc85-6301a4d0c6d8,Ducts/Manhole.json,7618c95bcfea9ec1f5588f931b4080763745f1f2852030333116d9a5fdc35b6a
+Ducts | Cable Entry,ae6a7aff-af07-489e-b222-8cf71b62b5b4,Ducts/Cable_Entry.json,60ae9d5cd6c373756ba98304f0c64eab878e6de6ff78040dd89658bbeedbb5ef
+Ducts | Conduits,bedc97be-259d-4928-9217-ffe88aebdb27,Ducts/Conduits.json,97cd9b8edbd7d72737997a566da521743f28745266513f73856d0c1d7e8af765
+Ducts | Manhole,edf46d3b-841c-4d2f-bc85-6301a4d0c6d8,Ducts/Manhole.json,7cb90ae36fabb027a4036ac2e5151cdb49ff130120c52153d6627f0f5a6b4cd3
 Edge-Core | ES | ES3510,e4935dff-8f94-407b-a1d3-419ec5027565,Edge-Core/ES/ES3510.json,71d5d7f0b663d6a6e5846a992af8ebbfda69d8aa5ae6a806575f9d2cbfbb5d62
 Edge-Core | ES | ES3510MA,28f3c0d8-9cb8-4a78-a533-f40500002144,Edge-Core/ES/ES3510MA.json,17c12f3472c234facef5d3bef344b1d5d243f3be698da2b32f88d17b1e177151
 Edge-Core | ES | ES3526XA-V2,3dfd3732-8197-4577-8410-e3d7ff7c8f59,Edge-Core/ES/ES3526XA-V2.json,6acbecab567905a917ff897e67350b2c1116645f09a42d239bdc613067d10f69

@@ -189,7 +189,7 @@ class MapPlugin(InvPlugin):
             object = Object.objects.get(id=gd.object)
             points[str(object.id)] = gd.data
             # Get all conduits connections
-            for c, remote, remote_name in object.get_genderless_connections("conduits"):
+            for c, remote, remote_name in object.get_genderless_connections("ducts"):
                 if (remote, object) not in conduits:
                     conduits.add((object, remote))
         # Find and resolve missed points

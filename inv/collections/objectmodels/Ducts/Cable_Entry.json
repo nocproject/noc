@@ -6,11 +6,25 @@
     "plugins": ["-inventory", "conduits"],
     "connections": [
         {
-            "description": "Ducts conduits connections",
+            "description": "Inter-manhole ducts",
+            "direction": "s",
+            "gender": "s",
+            "name": "ducts",
+            "type__name": "Ducts"
+        },
+        {
+            "description": "Conduits",
             "direction": "s",
             "gender": "s",
             "name": "conduits",
             "type__name": "Conduits"
+        },
+        {
+            "description": "Passing cables",
+            "direction": "s",
+            "gender": "s",
+            "name": "cables",
+            "type__name": "Cables"
         }
     ],
     "data": {
