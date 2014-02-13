@@ -12,6 +12,7 @@ Brocade | FastIron SuperX | PS Connector DC,fbdfffb6-f894-4cb7-8aff-f0f11325070f
 Brocade | FastIron SuperX | SFM Connector,e25e43f7-64a0-4891-82cf-c6bd897d7a78,Brocade/FastIron_SuperX/SFM_Connector.json,1da516a5d597e85eae6e7602916191595c02aa6261433666ad6d64a48c30067f
 Brocade | JetCore | Backplane Connector,714e6a57-8b15-45a0-acc0-fb005437dfa5,Brocade/JetCore/Backplane_Connector.json,00785fcb5c976c1947fa82e693b1394099540d6d74b6c8ecde05d7112f85981f
 Brocade | JetCore | PS Connector,11c0312e-7761-42c3-af60-af698a669a98,Brocade/JetCore/PS_Connector.json,18aa1d2600e3b070a950ef752b20ee4de8a4231a14059f49a73d738d9a698795
+Cables,233e6bb4-7404-4232-b2a5-6a0ac34e8890,Cables.json,755e08ebafce0706cf8ca9cb0a9f4c8d64bf11ed8a25646905875a532e0dea72
 Cisco | 6500 | CLK,dd7f8ef7-77fa-4145-b5c9-0b78b5dd5e1e,Cisco/6500/CLK.json,77f82808dcfb9bcdfda61bac871c1454a3a7362d33e9ad242fd2d27a104b824a
 Cisco | 6500 | DFC,5edcd942-237d-40d7-86d5-a317f11dc9b4,Cisco/6500/DFC.json,204287644a5d6d246bfe53609b3f6311c9dffef37354b384df03735db94e5d70
 Cisco | 6500 | PSU,ff568a7e-b4e6-40fc-820d-f3737263f055,Cisco/6500/PSU.json,314651d16036d47c7da0306e685aeee52e331e24a890d483f5ea9d942d91ea18
@@ -49,7 +50,7 @@ Cisco | SCE | SCE8000 OPB,2f8e75be-b431-466c-9d8d-db3d50306cd3,Cisco/SCE/SCE8000
 Cisco | SCE | SCE8000 SCM,590d68a8-70ae-4320-99a0-0189af2e2050,Cisco/SCE/SCE8000_SCM.json,9aaa30c9f67f4786a9aa2e0a67151d4504b3f268d0e4d469b83e37c7a83f74bb
 Cisco | SIP,c9f1ef78-12c6-4f9f-abf9-1de8d5d39d1b,Cisco/SIP.json,2b8a9f530356f68022dace8ac1730ff80aafcbe40eaa77c449b1c4edb02967dc
 Cisco | SPA,866b5026-45ab-4346-911f-1837b9157767,Cisco/SPA.json,c41be9f8773ea254c97ed9b782a9fcf98ca0167ec558f475c2340a88fafe5a51
-Conduits,376c9a7d-d810-42cc-9672-f6194efb4b1e,Conduits.json,622693e6086f260895cb9bc70d60f4c1ea0ef4cf218fc0989248be5403cafd5e
+Conduits,376c9a7d-d810-42cc-9672-f6194efb4b1e,Conduits.json,4115add8fee885e07264b60bbbe296b3d062e6d701e912b4a9d261d2fb94a482
 DLink | DES30 | Module,a15c4ef0-dd7c-43cb-9c6d-3556a2e8cbaa,DLink/DES30/Module.json,ad8d2607e3478815408340de13a9d6ee0e65f074be023054d076a00189c9e50a
 DLink | DES32-33 | Module,dac0eacf-c401-49ef-9d9c-156bf6d9e083,DLink/DES32-33/Module.json,0c69e1d5e9a10668809ae8a612777c38e66a9c6fe1e094c38abde0f7c1273b35
 DLink | DGS32-33 | Module,9a0a1d7f-5475-4c25-83df-aacf7d5fd169,DLink/DGS32-33/Module.json,3c17d0de2c46ebca4717e118c15611cae0a6899d52041c7d991147a4cdcf6fbe
@@ -57,6 +58,7 @@ DLink | DGS34-36 | Module,01247664-2a85-4b58-bae5-d35f7b3aa148,DLink/DGS34-36/Mo
 DLink | DGS3610 | Module,68feb8cb-5737-4b63-825c-b78097d7eb2e,DLink/DGS3610/Module.json,8d51ecf707168f7deba64c78131b51434e6e950a7cdbf84d8a5da301621d98d8
 DLink | DXS33 | Module,ba78d3f3-eb56-4924-9028-4dfae46582c1,DLink/DXS33/Module.json,e1fc6eb67abfff21470af42000855a9bbf1bd2391097975a8c3a3c90f0ec6c3d
 DLink | DXS36 | Module,ac4e6275-f1b3-4199-937b-24d132dcac5f,DLink/DXS36/Module.json,cc21b594946ae1069c19f9a3c7f213bd43a0c04a4eced31999dd431697de8d22
+Ducts,bb94899a-b565-4883-b4d0-6592c38f698a,Ducts.json,e69952f7a0b40d90b361d7e184f46a849150142bd7e04c7e6c32954802706f39
 Electrical | D-sub,5d808b39-c16b-4dc2-bc2f-12d3a852c81a,Electrical/D-sub.json,f03d78946fc6562382129c313dc1844ecce4427bb6900150268e36fc5981cc5f
 Electrical | DB21,a3a85312-fc14-4e26-9b86-6480b0b4ec71,Electrical/DB21.json,ef36f7bc8cd0791392ab022109d8e345412455281fe98cc24131584acf696631
 Electrical | DB25,e5d20b77-9020-4765-ab22-df865629ac87,Electrical/DB25.json,8516faf16edf0f62e4cb94f867ba439a3ab4613d857841d8da06c917f60626f6

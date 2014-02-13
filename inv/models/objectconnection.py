@@ -45,3 +45,13 @@ class ObjectConnection(Document):
 
     def __unicode__(self):
         return u"<%s>" % ", ".join(unicode(c) for c in self.connection)
+
+    def p2p_get_other(self, object):
+        """
+        Return other side
+        as object, name
+        """
+        for c in self.connection:
+            if c.object != object:
+                return c.object, c.name
+        return None, None

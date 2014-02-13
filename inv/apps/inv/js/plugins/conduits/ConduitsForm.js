@@ -52,7 +52,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
             handler: me.onDeleteConduits
         });
 
-        me.conduitsStore = Ext.create("Ext.data.Store", {
+        me.ductsStore = Ext.create("Ext.data.Store", {
             model: null,
             fields: [
                 "connection_id",
@@ -67,8 +67,8 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
             }
         });
 
-        me.conduitsGrid = Ext.create("Ext.grid.Panel", {
-            store: me.conduitsStore,
+        me.ductsGrid = Ext.create("Ext.grid.Panel", {
+            store: me.ductsStore,
             width: 400,
             dockedItems: [{
                 xtype: "toolbar",
@@ -141,7 +141,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
                 }
             ],
             items: [
-                me.conduitsGrid,
+                me.ductsGrid,
                 me.conduitsLayout
             ]
         });
@@ -152,7 +152,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
     preview: function(data) {
         var me = this;
         me.currentId = data.id;
-        me.conduitsStore.loadData(data.conduits);
+        me.ductsStore.loadData(data.ducts);
         me.saveButton.setDisabled(true);
     },
     //
@@ -170,8 +170,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
     //
     addConduits: function(config) {
         var me = this;
-        console.log("ADD", config);
-        me.conduitsStore.add({
+        me.ductsStore.add({
             target_id: config.target_id,
             target_name: config.target_name,
             project_distance: config.project_distance,
@@ -205,14 +204,14 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
     //
     deleteConduits: function(record) {
         var me = this;
-        me.conduitsStore.remove(record);
+        me.ductsStore.remove(record);
         me.saveButton.setDisabled(false);
         me.conduitsLayout.createBlockButton.setDisabled(true);
     },
     //
     onDeleteConduits: function() {
         var me = this,
-            sm = me.conduitsGrid.getSelectionModel(),
+            sm = me.ductsGrid.getSelectionModel(),
             selection = sm.getSelection(),
             remoteId = selection[0].get("target_id");
         Ext.Msg.show({
@@ -248,7 +247,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
     onSaveConduits: function() {
         var me = this,
             data = [];
-        me.conduitsStore.each(function(v) {
+        me.ductsStore.each(function(v) {
             data.push({
                 target: v.get("target_id"),
                 project_distance: v.get("project_distance"),
@@ -259,7 +258,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
             url: "/inv/inv/" + me.currentId + "/plugin/conduits/",
             method: "POST",
             jsonData: {
-                conduits: data
+                ducts: data
             },
             scope: me,
             success: function() {
