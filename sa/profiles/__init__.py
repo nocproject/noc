@@ -196,7 +196,7 @@ class Profile(object):
         return s
 
     # Cisco-like translation
-    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?)$", re.IGNORECASE)
+    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?B?)$", re.IGNORECASE)
 
     def convert_interface_name_cisco(self, s):
         """
@@ -216,6 +216,8 @@ class Profile(object):
         'Se 0/1/0:0.10'
         >>> Profile().convert_interface_name_cisco("ATM1/1/ima0")
         'At 1/1/ima0'
+        >>> Profile().convert_interface_name_cisco("Port-channel5B")
+        'Po 5B'
         """
         match = self.rx_cisco_interface_name.match(s)
         if not match:
