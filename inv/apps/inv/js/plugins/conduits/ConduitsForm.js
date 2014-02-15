@@ -52,6 +52,14 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
             handler: me.onDeleteConduits
         });
 
+        me.followButton = Ext.create("Ext.button.Button", {
+            text: "Follow",
+            glyph: NOC.glyph.long_arrow_right,
+            disabled: true,
+            scope: me,
+            handler: me.onFollowConduits
+        });
+
         me.ductsStore = Ext.create("Ext.data.Store", {
             model: null,
             fields: [
@@ -77,7 +85,9 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
                     me.saveButton,
                     "-",
                     me.addButton,
-                    me.deleteButton
+                    me.deleteButton,
+                    "-",
+                    me.followButton
                 ]
             }],
             columns: [
@@ -227,9 +237,18 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         });
     },
     //
+    onFollowConduits: function() {
+        var me = this,
+            sm = me.ductsGrid.getSelectionModel(),
+            selection = sm.getSelection(),
+            remoteId = selection[0].get("target_id");
+        me.app.app.showObject(remoteId);
+    },
+    //
     onSelectConduit: function(grid, record, index, eOpts) {
         var me = this;
         me.deleteButton.setDisabled(false);
+        me.followButton.setDisabled(false);
         me.conduitsLayout.preview(record);
     },
     //
@@ -237,6 +256,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         var me = this;
         me.app.reload();
         me.deleteButton.setDisabled(true);
+        me.followButton.setDisabled(true);
     },
     //
     reloadMapLayer: function() {
