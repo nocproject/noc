@@ -36,6 +36,40 @@ def refresh_schedule(scheduler_name, job_class, key, ts=None, delta=None):
     })
 
 
+def start_schedule(scheduler_name, job_class, key):
+    """
+    :param scheduler_name:
+    :param job_class:
+    :param key:
+    :return:
+    """
+    c = get_db()["noc.schedules.%s" % scheduler_name]
+    c.update({
+        Scheduler.ATTR_CLASS: job_class,
+        Scheduler.ATTR_KEY: key,
+        Scheduler.ATTR_STATUS: Scheduler.S_STOP
+    }, {
+        "$set": {Scheduler.ATTR_STATUS: Scheduler.S_WAIT}
+    })
+
+
+def stop_schedule(scheduler_name, job_class, key):
+    """
+    :param scheduler_name:
+    :param job_class:
+    :param key:
+    :return:
+    """
+    c = get_db()["noc.schedules.%s" % scheduler_name]
+    c.update({
+        Scheduler.ATTR_CLASS: job_class,
+        Scheduler.ATTR_KEY: key,
+        Scheduler.ATTR_STATUS: Scheduler.S_WAIT
+    }, {
+        "$set": {Scheduler.ATTR_STATUS: Scheduler.S_STOP}
+    })
+
+
 def submit_job(scheduler_name, job_class, key=None,
                ts=None, delta=None, data=None):
     if ts is None:
