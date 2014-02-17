@@ -68,7 +68,7 @@ class Script(NOCScript):
                 )
                 serial = match.group("serial")
                 if not part_no:
-                    if "XCVR" in type:
+                    if type and "XCVR" in type:
                         # Last chance to get idprom
                         if match.group("name").startswith("Transceiver"): 
                             int = match.group("name").split()[1]
