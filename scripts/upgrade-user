@@ -40,6 +40,9 @@ info "Syncronizing database"
 # Migrate database
 info "Migrating database"
 ./noc migrate --ignore-ghost-migrations || error_exit "$LINENO: migrate failed"
+# Syncronize mongodb collections
+info "Syncronize collections"
+./noc collection --sync || error_exit "$LINENO: collection --sync failed"
 # Generate SSH keys
 if [ ! -f etc/ssh/id_rsa ]; then
     info "Generating SSH keys"
@@ -51,9 +54,6 @@ info "Updating manifests"
 # Syncronize pyRules
 info "Syncronizing pyRules"
 ./noc sync-pyrules || error_exit "$LINENO: sync-pyrules failed"
-# Syncronize mongodb collections
-info "Syncronize collections"
-./noc collection --sync || error_exit "$LINENO: collection --sync failed"
 # Set up permissions
 info "Setting up permissions"
 ./noc sync-perm || error_exit "$LINENO: sync-perm failed"
