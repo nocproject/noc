@@ -1,0 +1,28 @@
+{
+    "name": "Cisco | 7600 | WS-CAC-4000W-INT",
+    "uuid": "19e135b3-a3ea-44fa-897a-02165652abe5",
+    "vendor__code": "CISCO",
+    "description": "Cisco 110/220v AC power supply, 4000 watt, international cord",
+    "connections": [
+        {
+            "description": "AC power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        },
+        {
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-CAC-4000W-INT"
+        }
+    }
+}
