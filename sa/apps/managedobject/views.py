@@ -32,7 +32,8 @@ from noc.vc.models.vcdomain import VCDomain
 from mongoengine.queryset import Q as MQ
 from noc.lib.serialize import json_decode
 from noc.lib.scheduler.utils import (get_job, refresh_schedule,
-                                     submit_job)
+                                     submit_job, stop_schedule,
+                                     start_schedule)
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 
@@ -255,8 +256,27 @@ class ManagedObjectApplication(ExtModelApplication):
             if getattr(o.object_profile, cfg):
                 if name in r:
                     self.ensure_discovery_job(name, o)
+                    start_schedule("inv.discovery", name, o.id)
                     refresh_schedule("inv.discovery",
                                      name, o.id, delta=d)
+                    d += 1
+        return {
+            "success": True
+        }
+
+    @view(url="^(?P<id>\d+)/discovery/stop/$", method=["POST"],
+          access="change_discovery", api=True)
+    def api_stop_discovery(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        r = json_decode(request.raw_post_data).get("names", [])
+        d = 0
+        for cfg, name, method in self.DISCOVERY_METHODS:
+            if getattr(o.object_profile, cfg):
+                if name in r:
+                    self.ensure_discovery_job(name, o)
+                    stop_schedule("inv.discovery", name, o.id)
                     d += 1
         return {
             "success": True

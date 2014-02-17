@@ -37,6 +37,14 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
              handler: me.onRunSelected
         });
 
+        me.stopSelectedButton = Ext.create("Ext.button.Button", {
+             text: "Disable",
+             glyph: NOC.glyph.minus_sign,
+             scope: me,
+             disabled: true,
+             handler: me.onStopSelected
+        });
+
         me.store = Ext.create("Ext.data.Store", {
             fields: [
                 {
@@ -147,7 +155,8 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
                         me.closeButton,
                         me.refreshButton,
                         "-",
-                        me.runSelectedButton
+                        me.runSelectedButton,
+                        me.stopSelectedButton
                     ]
                 }
             ],
@@ -249,9 +258,41 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
         });
     },
     //
+    onStopSelected: function() {
+        var me = this,
+            records = me.grid.getSelectionModel().getSelection(),
+            names = records.map(function(r) {
+                return r.get("name");
+            });
+        Ext.Ajax.request({
+            url: "/sa/managedobject/" + me.currentRecord.get("id") + "/discovery/stop/",
+            method: "POST",
+            scope: me,
+            jsonData: {
+                "names": names
+            },
+            success: function() {
+                me.onRefresh();
+            },
+            failure: function() {
+                NOC.error("Failed to disable tasks");
+            }
+        });
+    },
+    //
     onGridSelection: function(selection, records) {
-        var me = this;
-        me.runSelectedButton.setDisabled(records.length === 0);
+        var me = this,
+            canRun, canStop;
+        canRun = records.filter(function(v) {
+            var status = v.get("status");
+            return v.get("enable_profile") === true && (status === "W" || status === "S");
+        }).length > 0;
+        canStop = records.filter(function(v) {
+            var status = v.get("status");
+            return v.get("enable_profile") === true && status === "W";
+        }).length > 0;
+        me.runSelectedButton.setDisabled(!canRun);
+        me.stopSelectedButton.setDisabled(!canStop);
         if(records.length === 1) {
             me.showLog(records[0].get("name"));
         }
