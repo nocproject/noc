@@ -486,7 +486,7 @@ class Classifier(Daemon):
         if event.source == "SNMP Trap":
             # For SNMP traps format values according to MIB definitions
             resolved_vars.update(MIB.resolve_vars(event.raw_vars))
-        elif event.source == "syslog":
+        elif event.source == "syslog" and not event.log:
             # Check for unclassified events flood
             o_id = event.managed_object.id
             if o_id in self.unclassified_codebook:
