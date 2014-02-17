@@ -1,0 +1,132 @@
+{
+    "name": "Cisco | 1800 | 1801",
+    "uuid": "b4a53dff-ec0a-4c7e-a99c-ff35a5ffbd07",
+    "vendor__code": "CISCO",
+    "description": "ADSL over POTS router with 8-port 10/100BASE-T switch",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "connections": [
+        {
+            "description": "Bri0",
+            "direction": "s",
+            "gender": "f",
+            "name": "Bri0",
+            "protocols": ["ISDN"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Atm0",
+            "direction": "s",
+            "gender": "f",
+            "name": "Atm0",
+            "protocols": ["ADSLoPOTS"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa4",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa5",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa6",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa7",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa8",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Aux port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no1": "CISCO1801"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

@@ -22,6 +22,7 @@ Cisco | 7200 | Linecard,4c4d2acf-79ee-4990-9c11-d6e0028c2829,Cisco/7200/Linecard
 Cisco | 7200 | PWR-7200,e527ad85-23af-47db-95d8-610748177d20,Cisco/7200/PWR-7200.json,cc25f92f6b1646b2a554c8db2c38f3a946b7df7d11c4428d3af2ae4b60dbbe13
 Cisco | 7200 | Supervisor,f0aaaf95-2646-4a60-bbe0-8fa3f7139143,Cisco/7200/Supervisor.json,a055ca467f5ab5be096e779bce3a102feaf4519b796cd1c1c4c2f5dbc8fb7d0e
 Cisco | 7600 | 7606 Fan,463a22b7-2a1b-42dc-ab07-df99bb4edfff,Cisco/7600/7606_Fan.json,d6f91ebe1436adeb81b7a5a354b9ac751c4f3181e8617232444a9c8e607c2bc8
+Cisco | 7600 | 7609 Fan,b5c6af7b-977b-4c52-a942-7b364907f4f2,Cisco/7600/7609_Fan.json,4280b41f00924653e0d37deba34dd859b0a261e3d875dc05b4f2c2aa04280a5b
 Cisco | 7600 | Bus Linecard,de7c5b2c-8c75-4546-a3f6-9a2e4a03c1cf,Cisco/7600/Bus_Linecard.json,df1bd56f6f697bbf004d68e4a67df1856843f545f253b783a69a4480ef515a42
 Cisco | 7600 | Bus/Fabric Linecard,c7387cf5-dd0d-46f8-a3d6-8ecc169de993,Cisco/7600/Bus_Fabric_Linecard.json,13a8b6e3ece17970500d581795c8bfeff9a8fe63545ffd41b90ae07c10c752ec
 Cisco | 7600 | CLK,905b0c8a-8d26-418f-b1af-74e53ec0ebd9,Cisco/7600/CLK.json,39ae87cc73cbac2f2ef3d5d838d0c287eb41b1bd9306db40f3f6a100562396f2
