@@ -1,8 +1,8 @@
 {
-    "name": "DLink | DGS | DGS-3120-24SC",
-    "uuid": "f07281d4-7183-4269-a545-b1299ad11d70",
+    "name": "DLink | DGS | DGS-3120-24TC",
+    "uuid": "e903e177-c613-4f45-946b-b0eb3a6e5c67",
     "vendor__code": "DLINK",
-    "description": "DGS-3120-24SC L3 Managed Switch witch 16 ports 100/1000 SFP, 8 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 10G CX4",
+    "description": "DGS-3120-24TC L3 Managed Switch witch 20 ports 10/100/1000BASE-T and 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 10G CX4",
     "connection_rule__name": "DLink | DxS",
     "connections": [
         {
@@ -21,28 +21,12 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "1",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp1",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "2",
             "direction": "s",
             "gender": "f",
             "name": "2",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "2",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp2",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
         },
         {
             "description": "3",
@@ -53,28 +37,12 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "3",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp3",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "4",
             "direction": "s",
             "gender": "f",
             "name": "4",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "4",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp4",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
         },
         {
             "description": "5",
@@ -85,28 +53,12 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "5",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp5",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "6",
             "direction": "s",
             "gender": "f",
             "name": "6",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "6",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp6",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
         },
         {
             "description": "7",
@@ -117,14 +69,6 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "7",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp7",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "8",
             "direction": "s",
             "gender": "f",
@@ -133,108 +77,108 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "8",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp8",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "9",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp9",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "10",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp10",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "11",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp11",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "12",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp12",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "13",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp13",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "14",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp14",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "15",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp15",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "16",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp16",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "16",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "17",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp17",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "18",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp18",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "19",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp19",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "19",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "20",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp20",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "20",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "21",
+            "direction": "s",
+            "gender": "f",
+            "name": "21",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "21",
@@ -246,6 +190,14 @@
         },
         {
             "description": "22",
+            "direction": "s",
+            "gender": "f",
+            "name": "22",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "22",
             "direction": "i",
             "gender": "f",
             "name": "sfp22",
@@ -254,11 +206,27 @@
         },
         {
             "description": "23",
+            "direction": "s",
+            "gender": "f",
+            "name": "23",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "23",
             "direction": "i",
             "gender": "f",
             "name": "sfp23",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "24",
+            "direction": "s",
+            "gender": "f",
+            "name": "24",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "24",
@@ -303,8 +271,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3120-24SC",
-            "part_no1": "DGS-3120-24SC-DC"
+            "part_no0": "DGS-3120-24TC"
         },
         "management": {
             "managed": true
