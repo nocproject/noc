@@ -40,6 +40,8 @@ class DiscoveryDaemon(Daemon):
         self.load_beef_map()
         log_jobs = self.config.get("main", "log_jobs") or None
         self.scheduler.set_job_log(log_jobs)
+        max_faults = self.config.getint("main", "max_job_faults")
+        self.scheduler.max_faults = max_faults or None
 
     def load_beef_map(self):
         for o in self.config.options("beef"):
