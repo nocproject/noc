@@ -47,7 +47,9 @@ def start_schedule(scheduler_name, job_class, key):
     c.update({
         Scheduler.ATTR_CLASS: job_class,
         Scheduler.ATTR_KEY: key,
-        Scheduler.ATTR_STATUS: Scheduler.S_STOP
+        Scheduler.ATTR_STATUS: {
+            "$in": [Scheduler.S_STOP, Scheduler.S_DISABLED]
+        }
     }, {
         "$set": {Scheduler.ATTR_STATUS: Scheduler.S_WAIT}
     })
