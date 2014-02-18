@@ -1,8 +1,8 @@
 {
-    "name": "NoName | Transceiver | 1G | SFP BX (tx 1490nm)",
+    "name": "NoName | Transceiver | 1G | SFP BX10D",
     "uuid": "705ecb31-581c-4543-91c2-cc0c6c9517cd",
     "vendor__code": "NONAME",
-    "description": "NoName SFP BX transceiver",
+    "description": "NoName SFP BX10-D (tx 1490nm) transceiver",
     "connections": [
         {
             "description": "SFP Connector",
