@@ -10,55 +10,63 @@
             "direction": "i",
             "gender": "f",
             "name": "sfp1",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "sfp port 1",
+            "description": "sfp port 2",
             "direction": "i",
             "gender": "f",
             "name": "sfp2",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "sfp port 1",
+            "description": "sfp port 3",
             "direction": "i",
             "gender": "f",
             "name": "sfp3",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "sfp port 1",
+            "description": "sfp port 4",
             "direction": "i",
             "gender": "f",
             "name": "sfp4",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "sfp port 1",
+            "description": "sfp port 5",
             "direction": "i",
             "gender": "f",
             "name": "sfp5",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "sfp port 1",
+            "description": "sfp port 6",
             "direction": "i",
             "gender": "f",
             "name": "sfp6",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "sfp port 1",
+            "description": "sfp port 7",
             "direction": "i",
             "gender": "f",
             "name": "sfp7",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "sfp port 1",
+            "description": "sfp port 8",
             "direction": "i",
             "gender": "f",
             "name": "sfp8",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {

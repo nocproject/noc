@@ -10,6 +10,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Console",
+            "protocols": [">RS232"],
             "type__name": "Electrical | RJ45"
         },
         {

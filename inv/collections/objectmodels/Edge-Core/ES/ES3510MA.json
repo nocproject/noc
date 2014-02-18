@@ -16,6 +16,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Console",
+            "protocols": [">RS232"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -23,6 +24,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/1",
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -30,6 +32,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/2",
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -37,6 +40,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/3",
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -44,6 +48,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/4",
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -51,6 +56,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/5",
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -58,6 +64,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/6",
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -65,6 +72,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/7",
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -72,6 +80,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/8",
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -80,6 +89,7 @@
             "gender": "f",
             "group": "0",
             "name": "Ethernet1/9C",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -88,6 +98,7 @@
             "gender": "f",
             "group": "0",
             "name": "Ethernet1/9F",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -96,6 +107,7 @@
             "gender": "f",
             "group": "1",
             "name": "Ethernet1/10C",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -104,6 +116,7 @@
             "gender": "f",
             "group": "1",
             "name": "Ethernet1/10F",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         }
     ],

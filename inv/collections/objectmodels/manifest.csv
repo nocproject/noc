@@ -1,6 +1,6 @@
 name,uuid,path,hash
 APC | NetShelter SX | 42U AR3100,dcb53f4c-7725-493d-b0d8-b054df22e1db,APC/NetShelter_SX/42U_AR3100.json,02667b2652f8166bda61cd4e09d4f42d1b28536b60201b34a87e1c13862bc002
-Alcatel | OS | OS6850-U24X,21185ab6-f251-414c-96cd-f4417466f790,Alcatel/OS/OS6850-U24X.json,f118fe6264c52acaa65846eaa9244831a19db5c8ddd9f8d1bac9faef495956a3
+Alcatel | OS | OS6850-U24X,21185ab6-f251-414c-96cd-f4417466f790,Alcatel/OS/OS6850-U24X.json,638982e6ed693d334b15f435ce3ce0611df998dd468f3a0a936632115b1b141c
 Alcatel | OS | PS-126W-AC,fd1324c9-a517-4e94-8dc3-e5a8fa9786e8,Alcatel/OS/PS-126W-AC.json,19b10b905d10ab92c372f78c5239f464308570d709156d95a3a8a611e2fcefb5
 Area,73899565-8653-4920-8373-06ac2197d41d,Area.json,1fd81fc944d1da7208fbdaff688ec6348bcd77c4dcc61ec152b1600c4fca77e9
 Arista | 7100 | DCS-7124S,f2ba6387-5e5a-46e1-a2f3-e0cc645877a2,Arista/7100/DCS-7124S.json,2d26a30dccbc93c3a0453ce9c15473c40b6dfa63694bcc6c80175f08c71fe65d
@@ -17,10 +17,10 @@ Brocade | JetCore | 4 slot chassis,c69d8ee7-a292-48ca-9db4-bd64515c722b,Brocade/
 Brocade | JetCore | 8 slot chassis,9ac4db8f-3421-4ff0-9378-e6dc87bfbd56,Brocade/JetCore/8_slot_chassis.json,f8acdce63cc605310ba5901fa4c83aa20a5fa420fab1e71325064dc944c765e4
 Brocade | JetCore | B10G,d2b8bfb6-c4e9-41b2-9dcd-2693859c6dad,Brocade/JetCore/B10G.json,e700944b591b5aae4d8b076d05b7af49c7236bc1877ca7e3ac12483ce62a8884
 Brocade | JetCore | B2x10G,0b5d9e45-9ff5-4b67-a2e8-c89998967d14,Brocade/JetCore/B2x10G.json,a0cd1c86dc65afeb15367b3cd9d7813bd8b63956dd4b44dc88a6c2f9dd758a5a
-Brocade | JetCore | J-BxG16,66ba4a93-0eb3-4303-a888-48e9e4216c1a,Brocade/JetCore/J-BxG16.json,6ead12eaf401099f26d3b0c096ee480bfe9226e7ee2b2712d005fbfa5ee26060
-Brocade | JetCore | J-BxGMR4,cf3cd4ac-4e7d-4d69-8dfc-30df613a6fab,Brocade/JetCore/J-BxGMR4.json,6214e4b5d503732a53a052e65b5af0925a3ed0f85f1b4a484a52ce80519b730a
-Brocade | JetCore | J-FIxG16,e76572d5-cf80-4666-abeb-11ce1c106317,Brocade/JetCore/J-FIxG16.json,099cb373a87462f5cea68e4373b588a155c5a0e4fc46385d05638b5b0de0bad8
-Brocade | JetCore | J-FIxGMR4,cde738d1-187a-4738-be14-c7050d1eaea3,Brocade/JetCore/J-FIxGMR4.json,9d7f2fb61def03c912bc21510a477dda790747a4a4ab5ad35aaf6bec0cc7a08e
+Brocade | JetCore | J-BxG16,66ba4a93-0eb3-4303-a888-48e9e4216c1a,Brocade/JetCore/J-BxG16.json,5ff3d28ba4be7cb842c589589e61e54833dd04df493e357a7d5087ccdd843917
+Brocade | JetCore | J-BxGMR4,cf3cd4ac-4e7d-4d69-8dfc-30df613a6fab,Brocade/JetCore/J-BxGMR4.json,65383da522c8ed088af2071a1c8872af017b7ab7db5b23e3d642beadaed1116d
+Brocade | JetCore | J-FIxG16,e76572d5-cf80-4666-abeb-11ce1c106317,Brocade/JetCore/J-FIxG16.json,b325f52e97c78bfa96340573b272bdd0ed08cabd740a601554ff95f51430a988
+Brocade | JetCore | J-FIxGMR4,cde738d1-187a-4738-be14-c7050d1eaea3,Brocade/JetCore/J-FIxGMR4.json,9f921a5e1d75ebdbdf547dfcdd144ec404762050fa4b707b6406058f9fbde07e
 Brocade | RX | BigIron RX 4XFP linecard,16d91136-b5d8-42fb-89d8-6d4f7e34e2ad,Brocade/RX/BigIron_RX_4XFP_linecard.json,5a51a8b1942a8955425397d546a0c7ffb2d0e3ef36852d6c66a7135c3674b42f
 Brocade | RX | BigIron RX Mgmt module,17722045-ff6b-4a67-9b48-536eefeb3365,Brocade/RX/BigIron_RX_Mgmt_module.json,6787f2f6633b795c1707455a11f3e7f03bb3e68083776deb4321305bf211e196
 Brocade | RX | BigIron RX-8 Chassis,7c6d03e9-9564-4cc7-a51b-01a2a8afaafc,Brocade/RX/BigIron_RX-8_Chassis.json,c50012a7cb24bd621687a1233dcef41ae9acedd6ecf584c3af613cce3df21818
@@ -28,8 +28,8 @@ Brocade | RX | PSU AC 1200W,4df22a3c-c9d6-4531-b3a3-ff45cbd3980a,Brocade/RX/PSU_
 Brocade | RX | Switch Fabric Module,bef27232-7085-450f-a5d1-02c5a84d93dc,Brocade/RX/Switch_Fabric_Module.json,b9eb1149553ae829b885ce74deb8873215aec2074ba85f5b0fcbcf5b53dd61f3
 Brocade | SX | Chassis FastIron SX 1600,03a9d952-d532-4bbc-a9ee-4e6e83dfcd24,Brocade/SX/Chassis_FastIron_SX_1600.json,88dab4492c54ff86a2fdc4bd9f7a1159c4110c6cb4ba055290f2b73e0a1bca9f
 Brocade | SX | Chassis FastIron SX 800,c87721d2-ea1c-4523-bc1c-9c3748ced1b8,Brocade/SX/Chassis_FastIron_SX_800.json,74324956bcbcfa6f6f8ffd032b39a8106df18c0ce8ddb0a864b60cfcfa6fe9a8
-Brocade | SX | SX-FI-24HF 24 SFP Linecard1,0d2895b7-1076-411b-8104-bd5d305465e2,Brocade/SX/SX-FI-24HF_24_SFP_Linecard1.json,29baf28b1cf568b039c6aa56f15b529e15023884122f105ec488c160de8cb508
-Brocade | SX | SX-FI-2XG 2SFP+ Linecard,bcc931e4-58e6-45d0-926d-850db06186f0,Brocade/SX/SX-FI-2XG_2SFP+_Linecard.json,58bc7762768d1cabb185958bd88fea52afae6235473d4453dce8cd82da3259d4
+Brocade | SX | SX-FI-24HF 24 SFP Linecard1,0d2895b7-1076-411b-8104-bd5d305465e2,Brocade/SX/SX-FI-24HF_24_SFP_Linecard1.json,e61543f1820724142a8aa4bfeafbb628aa446cd34163a25a0d37a401091d5ee6
+Brocade | SX | SX-FI-2XG 2SFP+ Linecard,bcc931e4-58e6-45d0-926d-850db06186f0,Brocade/SX/SX-FI-2XG_2SFP+_Linecard.json,5d7dab38b02b298f1ae036aed64210a3b5aecbc383268815bf25c3de24960aec
 Brocade | SX | SX-FIZMRXL6 0-port management module,f4a68d1d-f6cc-4be3-b857-de6bd573e3e4,Brocade/SX/SX-FIZMRXL6_0-port_management_module.json,6143487c88e931f5af2f4d9c6201f621d9bd3288f19ba806a7c74c2b29a7cb6c
 Brocade | TurboIron x24,17edc5e8-15cf-4e58-8cbf-fa8fba6be867,Brocade/TurboIron_x24.json,d6c824c74f7b0a957a61ad713356a3d0e1cf0dc9fc01215fa33ab755985034ef
 Building,9e67029a-d694-41bb-b07c-b241a18c69b9,Building.json,de934cf3c224e90cebff7e260e29d60719d751c4da8c68ca61813c05bb396846
@@ -122,6 +122,8 @@ Cisco | ME3400 | ME-3400G-12CS-A,1d46bd83-b9fd-44fc-b24b-2b40b24396f3,Cisco/ME34
 Cisco | ME3400 | ME-3400G-12CS-D,a6d544ba-df8b-48e0-8557-11223372ceb9,Cisco/ME3400/ME-3400G-12CS-D.json,f3069500949aec19f2900fff589fc640577bbe5e7595a637f2cf4908be7e35e0
 Cisco | ME3400E | ME-3400E-24TS-M,cc57e073-e679-475f-8e52-dc8a6be9beb6,Cisco/ME3400E/ME-3400E-24TS-M.json,50756946105eee60b0b1faa64172433069f625257f82320d8b95b46cea2e8f4c
 Cisco | ME3400E | ME-3400EG-12CS-M,0f671df7-2fa2-4065-916c-fb4db4de828c,Cisco/ME3400E/ME-3400EG-12CS-M.json,5d90e1d63845e5f6742af0d7db3b07647167752aead10b68e308bb678898ed2b
+Cisco | ME3600 | ME-3600X-24FS-M,dbfa1dd5-3dd6-4996-8e1e-68be5ddaca9c,Cisco/ME3600/ME-3600X-24FS-M.json,ab4177bdec4dece64fec967280c9488b087090cb24a5bf5ab0476453eef89929
+Cisco | ME3600 | PWR-ME3KX-AC,89d6a0cb-88fc-4db2-9b78-c4736cde6514,Cisco/ME3600/PWR-ME3KX-AC.json,6945a536b8300d51b114397d3b30f6998a4774aaa82b50bef5e5058aa60ca1ae
 Cisco | PWR | ME34X-PWR-AC,12e5bfd4-4024-4f54-b1ab-0c69c5afc019,Cisco/PWR/ME34X-PWR-AC.json,9c9ce856ed86849fe7779382baee0267de03c67d1c83f219e9cd7df9f2f676b8
 Cisco | PWR | ME34X-PWR-DC,5186cf39-3551-4ee4-ae98-f98c59b4c588,Cisco/PWR/ME34X-PWR-DC.json,9d202caf7a9cc08ab1e6154d7c0d548c478e61d762ab8414c0c643fd2f14b719
 Cisco | PWR | PWR-C49-300DC,f6d06ad0-e8c7-45e7-8045-9aa1883f558b,Cisco/PWR/PWR-C49-300DC.json,c01d1483870076f5f774104a96e07081f3ab23260ec634dece95b9e2aff31823
@@ -175,8 +177,8 @@ DLink | Modules | DES-132GB,ad2f4760-ac4a-45b0-a993-5c03f0ee921a,DLink/Modules/D
 Ducts | Cable Entry,ae6a7aff-af07-489e-b222-8cf71b62b5b4,Ducts/Cable_Entry.json,60ae9d5cd6c373756ba98304f0c64eab878e6de6ff78040dd89658bbeedbb5ef
 Ducts | Conduits,bedc97be-259d-4928-9217-ffe88aebdb27,Ducts/Conduits.json,97cd9b8edbd7d72737997a566da521743f28745266513f73856d0c1d7e8af765
 Ducts | Manhole,edf46d3b-841c-4d2f-bc85-6301a4d0c6d8,Ducts/Manhole.json,7cb90ae36fabb027a4036ac2e5151cdb49ff130120c52153d6627f0f5a6b4cd3
-Edge-Core | ES | ES3510,e4935dff-8f94-407b-a1d3-419ec5027565,Edge-Core/ES/ES3510.json,71d5d7f0b663d6a6e5846a992af8ebbfda69d8aa5ae6a806575f9d2cbfbb5d62
-Edge-Core | ES | ES3510MA,28f3c0d8-9cb8-4a78-a533-f40500002144,Edge-Core/ES/ES3510MA.json,17c12f3472c234facef5d3bef344b1d5d243f3be698da2b32f88d17b1e177151
+Edge-Core | ES | ES3510,e4935dff-8f94-407b-a1d3-419ec5027565,Edge-Core/ES/ES3510.json,7ba0ad978cd33d8c5ec6e0a092d77e6fb71ca331e65cb76612803e418346cd8b
+Edge-Core | ES | ES3510MA,28f3c0d8-9cb8-4a78-a533-f40500002144,Edge-Core/ES/ES3510MA.json,fc8762af20d762ae0a4224a0adfae779b36b237f763dcab9df8c3730483c0708
 Edge-Core | ES | ES3526XA-V2,3dfd3732-8197-4577-8410-e3d7ff7c8f59,Edge-Core/ES/ES3526XA-V2.json,6acbecab567905a917ff897e67350b2c1116645f09a42d239bdc613067d10f69
 Edge-Core | ES | ES3528M,320d4483-e8a9-42fd-8a4d-9c7d43edfbc8,Edge-Core/ES/ES3528M.json,74fe009a9bf0b582f76077d0b0cca486636c38da2f6990fe46fc9c1519004942
 Edge-Core | ES | ES3552M,4656d985-0faa-4b92-b81c-522e688968d1,Edge-Core/ES/ES3552M.json,6e3e027d4e5f8c05acb01b944a42cb859fce00afd145a588af1aff7d2b7211a6
