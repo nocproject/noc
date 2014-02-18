@@ -1,0 +1,105 @@
+{
+    "name": "Alcatel | 7324RU",
+    "uuid": "457eece4-4d51-41d2-bf60-c12d40ec841f",
+    "vendor__code": "ALU",
+    "description": "Alcatel 7324 RU IP-based DSLAM",
+    "connections": [
+        {
+            "description": "ADLS User ports 1-24",
+            "direction": "s",
+            "gender": "f",
+            "name": "User1-24",
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "ADLS User ports 25-48",
+            "direction": "s",
+            "gender": "f",
+            "name": "User25-48",
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "POTS ports 1-24",
+            "direction": "s",
+            "gender": "f",
+            "name": "CO1-24",
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "POST ports 25-48",
+            "direction": "s",
+            "gender": "f",
+            "name": "CO25-48",
+            "type__name": "Electrical | Telco-50"
+        },
+        {
+            "description": "Dry contacts",
+            "direction": "s",
+            "gender": "f",
+            "name": "Alarm",
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "RJ45 Uplink port #1",
+            "direction": "s",
+            "gender": "f",
+            "name": "enet1",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "SFP Uplink port #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "enet1_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "SFP Uplink port #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "enet2_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RJ45 Uplink port #2",
+            "direction": "s",
+            "gender": "f",
+            "name": "enet2",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ11"
+        },
+        {
+            "description": "DC Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "Power",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        }
+    ],
+    "data": {
+        "airflow": {
+            "exhaust": "l"
+        },
+        "asset": {
+            "part_no0": "7324RU"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2.0
+        }
+    }
+}
