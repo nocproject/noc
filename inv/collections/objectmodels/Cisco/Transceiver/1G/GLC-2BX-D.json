@@ -1,0 +1,37 @@
+{
+    "name": "Cisco | Transceiver | 1G | GLC-2BX-D",
+    "uuid": "25c3a94f-bfca-433f-9d6f-daf95ad03c4a",
+    "vendor__code": "CISCO",
+    "description": "2-channel 1000BASE-BX10-D for Single-Fiber Bidirectional Applications",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "TX/RX LC",
+            "direction": "s",
+            "gender": "f",
+            "name": "txrx1",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1490"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX/RX LC",
+            "direction": "s",
+            "gender": "f",
+            "name": "txrx2",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1490"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "GLC-2BX-D"
+        }
+    }
+}
