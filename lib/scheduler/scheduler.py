@@ -37,16 +37,26 @@ class Scheduler(object):
     ATTR_RUNS = "runs"  # Number of runs
     ATTR_TRACEBACK = "tb"  # Last error traceback
     ATTR_LOG = "log"  # Job log
+    ATTR_FAULTS = "f"  # Amount of sequental faults
     # ATTR_STATUS values
     S_WAIT = "W"  # Waiting to run
     S_RUN = "R"   # Running
     S_STOP = "S"  # Stopped by operator
+    S_DISABLED = "D"  # Disabled by system
 
     JobExists = JobExists
 
+    IGNORE_MRT_CODES = set([
+        12,  # ERR_OVERLOAD
+        15,  # ERR_ACTIVATOR_NOT_AVAILABLE
+        16,  # ERR_DOWN
+        18,  # ERR_ACTIVATOR_LOST
+        24,  # ERR_SHARD_IS_DOWN
+    ])
+
     def __init__(self, name, cleanup=None, reset_running=False,
                  initial_submit=False, max_threads=None,
-                 preserve_order=False):
+                 preserve_order=False, max_faults=None):
         self.name = name
         self.job_classes = {}
         self.collection_name = self.COLLECTION_BASE + self.name
@@ -59,6 +69,7 @@ class Scheduler(object):
         self.initial_submit_next_check = {}  # job class -> timestamp
         self.max_threads = max_threads
         self.preserve_order = preserve_order
+        self.max_faults = max_faults
         self.running_lock = threading.Lock()
         self.running_count = defaultdict(int)  # Group -> Count
         self.log_jobs = None
@@ -165,7 +176,7 @@ class Scheduler(object):
     def reschedule_job(self, job_name, key, ts, status=None,
                        duration=None, last_status=None, tb=None,
                        log=None, update_runs=False,
-                       skip_running=False):
+                       skip_running=False, faults=None):
         self.info("Rescheduling job %s(%s) to %s%s" % (
             job_name, key, ts, " status=%s" % status if status else ""))
         q = {
@@ -185,6 +196,8 @@ class Scheduler(object):
             s[self.ATTR_LAST_STATUS] = last_status
         if duration is not None:
             s[self.ATTR_LAST_DURATION] = duration
+        if faults is not None:
+            s[self.ATTR_FAULTS] = faults
         op = {"$set": s}
         if update_runs:
             op["$inc"] = {self.ATTR_RUNS: 1}
@@ -306,13 +319,34 @@ class Scheduler(object):
         else:
             # Reschedule job
             t1 = time.time()
+            if self.max_faults and status in (Job.S_FAILED, Job.S_EXCEPTION):
+                code = None
+                if type(tb) == dict:
+                    code = tb.get("code")
+                if code in self.IGNORE_MRT_CODES:
+                    fc = None  # Ignore temporary errors
+                    next_status = self.S_WAIT
+                else:
+                    # Get fault count
+                    fc = self.get_faults(job.name, job.key) + 1
+                    if fc >= self.max_faults:  # Disable job
+                        next_status = self.S_DISABLED
+                        self.info("Disabling job %s(%s) due to %d sequental faults" % (
+                            job.name, job.key, fc
+                        ))
+                    else:
+                        next_status = self.S_WAIT
+            else:
+                next_status = self.S_WAIT
+                fc = 0
             self.reschedule_job(
                 job.name, job.key, t,
-                status="W",
+                status=next_status,
                 last_status=status,
                 duration=t1 - job.started,  # @todo: maybe error
                 tb=tb,
-                update_runs=True
+                update_runs=True,
+                faults=fc
             )
         # Reschedule jobs must be executed on complete
         for job_name, key in on_complete:
@@ -421,6 +455,19 @@ class Scheduler(object):
                 time.sleep(1)
             else:
                 self.cleanup()
+
+    def get_faults(self, job_name, key=None):
+        """
+        Get job's faults count
+        """
+        r = self.collection.find_one({
+            self.ATTR_CLASS: job_name,
+            self.ATTR_KEY: key
+        })
+        if not r:
+            return 0
+        else:
+            return r.get(self.ATTR_FAULTS, 0)
 
     def wipe(self):
         """
