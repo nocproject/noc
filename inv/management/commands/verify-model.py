@@ -28,9 +28,15 @@ class Command(BaseCommand):
             print "Rebuilding connections cache"
             ModelConnectionsCache.rebuild()
         CHECK_MAP = {
+            "Electrical | DB9": self.check_ct_db9,
             "Electrical | RJ45": self.check_ct_rj45,
             "Electrical | Power | IEC 60320 C14": self.check_ct_c14,
-            "Transceiver | SFP": self.check_ct_sfp
+            "Transceiver | SFP": self.check_ct_sfp,
+            "Transceiver | SFP+": self.check_ct_sfp_plus,
+            "Transceiver | QSFP+": self.check_ct_qsfp_plus,
+            "Transceiver | XFP": self.check_ct_xfp,
+            "Transceiver | GBIC": self.check_ct_gbic,
+            "Transceiver | XENPAK | Cisco": self.check_ct_xenpak
         }
         for m in ObjectModel.objects.all():
             self.errors = []
@@ -60,6 +66,13 @@ class Command(BaseCommand):
                     return
         self.e(c, "Must have one of protocols: %s" % ", ".join(protocols))
 
+    def check_ct_db9(self, c):
+        if c.direction != "s":
+            self.e(c, "DB9 must have direction 's' (has '%s')" % c.direction)
+        self.check_protocols(c, [
+            ">RS232"
+        ])
+
     def check_ct_rj45(self, c):
         if c.direction != "s":
             self.e(c, "RJ45 must have direction 's' (has '%s')" % c.direction)
@@ -76,4 +89,31 @@ class Command(BaseCommand):
     def check_ct_sfp(self, c):
         self.check_protocols(c, [
             "TransEth100M", "TransEth1G", "TransEth10G", "TransEth40G"
+        ])
+
+    def check_ct_sfp_plus(self, c):
+        self.check_protocols(c, [
+            "TransEth1G", "TransEth10G"
+        ])
+
+    def check_ct_qsfp_plus(self, c):
+        self.check_protocols(c, [
+            "TransEth1G", "TransEth10G", "TransEth40G"
+        ])
+
+    def check_ct_xfp(self, c):
+        # TODO: Add "TransEth10G" protocol to models
+        return
+        self.check_protocols(c, [
+            "TransEth10G"
+        ])
+
+    def check_ct_gbic(self, c):
+        self.check_protocols(c, [
+            "TransEth100M", "TransEth1G", "TransEth10G", "TransEth40G"
+        ])
+
+    def check_ct_xenpak(self, c):
+        self.check_protocols(c, [
+            "TransEth10G"
         ])
