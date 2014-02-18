@@ -37,10 +37,10 @@ class Scheduler(object):
     ATTR_RUNS = "runs"  # Number of runs
     ATTR_TRACEBACK = "tb"  # Last error traceback
     ATTR_LOG = "log"  # Job log
+    # ATTR_STATUS values
     S_WAIT = "W"  # Waiting to run
     S_RUN = "R"   # Running
     S_STOP = "S"  # Stopped by operator
-    S_FAIL = "F"  # Not used yet
 
     JobExists = JobExists
 
@@ -328,7 +328,7 @@ class Scheduler(object):
             else:
                 self.info("Job %s(%s) is failed" % (
                     job.name, job.get_display_key()))
-                self._complete_job(job, self.S_FAIL, m.script_result)
+                self._complete_job(job, job.S_FAILED, m.script_result)
         t.delete()
 
     def run_pending(self):
@@ -381,7 +381,7 @@ class Scheduler(object):
                 # Invalid job class. Park job to FAIL state
                 self.error("Invalid job class: %s" % jcls)
                 self.set_job_status(job_data[self.ATTR_CLASS],
-                    job_data[self.ATTR_KEY], self.S_FAIL)
+                    job_data[self.ATTR_KEY], Job.S_FAILED)
                 continue
             job = jcls(self,
                 job_data[self.ATTR_KEY], job_data[self.ATTR_DATA],
