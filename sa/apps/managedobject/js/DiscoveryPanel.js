@@ -106,6 +106,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
                         R: "Run",
                         S: "Stop",
                         F: "Fail",
+                        D: "Disabled",
                         true: "OK",
                         false: "Fail"
                     })
@@ -285,11 +286,11 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
             canRun, canStop;
         canRun = records.filter(function(v) {
             var status = v.get("status");
-            return v.get("enable_profile") === true && (status === "W" || status === "S");
+            return v.get("enable_profile") === true && (status === "W" || status === "S" || status === "" || status === "D");
         }).length > 0;
         canStop = records.filter(function(v) {
             var status = v.get("status");
-            return v.get("enable_profile") === true && status === "W";
+            return v.get("enable_profile") === true && (status === "W" || status === "");
         }).length > 0;
         me.runSelectedButton.setDisabled(!canRun);
         me.stopSelectedButton.setDisabled(!canStop);
