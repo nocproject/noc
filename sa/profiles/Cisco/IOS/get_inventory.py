@@ -282,6 +282,9 @@ class Script(NOCScript):
         elif pid.startswith("FAN"):
             # Fan module
             return "FAN", name.split()[1], pid
+        elif pid.startswith("NM-"):
+            # Network Module
+            return "NM", name[-1], pid
         elif "Clock FRU" in descr:
             # Clock module
             return "CLK", name.split()[1], pid
