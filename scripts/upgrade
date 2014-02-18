@@ -199,6 +199,11 @@ touch $PIP_FLAG
 info "Installing noc.pth"
 ./scripts/install-pth.py || error_exit "$LINENO: Cannot install noc.pth"
 ##
+## Install sitecustomize.py
+##
+info "Customizing Python site settings"
+./scripts/check-sitecustomize.py || error_exit "$LINENO: Cannot install check-sitecustomize.py"
+##
 ## Apply local patches
 ##
 info "Apply local patches"
