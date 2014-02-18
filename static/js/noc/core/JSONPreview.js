@@ -27,16 +27,16 @@ Ext.define("NOC.core.JSONPreview", {
             handler: me.onClose
         }));
         //
+        me.installButton = Ext.create("Ext.button.Button", {
+            text: "Install",
+            glyph: NOC.glyph.download_alt,
+            scope: me,
+            handler: me.onInstallJSON
+        });
+
         if(collection && NOC.settings.install_collection && NOC.hasPermission("create")) {
             tb.push("-");
-            tb.push(
-                Ext.create("Ext.button.Button", {
-                    text: "Install",
-                    glyph: NOC.glyph.download_alt,
-                    scope: me,
-                    handler: me.onInstallJSON
-                })
-            );
+            tb.push(me.installButton);
         }
 
         Ext.apply(me, {
@@ -58,8 +58,13 @@ Ext.define("NOC.core.JSONPreview", {
     },
     //
     preview: function(record) {
-        var me = this,
-            url = me.urlTemplate(record.data);
+        var me = this;
+        if(!record) {
+            me.items.first().update("No data!!!");
+            me.installButton.setDisabled(true);
+            return;
+        }
+        var url = me.urlTemplate(record.data);
         me.setTitle(me.titleTemplate(record.data));
         me.currentRecord = record;
         Ext.Ajax.request({
@@ -69,8 +74,7 @@ Ext.define("NOC.core.JSONPreview", {
             success: function(response) {
                 var json = Ext.decode(response.responseText);
                 me.items.first().update("<pre>" + Ext.util.Format.htmlEncode(json) + "</pre>");
-                //NOC.SyntaxHighlight.highlight(me.items.first(),
-                //    json, "json");
+                me.installButton.setDisabled(!record.get("uuid"));
             },
             failure: function() {
                 NOC.error("Failed to get JSON")
