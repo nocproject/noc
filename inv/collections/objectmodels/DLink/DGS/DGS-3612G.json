@@ -140,7 +140,7 @@
             "group": "0",
             "name": "console",
             "protocols": [">RS232"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Electrical | DB9"
         },
         {
             "description": "Power outlet",

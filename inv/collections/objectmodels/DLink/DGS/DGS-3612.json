@@ -7,7 +7,7 @@
     "connections": [
         {
             "description": "1",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "1",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -15,7 +15,7 @@
         },
         {
             "description": "2",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "2",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -23,7 +23,7 @@
         },
         {
             "description": "3",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "3",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -31,7 +31,7 @@
         },
         {
             "description": "4",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "4",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -39,7 +39,7 @@
         },
         {
             "description": "5",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "5",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -47,7 +47,7 @@
         },
         {
             "description": "6",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "6",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -55,7 +55,7 @@
         },
         {
             "description": "7",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "7",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -63,7 +63,7 @@
         },
         {
             "description": "8",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "8",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -140,7 +140,7 @@
             "group": "0",
             "name": "console",
             "protocols": [">RS232"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Electrical | DB9"
         },
         {
             "description": "Power outlet",

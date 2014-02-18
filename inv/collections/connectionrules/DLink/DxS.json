@@ -149,6 +149,14 @@
             "match_connection": "in",
             "match_type": "XCVR",
             "scope": "module",
+            "target_connection": "cx4_{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "module",
             "target_connection": "Gi{N}_gbic",
             "target_number": "",
             "target_type": "MODULE"
@@ -174,6 +182,14 @@
             "match_type": "XCVR",
             "scope": "module",
             "target_connection": "Te{N}_xfp",
+            "target_number": "",
+            "target_type": "MODULE"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "module",
+            "target_connection": "cx4_{N}",
             "target_number": "",
             "target_type": "MODULE"
         }

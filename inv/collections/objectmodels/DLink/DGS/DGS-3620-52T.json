@@ -1,10 +1,17 @@
 {
-    "name": "DLink | DGS | DGS-3650",
-    "uuid": "b505d15e-1388-4465-a6a7-4a1c6ed06cbe",
+    "name": "DLink | DGS | DGS-3620-52T",
+    "uuid": "fc6e6723-9e97-463b-afd6-3010d6419e98",
     "vendor__code": "DLINK",
-    "description": "DGS-3650 xStack L3 Managed Switch witch 44 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 module slot",
+    "description": "DGS-3620-52T xStack L3 Managed Switch witch 48 ports 10/100/1000BASE-T and 4 SFP+",
     "connection_rule__name": "DLink | DxS",
     "connections": [
+        {
+            "description": "SD card slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "card1",
+            "type__name": "Flash | SD"
+        },
         {
             "description": "1",
             "direction": "s",
@@ -366,28 +373,12 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "45",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp45",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "46",
             "direction": "s",
             "gender": "f",
             "name": "46",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "46",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp46",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
         },
         {
             "description": "47",
@@ -398,14 +389,6 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "47",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp47",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "48",
             "direction": "s",
             "gender": "f",
@@ -414,26 +397,36 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "48",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp48",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "49",
             "direction": "i",
             "gender": "f",
-            "name": "module1",
-            "type__name": "DLink | DGS34-36 | Module"
+            "name": "sfp+49",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "50",
             "direction": "i",
             "gender": "f",
-            "name": "module2",
-            "type__name": "DLink | DGS34-36 | Module"
+            "name": "sfp+50",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "51",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp+51",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "52",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp+52",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "Console port",
@@ -442,7 +435,7 @@
             "group": "0",
             "name": "console",
             "protocols": [">RS232"],
-            "type__name": "Electrical | DB9"
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "Power outlet",
@@ -456,7 +449,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3650"
+            "part_no0": "DGS-3620-52T"
         },
         "management": {
             "managed": true

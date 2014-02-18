@@ -7,7 +7,7 @@
     "connections": [
         {
             "description": "1",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "1",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -15,7 +15,7 @@
         },
         {
             "description": "2",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "2",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -23,7 +23,7 @@
         },
         {
             "description": "3",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "3",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -31,7 +31,7 @@
         },
         {
             "description": "4",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "4",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -39,7 +39,7 @@
         },
         {
             "description": "5",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "5",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -47,7 +47,7 @@
         },
         {
             "description": "6",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "6",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -55,7 +55,7 @@
         },
         {
             "description": "7",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "7",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -63,7 +63,7 @@
         },
         {
             "description": "8",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "8",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -71,7 +71,7 @@
         },
         {
             "description": "9",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "9",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -79,7 +79,7 @@
         },
         {
             "description": "10",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "10",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -87,7 +87,7 @@
         },
         {
             "description": "11",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "11",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -95,7 +95,7 @@
         },
         {
             "description": "12",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "12",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -103,7 +103,7 @@
         },
         {
             "description": "13",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "13",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -111,7 +111,7 @@
         },
         {
             "description": "14",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "14",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -119,7 +119,7 @@
         },
         {
             "description": "15",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "15",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -127,7 +127,7 @@
         },
         {
             "description": "16",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "16",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -135,7 +135,7 @@
         },
         {
             "description": "17",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "17",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -143,7 +143,7 @@
         },
         {
             "description": "18",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "18",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -151,7 +151,7 @@
         },
         {
             "description": "19",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "19",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -159,7 +159,7 @@
         },
         {
             "description": "20",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "20",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -257,7 +257,7 @@
             "group": "0",
             "name": "console",
             "protocols": [">RS232"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Electrical | DB9"
         },
         {
             "description": "Power outlet",
