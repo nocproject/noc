@@ -31,7 +31,8 @@ class Script(NOCScript):
         "loopback interface(s)": "loopback",
         "null interface": "null",
         "tunnel-te": "tunnel",
-        "vlan sub-interface(s)": None
+        "vlan sub-interface(s)": None,
+        "bridge-group virtual interface": "SVI"
     }
 
     rx_iface = re.compile(r"^(?P<name>\S+)\s+is\s+(?P<status>up|(?:administratively )?down),\s+"
