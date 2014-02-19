@@ -64,6 +64,11 @@ class Script(NOCScript):
         elif "MOD" in pid:
             number = name.split()[1].split("/")[1]
             return "MOD", number, pid
+        elif (("LC" in descr or "Line Card" in descr or
+              "Linecard" in descr) and
+              "module mau" not in name):
+            number = name.split()[1].split("/")[1]
+            return "MOD", number, pid 
         elif "MPA" in pid:
             number = name.split()[1].split("/")[-1]
             return "MPA", number, pid
