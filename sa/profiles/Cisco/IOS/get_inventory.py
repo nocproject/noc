@@ -234,8 +234,8 @@ class Script(NOCScript):
                     pid = self.get_transceiver_pid("1000BASE" + pid[5:])
                 return "XCVR", number, pid
         elif ((lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
-        and not pid.startswith("WS-CAC-") and not "Clock" in descr
-        and not "VTT FRU" in descr):
+        and not pid.startswith("WS-CAC-") and not pid.endswith("-MB")
+        and not "Clock" in descr and not "VTT FRU" in descr):
             try:
                 number = int(name)
             except ValueError:
@@ -256,6 +256,9 @@ class Script(NOCScript):
             and "Supervisor Engine" in descr)):
                 return "SUP", name[7:], pid
             else:
+                if (pid == "N/A" and "Gibraltar,G-20" in descr):
+                    # 2-port 100BASE-TX Fast Ethernet port adapter
+                    pid = "PA-2FE-TX"
                 return "LINECARD", name[7:], pid
         elif ((pid.startswith("WS-X64") or pid.startswith("WS-X67")
               or pid.startswith("WS-X65")) and "port" in descr):
@@ -285,6 +288,9 @@ class Script(NOCScript):
         elif pid.startswith("NM-"):
             # Network Module
             return "NM", name[-1], pid
+        elif pid.endswith("-MB"):
+            # Motherboard
+            return "MOTHERBOARD", None, pid
         elif "Clock FRU" in descr:
             # Clock module
             return "CLK", name.split()[1], pid
