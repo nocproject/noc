@@ -3,6 +3,7 @@
     "uuid": "d3595e44-1282-4b97-a9ff-7439e667b684",
     "vendor__code": "NOC",
     "description": "Network core level Point of Presence.",
+    "plugins": ["-inventory"],
     "connections": [
         {
             "description": "Inter-PoP logical links",
