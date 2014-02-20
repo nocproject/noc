@@ -3,13 +3,24 @@
     "uuid": "c13e8435-29a2-47fe-a87a-b7ee982c9f5d",
     "vendor__code": "NOC",
     "description": "Regional level Point of Presence.",
-    "connections": [],
+    "connections": [
+        {
+            "description": "Inter-PoP logical links",
+            "direction": "s",
+            "gender": "s",
+            "name": "links",
+            "type__name": "Inter-PoP Logical Links"
+        }
+    ],
     "data": {
         "container": {
             "container": true
         },
         "geopoint": {
             "layer": "pop_regional"
+        },
+        "pop": {
+            "level": 50
         }
     }
 }
