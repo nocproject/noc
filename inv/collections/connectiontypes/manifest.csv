@@ -103,6 +103,7 @@ Huawei | Quidway S5300 | Fan,16bdd354-1a6e-496c-aaf4-82dc97f61b16,Huawei/Quidway
 Huawei | Quidway S5300 | PSU,02305433-2a8c-4812-80c1-bbec7db6f364,Huawei/Quidway_S5300/PSU.json,6854f6aab0a4fa6c760db13c1e9e929476a4ea9f7e620d914ab66de6ed09deb7
 Huawei | Quidway S5300 | Rear slot,96552572-4f2b-459a-8d92-f82ab9ff4933,Huawei/Quidway_S5300/Rear_slot.json,9cd125877d1d9fb7c3288b9be2169b9ed1313f8cb2750c02858a59fe0bb4118b
 Huawei | Quidway S5300 | Stack 12G,36197a0a-dbd7-4814-aee7-714df1e5888c,Huawei/Quidway_S5300/Stack_12G.json,e6320475a6db94587bd48a1391e05481c594b6d221d874d063ebfb7c8db9e937
+Inter-PoP Logical Links,c2a6a92e-9836-4803-a518-c0960babda8c,Inter-PoP_Logical_Links.json,2980074ee980020c0b4dd021d4a6e4e19260473cc882ce3b98a75f53ad108dfd
 Juniper | EX | 8200 FPC,fc9e0b87-5b70-4ad2-a797-2266b80f6049,Juniper/EX/8200_FPC.json,64ffdf99e99abeaeaa56feb68fa935cba615beef8b3590953261d6158cd5bb87
 Juniper | EX | 8200 PWR,38e6b715-f422-403a-acb8-d4183f46e8b8,Juniper/EX/8200_PWR.json,6a0aaacf112d3f986d424f51ad491f4e14bac234fa43d50be0b4683566c01230
 Juniper | EX | 8200 SRE,52a42d8c-778f-4105-b218-0b264d98fdee,Juniper/EX/8200_SRE.json,42e4b94e6c3632770ad74c8540a1bfe42052464d168edc497a3f322892adb47e
