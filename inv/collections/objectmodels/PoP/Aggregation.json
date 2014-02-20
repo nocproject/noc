@@ -3,6 +3,7 @@
     "uuid": "178f5f78-2d47-475d-9085-01a8194b3c4b",
     "vendor__code": "NOC",
     "description": "Aggregation level Point of Presence.",
+    "plugins": ["-inventory"],
     "connections": [
         {
             "description": "Inter-PoP logical links",
