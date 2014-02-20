@@ -3,13 +3,24 @@
     "uuid": "178f5f78-2d47-475d-9085-01a8194b3c4b",
     "vendor__code": "NOC",
     "description": "Aggregation level Point of Presence.",
-    "connections": [],
+    "connections": [
+        {
+            "description": "Inter-PoP logical links",
+            "direction": "s",
+            "gender": "s",
+            "name": "links",
+            "type__name": "Inter-PoP Logical Links"
+        }
+    ],
     "data": {
         "container": {
             "container": true
         },
         "geopoint": {
             "layer": "pop_aggregation"
+        },
+        "pop": {
+            "level": 30
         }
     }
 }
