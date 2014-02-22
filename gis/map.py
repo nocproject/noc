@@ -20,6 +20,8 @@ from noc.gis.models.srs import SRS
 
 class Map(object):
     CONDUITS_LAYERS = ["manholes", "cableentries"]
+    POP_LAYERS = ["pop_international", "pop_national", "pop_regional",
+                  "pop_core", "pop_aggregation", "pop_access"]
 
     def __init__(self):
         self.layers = {}
@@ -126,6 +128,15 @@ class Map(object):
             self._conduit_layers_ids = Layer.objects.filter(
                 code__in=self.CONDUITS_LAYERS).values_list("id")
         return self._conduit_layers_ids
+
+    def get_pop_layers(self):
+        """
+        Returns a list of ids of pop-related layers
+        """
+        if not hasattr(self, "_pop_layers_ids"):
+            self._pop_layers_ids = Layer.objects.filter(
+                code__in=self.POP_LAYERS).values_list("id")
+        return self._pop_layers_ids
 
 
 map = Map()

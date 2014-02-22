@@ -1,0 +1,17 @@
+{
+    "name": "PoP Links | Access",
+    "uuid": "8df3266d-00e0-4969-87dd-02c726bbb073",
+    "description": "Links between access level points of presense",
+    "code": "pop_links2",
+    "default_zoom": 14,
+    "fill_color": 13390336,
+    "max_zoom": 19,
+    "min_zoom": 13,
+    "point_graphic": "circle",
+    "point_radius": 5,
+    "show_labels": false,
+    "stroke_color": 13390336,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 90
+}

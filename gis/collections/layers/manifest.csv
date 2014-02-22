@@ -5,6 +5,12 @@ Cable Entries,22cb5a15-ad39-4fdd-a677-263974943749,Cable_Entries.json,1de8a868b3
 Cities,498821e6-c34d-4828-94b0-482555929596,Cities.json,a0a83aefa18e5b6265cf09995939eb8739911e702a3252fa8707e150ccd2d41d
 Conduits,bcdc8aa9-059a-4fbb-b031-e0fd55926410,Conduits.json,55442071fefbe925f8f6155def11b5a45154ebb438307ac81b5e6c00abf1b46f
 Manholes,e48fdaad-d1fa-4918-a0a3-54f83498080d,Manholes.json,f39fcff0379540791bdf3feab1ca55f4572e24e8465f1c1064123b616f46012f
+PoP Links | Access,8df3266d-00e0-4969-87dd-02c726bbb073,PoP_Links/Access.json,db79f70e7da9078bd472cc4d817b33912a3e96325796c898944d1dee820eeb91
+PoP Links | Aggregation,af03f09c-da75-4d41-be11-fca70784de78,PoP_Links/Aggregation.json,6334b4748ffefc77d60ecb966b860b74cf4dc9b76088e65549d30f3681697259
+PoP Links | Core,15a6034a-12c7-4cb5-a85d-e3cb50ee0683,PoP_Links/Core.json,cf09a4e1cba9422b91ff0f814c3b61f828f1c37d518fedf10f1a4c6da3823606
+PoP Links | International,02b9f82f-4c41-493e-8019-65c46b95f268,PoP_Links/International.json,6789e0d0bd992e8682917f95b8fac4885f3c25d9c3e50a2f4661cd254521dbb7
+PoP Links | National,6b5fd542-600e-4e82-bd08-787f56a80b84,PoP_Links/National.json,00ff0d40cbb69fb583a84efcaaa13880579b2436fdb4dcff49b3ec4948b01d3a
+PoP Links | Regional,d64309e4-ec70-4672-8a93-f8770a33401a,PoP_Links/Regional.json,3a5a5477a5662be57005f78f5bc4435691a34b7a8ba55579bf832f5fd616753f
 PoP | Access,532da5c0-70ba-49d1-b1cc-0e8bb61e4af6,PoP/Access.json,260e42143c9d8aec88b00e072d61cfd9c380e45d4872a2d6d6e71b0dcc0e33f2
 PoP | Aggregation,65b65bd9-bb6b-450f-94a9-edcb8ae1d372,PoP/Aggregation.json,ad7b1144072dfba5b9f8ddbe89613ea279172804c4d10a0f1c113d7d0b836d34
 PoP | Core,1632ff88-02c4-40da-8787-20774b4ff90e,PoP/Core.json,255d8234e3484c3b1c9259a1277b4c74fa7f3f39de1f826f8f8313b6c67c64da

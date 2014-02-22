@@ -142,6 +142,8 @@ class MapPlugin(InvPlugin):
         srid = bbox[4]
         if layer == "conduits":
             builder = self.get_conduits_layer
+        elif layer.startswith("pop_link"):
+            builder = self.get_pop_links_layer
         else:
             builder = map.get_layer_objects
         return self.app.render_response(
@@ -164,13 +166,11 @@ class MapPlugin(InvPlugin):
             "model": o.model.name
         }
 
-    def get_conduits_layer(self, layer, x0, y0, x1, y1, srid):
+    def get_connection_layer(self, layers, x0, y0, x1, y1, srid, name,
+                             cfilter=None):
         """
         Build conduits layer
         """
-        layers = map.get_conduits_layers()
-        if not layers:
-            return {}
         # Build bounding box
         dst_srid = SpatialReference(srid)
         from_transform = CoordTransform(
@@ -182,19 +182,19 @@ class MapPlugin(InvPlugin):
         bbox.transform(from_transform)
         # Get all objects from *manholes* layer
         points = {}  # Object.id, point
-        conduits = set()  # (object1, object2)
+        lines = set()  # (object1, object2)
         for gd in GeoData.objects.filter(
                 layer__in=layers, data__intersects=bbox
         ).transform(dst_srid.srid):
             object = Object.objects.get(id=gd.object)
             points[str(object.id)] = gd.data
-            # Get all conduits connections
-            for c, remote, remote_name in object.get_genderless_connections("ducts"):
-                if (remote, object) not in conduits:
-                    conduits.add((object, remote))
+            # Get all lines connections
+            for c, remote, remote_name in object.get_genderless_connections(name):
+                if (remote, object) not in lines and (not cfilter or cfilter(c)):
+                    lines.add((object, remote))
         # Find and resolve missed points
         missed_points = set()
-        for o1, o2 in conduits:
+        for o1, o2 in lines:
             o1_id = str(o1.id)
             if o1_id not in points:
                 missed_points.add(o1_id)
@@ -207,7 +207,7 @@ class MapPlugin(InvPlugin):
             ).transform(dst_srid.srid):
                 points[gd.object] = gd.data
         cdata = []
-        for o1, o2 in conduits:
+        for o1, o2 in lines:
             o1_id = str(o1.id)
             o2_id = str(o2.id)
             if o1_id not in points or o2_id not in points:
@@ -222,6 +222,23 @@ class MapPlugin(InvPlugin):
         gj = GeoJSON()
         gj.crs = srid
         return gj.encode(cdata)
+
+    def get_conduits_layer(self, layer, x0, y0, x1, y1, srid):
+        layers = map.get_conduits_layers()
+        if not layers:
+            return {}
+        return self.get_connection_layer(
+            layers, x0, y0, x1, y1, srid, "ducts")
+
+    def get_pop_links_layer(self, layer, x0, y0, x1, y1, srid):
+        layers = map.get_pop_layers()
+        if not layers:
+            return {}
+        level = int(layer[9:])
+        return self.get_connection_layer(
+            layers, x0, y0, x1, y1, srid, "links",
+            cfilter=lambda c: c.data.get("level") == level
+            )
 
     def api_set_layer_visibility(self, request, layer, status):
         l = self.app.get_object_or_404(Layer, code=layer)
