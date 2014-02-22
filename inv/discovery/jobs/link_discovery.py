@@ -261,6 +261,12 @@ class LinkDiscoveryJob(MODiscoveryJob):
         if not o:
             # Find in discovery cache
             o = DiscoveryID.find_object(mac=mac)
+            if not o:
+                # Fallback to interface's MAC
+                mos = set(i.managed_object
+                          for i in Interface.objects.filter(mac=mac))
+                if len(mos) == 1:
+                    o = mos.pop()
             self.neighbor_by_mac_cache[mac] = o
         return o
 
