@@ -11,6 +11,7 @@ from base import InvPlugin
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.modelinterface import ModelInterface
+from noc.gis.map import map
 from noc.lib.utils import deep_merge
 from noc.sa.interfaces.base import StringParameter, UnicodeParameter
 
@@ -113,6 +114,7 @@ class DataPlugin(InvPlugin):
                 o.name = value.split("|")[-1].strip()
             elif key == "Model":
                 m = self.app.get_object_or_404(ObjectModel, id=value)
+                map.delete_point(o)
                 o.model = m
                 o.log(message="Changing model to %s" % m.name,
                       user=request.user, system="WEB")
