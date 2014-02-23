@@ -83,6 +83,7 @@ def update_links():
         level = data["level"]
         if (pop1, pop2) in links:
             if links[pop1, pop2]["level"] != level:
+                level = links[pop1, pop2]["level"]
                 print "Updating %s - %s level to %d" % (pop1, pop2, level)
                 oc.data["level"] = level
                 oc.save()
