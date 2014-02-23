@@ -243,10 +243,10 @@ class IGetInterfaces(Interface):
                 # Enabled L3 protocols
                 "enabled_protocols": ListOfParameter(
                                 element=StringParameter(choices=[
-                                    "ISIS", "OSPF", "RIP", "EIGRP",
+                                    "ISIS", "OSPF", "RIP", "EIGRP", "OSPFv3"
                                     "BGP",
                                     "LDP", "RSVP",
-                                    "PIM", "DVMRP", "IGMP", "VRRP"
+                                    "PIM", "DVMRP", "IGMP", "VRRP", "SRRP"
                                 ]), required=False),
                 "untagged_vlan": VLANIDParameter(required=False),  # enabled_afi = [BRIDGE]
                 "tagged_vlans": ListOfParameter(element=VLANIDParameter(), required=False),  # enabled_afi = [BRIDGE]
