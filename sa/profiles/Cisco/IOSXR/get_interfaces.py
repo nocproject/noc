@@ -57,7 +57,7 @@ class Script(NOCScript):
         for l in v.splitlines():
             match = self.rx_iface.match(l)
             if match:
-                current = match.group("name")
+                current = self.profile.convert_interface_name(match.group("name"))
                 status = match.group("status") == "up"
                 ifaces[current] = {
                     "name": current,
