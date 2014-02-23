@@ -178,6 +178,12 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
         if(record.get("is_const")) {
             return false;
         }
+        if(record.get("choices")) {
+            return {
+                xtype: "combobox",
+                store: record.get("choices")
+            }
+        }
         switch(record.get("type")) {
             case "int":
                 return "numberfield";

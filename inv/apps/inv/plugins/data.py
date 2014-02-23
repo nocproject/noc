@@ -9,6 +9,7 @@
 ## NOC modules
 from base import InvPlugin
 from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.modelinterface import ModelInterface
 from noc.lib.utils import deep_merge
 from noc.sa.interfaces.base import StringParameter, UnicodeParameter
@@ -17,6 +18,14 @@ from noc.sa.interfaces.base import StringParameter, UnicodeParameter
 class DataPlugin(InvPlugin):
     name = "data"
     js = "NOC.inv.inv.plugins.data.DataPanel"
+
+    RGROUPS = [
+        [
+            "Building", "PoP | International", "PoP | National",
+            "PoP | Regional", "PoP | Core", "PoP | Aggregation",
+            "PoP | Access"
+        ]
+    ]
 
     def init_plugin(self):
         super(DataPlugin, self).init_plugin()
@@ -40,15 +49,25 @@ class DataPlugin(InvPlugin):
                 ("Model", o.model.name, "Inventory model", True),
                 ("ID", str(o.id), "Internal ID", True)
             ]:
-            data += [{
+            r = {
                 "interface": "Common",
                 "name": k,
                 "value": v,
                 "type": "str",
                 "description": d,
                 "required": True,
-                "is_const": is_const
-            }]
+                "is_const": is_const,
+                "choices": None
+            }
+            if k == "Model":
+                for rg in self.RGROUPS:
+                    if v in rg:
+                        # Model can be changed
+                        r["is_const"] = False
+                        g = [ObjectModel.objects.get(name=x) for x in rg]
+                        r["choices"] = [[str(x.id), x.name] for x in g]
+                        break
+            data += [r]
         d = deep_merge(o.model.data, o.data)
         for i in d:
             mi = ModelInterface.objects.filter(name=i).first()
@@ -92,6 +111,12 @@ class DataPlugin(InvPlugin):
             # Fake interface
             if key == "Name":
                 o.name = value.split("|")[-1].strip()
+            elif key == "Model":
+                m = self.app.get_object_or_404(ObjectModel, id=value)
+                o.model = m
+                o.log(message="Changing model to %s" % m.name,
+                      user=request.user, system="WEB")
+                o.save()
         else:
             if value is None or value == "":
                 o.reset_data(interface, key)
