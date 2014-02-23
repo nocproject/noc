@@ -56,7 +56,9 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                             text: "Value",
                             dataIndex: "value",
                             flex: 1,
-                            editor: "textfield"
+                            editor: "textfield",
+                            getEditor: me.onGetEditor,
+                            renderer: me.onCellRender
                         }
                     ],
                     features: [{ftype:'grouping'}],
@@ -71,7 +73,6 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                     },
                     listeners: {
                         scope: me,
-                        beforeedit: me.onBeforeEdit,
                         edit: me.onEdit
                     }
                 },
@@ -149,12 +150,6 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
         });
     },
     //
-    onBeforeEdit: function(editor, e, eOpts) {
-        if(e.record.get("is_const")) {
-            return false;
-        }
-    },
-    //
     onEdit: function(editor, e, eOpts) {
         var me = this,
             toReload = e.record.get("interface") === "Common" && e.record.get("name") === "Name";
@@ -177,5 +172,29 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                 NOC.error("Failed to save");
             }
         });
+    },
+    //
+    onGetEditor: function(record) {
+        if(record.get("is_const")) {
+            return false;
+        }
+        switch(record.get("type")) {
+            case "int":
+                return "numberfield";
+            case "float":
+                return "numberfield";
+            default:
+                return "textfield";
+        }
+    },
+    //
+    onCellRender: function(value, meta, record) {
+        if(record.get("is_const")) {
+            meta.tdCls = "noc-const";
+        }
+        if(record.get("type") === "bool") {
+            return NOC.render.Bool(value);
+        }
+        return value;
     }
 });
