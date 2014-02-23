@@ -243,7 +243,7 @@ class IGetInterfaces(Interface):
                 # Enabled L3 protocols
                 "enabled_protocols": ListOfParameter(
                                 element=StringParameter(choices=[
-                                    "ISIS", "OSPF", "RIP", "EIGRP", "OSPFv3"
+                                    "ISIS", "OSPF", "RIP", "EIGRP", "OSPFv3",
                                     "BGP",
                                     "LDP", "RSVP",
                                     "PIM", "DVMRP", "IGMP", "VRRP", "SRRP"
