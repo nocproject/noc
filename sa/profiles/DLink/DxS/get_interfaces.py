@@ -75,10 +75,15 @@ class Script(NOCScript):
     rx_link_up = re.compile(r"Link\s*UP", re.IGNORECASE)
 
     rx_rip_gs = re.compile(r"RIP Global State : Enabled")
-    rx_ospf_gs = re.compile(r"OSPF Router ID : \S+\s*\nState\s+: Enabled")
+    rx_ospf_gs = re.compile(
+        r"OSPF Router ID : \S+ (\(.+\))?\s*\nState\s+: Enabled")
+    rx_ospfv3_gs = re.compile(
+        r"OSPFv3 Router ID : \S+(\(.+\))?\s*\nState\s+: Enabled")
     rx_lldp_gs = re.compile(r"LLDP Status\s+: Enabled")
-    rx_ctp_gs = re.compile(r"LBD Status\s+: Enabled")
+    rx_ctp_gs = re.compile(r"(LBD )?Status\s+: Enabled")
     rx_pim_gs = re.compile(r"PIM Global State\s+: Enabled")
+    rx_gvrp_gs = re.compile(r"Global GVRP\s+: Enabled")
+    rx_stp_gs = re.compile(r"STP Status\s+: Enabled")
 
     rx_rip = re.compile(r"(?P<ipif>\S+)\s+\S+\s+(?:Disabled|Enabled)\s+"
     r"(?:Disabled|Enabled)\s+(?:Disabled|Enabled)\s+"
@@ -86,10 +91,11 @@ class Script(NOCScript):
 
     rx_ospf = re.compile(r"(?P<ipif>\S+)\s+\S+\s+\S+\s+(?P<state>Enabled)\s+"
     r"Link (?:Up|DOWN)\s+\d+\d*", re.IGNORECASE)
+    rx_ospfv3 = re.compile(r"(?P<ipif>\S+)\s+\S+\s+(?P<state>Enabled)\s+"
+    r"Link (?:Up|DOWN)\s+\d+", re.IGNORECASE)
 
     rx_lldp = re.compile(r"Port ID\s+:\s+(?P<ipif>\S+)\s*\n"
     r"\-+\s*\nAdmin Status\s+: (?:TX_and_RX|RX_Only|TX_Only)")
-
     rx_lldp1 = re.compile(r"Port ID\s+:\s+(?P<ipif>\S+)\s*\n"
     r"\-+\s*\nPort ID Subtype\s+: MAC Address\s*\n"
     r"Port ID\s+: (?P<mac>\S+)")
@@ -111,6 +117,13 @@ class Script(NOCScript):
     rx_igmp = re.compile(r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+\d+\s+"
     r"\d+\s+(?P<state>Enabled)\s+")
 
+    rx_gvrp = re.compile(r"^ (?P<ipif>\d+)\s+\d+\s+(?P<state>Enabled)")
+
+    rx_stp = re.compile(r"Port Index\s+: (?P<ipif>\d+)\s+.+?Port STP : (?P<state>Enabled)")
+    rx_stp1 = re.compile(r"Port Index\s+: (?P<ipif>\d+)\s*\n"
+        r"Connection\s+: Link (?:Up|Down)\s*\n"
+        r"State : (?P<state>Yes|Enabled)")
+
     def parse_ctp(self, s):
         match = self.rx_ctp.search(s)
         if match:
@@ -120,6 +133,22 @@ class Script(NOCScript):
             return key, obj, s[match.end():]
         else:
             return None
+
+    def parse_stp(self, s):
+        match = self.rx_stp.search(s)
+        if match:
+            key = match.group("ipif")
+            state = match.group("state")
+            obj = {"port": key, "state": state}
+            return key, obj, s[match.end():]
+        else:
+            match = self.rx_stp1.search(s)
+            if match:
+                key = match.group("ipif")
+                state = match.group("state")
+                obj = {"port": key, "state": state}
+                return key, obj, s[match.end():]
+        return None
 
     def execute(self):
         if self.match_version(DxS_L2):
@@ -145,6 +174,16 @@ class Script(NOCScript):
             ospf_enable = self.rx_ospf_gs.search(c) is not None
             if ospf_enable:
                 for match in self.rx_ospf.finditer(c):
+                    ospf += [match.group("ipif")]
+
+            ospfv3 = []
+            try:
+                c = self.cli("show ospfv3")
+            except self.CLISyntaxError:
+                c = ""
+            ospfv3_enable = self.rx_ospfv3_gs.search(c) is not None
+            if ospfv3_enable:
+                for match in self.rx_ospfv3.finditer(c):
                     ospf += [match.group("ipif")]
 
             pim = []
@@ -216,21 +255,44 @@ class Script(NOCScript):
             c = ""
         ctp_enable = self.rx_ctp_gs.search(c) is not None
         if ctp_enable:
-            try:
+            c = self.cli_object_stream(
+            "show loopdetect ports all", parser=self.parse_ctp,
+            cmd_next="n", cmd_stop="q")
+            if c == []:
                 c = self.cli_object_stream(
-                "show loopdetect ports all", parser=self.parse_ctp,
+                "show loopdetect ports", parser=self.parse_ctp,
                 cmd_next="n", cmd_stop="q")
-            except self.CLISyntaxError:
-                try:
-                    c = self.cli_object_stream(
-                    "show loopdetect ports", parser=self.parse_ctp,
-                    cmd_next="n", cmd_stop="q")
-                except self.CLISyntaxError:
-                    c = []
             for i in c:
                 if i['state'] == 'Enabled':
                     ctp += [i['port']]
 
+        gvrp = []
+        try:
+            c = self.cli("show gvrp")
+        except self.CLISyntaxError:
+            c = ""
+        gvrp_enable = self.rx_gvrp_gs.search(c) is not None
+        if gvrp_enable:
+            try:
+                c1 = self.cli("show port_vlan")
+            except self.CLISyntaxError:
+                c1 = c
+            for match in self.rx_gvrp.finditer(c1):
+                gvrp += [match.group("ipif")]
+
+        stp = []
+        try:
+            c = self.cli("show stp")
+        except self.CLISyntaxError:
+            c = ""
+        stp_enable = self.rx_stp_gs.search(c) is not None
+        if stp_enable:
+            c = self.cli_object_stream(
+            "show stp ports", parser=self.parse_stp,
+            cmd_next="n", cmd_stop="q")
+            for i in c:
+                if i['state'] in ['Enabled', 'Yes']:
+                    stp += [i['port']]
 
         ports = self.profile.get_ports(self)
         vlans = self.profile.get_vlans(self)
@@ -275,6 +337,10 @@ class Script(NOCScript):
                 i["enabled_protocols"] += ["CTP"]
             if ifname in udld:
                 i["enabled_protocols"] += ["UDLD"]
+            if gvrp_enable and ifname in gvrp:
+                i["enabled_protocols"] += ["GVRP"]
+            if stp_enable and ifname in stp:
+                i["enabled_protocols"] += ["STP"]
             interfaces += [i]
 
         ipif = self.cli("show ipif")
@@ -389,6 +455,8 @@ class Script(NOCScript):
                     enabled_protocols += ["RIP"]
                 if ospf_enable and ifname in ospf:
                     enabled_protocols += ["OSPF"]
+                if ospfv3_enable and ifname in ospfv3:
+                    enabled_protocols += ["OSPFv3"]
                 if pim_enable and ifname in pim:
                     enabled_protocols += ["PIM"]
                 if ifname in igmp:
