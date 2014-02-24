@@ -26,7 +26,7 @@
             "type__name": "Electrical | Telco-50"
         },
         {
-            "description": "POST ports 25-48",
+            "description": "POTS ports 25-48",
             "direction": "s",
             "gender": "f",
             "name": "CO25-48",
@@ -56,20 +56,20 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "SFP Uplink port #2",
-            "direction": "i",
-            "gender": "f",
-            "name": "enet2_sfp",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "RJ45 Uplink port #2",
             "direction": "s",
             "gender": "f",
             "name": "enet2",
             "protocols": ["100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "SFP Uplink port #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "enet2_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "Console port",
