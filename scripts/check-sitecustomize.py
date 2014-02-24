@@ -13,7 +13,7 @@ import os
 
 VERSION = sys.version_info
 PATH = "lib/python%d.%d/site-packages/sitecustomize.py" % (
-    VERSION.major, VERSION.minor)
+    VERSION[0], VERSION[1])
 DATA = """import sys
 sys.setdefaultencoding("utf-8")
 """
