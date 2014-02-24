@@ -94,6 +94,12 @@ class Script(NOCScript):
     r"\-+\s*\nPort ID Subtype\s+: MAC Address\s*\n"
     r"Port ID\s+: (?P<mac>\S+)")
 
+    rx_pd = re.compile(r"Port\s+:\s+(?P<ipif>\S+)\s*\n"
+    r"\-+\s*\nPort Status\s+: Link (?:Up|Down)\s*\n"
+    r"Description\s+:\s*(?P<desc>\S*?)\s*\n"
+    r"HardWare Type\s+:\s*.+\s*\n"
+    r"MAC Address\s+:\s*(?P<mac>\S+)\s*\n")
+
     rx_udld = re.compile(r"(?P<ipif>\S+)\s+Enabled\s+\S+\s+\S+\s+\S+\s+\d+")
 
     rx_ctp = re.compile(r"^(?P<ipif>\S+)\s+(?P<state>Enabled|Disabled)\s+\S+",
@@ -183,6 +189,17 @@ class Script(NOCScript):
                 c = ""
             for match in self.rx_lldp.finditer(c):
                 lldp += [match.group("ipif")]
+
+        if self.match_version(DGS3620):
+            try:
+                c = self.cli("show ports details")
+                for match in self.rx_pd.finditer(c):
+                    macs += [{
+                        "ipif": match.group("ipif"),
+                        "mac":  match.group("mac")
+                    }]
+            except self.CLISyntaxError:
+                pass
 
         udld = []
         try:
