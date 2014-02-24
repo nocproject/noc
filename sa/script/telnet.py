@@ -59,6 +59,11 @@ class CLITelnetSocket(CLI, ConnectedTCPSocket):
         elif self.stale:
             self.queue.put(None)  # Signal stale socket timeout
 
+    def on_conn_refused(self):
+        self.debug("Connection refused")
+        self.motd = "Connection refused"
+        self.set_state("FAILURE")
+
     def on_connect(self):
         super(CLITelnetSocket, self).on_connect()
         r = self.script.profile.telnet_send_on_connect
