@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -45,8 +45,6 @@ class Script(NOCScript):
         r = []
         for match in self.rx_line.finditer(self.cli(cmd)):
             mactype = match.group("type").lower()
-            if mactype == "self" or mactype == "permanent":
-                continue
             r += [{
                 "vlan_id": match.group("vlan_id"),
                 "mac": match.group("mac"),
@@ -54,6 +52,8 @@ class Script(NOCScript):
                 "type": {
                     "dynamic":"D",
                     "static":"S",
+                    "self":"S",
+                    "permanent":"S",
                     "deleteontimeout":"D",
                     "del_on_timeout":"D",
                     "deleteonreset":"D",

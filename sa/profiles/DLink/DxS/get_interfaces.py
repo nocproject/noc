@@ -90,6 +90,10 @@ class Script(NOCScript):
     rx_lldp = re.compile(r"Port ID\s+:\s+(?P<ipif>\S+)\s*\n"
     r"\-+\s*\nAdmin Status\s+: (?:TX_and_RX|RX_Only|TX_Only)")
 
+    rx_lldp1 = re.compile(r"Port ID\s+:\s+(?P<ipif>\S+)\s*\n"
+    r"\-+\s*\nPort ID Subtype\s+: MAC Address\s*\n"
+    r"Port ID\s+: (?P<mac>\S+)")
+
     rx_udld = re.compile(r"(?P<ipif>\S+)\s+Enabled\s+\S+\s+\S+\s+\S+\s+\d+")
 
     rx_ctp = re.compile(r"^(?P<ipif>\S+)\s+(?P<state>Enabled|Disabled)\s+\S+",
@@ -157,11 +161,21 @@ class Script(NOCScript):
 
 
         lldp = []
+        macs = []
         try:
             c = self.cli("show lldp")
+            lldp_enable = self.rx_lldp_gs.search(c) is not None
+            try:
+                c = self.cli("show lldp local_ports")
+                for match in self.rx_lldp1.finditer(c):
+                    macs += [{
+                        "ipif": match.group("ipif"),
+                        "mac":  match.group("mac")
+                    }]
+            except self.CLISyntaxError:
+                pass
         except self.CLISyntaxError:
-            c = ""
-        lldp_enable = self.rx_lldp_gs.search(c) is not None
+            lldp_enable = False
         if lldp_enable:
             try:
                 c = self.cli("show lldp ports")
@@ -226,6 +240,10 @@ class Script(NOCScript):
             if desc != '' and desc != 'null':
                 i.update({"description": desc})
                 i['subinterfaces'][0].update({"description": desc})
+            for m in macs:
+                if p['port'] == m['ipif']:
+                    i['mac'] = m['mac']
+                    i['subinterfaces'][0]["mac"] = m['mac']
             tagged_vlans = []
             for v in vlans:
                 if p['port'] in v['tagged_ports']:
