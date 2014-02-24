@@ -268,6 +268,11 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         elif self.stale:
             self.queue.put(None)  # Signal stale socket timeout
 
+    def on_conn_refused(self):
+        self.debug("Connection refused")
+        self.motd = "Connection refused"
+        self.set_state("FAILURE")
+
     def generate_private_x(self, bits):
         def get_random(bits):
             if bits % 8:
