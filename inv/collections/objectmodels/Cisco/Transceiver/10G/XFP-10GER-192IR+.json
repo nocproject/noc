@@ -1,0 +1,37 @@
+{
+    "name": "Cisco | Transceiver | 10G | XFP-10GER-192IR+",
+    "uuid": "1bad640a-4626-47f7-bcbf-84ee975713f3",
+    "vendor__code": "CISCO",
+    "description": "Multirate 10GBASE-ER and OC-192/STM-64 IR-2 XFP, SMF",
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASEER-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASEER-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "XFP-10GER-192IR+"
+        }
+    }
+}
