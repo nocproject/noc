@@ -1,0 +1,20 @@
+{
+    "name": "Cisco | ASR9010 | PWR-3KW-AC",
+    "uuid": "fa2cfe59-ec1d-45d7-87b8-dc7d692902de",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR9010 3000 Watt AC power module",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR9010 | PEM-V1"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "A9K-3KW-AC"
+        }
+    }
+}
