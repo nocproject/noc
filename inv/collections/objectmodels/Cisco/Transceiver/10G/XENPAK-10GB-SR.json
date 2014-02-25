@@ -1,0 +1,37 @@
+{
+    "name": "Cisco | Transceiver | 10G | XENPAK-10GB-SR",
+    "uuid": "05c6cd4f-ed2c-46d0-b8bd-394f9585ccd8",
+    "vendor__code": "CISCO",
+    "description": "Cisco XENPAK 10G SR transceiver",
+    "connections": [
+        {
+            "description": "XENPAK Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XENPAK | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "XENPAK-10GB-SR"
+        }
+    }
+}

@@ -148,6 +148,8 @@ Cisco | Transceiver | 10G | XENPAK-10GB-CX4,e0748813-8335-4826-b972-880c0e43b9ec
 Cisco | Transceiver | 10G | XENPAK-10GB-ER,233e0c03-1872-4543-bf97-87a4abb74fa0,Cisco/Transceiver/10G/XENPAK-10GB-ER.json,c11188122b3c01c06af002c3ab54208f95392e48b2b9987f9174e0b9fd436f60
 Cisco | Transceiver | 10G | XENPAK-10GB-LR+,ff87c01f-389a-4ca8-a085-54fa1e66222e,Cisco/Transceiver/10G/XENPAK-10GB-LR+.json,a92b79c04063326d2348ed1a80ccd80b8e2f8192f29baf5fb429b82e9adb63c1
 Cisco | Transceiver | 10G | XENPAK-10GB-LX4,c394973a-4e50-493c-9120-b89059c22ca9,Cisco/Transceiver/10G/XENPAK-10GB-LX4.json,bc3347611a6d001cc45816ab6e06fb024b38589eda6f03de10e7fe48007e9f22
+Cisco | Transceiver | 10G | XENPAK-10GB-SR,05c6cd4f-ed2c-46d0-b8bd-394f9585ccd8,Cisco/Transceiver/10G/XENPAK-10GB-SR.json,44c4746cd2d8bb86ebd1c1ce38789f02f70638317983b144dd70302a7e0c0121
+Cisco | Transceiver | 10G | XFP-10GER-192IR+,1bad640a-4626-47f7-bcbf-84ee975713f3,Cisco/Transceiver/10G/XFP-10GER-192IR+.json,bbfd5e13037607f2b7d215ae766f4bc393f2da3009c4f1ee2803fa3b0c03e6ec
 Cisco | Transceiver | 10G | XFP-10GLR-OC192SR,8eb6bad5-4ad7-4f3e-972c-8a1cc07fa6a9,Cisco/Transceiver/10G/XFP-10GLR-OC192SR.json,df6187c4610a775daba3b492513eec9f427c152e5733767ad6dfecd64d683bd2
 Cisco | Transceiver | 1G | GLC-2BX-D,25c3a94f-bfca-433f-9d6f-daf95ad03c4a,Cisco/Transceiver/1G/GLC-2BX-D.json,6da2e8d19955007dff906f2edd4474d19ba3dddb02dd71ec0e21dbc474e9e1c0
 Cisco | Transceiver | 1G | GLC-BX-D,c51048d8-9b4e-44ca-9734-4c9330ca4dc0,Cisco/Transceiver/1G/GLC-BX-D.json,308af84cc6a936d0c1304cb8239539ad1751995612e516fc789bcdafad7843d4
