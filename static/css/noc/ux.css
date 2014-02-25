@@ -121,4 +121,19 @@
 .x-form-itemselector-bottom {
     background-image: url(/static/img/other/bottom2.gif);
 }
-
+.x-display-tag {
+    display: inline-block;
+    position: relative;
+    *display:inline; /* IE7 */
+    zoom:1; /* IE */
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    o-border-radius: 5px;
+    khtml-border-radius: 5px;
+    border: 1px solid #CAD8F3;
+    padding: 0px 2px 0px 2px !important;
+    margin: 0px 1px 0px 0px;
+    background-color: #DEE7F8;
+    cursor: default;
+}

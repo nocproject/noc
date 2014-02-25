@@ -41,7 +41,7 @@ NOC.render.URL = function(v) {
 NOC.render.Tags = function(v) {
     if(v) {
         return v.map(function(x) {
-            return "<span class='x-boxselect-item'>" + x + "</span>";
+            return "<span class='x-display-tag'>" + x + "</span>";
         }).join(" ");
     } else {
         return "";
