@@ -1,0 +1,52 @@
+{
+    "name": "Cisco | ASR9k | A9K-RSP-4G",
+    "uuid": "fef21c55-1211-4b93-ac99-ff6e38173c87",
+    "vendor__code": "CISCO",
+    "description": "ASR9K Route Switch Processor with 4G memory",
+    "connections": [
+        {
+            "description": "Ethernet management port",
+            "direction": "s",
+            "gender": "f",
+            "name": "mgmtEth0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet management port",
+            "direction": "s",
+            "gender": "f",
+            "name": "mgmtEth1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Aux port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR9k | RSP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "A9K-RSP-4G"
+        }
+    }
+}
