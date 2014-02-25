@@ -975,6 +975,30 @@ class Script(threading.Thread):
             raise self.UnexpectedResultError()
         return match
 
+    _match_lines_cache = {}
+
+    @classmethod
+    def match_lines(cls, rx, s):
+        k = id(rx)
+        if k not in cls._match_lines_cache:
+            _rx = [re.compile(l, re.IGNORECASE) for l in rx]
+            cls._match_lines_cache[k] = _rx
+        else:
+            _rx = cls._match_lines_cache[k]
+        ctx = {}
+        idx = 0
+        r = _rx[0]
+        for l in s.splitlines():
+            l = l.strip()
+            match = r.search(l)
+            if match:
+                ctx.update(match.groupdict())
+                idx += 1
+                if idx == len(_rx):
+                    return ctx
+                r = _rx[idx]
+        return None
+
     def find_re(self, iter, s):
         """
         Find first matching regular expression
