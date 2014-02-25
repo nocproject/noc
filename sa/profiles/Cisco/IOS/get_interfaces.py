@@ -46,7 +46,7 @@ class Script(NOCScript):
     rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$",
         re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
-    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?B?)$", re.IGNORECASE)
+    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$", re.IGNORECASE)
 
     types = {
            "As": "physical",    # Async
