@@ -229,7 +229,7 @@ class Script(NOCScript):
             for match in self.rx_lldp.finditer(c):
                 lldp += [match.group("ipif")]
 
-        if self.match_version(DGS3620):
+        if self.match_version(DGS3620, version__gte="2.60.16"):
             try:
                 c = self.cli("show ports details")
                 for match in self.rx_pd.finditer(c):
