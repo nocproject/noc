@@ -151,7 +151,7 @@ class Script(NOCScript):
                     # Port Description : D-Link DGS-3120-24SC R2.00.B01 Port 2 on Unit 1
                     match = self.rx_remote_port_id3.search(s1)
                     if match:
-                        n["remote_port_subtype"] = 7
+                        n["remote_port_subtype"] = 5
                     else:
                         # Debug string
                         self.debug('remote_port_id is empty!')
@@ -162,6 +162,7 @@ class Script(NOCScript):
                     match = self.rx_remote_port_id4.search(s1)
                     if match:
                         # Dirty hack !
+                        n["remote_port_subtype"] = 5
                         n["remote_port"] = match.group("port")
                 if n["remote_port_subtype"] == 3:
                     try:
@@ -171,8 +172,8 @@ class Script(NOCScript):
                         match = self.rx_remote_port_id3.search(s1)
                         if match:
                             # Dirty hack !
+                            n["remote_port_subtype"] = 5
                             n["remote_port"] = match.group("port")
-                            n["remote_port_subtype"] = 1
 
                 '''
                 Possible variants of Port ID, if Remote Port ID is "Local":
