@@ -1,8 +1,8 @@
 {
-    "name": "DLink | DES | DES-3200-10",
-    "uuid": "a85f20fa-ac75-4ba4-b251-264502922254",
+    "name": "DLink | DES | DES-3018",
+    "uuid": "fb37bfc2-10e4-464f-a47b-42e3345a756a",
     "vendor__code": "DLINK",
-    "description": "DES-3200-10 xStack L2 Managed Switch witch 8 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "description": "DES-3018 L2 Managed Switch witch 16 ports 10/100BASE-TX and 2 expansion slots",
     "connection_rule__name": "Generic | Switch SFP",
     "connections": [
         {
@@ -73,45 +73,79 @@
             "description": "9",
             "direction": "s",
             "gender": "f",
-            "group": "9",
             "name": "9",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Fiber port 9",
-            "direction": "i",
-            "gender": "f",
-            "group": "9",
-            "name": "sfp9",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
         },
         {
             "description": "10",
             "direction": "s",
             "gender": "f",
-            "group": "10",
             "name": "10",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fiber port 10",
-            "direction": "i",
-            "gender": "f",
-            "group": "10",
-            "name": "sfp10",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Console port",
+            "description": "11",
             "direction": "s",
             "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
-            "type__name": "Electrical | DB9"
+            "name": "11",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "12",
+            "direction": "s",
+            "gender": "f",
+            "name": "12",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "13",
+            "direction": "s",
+            "gender": "f",
+            "name": "13",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "14",
+            "direction": "s",
+            "gender": "f",
+            "name": "14",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "15",
+            "direction": "s",
+            "gender": "f",
+            "name": "15",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "16",
+            "direction": "s",
+            "gender": "f",
+            "name": "16",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Module 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "module1",
+            "type__name": "DLink | DES30 | Module"
+        },
+        {
+            "description": "Module 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "module2",
+            "type__name": "DLink | DES30 | Module"
         },
         {
             "description": "Power outlet",
@@ -120,11 +154,19 @@
             "name": "power",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
         }
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3200-10"
+            "part_no0": "DES-3018"
         },
         "management": {
             "managed": true

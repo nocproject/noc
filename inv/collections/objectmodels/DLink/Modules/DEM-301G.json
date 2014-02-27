@@ -1,0 +1,28 @@
+{
+    "name": "DLink | Modules | DEM-301G",
+    "uuid": "18ca94b2-a3f9-4b7c-9229-20878bf2780d",
+    "vendor__code": "DLINK",
+    "description": "1 Port GBIC Module",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "DLink | DES30 | Module"
+        },
+        {
+            "description": "port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "DEM-301G"
+        }
+    }
+}

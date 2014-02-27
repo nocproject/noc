@@ -1,7 +1,7 @@
 {
     "name": "Optical | ST",
     "uuid": "130872b7-1eef-46ca-b0be-f1f41a63038f",
-    "description": "Optical FC connection",
+    "description": "Optical ST connection",
     "c_group": [],
     "genders": "mf"
 }

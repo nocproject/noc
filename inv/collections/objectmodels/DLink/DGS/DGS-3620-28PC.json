@@ -278,6 +278,14 @@
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "Ethernet management port",
+            "direction": "s",
+            "gender": "f",
+            "name": "mgmt0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "description": "Power outlet",
             "direction": "s",
             "gender": "f",

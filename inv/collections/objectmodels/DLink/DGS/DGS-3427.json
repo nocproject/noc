@@ -1,17 +1,10 @@
 {
-    "name": "DLink | DGS | DGS-3620-28TC",
-    "uuid": "69237dd7-0404-46b0-bdfb-c60a9f99b8f7",
+    "name": "DLink | DGS | DGS-3427",
+    "uuid": "3f65155b-12dd-4f38-a716-023e77d229e2",
     "vendor__code": "DLINK",
-    "description": "DGS-3620-28TC xStack L3 Managed Switch witch 20 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 4 SFP+",
+    "description": "DGS-3427 xStack L2 Managed Switch witch 20 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 3 module slot",
     "connection_rule__name": "DLink | DxS",
     "connections": [
-        {
-            "description": "SD card slot",
-            "direction": "i",
-            "gender": "f",
-            "name": "card1",
-            "type__name": "Flash | SD"
-        },
         {
             "description": "1",
             "direction": "s",
@@ -240,33 +233,22 @@
             "description": "25",
             "direction": "i",
             "gender": "f",
-            "name": "sfp+25",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
+            "name": "module1",
+            "type__name": "DLink | DGS34-36 | Module"
         },
         {
             "description": "26",
             "direction": "i",
             "gender": "f",
-            "name": "sfp+26",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
+            "name": "module2",
+            "type__name": "DLink | DGS34-36 | Module"
         },
         {
             "description": "27",
             "direction": "i",
             "gender": "f",
-            "name": "sfp+27",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "description": "28",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp+28",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
+            "name": "module3",
+            "type__name": "DLink | DGS34-36 | Module"
         },
         {
             "description": "Console port",
@@ -275,15 +257,7 @@
             "group": "0",
             "name": "console",
             "protocols": [">RS232"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Ethernet management port",
-            "direction": "s",
-            "gender": "f",
-            "name": "mgmt0",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Electrical | DB9"
         },
         {
             "description": "Power outlet",
@@ -297,7 +271,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3620-28TC"
+            "part_no0": "DGS-3427"
         },
         "management": {
             "managed": true
