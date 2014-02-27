@@ -1,0 +1,28 @@
+{
+    "name": "DLink | Modules | DEM-301T",
+    "uuid": "a3e521ee-3f35-423c-946b-f3b54456102b",
+    "vendor__code": "DLINK",
+    "description": "1 Port 10/100/1000BASE-T Module",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "DLink | DES30 | Module"
+        },
+        {
+            "description": "port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "DEM-301T"
+        }
+    }
+}

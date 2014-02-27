@@ -1,8 +1,8 @@
 {
-    "name": "DLink | DES | DES-3200-10",
-    "uuid": "a85f20fa-ac75-4ba4-b251-264502922254",
+    "name": "DLink | DES | DES-2110",
+    "uuid": "d0b71ad7-b2db-453c-a75e-c973c597a4b6",
     "vendor__code": "DLINK",
-    "description": "DES-3200-10 xStack L2 Managed Switch witch 8 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "description": "DES-2110 L2 Managed Switch witch 8 ports 10/100BASE-TX, 1 ports 10/100/1000BASE-T, 1 port 100/1000 SFP",
     "connection_rule__name": "Generic | Switch SFP",
     "connections": [
         {
@@ -73,45 +73,17 @@
             "description": "9",
             "direction": "s",
             "gender": "f",
-            "group": "9",
             "name": "9",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fiber port 9",
-            "direction": "i",
-            "gender": "f",
-            "group": "9",
-            "name": "sfp9",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "description": "10",
-            "direction": "s",
-            "gender": "f",
-            "group": "10",
-            "name": "10",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Fiber port 10",
             "direction": "i",
             "gender": "f",
-            "group": "10",
             "name": "sfp10",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Console port",
-            "direction": "s",
-            "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
-            "type__name": "Electrical | DB9"
         },
         {
             "description": "Power outlet",
@@ -124,7 +96,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3200-10"
+            "part_no0": "DES-2110"
         },
         "management": {
             "managed": true

@@ -125,9 +125,11 @@ Juniper | MX | RE,93b87248-79dd-44db-a573-9817a1e40eab,Juniper/MX/RE.json,a849be
 Juniper | MX | SCB,24bc8b77-61f1-4eb5-9c92-fa868c5c056d,Juniper/MX/SCB.json,e58056c92a20f8e67f739b97dc8aa8f62aa195400618e6082a35d091211ab252
 Juniper | SRX | Mini-PIM,8d7d5975-bb25-41bb-bb43-60bc81bdba81,Juniper/SRX/Mini-PIM.json,94a860432681848f17ff52ddd894ab0ea3ec45636c8de1c87dd5ecdf2fb0986d
 Optical | FC,24b96124-b28b-423f-83c2-e2c5318289be,Optical/FC.json,253525cebceeea1d45aaea79a25c6cec61983ef2d778f43a709c528ae1d37080
+Optical | FL,e532e79e-85ed-44e9-9cb3-8309c357c1aa,Optical/FL.json,e4c8dd213a01585ab76dbf13ca355445f2d98d38218f55ed1087b40346264f0c
+Optical | FX,57440754-133c-4735-988e-6c09f714d2a5,Optical/FX.json,1b69bf56c6824bdd9a5b12362d5facb240bfc0e04baf554d0b3361b815068bd3
 Optical | LC,994a5a64-52de-45d0-b253-45e849d37ea2,Optical/LC.json,af5db96371ce385baa22d60a527f77854ecdd6216c3a89210dbcd44288cccc44
 Optical | SC,28e4906f-e830-4f20-863d-a5b58a8dc6b6,Optical/SC.json,ecfaf0771bad1ce0c89a040e43b048124b6da0463b9695fe478158ea344ef447
-Optical | ST,130872b7-1eef-46ca-b0be-f1f41a63038f,Optical/ST.json,8fbc61ec0ba97b7365a628b84a5bc789aebf928b428ef69aeedf04bc67931efe
+Optical | ST,130872b7-1eef-46ca-b0be-f1f41a63038f,Optical/ST.json,ed19419af769a4f2d92035f8a04fe6376821d062433b6e3e0cb9776932efb9d3
 Optical | TOSLINK,20fb30a4-029e-485f-a3a0-bdf8000a6e47,Optical/TOSLINK.json,5a070592822ee7c22e2d754cbefbb9f61247e3a34f4e3b4cb2979014b7bb45a2
 Power | CEE 7/16 Type C,920f7047-5e89-4824-826f-015791aae3fa,Power/CEE_7_16_Type_C.json,37ff312d0c5aef019bf35ebce8b7875019a9d719ced568ffb9d6ab62437a4bb4
 Power | CEE 7/17 Type C,f685064d-2de5-413b-b2a0-7da317b29d35,Power/CEE_7_17_Type_C.json,3993a5b38ddd0c85f9938e389d0bad7e1e66c9a4f9ea789ceda6ecd037ac09b5

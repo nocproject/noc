@@ -1,23 +1,16 @@
 {
-    "name": "DLink | DGS | DGS-3620-52P",
-    "uuid": "cd4a042a-17af-43e2-b107-449d5fd8cdea",
+    "name": "DLink | DES | DES-3200-52",
+    "uuid": "e8a8e4f9-c1fb-4543-a68b-5e641109d1ee",
     "vendor__code": "DLINK",
-    "description": "DGS-3620-52P xStack L3 Managed Switch witch 48 ports 10/100/1000BASE-T with PoE and 4 SFP+",
-    "connection_rule__name": "DLink | DxS",
+    "description": "DES-3200-52 xStackL2 Managed Switch witch 48 ports 10/100BASE-TX, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "connection_rule__name": "Generic | Switch SFP",
     "connections": [
-        {
-            "description": "SD card slot",
-            "direction": "i",
-            "gender": "f",
-            "name": "card1",
-            "type__name": "Flash | SD"
-        },
         {
             "description": "1",
             "direction": "s",
             "gender": "f",
             "name": "1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -25,7 +18,7 @@
             "direction": "s",
             "gender": "f",
             "name": "2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -33,7 +26,7 @@
             "direction": "s",
             "gender": "f",
             "name": "3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -41,7 +34,7 @@
             "direction": "s",
             "gender": "f",
             "name": "4",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -49,7 +42,7 @@
             "direction": "s",
             "gender": "f",
             "name": "5",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -57,7 +50,7 @@
             "direction": "s",
             "gender": "f",
             "name": "6",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -65,7 +58,7 @@
             "direction": "s",
             "gender": "f",
             "name": "7",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -73,7 +66,7 @@
             "direction": "s",
             "gender": "f",
             "name": "8",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -81,7 +74,7 @@
             "direction": "s",
             "gender": "f",
             "name": "9",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -89,7 +82,7 @@
             "direction": "s",
             "gender": "f",
             "name": "10",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -97,7 +90,7 @@
             "direction": "s",
             "gender": "f",
             "name": "11",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -105,7 +98,7 @@
             "direction": "s",
             "gender": "f",
             "name": "12",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -113,7 +106,7 @@
             "direction": "s",
             "gender": "f",
             "name": "13",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -121,7 +114,7 @@
             "direction": "s",
             "gender": "f",
             "name": "14",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -129,7 +122,7 @@
             "direction": "s",
             "gender": "f",
             "name": "15",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -137,7 +130,7 @@
             "direction": "s",
             "gender": "f",
             "name": "16",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -145,7 +138,7 @@
             "direction": "s",
             "gender": "f",
             "name": "17",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -153,7 +146,7 @@
             "direction": "s",
             "gender": "f",
             "name": "18",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -161,7 +154,7 @@
             "direction": "s",
             "gender": "f",
             "name": "19",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -169,7 +162,7 @@
             "direction": "s",
             "gender": "f",
             "name": "20",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -177,7 +170,7 @@
             "direction": "s",
             "gender": "f",
             "name": "21",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -185,7 +178,7 @@
             "direction": "s",
             "gender": "f",
             "name": "22",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -193,7 +186,7 @@
             "direction": "s",
             "gender": "f",
             "name": "23",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -201,7 +194,7 @@
             "direction": "s",
             "gender": "f",
             "name": "24",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -209,7 +202,7 @@
             "direction": "s",
             "gender": "f",
             "name": "25",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -217,7 +210,7 @@
             "direction": "s",
             "gender": "f",
             "name": "26",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -225,7 +218,7 @@
             "direction": "s",
             "gender": "f",
             "name": "27",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -233,7 +226,7 @@
             "direction": "s",
             "gender": "f",
             "name": "28",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -241,7 +234,7 @@
             "direction": "s",
             "gender": "f",
             "name": "29",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -249,7 +242,7 @@
             "direction": "s",
             "gender": "f",
             "name": "30",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -257,7 +250,7 @@
             "direction": "s",
             "gender": "f",
             "name": "31",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -265,7 +258,7 @@
             "direction": "s",
             "gender": "f",
             "name": "32",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -273,7 +266,7 @@
             "direction": "s",
             "gender": "f",
             "name": "33",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -281,7 +274,7 @@
             "direction": "s",
             "gender": "f",
             "name": "34",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -289,7 +282,7 @@
             "direction": "s",
             "gender": "f",
             "name": "35",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -297,7 +290,7 @@
             "direction": "s",
             "gender": "f",
             "name": "36",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -305,7 +298,7 @@
             "direction": "s",
             "gender": "f",
             "name": "37",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -313,7 +306,7 @@
             "direction": "s",
             "gender": "f",
             "name": "38",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -321,7 +314,7 @@
             "direction": "s",
             "gender": "f",
             "name": "39",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -329,7 +322,7 @@
             "direction": "s",
             "gender": "f",
             "name": "40",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -337,7 +330,7 @@
             "direction": "s",
             "gender": "f",
             "name": "41",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -345,7 +338,7 @@
             "direction": "s",
             "gender": "f",
             "name": "42",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -353,7 +346,7 @@
             "direction": "s",
             "gender": "f",
             "name": "43",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -361,7 +354,7 @@
             "direction": "s",
             "gender": "f",
             "name": "44",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -369,7 +362,7 @@
             "direction": "s",
             "gender": "f",
             "name": "45",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -377,7 +370,7 @@
             "direction": "s",
             "gender": "f",
             "name": "46",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -385,7 +378,7 @@
             "direction": "s",
             "gender": "f",
             "name": "47",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -393,71 +386,101 @@
             "direction": "s",
             "gender": "f",
             "name": "48",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
             "description": "49",
+            "direction": "s",
+            "gender": "f",
+            "group": "49",
+            "name": "49",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 49",
             "direction": "i",
             "gender": "f",
-            "name": "sfp+49",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
+            "group": "49",
+            "name": "sfp49",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "50",
+            "direction": "s",
+            "gender": "f",
+            "group": "50",
+            "name": "50",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 50",
             "direction": "i",
             "gender": "f",
-            "name": "sfp+50",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
+            "group": "50",
+            "name": "sfp50",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "51",
+            "direction": "s",
+            "gender": "f",
+            "group": "51",
+            "name": "51",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 51",
             "direction": "i",
             "gender": "f",
-            "name": "sfp+51",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
+            "group": "51",
+            "name": "sfp51",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "52",
+            "direction": "s",
+            "gender": "f",
+            "group": "52",
+            "name": "52",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fiber port 52",
             "direction": "i",
             "gender": "f",
-            "name": "sfp+52",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
+            "group": "52",
+            "name": "sfp52",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "group": "0",
             "name": "console",
             "protocols": [">RS232"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Ethernet management port",
-            "direction": "s",
-            "gender": "f",
-            "name": "mgmt0",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Electrical | DB9"
         },
         {
             "description": "Power outlet",
             "direction": "s",
             "gender": "f",
-            "group": "0",
-            "name": "IPWR",
+            "name": "power",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | IEC 60320 C14"
         }
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3620-52P"
+            "part_no0": "DES-3200-52"
         },
         "management": {
             "managed": true
