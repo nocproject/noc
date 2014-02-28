@@ -495,20 +495,23 @@ class AssetReport(Report):
         # Transceiver formfactor
         tp = c.type.name.split(" | ")
         ff = tp[1]
-        if name == "Unknown | Transceiver | Unknown":
-            m = "NoName | Transceiver | Unknown %s" % ff
-        else:
-            # Speed and media
-            try:
-                speed, ot = name[24:].upper().replace("-", "").split("BASE")
+        m = "NoName | Transceiver | Unknown %s" % ff
+        if name != "Unknown | Transceiver | Unknown":
+            mtype = name[24:].upper().replace("-", "")
+            if "BASE" in mtype:
+                speed, ot = mtype.split("BASE", 1)
                 spd = {
                     "100": "100M",
                     "1000": "1G",
                     "10G": "10G"
-                }[speed]
-                m = "NoName | Transceiver | %s | %s %s" % (spd, ff, ot)
-            except:
-                m = "NoName | Transceiver | Unknown %s" % ff
+                }.get(speed)
+                if spd:
+                    m = "NoName | Transceiver | %s | %s %s" % (spd, ff, ot)
+                else:
+                    self.error("Unknown transceiver speed: %s" % speed)
+                    m = name
+            else:
+                m = name
         # Add vendor suffix when necessary
         if len(tp) == 3:
             m += " | %s" % tp[2]
