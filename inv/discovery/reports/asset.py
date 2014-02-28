@@ -499,13 +499,16 @@ class AssetReport(Report):
             m = "NoName | Transceiver | Unknown %s" % ff
         else:
             # Speed and media
-            speed, ot = name[24:].upper().replace("-", "").split("BASE")
-            spd = {
-                "100": "100M",
-                "1000": "1G",
-                "10G": "10G"
-            }[speed]
-            m = "NoName | Transceiver | %s | %s %s" % (spd, ff, ot)
+            try:
+                speed, ot = name[24:].upper().replace("-", "").split("BASE")
+                spd = {
+                    "100": "100M",
+                    "1000": "1G",
+                    "10G": "10G"
+                }[speed]
+                m = "NoName | Transceiver | %s | %s %s" % (spd, ff, ot)
+            except:
+                m = "NoName | Transceiver | Unknown %s" % ff
         # Add vendor suffix when necessary
         if len(tp) == 3:
             m += " | %s" % tp[2]
