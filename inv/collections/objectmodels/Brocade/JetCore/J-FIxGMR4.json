@@ -4,6 +4,7 @@
     "vendor__code": "BROCADE",
     "description": "J-FIxGMR4 - 4 gen FastIron mgmt",
     "connection_rule__name": "Brocade | JetCore",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "sfp port 1",

@@ -4,6 +4,7 @@
     "vendor__code": "JUNIPER",
     "description": "J4350, Hw Encryption, 4 PIM cards, 2 PIM/UPIM, AC PSU, w/JUNOS\n",
     "connection_rule__name": "Juniper | MX",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "ge-0/0/0",

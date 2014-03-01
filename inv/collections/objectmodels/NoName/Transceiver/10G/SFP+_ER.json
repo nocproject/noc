@@ -3,6 +3,7 @@
     "uuid": "385fb8e6-ccdf-4795-8608-af18354513ad",
     "vendor__code": "NONAME",
     "description": "NoName SFP+ ER transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP+ Connector",

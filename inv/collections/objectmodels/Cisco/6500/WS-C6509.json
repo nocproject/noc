@@ -4,6 +4,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco C6509 9-slot Chassis",
     "connection_rule__name": "Cisco | 6500",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "CLK module slot 1",

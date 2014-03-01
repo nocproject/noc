@@ -3,6 +3,7 @@
     "uuid": "e337f204-f791-47c1-b027-e9fd6d02f738",
     "vendor__code": "JUNIPER",
     "description": "Juniper XFP LR transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "XFP Connector",

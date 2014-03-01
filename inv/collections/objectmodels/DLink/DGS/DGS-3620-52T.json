@@ -4,6 +4,7 @@
     "vendor__code": "DLINK",
     "description": "DGS-3620-52T xStack L3 Managed Switch witch 48 ports 10/100/1000BASE-T and 4 SFP+",
     "connection_rule__name": "DLink | DxS",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "SD card slot",

@@ -4,6 +4,7 @@
     "vendor__code": "ERICSSON",
     "description": "Alarm card",
     "connection_rule__name": "Ericsson | SmartEdge",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Line connector",

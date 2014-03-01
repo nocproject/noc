@@ -3,6 +3,7 @@
     "uuid": "aa002c66-bd6e-497b-b15b-03ef8366e678",
     "vendor__code": "NONAME",
     "description": "Twinax SFP+ transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "cross": "in2",

@@ -3,6 +3,7 @@
     "uuid": "233e0c03-1872-4543-bf97-87a4abb74fa0",
     "vendor__code": "CISCO",
     "description": "Cisco XENPAK 10G ER transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "XENPAK Connector",

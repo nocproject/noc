@@ -4,6 +4,7 @@
     "vendor__code": "BROCADE",
     "description": "PSU for RX8 chassis",
     "connection_rule__name": "Brocade | SX",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "PSU connector",

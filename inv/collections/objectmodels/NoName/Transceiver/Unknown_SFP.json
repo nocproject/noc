@@ -3,6 +3,7 @@
     "uuid": "2ba9fd2c-1a6e-44f9-b59b-0305f9f893ff",
     "vendor__code": "NONAME",
     "description": "Unknown SFP transceiver. Replace with real type manually",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

@@ -3,6 +3,7 @@
     "uuid": "37b32d6b-90b5-4f69-ba1d-efecf3525565",
     "vendor__code": "CISCO",
     "description": "Cisco SFP TX transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

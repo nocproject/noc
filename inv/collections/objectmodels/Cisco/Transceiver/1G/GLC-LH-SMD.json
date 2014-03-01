@@ -3,6 +3,7 @@
     "uuid": "1724b01e-e07c-47ad-a4e7-5dce23000251",
     "vendor__code": "CISCO",
     "description": "Cisco SFP LH/LX transceiver with DOM support",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

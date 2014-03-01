@@ -4,6 +4,7 @@
     "vendor__code": "BROCADE",
     "description": "4 XFP linecard\n",
     "connection_rule__name": "Brocade | SX",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "xfp port",

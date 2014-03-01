@@ -3,6 +3,7 @@
     "uuid": "4c7d3dc0-b897-42f8-8dd9-6957b998802e",
     "vendor__code": "CISCO",
     "description": " Cisco 1000BASE-T GBIC Copper",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "GBIC Connector",

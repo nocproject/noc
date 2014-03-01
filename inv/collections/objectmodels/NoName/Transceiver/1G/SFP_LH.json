@@ -3,6 +3,7 @@
     "uuid": "e053a183-d0d3-4624-853e-96119178edbc",
     "vendor__code": "NONAME",
     "description": "NoName SFP LH transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

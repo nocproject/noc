@@ -4,6 +4,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco ASA5520 chassis",
     "connection_rule__name": "Cisco | ASA",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Gi0/0 port",

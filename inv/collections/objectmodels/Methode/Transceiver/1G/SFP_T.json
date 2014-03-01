@@ -3,6 +3,7 @@
     "uuid": "cd0449f7-6fe4-4e55-bfa9-90bee6c0bdc2",
     "vendor__code": "METHODE",
     "description": "SFP T transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

@@ -3,6 +3,7 @@
     "uuid": "e7234cc2-78e8-449a-803f-baaea5d6920d",
     "vendor__code": "OPTICIN",
     "description": "Opticin SFP, 850nm, LC, 500m, SX transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

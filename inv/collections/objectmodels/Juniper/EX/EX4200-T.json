@@ -4,6 +4,7 @@
     "vendor__code": "JUNIPER",
     "description": "24-port 10/100/1000BASE-T",
     "connection_rule__name": "Juniper | EX4200",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Console port",

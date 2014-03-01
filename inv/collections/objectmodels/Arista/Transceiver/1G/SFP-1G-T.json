@@ -3,6 +3,7 @@
     "uuid": "5bc911e4-1d42-4f90-b0a3-8f483d7d5e9f",
     "vendor__code": "ARISTA",
     "description": "1000Base-T",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "1000Base-T port",

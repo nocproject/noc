@@ -3,6 +3,7 @@
     "uuid": "070deca5-5589-4343-866c-512472c79f5b",
     "vendor__code": "NONAME",
     "description": "NoName XFP LR transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "XFP Connector",

@@ -4,6 +4,7 @@
     "vendor__code": "ZYXEL",
     "description": "ZyXEL ES-3012F switch, 8 SFP, 4 Combo",
     "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Console port",

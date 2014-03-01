@@ -4,6 +4,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco SCE 8000 Service Control Module",
     "connection_rule__name": "Cisco | SCE",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "SCM Connector",

@@ -3,6 +3,7 @@
     "uuid": "57d4d724-619f-43a5-a82e-ad6fbaee468b",
     "vendor__code": "OPTOSTAR",
     "description": "Optostar SFP LX transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

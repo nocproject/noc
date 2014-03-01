@@ -3,6 +3,7 @@
     "uuid": "4d121546-4c62-405a-aaa6-ca94dfd70101",
     "vendor__code": "CISCO",
     "description": "ASA/IPS 180W AC Power Supply",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Power inlet",

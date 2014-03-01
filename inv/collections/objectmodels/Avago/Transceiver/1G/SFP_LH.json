@@ -3,6 +3,7 @@
     "uuid": "8c27952d-8fc0-4cff-9220-3bad9cb270c9",
     "vendor__code": "AVAGO",
     "description": "LH/LX transceiver without DOM support",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

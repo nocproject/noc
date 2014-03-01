@@ -4,6 +4,7 @@
     "vendor__code": "CISCO",
     "description": "48 Ethernet 10/100 ports with PoE and 4 SFP-based Gigabit Ethernet ports",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Fa0/1",

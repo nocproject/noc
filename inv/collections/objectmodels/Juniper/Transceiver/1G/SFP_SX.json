@@ -3,6 +3,7 @@
     "uuid": "8b2e420a-3464-40f5-a1f1-6800963c3cbf",
     "vendor__code": "JUNIPER",
     "description": "Juniper SFP SX transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

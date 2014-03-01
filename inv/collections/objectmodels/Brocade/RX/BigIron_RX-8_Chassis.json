@@ -4,6 +4,7 @@
     "vendor__code": "BROCADE",
     "description": "BigIron RX-8 AC 8 slot chassis",
     "connection_rule__name": "Brocade | SX",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "pwr1",

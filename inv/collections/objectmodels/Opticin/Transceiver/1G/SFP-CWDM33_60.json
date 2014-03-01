@@ -3,6 +3,7 @@
     "uuid": "959b91a0-1de7-4279-90f5-ffabf664f761",
     "vendor__code": "OPTICIN",
     "description": "Opticin CWDM SFP, 1330nm, DDM, LC, 60km, ZX transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

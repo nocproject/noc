@@ -4,6 +4,7 @@
     "vendor__code": "ZYXEL",
     "description": "L3 switch with 8 ports 1000BaseX (SFP) and 4 combo ports 10/100/1000BaseTX / SFP",
     "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "DC power input",

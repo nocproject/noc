@@ -3,6 +3,7 @@
     "uuid": "4de3ed09-4221-4fc5-a3e6-ee6f03e151e3",
     "vendor__code": "CISCO",
     "description": "Cisco X2 10G LR transciever",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "X2 Connector",

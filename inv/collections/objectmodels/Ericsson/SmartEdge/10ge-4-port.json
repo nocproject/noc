@@ -4,6 +4,7 @@
     "vendor__code": "ERICSSON",
     "description": "4 XFP Linecard",
     "connection_rule__name": "Ericsson | SmartEdge",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "XFP port",

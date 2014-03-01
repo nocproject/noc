@@ -3,6 +3,7 @@
     "uuid": "9fc8baef-f958-4e44-93e7-d57f2971761c",
     "vendor__code": "CARELINK",
     "description": "CareLink SFP WDM transceiver (1310 tx, 1550 rx)",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

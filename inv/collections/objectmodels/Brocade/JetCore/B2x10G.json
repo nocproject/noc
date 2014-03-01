@@ -4,6 +4,7 @@
     "vendor__code": "BROCADE",
     "description": "B2x10G - 2 port 10G fiber module(2 XenPak)",
     "connection_rule__name": "Brocade | JetCore",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "XENPAK port 1",
