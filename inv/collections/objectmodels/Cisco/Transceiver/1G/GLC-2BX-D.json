@@ -3,6 +3,7 @@
     "uuid": "25c3a94f-bfca-433f-9d6f-daf95ad03c4a",
     "vendor__code": "CISCO",
     "description": "2-channel 1000BASE-BX10-D for Single-Fiber Bidirectional Applications",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

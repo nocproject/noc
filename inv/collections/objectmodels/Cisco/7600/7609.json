@@ -4,6 +4,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco 7600 9-slot Chassis",
     "connection_rule__name": "Cisco | 7600",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "CLK module slot 1",

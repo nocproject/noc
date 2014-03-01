@@ -3,6 +3,7 @@
     "uuid": "1372bce3-e3f1-4086-8db7-ffee47795d22",
     "vendor__code": "JUNIPER",
     "description": "Juniper SFP+ SR transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP+ Connector",

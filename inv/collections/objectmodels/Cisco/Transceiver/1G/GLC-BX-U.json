@@ -3,6 +3,7 @@
     "uuid": "b3d9223c-28da-4696-a01e-624f843fcc19",
     "vendor__code": "CISCO",
     "description": "1000BASE-BX-U",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

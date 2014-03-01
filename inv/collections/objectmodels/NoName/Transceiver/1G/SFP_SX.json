@@ -3,6 +3,7 @@
     "uuid": "81e1867e-4297-4cd0-84f5-46931022868e",
     "vendor__code": "NONAME",
     "description": "NoName SFP SX transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

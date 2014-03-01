@@ -4,6 +4,7 @@
     "vendor__code": "JUNIPER",
     "description": "24-port 10/100/1000BASE-T",
     "connection_rule__name": "Juniper | EX2200",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "xe-X/1/0 SFP+ port",

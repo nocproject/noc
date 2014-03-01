@@ -3,6 +3,7 @@
     "uuid": "98fa28dc-09de-46e7-9971-45f707ba9d08",
     "vendor__code": "SUMITOMO",
     "description": "100BaseLX-FE SFP",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

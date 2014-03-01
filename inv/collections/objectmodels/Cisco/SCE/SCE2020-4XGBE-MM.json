@@ -4,6 +4,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco SCE2020-4XGBE-MM Service Control Engine Platform",
     "connection_rule__name": "Cisco | SCE",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "GBE1_rx",

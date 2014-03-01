@@ -4,6 +4,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco ASR 9010 DC Chassis with PEM Version 1",
     "connection_rule__name": "Cisco | ASR9k",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "RSP 1 slot",

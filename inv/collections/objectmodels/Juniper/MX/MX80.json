@@ -4,6 +4,7 @@
     "vendor__code": "JUNIPER",
     "description": "Juniper MX80 chassis",
     "connection_rule__name": "Juniper | MX80",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "MIC Slot #0",

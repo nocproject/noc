@@ -3,6 +3,7 @@
     "uuid": "945b77ec-1178-4741-8f0f-d9ce4ad0e2d9",
     "vendor__code": "ARISTA",
     "description": "10GBASE-SR 50u MMF / 300m SFP+ transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "TX",

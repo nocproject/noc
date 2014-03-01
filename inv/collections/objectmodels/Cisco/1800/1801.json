@@ -4,6 +4,7 @@
     "vendor__code": "CISCO",
     "description": "ADSL over POTS router with 8-port 10/100BASE-T switch",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Bri0",

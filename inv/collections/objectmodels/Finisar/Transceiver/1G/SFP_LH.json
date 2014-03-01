@@ -3,6 +3,7 @@
     "uuid": "bb81c014-4d71-451d-aa13-eadfaef53869",
     "vendor__code": "FINISAR",
     "description": "LH/LX transceiver without DOM support",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

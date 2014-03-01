@@ -4,6 +4,7 @@
     "vendor__code": "BROCADE",
     "description": "24 SFP/SFP+ ports and 4 10/100/1000 Gigabit Ethernet ports",
     "connection_rule__name": "Brocade | SX",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "fixed gigabit",

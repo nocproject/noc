@@ -3,6 +3,7 @@
     "uuid": "05c6cd4f-ed2c-46d0-b8bd-394f9585ccd8",
     "vendor__code": "CISCO",
     "description": "Cisco XENPAK 10G SR transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "XENPAK Connector",

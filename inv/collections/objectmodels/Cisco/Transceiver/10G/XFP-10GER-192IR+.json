@@ -3,6 +3,7 @@
     "uuid": "1bad640a-4626-47f7-bcbf-84ee975713f3",
     "vendor__code": "CISCO",
     "description": "Multirate 10GBASE-ER and OC-192/STM-64 IR-2 XFP, SMF",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "XFP Connector",

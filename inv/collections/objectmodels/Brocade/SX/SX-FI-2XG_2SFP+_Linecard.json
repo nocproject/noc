@@ -4,6 +4,7 @@
     "vendor__code": "BROCADE",
     "description": "SX-FI-2XG 2SFP+ Linecard",
     "connection_rule__name": "Brocade | SX",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "sfp port",

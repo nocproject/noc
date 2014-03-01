@@ -4,6 +4,7 @@
     "vendor__code": "JUNIPER",
     "description": "Base EX8208 system configuration:  8-slot chassis with passive backplane",
     "connection_rule__name": "Juniper | EX8200",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "SRE Slot 0",

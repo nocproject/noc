@@ -4,6 +4,7 @@
     "vendor__code": "ARISTA",
     "description": "Arista 7124S, 24-port L2/3/4 switch, 600ns latency, 760W AC power supplies",
     "connection_rule__name": "Arista | 7100",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Port 1",

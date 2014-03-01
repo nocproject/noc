@@ -3,6 +3,7 @@
     "uuid": "8490de94-1ca6-44e7-96f9-0fb5bf3f60b2",
     "vendor__code": "NATEKS",
     "description": "Nateks SFP LX transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

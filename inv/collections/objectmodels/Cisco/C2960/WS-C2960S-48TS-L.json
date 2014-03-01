@@ -4,6 +4,7 @@
     "vendor__code": "CISCO",
     "description": "48 Ethernet 10/100/1000 ports and 4 one gigabit SFP ports",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Gi1/0/1",

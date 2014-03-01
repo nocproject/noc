@@ -3,6 +3,7 @@
     "uuid": "360483a2-f3c4-472e-9580-d7a119b2f8e9",
     "vendor__code": "ZYXEL",
     "description": "Zyxel SFP LX transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

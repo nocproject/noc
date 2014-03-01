@@ -4,6 +4,7 @@
     "vendor__code": "DLINK",
     "description": "DGS-3612 xStack L3 Managed Switch witch 8 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
     "connection_rule__name": "DLink | DxS",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "1",

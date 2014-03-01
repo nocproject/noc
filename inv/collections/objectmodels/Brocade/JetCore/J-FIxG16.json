@@ -4,6 +4,7 @@
     "vendor__code": "BROCADE",
     "description": "16-sfp jetcore line card",
     "connection_rule__name": "Brocade | JetCore",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "sfp port",

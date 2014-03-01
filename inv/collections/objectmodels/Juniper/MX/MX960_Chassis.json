@@ -4,6 +4,7 @@
     "vendor__code": "JUNIPER",
     "description": "Juniper MX960 chassis",
     "connection_rule__name": "Juniper | MX",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Fan Slot #0",
@@ -166,7 +167,7 @@
             "managed": true
         },
         "rackmount": {
-            "units": 16
+            "units": 16.0
         }
     }
 }

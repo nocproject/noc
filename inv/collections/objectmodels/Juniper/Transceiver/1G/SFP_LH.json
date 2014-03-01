@@ -3,6 +3,7 @@
     "uuid": "b2b522fa-8d71-4cd6-9bbf-b72f68c6ffd9",
     "vendor__code": "JUNIPER",
     "description": "Juniper SFP LH transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

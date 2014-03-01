@@ -3,6 +3,7 @@
     "uuid": "18472601-fd06-48d9-8d98-5da8a821bac8",
     "vendor__code": "CISCO",
     "description": "100BaseLX-FE SFP",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

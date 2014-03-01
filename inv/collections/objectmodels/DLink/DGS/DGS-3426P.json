@@ -4,6 +4,7 @@
     "vendor__code": "DLINK",
     "description": "DGS-3426P xStack L2 Managed Switch witch 20 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 module slot with PoE",
     "connection_rule__name": "DLink | DxS",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "1",

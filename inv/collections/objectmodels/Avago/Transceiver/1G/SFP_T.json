@@ -3,6 +3,7 @@
     "uuid": "7cfc875b-2413-4607-96c0-608a78b59b80",
     "vendor__code": "AVAGO",
     "description": "Cisco-compatible SFP T transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",

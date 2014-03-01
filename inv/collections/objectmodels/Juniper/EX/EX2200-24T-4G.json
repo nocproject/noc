@@ -4,6 +4,7 @@
     "vendor__code": "JUNIPER",
     "description": "EX 2200, 24-port 10/100/1000BaseT with 4 SFP uplink ports\n",
     "connection_rule__name": "Juniper | EX2200",
+    "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Console port",

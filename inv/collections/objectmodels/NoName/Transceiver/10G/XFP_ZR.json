@@ -3,6 +3,7 @@
     "uuid": "51a5ea17-d727-4bba-863c-13df21adbc61",
     "vendor__code": "NONAME",
     "description": "NoName XFP ZR transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "XFP Connector",

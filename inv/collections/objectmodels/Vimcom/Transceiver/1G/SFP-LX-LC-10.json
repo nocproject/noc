@@ -3,6 +3,7 @@
     "uuid": "4ad05e3e-e88b-477b-a4e0-655d5d94293e",
     "vendor__code": "VIMCOM",
     "description": "Vimcom SFP LX transceiver",
+    "cr_context": "XCVR",
     "connections": [
         {
             "description": "SFP Connector",
