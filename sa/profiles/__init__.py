@@ -237,6 +237,13 @@ class Profile(object):
         name = name.split(":")[0]
         return name
 
+    def get_interface_names(self, name):
+        """
+        Return possible alternative interface names,
+        i.e. for LLDP discovery *Local* method
+        """
+        return []
+
     def get_linecard(self, interface_name):
         """
         Returns linecard number related to interface
