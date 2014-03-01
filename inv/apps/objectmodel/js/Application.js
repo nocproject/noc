@@ -88,6 +88,11 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     width: 100
                 },
                 {
+                    text: "CR. Context",
+                    dataIndex: "cr_context",
+                    width: 70
+                },
+                {
                     text: "Description",
                     dataIndex: "description",
                     flex: 1
@@ -120,6 +125,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     name: "connection_rule",
                     xtype: "inv.connectionrule.LookupField",
                     fieldLabel: "Connection Rule",
+                    allowBlank: true
+                },
+                {
+                    name: "cr_context",
+                    xtype: "textfield",
+                    fieldLabel: "Connection Context",
                     allowBlank: true
                 },
                 {

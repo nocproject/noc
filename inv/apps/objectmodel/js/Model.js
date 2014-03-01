@@ -34,6 +34,10 @@ Ext.define("NOC.inv.objectmodel.Model", {
             persist: false
         },
         {
+            name: "cr_context",
+            type: "string"
+        },
+        {
             name: "description",
             type: "string"
         },
