@@ -95,6 +95,8 @@ class ObjectModel(Document):
     description = StringField()
     vendor = PlainReferenceField(Vendor)
     connection_rule = PlainReferenceField(ConnectionRule, required=False)
+    # Connection rule context
+    cr_context = StringField(required=False)
     data = DictField()
     connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
     uuid = UUIDField(binary=True)
@@ -177,6 +179,8 @@ class ObjectModel(Document):
         }
         if self.connection_rule:
             r["connection_rule__name"] = self.connection_rule.name
+        if self.cr_context:
+            r["cr_context"] = self.cr_context
         if self.plugins:
             r["plugins"] = self.plugins
         return r
@@ -186,6 +190,7 @@ class ObjectModel(Document):
                        order=["name", "uuid", "vendor__code",
                               "description",
                               "connection_rule__name",
+                              "cr_context",
                               "plugins"])
 
     def get_json_path(self):
