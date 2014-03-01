@@ -40,6 +40,12 @@ class Profile(NOCProfile):
         return cmp([int(z) for z in self.rx_ver.findall(x)],
             [int(z) for z in self.rx_ver.findall(y)])
 
+    def get_interface_names(self, name):
+        r = []
+        if name.startswith("1/") or name.startswith("1:"):
+            r += [name[2:]]
+        return r
+
     cluster_member = None
     dlink_pager = False
     rx_pager = re.compile(r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$",
