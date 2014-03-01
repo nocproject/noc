@@ -20,7 +20,7 @@ def reduce_commands(task, commands):
         "<style>.cmd {border-bottom: 1px solid black;font-weight: bold;}</style>"]
     r += ["<table border='1'>",
           "<tr><th>Object</th><th>Status</th><th>Result</th></tr>"]
-    for mt in task.maptask_set.all():
+    for mt in task.maptask_set.all().order_by('managed_object__name'):
         if mt.status == "C":
             result = "\n".join(
                 ["<div class='cmd'>%s</div><br/><pre>%s</pre><br/>" % (c, sr)
