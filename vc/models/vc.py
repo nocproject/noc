@@ -75,7 +75,7 @@ class VC(models.Model):
         if (self.l1 < self.vc_domain.type.label1_min or
             self.l1 > self.vc_domain.type.label1_max):
             raise InvalidLabelException("Invalid value for L1")
-        if self.vc_domain.type.min_labels > 1 and not self.l2:
+        if self.vc_domain.type.min_labels > 1 and self.l2 is None:
             raise MissedLabelException("L2 required")
         if (self.vc_domain.type.min_labels > 1 and
             not (self.vc_domain.type.label2_min <= self.l2 <= self.vc_domain.type.label2_max)):
