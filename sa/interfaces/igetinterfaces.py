@@ -228,7 +228,7 @@ class IGetInterfaces(Interface):
                 "mtu": IntParameter(required=False),
                 "description": StringParameter(required=False),
                 "mac": MACAddressParameter(required=False),
-                "vlan_ids": ListOfParameter(element=VLANIDParameter(), required=False),
+                "vlan_ids": VLANStackParameter(required=False),
                 # Enabled address families
                 "enabled_afi": ListOfParameter(
                     element=StringParameter(choices=[
