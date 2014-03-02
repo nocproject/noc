@@ -1152,11 +1152,15 @@ class RDParameter(Parameter):
         '100:4294967295'
         >>> RDParameter().clean("10.10.10.10:10")
         '10.10.10.10:10'
+        >>> RDParameter().clean("100000:500")
+        '100000:500'
         """
         try:
             l, r = value.split(":")
             r = long(r)
         except ValueError:
+            self.raise_error(value)
+        if r < 0:
             self.raise_error(value)
         if "." in l:
             # IP:N
@@ -1164,7 +1168,7 @@ class RDParameter(Parameter):
                 l = IPv4Parameter().clean(l)
             except InterfaceTypeError:
                 self.raise_error(value)
-            if r < 0 or r > 65535:
+            if r > 65535:
                 self.raise_error(value)
         else:
             # ASN:N
@@ -1172,8 +1176,14 @@ class RDParameter(Parameter):
                 l = int(l)
             except ValueError:
                 self.raise_error(value)
-            if l < 0 or l > 65535 or r < 0 or r > 0xFFFFFFFFL:
+            if l < 0:
                 self.raise_error(value)
+            if l > 65535:
+                if r > 65535:  # 4-byte ASN
+                    self.raise_error(value)
+            else:
+                if r > 0xFFFFFFFFL:  # 2-byte ASN
+                    self.raise_error(value)
         return "%s:%s" % (l,r)
 
 
