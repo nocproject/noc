@@ -994,6 +994,30 @@ class VLANIDParameter(IntParameter):
                                               min_value=1, max_value=4095)
     
 
+class VLANStackParameter(ListOfParameter):
+    """
+    >>> VLANStackParameter().clean(10)
+    [10]
+    >>> VLANStackParameter().clean([10])
+    [10]
+    >>> VLANStackParameter().clean([10, "20"])
+    [10, 20]
+    >>> VLANStackParameter().clean([10, 0])
+    [10, 0]
+    """
+    def __init__(self, required=True, default=None):
+        super(VLANStackParameter, self).__init__(element=IntParameter(),
+                                           required=required,
+                                           default=default, convert=True)
+
+    def clean(self, value):
+        value = super(VLANStackParameter, self).clean(value)
+        if len(value) > 0:
+            value[0] = VLANIDParameter().clean(value[0])
+        for i in range(1, len(value)):
+            value[i] = IntParameter(min_value=0, max_value=4095).clean(value[i])
+        return value
+
 ##
 ##
 ##
