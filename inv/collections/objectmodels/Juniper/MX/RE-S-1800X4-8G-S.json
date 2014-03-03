@@ -3,6 +3,7 @@
     "uuid": "21225099-f0a9-46cb-926c-789480596528",
     "vendor__code": "JUNIPER",
     "description": "Routing Engine - Quad Core 1800Ghz with 8G Memory",
+    "cr_context": "RE",
     "connections": [
         {
             "description": "AUX serial port",

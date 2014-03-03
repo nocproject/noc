@@ -3,6 +3,7 @@
     "uuid": "25a10884-710e-4789-a9b8-00d8de6ab1c9",
     "vendor__code": "JUNIPER",
     "description": "MX480 1200W Power Entry Module AC",
+    "cr_context": "PEM",
     "connections": [
         {
             "description": "Internal power slot",

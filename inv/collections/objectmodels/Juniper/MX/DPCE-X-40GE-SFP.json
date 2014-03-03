@@ -3,6 +3,7 @@
     "uuid": "8221904d-8d20-4101-ad5c-cb615f835f85",
     "vendor__code": "JUNIPER",
     "description": "40x1GE DPC for MX with L2/L2.5 features",
+    "cr_context": "FPC",
     "connections": [
         {
             "description": "ge-X/0/0 interface",

@@ -3,6 +3,7 @@
     "uuid": "1f0e8ada-db1b-401c-bfc3-0f025e019625",
     "vendor__code": "JUNIPER",
     "description": "16x10GE line card, price includes full scale L2/L2.5 and reduced scale L3 features",
+    "cr_context": "FPC",
     "connections": [
         {
             "description": "Chassis connection",

@@ -3,6 +3,7 @@
     "uuid": "69cc20f4-7950-4dd6-a02c-9b94ffb67a3d",
     "vendor__code": "JUNIPER",
     "description": "40x1GE Enhanced DPC for MX",
+    "cr_context": "PEM",
     "connections": [
         {
             "description": "ge-X/0/0 interface",

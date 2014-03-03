@@ -3,6 +3,7 @@
     "uuid": "b1c01a3f-6f55-4ec8-8856-45c25aeb7e71",
     "vendor__code": "JUNIPER",
     "description": "40x1G Enhanced Queuing DPC for MX with full L2/L3 features & VLAN-HQoS",
+    "cr_context": "FPC",
     "connections": [
         {
             "description": "ge-X/0/0 interface",

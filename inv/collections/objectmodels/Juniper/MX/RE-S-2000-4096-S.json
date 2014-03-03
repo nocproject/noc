@@ -3,6 +3,7 @@
     "uuid": "18fdb7b0-cf45-4562-b7de-361d759a527f",
     "vendor__code": "JUNIPER",
     "description": "Routing engine with 2000MHz processor and 4GB memory",
+    "cr_context": "RE",
     "connections": [
         {
             "description": "AUX serial port",

@@ -3,6 +3,7 @@
     "uuid": "b10a145e-fc7b-4484-8079-429385fdf83c",
     "vendor__code": "JUNIPER",
     "description": "4x10G MIC for MX",
+    "cr_context": "MIC",
     "connections": [
         {
             "description": "MPC connection",
