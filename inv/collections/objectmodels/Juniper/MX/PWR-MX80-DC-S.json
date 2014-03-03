@@ -3,6 +3,7 @@
     "uuid": "3f88374e-f103-476d-a58b-7707f824c7b9",
     "vendor__code": "JUNIPER",
     "description": "MX80 DC Power Supply",
+    "cr_context": "PEM",
     "connections": [
         {
             "description": "-48V",

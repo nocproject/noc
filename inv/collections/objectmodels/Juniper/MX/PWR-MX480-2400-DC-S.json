@@ -3,6 +3,7 @@
     "uuid": "6bcfa7ea-b3e2-4695-8738-542377ed8e92",
     "vendor__code": "JUNIPER",
     "description": "2400W DC Power Supply",
+    "cr_context": "PEM",
     "connections": [
         {
             "description": "-48V",

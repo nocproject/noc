@@ -3,6 +3,7 @@
     "uuid": "336d4b77-338a-4389-82e0-edea14f68790",
     "vendor__code": "JUNIPER",
     "description": "4100W AC Power Supply",
+    "cr_context": "PEM",
     "connections": [
         {
             "description": "Internal power slot",

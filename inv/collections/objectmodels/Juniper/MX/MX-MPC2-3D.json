@@ -3,6 +3,7 @@
     "uuid": "4d3c9a48-9a71-457c-ae48-59f8d1ed442a",
     "vendor__code": "JUNIPER",
     "description": "2 Trio PFEs, port queue, 64 K IFLs",
+    "cr_context": "FPC",
     "connections": [
         {
             "description": "Chassis connection",

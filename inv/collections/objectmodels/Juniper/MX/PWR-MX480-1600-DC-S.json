@@ -3,6 +3,7 @@
     "uuid": "0da4fcc0-2f0d-44d5-80f1-339cd869331a",
     "vendor__code": "JUNIPER",
     "description": "1600W DC Power Entry Module, Redundant",
+    "cr_context": "PEM",
     "connections": [
         {
             "description": "-48V",

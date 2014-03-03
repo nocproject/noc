@@ -3,6 +3,7 @@
     "uuid": "2fc621a8-60b7-4995-8382-2106c7aa9fef",
     "vendor__code": "JUNIPER",
     "description": "20x10/100/1000 MIC for MX",
+    "cr_context": "MIC",
     "connections": [
         {
             "description": "SFP 0/0",

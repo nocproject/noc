@@ -3,6 +3,7 @@
     "uuid": "2c2b8b59-e5e6-4613-a10c-9ea31b4bd24a",
     "vendor__code": "JUNIPER",
     "description": "MX Enhanced Switch Control Board",
+    "cr_context": "SCB",
     "connections": [
         {
             "description": "Routing Engine slot",

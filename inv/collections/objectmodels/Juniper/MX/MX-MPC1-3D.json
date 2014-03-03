@@ -3,6 +3,7 @@
     "uuid": "2a32d79b-0222-4b42-a319-f2d809de6935",
     "vendor__code": "JUNIPER",
     "description": "1xTrio Chipset MPC, port queuing",
+    "cr_context": "FPC",
     "connections": [
         {
             "description": "MPC0 slot",

@@ -3,6 +3,7 @@
     "uuid": "d1ed4fcb-b38d-4d9b-9feb-6509314e4487",
     "vendor__code": "JUNIPER",
     "description": "MX Switch Control Board",
+    "cr_context": "SCB",
     "connections": [
         {
             "description": "Routing Engine slot",
