@@ -3,6 +3,7 @@
     "uuid": "a7e008b2-4343-449b-b270-207521a4fdb9",
     "vendor__code": "DLINK",
     "description": "4 Port SFP Module",
+    "cr_context": "MODULE",
     "connections": [
         {
             "description": "Chassis connection",

@@ -3,6 +3,7 @@
     "uuid": "9180351e-be76-4abc-ba28-6c0c48419910",
     "vendor__code": "DLINK",
     "description": "1 Port CX4 Module",
+    "cr_context": "MODULE",
     "connections": [
         {
             "description": "Chassis connection",

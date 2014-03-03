@@ -1,9 +1,9 @@
 {
-    "name": "DLink | DES | DES-3010G",
-    "uuid": "11cfe094-e988-4ed0-87fd-fce5abca5a09",
+    "name": "DLink | DGS | DGS-3200-10",
+    "uuid": "e624ed26-4313-4c4c-b8b2-b0ed8cc71603",
     "vendor__code": "DLINK",
-    "description": "DES-3010G L2 Managed Switch witch 8 ports 10/100BASE-TX, 1 ports 10/100/1000BASE-T, 1 port 100/1000 SFP",
-    "connection_rule__name": "Generic | Switch SFP",
+    "description": "DGS-3200-10 xStackL2 Managed Switch witch 8 ports 10/100/1000BASE-T, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -11,7 +11,7 @@
             "direction": "s",
             "gender": "f",
             "name": "1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -19,7 +19,7 @@
             "direction": "s",
             "gender": "f",
             "name": "2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -27,7 +27,7 @@
             "direction": "s",
             "gender": "f",
             "name": "3",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -35,7 +35,7 @@
             "direction": "s",
             "gender": "f",
             "name": "4",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -43,7 +43,7 @@
             "direction": "s",
             "gender": "f",
             "name": "5",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -51,7 +51,7 @@
             "direction": "s",
             "gender": "f",
             "name": "6",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -59,7 +59,7 @@
             "direction": "s",
             "gender": "f",
             "name": "7",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -67,7 +67,7 @@
             "direction": "s",
             "gender": "f",
             "name": "8",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -79,17 +79,34 @@
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "9",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp9",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "10",
+            "direction": "s",
+            "gender": "f",
+            "name": "10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "description": "10",
             "direction": "i",
             "gender": "f",
             "name": "sfp10",
-            "protocols": ["TransEth1G"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
             "description": "Console port",
             "direction": "s",
             "gender": "f",
+            "group": "0",
             "name": "console",
             "protocols": [">RS232"],
             "type__name": "Electrical | DB9"
@@ -98,14 +115,15 @@
             "description": "Power outlet",
             "direction": "s",
             "gender": "f",
-            "name": "power",
+            "group": "0",
+            "name": "IPWR",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | IEC 60320 C14"
         }
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3010G"
+            "part_no0": "DGS-3200-10"
         },
         "management": {
             "managed": true
