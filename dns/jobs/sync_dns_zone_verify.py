@@ -14,7 +14,7 @@ from noc.dns.models.dnszone import DNSZone
 class SyncDNSZoneVerify(ModelJob):
     name = "dns.sync_dns_zone_verify"
     model = DNSZone
-    threaded = True
+    # threaded = True
 
     ignored = False
     initial_submit_interval = 300
