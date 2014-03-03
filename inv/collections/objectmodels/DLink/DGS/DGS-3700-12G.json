@@ -1,8 +1,8 @@
 {
-    "name": "DLink | DGS | DGS-3612G",
-    "uuid": "a04f6086-ae2c-4d70-87e1-c33f8598a05b",
+    "name": "DLink | DGS | DGS-3700-12G",
+    "uuid": "1b43e312-3b80-4e42-9a9a-2dcfe5d26010",
     "vendor__code": "DLINK",
-    "description": "DGS-3612G xStack L3 Managed Switch witch 8 ports 100/1000 SFP, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "description": "DGS-3700-12G xStack L2 Managed Switch witch 8 ports 100/1000 SFP, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "connections": [
@@ -153,7 +153,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3612G"
+            "part_no0": "DGS-3700-12G"
         },
         "management": {
             "managed": true
