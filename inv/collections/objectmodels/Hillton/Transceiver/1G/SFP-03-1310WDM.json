@@ -1,0 +1,38 @@
+{
+    "name": "Hillton | Transceiver | 1G | SFP-03-1310WDM",
+    "uuid": "c9feb65e-b305-4f2d-a0fa-42c965e6de4f",
+    "vendor__code": "HILLTON",
+    "description": "Hillton 3km SFP LX transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-03-1310WDM"
+        }
+    }
+}

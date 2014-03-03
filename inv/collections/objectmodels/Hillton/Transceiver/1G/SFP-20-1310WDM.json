@@ -1,0 +1,38 @@
+{
+    "name": "Hillton | Transceiver | 1G | SFP-20-1310WDM",
+    "uuid": "66ce730e-ff6c-4ad8-9d45-385bbae2976a",
+    "vendor__code": "HILLTON",
+    "description": "Hillton 20km SFP LX transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-20-1310WDM"
+        }
+    }
+}
