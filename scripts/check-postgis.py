@@ -120,7 +120,11 @@ class PGDriver(object):
         """
         u = os.uname()
         if u[0] == "FreeBSD":
-            base = "/usr/local/share/postgis/contrib/"
+            fp = "/usr/local/share/postgis/contrib/"
+            if os.path.isdir(fp):
+                base = fp
+            else:
+                base = self.pg_contrib
         else:
             base = self.pg_contrib
         self.assert_dir(base)
