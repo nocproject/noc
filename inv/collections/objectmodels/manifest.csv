@@ -263,6 +263,10 @@ Force10 | S | S50-01-SSC-12G,628a2dde-f96a-42ea-bc42-1b00485e4ac7,Force10/S/S50-
 Force10 | S | S50-01-SSC-24G,a217c0aa-90c9-4e64-9145-25a8dae85ae5,Force10/S/S50-01-SSC-24G.json,9b797e259eac5e42bc4ce78fe63a6716a3b12207b446f31d230babf0c068a931
 Force10 | S | S50N,ff9f8621-7ee7-40db-a5f9-6c91134655a8,Force10/S/S50N.json,949acedff3436d2724f07456180ead632e28c1d98c0b6f9029281f1e370b46a6
 Group,badce84e-b57a-4fe1-a386-fbbd0e1ba705,Group.json,62045d3f23f02eeb5ff72e88e8400d44d37e1edd3a0fb6aa532ae15ee83aba9a
+Hillton | Transceiver | 1G | SFP-03-1310WDM,c9feb65e-b305-4f2d-a0fa-42c965e6de4f,Hillton/Transceiver/1G/SFP-03-1310WDM.json,6dc3eee53c4bcbff7458478d3e86da7484aed23776ae44dfcc5032ca188bba97
+Hillton | Transceiver | 1G | SFP-03-1550WDM,77d8d195-510f-4063-932b-b40a200b6cce,Hillton/Transceiver/1G/SFP-03-1550WDM.json,606fb070c646387e078309ac0b1c26ce758c40596d7c5a8ad68ab512a908ec86
+Hillton | Transceiver | 1G | SFP-20-1310WDM,66ce730e-ff6c-4ad8-9d45-385bbae2976a,Hillton/Transceiver/1G/SFP-20-1310WDM.json,debfbc78e3c47938e39060461d6736db43bd6a75705d8c7cc5368fbfd285b7d3
+Hillton | Transceiver | 1G | SFP-20-1550WDM,2e1d626d-3c04-42c4-affb-88983ea93e28,Hillton/Transceiver/1G/SFP-20-1550WDM.json,f9cd9b44702f4ec4b71de7ac0659dddea986e7dbd1a8fd26687f8336249c278a
 Huawei | Quidway S5300 | E2XX-2-Port 10GE XFP subcard,fc15b762-6c94-4034-b760-9a06a99637b9,Huawei/Quidway_S5300/E2XX-2-Port_10GE_XFP_subcard.json,9b745f53c55227dd59564d1803175eb72c5edd13ee9b9e948b4b8574a8f1cb47
 Huawei | Quidway S5300 | E4GF-4-Port GE SFP subcard,4420bda2-606e-481f-925b-04b9f5cb85f7,Huawei/Quidway_S5300/E4GF-4-Port_GE_SFP_subcard.json,9cc7022be0131c4fe5c39097247632ca5702b42933fc38c0ed87223cde5553a9
 Huawei | Quidway S5300 | ETPC-Stack Rear Subcard,586ea21e-c3c4-47db-9211-3d28f570984c,Huawei/Quidway_S5300/ETPC-Stack_Rear_Subcard.json,9d91cca791fd8fb241807b3aafbc86c7727227103f410056f36c3eb28b9f8a24
