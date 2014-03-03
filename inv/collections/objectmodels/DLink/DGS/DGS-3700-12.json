@@ -1,74 +1,74 @@
 {
-    "name": "DLink | DGS | DGS-3612G",
-    "uuid": "a04f6086-ae2c-4d70-87e1-c33f8598a05b",
+    "name": "DLink | DGS | DGS-3700-12",
+    "uuid": "83ca57df-6224-463b-acc7-c7df446d585a",
     "vendor__code": "DLINK",
-    "description": "DGS-3612G xStack L3 Managed Switch witch 8 ports 100/1000 SFP, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "description": "DGS-3700-12 xStack L2 Managed Switch witch 8 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "1",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp1",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "2",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp2",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "3",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp3",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "4",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp4",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "5",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp5",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "6",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp6",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "7",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp7",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "8",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
-            "name": "sfp8",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         },
         {
             "description": "9",
@@ -153,7 +153,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3612G"
+            "part_no0": "DGS-3700-12"
         },
         "management": {
             "managed": true
