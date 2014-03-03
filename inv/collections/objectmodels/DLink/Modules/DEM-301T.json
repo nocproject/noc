@@ -3,6 +3,7 @@
     "uuid": "a3e521ee-3f35-423c-946b-f3b54456102b",
     "vendor__code": "DLINK",
     "description": "1 Port 10/100/1000BASE-T Module",
+    "cr_context": "MODULE",
     "connections": [
         {
             "description": "Chassis connection",

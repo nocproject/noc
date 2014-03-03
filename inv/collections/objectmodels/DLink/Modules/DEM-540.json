@@ -3,6 +3,7 @@
     "uuid": "b42574e6-c536-4ac1-abe6-2bc716f63910",
     "vendor__code": "DLINK",
     "description": "Stack Module",
+    "cr_context": "MODULE",
     "connections": [
         {
             "description": "Chassis connection",

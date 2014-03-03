@@ -3,6 +3,7 @@
     "uuid": "9d9bd60e-8c66-4b65-8f4c-5c7c2244bf49",
     "vendor__code": "DLINK",
     "description": "1 Port XFP Module",
+    "cr_context": "MODULE",
     "connections": [
         {
             "description": "Chassis connection",

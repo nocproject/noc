@@ -3,6 +3,7 @@
     "uuid": "18ca94b2-a3f9-4b7c-9229-20878bf2780d",
     "vendor__code": "DLINK",
     "description": "1 Port GBIC Module",
+    "cr_context": "MODULE",
     "connections": [
         {
             "description": "Chassis connection",
