@@ -13,6 +13,8 @@ Brocade | FastIron SuperX | SFM Connector,e25e43f7-64a0-4891-82cf-c6bd897d7a78,B
 Brocade | JetCore | Backplane Connector,714e6a57-8b15-45a0-acc0-fb005437dfa5,Brocade/JetCore/Backplane_Connector.json,00785fcb5c976c1947fa82e693b1394099540d6d74b6c8ecde05d7112f85981f
 Brocade | JetCore | PS Connector,11c0312e-7761-42c3-af60-af698a669a98,Brocade/JetCore/PS_Connector.json,18aa1d2600e3b070a950ef752b20ee4de8a4231a14059f49a73d738d9a698795
 Cables,233e6bb4-7404-4232-b2a5-6a0ac34e8890,Cables.json,755e08ebafce0706cf8ca9cb0a9f4c8d64bf11ed8a25646905875a532e0dea72
+Cisco | 3800 | AIM,5087aa60-bbc4-4c85-b19e-6c79132dcfa8,Cisco/3800/AIM.json,8739f69107abf53892f79013b4958feb7f35174cba7a3476b6acf7774cee6882
+Cisco | 3800 | DCS,6d4fb1aa-204c-4188-9f5a-8401ea6a2f4c,Cisco/3800/DCS.json,d3f4af6b1b424fd624d990cde69511f1fe32247b4fdeb1e937638d8ec913959c
 Cisco | 3800 | MOTHERBOARD,b7dbcd22-1fde-466c-b4ca-70355d4c2dac,Cisco/3800/MOTHERBOARD.json,db7eef021a68c6879598ed0a5cc268fd2e76a8c796ba16a05a1724634ea6f234
 Cisco | 3800 | NM,ca192cf3-77ab-42c1-9c76-202fde475d64,Cisco/3800/NM.json,c271f09dd80fe9b69f92bb7d3ee772a68f18c3c35d5310af338e1bb51b030e24
 Cisco | 6500 | CLK,dd7f8ef7-77fa-4145-b5c9-0b78b5dd5e1e,Cisco/6500/CLK.json,77f82808dcfb9bcdfda61bac871c1454a3a7362d33e9ad242fd2d27a104b824a
