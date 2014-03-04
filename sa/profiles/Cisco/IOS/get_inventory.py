@@ -274,7 +274,13 @@ class Script(NOCScript):
             except ValueError:
                 number = None
             return "SUP", number, pid
-        elif "-DFC" in pid or "-CFC" in pid or "sub-module" in name:
+        elif "-PFC" in pid:
+            # PFC subcard
+            return "PFC", None, pid
+        elif name.startswith("msfc "):
+            # MSFC subcard
+            return "MSFC", None, pid
+        elif "-DFC" in pid or "-CFC" in pid or "sub-module of" in name:
             # DFC subcard
             return "DFC", None, pid
         elif name.startswith("PS "):
@@ -285,9 +291,18 @@ class Script(NOCScript):
         elif pid.startswith("FAN"):
             # Fan module
             return "FAN", name.split()[1], pid
-        elif pid.startswith("NM-"):
+        elif (pid.startswith("NM-") or pid.startswith("NME-")
+        or pid.startswith("EVM-") or pid.startswith("EM-")):
             # Network Module
             return "NM", name[-1], pid
+        elif (pid.startswith("WIC-") or pid.startswith("HWIC-")
+        or pid.startswith("VWIC-") or pid.startswith("VIC2-")
+        or pid.startswith("VIC3-")):
+            # DaughterCard
+            return "DCS", name[-1], pid
+        elif pid.startswith("AIM-"):
+            # Network Module
+            return "AIM", name[-1], pid
         elif pid.endswith("-MB"):
             # Motherboard
             return "MOTHERBOARD", None, pid

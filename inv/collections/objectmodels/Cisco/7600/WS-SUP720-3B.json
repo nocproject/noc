@@ -27,11 +27,11 @@
             "type__name": "Flash | CF"
         },
         {
-            "description": "DFC slot",
+            "description": "MSFC slot",
             "direction": "i",
             "gender": "f",
-            "name": "dfc",
-            "type__name": "Cisco | 7600 | DFC"
+            "name": "msfc",
+            "type__name": "Cisco | 6500 | MSFC"
         },
         {
             "description": "PFC slot",
