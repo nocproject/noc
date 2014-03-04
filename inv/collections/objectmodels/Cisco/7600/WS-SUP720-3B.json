@@ -3,6 +3,7 @@
     "uuid": "d46b3077-773e-4a87-b9b6-d62570d1b07d",
     "vendor__code": "CISCO",
     "description": "WS-SUP720-3B 2 ports Supervisor Engine 720",
+    "cr_context": "SUP",
     "connections": [
         {
             "description": "Chassis connection",
@@ -24,6 +25,20 @@
             "gender": "f",
             "name": "disk2",
             "type__name": "Flash | CF"
+        },
+        {
+            "description": "DFC slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "dfc",
+            "type__name": "Cisco | 7600 | DFC"
+        },
+        {
+            "description": "PFC slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "pfc",
+            "type__name": "Cisco | 6500 | PFC"
         },
         {
             "description": "GigabitEthernet X/1 SFP port",
@@ -52,7 +67,8 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-SUP720-3B"
+            "part_no0": "WS-SUP720-3B",
+            "part_no1": "WS-SUP720-3BXL"
         }
     }
 }
