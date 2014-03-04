@@ -24,10 +24,11 @@ class PGDriver(object):
     POSTGIS_FILES = ["postgis.sql", "spatial_ref_sys.sql",
                      "postgis_comments.sql",
                      "rtpostgis.sql",
-                     "raster_comments.sql",
                      "topology/topology.sql", "topology.sql",
-                     "topology/topology_comments.sql", "topology_comments.sql",
-                     "legacy.sql", "legacy_gist.sql"]
+                     "topology/topology_comments.sql",
+                     "topology_comments.sql",
+                     "legacy.sql", "legacy_gist.sql",
+                     "raster_comments.sql"]
 
     REQUIRED_POSTGIS_FILES = ["postgis.sql", "spatial_ref_sys.sql"]
 
