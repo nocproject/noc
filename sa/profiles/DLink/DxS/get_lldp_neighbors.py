@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -36,16 +36,16 @@ class Script(NOCScript):
         re.MULTILINE | re.IGNORECASE)
     rx_remote_port_id_subtype = re.compile(
         r"Port ID Subtype\s+: (?P<subtype>.+)", re.MULTILINE | re.IGNORECASE)
-    rx_remote_port_id = re.compile(r"Port ID\s+: (\d+[/])?(?P<port>.+)",
-        re.MULTILINE | re.IGNORECASE)
-    rx_remote_port_id2 = re.compile(r"RMON Port (.*[/])*(?P<port>\d+)",
+    rx_remote_port_id = re.compile(r"Port ID\s+: (?P<port>.+)",
+        re.IGNORECASE)
+    rx_remote_port_id2 = re.compile(r"RMON Port (?P<port>\d+([/:]\d+)?)",
         re.IGNORECASE)
     rx_remote_port_id3 = re.compile(
         r"Port Description\s+: D-Link D[EGX]S-\S+ \S+ Port\s+(?P<port>\d+)")
     rx_remote_port_id4 = re.compile(
         r"Port Description\s+: (?P<port>((Ten)?Gigabit|Fast)?Ethernet\d+\S+)")
     rx_remote_system_name = re.compile(r"System Name\s+: (?P<name>.+)",
-        re.MULTILINE | re.IGNORECASE)
+        re.IGNORECASE)
     rx_remote_capabilities = re.compile(
         r"System Capabilities\s+: (?P<capabilities>.+)",
         re.MULTILINE | re.IGNORECASE)
@@ -158,22 +158,26 @@ class Script(NOCScript):
                         continue
 
                 n["remote_port"] = match.group("port").strip()
+                # Interface Alias
                 if n["remote_port_subtype"] == 1:
                     match = self.rx_remote_port_id4.search(s1)
                     if match:
                         # Dirty hack !
                         n["remote_port_subtype"] = 5
                         n["remote_port"] = match.group("port")
+                # MAC Address
                 if n["remote_port_subtype"] == 3:
-                    try:
-                        n["remote_port"] = \
-                            MACAddressParameter().clean(match.group("port"))
-                    except:
-                        match = self.rx_remote_port_id3.search(s1)
-                        if match:
-                            # Dirty hack !
-                            n["remote_port_subtype"] = 5
-                            n["remote_port"] = match.group("port")
+                    # Try to convert to Interface Name
+                    match = self.rx_remote_port_id3.search(s1)
+                    if match:
+                        n["remote_port_subtype"] = 5
+                        n["remote_port"] = match.group("port")
+                    else:
+                        try:
+                            n["remote_port"] = \
+                                MACAddressParameter().clean(n["remote_port"])
+                        except:
+                            pass
 
                 '''
                 Possible variants of Port ID, if Remote Port ID is "Local":
