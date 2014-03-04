@@ -1,0 +1,106 @@
+{
+    "name": "Cisco | 7200 | NPE-G2",
+    "uuid": "1f6bc39a-d87f-4666-bd3b-9229cd54f4b6",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7200 Series Network Processing Engine NPE-G2",
+    "connection_rule__name": "Cisco | 7200",
+    "cr_context": "SUP",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7200 | Supervisor"
+        },
+        {
+            "description": "Gi 0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi 0/1 port (SFP)",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0/1_sfp",
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "Gi 0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi 0/2 port (SFP)",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0/2_sfp",
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "Gi 0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi 0/3 port (SFP)",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0/3_sfp",
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "AUX port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS323"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb1",
+            "protocols": ["USB10", "USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb2",
+            "protocols": ["USB10", "USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "Compact Flash slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk0",
+            "type__name": "Flash | CF"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "NPE-G2"
+        }
+    }
+}

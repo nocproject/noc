@@ -1,0 +1,28 @@
+{
+    "name": "Cisco | 7200 | PWR-7200-DC",
+    "uuid": "802f4d6c-b0bf-4358-a85e-22f63417abe9",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7200 DC Power Supply",
+    "connections": [
+        {
+            "description": "DC power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        },
+        {
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7200 | PWR-7200"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "PWR-7200-DC"
+        }
+    }
+}
