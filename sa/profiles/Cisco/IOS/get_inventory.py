@@ -267,8 +267,11 @@ class Script(NOCScript):
             except ValueError:
                 number = None
             return "LINECARD", number, pid
-        elif ((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
-        and "Supervisor Engine" in descr):
+        elif (((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
+        and "Supervisor Engine" in descr) or ((pid.startswith("C72")
+        or pid.startswith("NPE") or pid.startswith("uBR7200-NPE")
+        or pid.startswith("7301-NPE") or pid.startswith("7304-NPE"))
+        and "Network Processing Engine" in descr)):
             try:
                 number = int(name)
             except ValueError:
@@ -312,6 +315,9 @@ class Script(NOCScript):
         elif "VTT FRU" in descr:
             # Clock module
             return "VTT", name.split()[1], pid
+        elif "Compact Flash Disk" in descr:
+            # Compact Flash
+            return "Flash | CF", name, pid
         # Unknown
         return None, None, None
 
