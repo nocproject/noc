@@ -5,6 +5,20 @@
     "description": "WS-X6704-10GE CEF720 4 port 10-Gigabit Ethernet",
     "connections": [
         {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "DFC slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "dfc",
+            "type__name": "Cisco | 7600 | DFC"
+        },
+        {
             "description": "TeX/1 XENPAK port",
             "direction": "i",
             "gender": "f",
@@ -35,13 +49,6 @@
             "name": "Te4_xenpak",
             "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XENPAK | Cisco"
-        },
-        {
-            "description": "Chassis connection",
-            "direction": "o",
-            "gender": "m",
-            "name": "in",
-            "type__name": "Cisco | 7600 | Fabric Linecard"
         }
     ],
     "data": {
