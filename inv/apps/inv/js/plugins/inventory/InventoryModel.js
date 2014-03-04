@@ -28,6 +28,10 @@ Ext.define("NOC.inv.inv.plugins.inventory.InventoryModel", {
         {
             name: "serial",
             type: "string"
+        },
+        {
+            name: "revision",
+            type: "string"
         }
     ]
 });

@@ -499,9 +499,13 @@ class ManagedObjectApplication(ExtModelApplication):
         self.discovery_scheduler.ensure_job(job_name, managed_object)
 
     def get_nested_inventory(self, o):
+        rev = o.get_data("asset", "revision")
+        if rev == "None":
+            rev = ""
         r = {
             "id": str(o.id),
             "serial": o.get_data("asset", "serial"),
+            "revision": rev or "",
             "description": o.model.description,
             "model": o.model.name
         }

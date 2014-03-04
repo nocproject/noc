@@ -15,9 +15,13 @@ class InventoryPlugin(InvPlugin):
     js = "NOC.inv.inv.plugins.inventory.InventoryPanel"
 
     def get_nested_inventory(self, o):
+        rev = o.get_data("asset", "revision")
+        if rev == "None":
+            rev = ""
         r = {
             "id": str(o.id),
             "serial": o.get_data("asset", "serial"),
+            "revision": rev or "",
             "description": o.model.description,
             "model": o.model.name
         }

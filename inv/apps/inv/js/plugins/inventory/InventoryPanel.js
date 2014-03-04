@@ -46,15 +46,23 @@ Ext.define("NOC.inv.inv.plugins.inventory.InventoryPanel", {
                 },
                 {
                     text: "Model",
-                    dataIndex: "model"
+                    dataIndex: "model",
+                    width: 300
                 },
                 {
-                    text: "Description",
-                    dataIndex: "description"
+                    text: "Revision",
+                    dataIndex: "revision",
+                    width: 100
                 },
                 {
                     text: "Serial",
-                    dataIndex: "serial"
+                    dataIndex: "serial",
+                    width: 150
+                },
+                {
+                    text: "Description",
+                    dataIndex: "description",
+                    flex: 1
                 }
             ]
         });
