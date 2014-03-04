@@ -1,0 +1,20 @@
+{
+    "name": "Cisco | 7200 | MEM-7201-FLD256",
+    "uuid": "05e7d823-b995-411b-8d3f-5dbd2742331a",
+    "vendor__code": "CISCO",
+    "description": "256MB Compact Flash Disk for c7201",
+    "connections": [
+        {
+            "description": "Compact Flash Disk slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Flash | CF"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "MEM-7201-FLD256"
+        }
+    }
+}
