@@ -63,10 +63,18 @@
         {
             "match_connection": "in",
             "match_type": "PFC",
-            "scope": "linecard",
+            "scope": "sup",
             "target_connection": "pfc",
             "target_number": "",
-            "target_type": "LINECARD"
+            "target_type": "SUP"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "MSFC",
+            "scope": "sup",
+            "target_connection": "msfc",
+            "target_number": "",
+            "target_type": "SUP"
         },
         {
             "match_connection": "in",

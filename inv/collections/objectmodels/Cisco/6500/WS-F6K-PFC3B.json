@@ -6,7 +6,7 @@
     "cr_context": "PFC",
     "connections": [
         {
-            "description": "PFC slot",
+            "description": "PFC Policy Feature Card",
             "direction": "o",
             "gender": "m",
             "name": "in",

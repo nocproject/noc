@@ -26,6 +26,20 @@
             "type__name": "Flash | CF"
         },
         {
+            "description": "MSFC slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "msfc",
+            "type__name": "Cisco | 6500 | MSFC"
+        },
+        {
+            "description": "PFC slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "pfc",
+            "type__name": "Cisco | 6500 | PFC"
+        },
+        {
             "description": "GigabitEthernet X/1 SFP port",
             "direction": "i",
             "gender": "f",
@@ -68,7 +82,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "RSP720-3CXL-GE"
+            "part_no0": "RSP720-3C-GE"
         }
     }
 }

@@ -3,14 +3,14 @@
     "uuid": "fccd5cff-ad93-4638-aab3-ff27164e66ad",
     "vendor__code": "CISCO",
     "description": "Cisco WS-SUP720 MSFC3 Daughterboard",
-    "cr_context": "DFC",
+    "cr_context": "MSFC",
     "connections": [
         {
-            "description": "DFC slot",
+            "description": "MSFC3 Daughterboard",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Cisco | 7600 | DFC"
+            "type__name": "Cisco | 6500 | MSFC"
         }
     ],
     "data": {
