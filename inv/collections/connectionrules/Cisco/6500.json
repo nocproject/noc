@@ -62,6 +62,14 @@
         },
         {
             "match_connection": "in",
+            "match_type": "PFC",
+            "scope": "linecard",
+            "target_connection": "pfc",
+            "target_number": "",
+            "target_type": "LINECARD"
+        },
+        {
+            "match_connection": "in",
             "match_type": "PSU",
             "scope": "chassis",
             "target_connection": "psu{N}",

@@ -3,6 +3,7 @@
     "uuid": "619a4fb8-a4a5-4eab-b3f2-3aec491188de",
     "vendor__code": "CISCO",
     "description": "Cisco VS-S720-10G 5 ports Supervisor Engine 720 10GE",
+    "cr_context": "SUP",
     "connections": [
         {
             "description": "Chassis connection",
@@ -17,6 +18,20 @@
             "gender": "f",
             "name": "disk1",
             "type__name": "Flash | CF"
+        },
+        {
+            "description": "DFC slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "dfc",
+            "type__name": "Cisco | 7600 | DFC"
+        },
+        {
+            "description": "PFC slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "pfc",
+            "type__name": "Cisco | 6500 | PFC"
         },
         {
             "description": "GigabitEthernet X/1",
@@ -69,7 +84,9 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "VS-S720-10G"
+            "part_no0": "VS-S720-10G",
+            "part_no1": "VS-S720-10G-3C",
+            "part_no2": "VS-S720-10G-3CXL"
         }
     }
 }

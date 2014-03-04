@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | 6500 | WS-F6K-PFC3B",
+    "uuid": "08bd8454-f61a-49bd-af33-c4be23dbabf2",
+    "vendor__code": "CISCO",
+    "description": "WS-F6K-PFC3B Policy Feature Card",
+    "cr_context": "PFC",
+    "connections": [
+        {
+            "description": "PFC slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500 | PFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-F6K-PFC3B"
+        }
+    }
+}
