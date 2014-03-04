@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | 6500 | WS-F6K-MSFC2",
+    "uuid": "bff89ef0-6cca-495b-bb14-4ca6e115fb59",
+    "vendor__code": "CISCO",
+    "description": "Cisco WS-F6K-MSFC2 Daughterboard",
+    "cr_context": "MSFC",
+    "connections": [
+        {
+            "description": "MSFC3 Daughterboard",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500 | MSFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-F6K-MSFC2"
+        }
+    }
+}

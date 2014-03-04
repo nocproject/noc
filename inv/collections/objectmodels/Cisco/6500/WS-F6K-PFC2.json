@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | 6500 | WS-F6K-PFC2",
+    "uuid": "35d3d0dc-5ed0-4a9e-a3be-58bcb55c9ede",
+    "vendor__code": "CISCO",
+    "description": "WS-F6K-PFC2 Policy Feature Card",
+    "cr_context": "PFC",
+    "connections": [
+        {
+            "description": "PFC Policy Feature Card",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500 | PFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-F6K-PFC2"
+        }
+    }
+}
