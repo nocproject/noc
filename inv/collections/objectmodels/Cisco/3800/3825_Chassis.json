@@ -1,0 +1,56 @@
+{
+    "name": "Cisco | 3800 | 3825 Chassis",
+    "uuid": "daa957c9-0b3e-45c0-b0a0-6d54c3617400",
+    "vendor__code": "CISCO",
+    "description": "Cisco 3800 Series Integrated Services Routers with 2 NME slots",
+    "connection_rule__name": "Cisco | 3800",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "3825 Motherboard",
+            "direction": "i",
+            "gender": "f",
+            "name": "mb",
+            "type__name": "Cisco | 3800 | MOTHERBOARD"
+        },
+        {
+            "description": "NME 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "nm1",
+            "type__name": "Cisco | 3800 | NM"
+        },
+        {
+            "description": "NME 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "nm2",
+            "type__name": "Cisco | 3800 | NM"
+        },
+        {
+            "description": "Power Supply slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Cisco | 3800 | PSU"
+        },
+        {
+            "description": "Power Supply slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Cisco | 3800 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "CISCO3825"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2
+        }
+    }
+}
