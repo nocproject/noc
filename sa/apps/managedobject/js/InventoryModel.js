@@ -28,6 +28,10 @@ Ext.define("NOC.sa.managedobject.InventoryModel", {
         {
             name: "serial",
             type: "string"
+        },
+        {
+            name: "revision",
+            type: "string"
         }
     ]
 });
