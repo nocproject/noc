@@ -1,0 +1,56 @@
+{
+    "name": "Cisco | 7200 | uBR7246VXR Chassis",
+    "uuid": "2784b4b6-7666-48df-8419-5057b24d255f",
+    "vendor__code": "CISCO",
+    "description": "Cisco uBR7246VXR",
+    "connection_rule__name": "Cisco | 7200",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Supervisor slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "sup",
+            "type__name": "Cisco | 7200 | Supervisor"
+        },
+        {
+            "description": "Linecard 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard1",
+            "type__name": "Cisco | 7200 | Linecard"
+        },
+        {
+            "description": "Linecard 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard2",
+            "type__name": "Cisco | 7200 | Linecard"
+        },
+        {
+            "description": "PSU0",
+            "direction": "i",
+            "gender": "f",
+            "name": "pwr0",
+            "type__name": "Cisco | 7200 | PWR-7200"
+        },
+        {
+            "description": "PSU1",
+            "direction": "i",
+            "gender": "f",
+            "name": "pwr1",
+            "type__name": "Cisco | 7200 | PWR-7200"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "CISCOUBR7246VXR"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 7
+        }
+    }
+}
