@@ -32,7 +32,7 @@
             "match_connection": "in",
             "match_type": "SUP",
             "scope": "chassis",
-            "target_connection": "sup{N}",
+            "target_connection": "sup",
             "target_number": "",
             "target_type": "CHASSIS"
         },
