@@ -3,6 +3,7 @@
     "uuid": "30d290de-bf49-411a-b224-133ca3951259",
     "vendor__code": "CISCO",
     "description": "Voltage termination module Cisco Catalyst 6500",
+    "cr_context": "VTT",
     "connections": [
         {
             "description": "VTT connection",

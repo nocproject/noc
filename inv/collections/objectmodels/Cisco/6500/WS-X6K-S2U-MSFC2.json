@@ -3,6 +3,7 @@
     "uuid": "5f32f1a8-d14b-48bf-bcd0-b368c1827ef8",
     "vendor__code": "CISCO",
     "description": "WS-X6K-S2U-MSFC2 2 ports Catalyst 6000 supervisor 2",
+    "cr_context": "SUP",
     "connections": [
         {
             "description": "Chassis connection",

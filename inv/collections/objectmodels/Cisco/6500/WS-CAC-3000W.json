@@ -3,6 +3,7 @@
     "uuid": "fab092ce-35b2-46b5-8be8-048a7f7613f3",
     "vendor__code": "CISCO",
     "description": "Cisco 110/220v AC power supply, 3000 watt",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "AC power inlet",

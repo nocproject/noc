@@ -3,6 +3,7 @@
     "uuid": "7464b565-0bf1-4a56-ab4e-67a9a6727f74",
     "vendor__code": "CISCO",
     "description": "Cisco 110/220v AC power supply, 2500 watt",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "AC power inlet",

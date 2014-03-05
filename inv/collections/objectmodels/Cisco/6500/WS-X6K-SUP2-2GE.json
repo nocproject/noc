@@ -3,6 +3,7 @@
     "uuid": "135ba1c9-6d5b-4ee5-8145-02e7c3f6c62e",
     "vendor__code": "CISCO",
     "description": "WS-X6K-SUP2-2GE 2 ports Catalyst 6000 supervisor 2",
+    "cr_context": "SUP",
     "connections": [
         {
             "description": "Chassis connection",

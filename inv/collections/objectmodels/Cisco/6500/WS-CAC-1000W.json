@@ -3,6 +3,7 @@
     "uuid": "2e6ba7d5-3d53-4e98-862e-1d180ef9db41",
     "vendor__code": "CISCO",
     "description": "Cisco 110/220v AC power supply, 1000 watt",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "AC power inlet",
