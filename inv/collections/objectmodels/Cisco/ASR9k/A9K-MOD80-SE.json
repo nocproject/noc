@@ -3,6 +3,7 @@
     "uuid": "61cc1401-a1cf-44e4-b7f1-369585545425",
     "vendor__code": "CISCO",
     "description": "80G Modular Linecard, Service Edge Optimized",
+    "cr_context": "MOD",
     "connections": [
         {
             "description": "MPA 1 slot",

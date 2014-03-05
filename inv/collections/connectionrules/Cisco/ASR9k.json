@@ -4,7 +4,7 @@
     "description": "ASR9k connection rules",
     "context": [
         {
-            "reset_scopes": ["mod", "mpa"],
+            "reset_scopes": ["mod", "mpa", "linecard"],
             "scope": "chassis",
             "type": "CHASSIS"
         },
@@ -54,6 +54,14 @@
         },
         {
             "match_connection": "in",
+            "match_type": "LINECARD",
+            "scope": "chassis",
+            "target_connection": "LC{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
             "match_type": "MPA",
             "scope": "mod",
             "target_connection": "MPA{N}",
@@ -71,10 +79,42 @@
         {
             "match_connection": "in",
             "match_type": "XCVR",
+            "scope": "linecard",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "LINECARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "rsp",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "RSP"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
             "scope": "mpa",
             "target_connection": "Te{N}_xfp",
             "target_number": "",
             "target_type": "MPA"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "linecard",
+            "target_connection": "Te{N}_xfp",
+            "target_number": "",
+            "target_type": "LINECARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "rsp",
+            "target_connection": "Te{N}_xfp",
+            "target_number": "",
+            "target_type": "RSP"
         }
     ]
 }

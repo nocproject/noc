@@ -3,6 +3,7 @@
     "uuid": "068745de-9171-4bfd-bbd8-0009ac2b7574",
     "vendor__code": "CISCO",
     "description": "ASR 9000 4-port 10GE Modular Port Adapter",
+    "cr_context": "MPA",
     "connections": [
         {
             "description": "TeX/0 port",
