@@ -3,6 +3,7 @@
     "uuid": "f9a56c2a-e431-4031-9b10-c352a06f37b9",
     "vendor__code": "CISCO",
     "description": "High Speed Fan Module for Cisco 7606-S",
+    "cr_context": "FAN",
     "connections": [
         {
             "description": "Fan connection",

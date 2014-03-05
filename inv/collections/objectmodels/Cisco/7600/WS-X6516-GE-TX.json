@@ -3,6 +3,7 @@
     "uuid": "79ff2372-dcfc-49c1-b86d-a9663c598eda",
     "vendor__code": "CISCO",
     "description": "Cisco WS-X6516-GE-TX SFM-capable 16 port 10/100/1000mb RJ45",
+    "cr_context": "LINECARD",
     "connections": [
         {
             "description": "Chassis connection",

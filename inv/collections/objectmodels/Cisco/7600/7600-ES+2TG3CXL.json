@@ -3,6 +3,7 @@
     "uuid": "060062bb-6cc3-43f4-9577-8de85aab52a4",
     "vendor__code": "CISCO",
     "description": "7600-ES+2TG3CXL 2 ports 7600 ES+",
+    "cr_context": "LINECARD",
     "connections": [
         {
             "description": "TeX/1 XFP port",

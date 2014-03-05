@@ -3,6 +3,7 @@
     "uuid": "80101fde-0161-4aec-9712-ff24ae2b9391",
     "vendor__code": "CISCO",
     "description": "Cisco WS-X6724-SFP CEF720 linecard with 24 1G SFP ports ",
+    "cr_context": "LINECARD",
     "connections": [
         {
             "description": "Chassis connection",

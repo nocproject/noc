@@ -3,6 +3,7 @@
     "uuid": "59f730d5-e097-4777-8a63-191b441f94bb",
     "vendor__code": "CISCO",
     "description": "7600-ES+2TG 2x10G ports 7600 ES+",
+    "cr_context": "LINECARD",
     "connections": [
         {
             "description": "DFC Slot",

@@ -3,6 +3,7 @@
     "uuid": "2fade0fb-cf90-4783-8b45-092413f78672",
     "vendor__code": "CISCO",
     "description": "RSP720-3CXL-GE 2 ports Route Switch Processor 720",
+    "cr_context": "SUP",
     "connections": [
         {
             "description": "Chassis connection",

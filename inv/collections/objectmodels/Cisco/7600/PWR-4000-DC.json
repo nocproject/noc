@@ -3,6 +3,7 @@
     "uuid": "24c22597-ac06-4edb-8605-8256e62716c0",
     "vendor__code": "CISCO",
     "description": "4000 Watt DC Power Supply for Cisco 7600",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "DC 1 input Positive contact",

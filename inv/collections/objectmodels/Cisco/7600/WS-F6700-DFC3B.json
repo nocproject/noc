@@ -3,6 +3,7 @@
     "uuid": "f03ed3c2-65b1-4dd8-8e96-16718f0605cc",
     "vendor__code": "CISCO",
     "description": "Cisco WS-F6700-DFC3B Distributed Forwarding Card 3",
+    "cr_context": "DFC",
     "connections": [
         {
             "description": "DFC slot",
