@@ -3,6 +3,7 @@
     "uuid": "802f4d6c-b0bf-4358-a85e-22f63417abe9",
     "vendor__code": "CISCO",
     "description": "Cisco 7200 DC Power Supply",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "DC power inlet",

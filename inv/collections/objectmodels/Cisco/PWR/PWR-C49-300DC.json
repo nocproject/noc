@@ -3,6 +3,7 @@
     "uuid": "f6d06ad0-e8c7-45e7-8045-9aa1883f558b",
     "vendor__code": "CISCO",
     "description": "300 Watt DC PSU",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "",

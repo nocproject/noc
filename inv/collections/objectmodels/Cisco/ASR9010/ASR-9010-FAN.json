@@ -3,6 +3,7 @@
     "uuid": "db6aedac-c1c0-4e22-989e-6c5afb2fdb70",
     "vendor__code": "CISCO",
     "description": "ASR-9010 Fan Tray",
+    "cr_context": "FAN",
     "connections": [
         {
             "description": "",
