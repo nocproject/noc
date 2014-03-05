@@ -3,6 +3,7 @@
     "uuid": "95f1a5b8-956a-432e-9ea4-930268dc569b",
     "vendor__code": "CISCO",
     "description": "Cisco C6K Clock FRU",
+    "cr_context": "CLK",
     "connections": [
         {
             "description": "Chassis connection",

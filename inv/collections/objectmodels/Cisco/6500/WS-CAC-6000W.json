@@ -3,6 +3,7 @@
     "uuid": "685a3c0f-adf2-467c-9065-f393d158bcbf",
     "vendor__code": "CISCO",
     "description": "Cisco 110/220v AC power supply, 6000 watt",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "AC power inlet",

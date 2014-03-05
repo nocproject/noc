@@ -3,6 +3,7 @@
     "uuid": "0c6c2776-463c-450c-89c8-25d29e0bd110",
     "vendor__code": "CISCO",
     "description": "Cisco 110/220v AC power supply, 1300 watt",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "AC power inlet",
