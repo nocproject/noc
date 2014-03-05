@@ -3,6 +3,7 @@
     "uuid": "f3286404-7aa2-47cd-bc06-801d63b01225",
     "vendor__code": "CISCO",
     "description": "Cisco 7604 DC Power Supply",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "DC 1 input Positive contact",

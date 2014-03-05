@@ -3,6 +3,7 @@
     "uuid": "00e43bca-1294-4034-be19-502c23aae5a4",
     "vendor__code": "CISCO",
     "description": "Cisco 7201 DC Power Supply",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "DC power inlet",

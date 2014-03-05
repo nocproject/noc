@@ -3,6 +3,7 @@
     "uuid": "00b259d4-5d03-4555-83d6-26bf2b3ec407",
     "vendor__code": "CISCO",
     "description": "Cisco 7604 AC Power Supply",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "AC power inlet",

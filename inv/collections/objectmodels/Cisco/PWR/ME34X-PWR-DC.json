@@ -3,6 +3,7 @@
     "uuid": "5186cf39-3551-4ee4-ae98-f98c59b4c588",
     "vendor__code": "CISCO",
     "description": "80 Watt DC PSU for Cisco ME3400E Series switches",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "PSU connect to switch",

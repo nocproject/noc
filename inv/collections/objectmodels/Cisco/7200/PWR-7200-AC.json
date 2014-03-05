@@ -3,6 +3,7 @@
     "uuid": "cb42abef-6134-4263-8fc2-38af4ba4762a",
     "vendor__code": "CISCO",
     "description": "Cisco 7200 AC Power Supply",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "AC power inlet",

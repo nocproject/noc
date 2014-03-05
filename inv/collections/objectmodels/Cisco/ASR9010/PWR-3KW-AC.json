@@ -3,6 +3,7 @@
     "uuid": "fa2cfe59-ec1d-45d7-87b8-dc7d692902de",
     "vendor__code": "CISCO",
     "description": "Cisco ASR9010 3000 Watt AC power module",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "",

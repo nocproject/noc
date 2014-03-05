@@ -3,6 +3,7 @@
     "uuid": "f5f9b320-1444-4f18-9fcb-4058e6ce2aeb",
     "vendor__code": "CISCO",
     "description": "Cisco 7201 Network Processing Engine",
+    "cr_context": "SUP",
     "connections": [
         {
             "description": "NPE slot",

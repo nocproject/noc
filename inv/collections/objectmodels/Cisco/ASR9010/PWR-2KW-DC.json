@@ -3,6 +3,7 @@
     "uuid": "b96075e4-dc24-4ed4-abb7-2a51d55037ba",
     "vendor__code": "CISCO",
     "description": "Cisco ASR9010 2000 Watt DC power module",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "",
