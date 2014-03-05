@@ -3,7 +3,7 @@ Arista | 7100,ca7c714b-2949-49a0-b3bd-ef1c2d2f671e,Arista/7100.json,320a9254af52
 Brocade | JetCore,c82bd220-e4dc-4f1b-b501-787d2b537a67,Brocade/JetCore.json,b4238640483b1c3de9d989e17bebc1d89f0f2beda599a36f2eccf7f18011ffd0
 Brocade | SX,3aefbe22-c0b6-421a-9bf7-5a4b49ff4a98,Brocade/SX.json,0a2a0f9e93018fdc4be6e0c70fcc4aca15aebdeb0ff93a40b4e6e1dab011b2b4
 Cisco | 3800,c78b19bd-cf99-4a42-ad68-7319d23dfbec,Cisco/3800.json,ea78b99dc2ea13d7c849ce779a0b70e0ec10efbf6aa75b265a69e5f75bf3fbdb
-Cisco | 6500,7ecc9723-93a0-443e-b62c-84477485bdbc,Cisco/6500.json,66b8f21bfa0efd47633b1b25f1ff3ce191c528d855de82b6d009499a92be89eb
+Cisco | 6500,7ecc9723-93a0-443e-b62c-84477485bdbc,Cisco/6500.json,9d44142be92d101174cc879664dd3c8522a1a21041eb625e397474a6704cbb50
 Cisco | 7200,510cc04d-648a-455e-b7ec-8e6914f093b9,Cisco/7200.json,4ee502eeaaa1ec70861a0f7c4c6a7586e4ccbdd3d6dbc5cd4eaa1ba31b7d245d
 Cisco | 7600,eaa17985-6b50-4cdb-8b30-bdab3f28f6f9,Cisco/7600.json,df651a3581d07328288a9611931a3a8ccec70a43aa1cf06b07256dcbface4572
 Cisco | ASA,dbd6557e-a3cd-496a-8f9d-1e6dfe1df492,Cisco/ASA.json,4e341867d398d64c4d75efc220ffcbfa2a6da21396f671463542decdcd80be9a

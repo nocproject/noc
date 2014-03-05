@@ -55,10 +55,10 @@
         {
             "match_connection": "in",
             "match_type": "DFC",
-            "scope": "sup",
+            "scope": "linecard",
             "target_connection": "dfc",
             "target_number": "",
-            "target_type": "SUP"
+            "target_type": "LINECARD"
         },
         {
             "match_connection": "in",
@@ -71,10 +71,10 @@
         {
             "match_connection": "in",
             "match_type": "PFC",
-            "scope": "linecard",
+            "scope": "sup",
             "target_connection": "pfc",
             "target_number": "",
-            "target_type": "LINECARD"
+            "target_type": "SUP"
         },
         {
             "match_connection": "in",
