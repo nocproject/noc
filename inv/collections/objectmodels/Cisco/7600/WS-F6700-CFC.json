@@ -3,6 +3,7 @@
     "uuid": "0e1fdb7b-b471-41c7-b957-70b9a0e4f985",
     "vendor__code": "CISCO",
     "description": "Cisco WS-F6700-CFC Centralized Forwarding Card",
+    "cr_context": "DFC",
     "connections": [
         {
             "description": "DFC slot",

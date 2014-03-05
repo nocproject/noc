@@ -3,6 +3,7 @@
     "uuid": "5bc50667-95db-4a99-89ff-acc676c21ae8",
     "vendor__code": "CISCO",
     "description": "2700 Watt DC Power Supply for Cisco 7600",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "DC 1 input Positive contact",

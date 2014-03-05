@@ -3,6 +3,7 @@
     "uuid": "c8f9f571-7d08-4217-8673-bc2187b9a8d5",
     "vendor__code": "CISCO",
     "description": "6000 Watt DC Power Supply for Cisco 7600",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "DC 1 input Positive contact",

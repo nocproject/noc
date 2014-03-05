@@ -3,6 +3,7 @@
     "uuid": "b8099319-e928-4713-b7e8-1fabce36ff5d",
     "vendor__code": "CISCO",
     "description": "76-ES+XT-4TG3CXL 4 ports 7600 ES+",
+    "cr_context": "LINECARD",
     "connections": [
         {
             "description": "TeX/1 XFP port",

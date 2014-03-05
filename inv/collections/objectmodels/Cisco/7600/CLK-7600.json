@@ -3,6 +3,7 @@
     "uuid": "04dfc198-6f73-4ebf-b05f-9ccaf8966a05",
     "vendor__code": "CISCO",
     "description": "Cisco OSR-7600 Clock FRU",
+    "cr_context": "CLK",
     "connections": [
         {
             "description": "Chassis connection",

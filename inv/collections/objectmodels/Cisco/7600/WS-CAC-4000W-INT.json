@@ -3,6 +3,7 @@
     "uuid": "19e135b3-a3ea-44fa-897a-02165652abe5",
     "vendor__code": "CISCO",
     "description": "Cisco 110/220v AC power supply, 4000 watt, international cord",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "AC power inlet",

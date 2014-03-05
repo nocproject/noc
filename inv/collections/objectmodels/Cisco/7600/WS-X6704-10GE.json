@@ -3,6 +3,7 @@
     "uuid": "e94b4c3f-80c7-4a77-bfcc-cc39ec24ac31",
     "vendor__code": "CISCO",
     "description": "WS-X6704-10GE CEF720 4 port 10-Gigabit Ethernet",
+    "cr_context": "LINECARD",
     "connections": [
         {
             "description": "Chassis connection",
