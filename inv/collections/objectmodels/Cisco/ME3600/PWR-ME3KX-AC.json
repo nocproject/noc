@@ -3,6 +3,7 @@
     "uuid": "89d6a0cb-88fc-4db2-9b78-c4736cde6514",
     "vendor__code": "CISCO",
     "description": "Cisco ME3600X / ME3800X Series AC power supply and fan module",
+    "cr_context": "PSU",
     "connections": [
         {
             "description": "Chassis connection",
