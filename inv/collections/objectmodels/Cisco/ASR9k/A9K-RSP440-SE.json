@@ -3,6 +3,7 @@
     "uuid": "e381177c-c62e-4f58-813b-251b813fe6cc",
     "vendor__code": "CISCO",
     "description": "ASR9K Route Switch Processor with 440G/slot Fabric and 12GB",
+    "cr_context": "RSP",
     "connections": [
         {
             "description": "Ethernet management port",

@@ -3,6 +3,7 @@
     "uuid": "1ffc0f24-875b-44eb-98d3-de4a55c96952",
     "vendor__code": "CISCO",
     "description": "80G Modular Linecard, Packet Transport Optimized",
+    "cr_context": "MOD",
     "connections": [
         {
             "description": "MPA 1 slot",
