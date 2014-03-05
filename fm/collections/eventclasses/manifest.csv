@@ -137,13 +137,13 @@ Network | Link | Link Down,358bf8ed-81ce-4e92-8d05-adc3817edbda,Network/Link/Lin
 Network | Link | Link Flap Error Detected,10747532-86a8-4ed2-8e81-fa92a571b310,Network/Link/Link_Flap_Error_Detected.json,89565adffd3fdae06f9ae45259b1c882b5f55918f7d2a28ed7d3d88bf3dc6878
 Network | Link | Link Flap Error Recovery,9c97e2c1-4a14-458e-a6ad-38ae2b643aa0,Network/Link/Link_Flap_Error_Recovery.json,721534997f032ad8bffff3797d21151df85c01aa41607de2e84b88b1fc56741e
 Network | Link | Link Up,82d72502-974a-4c42-8fe4-c4d2aae71d5c,Network/Link/Link_Up.json,3aa7f43c334cbfcfec0220450d9d6bb1d16e195e031678d70473f234075672ce
-Network | MAC | Duplicate MAC,81215d7f-71b8-491e-8492-7e5734660eb1,Network/MAC/Duplicate_MAC.json,8795f6fe1d85a810fb5b90d22e3dd75c76d9b65ff0af52e8a4c03995853fee98
-Network | MAC | Invalid MAC,66a6a42d-8511-47b5-a738-f28ff359cc6d,Network/MAC/Invalid_MAC.json,8345844fd38cbb793cf98cf52e2d0638848c0b0e370dc99fb920ef9f11ab8f25
-Network | MAC | MAC Aged,82203fbf-480b-421a-baa0-fe8070b9ce41,Network/MAC/MAC_Aged.json,ddc7067c87b0172f8036d4abc02f3233a00af745a50edf8f6ca76e37d90e14b5
-Network | MAC | MAC Flap,fa9cc838-9ec4-4080-907a-13390b5b1285,Network/MAC/MAC_Flap.json,178d5d8776be590600bdd5c9987b56eec54817b47a12887093111283067807e2
-Network | MAC | MAC Flood,97f7cbff-e6e6-4e12-86ad-c6caaf46fc1c,Network/MAC/MAC_Flood.json,48f7712c42a6ecabd6885fac1fffafc0b6d956b4463a3ead5b6b37238c5a9036
-Network | MAC | MAC Learned,7810ae31-e249-4889-b7c2-3cea5404e2f7,Network/MAC/MAC_Learned.json,4a66d84462fd7f4704c3eb4cd5cafd3ad7c6dbd28d336abb762952509bdc8d50
-Network | MAC | MAC Moved,69b2b776-1f65-4289-9b42-6e975679ba23,Network/MAC/MAC_Moved.json,cae7551174c780d09b9f8d6fcfc262a68e127cd97568a357d1f51d14135b7899
+Network | MAC | Duplicate MAC,81215d7f-71b8-491e-8492-7e5734660eb1,Network/MAC/Duplicate_MAC.json,24b4957122b919ae98a76c1f0cd782a9ba75aea8429bc2d4c561d5bdf7966c67
+Network | MAC | Invalid MAC,66a6a42d-8511-47b5-a738-f28ff359cc6d,Network/MAC/Invalid_MAC.json,410e8ff5f54b8ff689d53b4905c947d6ce5a215a291bf9c10b8a642ceef5348a
+Network | MAC | MAC Aged,82203fbf-480b-421a-baa0-fe8070b9ce41,Network/MAC/MAC_Aged.json,ffca3604135d91b9e9e7fe9a2a29c9ba8a08b10d539534a9d88a87137ab64ac3
+Network | MAC | MAC Flap,fa9cc838-9ec4-4080-907a-13390b5b1285,Network/MAC/MAC_Flap.json,193d3c4d1f24666d8113f1e83c9f948252fded50ec58655afe75e1cfc22b4ffa
+Network | MAC | MAC Flood,97f7cbff-e6e6-4e12-86ad-c6caaf46fc1c,Network/MAC/MAC_Flood.json,4dd336dbc68b2f2b0a9d56cc0c195102ce49130cf0778f9608c6477a0272f5c0
+Network | MAC | MAC Learned,7810ae31-e249-4889-b7c2-3cea5404e2f7,Network/MAC/MAC_Learned.json,194903b1a599234cb29c8db2b7cd59138e5737ecaa3b31a6ebd5f795c58460c0
+Network | MAC | MAC Moved,69b2b776-1f65-4289-9b42-6e975679ba23,Network/MAC/MAC_Moved.json,2d9c7ad5301f560c28881259503d55c0f05562f61bb1e00b243505f7793305bd
 Network | MPLS | LDP Neighbor Down,188f5509-7498-4039-a4e3-41eb5d504585,Network/MPLS/LDP_Neighbor_Down.json,bc4c9933c998b7c9f6e35fb15d7a17a31a566dfe381515c93f5271dcd3994807
 Network | MPLS | LDP Neighbor Up,99cdbce1-e7e8-42fd-99bc-a0091ffa6e3a,Network/MPLS/LDP_Neighbor_Up.json,ec0c96ac87c1231abac0939f1796701f6dfc2fff423fd6dda6eec1fd2b471bfd
 Network | MPLS | LSP Down,4c0a6d84-f613-4141-8b24-f57c684e3699,Network/MPLS/LSP_Down.json,b547f4b1e511058c3be1ac5f2c2ebc1bba35bc3cd1c1cefda3b53e559b47cca8
