@@ -3,6 +3,7 @@
     "uuid": "ecc500f1-a0f2-4904-af1d-f9e704ab1f78",
     "vendor__code": "CISCO",
     "description": "Cisco SCE 8000 Fan tray",
+    "cr_context": "FAN",
     "connections": [
         {
             "description": "Fan slot 1",

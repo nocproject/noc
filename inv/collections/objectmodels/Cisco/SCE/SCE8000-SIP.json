@@ -3,6 +3,7 @@
     "uuid": "ab4fa392-608d-4267-abfa-86b660e8dee8",
     "vendor__code": "CISCO",
     "description": "Cisco SCE 8000 Service Interface Processor",
+    "cr_context": "SIP",
     "connections": [
         {
             "description": "SIP Connector",
