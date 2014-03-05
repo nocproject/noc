@@ -3,6 +3,7 @@
     "uuid": "d845961d-d249-4449-a436-be52ace4594d",
     "vendor__code": "CISCO",
     "description": "Cisco 1-Port XFP 10-GE Shared Port Adapter",
+    "cr_context": "SPA",
     "connections": [
         {
             "description": "SPA connector",
