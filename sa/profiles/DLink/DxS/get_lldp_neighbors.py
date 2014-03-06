@@ -41,7 +41,7 @@ class Script(NOCScript):
     rx_remote_port_id2 = re.compile(r"RMON Port (?P<port>\d+([/:]\d+)?)",
         re.IGNORECASE)
     rx_remote_port_id3 = re.compile(
-        r"Port Description\s+: D-Link D[EGX]S-\S+ \S+ Port\s+(?P<port>\d+)")
+        r"Port Description\s+: D-Link D[EGX]S-\S+\s+\S+\s+Port\s+(?P<port>\d+)")
     rx_remote_port_id4 = re.compile(
         r"Port Description\s+: (?P<port>((Ten)?Gigabit|Fast)?Ethernet\d+\S+)")
     rx_remote_system_name = re.compile(r"System Name\s+: (?P<name>.+)",
