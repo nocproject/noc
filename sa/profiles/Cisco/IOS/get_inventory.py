@@ -258,7 +258,7 @@ class Script(NOCScript):
             else:
                 if (pid == "N/A" and "Gibraltar,G-20" in descr):
                     # 2-port 100BASE-TX Fast Ethernet port adapter
-                    pid = "7100-MB"
+                    pid = "CISCO7100-MB"
                 return "MOTHERBOARD", name[7:], pid
         elif ((pid.startswith("WS-X64") or pid.startswith("WS-X67")
               or pid.startswith("WS-X65")) and "port" in descr):
