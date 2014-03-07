@@ -100,6 +100,7 @@ Ericsson | SE600 | MGMT,f0acc592-b13d-4d3c-8bb2-9bcf5ba0c600,Ericsson/SE600/MGMT
 Flash | CF,175acd37-e1d7-41d3-b0cc-1d897f29b1c9,Flash/CF.json,76934ee0ded58acd9c07d7c2aef15107edd860237709fdda2a1771dae35838da
 Flash | MMC,c5f7eab1-1dcd-4b83-a3ea-20762d9c899b,Flash/MMC.json,792e017120651f15533a9dfe9dedcda49e42932e6ba5fd4017886d94550a2120
 Flash | Memory Stick,279f9080-31b0-455f-9b5a-9271307b6e6a,Flash/Memory_Stick.json,aecf24ef3ce455de5496eb1e8144a622338da8cbbcdf8549ace4ec89ee535e96
+Flash | PCMCIA,3adc8cec-9df4-4d1d-ba60-e5f8166eb076,Flash/PCMCIA.json,e3d4cc657e47bd36ebfa0b81fa08ad9194410eb56e102b0b5a6fafea3594a8c6
 Flash | SD,2a0f0b19-2572-4c37-8676-077c4fc22a5a,Flash/SD.json,4624d6a772a4b84896e6c968a65284214ec44b9251242e93be9641dc621b9769
 Flash | microSD,94cb91eb-61c6-4eaa-ab16-eec6869af223,Flash/microSD.json,2c0c727c129f96196da9829566cba3f6fd3c1f51732dba4877df378ef9ea680d
 Flash | miniSD,60dcf9c8-4e38-445e-a251-35342602fbba,Flash/miniSD.json,cc5d8c8d062af0c5f3a6fa9241763ca75662dfdc3e56ab094d0f8806328c9dac
