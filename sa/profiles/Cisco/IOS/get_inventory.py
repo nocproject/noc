@@ -41,6 +41,10 @@ class Script(NOCScript):
         r"System serial number\s+:\s+(?P<serial>\S+)\s*\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL
     )
+    rx_7100 = re.compile(
+        r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? "
+        r"(?:Universal Broadband Router|chassis)",
+    )
 
     IGNORED_SERIAL = set([
         "H22L714"
@@ -51,7 +55,8 @@ class Script(NOCScript):
     ])
 
     GBIC_MODULES = set([
-        "WS-X6K-SUP2-2GE"
+        "WS-X6K-SUP2-2GE",
+        "WS-X6724-SFP"
     ])
 
     def get_inv(self):
@@ -240,6 +245,9 @@ class Script(NOCScript):
                 number = int(name)
             except ValueError:
                 number = None
+            if pid in ("", "N/A"):
+                if self.rx_7100.search(descr):
+                    pid = "CISCO7100"
             return "CHASSIS", number, pid
         elif (("SUP" in pid or "S2U" in pid)
             and "supervisor" in descr):
