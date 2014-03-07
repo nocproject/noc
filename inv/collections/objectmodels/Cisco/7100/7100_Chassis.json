@@ -1,0 +1,71 @@
+{
+    "name": "Cisco | 7100 | 7100 Chassis",
+    "uuid": "9079b1d9-d724-463c-aebc-6a5f7c807293",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7100 Series Integrated Services Routers",
+    "connection_rule__name": "Cisco | 7100",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "7100 Motherboard",
+            "direction": "i",
+            "gender": "f",
+            "name": "mb",
+            "type__name": "Cisco | 7100 | MOTHERBOARD"
+        },
+        {
+            "description": "Linecard 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard1",
+            "type__name": "Cisco | 7100 | Linecard"
+        },
+        {
+            "description": "Linecard 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard2",
+            "type__name": "Cisco | 7100 | Linecard"
+        },
+        {
+            "description": "Linecard 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard3",
+            "type__name": "Cisco | 7100 | Linecard"
+        },
+        {
+            "description": "Linecard 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard4",
+            "type__name": "Cisco | 7100 | Linecard"
+        },
+        {
+            "description": "Linecard 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard5",
+            "type__name": "Cisco | 7100 | Linecard"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "CISCO7100"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2
+        }
+    }
+}
