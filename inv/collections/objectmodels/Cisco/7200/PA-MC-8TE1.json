@@ -1,0 +1,78 @@
+{
+    "name": "Cisco | 7200 | PA-MC-8TE1",
+    "uuid": "05440f7a-135a-4513-8077-f7ba17bd1fbb",
+    "vendor__code": "CISCO",
+    "description": "Single-wide port adapter with 8 T1 or E1 PRI RJ48c ports",
+    "connection_rule__name": "Cisco | 7200",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7200 | Linecard"
+        },
+        {
+            "description": "Port1",
+            "direction": "s",
+            "gender": "f",
+            "name": "port1",
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "description": "Port2",
+            "direction": "s",
+            "gender": "f",
+            "name": "port2",
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "description": "Port3",
+            "direction": "s",
+            "gender": "f",
+            "name": "port3",
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "description": "Port4",
+            "direction": "s",
+            "gender": "f",
+            "name": "port4",
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "description": "Port5",
+            "direction": "s",
+            "gender": "f",
+            "name": "port5",
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "description": "Port6",
+            "direction": "s",
+            "gender": "f",
+            "name": "port6",
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "description": "Port7",
+            "direction": "s",
+            "gender": "f",
+            "name": "port7",
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "description": "Port8",
+            "direction": "s",
+            "gender": "f",
+            "name": "port8",
+            "type__name": "Electrical | RJ48"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "PA-MC-8TE1+"
+        }
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "name": "Cisco | 7600 | WS-X6182-2PA",
+    "uuid": "5c52cc87-c2c0-4703-b4d5-ddc5c604ce18",
+    "vendor__code": "CISCO",
+    "description": "FlexWAN Module for the Cisco 7600 Series Router ",
+    "connection_rule__name": "Cisco | 7600",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "Linecard 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard1",
+            "type__name": "Cisco | 7200 | Linecard"
+        },
+        {
+            "description": "Linecard 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard2",
+            "type__name": "Cisco | 7200 | Linecard"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-X6182-2PA"
+        }
+    }
+}
