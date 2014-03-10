@@ -13,7 +13,7 @@ from base import *
 class IGetInventory(Interface):
     returns = DictListParameter(attrs={
         # Object type, used in ConnectionRule
-        "type": StringParameter(),
+        "type": StringParameter(required=False),
         # Object number as reported by script
         "number": StringParameter(required=False),
         # Builtin modules apply ConnectionRule scopes

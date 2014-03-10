@@ -47,9 +47,14 @@ class AssetReport(Report):
                vendor=None,
                revision=None, serial=None,
                description=None):
+        #
+        is_unknown_xcvr = (not builtin and
+                           part_no[0].startswith("Unknown | Transceiver | "))
+        if not type and is_unknown_xcvr:
+            type = "XCVR"
         # Set contexts
         self.set_context("N", number)
-        if type in self.rule_context:
+        if type and type in self.rule_context:
             scope, reset_scopes = self.rule_context[type]
             if scope:
                 self.set_context(scope, number)
@@ -57,12 +62,12 @@ class AssetReport(Report):
                 self.reset_context(reset_scopes)
         # Skip builtin modules
         if builtin:
-            return
+            return  # Builtin must aways have type set
         #
-        if part_no[0].startswith("Unknown | Transceiver | "):
+        if is_unknown_xcvr:
             self.debug("%s S/N %s should be resolved later" % (
                 part_no[0], serial))
-            self.objects += [(type, part_no[0], self.ctx.copy(), serial)]
+            self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial)]
             return
         # Cache description
         if description:
@@ -89,6 +94,20 @@ class AssetReport(Report):
                         vnd.name, description, part_no))
                     self.register_unknown_part_no(vnd, part_no, description)
                     return
+        #
+        if type is None:
+            type = m.cr_context
+            if not type:
+                self.debug("Cannot resolve type for: vendor=%s, part_no=%s (%s). Skipping" % (
+                    vnd.name, description, part_no))
+                return
+            # Set up context
+            if type in self.rule_context:
+                scope, reset_scopes = self.rule_context[type]
+                if scope:
+                    self.set_context(scope, number)
+                if reset_scopes:
+                    self.reset_context(reset_scopes)
         # Get connection rule
         if not self.rule and m.connection_rule:
             self.set_rule(m.connection_rule)
