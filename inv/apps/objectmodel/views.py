@@ -59,13 +59,23 @@ class ObjectModelApplication(ExtDocApplication):
                     "gender": mc.gender
                 }]
             #
-            r += [{
-                "name": c.name,
-                "description": c.description,
-                "direction": c.direction,
-                "gender": c.gender,
-                "connections": proposals
-            }]
+            if (r and r[-1]["direction"] == c.direction and
+                        r[-1]["gender"] == c.gender and
+                        r[-1]["connections"] == proposals):
+                r[-1]["names"] += [{
+                    "name": c.name,
+                    "description": c.description
+                }]
+            else:
+                r += [{
+                    "names": [{
+                        "name": c.name,
+                        "description": c.description
+                    }],
+                    "direction": c.direction,
+                    "gender": c.gender,
+                    "connections": proposals
+                }]
         # Crossing
         # @todo: Count splitter interface
         rc = []

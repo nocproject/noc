@@ -2,7 +2,11 @@
 <table border="1">
 {{#each connections}}
     <tr>
-        <td><b>{{name}}</b><br/><i>({{description}})</i></td>
+        <td>
+            {{#each names}}
+                <b>{{name}}</b><br/><i>({{description}})</i><br/>
+            {{/each}}
+        </td>
         <td>{{direction}}</td>
         <td>
             <table>
