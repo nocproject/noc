@@ -722,6 +722,14 @@ class Script(threading.Thread):
         nr = 0
         stop_sent = False
         for data in stream:
+            # Check for syntax error
+            if (self.profile.rx_pattern_syntax_error and
+                    self.profile.rx_pattern_syntax_error.search(data)):
+                raise self.CLISyntaxError(data)
+            # Then check for operaion error
+            if (self.profile.rx_pattern_operation_error and
+                    self.profile.rx_pattern_operation_error.search(data)):
+                raise self.CLIOperationError(data)
             input += data
             while input:
                 r = parser(input)
