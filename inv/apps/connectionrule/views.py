@@ -20,6 +20,7 @@ class ConnectionRuleApplication(ExtDocApplication):
     title = "Connection Rules"
     menu = "Setup | Connection Rules"
     model = ConnectionRule
+    query_fields = ["name__icontains", "description__icontains"]
 
     @view(url="^actions/json/$", method=["POST"],
           access="read",
