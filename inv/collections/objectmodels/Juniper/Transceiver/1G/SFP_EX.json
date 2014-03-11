@@ -1,22 +1,24 @@
 {
-    "name": "Juniper | Transceiver | 10G | XFP-10G-LR",
-    "uuid": "e337f204-f791-47c1-b027-e9fd6d02f738",
+    "name": "Juniper | Transceiver | 1G | SFP EX",
+    "uuid": "2e38c9c2-61f2-420d-9deb-775e5164e1cf",
     "vendor__code": "JUNIPER",
-    "description": "Juniper XFP LR transceiver",
+    "description": "Juniper SFP EX transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
-            "description": "XFP Connector",
+            "description": "SFP Connector",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Transceiver | XFP"
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
+            "protocols": [">1000BASEEX-1310"],
             "type__name": "Optical | LC"
         },
         {
@@ -24,14 +26,14 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
+            "protocols": ["<1000BASEEX-1310"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no0": "XFP-10G-L-OC192-SR1",
-            "part_no0": "740-011607",
-            "part_no1": "740-014279"
+            "order_part_no0": "SFP-EX",
+            "part_no0": "740-017726"
         }
     }
 }

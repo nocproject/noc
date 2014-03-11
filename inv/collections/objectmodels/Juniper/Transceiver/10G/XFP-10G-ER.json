@@ -1,8 +1,8 @@
 {
-    "name": "Juniper | Transceiver | 10G | XFP-10G-LR",
-    "uuid": "e337f204-f791-47c1-b027-e9fd6d02f738",
+    "name": "Juniper | Transceiver | 10G | XFP-10G-ER",
+    "uuid": "7c47eda4-98a1-4400-a04c-7df28aa2cd12",
     "vendor__code": "JUNIPER",
-    "description": "Juniper XFP LR transceiver",
+    "description": "Juniper XFP ER transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -10,6 +10,7 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
         },
         {
@@ -17,6 +18,7 @@
             "direction": "s",
             "gender": "f",
             "name": "rx",
+            "protocols": ["<10GBASEER-1550"],
             "type__name": "Optical | LC"
         },
         {
@@ -24,14 +26,15 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
+            "protocols": [">10GBASEER-1550"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no0": "XFP-10G-L-OC192-SR1",
-            "part_no0": "740-011607",
-            "part_no1": "740-014279"
+            "order_part_no0": "XFP-10G-ER",
+            "part_no0": "740-014290",
+            "part_no1": "740-031834"
         }
     }
 }
