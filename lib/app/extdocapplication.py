@@ -213,7 +213,7 @@ class ExtDocApplication(ExtApplication):
             return self.response(str(why), status=self.BAD_REQUEST)
         if self.pk in attrs:
             del attrs[self.pk]
-        if self.has_uuid and "uuid" not in attrs:
+        if self.has_uuid and not attrs.get("uuid"):
             attrs["uuid"] = uuid.uuid4()
         # Check for duplicates
         if self.unique_fields:
