@@ -49,10 +49,12 @@ class InventoryPlugin(InvPlugin):
                     "leaf": True,
                     "serial": None,
                     "description": n.description,
-                    "model": ", ".join(n.protocols)
+                    "model": ", ".join(n.protocols),
+                    "direction": "s"
                 }]
         if children:
-            to_expand = "Transceiver" not in o.model.name
+            # to_expand = "Transceiver" not in o.model.name
+            to_expand = any(x for x in children if x.get("direction") != "s")
             r["children"] = children
             r["expanded"] = to_expand
         else:
