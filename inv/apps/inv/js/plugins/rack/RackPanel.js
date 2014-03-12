@@ -142,7 +142,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     //
     preview: function(data) {
         var me = this,
-            r = NOC.core.Rack.getRack(5, 5, data.rack, data.content, me.getSide(), data.name),
+            r = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide()),
             dc = Ext.create("Ext.draw.Component", {
                 viewBox: false,
                 items: r,
@@ -215,6 +215,10 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
                 NOC.error("Failed to save");
             }
         });
+    },
+    //
+    onObjectSelect: function(objectId) {
+        var me = this;
+        me.app.showObject(objectId);
     }
-
 });

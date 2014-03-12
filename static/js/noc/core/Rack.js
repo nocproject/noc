@@ -23,7 +23,7 @@ Ext.define("NOC.core.Rack", {
     NEAR_COLOR: "#f0f0f0",
     FAR_COLOR: "#d0d0d0",
 
-    getRack: function(x, y, opts, content, side, label) {
+    getRack: function(app, x, y, opts, content, side, listeners) {
         var me = this,
             out = [],
             // Internal width
@@ -40,7 +40,7 @@ Ext.define("NOC.core.Rack", {
             n_bottom = y + me.TOP_WIDTH + i_height,
             // far side
             far_side = side === "f" ? "r" : "f";
-        label = label || null;
+        label = opts.label || null;
         /*
          * Enclosure
          */
@@ -113,7 +113,10 @@ Ext.define("NOC.core.Rack", {
                 width: i_width,
                 height: c.units * me.U_HEIGH,
                 stroke: "black",
-                fill: me.FAR_COLOR
+                fill: me.FAR_COLOR,
+                listeners: {
+                    dblclick: Ext.bind(app.onObjectSelect, app, [c.id])
+                }
             });
             out.push({
                 type: "text",
@@ -139,7 +142,10 @@ Ext.define("NOC.core.Rack", {
                 width: i_width,
                 height: c.units * me.U_HEIGH,
                 stroke: "black",
-                fill: me.NEAR_COLOR
+                fill: me.NEAR_COLOR,
+                listeners: {
+                    dblclick: Ext.bind(app.onObjectSelect, app, [c.id])
+                }
             });
             out.push({
                 type: "text",

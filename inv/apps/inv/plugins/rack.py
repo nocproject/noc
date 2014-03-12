@@ -34,7 +34,6 @@ class RackPlugin(InvPlugin):
     def get_data(self, request, o):
         r = {
             "id": str(o.id),
-            "name": o.name,
             "rack": dict(
                 (k, o.get_data("rack", k))
                 for k in ("units", "width", "depth")
@@ -42,6 +41,7 @@ class RackPlugin(InvPlugin):
             "content": [],
             "load": []
         }
+        r["rack"]["label"] = o.name
         # Fill content
         for c in o.get_content():
             units = c.get_data("rackmount", "units")
@@ -58,6 +58,7 @@ class RackPlugin(InvPlugin):
             }]
             if units and pos:
                 r["content"] += [{
+                    "id": str(c.id),
                     "units": units,
                     "pos": pos,
                     "name": c.name,
