@@ -4,9 +4,9 @@
 // Copyright (C) 2007-2013 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.inv.plugins.data.LogModel");
+console.debug("Defining NOC.inv.inv.plugins.log.LogModel");
 
-Ext.define("NOC.inv.inv.plugins.data.LogModel", {
+Ext.define("NOC.inv.inv.plugins.log.LogModel", {
     extend: "Ext.data.Model",
     fields: [
         {

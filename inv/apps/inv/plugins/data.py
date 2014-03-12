@@ -91,18 +91,7 @@ class DataPlugin(InvPlugin):
             "id": str(o.id),
             "name": o.name,
             "model": o.model.name,
-            "data": data,
-            "log": [
-                {
-                    "ts": x.ts.isoformat(),
-                    "user": x.user,
-                    "system": x.system,
-                    "managed_object": x.managed_object,
-                    "op": x.op,
-                    "message": x.message
-                }
-                for x in o.get_log()
-            ]
+            "data": data
         }
 
     def api_save_data(self, request, id,
