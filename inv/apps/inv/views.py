@@ -113,6 +113,8 @@ class InvApplication(ExtApplication):
                 n["plugins"] += [self.get_plugin_data("inventory")]
             if o.get_data("geopoint", "layer"):
                 n["plugins"] += [self.get_plugin_data("map")]
+            if o.get_data("management", "managed_object"):
+                n["plugins"] += [self.get_plugin_data("managedobject")]
             # Append model's plugins
             for p in m_plugins:
                 if not p.startswith("-"):
