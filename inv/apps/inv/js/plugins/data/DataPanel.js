@@ -14,7 +14,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
     ],
     title: "Data",
     closable: false,
-    layout: "border",
+    layout: "fit",
 
     initComponent: function() {
         var me = this;
@@ -23,10 +23,6 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
         me.store = Ext.create("Ext.data.Store", {
             model: "NOC.inv.inv.plugins.data.DataModel",
             groupField: "interface"
-        });
-        // Log Store
-        me.logStore = Ext.create("Ext.data.Store", {
-            model: "NOC.inv.inv.plugins.data.LogModel"
         });
         // Grids
         Ext.apply(me, {
@@ -75,53 +71,6 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                         scope: me,
                         edit: me.onEdit
                     }
-                },
-                {
-                    xtype: "gridpanel",
-                    border: false,
-                    autoScroll: true,
-                    stateful: true,
-                    stateId: "inv.inv-log-grid",
-                    store: me.logStore,
-                    region: "south",
-                    height: 100,
-                    split: true,
-                    columns: [
-                        {
-                            text: "Time",
-                            dataIndex: "ts",
-                            renderer: NOC.render.DateTime,
-                            width: 100
-                        },
-                        {
-                            text: "User",
-                            dataIndex: "user",
-                            width: 70
-                        },
-                        {
-                            text: "System",
-                            dataIndex: "system",
-                            width: 70
-                        },
-                        {
-                            text: "Operation",
-                            dataIndex: "op",
-                            width: 70
-                        },
-                        {
-                            text: "Object",
-                            dataIndex: "managed_object",
-                            width: 100
-                        },
-                        {
-                            text: "Message",
-                            dataIndex: "message",
-                            flex: 1
-                        }
-                    ],
-                    viewConfig: {
-                        enableTextSelection: true
-                    }
                 }
             ]
         });
@@ -132,7 +81,6 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
         var me = this;
         me.currentId = data.id;
         me.store.loadData(data.data);
-        me.logStore.loadData(data.log);
     },
     //
     onReload: function() {

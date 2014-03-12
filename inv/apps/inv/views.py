@@ -120,7 +120,8 @@ class InvApplication(ExtApplication):
             n["plugins"] += [
                 self.get_plugin_data("data"),
                 self.get_plugin_data("comment"),
-                self.get_plugin_data("file")
+                self.get_plugin_data("file"),
+                self.get_plugin_data("log")
             ]
             # Process disabled plugins
             n["plugins"] = [p for p in n["plugins"] if p["name"] not in disabled_plugins]
