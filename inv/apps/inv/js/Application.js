@@ -142,6 +142,33 @@ Ext.define("NOC.inv.inv.Application", {
         });
     },
     //
+    addAppForm: function(parent, app, objectId) {
+        var me = this,
+            url = "/" + app.replace(".", "/") + "/launch_info/",
+            c;
+        Ext.Ajax.request({
+            url: url,
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var li = Ext.decode(response.responseText),
+                    params = {};
+                Ext.merge(params, li.params);
+                c = Ext.create("NOC." + app + ".Application", {
+                    noc: params,
+                    controller: me.controller
+                });
+                c.loadById(objectId, function(record) {
+                    c.onEditRecord(record);
+                });
+                parent.items.add(c);
+            },
+            failure: function() {
+                NOC.error("Failed to launch application " + app);
+            }
+        });
+    },
+    //
     onSelectNav: function(panel, record, index, eOpts) {
         var me = this,
             objectId = record.get("id"),
