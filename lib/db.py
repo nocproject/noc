@@ -8,6 +8,8 @@
 
 ## Python modules
 import subprocess
+##
+from psycopg2.extensions import adapt
 ## Django modules
 from django.utils import tree
 from django.db.models import Q
@@ -48,11 +50,12 @@ class TagsExpression(object):
     def __init__(self, query, tags):
         if type(tags) not in (list, tuple):
             tags = [str(tags)]
-        self.tags = tags
+        self.tags = [str(x.strip()) for x in tags if x.strip()]
         self.table = query.get_meta().db_table
 
     def as_sql(self, qn, connection):
-        return "%%s::text[] <@ %s.%s" % (self.table, qn("tags")), [self.tags]
+        t = ",".join(str(adapt(x)) for x in self.tags)
+        return "ARRAY[%s] <@ %s.%s" % (t, self.table, qn("tags")), []
 
 
 class TagsNode(tree.Node):
