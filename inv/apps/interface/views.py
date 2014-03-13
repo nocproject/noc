@@ -264,7 +264,7 @@ class InterfaceAppplication(ExtApplication):
             "vc_domain": ModelParameter(VCDomain, required=False)
         },
         method=["POST"], access="profile", api=True)
-    def api_change_project(self, request, iface_id, vc_domain):
+    def api_change_vc_domain(self, request, iface_id, vc_domain):
         i = Interface.objects.filter(id=iface_id).first()
         if not i:
             return self.response_not_found()
