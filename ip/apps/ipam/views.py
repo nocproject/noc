@@ -222,6 +222,13 @@ class IPAMAppplication(Application):
                 prefix_info += [
                     ("Free addresses", free - 2 if free >= 2 else free)
                 ]
+        t = {
+            "E": "Enabled",
+            "D": "Disabled"
+        }[prefix.effective_ip_discovery]
+        if prefix.enable_ip_discovery == "I":
+            t = "Inherit (%s)" % t
+        prefix_info += [("IP Discovery", t)]
         # Add custom fields
         for f in CustomField.table_fields("ip_prefix"):
             v = getattr(prefix, f.name)
@@ -467,6 +474,15 @@ class IPAMAppplication(Application):
                     required=False,
                     help_text=_("Appropriative dual-stack allocation")
                 )
+                enable_ip_discovery = forms.ChoiceField(
+                    label=_("Enable IP Discovery"),
+                    required=True,
+                    choices=[
+                        ("I", "Inherit"),
+                        ("E", "Enable"),
+                        ("D", "Disable")
+                    ]
+                )
 
                 def clean_prefix(self):
                     prefix = self.cleaned_data["prefix"]
@@ -528,15 +544,19 @@ class IPAMAppplication(Application):
             form = form_class(request.POST)
             if form.is_valid():
                 # Create prefix
-                p = Prefix(vrf=vrf, afi=afi,
-                           prefix=form.cleaned_data["prefix"].strip(),
-                           state=form.cleaned_data["state"],
-                           project=form.cleaned_data["project"],
-                           asn=form.cleaned_data["asn"],
-                           description=form.cleaned_data["description"],
-                           tags=form.cleaned_data["tags"],
-                           tt=form.cleaned_data["tt"],
-                           style=form.cleaned_data["style"])
+                p = Prefix(
+                    vrf=vrf,
+                    afi=afi,
+                    prefix=form.cleaned_data["prefix"].strip(),
+                    state=form.cleaned_data["state"],
+                    project=form.cleaned_data["project"],
+                    asn=form.cleaned_data["asn"],
+                    description=form.cleaned_data["description"],
+                    tags=form.cleaned_data["tags"],
+                    tt=form.cleaned_data["tt"],
+                    style=form.cleaned_data["style"],
+                    enable_ip_discovery=form.cleaned_data["enable_ip_discovery"]
+                )
                 self.apply_custom_fields(
                     p, form.cleaned_data, "ip_prefix")
                 with self.form_errors(form):
@@ -647,6 +667,15 @@ class IPAMAppplication(Application):
                     required=False,
                     help_text=_("Appropriative dual-stack allocation")
                 )
+                enable_ip_discovery = forms.ChoiceField(
+                    label=_("Enable IP Discovery"),
+                    required=True,
+                    choices=[
+                        ("I", "Inherit"),
+                        ("E", "Enable"),
+                        ("D", "Disable")
+                    ]
+                )
 
                 def clean_dual_stack_prefix(self):
                     ds_prefix = self.cleaned_data["dual_stack_prefix"]
@@ -714,7 +743,8 @@ class IPAMAppplication(Application):
                 "dual_stack_prefix": ds_prefix,
                 "tags": prefix.tags,
                 "tt": prefix.tt,
-                "style": prefix.style.id if prefix.style else None
+                "style": prefix.style.id if prefix.style else None,
+                "enable_ip_discovery": prefix.enable_ip_discovery
             }
             self.apply_custom_initial(prefix, initial, "ip_prefix")
             form = form_class(initial=initial)

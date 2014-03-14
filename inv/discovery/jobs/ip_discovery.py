@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## IP Discovery Job
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -30,7 +30,8 @@ class IPDiscoveryJob(MODiscoveryJob):
         :param result:
         :return:
         """
-        self.report = IPReport(self, to_save=self.to_save)
+        self.report = IPReport(self, to_save=self.to_save,
+                               allow_prefix_restrictions=True)
         for v in result:
             vrf = vrf_cache.get_or_create(
                 object, v["name"], v.get("rd", "0:0"))

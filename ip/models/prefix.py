@@ -94,6 +94,18 @@ class Prefix(models.Model):
         null=True, blank=True,
         limit_choices_to={"afi": "6"},
         on_delete=models.SET_NULL)
+    enable_ip_discovery = models.CharField(
+        _("Enable IP Discovery"),
+        max_length=1,
+        choices=[
+            ("I", "Inherit"),
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="I",
+        blank=False,
+        null=False
+    )
 
     csv_ignored_fields = ["parent"]
 
@@ -500,6 +512,17 @@ class Prefix(models.Model):
         for fp in IP.prefix(self.prefix).iter_free(
                 [p.prefix for p in self.children_set.all()]):
             yield str(fp)
+
+    @property
+    def effective_ip_discovery(self):
+        if self.enable_ip_discovery == "I":
+            if self.parent:
+                return self.parent.effective_ip_discovery
+            else:
+                return "E"
+        else:
+            return self.enable_ip_discovery
+
 
 # Avoid circular references
 from address import Address
