@@ -81,6 +81,13 @@ class IP(object):
         return self.contains(other)
 
     @classmethod
+    def get_afi(cls, prefix):
+        if ":" in prefix:
+            return "6"
+        else:
+            return "4"
+
+    @classmethod
     def prefix(cls, prefix):
         """
         Convert string to prefix instance.

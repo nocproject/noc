@@ -484,6 +484,10 @@ enabled = true
 initial_submit_interval = 900
 # Upper limit of new schedule submitted at once
 initial_submit_concurrency = 20
+# Description generator
+get_description = noc.solutions.noc.default.discovery.ip.get_description
+# FQDN generator
+get_fqdn = noc.solutions.noc.default.discovery.ip.get_fqdn
 
 [asset_discovery]
 enabled = true

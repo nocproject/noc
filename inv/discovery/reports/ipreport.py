@@ -19,8 +19,8 @@ from noc.ip.models.addressrange import AddressRange
 from noc.ip.models.prefix import Prefix
 from noc.fm.models import NewEvent
 from noc.inv.models import NewAddressDiscoveryLog
-from noc.lib.ip import IP
 from noc.settings import config
+from noc.lib.solutions import get_solution
 
 
 class IPReport(Report):
@@ -32,12 +32,13 @@ class IPReport(Report):
             job, enabled=enabled, to_save=to_save)
         self.ip_state_map = self.get_state_map(
             config.get("ip_discovery", "change_state"))
-        t = config.get("ip_discovery", "fqdn_template")
-        self.fqdn_template = Template(t) if t else None
         self.new_addresses = []
         self.collisions = []
         self.locked_ranges = {}  # VRF -> [(from ip, to ip)]
         self.allow_prefix_restrictions = allow_prefix_restrictions
+        # Initialize solutions
+        self.get_fqdn = get_solution(config.get("ip_discovery", "get_fqdn"))
+        self.get_description = get_solution(config.get("ip_discovery", "get_description"))
 
     def submit(self, vrf, address, interface=None, description=None,
                mac=None):
@@ -132,10 +133,9 @@ class IPReport(Report):
             }]
             if self.to_save:
                 if not description:
-                    description = "Seen at %s:%s" % (
-                        self.object.name, interface)
+                    description = self.get_description(self.object, interface)
                 Address(vrf=vrf, afi=afi,
-                    fqdn=self.get_fqdn(interface, vrf, address),
+                    fqdn=self.get_fqdn(interface, vrf, address, self.context),
                     mac=mac, address=address,
                     description=description
                 ).save()
@@ -200,27 +200,6 @@ class IPReport(Report):
             log=[]
         ).save()
         return False
-
-    def get_fqdn(self, interface, vrf, address):
-        """
-        Generate FQDN for address
-        :return:
-        """
-        afi = "6" if ":" in address else "4"
-        if afi == "4":
-            ip = [str(x) for x in IP.prefix(address)._get_parts()]
-        else:
-            ip = ["%x" % x for x in IP.prefix(address)._get_parts()]
-        rip = list(reversed(ip))
-        c = self.context.copy()
-        c.update({
-            "afi": afi,
-            "IP": ip,
-            "rIP": rip,
-            "interface": interface,
-            "vrf": vrf
-        })
-        return self.fqdn_template.render(Context(c))
 
     def send(self):
         if not (self.new_addresses or self.collisions):
