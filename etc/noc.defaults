@@ -446,6 +446,7 @@ initial_submit_concurrency = 20
 change_state =
 #
 # Django template to generate discovered Address'es FQDN.
+# USed by noc.solutions.noc.default.discovery.ip.get_fqdn solution
 # Available context variables are:
 #   object - Managed object instance
 #   vrf - VRF instance
@@ -459,6 +460,10 @@ change_state =
 #   rIP - IP in reversed order
 #
 fqdn_template = ip-{{ IP|join:"-" }}.{%% if domain %%}{{ domain }}{%% else %%}example.com{%% endif %%}
+# Description generator
+get_description = noc.solutions.noc.default.discovery.ip.get_description
+# FQDN generator
+get_fqdn = noc.solutions.noc.default.discovery.ip.get_fqdn
 
 [vlan_discovery]
 enabled = true
@@ -484,10 +489,6 @@ enabled = true
 initial_submit_interval = 900
 # Upper limit of new schedule submitted at once
 initial_submit_concurrency = 20
-# Description generator
-get_description = noc.solutions.noc.default.discovery.ip.get_description
-# FQDN generator
-get_fqdn = noc.solutions.noc.default.discovery.ip.get_fqdn
 
 [asset_discovery]
 enabled = true
