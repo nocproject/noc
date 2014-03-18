@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
 ## Django modules
 from django.core import exceptions
 from django.utils.importlib import import_module
@@ -53,3 +55,13 @@ def load_solution(name):
     Load and initialize solution by name
     """
     __import__("noc.solutions.%s" % name, {}, {}, "")
+
+
+def read_solutions_configs(config, name):
+    cn = os.path.splitext(name)[0]
+    # Update config with solution's one
+    for sn in config.options("solutions"):
+        if config.getboolean("solutions", sn):
+            v, s = sn.split(".", 1)
+            c = os.path.join("solutions", v, s, "etc", cn)
+            config.read([c + ".defaults", c + ".conf"])
