@@ -65,3 +65,13 @@ def read_solutions_configs(config, name):
             v, s = sn.split(".", 1)
             c = os.path.join("solutions", v, s, "etc", cn)
             config.read([c + ".defaults", c + ".conf"])
+
+
+def solutions_roots():
+    """
+    Generator returning active solutions roots
+    """
+    for sn in config.options("solutions"):
+        if config.getboolean("solutions", sn):
+            vendor, name = sn.split(".", 1)
+            yield os.path.join("solutions", vendor, name)

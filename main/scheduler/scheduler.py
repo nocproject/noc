@@ -13,6 +13,7 @@ from collections import defaultdict
 from noc.lib.scheduler.scheduler import Scheduler
 from jobs.subscriber import SubscriberJob
 from noc.settings import INSTALLED_APPS
+from noc.lib.solutions import solutions_roots
 
 
 class JobScheduler(Scheduler):
@@ -34,6 +35,10 @@ class JobScheduler(Scheduler):
             pp = os.path.join(*p)
             if os.path.isdir(pp):
                 self.register_all(pp)
+        for r in solutions_roots():
+            jd = os.path.join(r, "jobs")
+            if os.path.isdir(jd):
+                self.register_all(jd)
 
     def register_job_class(self, cls):
         if issubclass(cls, SubscriberJob):
