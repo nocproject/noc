@@ -37,6 +37,8 @@ class Daemon(object):
     defaults_config_path = "etc/%(daemon_name)s.defaults"
     config_path = "etc/%(daemon_name)s.conf"
     create_piddir = False
+    # Initialize custom fields and solutions
+    use_solutions = False
 
     LOG_LEVELS = {
         "debug": logging.DEBUG,
@@ -90,6 +92,10 @@ class Daemon(object):
                 continue
             signal.signal(sig, getattr(self, s))
         #atexit.register(self.at_exit)
+        if self.use_solutions:
+            logging.info("Initializing solutions")
+            from noc.lib.solutions import init_solutions
+            init_solutions()
 
     def load_config(self):
         """

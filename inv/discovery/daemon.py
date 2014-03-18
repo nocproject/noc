@@ -20,6 +20,7 @@ from noc.lib.serialize import json_decode
 
 class DiscoveryDaemon(Daemon):
     daemon_name = "noc-discovery"
+    use_solutions = True
 
     def __init__(self, *args, **kwargs):
         self.scheduler = DiscoveryScheduler(self)
