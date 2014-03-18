@@ -3,12 +3,22 @@
 # Edit etc/noc.conf instead
 import ConfigParser
 import sys
+import os
 
+# Load config
 config = ConfigParser.SafeConfigParser()
 config.read(["etc/noc.defaults", "etc/noc.conf"])
 if not config.sections():
     # Called from autodoc
+    # @todo: Remove?
     config.read(["../../../../etc/noc.defaults", "../../../../etc/noc.conf"])
+# Load solutions's config
+for sn in config.options("solutions"):
+    if config.getboolean("solutions", sn):
+        v, s = sn.split(".")
+        cfg = os.path.join("solutions", v, s, "etc", "noc.")
+        print [cfg + "defaults", cfg + "conf"]
+        config.read([cfg + "defaults", cfg + "conf"])
 
 DEBUG = config.getboolean("main", "debug")
 TEMPLATE_DEBUG = DEBUG
