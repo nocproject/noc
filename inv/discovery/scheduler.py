@@ -12,6 +12,7 @@ import datetime
 import random
 ## NOC modules
 from noc.lib.scheduler.scheduler import Scheduler
+from noc.lib.solutions import solutions_roots
 
 
 class DiscoveryScheduler(Scheduler):
@@ -24,6 +25,10 @@ class DiscoveryScheduler(Scheduler):
         self.register_all(
             os.path.join("inv", "discovery", "jobs"),
             exclude=["base.py"])
+        for r in solutions_roots():
+            jd = os.path.join(r, "discovery", "jobs")
+            if os.path.isdir(jd):
+                self.register_all(jd)
 
     def can_run(self, job):
         group = job.get_group()
