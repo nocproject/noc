@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Legacy periodic scheduler
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 from __future__ import with_statement
 import logging
@@ -19,6 +18,7 @@ from noc.lib.stomp.threadclient import ThreadedSTOMPClient
 
 class SchedulerDaemon(Daemon):
     daemon_name = "noc-scheduler"
+    use_solutions = True
 
     def __init__(self):
         self.stomp_host = None

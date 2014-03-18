@@ -61,6 +61,10 @@ log_sql_statements = false
 # is larger than limit (0 - unlimited)
 json_row_limit = 0
 
+[solutions]
+# Enable noc.default solution
+noc.default = true
+
 [database]
 # postgresql_psycopg2
 engine   = postgresql_psycopg2
