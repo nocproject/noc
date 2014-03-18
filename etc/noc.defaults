@@ -420,7 +420,11 @@ initial_submit_interval = 900
 initial_submit_concurrency = 20
 # IInterfaceClassification-interfaced pyRule
 # returning interface class name
+# Used by noc.solutions.noc.default.discovery.interface.get_interface_profile
 classification_pyrule =
+# Description generator
+get_interface_profile = noc.solutions.noc.default.discovery.interface.get_interface_profile
+
 
 [prefix_discovery]
 enabled = true
