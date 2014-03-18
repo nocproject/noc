@@ -11,8 +11,7 @@ from base import MODiscoveryJob
 from noc.inv.discovery.reports.interfacereport import InterfaceReport
 from noc.settings import config
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
-from noc.main.models import PyRule
+from noc.lib.solutions import get_solution
 
 
 class InterfaceDiscoveryJob(MODiscoveryJob):
@@ -29,43 +28,19 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
     ip_discovery_enable = config.getboolean("ip_discovery", "enabled")
     ip_discovery_save = config.getboolean("ip_discovery", "save")
     prefix_discovery_enable = config.getboolean(
-        "prefix_discovery","enabled")
+        "prefix_discovery", "enabled")
     prefix_discovery_save = config.getboolean(
-            "prefix_discovery","save")
+            "prefix_discovery", "save")
 
     @classmethod
     def initialize(cls, scheduler):
         super(InterfaceDiscoveryJob, cls).initialize(scheduler)
+        cls.get_interface_profile = None
         if scheduler.daemon:
             # Compile classification rules
-            cls.compile_classification_rules(scheduler)
-
-    @classmethod
-    def compile_classification_rules(cls, scheduler):
-        """
-        Compile interface classification rules
-        :param scheduler:
-        :return:
-        """
-        cls.classification_pyrule = None
-        if not cls.ignored:
-            p = config.get("interface_discovery",
-                "classification_pyrule")
-            if p:
-                # Use pyRule
-                r = list(PyRule.objects.filter(name=p,
-                        interface="IInterfaceClassification"))
-                if r:
-                    scheduler.info("Enabling interface classification pyRule '%s'" % p)
-                    cls.classification_pyrule = r[0]
-                else:
-                    scheduler.error("Interface classification pyRule '%s' is not found. Ignoring" % p)
-            elif InterfaceClassificationRule.objects.filter(is_active=True).count():
-                # Load rules
-                scheduler.info("Compiling interface classification rules:\n"
-                               "-----[CODE]-----\n%s\n-----[END]-----" %\
-                               InterfaceClassificationRule.get_classificator_code())
-                cls.classification_pyrule = InterfaceClassificationRule.get_classificator()
+            sol = config.get("interface_discovery", "get_interface_profile")
+            if sol:
+                cls.get_interface_profile = get_solution(sol)
 
     def handler(self, object, result):
         """
@@ -152,9 +127,9 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
         :param iface: Interface instance
         :return:
         """
-        if not self.classification_pyrule or iface.profile_locked:
+        if not self.get_interface_profile or iface.profile_locked:
             return
-        p_name = self.classification_pyrule(interface=iface)
+        p_name = self.get_interface_profile(iface)
         if p_name and p_name != iface.profile.name:
             # Change profile
             p = self.profiles_cache.get(p_name)
