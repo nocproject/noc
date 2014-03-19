@@ -301,7 +301,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
     //
     setLog: function(text) {
         var me = this;
-        me.logPanel.items.first().update("<pre>" + text + "<pre>");
+        me.logPanel.items.first().update("<pre>" + Ext.util.Format.htmlEncode(text) + "<pre>");
     },
     //
     showLog: function(name) {
