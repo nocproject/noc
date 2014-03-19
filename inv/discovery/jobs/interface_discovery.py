@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Interface Discovery Job
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
             # Compile classification rules
             sol = config.get("interface_discovery", "get_interface_profile")
             if sol:
-                cls.get_interface_profile = get_solution(sol)
+                cls.get_interface_profile = staticmethod(get_solution(sol))
 
     def handler(self, object, result):
         """
