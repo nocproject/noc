@@ -45,6 +45,34 @@ Ext.define("NOC.inv.interface.LAGPanel", {
                             renderer: NOC.render.ClickableLookup("profile"),
                             onClick: me.onChangeProfile
                         },
+                                                {
+                            text: "Profile",
+                            dataIndex: "profile",
+                            renderer: NOC.render.ClickableLookup("profile"),
+                            onClick: me.onChangeProfile
+                        },
+                        {
+                            text: "Project",
+                            dataIndex: "project",
+                            renderer: NOC.render.ClickableLookup("project"),
+                            onClick: me.onChangeProject
+                        },
+                        {
+                            text: "State",
+                            dataIndex: "state",
+                            renderer: NOC.render.ClickableLookup("state"),
+                            onClick: me.onChangeState
+                        },
+                        {
+                            text: "VC Domain",
+                            dataIndex: "vc_domain",
+                            renderer: NOC.render.ClickableLookup("vc_domain"),
+                            onClick: me.onChangeVCDomain
+                        },
+                        {
+                            text: "Protocols",
+                            dataIndex: "enabled_protocols"
+                        },
                         {
                             text: "Description",
                             dataIndex: "description",
@@ -78,6 +106,30 @@ Ext.define("NOC.inv.interface.LAGPanel", {
     onChangeProfile: function(record) {
         var me = this;
         Ext.create("NOC.inv.interface.ChangeInterfaceProfileForm", {
+            app: me,
+            record: record
+        });
+    },
+    //
+    onChangeProject: function(record) {
+        var me = this;
+        Ext.create("NOC.inv.interface.ChangeInterfaceProjectForm", {
+            app: me,
+            record: record
+        });
+    },
+    //
+    onChangeVCDomain: function(record) {
+        var me = this;
+        Ext.create("NOC.inv.interface.ChangeInterfaceVCDomainForm", {
+            app: me,
+            record: record
+        });
+    },
+    //
+    onChangeState: function(record) {
+        var me = this;
+        Ext.create("NOC.inv.interface.ChangeInterfaceStateForm", {
             app: me,
             record: record
         });
