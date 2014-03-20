@@ -13,6 +13,7 @@ from noc.lib.nosql import (Document, EmbeddedDocument,
                            StringField, ListField,
                            ForeignKeyField, EmbeddedDocumentField)
 from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.interface import Interface
 
 
 class MACRange(EmbeddedDocument):
@@ -88,6 +89,12 @@ class DiscoveryID(Document):
             })
             if r:
                 return ManagedObject.objects.get(id=r["object"])
+        # Fallback to interface search
+        o = set()
+        for i in Interface.objects.filter(mac=mac):
+            o.add(i.managed_object)
+        if len(o) == 1:
+            return o.pop()
         return None
 
     @classmethod
@@ -104,4 +111,14 @@ class DiscoveryID(Document):
             return []
         if not o or not o.chassis_mac:
             return None
-        return [(r.first_mac, r.last_mac) for r in o.chassis_mac]
+        # Discovered chassis id range
+        c_macs = [(r.first_mac, r.last_mac) for r in o.chassis_mac]
+        # Other interface macs
+        i_macs = set()
+        for i in Interface.objects.filter(
+                managed_object=object.id, mac__exists=False):
+            if i.mac:
+                if not any(1 for f, t in c_macs if f <= i.mac <= t):
+                    # Not in range
+                    i_macs.add(i.mac)
+        return c_macs + [(m, m) for m in i_macs]
