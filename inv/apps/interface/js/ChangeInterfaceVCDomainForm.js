@@ -44,7 +44,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceVCDomainForm", {
                     buttons: [
                         {
                             text: "Change",
-                            iconCls: "icon_page_edit",
+                            glyph: NOC.glyph.ok,
                             formBind: false,
                             scope: me,
                             handler: me.onChangeVCDomain

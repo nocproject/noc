@@ -46,7 +46,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceProjectForm", {
                     buttons: [
                         {
                             text: "Change",
-                            iconCls: "icon_page_edit",
+                            glyph: NOC.glyph.ok,
                             formBind: true,
                             scope: me,
                             handler: me.onChangeProject
