@@ -306,6 +306,9 @@ class Script(NOCScript):
         or pid.startswith("EVM-") or pid.startswith("EM-")):
             # Network Module
             return "NM", name[-1], pid
+        elif "-NM-" in pid:
+            # Network module 2
+            return "NM", name.split()[5], pid
         elif (pid.startswith("WIC-") or pid.startswith("HWIC-")
         or pid.startswith("VWIC-") or pid.startswith("VIC2-")
         or pid.startswith("VIC3-")):
