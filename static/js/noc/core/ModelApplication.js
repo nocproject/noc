@@ -10,7 +10,8 @@ Ext.define("NOC.core.ModelApplication", {
     extend: "NOC.core.Application",
     requires: [
         "NOC.core.ModelStore",
-        "NOC.core.InlineModelStore"
+        "NOC.core.InlineModelStore",
+        "Ext.ux.ProgressBarPager"
     ],
     layout: "card",
     search: false,
@@ -303,7 +304,8 @@ Ext.define("NOC.core.ModelApplication", {
                     xtype: "pagingtoolbar",
                     store: me.store,
                     dock: "bottom",
-                    displayInfo: true
+                    displayInfo: true,
+                    plugins: new Ext.ux.ProgressBarPager()
                 }
             ],
             rbar: grid_rbar,
