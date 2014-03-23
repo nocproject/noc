@@ -12,7 +12,8 @@ Ext.define("NOC.fm.alarm.Application", {
         "NOC.fm.alarm.templates.Overview",
         "NOC.fm.alarm.templates.Help",
         "NOC.fm.alarm.templates.Data",
-        "NOC.fm.alarm.templates.SummaryPanel"
+        "NOC.fm.alarm.templates.SummaryPanel",
+        "Ext.ux.ProgressBarPager"
     ],
     layout: "card",
     STATUS_MAP: {
@@ -135,7 +136,8 @@ Ext.define("NOC.fm.alarm.Application", {
                     xtype: "pagingtoolbar",
                     store: me.store,
                     dock: "bottom",
-                    displayInfo: true
+                    displayInfo: true,
+                    plugins: new Ext.ux.ProgressBarPager()
                 }
             ],
             columns: [

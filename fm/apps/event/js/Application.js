@@ -11,7 +11,8 @@ Ext.define("NOC.fm.event.Application", {
     requires: [
         "NOC.fm.event.templates.Overview",
         "NOC.fm.event.templates.Help",
-        "NOC.fm.event.templates.Data"
+        "NOC.fm.event.templates.Data",
+        "Ext.ux.ProgressBarPager"
     ],
     layout: "card",
     STATUS_MAP: {
@@ -125,7 +126,8 @@ Ext.define("NOC.fm.event.Application", {
                     xtype: "pagingtoolbar",
                     store: me.store,
                     dock: "bottom",
-                    displayInfo: true
+                    displayInfo: true,
+                    plugins: new Ext.ux.ProgressBarPager()
                 }
             ],
             columns: [
