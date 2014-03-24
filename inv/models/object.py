@@ -429,6 +429,31 @@ class Object(Document):
                 c.connection = left
                 c.save()
 
+    def get_pop(self):
+        """
+        Find enclosing PoP
+        :returns: PoP instance or None
+        """
+        c = self.container
+        while c:
+            o = Object.objects.get(id=c)
+            if o.get_data("pop", "level"):
+                return o
+            c = o.container
+        return None
+
+    @classmethod
+    def get_managed(cls, mo):
+        """
+        Get Object managed by managed object
+        :param mo: Managed Object instance or id
+        :returns: Objects managed by managed object, or empty list
+        """
+        if hasattr(mo, "id"):
+            mo = mo.id
+        return cls.objects.filter(data__management__managed_object=mo)
+
+
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_geo_point, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)

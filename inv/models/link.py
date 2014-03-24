@@ -8,6 +8,8 @@
 
 ## Python modules
 from collections import defaultdict
+## Third-party modules
+from mongoengine import signals
 ## NOC modules
 from noc.lib.nosql import Document, PlainReferenceListField, StringField
 from interface import Interface
@@ -101,3 +103,22 @@ class Link(Document):
     def object_links_count(cls, object):
         ifaces = Interface.objects.filter(managed_object=object.id).values_list("id")
         return cls.objects.filter(interfaces__in=ifaces).count()
+
+    @classmethod
+    def _update_pop_links(cls, sender, document, target=None, **kwargs):
+        for i in document.interfaces:
+            for o in Object.get_managed(i.managed_object):
+                pop = o.get_pop()
+                if pop:
+                    refresh_schedule(
+                        "main.jobs", "inv.update_pop_links",
+                        key=pop.id, delta=5)
+
+
+signals.pre_delete.connect(Link._update_pop_links, sender=Link)
+signals.post_save.connect(Link._update_pop_links, sender=Link)
+
+
+##
+from object import Object
+from noc.lib.scheduler.utils import refresh_schedule
