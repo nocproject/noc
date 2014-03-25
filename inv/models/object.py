@@ -504,7 +504,7 @@ class Object(Document):
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_geo_point, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
-signals.pre_save.connect(Object.change_container, sender=Object)
+signals.post_save.connect(Object.change_container, sender=Object)
 signals.post_save.connect(Object.set_geo_point, sender=Object)
 signals.pre_init.connect(Object._pre_init, sender=Object)
 
