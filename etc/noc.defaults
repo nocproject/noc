@@ -505,6 +505,8 @@ save = true
 initial_submit_interval = 900
 # Upper limit of new schedule submitted at once
 initial_submit_concurrency = 20
+# Object name generator
+get_name = noc.solutions.noc.default.discovery.asset.get_name
 
 [lldp_discovery]
 enabled = false
