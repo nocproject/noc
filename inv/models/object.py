@@ -453,11 +453,52 @@ class Object(Document):
             mo = mo.id
         return cls.objects.filter(data__management__managed_object=mo)
 
+    @classmethod
+    def change_container(cls, sender, document, target=None,
+                         created=False, **kwargs):
+        if "container" not in document._changed_fields:
+            return
+        old_container = getattr(document, "_cache_container", None)
+        old_pop = None
+        new_pop = None
+        # Old pop
+        if old_container:
+            c = old_container
+            while c:
+                o = Object.objects.get(id=c)
+                if o.get_data("pop", "level"):
+                    old_pop = o.id
+                    break
+                c = o.container
+        # New pop
+        pop = document.get_pop()
+        if pop:
+            new_pop = pop.id
+        if old_pop != new_pop:
+            if old_pop:
+                refresh_schedule(
+                    "main.jobs", "inv.update_pop_links",
+                    key=old_pop, delta=5)
+            if new_pop:
+                refresh_schedule(
+                    "main.jobs", "inv.update_pop_links",
+                    key=new_pop, delta=5)
+
+    @classmethod
+    def _pre_init(cls, sender, document, values, **kwargs):
+        """
+        Object pre-initialization
+        """
+        if "container" in values and values["container"]:
+            document._cache_container = values["container"]
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_geo_point, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
+signals.pre_save.connect(Object.change_container, sender=Object)
 signals.post_save.connect(Object.set_geo_point, sender=Object)
+signals.pre_init.connect(Object._pre_init, sender=Object)
 
 ## Avoid circular references
 from objectconnection import ObjectConnection, ObjectConnectionItem
+from noc.lib.scheduler.utils import refresh_schedule
