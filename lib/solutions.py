@@ -39,6 +39,10 @@ def get_solution(path):
     return c
 
 
+def get_solution_from_config(section, name):
+    return get_solution(config.get(section, name))
+
+
 def init_solutions():
     """
     Initialize solutions and load modules

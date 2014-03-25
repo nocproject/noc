@@ -21,6 +21,7 @@ from noc.inv.models.unknownmodel import UnknownModel
 from noc.inv.models.modelmapping import ModelMapping
 from noc.inv.models.error import ConnectionError
 from noc.lib.text import str_dict
+from noc.lib.solutions import get_solution_from_config
 
 
 class AssetReport(Report):
@@ -41,6 +42,7 @@ class AssetReport(Report):
         self.managed = set()  # Object ids
         self.unk_model = {}  # name -> model
         self.lost_and_found = self.get_lost_and_found(self.object)
+        self.get_name = get_solution_from_config("asset_discovery", "get_name")
 
     def submit(self, type, part_no, number=None,
                builtin=False,
@@ -153,13 +155,6 @@ class AssetReport(Report):
             )
         # Check management
         if o.get_data("management", "managed"):
-            if not o.name:
-                self.info("Changing name to '%s'" % self.object.name)
-                o.name = self.object.name
-                o.save()
-                o.log("Change name to '%s'" % self.object.name,
-                      system="DISCOVERY",
-                      managed_object=self.object, op="CHANGE")
             if o.get_data("management", "managed_object") != self.object.id:
                 self.info("Changing object management to '%s'" % self.object.name)
                 o.set_data("management", "managed_object", self.object.id)
@@ -169,12 +164,23 @@ class AssetReport(Report):
                     system="DISCOVERY", managed_object=self.object,
                     op="CHANGE"
                 )
+            self.update_name(o)
             if o.id in self.managed:
                 self.managed.remove(o.id)
         self.objects += [(type, o, self.ctx.copy(), serial)]
         # Collect stack members
         if number and o.get_data("stack", "stackable"):
             self.stack_member[o] = number
+
+    def update_name(self, object):
+        n = self.get_name(object, self.object)
+        if n and n != object.name:
+            object.name = n
+            self.info("Changing name to '%s'" % n)
+            object.save()
+            object.log("Change name to '%s'" % n,
+                       system="DISCOVERY",
+                       managed_object=self.object, op="CHANGE")
 
     def iter_object(self, i, scope, value, target_type, fwd):
         # Search backwards
@@ -324,6 +330,7 @@ class AssetReport(Report):
                 o.log("Setting stack member %s" % m,
                       system="DISCOVERY", managed_object=self.object,
                       op="CHANGE")
+                self.update_name(o)
 
     def send(self):
         if self.unknown_part_no:
