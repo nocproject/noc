@@ -456,6 +456,15 @@ class Object(Document):
     @classmethod
     def change_container(cls, sender, document, target=None,
                          created=False, **kwargs):
+        if created:
+            if document.container:
+                pop = document.get_pop()
+                if pop:
+                    refresh_schedule(
+                        "main.jobs", "inv.update_pop_links",
+                        key=pop.id, delta=5)
+            return
+        # Changed object
         if "container" not in document._changed_fields:
             return
         old_container = getattr(document, "_cache_container", None)
