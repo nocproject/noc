@@ -41,6 +41,7 @@ class Correlator(Daemon):
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = {}  # alarm_class -> set([alarm_class])
         self.alarm_jobs = {}  # alarm_class -> [JobLauncher, ..]
+        self.handlers = {}  # alamr class id -> [<handler>]
         logging.info("Running noc-correlator")
         self.scheduler = CorrelatorScheduler(self,
             cleanup=reset_queries)
@@ -64,6 +65,7 @@ class Correlator(Daemon):
         self.load_triggers()
         self.load_rca_rules()
         self.load_alarm_jobs()
+        self.load_handlers()
 
     def load_rules(self):
         """
@@ -147,6 +149,36 @@ class Correlator(Daemon):
                 for j in a.jobs]
             n += len(self.alarm_jobs[a.id])
         logging.debug("%d alarm jobs have been loaded" % n)
+
+    def load_handlers(self):
+        logging.info("Loading handlers")
+        self.handlers = {}
+        for ac in AlarmClass.objects.filter():
+            if not ac.handlers:
+                continue
+            hl = []
+            for h in ac.handlers:
+                # Resolve handler
+                hh = self.resolve_handler(h)
+                if hh:
+                    hl += [hh]
+            if hl:
+                self.handlers[ac.id] = hl
+        logging.info("Handlers are loaded")
+
+    @classmethod
+    def resolve_handler(cls, h):
+        mn, s = h.rsplit(".", 1)
+        try:
+            m = __import__(mn, {}, {}, s)
+        except ImportError:
+            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            return None
+        try:
+            return getattr(m, s)
+        except AttributeError:
+            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            return None
 
     def mark_as_failed(self, event):
         """
@@ -233,6 +265,13 @@ class Correlator(Daemon):
             for aa in ActiveAlarm.objects.filter(alarm_class__in=self.rca_reverse):
                 if aa.alarm_class.id in self.rca_forward and a.id != aa.id:
                     self.set_root_cause(aa, a)
+        # Call handlers
+        if a.alarm_class.id in self.handlers:
+            for h in self.handlers[a.alarm_class.id]:
+                try:
+                    h(a)
+                except:
+                    error_report()
         # Call triggers if necessary
         if r.alarm_class.id in self.triggers:
             for t in self.triggers[r.alarm_class.id]:
