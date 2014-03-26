@@ -1,9 +1,8 @@
 {
     "name": "System | Process Exited",
     "uuid": "2ed4c9de-0fec-42a8-a139-1a3a220f8f2c",
-    "desciption": "Process exited",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Process name",

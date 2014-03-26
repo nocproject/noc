@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Hardware | Hardware Port Warning Recover",
     "uuid": "7f83d8ec-161c-41e1-8ab3-09f84f7470f0",
-    "desciption": "Hardware port or slot warning recovered",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Hardware port or slot",

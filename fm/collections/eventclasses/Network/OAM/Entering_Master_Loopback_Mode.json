@@ -1,9 +1,8 @@
 {
     "name": "Network | OAM | Entering Master Loopback Mode",
     "uuid": "3e278c87-af70-481d-a894-93786d156aaa",
-    "desciption": "Interface has entered the master loopback mode",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

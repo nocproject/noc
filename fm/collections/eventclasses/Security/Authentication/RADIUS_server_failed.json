@@ -1,9 +1,8 @@
 {
     "name": "Security | Authentication | RADIUS server failed",
     "uuid": "4c8ae9b3-472f-4aa4-9fe0-201fdff4a523",
-    "desciption": "RADIUS server failed",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "RADIUS server address",

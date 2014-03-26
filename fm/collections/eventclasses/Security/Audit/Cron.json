@@ -1,9 +1,8 @@
 {
     "name": "Security | Audit | Cron",
     "uuid": "1e575996-02d8-4e57-ba20-223067fcd705",
-    "desciption": "Scheduled Command Executed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "User",

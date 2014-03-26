@@ -1,7 +1,6 @@
 {
     "name": "Network | MAC | Invalid MAC",
     "uuid": "c32378e8-a6e6-4a00-928f-96b3a7cb5f77",
-    "desciption": "Invalid MAC Detected",
     "is_unique": true,
     "discriminator": ["mac"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "mac",
             "description": "MAC Address"

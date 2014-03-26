@@ -1,7 +1,6 @@
 {
     "name": "Network | MAC | MAC Flap",
     "uuid": "211d9e04-9595-465b-9257-7fd0d68ff10a",
-    "desciption": "Flapping MAC Detected",
     "is_unique": true,
     "discriminator": ["mac"],
     "user_clearable": true,
@@ -33,8 +32,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "mac",
             "description": "MAC Address"

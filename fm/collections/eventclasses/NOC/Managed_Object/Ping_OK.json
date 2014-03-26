@@ -1,9 +1,8 @@
 {
     "name": "NOC | Managed Object | Ping OK",
     "uuid": "121098a0-ac8c-44e4-a856-2f4ed096f454",
-    "desciption": "Managed object has been pinged successfully",
     "action": "L",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

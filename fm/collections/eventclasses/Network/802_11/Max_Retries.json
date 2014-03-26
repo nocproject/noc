@@ -1,9 +1,8 @@
 {
     "name": "Network | 802.11 | Max Retries",
     "uuid": "6f1e5281-7954-47df-8017-8b6ab1866f12",
-    "desciption": "Maximum retries reached",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "Station MAC",

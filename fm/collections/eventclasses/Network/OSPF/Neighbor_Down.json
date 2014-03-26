@@ -1,9 +1,8 @@
 {
     "name": "Network | OSPF | Neighbor Down",
     "uuid": "a148d17b-feab-42ba-86c5-f83edc494495",
-    "desciption": "OSPF adjacency down",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "area",
             "description": "OSPF area",

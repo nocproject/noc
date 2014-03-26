@@ -1,7 +1,6 @@
 {
     "name": "Network | LBD | Loop Detected",
     "uuid": "aadd3309-c0d4-4f52-9a93-b6231eb25111",
-    "desciption": "LBD Loop Detected",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "interface"

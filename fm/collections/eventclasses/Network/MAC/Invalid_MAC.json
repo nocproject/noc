@@ -1,9 +1,8 @@
 {
     "name": "Network | MAC | Invalid MAC",
     "uuid": "66a6a42d-8511-47b5-a738-f28ff359cc6d",
-    "desciption": "Invalid MAC detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "MAC Address",

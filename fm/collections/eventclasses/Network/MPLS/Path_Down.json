@@ -1,9 +1,8 @@
 {
     "name": "Network | MPLS | Path Down",
     "uuid": "2a5f5a0c-55f2-4804-9e00-7394f442cd88",
-    "desciption": "MPLS Path Down",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Path name",

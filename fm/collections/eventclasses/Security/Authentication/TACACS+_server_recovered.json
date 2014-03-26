@@ -1,9 +1,8 @@
 {
     "name": "Security | Authentication | TACACS+ server recovered",
     "uuid": "46e7f27a-caea-41db-87b3-fc2e7ac766db",
-    "desciption": "TACACS+ server recovered",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "TACACS+ server address",

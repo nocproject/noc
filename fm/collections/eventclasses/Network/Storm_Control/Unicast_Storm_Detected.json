@@ -1,9 +1,8 @@
 {
     "name": "Network | Storm Control | Unicast Storm Detected",
     "uuid": "48a75b5d-79b1-4c6b-afc3-576c59acab11",
-    "desciption": "Unicast (DLF) Storm Detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

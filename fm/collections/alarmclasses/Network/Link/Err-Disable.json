@@ -1,7 +1,6 @@
 {
     "name": "Network | Link | Err-Disable",
     "uuid": "a567754e-8be6-498b-a790-97f34aa4d52b",
-    "desciption": "Link in err-disable state",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "interface name"

@@ -1,12 +1,11 @@
 {
     "name": "Network | DNS | Bad Query",
     "uuid": "df739179-a360-422b-9f38-efd8c898a0e2",
-    "desciption": "Bad DNS query",
     "is_unique": true,
     "discriminator": ["ip"],
     "user_clearable": true,
     "default_severity__name": "INFO",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Source IP"

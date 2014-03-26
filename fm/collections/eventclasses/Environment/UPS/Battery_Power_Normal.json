@@ -1,9 +1,8 @@
 {
     "name": "Environment | UPS | Battery Power Normal",
     "uuid": "e641ac4d-d3c6-4970-8253-0854d8b539c2",
-    "desciption": "Battery Power Normal",
     "action": "A",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

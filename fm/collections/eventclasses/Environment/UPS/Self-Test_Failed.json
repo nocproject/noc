@@ -1,9 +1,8 @@
 {
     "name": "Environment | UPS | Self-Test Failed",
     "uuid": "5cab11d8-df89-483b-9fab-6477ccdf93c1",
-    "desciption": "Self-Test Failed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Test name",

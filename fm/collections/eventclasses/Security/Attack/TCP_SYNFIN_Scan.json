@@ -1,9 +1,8 @@
 {
     "name": "Security | Attack | TCP SYNFIN Scan",
     "uuid": "c5f6fc10-61d2-400a-a95f-58c0d1597426",
-    "desciption": "TCP SYNFIN Scan detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Stack | Stack Degraded",
     "uuid": "ff2191ec-f107-4232-b849-5045f194de3d",
-    "desciption": "One or more unit is out of stack",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "unit",
             "description": "Unit number",

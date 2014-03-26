@@ -1,9 +1,8 @@
 {
     "name": "Network | Storm Control | Multicast Storm Cleared",
     "uuid": "c7a095cd-875d-40fc-afc5-ca0a463fa294",
-    "desciption": "Multicast Storm Cleared",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

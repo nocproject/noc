@@ -1,9 +1,8 @@
 {
     "name": "Security | Access | Door Close",
     "uuid": "16615d0e-17f1-43aa-a896-353b4436588c",
-    "desciption": "Door is closed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

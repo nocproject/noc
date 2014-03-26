@@ -156,7 +156,7 @@ class AlarmClass(nosql.Document):
             t += ["\n".join(l)]
         r += [",\n\n".join(t)]
         r += ["    }"]
-        r += ["}"]
+        r += ["}", ""]
         return "\n".join(r)
 
     def get_json_path(self):

@@ -1,7 +1,6 @@
 {
     "name": "Network | Link | Half-Duplex",
     "uuid": "2b7c3501-a858-4296-afa5-512131a51cc9",
-    "desciption": "Link going into half-duplex state",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "interface name"

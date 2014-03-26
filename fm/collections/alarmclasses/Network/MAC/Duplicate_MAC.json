@@ -1,7 +1,6 @@
 {
     "name": "Network | MAC | Duplicate MAC",
     "uuid": "c7ecc87a-070b-469a-9434-ffe3e924a76b",
-    "desciption": "Duplicate MAC Detected",
     "is_unique": true,
     "discriminator": ["mac"],
     "user_clearable": true,
@@ -24,8 +23,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "mac",
             "description": "MAC Address"

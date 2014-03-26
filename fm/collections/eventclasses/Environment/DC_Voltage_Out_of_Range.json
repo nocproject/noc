@@ -1,9 +1,8 @@
 {
     "name": "Environment | DC Voltage Out of Range",
     "uuid": "945ffe6c-075c-4629-a65a-45d0a896eddc",
-    "desciption": "DC voltage out of range",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

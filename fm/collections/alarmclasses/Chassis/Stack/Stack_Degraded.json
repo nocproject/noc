@@ -1,12 +1,11 @@
 {
     "name": "Chassis | Stack | Stack Degraded",
     "uuid": "ed3566d9-75dc-46e6-a012-1c05387cd5dd",
-    "desciption": "One or more unit is out of stack",
     "is_unique": true,
     "discriminator": ["unit"],
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "unit",
             "description": "Unit number"

@@ -1,11 +1,10 @@
 {
     "name": "Environment | Module Voltage Out of Range",
     "uuid": "5c83ad07-4a96-4322-a945-af801ff95207",
-    "desciption": "Module voltage out of range",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name"

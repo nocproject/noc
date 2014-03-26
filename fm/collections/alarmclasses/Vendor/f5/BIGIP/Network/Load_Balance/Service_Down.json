@@ -1,12 +1,11 @@
 {
     "name": "Vendor | f5 | BIGIP | Network | Load Balance | Service Down",
     "uuid": "94244c8a-d185-4c50-adaa-09fe27a39f92",
-    "desciption": "Service Down",
     "is_unique": true,
     "discriminator": ["node", "port"],
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "vars ": [
+    "vars": [
         {
             "name": "node",
             "description": "IP or hostname"

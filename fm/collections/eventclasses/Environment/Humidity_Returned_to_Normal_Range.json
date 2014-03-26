@@ -1,9 +1,8 @@
 {
     "name": "Environment | Humidity Returned to Normal Range",
     "uuid": "c4a71081-bdc6-4f6d-b38d-8ba176833430",
-    "desciption": "Humidity returned to normal range",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

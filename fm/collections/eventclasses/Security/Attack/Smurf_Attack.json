@@ -1,9 +1,8 @@
 {
     "name": "Security | Attack | Smurf Attack",
     "uuid": "7edc00c7-fafc-4eef-9144-ef6f08a2b1da",
-    "desciption": "Smurf Attack detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

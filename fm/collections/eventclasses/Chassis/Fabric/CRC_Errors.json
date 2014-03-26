@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Fabric | CRC Errors",
     "uuid": "1bdd08e3-4ea2-44c5-8b45-5306f8af8645",
-    "desciption": "Exessive number of CRC errors on fabric module",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Farbic module",

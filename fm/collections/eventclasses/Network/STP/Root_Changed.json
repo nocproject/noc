@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | Root Changed",
     "uuid": "cf0fd520-7bde-442a-b52c-9a607c589e7f",
-    "desciption": "STP Root changed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

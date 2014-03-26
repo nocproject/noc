@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Hardware | Module | Module Removed",
     "uuid": "9f9381ee-28e1-41ee-a9ad-6fd33fc0f14c",
-    "desciption": "Hardware module has been removed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "module",
             "description": "Module type",

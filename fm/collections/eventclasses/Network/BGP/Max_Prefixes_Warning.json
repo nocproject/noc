@@ -1,9 +1,8 @@
 {
     "name": "Network | BGP | Max Prefixes Warning",
     "uuid": "65556dfa-77c5-4840-9306-30dd8d3d0164",
-    "desciption": "Max prefixes warning",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "peer",
             "description": "Peer",

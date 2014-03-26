@@ -1,9 +1,8 @@
 {
     "name": "Vendor | Cisco | SCOS | Security | Attack | Attack Detected",
     "uuid": "f80e3686-bd0c-4247-afcf-d79cf60cb832",
-    "desciption": "Attack detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "from_ip",
             "description": "From IP",

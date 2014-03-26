@@ -1,11 +1,10 @@
 {
     "name": "Environment | UPS | Input Power Failed",
     "uuid": "c3afd86c-dee6-4cdf-9daa-8b78222e7d12",
-    "desciption": "Input Power Failed",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

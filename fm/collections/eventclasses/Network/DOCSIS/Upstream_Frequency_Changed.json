@@ -1,9 +1,8 @@
 {
     "name": "Network | DOCSIS | Upstream Frequency Changed",
     "uuid": "d997c32e-27e6-43da-87be-13253e6fd4b6",
-    "desciption": "The upstream channel frequency has been changed.",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Cable interface",

@@ -1,9 +1,8 @@
 {
     "name": "Network | Link | Link Flap Error Recovery",
     "uuid": "9c97e2c1-4a14-458e-a6ad-38ae2b643aa0",
-    "desciption": "Link-flap error recovery",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Affected interface",

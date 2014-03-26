@@ -1,7 +1,6 @@
 {
     "name": "Network | STP | Root Guard Violation",
     "uuid": "ca261ef8-3d29-4270-8fd2-eb616d9e6e76",
-    "desciption": "Root Guard Violation",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "interface"

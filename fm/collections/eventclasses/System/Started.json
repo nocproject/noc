@@ -1,9 +1,8 @@
 {
     "name": "System | Started",
     "uuid": "6bd08fbf-e09c-4472-a99d-c24176a47201",
-    "desciption": "System started",
     "action": "A",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

@@ -1,9 +1,8 @@
 {
     "name": "Network | MPLS | TDP Neighbor Up",
     "uuid": "10f28e29-5945-4fdc-99dd-9791e21fac39",
-    "desciption": "MPLS TDP Neighbor Up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "neighbor",
             "description": "TDP Neighbor",

@@ -1,9 +1,8 @@
 {
     "name": "Network | NTP | System Clock Adjusted",
     "uuid": "1d7e89f7-b77f-470e-b8d4-250ead2848b9",
-    "desciption": "System clock was adjusted",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "adjustment_ms",
             "description": "Time adjustment in msec",

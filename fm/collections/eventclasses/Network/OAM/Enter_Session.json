@@ -1,9 +1,8 @@
 {
     "name": "Network | OAM | Enter Session",
     "uuid": "bccbe42f-9786-4ab6-9161-771de340ef8a",
-    "desciption": "Client has entered the OAM session",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

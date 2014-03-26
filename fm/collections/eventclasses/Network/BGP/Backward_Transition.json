@@ -1,9 +1,8 @@
 {
     "name": "Network | BGP | Backward Transition",
     "uuid": "df53d877-2473-4074-a9a0-0a7352731784",
-    "desciption": "BGP Backward Transition",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "peer",
             "description": "Peer",

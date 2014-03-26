@@ -1,9 +1,8 @@
 {
     "name": "Network | UDLD | UDLD Protocol Error Detected",
     "uuid": "887d87fd-903d-43b7-8067-99cab2ae8a24",
-    "desciption": "UniDirectional Link Detection (UDLD) Protocol Error Detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

@@ -1,9 +1,8 @@
 {
     "name": "Security | Access | Case Open",
     "uuid": "e1f7d295-8b53-4643-81cd-1f1380029db1",
-    "desciption": "Case or cover is open",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

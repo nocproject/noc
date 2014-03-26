@@ -1,9 +1,8 @@
 {
     "name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
     "uuid": "ec40d5c8-d161-4ac0-b8ea-7b63e13181a6",
-    "desciption": "vserver out of service",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "module",
             "description": "Module name",

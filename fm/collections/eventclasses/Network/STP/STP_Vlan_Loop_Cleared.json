@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | STP Vlan Loop Cleared",
     "uuid": "0e4f62a1-36a2-4e42-9907-ad5f8614084e",
-    "desciption": "STP Vlan Loop Cleared",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

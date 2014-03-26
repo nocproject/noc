@@ -1,9 +1,8 @@
 {
     "name": "Network | OAM | Discovery Timeout",
     "uuid": "0ced5d24-225f-422b-8c9c-8d8ae5c480a5",
-    "desciption": "Client discovery timeout",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

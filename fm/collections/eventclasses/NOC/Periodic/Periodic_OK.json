@@ -1,9 +1,8 @@
 {
     "name": "NOC | Periodic | Periodic OK",
     "uuid": "d0b731d7-e9f1-4fdb-9c21-32ecf5ce0137",
-    "desciption": "Periodic task has been completed successfully",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "task",
             "description": "Task's name",

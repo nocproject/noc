@@ -1,9 +1,8 @@
 {
     "name": "Network | BGP | Peer State Changed",
     "uuid": "b4ab69c1-15d3-4dd9-a6c8-aecb25c249b0",
-    "desciption": "BGP Peer State Changed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "peer",
             "description": "Peer",

@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Hardware | Hardware Warning",
     "uuid": "d299572a-1369-4c46-8b88-9b40de992682",
-    "desciption": "Hardware warning occured",
     "action": "A",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

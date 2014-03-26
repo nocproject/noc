@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Linecard | LC Down",
     "uuid": "cea6abfb-7327-49b3-8525-de42e5e6809a",
-    "desciption": "Linecard Down",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "number",
             "description": "Slot number",

@@ -1,9 +1,8 @@
 {
     "name": "Chassis | CPU | CPU Usage Above Threshold",
     "uuid": "40dd3c2c-12f5-49c7-b978-ee5ca769d5da",
-    "desciption": "CPU Usage Above Threshold",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "cpu",
             "description": "CPU Name",

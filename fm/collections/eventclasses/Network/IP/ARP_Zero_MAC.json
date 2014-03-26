@@ -1,9 +1,8 @@
 {
     "name": "Network | IP | ARP Zero MAC",
     "uuid": "3ee0c0ea-e0db-4048-8315-2379cfb88ca0",
-    "desciption": "ARP Zero MAC",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "IP",

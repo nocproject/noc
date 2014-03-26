@@ -1,9 +1,8 @@
 {
     "name": "Chassis | PSU | PSU Recovered",
     "uuid": "0f338208-7629-4b2b-9406-05142ad764f9",
-    "desciption": "Power Suppply Unit recovered",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "PSU Name",

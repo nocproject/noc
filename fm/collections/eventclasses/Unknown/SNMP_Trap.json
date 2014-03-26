@@ -1,9 +1,8 @@
 {
     "name": "Unknown | SNMP Trap",
     "uuid": "fc2dc1b2-25b2-482d-9c0f-13325f0b48c4",
-    "desciption": "All rules have been failed to classify this SNMP TRAP",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "trap_oid",
             "description": "SNMP Trap OID",

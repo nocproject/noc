@@ -1,9 +1,8 @@
 {
     "name": "Security | Authentication | SNMP Authentication Failure",
     "uuid": "91094f01-18a3-4fdf-849b-26de6e751b61",
-    "desciption": "SNMP authentication failure",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Request source address",

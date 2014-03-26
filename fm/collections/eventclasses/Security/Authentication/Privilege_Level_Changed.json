@@ -1,9 +1,8 @@
 {
     "name": "Security | Authentication | Privilege Level Changed",
     "uuid": "601bc6a1-e7a4-4652-998e-a42a214967d8",
-    "desciption": "User privilege level changed",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "User",

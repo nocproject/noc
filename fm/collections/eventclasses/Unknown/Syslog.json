@@ -1,9 +1,8 @@
 {
     "name": "Unknown | Syslog",
     "uuid": "b1810b6f-bbaf-4883-81ec-ddc208097a1a",
-    "desciption": "All rules have been failed to classify this SYSLOG message",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "syslog_message",
             "description": "Full syslog message",

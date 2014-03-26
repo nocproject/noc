@@ -1,9 +1,8 @@
 {
     "name": "Unknown | Default",
     "uuid": "8406c855-6af0-405c-b2f9-4ce56c623984",
-    "desciption": "All rules have been failed to classify event",
     "action": "L",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

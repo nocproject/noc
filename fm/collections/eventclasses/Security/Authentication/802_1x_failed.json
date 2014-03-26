@@ -1,9 +1,8 @@
 {
     "name": "Security | Authentication | 802.1x failed",
     "uuid": "bbaaffb9-d1ae-425a-83b4-9dab0b9d8063",
-    "desciption": "802.1x autentification failed",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "user name",

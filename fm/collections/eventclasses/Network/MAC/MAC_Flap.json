@@ -1,9 +1,8 @@
 {
     "name": "Network | MAC | MAC Flap",
     "uuid": "fa9cc838-9ec4-4080-907a-13390b5b1285",
-    "desciption": "MAC Flap detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "MAC Address",

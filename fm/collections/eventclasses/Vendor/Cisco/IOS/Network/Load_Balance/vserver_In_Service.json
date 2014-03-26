@@ -1,9 +1,8 @@
 {
     "name": "Vendor | Cisco | IOS | Network | Load Balance | vserver In Service",
     "uuid": "05ecce37-99c6-4eee-b181-1bba2a026fa4",
-    "desciption": "vserver in service",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "module",
             "description": "Module name",

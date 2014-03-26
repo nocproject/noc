@@ -1,9 +1,8 @@
 {
     "name": "Security | Attack | Land Attack",
     "uuid": "21512010-818f-46fd-ba47-4ec0dfb26c60",
-    "desciption": "Land Attack detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

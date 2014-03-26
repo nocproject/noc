@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | BPDU Guard Recovery",
     "uuid": "c3facb7a-e5e7-476a-97f6-6c9e80a79f06",
-    "desciption": "BPDU Guard Recovery",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

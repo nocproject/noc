@@ -1,9 +1,8 @@
 {
     "name": "Network | VLAN | VLAN Deleted",
     "uuid": "3cb7e546-aa5a-4b47-a62c-5e0503ea4ede",
-    "desciption": "VLAN Deleted",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "vlan",
             "description": "VLAN ID",

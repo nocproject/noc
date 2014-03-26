@@ -1,9 +1,8 @@
 {
     "name": "Network | IMPB | Recover IMPB stop learning state",
     "uuid": "3f84402f-4968-439b-902b-1d1b1519aa78",
-    "desciption": "Port 28 recovers from IMPB stop learning state",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Affected interface",

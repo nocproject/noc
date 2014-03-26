@@ -1,9 +1,8 @@
 {
     "name": "Chassis | PSU | PSU Changed",
     "uuid": "29f335f4-e9f5-4315-94aa-4b8ba604e50a",
-    "desciption": "Power Suppply Unit Changed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "PSU Name",

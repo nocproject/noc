@@ -1,9 +1,8 @@
 {
     "name": "Config | Config Sync Failed",
     "uuid": "8cf52937-88e5-4850-8470-8c5f42d309c9",
-    "desciption": "Configuration synchronization failed with redundant module",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "config",
             "description": "Config type",

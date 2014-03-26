@@ -1,9 +1,8 @@
 {
     "name": "Network | BGP | Max Prefixes Exceeds",
     "uuid": "468a5649-f050-44ad-88cc-aa55e616207e",
-    "desciption": "Max prefixes exceeds",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "peer",
             "description": "Peer",

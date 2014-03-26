@@ -1,9 +1,8 @@
 {
     "name": "Network | DOCSIS | Upstream Input Power Level Changed",
     "uuid": "ab798ce8-7a72-4470-a8bb-ed87deee357b",
-    "desciption": "The upstream channel input power level has been changed.",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Cable interface",

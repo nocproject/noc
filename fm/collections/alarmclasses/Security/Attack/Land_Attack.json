@@ -1,7 +1,6 @@
 {
     "name": "Security | Attack | Land Attack",
     "uuid": "35e9d7f3-b6ba-483b-8fb1-d504d6c29295",
-    "desciption": "Land Attack Detected",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "Interface"

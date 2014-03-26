@@ -1,9 +1,8 @@
 {
     "name": "Network | Link | Err-Disable",
     "uuid": "7b9be94a-143f-45b6-bf02-3aa5620d90cb",
-    "desciption": "Link in err-disable state",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "interface name",

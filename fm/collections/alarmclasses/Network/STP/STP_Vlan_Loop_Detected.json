@@ -1,7 +1,6 @@
 {
     "name": "Network | STP | STP Vlan Loop Detected",
     "uuid": "4841c76c-8b00-4a70-bfd0-adafc80800f4",
-    "desciption": "STP Vlan Loop Detected",
     "is_unique": true,
     "discriminator": ["interface", "vlan"],
     "user_clearable": true,
@@ -24,8 +23,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "interface"

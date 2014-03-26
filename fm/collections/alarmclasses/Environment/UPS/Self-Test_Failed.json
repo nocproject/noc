@@ -1,11 +1,10 @@
 {
     "name": "Environment | UPS | Self-Test Failed",
     "uuid": "cd8a2c67-969e-472a-a32e-624edda8e29a",
-    "desciption": "Self-Test Failed",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Test name"

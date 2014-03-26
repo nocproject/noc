@@ -1,12 +1,11 @@
 {
     "name": "Network | DOCSIS | Maximum Capacity Reached",
     "uuid": "b1fea1e4-8b4c-4116-af4d-850ce41a79fe",
-    "desciption": "Current total reservation exceeds maximum configured reservation",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
     "default_severity__name": "MAJOR",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Cable interface"

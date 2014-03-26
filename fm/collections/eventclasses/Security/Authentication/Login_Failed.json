@@ -1,9 +1,8 @@
 {
     "name": "Security | Authentication | Login Failed",
     "uuid": "572419ce-4aa6-4169-8958-caedb0e22e0d",
-    "desciption": "Failed Login",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "User",

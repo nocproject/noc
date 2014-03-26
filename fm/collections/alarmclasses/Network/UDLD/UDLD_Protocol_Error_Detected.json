@@ -1,7 +1,6 @@
 {
     "name": "Network | UDLD | UDLD Protocol Error Detected",
     "uuid": "f5da2fd6-f712-43f1-b788-16812f844239",
-    "desciption": "UniDirectional Link Detection (UDLD) Protocol Error Detected",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "interface"

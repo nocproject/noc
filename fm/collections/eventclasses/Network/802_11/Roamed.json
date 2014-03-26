@@ -1,9 +1,8 @@
 {
     "name": "Network | 802.11 | Roamed",
     "uuid": "40e20900-b25e-48df-8ca4-e80a58fc84c3",
-    "desciption": "Client roamed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "Station MAC",

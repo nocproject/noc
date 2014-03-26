@@ -1,12 +1,11 @@
 {
     "name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
     "uuid": "c4ebe882-c66b-42ec-9c33-47bb6caa25c3",
-    "desciption": "SLB vserver out of service",
     "is_unique": true,
     "discriminator": ["module", "name"],
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "vars ": [
+    "vars": [
         {
             "name": "module",
             "description": "Module name"

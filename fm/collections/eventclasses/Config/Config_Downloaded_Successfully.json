@@ -1,9 +1,8 @@
 {
     "name": "Config | Config Downloaded Successfully",
     "uuid": "fae009cd-a805-4b8b-bcf8-96d40d2d0c37",
-    "desciption": "Config Downloaded Successfully",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Server IP",

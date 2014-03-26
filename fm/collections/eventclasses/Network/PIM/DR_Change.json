@@ -1,9 +1,8 @@
 {
     "name": "Network | PIM | DR Change",
     "uuid": "8f8892fe-cc85-4c4f-b8e9-4a0a168e6149",
-    "desciption": "Designated Router Change",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

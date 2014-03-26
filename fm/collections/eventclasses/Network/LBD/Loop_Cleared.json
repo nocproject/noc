@@ -1,9 +1,8 @@
 {
     "name": "Network | LBD | Loop Cleared",
     "uuid": "f0739e3d-12ee-4a12-98fe-290819163582",
-    "desciption": "LBD Loop Cleared",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "LBD interface",

@@ -1,9 +1,8 @@
 {
     "name": "Security | Attack | IP Spoofing",
     "uuid": "5228f878-37ba-46ea-bebf-97bcf5bbd16a",
-    "desciption": "IP Spoofing detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

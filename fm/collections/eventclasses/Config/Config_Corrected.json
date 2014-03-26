@@ -1,9 +1,8 @@
 {
     "name": "Config | Config Corrected",
     "uuid": "f44a3f99-6c43-4a43-a73c-aff70f5b3611",
-    "desciption": "Correct invalid config",
     "action": "A",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

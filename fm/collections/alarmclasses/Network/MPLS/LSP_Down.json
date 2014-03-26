@@ -1,12 +1,11 @@
 {
     "name": "Network | MPLS | LSP Down",
     "uuid": "7f0f26b3-00e9-4def-b968-05a3509d6c76",
-    "desciption": "MPLS LSP down",
     "is_unique": true,
     "discriminator": ["name"],
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "LSP name"

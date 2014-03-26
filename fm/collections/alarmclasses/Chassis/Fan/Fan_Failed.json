@@ -1,12 +1,11 @@
 {
     "name": "Chassis | Fan | Fan Failed",
     "uuid": "9fb6ce01-29e1-4ef4-9bc6-71f12f3bf83d",
-    "desciption": "Fan failed",
     "is_unique": true,
     "discriminator": ["name"],
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Fan Name"

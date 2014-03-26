@@ -1,9 +1,8 @@
 {
     "name": "Network | NTP | NTP Server Reachable",
     "uuid": "38891d3a-6ab1-4bc5-a161-394f2096c7d3",
-    "desciption": "NTP Server reachable",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "server_name",
             "description": "NTP server name",

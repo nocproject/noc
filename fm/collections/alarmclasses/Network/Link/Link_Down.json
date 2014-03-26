@@ -1,7 +1,6 @@
 {
     "name": "Network | Link | Link Down",
     "uuid": "9b5d51e7-ada9-4721-b13e-2f61835b5c8e",
-    "desciption": "Link down",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "interface name"

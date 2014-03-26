@@ -1,9 +1,8 @@
 {
     "name": "Environment | UPS | Battery Replaced",
     "uuid": "aac6fa20-e678-411a-bacc-db075119caf9",
-    "desciption": "Battery Replaced",
     "action": "L",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

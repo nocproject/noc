@@ -1,9 +1,8 @@
 {
     "name": "Security | Authentication | Privilege Level Change Fail",
     "uuid": "5d099c4d-42bc-47ab-b91a-dac20cc25bfd",
-    "desciption": "Failed to change user privilege level",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "User",

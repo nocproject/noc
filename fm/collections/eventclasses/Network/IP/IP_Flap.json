@@ -1,9 +1,8 @@
 {
     "name": "Network | IP | IP Flap",
     "uuid": "16efc0f6-d3f0-4527-850c-e783b1287926",
-    "desciption": "IP Flapped between interfaces",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Flapped IP",

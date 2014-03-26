@@ -1,9 +1,8 @@
 {
     "name": "Network | DOCSIS | Invalid QoS",
     "uuid": "4f8d3fcb-a2f0-4cbb-84c3-b2bad33e1b33",
-    "desciption": "Invalid or unsupported QoS setting",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "Cable Modem MAC",

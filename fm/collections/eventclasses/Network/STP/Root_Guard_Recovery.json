@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | Root Guard Recovery",
     "uuid": "a692aee5-7ecd-43eb-bf5d-509458f6e193",
-    "desciption": "Root Guard Recovery",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

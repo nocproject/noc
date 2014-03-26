@@ -1,9 +1,8 @@
 {
     "name": "NOC | Periodic | Periodic Failed",
     "uuid": "919bf2f9-bc5e-43a1-8df8-f462ab4ea025",
-    "desciption": "Periodic task has been failed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "task",
             "description": "Task's name",

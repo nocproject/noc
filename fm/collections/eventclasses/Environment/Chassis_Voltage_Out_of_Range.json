@@ -1,9 +1,8 @@
 {
     "name": "Environment | Chassis Voltage Out of Range",
     "uuid": "229a1a61-3f9b-40a6-bb87-a0ea98bc34ae",
-    "desciption": "Chassis voltage out of range",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

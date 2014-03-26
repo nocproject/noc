@@ -1,12 +1,11 @@
 {
     "name": "Security | Access | Case Open",
     "uuid": "bd40639b-5e81-4805-864d-29de2c6de60c",
-    "desciption": "Case Open",
     "is_unique": true,
     "discriminator": ["name"],
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name"

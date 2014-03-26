@@ -1,9 +1,8 @@
 {
     "name": "System | Reboot",
     "uuid": "757ec9c1-68cb-40d4-8cce-1524c971e51f",
-    "desciption": "System rebooting",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "Username",

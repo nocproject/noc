@@ -1,9 +1,8 @@
 {
     "name": "Environment | Module Voltage Returned to Normal Range",
     "uuid": "e8a83fd4-d008-4916-bd7f-5559294834e0",
-    "desciption": "Module voltage returned to normal range",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

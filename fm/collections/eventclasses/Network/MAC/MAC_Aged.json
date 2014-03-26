@@ -1,9 +1,8 @@
 {
     "name": "Network | MAC | MAC Aged",
     "uuid": "82203fbf-480b-421a-baa0-fe8070b9ce41",
-    "desciption": "MAC address aged",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "MAC Address",

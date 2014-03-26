@@ -1,7 +1,6 @@
 {
     "name": "Security | Attack | Attack",
     "uuid": "b1187763-a252-491f-8683-d791a09ae95f",
-    "desciption": "Attack in progress detected",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
@@ -23,8 +22,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "name",
             "description": "Attack name"

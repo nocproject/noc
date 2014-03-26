@@ -1,9 +1,8 @@
 {
     "name": "Network | LLDP | Remote Tables Change",
     "uuid": "c0d11fbc-06e7-426e-8d69-b24f5b1fe249",
-    "desciption": "LLDP Remote Tables Change",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "table_inserts",
             "description": "Number of insers per interval",

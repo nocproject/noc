@@ -1,9 +1,8 @@
 {
     "name": "Network | NTP | NTP Server Unreachable",
     "uuid": "0a70a416-e65d-42ef-bd4f-d601d9dc17fc",
-    "desciption": "NTP Server unreachable",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "server_name",
             "description": "NTP server name",

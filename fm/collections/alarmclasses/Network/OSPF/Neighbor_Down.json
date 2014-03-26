@@ -1,7 +1,6 @@
 {
     "name": "Network | OSPF | Neighbor Down",
     "uuid": "7bd05776-7d5e-4eae-9401-2e45e290756f",
-    "desciption": "OSPF neighbor down",
     "is_unique": true,
     "discriminator": ["interface", "neighbor"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "area",
             "description": "OSPF area"

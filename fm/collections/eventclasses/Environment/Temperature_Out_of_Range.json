@@ -1,9 +1,8 @@
 {
     "name": "Environment | Temperature Out of Range",
     "uuid": "bff63c3c-ab86-4eea-8615-4acb234b028a",
-    "desciption": "Temperature out of range",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

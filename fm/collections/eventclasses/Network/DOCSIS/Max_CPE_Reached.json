@@ -1,9 +1,8 @@
 {
     "name": "Network | DOCSIS | Max CPE Reached",
     "uuid": "1679a32f-74cb-4567-af15-65e817df02c7",
-    "desciption": "Maximum number of CPE reached",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "CPE MAC",

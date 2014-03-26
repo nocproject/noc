@@ -1,9 +1,8 @@
 {
     "name": "Security | Authentication | RADIUS server recovered",
     "uuid": "d39a3fb7-68d0-4e6a-bda6-4efacddf6f89",
-    "desciption": "RADIUS server recovered",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "RADIUS server address",

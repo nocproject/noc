@@ -1,9 +1,8 @@
 {
     "name": "Config | Entering Configuration Mode",
     "uuid": "d7e6f005-1e8d-444f-b8b1-b7b0e6c84a8b",
-    "desciption": "Entering configuration mode",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "Username",

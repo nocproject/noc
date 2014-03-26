@@ -1,9 +1,8 @@
 {
     "name": "Security | Authentication | Login",
     "uuid": "e2a34691-21e7-4585-a8e7-fc006dd131ed",
-    "desciption": "Successful Login",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "User",

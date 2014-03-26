@@ -1,7 +1,6 @@
 {
     "name": "Network | BFD | Session Down",
     "uuid": "6b3a8cff-44fa-461a-8cb2-454ea2d7b2c6",
-    "desciption": "BFD Session Down",
     "is_unique": true,
     "discriminator": ["interface", "peer"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "BFD interface"

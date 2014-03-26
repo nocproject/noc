@@ -1,9 +1,8 @@
 {
     "name": "NOC | Unhandled Exception",
     "uuid": "1d279004-cd09-4382-a405-acea050775be",
-    "desciption": "Unhandled Exception in NOC",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "component",
             "description": "NOC's component",

@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | BPDU Root Violation",
     "uuid": "414ef94c-78a3-4b74-98bf-b64449925036",
-    "desciption": "BPDU Root Violation",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

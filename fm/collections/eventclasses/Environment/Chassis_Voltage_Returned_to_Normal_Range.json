@@ -1,9 +1,8 @@
 {
     "name": "Environment | Chassis Voltage Returned to Normal Range",
     "uuid": "74f1f7f2-ed78-4c1d-829d-f19ee656d127",
-    "desciption": "Chassis voltage returned to normal range",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

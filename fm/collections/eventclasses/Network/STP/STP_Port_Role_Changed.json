@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | STP Port Role Changed",
     "uuid": "c614673d-99a0-4901-96ab-ea7b50f36ea2",
-    "desciption": "STP Port role changed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

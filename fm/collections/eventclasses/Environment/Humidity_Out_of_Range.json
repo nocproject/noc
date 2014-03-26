@@ -1,9 +1,8 @@
 {
     "name": "Environment | Humidity Out of Range",
     "uuid": "72e5d88d-67b6-41b4-923d-173529c6d31d",
-    "desciption": "Humidity out of range",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

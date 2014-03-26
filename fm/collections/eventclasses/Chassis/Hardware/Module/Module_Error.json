@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Hardware | Module | Module Error",
     "uuid": "8cc009d5-3d92-4f5f-a12e-678a1a4a29d9",
-    "desciption": "Hardware module error",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "module",
             "description": "Module type",

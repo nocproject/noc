@@ -1,9 +1,8 @@
 {
     "name": "Security | Authentication | TACACS+ server failed",
     "uuid": "d4500ab1-1b8c-46b8-b0c5-4348465569f0",
-    "desciption": "TACACS+ server failed",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "TACACS+ server address",

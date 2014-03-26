@@ -1,11 +1,10 @@
 {
     "name": "Chassis | Hardware | Hardware Warning",
     "uuid": "7045d7e2-80e3-4caa-9980-96ed94e4fac1",
-    "desciption": "Hardware warning occured",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

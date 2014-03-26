@@ -1,9 +1,8 @@
 {
     "name": "Network | DOCSIS | Channel Width Changed",
     "uuid": "865c8a6c-73c0-4a45-a767-aecb56158a83",
-    "desciption": "The upstream channel width has been changed.",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Cable interface",

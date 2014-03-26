@@ -1,9 +1,8 @@
 {
     "name": "Network | EIGRP | Neighbor Down",
     "uuid": "c720e355-84dd-44a2-b7fd-5cb4f6ca5f0e",
-    "desciption": "EIGRP adjacency down",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "as",
             "description": "EIGRP automonus system",

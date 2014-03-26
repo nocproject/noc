@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Hardware | Module | Module not Present",
     "uuid": "e4d717fc-b951-4651-8288-72a31cc9a678",
-    "desciption": "Hardware module not present",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "module",
             "description": "Module type",

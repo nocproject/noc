@@ -1,9 +1,8 @@
 {
     "name": "Network | NTP | Lost synchronization",
     "uuid": "67353603-b8d2-4887-bf80-19496713747d",
-    "desciption": "NTP synchronization with its peer has been lost",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "server_name",
             "description": "NTP server name",

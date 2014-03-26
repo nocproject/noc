@@ -1,9 +1,8 @@
 {
     "name": "Chassis | TCAM | TCAM Error",
     "uuid": "3fd835ce-35dc-4a3c-8004-7abe4e5e9f15",
-    "desciption": "TCAM Error",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "reason",
             "description": "Reason",

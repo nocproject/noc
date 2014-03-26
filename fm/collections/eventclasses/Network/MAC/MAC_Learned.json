@@ -1,9 +1,8 @@
 {
     "name": "Network | MAC | MAC Learned",
     "uuid": "7810ae31-e249-4889-b7c2-3cea5404e2f7",
-    "desciption": "New MAC learned on switch port",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "MAC Address",

@@ -1,9 +1,8 @@
 {
     "name": "Network | MAC | Duplicate MAC",
     "uuid": "81215d7f-71b8-491e-8492-7e5734660eb1",
-    "desciption": "Duplicate MAC detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "MAC Address",

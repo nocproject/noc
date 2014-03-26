@@ -1,9 +1,8 @@
 {
     "name": "Network | OAM | Monitoring Error",
     "uuid": "c35534c5-159c-423e-a7d5-f3c6f7ef9b46",
-    "desciption": "Monitored error has been detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

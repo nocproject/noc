@@ -1,9 +1,8 @@
 {
     "name": "Vendor | f5 | BIGIP | Network | Load Balance | Node Up",
     "uuid": "4999f3c3-74f5-4886-bb00-421c3b947cd9",
-    "desciption": "Node Up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "node",
             "description": "IP or hostname",

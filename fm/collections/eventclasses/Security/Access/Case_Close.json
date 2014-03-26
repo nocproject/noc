@@ -1,9 +1,8 @@
 {
     "name": "Security | Access | Case Close",
     "uuid": "12adb4ea-83b3-4233-91ff-1695c0bc6390",
-    "desciption": "Case or cover is closed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

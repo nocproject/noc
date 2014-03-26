@@ -1,9 +1,8 @@
 {
     "name": "NOC | Managed Object | Ping Failed",
     "uuid": "3cd44497-6f0e-4a27-b6fe-3ab001681236",
-    "desciption": "Failed to ping managed object",
     "action": "L",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

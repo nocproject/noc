@@ -1,9 +1,8 @@
 {
     "name": "Network | IS-IS | Adjacency Down",
     "uuid": "87e5b0e2-43de-4983-99fc-0af4029ff305",
-    "desciption": "IS-IS adjacency down",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "level",
             "description": "Level",

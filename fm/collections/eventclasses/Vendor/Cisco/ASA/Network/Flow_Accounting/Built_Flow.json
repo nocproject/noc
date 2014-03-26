@@ -1,9 +1,8 @@
 {
     "name": "Vendor | Cisco | ASA | Network | Flow Accounting | Built Flow",
     "uuid": "7efcbbb7-8016-4792-9387-6ab14b877bdb",
-    "desciption": "Teardown Flow",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "proto",
             "description": "Protocol",

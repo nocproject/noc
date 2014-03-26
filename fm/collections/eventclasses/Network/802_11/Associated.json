@@ -1,9 +1,8 @@
 {
     "name": "Network | 802.11 | Associated",
     "uuid": "b41cf4f1-be8f-4146-ad9c-3a22f05e2060",
-    "desciption": "Client associated",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Radio interface",

@@ -1,9 +1,8 @@
 {
     "name": "Environment | AC Voltage Returned to Normal Range",
     "uuid": "52f8a54a-e06c-4fe1-9054-12ef8d894e09",
-    "desciption": "AC voltage returned to normal range",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

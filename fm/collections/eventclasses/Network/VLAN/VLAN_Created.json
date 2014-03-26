@@ -1,9 +1,8 @@
 {
     "name": "Network | VLAN | VLAN Created",
     "uuid": "6ae5607e-6320-42fa-970b-f734b99b9baa",
-    "desciption": "VLAN Created",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "vlan",
             "description": "VLAN ID",

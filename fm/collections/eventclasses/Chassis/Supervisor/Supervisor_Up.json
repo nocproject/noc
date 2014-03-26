@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Supervisor | Supervisor Up",
     "uuid": "e1a830c8-6e89-4ca9-8ff5-f6ee36c6254f",
-    "desciption": "Supervisor Up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Supervisor name",

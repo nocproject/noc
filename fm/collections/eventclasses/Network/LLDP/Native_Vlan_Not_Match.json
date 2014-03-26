@@ -1,9 +1,8 @@
 {
     "name": "Network | LLDP | Native Vlan Not Match",
     "uuid": "4bd59007-3c2e-4449-b06d-cd1554524afd",
-    "desciption": "LLDP Native Vlan Not Match",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Affected interface",

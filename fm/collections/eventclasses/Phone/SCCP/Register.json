@@ -1,9 +1,8 @@
 {
     "name": "Phone | SCCP | Register",
     "uuid": "8cd40d89-6a71-421c-a28b-b7110f4d22ea",
-    "desciption": "SCCP phone registered",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Device name",
