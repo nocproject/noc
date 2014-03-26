@@ -280,7 +280,7 @@ class EventClass(Document):
             vd += ["            \"required\": %s" % q(v.required)]
             vd += ["        }"]
             vars += ["\n".join(vd)]
-        r += ["    \"vars \": ["]
+        r += ["    \"vars\": ["]
         r += [",\n".join(vars)]
         r += ["    ],"]
         # Handlers
