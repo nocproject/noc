@@ -34,7 +34,7 @@ Environment | UPS | Input Power Low,0b7db31a-06fe-47fc-895e-92b14158dcb8,Environ
 Environment | UPS | Self-Test Failed,cd8a2c67-969e-472a-a32e-624edda8e29a,Environment/UPS/Self-Test_Failed.json,185fdce3e41e7fcb77eb4fc5353ab7113deacd3fb854812f2dbd98d6f8e00a32
 NOC | IPAM | VRF Group Address Collision,099d5271-1581-4059-9872-b8b98621e529,NOC/IPAM/VRF_Group_Address_Collision.json,5e20ab2f5a3e58fc0587e57369b2731cc58c94e0674916cc0706eb6e05bf1fa7
 NOC | Managed Object | Configuration Errors | Misconfigured SNMP,fad2b0ca-b717-404c-af00-7489baf6b15b,NOC/Managed_Object/Configuration_Errors/Misconfigured_SNMP.json,c0da48922d9e2684595eea05e62253fda1930584abde84394b578edab90a7d69
-NOC | Managed Object | Ping Failed,ec26e28d-0b64-4738-8c07-5ee3daca16f4,NOC/Managed_Object/Ping_Failed.json,7ee1ddc7886fe78e2fd8f8e5df6bebd4eae0f45c30ca2b1546d2a8a7882215e7
+NOC | Managed Object | Ping Failed,ec26e28d-0b64-4738-8c07-5ee3daca16f4,NOC/Managed_Object/Ping_Failed.json,d64685757c1d1a1ee82ed62d1c63318340b106cdf1d240372c67454e9812a78b
 NOC | Periodic | Periodic Failed,19331749-daac-435d-829c-b9fedf85603f,NOC/Periodic/Periodic_Failed.json,af998074fa6f882bb2cd0658ff98561b983a060f36518c60538e5f5df71fe387
 Network | BFD | Session Down,6b3a8cff-44fa-461a-8cb2-454ea2d7b2c6,Network/BFD/Session_Down.json,b4bab554fb9d6547328b950fb130e579bf339400577a0f4a28d377d7da97ae48
 Network | BGP | Peer Down,1b01710e-b3e7-4ff5-b718-2b6925bc6537,Network/BGP/Peer_Down.json,372a7fc05eb00c127c964c4d58d0a843bccf7800137ebe265528b2ed244a7458
