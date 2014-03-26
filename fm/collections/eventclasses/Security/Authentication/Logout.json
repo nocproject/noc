@@ -1,9 +1,8 @@
 {
     "name": "Security | Authentication | Logout",
     "uuid": "78ca650e-fb0a-4018-81cb-29a746be97e3",
-    "desciption": "Successful Logout",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "User",

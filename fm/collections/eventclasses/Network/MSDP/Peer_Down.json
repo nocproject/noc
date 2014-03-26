@@ -1,9 +1,8 @@
 {
     "name": "Network | MSDP | Peer Down",
     "uuid": "68e8e127-e30a-4eb5-8e4f-b16621f96e7a",
-    "desciption": "MSDP peer down",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "peer",
             "description": "Peer's IP",

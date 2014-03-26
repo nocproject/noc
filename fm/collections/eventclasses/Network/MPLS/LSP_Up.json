@@ -1,9 +1,8 @@
 {
     "name": "Network | MPLS | LSP Up",
     "uuid": "4c583d7b-8546-4504-8900-27c6d22ad217",
-    "desciption": "MPLS LSP Up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "LSP name",

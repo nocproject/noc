@@ -1,9 +1,8 @@
 {
     "name": "Network | RSVP | Neighbor Up",
     "uuid": "cba69e5c-275b-4d39-a773-bd210802f86a",
-    "desciption": "RSVP Neighbor up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

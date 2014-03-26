@@ -1,9 +1,8 @@
 {
     "name": "Network | Storm Control | Unicast Storm Cleared",
     "uuid": "25af81b8-2cdf-48b6-b753-2e1485d606e6",
-    "desciption": "Unicast (DLF) Storm Cleared",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

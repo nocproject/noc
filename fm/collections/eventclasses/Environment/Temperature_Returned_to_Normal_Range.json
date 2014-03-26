@@ -1,9 +1,8 @@
 {
     "name": "Environment | Temperature Returned to Normal Range",
     "uuid": "92a80f0e-cc28-498c-9a43-3a88c698b718",
-    "desciption": "Temperature returned to normal range",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

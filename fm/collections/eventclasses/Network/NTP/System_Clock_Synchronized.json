@@ -1,9 +1,8 @@
 {
     "name": "Network | NTP | System Clock Synchronized",
     "uuid": "65f839bd-2c81-45df-83fe-2aa4d788a203",
-    "desciption": "System clock synchronized",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "server_name",
             "description": "NTP server name",

@@ -1,9 +1,8 @@
 {
     "name": "Network | LAG | Unbundle",
     "uuid": "5b434de9-1e39-409f-aea4-c3ba49be6b2a",
-    "desciption": "Interface left LAG",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Port",

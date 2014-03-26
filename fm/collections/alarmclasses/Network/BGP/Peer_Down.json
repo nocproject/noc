@@ -1,7 +1,6 @@
 {
     "name": "Network | BGP | Peer Down",
     "uuid": "1b01710e-b3e7-4ff5-b718-2b6925bc6537",
-    "desciption": "A",
     "is_unique": true,
     "discriminator": ["peer"],
     "user_clearable": true,
@@ -14,8 +13,8 @@
                 "peer": "peer"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "peer",
             "description": "BGP Peer"

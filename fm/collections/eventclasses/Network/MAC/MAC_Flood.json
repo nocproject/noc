@@ -1,9 +1,8 @@
 {
     "name": "Network | MAC | MAC Flood",
     "uuid": "97f7cbff-e6e6-4e12-86ad-c6caaf46fc1c",
-    "desciption": "Flooding MAC Detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "MAC Address",

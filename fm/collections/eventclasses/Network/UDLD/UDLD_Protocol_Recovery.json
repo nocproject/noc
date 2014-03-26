@@ -1,9 +1,8 @@
 {
     "name": "Network | UDLD | UDLD Protocol Recovery",
     "uuid": "2928373c-8de8-46f5-8eec-aebfe3e5a7e4",
-    "desciption": "UniDirectional Link Detection (UDLD) Protocol Recovery",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

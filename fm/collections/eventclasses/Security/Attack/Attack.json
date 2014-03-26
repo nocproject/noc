@@ -1,9 +1,8 @@
 {
     "name": "Security | Attack | Attack",
     "uuid": "dcb43df5-cca3-4945-b3f1-b7d4140fdb4e",
-    "desciption": "Attack in progress detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Attack name",

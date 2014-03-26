@@ -1,9 +1,8 @@
 {
     "name": "Network | DOCSIS | Invalid CoS",
     "uuid": "bcc634b6-6927-49c4-a29c-04cf3b44e4e3",
-    "desciption": "Invalid or unsupported CoS setting",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "Cable Modem MAC",

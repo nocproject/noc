@@ -1,12 +1,11 @@
 {
     "name": "Network | MSDP | Peer Down",
     "uuid": "5109bea9-c7da-4132-98b5-35f1767d4421",
-    "desciption": "MSDP peer down",
     "is_unique": true,
     "discriminator": ["peer"],
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "vars ": [
+    "vars": [
         {
             "name": "peer",
             "description": "Peer's IP"

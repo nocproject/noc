@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Fan | Fan Failed",
     "uuid": "c606a185-2ace-43c5-8a4d-58f0cbf0e4b8",
-    "desciption": "Fan failed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Fan Name",

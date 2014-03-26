@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | STP instances exceeded",
     "uuid": "eb0110f6-b102-4adb-83a4-b30a7524ffb5",
-    "desciption": "Platform limit of STP instances exceeded",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "limit",
             "description": "Platform limit",

@@ -1,9 +1,8 @@
 {
     "name": "Config | Config Upload Failed",
     "uuid": "44a8e9b7-dc88-4072-aa9b-2a7d20d63137",
-    "desciption": "Config Upload Failed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Server IP",

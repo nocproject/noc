@@ -1,9 +1,8 @@
 {
     "name": "Network | LBD | Loop Detected",
     "uuid": "15160239-5d9f-433c-911a-5a582fab50fb",
-    "desciption": "LBD Loop Detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "LBD interface",

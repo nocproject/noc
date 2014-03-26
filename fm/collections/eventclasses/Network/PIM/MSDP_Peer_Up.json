@@ -1,9 +1,8 @@
 {
     "name": "Network | PIM | MSDP Peer Up",
     "uuid": "9f18d201-55fd-4020-b32f-94532bb8e2cb",
-    "desciption": "MSDP peer up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "peer",
             "description": "Peer's IP",

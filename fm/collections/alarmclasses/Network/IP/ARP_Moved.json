@@ -1,12 +1,11 @@
 {
     "name": "Network | IP | ARP Moved",
     "uuid": "1fa45f6c-385c-421e-97fc-6b5310056418",
-    "desciption": "ARP Moved",
     "is_unique": true,
     "discriminator": ["ip", "from_mac", "to_mac"],
     "user_clearable": true,
     "default_severity__name": "INFO",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "BFD interface"

@@ -1,9 +1,8 @@
 {
     "name": "Config | Config Uploaded Successfully",
     "uuid": "e338914f-afc1-4e2c-8511-877c4ba67ad9",
-    "desciption": "Config Uploaded Successfully",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Server IP",

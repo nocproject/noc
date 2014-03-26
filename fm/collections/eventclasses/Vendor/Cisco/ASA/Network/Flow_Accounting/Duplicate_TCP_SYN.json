@@ -1,9 +1,8 @@
 {
     "name": "Vendor | Cisco | ASA | Network | Flow Accounting | Duplicate TCP SYN",
     "uuid": "591747d8-2a2b-4cd2-8d67-349463e24501",
-    "desciption": "Duplicate TCP SYN",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "src_interface",
             "description": "Source Interface",

@@ -1,9 +1,8 @@
 {
     "name": "Network | OAM | Client Recieved Remote Failure",
     "uuid": "bc075da2-7292-4335-976c-61594c45bc85",
-    "desciption": "Client has received a remote failure indication from its remote peer",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

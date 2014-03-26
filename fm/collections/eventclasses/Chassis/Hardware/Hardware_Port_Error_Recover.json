@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Hardware | Hardware Port Error Recover",
     "uuid": "2ad0d762-1003-4b15-b88a-ce1644e8be6e",
-    "desciption": "Hardware port or slot error recovered",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Hardware port",

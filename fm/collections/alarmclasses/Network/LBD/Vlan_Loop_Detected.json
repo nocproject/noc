@@ -1,7 +1,6 @@
 {
     "name": "Network | LBD | Vlan Loop Detected",
     "uuid": "c3a089e3-16b8-42aa-a4d2-801049177a22",
-    "desciption": "LBD Loop Detected on a specific vlan",
     "is_unique": true,
     "discriminator": ["interface", "vlan"],
     "user_clearable": true,
@@ -24,8 +23,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "interface"

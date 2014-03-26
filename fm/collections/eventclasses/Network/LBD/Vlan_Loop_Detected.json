@@ -1,9 +1,8 @@
 {
     "name": "Network | LBD | Vlan Loop Detected",
     "uuid": "654c492d-cb7f-46ce-b948-f4f8c718c36d",
-    "desciption": "LBD Vlan Loop Detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "LBD interface",

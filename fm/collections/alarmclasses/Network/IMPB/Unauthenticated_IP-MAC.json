@@ -1,7 +1,6 @@
 {
     "name": "Network | IMPB | Unauthenticated IP-MAC",
     "uuid": "951053ed-a46f-41aa-ae4b-05931c63d425",
-    "desciption": "A",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "ip",
             "description": "User IP"

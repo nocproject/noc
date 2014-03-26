@@ -1,9 +1,8 @@
 {
     "name": "Network | Link | DOM | Warning: Out of Threshold",
     "uuid": "71faba70-4890-455b-af5b-295215979359",
-    "desciption": "DOM above or below threshold exceeded",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Physical port",

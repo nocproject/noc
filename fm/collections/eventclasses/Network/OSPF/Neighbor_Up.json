@@ -1,9 +1,8 @@
 {
     "name": "Network | OSPF | Neighbor Up",
     "uuid": "f319d6f6-bd45-4e18-b232-45b270fd1c29",
-    "desciption": "OSPF neighbor up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "area",
             "description": "OSPF area",

@@ -1,7 +1,6 @@
 {
     "name": "Network | Port Security | Port Security Violation",
     "uuid": "ba10cc93-f17e-4bca-b1e4-53294b614f6d",
-    "desciption": "Port Security Violation",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "Interface"

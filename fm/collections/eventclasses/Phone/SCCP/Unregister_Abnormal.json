@@ -1,9 +1,8 @@
 {
     "name": "Phone | SCCP | Unregister Abnormal",
     "uuid": "09d3e124-2042-4f91-96ca-4ca676caffb3",
-    "desciption": "SCCP phone abnormal unregister sequence",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Device name",

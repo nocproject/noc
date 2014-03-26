@@ -1,9 +1,8 @@
 {
     "name": "Chassis | PSU | PSU Failed",
     "uuid": "1f118a19-3fd3-4de2-9092-284c102ba051",
-    "desciption": "Power Suppply Unit failed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "PSU Name",

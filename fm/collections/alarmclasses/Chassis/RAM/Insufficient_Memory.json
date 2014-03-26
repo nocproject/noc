@@ -1,11 +1,10 @@
 {
     "name": "Chassis | RAM | Insufficient Memory",
     "uuid": "e02309ba-800f-4da8-94a4-5bbb060457a6",
-    "desciption": "Insufficient Memory",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "reason",
             "description": "Reason"

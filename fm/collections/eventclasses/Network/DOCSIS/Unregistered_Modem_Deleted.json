@@ -1,9 +1,8 @@
 {
     "name": "Network | DOCSIS | Unregistered Modem Deleted",
     "uuid": "a14aadb9-e0c9-4d8c-adf6-569f721322f8",
-    "desciption": "CMTS deleted unregistered Cable Modem",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "Cable Modem MAC",

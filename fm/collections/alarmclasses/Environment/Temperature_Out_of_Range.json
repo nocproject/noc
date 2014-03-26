@@ -1,12 +1,11 @@
 {
     "name": "Environment | Temperature Out of Range",
     "uuid": "752d85ca-4fdf-4aae-8d07-8967cb3d9ac1",
-    "desciption": "Temperature out of range",
     "is_unique": true,
     "discriminator": ["name"],
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name"

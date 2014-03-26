@@ -1,9 +1,8 @@
 {
     "name": "Network | IP | Route Limit Warning",
     "uuid": "a533af93-c5e7-4f95-8c00-b30ae5ec9a88",
-    "desciption": "Route Limit Warning",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "reason",
             "description": "Reason",

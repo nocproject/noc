@@ -1,9 +1,8 @@
 {
     "name": "Network | OAM | Client Clear Remote Failure",
     "uuid": "39854dc7-40bd-46d6-96eb-ed4d950312d7",
-    "desciption": "Client has received a message to clear remote failure indication from its remote peer",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

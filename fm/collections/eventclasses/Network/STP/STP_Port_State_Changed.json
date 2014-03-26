@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | STP Port State Changed",
     "uuid": "d714bd19-7877-4c6b-8d75-985415d43078",
-    "desciption": "STP Port state changed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

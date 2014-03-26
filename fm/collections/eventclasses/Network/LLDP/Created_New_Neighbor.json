@@ -1,9 +1,8 @@
 {
     "name": "Network | LLDP | Created New Neighbor",
     "uuid": "bb1db4da-a0d0-4ec1-a6eb-391cccb0beb7",
-    "desciption": "LLDP Created New Neighbore",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Affected interface",

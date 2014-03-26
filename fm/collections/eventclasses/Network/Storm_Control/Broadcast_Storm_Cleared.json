@@ -1,9 +1,8 @@
 {
     "name": "Network | Storm Control | Broadcast Storm Cleared",
     "uuid": "704b51e6-54e0-4c95-b997-f7f3916101e3",
-    "desciption": "Broadcast Storm Cleared",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

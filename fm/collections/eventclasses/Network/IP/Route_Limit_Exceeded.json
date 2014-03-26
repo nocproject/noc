@@ -1,9 +1,8 @@
 {
     "name": "Network | IP | Route Limit Exceeded",
     "uuid": "64654abe-bea8-47e2-822f-2d57614f5c9a",
-    "desciption": "Route Limit Exceeded",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "reason",
             "description": "Reason",

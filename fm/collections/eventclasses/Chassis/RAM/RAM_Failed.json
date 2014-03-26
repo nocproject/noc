@@ -1,9 +1,8 @@
 {
     "name": "Chassis | RAM | RAM Failed",
     "uuid": "e9b3e884-e0cd-4f3d-a00a-324f6df951e9",
-    "desciption": "Failed RAM module",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "bank",
             "description": "Bank Name",

@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Hardware | Module | Module Inserted",
     "uuid": "6e70a64d-9932-4d1d-a516-a099d7899f59",
-    "desciption": "Hardware module inserted",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "module",
             "description": "Module type",

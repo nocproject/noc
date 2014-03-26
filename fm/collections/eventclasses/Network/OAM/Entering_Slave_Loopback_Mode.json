@@ -1,9 +1,8 @@
 {
     "name": "Network | OAM | Entering Slave Loopback Mode",
     "uuid": "0ecd6bdb-d916-46c4-967d-a18a9a6b31e0",
-    "desciption": "Interface has entered the slave loopback mode",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

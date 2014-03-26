@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Clock | Clock Failed",
     "uuid": "e62dab88-9d94-490d-b3c0-1c60981b07fd",
-    "desciption": "Failed Clock module or linecard",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Clock Name",

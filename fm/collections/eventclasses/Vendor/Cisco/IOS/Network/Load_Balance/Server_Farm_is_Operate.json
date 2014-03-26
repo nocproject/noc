@@ -1,9 +1,8 @@
 {
     "name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm is Operate",
     "uuid": "7e2a83e1-59db-49f8-a497-1e9697fe3b5b",
-    "desciption": "SLB Server Farm Degraded",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "farm",
             "description": "SLB server farm name",

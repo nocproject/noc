@@ -1,9 +1,8 @@
 {
     "name": "Network | IP | Address Conflict",
     "uuid": "487fea0a-fb72-472a-942a-8c872f98c908",
-    "desciption": "Conflicted addresses",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Conflicting IP",

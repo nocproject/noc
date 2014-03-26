@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Fan | Fan Removed",
     "uuid": "ace93730-0292-4e01-91ad-48f1c64474c5",
-    "desciption": "Fan removed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Fan Name",

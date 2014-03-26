@@ -1,9 +1,8 @@
 {
     "name": "Security | Attack | Teardrop Attack",
     "uuid": "6d3a2f8c-9768-4447-9f9a-46e37a26b85d",
-    "desciption": "Teardrop attack detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

@@ -1,12 +1,11 @@
 {
     "name": "Network | DOCSIS | BPI Unautorized",
     "uuid": "7b5bc42b-a8f9-4388-bf8e-08de73b625fb",
-    "desciption": "Cable modem is BPI unauthorized",
     "is_unique": true,
     "discriminator": ["mac"],
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "Cable Modem MAC"

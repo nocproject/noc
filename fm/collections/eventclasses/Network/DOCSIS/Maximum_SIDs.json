@@ -1,9 +1,8 @@
 {
     "name": "Network | DOCSIS | Maximum SIDs",
     "uuid": "c3c26486-18bf-4296-b621-fd10c3f63070",
-    "desciption": "The maximum number of SIDs has been allocated",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Cable interface",

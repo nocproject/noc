@@ -1,9 +1,8 @@
 {
     "name": "Network | PIM | Invalid RP",
     "uuid": "86b92bf2-706e-4900-880d-f1c9c253b206",
-    "desciption": "Received Register or Join for invalid RP",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "pim_router",
             "description": "PIM Router IP",

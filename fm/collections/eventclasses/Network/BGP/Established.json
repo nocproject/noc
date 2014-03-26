@@ -1,9 +1,8 @@
 {
     "name": "Network | BGP | Established",
     "uuid": "132e470f-6dae-4e85-915f-d861934a56ab",
-    "desciption": "BGP Session Established",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "peer",
             "description": "Peer",

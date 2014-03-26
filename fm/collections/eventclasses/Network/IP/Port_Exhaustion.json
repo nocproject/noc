@@ -1,9 +1,8 @@
 {
     "name": "Network | IP | Port Exhaustion",
     "uuid": "c10a55e0-29ed-44ae-89b1-0d6019a23bd7",
-    "desciption": "Port Exchaustion",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "src_ip",
             "description": "Source address",

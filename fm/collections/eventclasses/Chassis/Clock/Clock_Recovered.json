@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Clock | Clock Recovered",
     "uuid": "37c6f703-22de-4ea3-a778-87892da3d3bd",
-    "desciption": "Clock module or linecard recovered",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Clock Name",

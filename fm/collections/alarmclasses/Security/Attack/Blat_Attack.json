@@ -1,7 +1,6 @@
 {
     "name": "Security | Attack | Blat Attack",
     "uuid": "da287612-26d3-4086-a11b-67b0b52595b1",
-    "desciption": "Blat Attack Detected",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "Interface"

@@ -1,11 +1,10 @@
 {
     "name": "Environment | AC Voltage Out of Range",
     "uuid": "bb4ae098-e4f6-4fa2-b618-03af9de53443",
-    "desciption": "AC voltage out of range",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name"

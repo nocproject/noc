@@ -1,9 +1,8 @@
 {
     "name": "Network | DOCSIS | BPI Unautorized",
     "uuid": "0cbcf3cf-c124-49c8-9a87-38f3fa20fea3",
-    "desciption": "Invalid Shared Secret",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "Cable Modem MAC",

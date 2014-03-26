@@ -1,9 +1,8 @@
 {
     "name": "Chassis | PSU | Power Failed",
     "uuid": "15815c7f-edb7-45b0-be02-8fe65e9bf174",
-    "desciption": "Power failed",
     "action": "A",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

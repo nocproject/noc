@@ -1,9 +1,8 @@
 {
     "name": "Network | LBD | Vlan Loop Cleared",
     "uuid": "47a0fb97-5b04-406d-bc27-4f31c1df8399",
-    "desciption": "LBD Vlan Loop Cleared",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "LBD interface",

@@ -1,9 +1,8 @@
 {
     "name": "Network | Link | Connection Problem",
     "uuid": "215f43d2-9abd-461b-9f8f-4332ce00740b",
-    "desciption": "Link or carrier problem",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Affected interface",

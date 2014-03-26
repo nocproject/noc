@@ -1,9 +1,8 @@
 {
     "name": "Network | Storm Control | Storm Detected",
     "uuid": "52989e79-7862-4fd4-9d23-bd5ed200f7d6",
-    "desciption": "Storm Detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

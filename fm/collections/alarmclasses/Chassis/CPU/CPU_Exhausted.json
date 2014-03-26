@@ -1,11 +1,10 @@
 {
     "name": "Chassis | CPU | CPU Exhausted",
     "uuid": "5a225d20-256c-4bb6-8504-0562d0b2a2d4",
-    "desciption": "CPU Exhausted",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

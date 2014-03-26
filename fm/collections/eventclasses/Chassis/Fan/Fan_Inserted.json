@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Fan | Fan Inserted",
     "uuid": "ba84a846-4897-4108-bfee-7dbc589ffdcd",
-    "desciption": "Fan inserted",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Fan Name",

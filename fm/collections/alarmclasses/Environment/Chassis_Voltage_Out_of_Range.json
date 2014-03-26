@@ -1,11 +1,10 @@
 {
     "name": "Environment | Chassis Voltage Out of Range",
     "uuid": "a4ff5329-9339-406b-bf60-caf575197df3",
-    "desciption": "Chassis voltage out of range",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name"

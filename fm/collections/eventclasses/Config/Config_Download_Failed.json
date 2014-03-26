@@ -1,9 +1,8 @@
 {
     "name": "Config | Config Download Failed",
     "uuid": "956dc864-cc0b-4598-8f8d-abfd05f82477",
-    "desciption": "Config Download Failed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Server IP",

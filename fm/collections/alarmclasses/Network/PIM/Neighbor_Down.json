@@ -1,7 +1,6 @@
 {
     "name": "Network | PIM | Neighbor Down",
     "uuid": "3fe312b7-a381-455d-9d8e-50bd2cd1d173",
-    "desciption": "PIM neighbor down",
     "is_unique": true,
     "discriminator": ["interface", "neighbor"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "Interface"

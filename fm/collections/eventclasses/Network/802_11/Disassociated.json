@@ -1,9 +1,8 @@
 {
     "name": "Network | 802.11 | Disassociated",
     "uuid": "60ad685a-f25b-4701-9019-c85138cdc35d",
-    "desciption": "Client disassociated",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Radio interface",

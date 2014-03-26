@@ -1,9 +1,8 @@
 {
     "name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode",
     "uuid": "7e3511aa-2e12-4c02-b05e-98920ea86604",
-    "desciption": "Safeguard Engine enters EXHAUSTED mode",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "unit",
             "description": "Unit number in stack",

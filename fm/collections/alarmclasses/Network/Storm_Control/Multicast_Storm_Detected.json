@@ -1,7 +1,6 @@
 {
     "name": "Network | Storm Control | Multicast Storm Detected",
     "uuid": "94845065-483a-4366-9222-6be7d09426cf",
-    "desciption": "Multicast Storm Detected",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "interface"

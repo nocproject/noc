@@ -1,9 +1,8 @@
 {
     "name": "Network | DOCSIS | Bad Timing Offset",
     "uuid": "7798679b-61e6-40b3-8adb-5d0c5b35de69",
-    "desciption": "Bad timing offset detected for Cable Modem",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "mac",
             "description": "Cable Modem MAC",

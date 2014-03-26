@@ -1,9 +1,8 @@
 {
     "name": "System | Process Started",
     "uuid": "33fe3b20-a71d-4265-9c19-2d98bbf17b43",
-    "desciption": "Process started",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Process name",

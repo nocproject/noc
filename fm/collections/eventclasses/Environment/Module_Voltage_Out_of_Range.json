@@ -1,9 +1,8 @@
 {
     "name": "Environment | Module Voltage Out of Range",
     "uuid": "8307670b-d3e3-496c-9c66-ecb54170743b",
-    "desciption": "Module voltage out of range",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

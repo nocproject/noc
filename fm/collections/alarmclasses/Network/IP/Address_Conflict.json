@@ -1,12 +1,11 @@
 {
     "name": "Network | IP | Address Conflict",
     "uuid": "ef2b8f0a-3959-4bce-99b8-5eb5298409b9",
-    "desciption": "Conflicted addresses",
     "is_unique": true,
     "discriminator": ["ip"],
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Conflicting IP"

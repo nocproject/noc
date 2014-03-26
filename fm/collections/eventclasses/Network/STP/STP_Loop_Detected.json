@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | STP Loop Detected",
     "uuid": "0ccb9769-3dc2-422a-8317-baa7f2661da0",
-    "desciption": "STP Loop Detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

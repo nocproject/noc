@@ -1,9 +1,8 @@
 {
     "name": "Config | Config Synced",
     "uuid": "ccad1e6b-d655-40ec-a098-ad2b709f1739",
-    "desciption": "Configuration has been synchronized with redundant module",
     "action": "L",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

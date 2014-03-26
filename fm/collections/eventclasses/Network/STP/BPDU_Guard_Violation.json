@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | BPDU Guard Violation",
     "uuid": "9bb007b3-1049-4a39-9594-a1def3c9308d",
-    "desciption": "BPDU Guard Violation",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

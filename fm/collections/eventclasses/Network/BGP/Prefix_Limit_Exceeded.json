@@ -1,9 +1,8 @@
 {
     "name": "Network | BGP | Prefix Limit Exceeded",
     "uuid": "d028a97e-8501-4633-a043-09c0f25819bd",
-    "desciption": "BGP Prefix Limit Exceeded",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "peer",
             "description": "Peer",

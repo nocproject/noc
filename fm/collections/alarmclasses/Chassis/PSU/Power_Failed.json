@@ -1,11 +1,10 @@
 {
     "name": "Chassis | PSU | Power Failed",
     "uuid": "58a480a0-97bc-4f7c-919c-43a2093475b9",
-    "desciption": "Power failed",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

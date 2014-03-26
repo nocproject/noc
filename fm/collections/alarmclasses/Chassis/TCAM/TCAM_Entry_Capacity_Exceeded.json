@@ -1,11 +1,10 @@
 {
     "name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
     "uuid": "d8d98bf5-3a57-48df-80c5-3e67f25f43c9",
-    "desciption": "TCAM entry capacity exceeded",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "reason",
             "description": "Reason"

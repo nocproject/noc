@@ -1,7 +1,6 @@
 {
     "name": "Security | Attack | IP Spoofing",
     "uuid": "e08eedd4-f661-419c-9529-0e475628239a",
-    "desciption": "IP Spoofing detected",
     "is_unique": true,
     "discriminator": ["src_ip", "interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "Interface"

@@ -1,9 +1,8 @@
 {
     "name": "Network | IS-IS | Adjacency Up",
     "uuid": "a4af4dd8-4139-4577-85e6-236d85e4d838",
-    "desciption": "ISIS adjacency up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "level",
             "description": "Level",

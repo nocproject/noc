@@ -1,9 +1,8 @@
 {
     "name": "System | Halt",
     "uuid": "4d17166c-9c01-4b63-be45-ce6c8b693c9f",
-    "desciption": "System halted",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "Username",

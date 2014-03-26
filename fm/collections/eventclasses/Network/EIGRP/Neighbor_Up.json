@@ -1,9 +1,8 @@
 {
     "name": "Network | EIGRP | Neighbor Up",
     "uuid": "ae8f0855-4d07-407d-9443-c29dee762288",
-    "desciption": "EIGRP neighbor up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "as",
             "description": "EIGRP autonomus system",

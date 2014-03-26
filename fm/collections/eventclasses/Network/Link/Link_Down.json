@@ -1,9 +1,8 @@
 {
     "name": "Network | Link | Link Down",
     "uuid": "358bf8ed-81ce-4e92-8d05-adc3817edbda",
-    "desciption": "Link Down",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Affected interface",

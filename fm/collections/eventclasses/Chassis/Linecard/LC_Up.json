@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Linecard | LC Up",
     "uuid": "e9fbf27a-4153-45e6-86e9-aa006b069419",
-    "desciption": "Linecard Up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "number",
             "description": "Slot number",

@@ -1,9 +1,8 @@
 {
     "name": "Config | Config Changed",
     "uuid": "bef2ecc6-1cfd-412c-b03e-3bca6fa93ecf",
-    "desciption": "Configuration has been changed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "Username",

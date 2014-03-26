@@ -1,9 +1,8 @@
 {
     "name": "Environment | UPS | Input Power Low",
     "uuid": "bc0de552-d41b-4048-bf8d-a8df3eced719",
-    "desciption": "Input Power Low",
     "action": "A",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

@@ -1,9 +1,8 @@
 {
     "name": "Security | ACL | ACL Deny",
     "uuid": "ec6f4a1c-6efa-496b-93a7-e591496053e6",
-    "desciption": "Packet denied by ACL",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "ACL Name",

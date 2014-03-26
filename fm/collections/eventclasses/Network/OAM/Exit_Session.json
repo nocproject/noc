@@ -1,9 +1,8 @@
 {
     "name": "Network | OAM | Exit Session",
     "uuid": "42bd4de9-a314-4b1b-aa73-f5e80b2f183a",
-    "desciption": "Client has left the OAM session",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

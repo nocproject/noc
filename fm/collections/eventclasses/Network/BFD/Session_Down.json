@@ -1,9 +1,8 @@
 {
     "name": "Network | BFD | Session Down",
     "uuid": "824c5272-33dd-4b37-b588-1fb6e4cf2174",
-    "desciption": "BFD Session Down",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "BFD interface",

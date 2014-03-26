@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | Topology Changed",
     "uuid": "d1dfc1e4-0a1d-4b03-8663-67bb6d00280e",
-    "desciption": "STP Topology changed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

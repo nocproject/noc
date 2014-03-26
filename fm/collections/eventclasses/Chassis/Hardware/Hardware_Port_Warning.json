@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Hardware | Hardware Port Warning",
     "uuid": "644d544a-958b-4c8d-b8f0-e4aa8642c19c",
-    "desciption": "Hardware port or slot warning occured",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Hardware port or slot",

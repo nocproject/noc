@@ -1,9 +1,8 @@
 {
     "name": "Security | Attack | Blat Attack",
     "uuid": "d0dc220c-6d55-4189-a42a-ba5a1f4b8947",
-    "desciption": "Blat Attack detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

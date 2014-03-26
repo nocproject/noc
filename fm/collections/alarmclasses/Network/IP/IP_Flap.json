@@ -1,12 +1,11 @@
 {
     "name": "Network | IP | IP Flap",
     "uuid": "7a98aeaf-a2d3-473f-80f5-44040d4f0e1e",
-    "desciption": "IP Flapped between interfaces",
     "is_unique": true,
     "discriminator": ["ip", "from_interface", "to_interface"],
     "user_clearable": true,
     "default_severity__name": "INFO",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Flapped IP"

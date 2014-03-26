@@ -1,12 +1,11 @@
 {
     "name": "Security | Authentication | RADIUS server failed",
     "uuid": "fa641bed-9f72-49b6-b95d-b33936dc3690",
-    "desciption": "RADIUS server failed",
     "is_unique": true,
     "discriminator": ["ip"],
     "user_clearable": true,
     "default_severity__name": "MINOR",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "RADIUS server address"

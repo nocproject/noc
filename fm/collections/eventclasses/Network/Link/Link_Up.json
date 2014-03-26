@@ -1,9 +1,8 @@
 {
     "name": "Network | Link | Link Up",
     "uuid": "82d72502-974a-4c42-8fe4-c4d2aae71d5c",
-    "desciption": "Link Up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Affected interface",

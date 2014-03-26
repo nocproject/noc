@@ -1,7 +1,6 @@
 {
     "name": "Network | MAC | MAC Flood",
     "uuid": "b761d498-a29f-41e0-9e8d-20ce696394a2",
-    "desciption": "Flooding MAC Detected",
     "is_unique": true,
     "discriminator": ["mac"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "mac",
             "description": "MAC Address"

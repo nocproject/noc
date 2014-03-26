@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | STP Vlan Loop Detected",
     "uuid": "f7fa2d23-5b30-4497-bd00-1d792bcb2b70",
-    "desciption": "STP Vlan Loop Detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

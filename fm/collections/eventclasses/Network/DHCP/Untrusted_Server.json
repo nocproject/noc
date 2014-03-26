@@ -1,9 +1,8 @@
 {
     "name": "Network | DHCP | Untrusted Server",
     "uuid": "7884729e-f04a-4fc2-8ed9-05ebcefa20a0",
-    "desciption": "Untrusted DHCP server detected",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Source IP",

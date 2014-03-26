@@ -1,9 +1,8 @@
 {
     "name": "Network | DNS | Bad Query",
     "uuid": "0d08ba3d-ea83-42ac-9f96-102a16f624d2",
-    "desciption": "Bad DNS query",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Source IP",

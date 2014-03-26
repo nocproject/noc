@@ -1,9 +1,8 @@
 {
     "name": "NOC | Unknown Event Source",
     "uuid": "764bd643-9c5a-41bc-bf9b-89a1e44abe70",
-    "desciption": "Unknown Event Source",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "Event SRC IP",

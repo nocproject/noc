@@ -1,9 +1,8 @@
 {
     "name": "Chassis | CPU | CPU Usage Drops Below Threshold",
     "uuid": "c960077c-c65d-4842-b88b-1b8e21e8d2b3",
-    "desciption": "CPU Usage Drops Below Threshold",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "cpu",
             "description": "CPU Name",

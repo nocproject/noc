@@ -1,9 +1,8 @@
 {
     "name": "Network | LLDP | LLDP Aged Out",
     "uuid": "3380c0aa-97cc-4f8e-b350-c50afaa23a45",
-    "desciption": "LLDP Aged Out",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Affected interface",

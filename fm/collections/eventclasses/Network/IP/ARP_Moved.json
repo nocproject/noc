@@ -1,9 +1,8 @@
 {
     "name": "Network | IP | ARP Moved",
     "uuid": "c7b07703-98e0-42e7-b43e-afdfd3492cef",
-    "desciption": "ARP Moved",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "BFD interface",

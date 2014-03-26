@@ -1,9 +1,8 @@
 {
     "name": "NOC | IPAM | VRF Group Address Collision",
     "uuid": "913a40f4-b51a-42c5-b490-ad03f4b7edd7",
-    "desciption": "VRF Group address collision detected",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "address",
             "description": "Address",

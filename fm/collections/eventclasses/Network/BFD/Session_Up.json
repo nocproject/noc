@@ -1,9 +1,8 @@
 {
     "name": "Network | BFD | Session Up",
     "uuid": "c81f31b9-f8a6-425a-a5b4-d4d3653f62f8",
-    "desciption": "BFD Session Up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "BFD interface",

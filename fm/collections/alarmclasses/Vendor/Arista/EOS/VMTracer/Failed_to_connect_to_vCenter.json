@@ -1,11 +1,10 @@
 {
     "name": "Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter",
     "uuid": "9c73f93b-9249-4296-b386-4ee1f1cb7e83",
-    "desciption": "Failed to connect to vCenter",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "vars ": [
+    "vars": [
         {
             "name": "reason",
             "description": "Reason"

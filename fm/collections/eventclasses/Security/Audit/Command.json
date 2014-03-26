@@ -1,9 +1,8 @@
 {
     "name": "Security | Audit | Command",
     "uuid": "2046e3d3-d3f7-40d7-8a60-3334941cd7ee",
-    "desciption": "Command Executed",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "User",

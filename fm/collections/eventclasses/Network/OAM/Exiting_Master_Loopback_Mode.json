@@ -1,9 +1,8 @@
 {
     "name": "Network | OAM | Exiting Master Loopback Mode",
     "uuid": "3f8ed629-ca82-4a29-8cf2-4b0b83f57e86",
-    "desciption": "Interface has exited the master loopback mode",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

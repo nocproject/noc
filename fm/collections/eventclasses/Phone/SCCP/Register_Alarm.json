@@ -1,9 +1,8 @@
 {
     "name": "Phone | SCCP | Register Alarm",
     "uuid": "0739ec2b-ac9d-4bd4-9565-0bdae96b062c",
-    "desciption": "SCCP phone registration alarm",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "sn",
             "description": "Device Serial Number",

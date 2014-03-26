@@ -1,9 +1,8 @@
 {
     "name": "Security | Audit | Clearing Counters",
     "uuid": "296ecc8a-bbd2-4be0-8145-983002379498",
-    "desciption": "Clearing counters on interface",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface name",

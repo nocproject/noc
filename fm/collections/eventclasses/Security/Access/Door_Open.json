@@ -1,9 +1,8 @@
 {
     "name": "Security | Access | Door Open",
     "uuid": "015a0c87-c4ac-4db0-9842-27293161725a",
-    "desciption": "Door is open",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",

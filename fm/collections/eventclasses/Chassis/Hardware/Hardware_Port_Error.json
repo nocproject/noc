@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Hardware | Hardware Port Error",
     "uuid": "618bb86b-c606-4e00-a675-b659ca5930a5",
-    "desciption": "Hardware port or slot error occured",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Hardware port",

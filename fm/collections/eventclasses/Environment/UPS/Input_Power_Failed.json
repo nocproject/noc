@@ -1,9 +1,8 @@
 {
     "name": "Environment | UPS | Input Power Failed",
     "uuid": "5cf54a01-24e4-45fa-97f1-20dbda62401f",
-    "desciption": "Input Power Failed",
     "action": "A",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

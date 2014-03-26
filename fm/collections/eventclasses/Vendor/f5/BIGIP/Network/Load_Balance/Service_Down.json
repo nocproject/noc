@@ -1,9 +1,8 @@
 {
     "name": "Vendor | f5 | BIGIP | Network | Load Balance | Service Down",
     "uuid": "5dd3cb34-2115-4fc6-bdb0-faaf3c032714",
-    "desciption": "Service Down",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "node",
             "description": "IP or hostname",

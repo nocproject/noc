@@ -1,12 +1,11 @@
 {
     "name": "Chassis | RAM | RAM Failed",
     "uuid": "f93e491e-3d31-4c8d-827b-a4432503128b",
-    "desciption": "Failed RAM module",
     "is_unique": true,
     "discriminator": ["bank"],
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "bank",
             "description": "Bank Name"

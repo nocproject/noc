@@ -1,9 +1,8 @@
 {
     "name": "Environment | UPS | Battery Power Low",
     "uuid": "2b0a957c-ef91-4305-be71-b4e66361cf03",
-    "desciption": "Battery Power Low",
     "action": "A",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

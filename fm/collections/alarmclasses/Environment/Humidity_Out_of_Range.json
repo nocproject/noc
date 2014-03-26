@@ -1,11 +1,10 @@
 {
     "name": "Environment | Humidity Out of Range",
     "uuid": "331594a3-7e20-40b2-bac4-7cbcad13b9e6",
-    "desciption": "Humidity out of range",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name"

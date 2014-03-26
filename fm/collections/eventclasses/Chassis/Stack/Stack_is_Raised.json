@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Stack | Stack is Raised",
     "uuid": "5e182458-098f-4673-a369-956219393846",
-    "desciption": "One or more unit is joined to stack",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "unit",
             "description": "Unit number",

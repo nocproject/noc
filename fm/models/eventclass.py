@@ -322,7 +322,7 @@ class EventClass(Document):
             r += ["    ]"]
         else:
             r += ["    }"]
-        r += ["}"]
+        r += ["}", ""]
         return "\n".join(r)
 
     def get_json_path(self):

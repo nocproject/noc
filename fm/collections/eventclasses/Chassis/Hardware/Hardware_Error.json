@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Hardware | Hardware Error",
     "uuid": "054ce5c4-feb0-4edb-b2b3-8ea8e88fbc2a",
-    "desciption": "Hardware error occured",
     "action": "A",
-    "vars ": [
+    "vars": [
 
     ],
     "text": {

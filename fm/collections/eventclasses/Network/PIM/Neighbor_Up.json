@@ -1,9 +1,8 @@
 {
     "name": "Network | PIM | Neighbor Up",
     "uuid": "81375929-f945-40ea-abf5-f0a2c15095d8",
-    "desciption": "PIM Neighbor up",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

@@ -1,9 +1,8 @@
 {
     "name": "Network | Link | DOM | Warning: Out of Threshold Recovered",
     "uuid": "ed2b35df-5a77-42e9-a583-f35a655c8610",
-    "desciption": "DOM above or below threshold recovered",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Physical port",

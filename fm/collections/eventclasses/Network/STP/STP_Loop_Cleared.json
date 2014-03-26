@@ -1,9 +1,8 @@
 {
     "name": "Network | STP | STP Loop Cleared",
     "uuid": "92261078-fe4b-42f7-8d41-216fe05c124b",
-    "desciption": "STP Loop Cleared",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

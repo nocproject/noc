@@ -1,9 +1,8 @@
 {
     "name": "Network | IMPB | Dynamic IMPB entry is conflicting with static",
     "uuid": "ea244bae-6d36-40ec-bc24-e69a2c03a23b",
-    "desciption": "Dynamic IMPB entry is conflicting with static",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "ip",
             "description": "User IP",

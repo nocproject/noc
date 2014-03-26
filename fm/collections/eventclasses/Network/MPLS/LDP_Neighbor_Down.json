@@ -1,9 +1,8 @@
 {
     "name": "Network | MPLS | LDP Neighbor Down",
     "uuid": "188f5509-7498-4039-a4e3-41eb5d504585",
-    "desciption": "MPLS LDP Neighbor Down",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "neighbor",
             "description": "LDP Neighbor",

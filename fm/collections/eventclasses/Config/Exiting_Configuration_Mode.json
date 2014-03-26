@@ -1,9 +1,8 @@
 {
     "name": "Config | Exiting Configuration Mode",
     "uuid": "f053aeb1-af41-427c-b92e-8d5d2609a900",
-    "desciption": "Exitin configuration mode",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "user",
             "description": "Username",

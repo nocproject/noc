@@ -1,9 +1,8 @@
 {
     "name": "Network | Port Security | Port Security Violation",
     "uuid": "c0e272fd-7a5d-4f32-950d-86bfe75c53c4",
-    "desciption": "Port Security Violation",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Interface",

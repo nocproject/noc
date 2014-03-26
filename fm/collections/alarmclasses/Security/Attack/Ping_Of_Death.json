@@ -1,7 +1,6 @@
 {
     "name": "Security | Attack | Ping Of Death",
     "uuid": "52b4012f-83cf-4fe8-a35b-1e850d3a34ef",
-    "desciption": "Ping Of Death detected",
     "is_unique": true,
     "discriminator": ["src_ip", "interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "Interface"

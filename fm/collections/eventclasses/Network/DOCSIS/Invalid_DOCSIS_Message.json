@@ -1,9 +1,8 @@
 {
     "name": "Network | DOCSIS | Invalid DOCSIS Message",
     "uuid": "2d7a2484-2918-4117-84cd-294cc0d1375e",
-    "desciption": "Invalid DOCSIS Message received from a Cable Modem",
     "action": "L",
-    "vars ": [
+    "vars": [
         {
             "name": "interface",
             "description": "Cable interface",

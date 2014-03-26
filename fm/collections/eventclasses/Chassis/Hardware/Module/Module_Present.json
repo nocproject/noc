@@ -1,9 +1,8 @@
 {
     "name": "Chassis | Hardware | Module | Module Present",
     "uuid": "3425bd20-bc9f-4a5d-910d-1955ab9cc3ef",
-    "desciption": "Hardware module present",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "module",
             "description": "Module type",

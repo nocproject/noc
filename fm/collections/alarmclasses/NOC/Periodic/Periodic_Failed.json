@@ -1,12 +1,11 @@
 {
     "name": "NOC | Periodic | Periodic Failed",
     "uuid": "19331749-daac-435d-829c-b9fedf85603f",
-    "desciption": "Periodic task has been failed",
     "is_unique": true,
     "discriminator": ["task"],
     "user_clearable": false,
     "default_severity__name": "WARNING",
-    "vars ": [
+    "vars": [
         {
             "name": "task",
             "description": "Task name"

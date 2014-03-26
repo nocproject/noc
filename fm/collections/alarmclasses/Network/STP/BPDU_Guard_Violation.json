@@ -1,7 +1,6 @@
 {
     "name": "Network | STP | BPDU Guard Violation",
     "uuid": "20d3c3e7-1c33-458d-9e12-837670bbd080",
-    "desciption": "BPDU Guard Violation",
     "is_unique": true,
     "discriminator": ["interface"],
     "user_clearable": true,
@@ -15,8 +14,8 @@
                 "managed_object": "managed_object"
                 }
             }
-    ]
-    "vars ": [
+    ],
+    "vars": [
         {
             "name": "interface",
             "description": "interface"

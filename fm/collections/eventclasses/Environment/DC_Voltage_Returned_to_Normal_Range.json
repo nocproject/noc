@@ -1,9 +1,8 @@
 {
     "name": "Environment | DC Voltage Returned to Normal Range",
     "uuid": "21b954d8-cbd7-4cb5-8a77-2f5cd0f2132c",
-    "desciption": "DC voltage returned to normal range",
     "action": "A",
-    "vars ": [
+    "vars": [
         {
             "name": "name",
             "description": "Name",
