@@ -7,6 +7,9 @@
     "vars": [
 
     ],
+    "handlers": [
+        "noc.fm.handlers.alarm.managed_object.set_down_severity"
+    ],
     "text": {
         "en": {
             "subject_template": "Ping Failed",
