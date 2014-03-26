@@ -39,12 +39,12 @@
         },
         {
             "name": "one_description",
-            "description": "Interface description"
+            "description": "Interface description",
             "default": "=oneInterfaceDS.description"
         },
         {
             "name": "two_description",
-            "description": "Interface description"
+            "description": "Interface description",
             "default": "=twoInterfaceDS.description"
         }
     ],

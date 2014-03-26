@@ -30,7 +30,7 @@
         },
         {
             "name": "description",
-            "description": "Interface description"
+            "description": "Interface description",
             "default": "=InterfaceDS.description"
         }
     ],
