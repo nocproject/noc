@@ -29,27 +29,27 @@
         },
         {
             "name": "as",
-            "description": "BGP Peer AS"
+            "description": "BGP Peer AS",
             "default": "=PeerDS.remote_asn"
         },
         {
             "name": "local_as",
-            "description": "Local AS"
+            "description": "Local AS",
             "default": "=PeerDS.local_asn"
         },
         {
             "name": "description",
-            "description": "BGP Peer Description"
+            "description": "BGP Peer Description",
             "default": "=PeerDS.description"
         },
         {
             "name": "import_filter",
-            "description": "BGP Import Filter"
+            "description": "BGP Import Filter",
             "default": "=PeerDS.import_filter"
         },
         {
             "name": "export_filter",
-            "description": "BGP Export Filter"
+            "description": "BGP Export Filter",
             "default": "=PeerDS.export_filter"
         }
     ],

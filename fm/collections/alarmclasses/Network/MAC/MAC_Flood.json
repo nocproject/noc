@@ -30,17 +30,17 @@
         },
         {
             "name": "vlan_name",
-            "description": "Vlan name"
+            "description": "Vlan name",
             "default": "=VCDS.name"
         },
         {
             "name": "vlan_description",
-            "description": "Vlan description"
+            "description": "Vlan description",
             "default": "=VCDS.description"
         },
         {
             "name": "vlan_vc_domain",
-            "description": "VC domain"
+            "description": "VC domain",
             "default": "=VCDS.vc_domain"
         }
     ],

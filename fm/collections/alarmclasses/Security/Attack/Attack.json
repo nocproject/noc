@@ -46,12 +46,12 @@
         },
         {
             "name": "description",
-            "description": "Interface description"
+            "description": "Interface description",
             "default": "=InterfaceDS.description"
         },
         {
             "name": "vlan_name",
-            "description": "Vlan name"
+            "description": "Vlan name",
             "default": "=VCDS.name"
         }
     ],
