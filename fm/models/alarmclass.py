@@ -71,7 +71,9 @@ class AlarmClass(nosql.Document):
         fields.EmbeddedDocumentField(AlarmRootCauseCondition))
     # Job descriptions
     jobs = fields.ListField(fields.EmbeddedDocumentField(AlarmClassJob))
-        # Plugin settings
+    #
+    handlers = fields.ListField(fields.StringField())
+    # Plugin settings
     plugins = fields.ListField(fields.EmbeddedDocumentField(AlarmPlugin))
     #
     category = nosql.ObjectIdField()
@@ -142,6 +144,12 @@ class AlarmClass(nosql.Document):
         r += ["    \"vars\": ["]
         r += [",\n".join(vars)]
         r += ["    ],"]
+        # Handlers
+        if self.handlers:
+            hh = ["        \"%s\"" % h for h in self.handlers]
+            r += ["    \"handlers\": ["]
+            r += [",\n\n".join(hh)]
+            r += ["    ],"]
         # text
         r += ["    \"text\": {"]
         t = []

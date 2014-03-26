@@ -284,8 +284,8 @@ class EventClass(Document):
         r += [",\n".join(vars)]
         r += ["    ],"]
         # Handlers
-        hh = ["        \"%s\"" % h for h in self.handlers]
         if self.handlers:
+            hh = ["        \"%s\"" % h for h in self.handlers]
             r += ["    \"handlers\": ["]
             r += [",\n\n".join(hh)]
             r += ["    ],"]
