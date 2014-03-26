@@ -127,7 +127,7 @@ class AlarmClass(nosql.Document):
                 x += ["            \"search\": {\n%s\n                }" % (",\n".join(ss))]
                 jds += ["        {\n%s\n            }" % ",\n".join(x)]
             r += [",\n\n".join(jds)]
-            r += ["    ]"]
+            r += ["    ],"]
         # vars
         vars = []
         for v in c.vars:
@@ -138,7 +138,7 @@ class AlarmClass(nosql.Document):
                 vd += ["            \"default\": \"%s\"" % q(v.default)]
             vd += ["        }"]
             vars += ["\n".join(vd)]
-        r += ["    \"vars \": ["]
+        r += ["    \"vars\": ["]
         r += [",\n".join(vars)]
         r += ["    ],"]
         # text
