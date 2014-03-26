@@ -135,6 +135,7 @@ class AlarmClass(nosql.Document):
             vd += ["            \"name\": \"%s\"," % q(v.name)]
             vd += ["            \"description\": \"%s\"" % q(v.description)]
             if v.default:
+                vd[-1] += ","
                 vd += ["            \"default\": \"%s\"" % q(v.default)]
             vd += ["        }"]
             vars += ["\n".join(vd)]
