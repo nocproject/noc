@@ -23,5 +23,17 @@
             "probable_causes": "",
             "recommended_actions": ""
         }
-    }
+    },
+    "root_cause": [
+        {
+            "name": "Node down",
+            "root__name": "Vendor | f5 | BIGIP | Network | Load Balance | Node Down",
+            "window": 60,
+            "condition": "True",
+            "match_condition": {
+                "vars__node": "alarm.vars['node']",
+                "managed_object": "alarm.managed_object.id"
+            }
+        }
+    ]
 }

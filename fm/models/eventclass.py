@@ -322,6 +322,27 @@ class EventClass(Document):
             r += ["    ]"]
         else:
             r += ["    }"]
+        # Plugins
+        if self.plugins:
+            r[-1] += ","
+            plugins = []
+            for p in self.plugins:
+                pd = ["        {"]
+                pd += ["            \"name\": \"%s\"" % p.name]
+                if p.config:
+                    pd[-1] += ","
+                    pc = []
+                    for v in p.config:
+                        pc += ["                \"%s\": \"%s\"" % (v, p.config.vars[v])]
+                    pd += ["            \"config\": {"]
+                    pd += [",\n".join(pc)]
+                    pd += ["            }"]
+                pd += ["        }"]
+                plugins += ["\n".join(pd)]
+            r += ["    \"plugins\": ["]
+            r += [",\n".join(plugins)]
+            r += ["    ]"]
+        # Close
         r += ["}", ""]
         return "\n".join(r)
 

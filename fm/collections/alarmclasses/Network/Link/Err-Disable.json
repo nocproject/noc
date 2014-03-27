@@ -38,5 +38,17 @@
             "probable_causes": "",
             "recommended_actions": ""
         }
-    }
+    },
+    "root_cause": [
+        {
+            "name": "UDLD",
+            "root__name": "Network | UDLD | UDLD Protocol Error Detected",
+            "window": 10,
+            "condition": "True",
+            "match_condition": {
+                "vars__interface": "alarm.vars['interface']",
+                "managed_object": "alarm.managed_object.id"
+            }
+        }
+    ]
 }

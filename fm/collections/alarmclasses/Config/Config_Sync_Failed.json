@@ -18,5 +18,25 @@
             "probable_causes": "",
             "recommended_actions": ""
         }
-    }
+    },
+    "root_cause": [
+        {
+            "name": "Stack Degraded",
+            "root__name": "Chassis | Stack | Stack Degraded",
+            "window": 30,
+            "condition": "True",
+            "match_condition": {
+                "managed_object": "alarm.managed_object.id"
+            }
+        },
+        {
+            "name": "Supervisor Down",
+            "root__name": "Chassis | Supervisor | Supervisor Down",
+            "window": 30,
+            "condition": "True",
+            "match_condition": {
+                "managed_object": "alarm.managed_object.id"
+            }
+        }
+    ]
 }
