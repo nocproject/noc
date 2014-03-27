@@ -165,6 +165,68 @@ class AlarmClass(nosql.Document):
             t += ["\n".join(l)]
         r += [",\n\n".join(t)]
         r += ["    }"]
+        # Root cause
+        if self.root_cause:
+            rc = []
+            for rr in self.root_cause:
+                rcd = ["        {"]
+                rcd += ["            \"name\": \"%s\"," % rr.name]
+                rcd += ["            \"root__name\": \"%s\"," % rr.root.name]
+                rcd += ["            \"window\": %d," % rr.window]
+                if rr.condition:
+                    rcd += ["            \"condition\": \"%s\"," % rr.condition]
+                rcd += ["            \"match_condition\": {"]
+                mcv = []
+                for v in rr.match_condition:
+                    mcv += ["                \"%s\": \"%s\"" % (v, rr.match_condition[v])]
+                rcd += [",\n".join(mcv)]
+                rcd += ["            }"]
+                rcd += ["        }"]
+                rc += ["\n".join(rcd)]
+            r[-1] += ","
+            r += ["    \"root_cause\": ["]
+            r += [",\n".join(rc)]
+            r += ["    ]"]
+        # Jobs
+        if self.jobs:
+            jobs = []
+            for job in self.jobs:
+                jd = ["        {"]
+                jd += ["            \"job\": \"%s\"," % job.job]
+                jd += ["            \"interval\": %d," % job.interval]
+                jd += ["            \"vars\": {"]
+                jv = []
+                for v in job.vars:
+                    jv += ["                \"%s\": \"%s\"" % (v, job.vars[v])]
+                jd += [",\n".join(jv)]
+                jd += ["            }"]
+                jd += ["        }"]
+                jobs += ["\n".join(jd)]
+            r[-1] += ","
+            r += ["    \"jobs\": ["]
+            r += [",\n".join(jobs)]
+            r += ["    ]"]
+        # Plugins
+        if self.plugins:
+            r[-1] += ","
+            plugins = []
+            for p in self.plugins:
+                pd = ["        {"]
+                pd += ["            \"name\": \"%s\"" % p.name]
+                if p.config:
+                    pd[-1] += ","
+                    pc = []
+                    for v in p.config:
+                        pc += ["                \"%s\": \"%s\"" % (v, p.config.vars[v])]
+                    pd += ["            \"config\": {"]
+                    pd += [",\n".join(pc)]
+                    pd += ["            }"]
+                pd += ["        }"]
+                plugins += ["\n".join(pd)]
+            r += ["    \"plugins\": ["]
+            r += [",\n".join(plugins)]
+            r += ["    ]"]
+        # Close
         r += ["}", ""]
         return "\n".join(r)
 

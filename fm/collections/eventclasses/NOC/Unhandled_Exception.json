@@ -36,5 +36,10 @@
             "probable_causes": "Bug in NOC",
             "recommended_actions": "Grab this event, clear valuable data and submit an issue at http://nocproject.org/"
         }
-    }
+    },
+    "plugins": [
+        {
+            "name": "traceback"
+        }
+    ]
 }

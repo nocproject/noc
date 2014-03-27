@@ -39,5 +39,85 @@
             "probable_causes": "Administrative action, cable damage, hardware or software error either from this or from another side",
             "recommended_actions": "Check configuration, both sides of links and hardware"
         }
-    }
+    },
+    "root_cause": [
+        {
+            "name": "Other side link down",
+            "root__name": "Network | Link | Link Down",
+            "window": 60,
+            "condition": "alarm.vars.get('link') is not None",
+            "match_condition": {
+                "vars__link": "alarm.vars['link']"
+            }
+        },
+        {
+            "name": "Linecard Down",
+            "root__name": "Chassis | Linecard | LC Down",
+            "window": 30,
+            "condition": "True",
+            "match_condition": {
+                "vars__number": "alarm.managed_object.profile.get_linecard(alarm.vars['interface'])",
+                "managed_object": "alarm.managed_object.id"
+            }
+        },
+        {
+            "name": "LBD Loop",
+            "root__name": "Network | LBD | Loop Detected",
+            "window": 10,
+            "condition": "True",
+            "match_condition": {
+                "vars__interface": "alarm.vars['interface']",
+                "managed_object": "alarm.managed_object.id"
+            }
+        },
+        {
+            "name": "STP Loop Detected",
+            "root__name": "Network | STP | STP Loop Detected",
+            "window": 10,
+            "condition": "True",
+            "match_condition": {
+                "vars__interface": "alarm.vars['interface']",
+                "managed_object": "alarm.managed_object.id"
+            }
+        },
+        {
+            "name": "err-disable",
+            "root__name": "Network | Link | Err-Disable",
+            "window": 10,
+            "condition": "True",
+            "match_condition": {
+                "vars__interface": "alarm.vars['interface']",
+                "managed_object": "alarm.managed_object.id"
+            }
+        },
+        {
+            "name": "Hardware Port Error",
+            "root__name": "Chassis | Hardware | Hardware Port Error",
+            "window": 10,
+            "condition": "True",
+            "match_condition": {
+                "vars__interface": "alarm.vars['interface']",
+                "managed_object": "alarm.managed_object.id"
+            }
+        },
+        {
+            "name": "DOM Out of Threshold",
+            "root__name": "Network | Link | DOM | Alarm: Out of Threshold",
+            "window": 10,
+            "condition": "True",
+            "match_condition": {
+                "vars__interface": "alarm.vars['interface']",
+                "managed_object": "alarm.managed_object.id"
+            }
+        }
+    ],
+    "jobs": [
+        {
+            "job": "check_link",
+            "interval": 60,
+            "vars": {
+                "interface": "alarm.vars['interface']"
+            }
+        }
+    ]
 }

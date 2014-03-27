@@ -18,5 +18,16 @@
             "probable_causes": "The object is not responding to ICMP echo-requests",
             "recommended_actions": "Check object is alive. Check routing to this object. Check firewalls"
         }
-    }
+    },
+    "root_cause": [
+        {
+            "name": "Power Failed",
+            "root__name": "Chassis | PSU | Power Failed",
+            "window": 30,
+            "condition": "True",
+            "match_condition": {
+                "managed_object": "alarm.managed_object.id"
+            }
+        }
+    ]
 }
