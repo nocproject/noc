@@ -5,6 +5,9 @@
     "vars": [
 
     ],
+    "handlers": [
+        "noc.fm.handlers.event.audit.log_started"
+    ],
     "text": {
         "en": {
             "subject_template": "System started",

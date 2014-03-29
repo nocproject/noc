@@ -10,6 +10,9 @@
             "required": false
         }
     ],
+    "handlers": [
+        "noc.fm.handlers.event.audit.log_halted"
+    ],
     "text": {
         "en": {
             "subject_template": "Halt{% if user %} requested by {{user}}{% endif %}",
