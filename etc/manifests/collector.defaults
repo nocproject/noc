@@ -1,0 +1,11 @@
+etc/noc-collector.defaults
+etc/manifests/collector.defaults
+etc/requirements/collector.txt
+lib/__init__.py
+lib/daemon.py
+lib/debug.py
+lib/nbsocket/
+fm/__init__.py
+fm/collector/__init__.py
+fm/collector/daemon.py
+scripts/noc-collector.py
