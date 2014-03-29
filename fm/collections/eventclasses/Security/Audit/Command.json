@@ -16,6 +16,9 @@
             "required": true
         }
     ],
+    "handlers": [
+        "noc.fm.handlers.event.audit.log_cmd"
+    ],
     "text": {
         "en": {
             "subject_template": "Command executed{% if user %} by {{user}}{% endif %}: {{command}}",

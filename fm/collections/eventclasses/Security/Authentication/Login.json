@@ -16,6 +16,9 @@
             "required": false
         }
     ],
+    "handlers": [
+        "noc.fm.handlers.event.audit.log_login"
+    ],
     "text": {
         "en": {
             "subject_template": "Login successful:{% if user %} {{user}}{% endif %}{% if ip %} ({{ip}}){% endif %}",

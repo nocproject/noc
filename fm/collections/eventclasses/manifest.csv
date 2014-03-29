@@ -34,7 +34,7 @@ Chassis | Supervisor | Supervisor Down,3a8fb640-c871-4eae-8247-9abf230b28d0,Chas
 Chassis | Supervisor | Supervisor Up,e1a830c8-6e89-4ca9-8ff5-f6ee36c6254f,Chassis/Supervisor/Supervisor_Up.json,f494811d9b7b14be5c4773ecadc7f09ec8520bbf5ef2916ffbf7755e1f40e1af
 Chassis | TCAM | TCAM Entry Capacity Exceeded,4f2e674b-0c1d-473c-aa67-4369635f512d,Chassis/TCAM/TCAM_Entry_Capacity_Exceeded.json,e51ee63c32a3c9884e9884ec546a094d90025ce438bd769de42f58fe2fd90678
 Chassis | TCAM | TCAM Error,3fd835ce-35dc-4a3c-8004-7abe4e5e9f15,Chassis/TCAM/TCAM_Error.json,2b180cb78996cbcee0c6d36ff2fa33f8e8da159363919288ffa8036e25adb2e5
-Config | Config Changed,bef2ecc6-1cfd-412c-b03e-3bca6fa93ecf,Config/Config_Changed.json,d51550968b635f85c8d0396c08b8c6ad4024a9cc5e8ef7426af34e940708c898
+Config | Config Changed,bef2ecc6-1cfd-412c-b03e-3bca6fa93ecf,Config/Config_Changed.json,db2421ede0ca80255520db436dcd6893cb2ab9332c839cf7617091cb76a37020
 Config | Config Corrected,f44a3f99-6c43-4a43-a73c-aff70f5b3611,Config/Config_Corrected.json,642cd51311899215e1ce675d5fc19a2c82b62953ea47330ca710908c651818f9
 Config | Config Download Failed,956dc864-cc0b-4598-8f8d-abfd05f82477,Config/Config_Download_Failed.json,37eb82111bc90547a22adef02157ab36ef0da050e414d4f4d23f772af57050ce
 Config | Config Downloaded Successfully,fae009cd-a805-4b8b-bcf8-96d40d2d0c37,Config/Config_Downloaded_Successfully.json,417ac70f77310eba7ba43e4af58afc19845a00150aa6ec845b1f92b8f1852c1a
@@ -225,13 +225,13 @@ Security | Attack | Smurf Attack,7edc00c7-fafc-4eef-9144-ef6f08a2b1da,Security/A
 Security | Attack | TCP SYNFIN Scan,c5f6fc10-61d2-400a-a95f-58c0d1597426,Security/Attack/TCP_SYNFIN_Scan.json,ff85eabd9043c447e122fef7908df964d5bef8f66476f162552e107f322a4d0c
 Security | Attack | Teardrop Attack,6d3a2f8c-9768-4447-9f9a-46e37a26b85d,Security/Attack/Teardrop_Attack.json,8f3591ad0824dff56540cd6a287695ce65c14a76ed5fce5c603ef8a4263d908c
 Security | Audit | Clearing Counters,296ecc8a-bbd2-4be0-8145-983002379498,Security/Audit/Clearing_Counters.json,f3fbe5ab39028dc0dc59676f0c2fda3cfad2bc8fa0d2e22012b4457dfc7c355e
-Security | Audit | Command,2046e3d3-d3f7-40d7-8a60-3334941cd7ee,Security/Audit/Command.json,76644908d1efff4736e47bee192c343ab72cdad409ab72e115494dbc58eb2a36
+Security | Audit | Command,2046e3d3-d3f7-40d7-8a60-3334941cd7ee,Security/Audit/Command.json,3c5d7a58594949bcebaa6186683ea4bbdb92ce0a43e7075d8c843053c2d6e0ea
 Security | Audit | Cron,1e575996-02d8-4e57-ba20-223067fcd705,Security/Audit/Cron.json,8ca33cf5f95a7eaaaffe9fd56b4f145b50014f235a9601e039e00731f8b0ca8d
 Security | Authentication | 802.1x failed,bbaaffb9-d1ae-425a-83b4-9dab0b9d8063,Security/Authentication/802_1x_failed.json,f346938de44c3db8dd3120958ba1babaa14e52b5d0b751306b9ffd7d92f49aa2
 Security | Authentication | Authentication Failed,30c1362f-e94c-4c72-977d-c9b2d31d717c,Security/Authentication/Authentication_Failed.json,938783117d8e00097401bbfa5aac2cd7dcc8d45759d857b15efbda5b619ebf83
-Security | Authentication | Login,e2a34691-21e7-4585-a8e7-fc006dd131ed,Security/Authentication/Login.json,1c80757052cc8bfdc29bb3cc348291276553018ebe32ad5b10ceea3fc7bb1ce9
+Security | Authentication | Login,e2a34691-21e7-4585-a8e7-fc006dd131ed,Security/Authentication/Login.json,4aa17bb905145dbe58495daab8ffb6097b7c14d83bca3e9f6bf337ec13973bcd
 Security | Authentication | Login Failed,572419ce-4aa6-4169-8958-caedb0e22e0d,Security/Authentication/Login_Failed.json,919bbddf4fd8b683fb115aaddacfc41891bb644dca919614d31fddf5ecfbbebf
-Security | Authentication | Logout,78ca650e-fb0a-4018-81cb-29a746be97e3,Security/Authentication/Logout.json,7f6a70f502d4b9d7134b306211c6dfce3d10040ec16649dab7a3d4860c465168
+Security | Authentication | Logout,78ca650e-fb0a-4018-81cb-29a746be97e3,Security/Authentication/Logout.json,408f88680cee0ba5aa8a4adf32f6a34d62977d6dd434ae4ed8c6b8d928a6a2ad
 Security | Authentication | Privilege Level Change Fail,5d099c4d-42bc-47ab-b91a-dac20cc25bfd,Security/Authentication/Privilege_Level_Change_Fail.json,548504ca56b4d3917c7e79efb49f1434e27f0d6e4c867643576432c2c1daaae1
 Security | Authentication | Privilege Level Changed,601bc6a1-e7a4-4652-998e-a42a214967d8,Security/Authentication/Privilege_Level_Changed.json,822f8805945389ac8781db50c2947e1fbd64947cbd87208d71f66a2803e94509
 Security | Authentication | RADIUS server failed,4c8ae9b3-472f-4aa4-9fe0-201fdff4a523,Security/Authentication/RADIUS_server_failed.json,76f2367b523bd6c9c9c1a7acd8396b0fc435e597b8d7fbbba0ad27385ab4961f
@@ -239,11 +239,11 @@ Security | Authentication | RADIUS server recovered,d39a3fb7-68d0-4e6a-bda6-4efa
 Security | Authentication | SNMP Authentication Failure,91094f01-18a3-4fdf-849b-26de6e751b61,Security/Authentication/SNMP_Authentication_Failure.json,689b3913829f433bb079e1b1496610b1a0ebb5c0ab7a1e0199624b1b926d9f46
 Security | Authentication | TACACS+ server failed,d4500ab1-1b8c-46b8-b0c5-4348465569f0,Security/Authentication/TACACS+_server_failed.json,7e321427416c3b2a6635b8e5d8393d0667444a51ae4cad613afa659f6cd1675c
 Security | Authentication | TACACS+ server recovered,46e7f27a-caea-41db-87b3-fc2e7ac766db,Security/Authentication/TACACS+_server_recovered.json,88ecff2f3e96a60b2cf7eb0f5e18d347eb22ce93ee3893b884d9b9ecda47ce5a
-System | Halt,4d17166c-9c01-4b63-be45-ce6c8b693c9f,System/Halt.json,e13c6760b2e78901f580c6d4964cc187dc17f8557e50661eb8c5eaf4fbd592bf
+System | Halt,4d17166c-9c01-4b63-be45-ce6c8b693c9f,System/Halt.json,3754c8607e3ac9896fead1bcc9261b1da346ad4f87cf2f861387536c5608e593
 System | Process Exited,2ed4c9de-0fec-42a8-a139-1a3a220f8f2c,System/Process_Exited.json,8429003c512446d516b0cdd7fa8b019bd78108e9c2c393880b87e3de8520c8e1
 System | Process Started,33fe3b20-a71d-4265-9c19-2d98bbf17b43,System/Process_Started.json,4b6024d98f77eee20e43f0f7ddf84a8b1ae803e3913bd5cd5567e14f9d217f5b
-System | Reboot,757ec9c1-68cb-40d4-8cce-1524c971e51f,System/Reboot.json,4b66ba44947fb7043325dc804c09243313175bc9a4515d081d8274fa6817fcd1
-System | Started,6bd08fbf-e09c-4472-a99d-c24176a47201,System/Started.json,1e1cec8a7e8a301ee9e5b2fdf1cb27b8327e91160e4cdbe812fb2d8a42ca6678
+System | Reboot,757ec9c1-68cb-40d4-8cce-1524c971e51f,System/Reboot.json,2dc25980746e22269a83422b34f581ddf12ce7947b9bd4301265bb9a7b8ea145
+System | Started,6bd08fbf-e09c-4472-a99d-c24176a47201,System/Started.json,47cb8531e96ab2549dc585219552d2833bfad794af8b82577dc3989edffa3077
 Unknown | Default,8406c855-6af0-405c-b2f9-4ce56c623984,Unknown/Default.json,977bb8f86c90492e2861dac7165e73f34636957bb3cffca86da02f5ff8217add
 Unknown | Ignore,5987a346-7d84-420f-9b8b-ff590d9ac3a5,Unknown/Ignore.json,68bc9802ae22ac1e12a6b989a3c21177361bb517f77fcebc345fedfcada94050
 Unknown | SNMP Trap,fc2dc1b2-25b2-482d-9c0f-13325f0b48c4,Unknown/SNMP_Trap.json,6ebb184152d93ba1436a58e72f1ec86147a5e10a1ebc3cbb47cc263a044bc5fb
