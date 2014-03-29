@@ -556,3 +556,13 @@ enabled = false
 initial_submit_interval = 900
 # Upper limit of new schedule submitted at once
 initial_submit_concurrency = 20
+
+[audit]
+# Store commands audit log
+command_ttl = 1m
+# Store login/logout audit log
+login_ttl = 1m
+# Store reboot/started/halted log
+reboot_ttl = 0
+# Store config changed log
+config_changed_ttl = 1y
