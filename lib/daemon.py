@@ -74,7 +74,8 @@ class Daemon(object):
             print get_version()
             sys.exit(0)
         if len(self.args) < 1 or self.args[0] not in ["start", "launch",
-                                                      "stop", "refresh"]:
+                                                      "stop", "refresh",
+                                                      "manifest"]:
             self.opt_parser.error(
                 "You must supply one of start|launch|stop|refresh commands")
         # Read config
@@ -433,6 +434,14 @@ class Daemon(object):
         """
         self.stop()
         self.start()
+
+    def manifest(self):
+        import sys
+        for name in [x for x in sys.modules if x.startswith("noc.")]:
+            mod = sys.modules[name]
+            if not mod:
+                continue
+            print mod
 
     def at_exit(self):
         if self.pidfile:
