@@ -1,0 +1,39 @@
+#!/bin/sh
+##----------------------------------------------------------------------
+## Initialize virtualenv
+##----------------------------------------------------------------------
+
+error_exit ( ) {
+    echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
+    echo "Terminating" 1>&2
+    exit 1
+}
+
+info ( ) {
+    echo $1 1>&2
+}
+
+[ -x ./bin/python ] && exit 0
+
+info "vitualenv is not configured. Trying to set up"
+# Check virtualenv is available
+which virtualenv
+if [ $? -ne 0 ]; then
+    error_exit "$LINENO: virtualenv is not installed.\nPlease install virtualenv:\n > pip install virtualenv\nand run $0 again"
+fi
+# Initialize virtualenv
+info "Setting up virtualenv"
+virtualenv $PWD --no-site-packages
+if [ $? -ne 0 ]; then
+    error_exit "$LINENO: Cannot setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
+fi
+
+info "Installing noc.pth"
+./scripts/install-pth.py || error_exit "Failed to install noc.pth"
+
+info "Installing python dependencies"
+PIP_ARGS=""
+for req in etc/requirements/*.txt; do
+    PIP_ARGS="-r $req "
+done
+./bin/pip install $PIP_ARGS
