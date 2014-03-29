@@ -20,3 +20,19 @@ default_interface_profile =
 # Interval in seconds to find duplicated events
 # 0 - disable deduplication
 deduplication_window = 3
+
+[collector]
+# Enable distributed event collecting and classification
+enabled = false
+# Collector's name, must match with managed objects' settings
+name =
+
+[collector_database]
+# Distributed event collector database name
+name = noc
+user =
+password =
+host = 127.0.0.1
+port = 27017
+collection = noc.events.new
+object_map = noc.object_map
