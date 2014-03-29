@@ -16,7 +16,7 @@ def log_cmd(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        managed_object=event.managed_object.id,
+        object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_COMMAND,
         text=event.vars.get("command")
@@ -29,7 +29,7 @@ def log_login(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        managed_object=event.managed_object.id,
+        object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_LOGIN,
         text="User logged in"
@@ -42,7 +42,7 @@ def log_logout(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        managed_object=event.managed_object.id,
+        object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_LOGOUT,
         text="User logged out"
@@ -55,7 +55,7 @@ def log_reboot(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        managed_object=event.managed_object.id,
+        object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_REBOOT,
         text="System rebooted"
@@ -68,7 +68,7 @@ def log_started(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        managed_object=event.managed_object.id,
+        object=event.managed_object.id,
         user=None,
         op=InteractionLog.OP_STARTED,
         text="System started"
@@ -81,7 +81,7 @@ def log_halted(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        managed_object=event.managed_object.id,
+        object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_HALTED,
         text="System halted"
@@ -94,7 +94,7 @@ def log_config_changed(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        managed_object=event.managed_object.id,
+        object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_CONFIG_CHANGED,
         text="Config changed"
