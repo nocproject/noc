@@ -179,6 +179,10 @@ class CollectorDaemon(Daemon):
                 t,
                 seq.next() & 0xFFFFFFFFL
             )
+            # Escape body
+            body = dict([(k.replace(".", "__").replace("$", "^^"), v)
+                for k, v in body.items()])
+            #
             return {
                 "timestamp": ts,
                 "managed_object": mo_id,
