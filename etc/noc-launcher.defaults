@@ -101,3 +101,9 @@ enabled = true
 user = noc
 group =
 config = etc/noc-pmprobe.conf
+
+[noc-collector]
+enabled = false
+user = root
+group =
+config = etc/noc-collector.conf

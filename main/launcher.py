@@ -145,7 +145,7 @@ class Launcher(Daemon):
 
     DAEMONS = ["stomp", "scheduler", "wf",
                "web", "sae", "activator",
-               "classifier", "correlator",
+               "classifier", "collector", "correlator",
                "notifier", "pmwriter", "pmprobe",
                "discovery", "sync"]
 
