@@ -19,6 +19,7 @@ from noc.sa.models.managedobject import (ManagedObject,
                                          ManagedObjectAttribute)
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.reducetask import ReduceTask
+from noc.sa.models.interactionlog import InteractionLog
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -580,6 +581,20 @@ class ManagedObjectApplication(ExtModelApplication):
                 with open(p) as f:
                     return self.render_plain_text(f.read())
         return self.render_plain_text("No data!")
+
+    @view(url="^(?P<id>\d+)/interactions/$", method=["GET"],
+          access="interactions", api=True)
+    def api_interactions(self, request, id):
+        # @todo: limit
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        return [{
+            "ts": i.timestamp.isoformat(),
+            "op": i.op,
+            "user": i.user,
+            "text": i.text
+        } for i in InteractionLog.objects.filter(object=o.id).order_by("-timestamp")]
 
     @view(url="^(?P<id>\d+)/scripts/$", method=["GET"], access="script",
           api=True)
