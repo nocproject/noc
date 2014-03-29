@@ -52,6 +52,15 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "collector",
+            type: "int"
+        },
+        {
+            name: "collector__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "profile_name",
             type: "string"
         },

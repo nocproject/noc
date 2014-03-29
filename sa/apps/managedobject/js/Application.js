@@ -15,6 +15,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.managedobject.SchemeLookupField",
         "NOC.sa.administrativedomain.LookupField",
         "NOC.sa.activator.LookupField",
+        "NOC.sa.collector.LookupField",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.ip.vrf.LookupField",
@@ -255,6 +256,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                             allowBlank: false
                         },
                         {
+                            name: "collector",
+                            xtype: "sa.collector.LookupField",
+                            fieldLabel: "Collector",
+                            width: 100,
+                            allowBlank: true
+                        },
+                        {
                             name: "vrf",
                             xtype: "ip.vrf.LookupField",
                             fieldLabel: "VRF",
@@ -464,6 +472,12 @@ Ext.define("NOC.sa.managedobject.Application", {
             name: "activator",
             ftype: "lookup",
             lookup: "sa.activator"
+        },
+        {
+            title: "By Collector",
+            name: "collector",
+            ftype: "lookup",
+            lookup: "sa.collector"
         },
         {
             title: "By VRF",

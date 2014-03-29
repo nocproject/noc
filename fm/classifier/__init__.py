@@ -15,15 +15,22 @@ import sys
 import os
 ## Django modules
 from django.db import reset_queries
+## Third-party modules
+import mongoengine.connection
 ## NOC modules
 from noc.lib.daemon import Daemon
-from noc.fm.models import (EventClassificationRule, NewEvent, FailedEvent,
+from noc.fm.models.newevent import NewEvent
+from noc.fm.models.failedevent import FailedEvent
+from noc.fm.models import (EventClassificationRule,
                            EventClass, MIB, EventLog, CloneClassificationRule,
                            ActiveEvent, EventTrigger, Enumeration)
 from noc.inv.models import InterfaceProfile
 from noc.fm.correlator.scheduler import CorrelatorScheduler
 import noc.inv.models
-from noc.sa.models import profile_registry, ManagedObject
+from noc.sa.models import profile_registry
+from noc.sa.models.collector import Collector
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.objectmap import ObjectMap
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.escape import fm_unescape
@@ -86,6 +93,8 @@ class Classifier(Daemon):
         self.default_rule = None
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
+        self.is_distributed = False
+        self.collector_id = None
         Daemon.__init__(self)
         logging.info("Running Classifier version %s" % self.version)
         self.correlator_scheduler = CorrelatorScheduler()
@@ -109,6 +118,9 @@ class Classifier(Daemon):
         self.load_suppression()
         self.load_link_action()
         self.load_handlers()
+        self.is_distributed = self.config.getboolean("collector", "enabled")
+        if self.is_distributed:
+            self.setup_distributed_mode()
 
     def load_rules(self):
         """
@@ -279,6 +291,33 @@ class Classifier(Daemon):
                 self.handlers[ec.id] = hl
         logging.info("Handlers are loaded")
 
+    def setup_distributed_mode(self):
+        if "collector" in mongoengine.connection._connection_settings:
+            return
+        logging.info("Entering distributed mode")
+        # Get collector id
+        collector_name = self.config.get("collector", "name")
+        if not collector_name:
+            logging.error("Collector name missed. Exiting", collector_name)
+            os._exit(1)
+        try:
+            self.collector_id = Collector.objects.get(name=collector_name).id
+        except Collector.DoesNotExist:
+            logging.error("Invalid collector name: '%s'. Exiting", collector_name)
+            os._exit(1)
+        # Connect to collector's database
+        mongoengine.connection.register_connection(
+            "collector",
+            name=self.config.get("collector_database", "name"),
+            host=self.config.get("collector_database", "host") or "127.0.0.1",
+            port=self.config.getint("collector_database", "port") or 27017,
+            username=self.config.get("collector_database", "user") or None,
+            password=self.config.get("collector_database", "password") or None
+        )
+        # Switch new and failed events collections to collector database
+        NewEvent._meta["db_alias"] = "collector"
+        FailedEvent._meta["db_alias"] = "collector"
+
     @classmethod
     def resolve_handler(cls, h):
         mn, s = h.rsplit(".", 1)
@@ -292,6 +331,18 @@ class Classifier(Daemon):
         except AttributeError:
             logging.error("Failed to load handler '%s'. Ignoring" % h)
             return None
+
+    def update_object_map(self):
+        logging.debug("Updating object maps")
+        d = ObjectMap.get_map(self.collector_id)
+        cdb = mongoengine.connection.get_db("collector")
+        n = self.config.get("collector_database", "object_map")
+        ntmp = n + "_tmp"
+        cdb.drop_collection(ntmp)
+        tmp = cdb[ntmp]
+        tmp.insert(d, safe=True)
+        tmp.rename(n, dropTarget=True)
+        cdb[n].ensure_index("sources")
 
     ##
     ## Variable decoders
@@ -670,9 +721,13 @@ class Classifier(Daemon):
         # @todo: move to configuration
         CHECK_EVERY = 1  # Recheck queue every N seconds
         REPORT_INTERVAL = 1000  # Performance report interval
+        OM_UPDATE_INTERVAL = 600
         # Try to classify events which processing failed
         # on previous versions of classifier
         self.retry_failed_events()
+        if self.is_distributed:
+            self.update_object_map()
+        nu = time.time() + OM_UPDATE_INTERVAL
         logging.info("Ready to process events")
         st = {
             CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
@@ -684,6 +739,9 @@ class Classifier(Daemon):
             n = 0  # Number of events processed
             sn = st.copy()
             t0 = time.time()
+            if self.is_distributed and t0 > nu:
+                self.update_object_map()
+                nu = t0 + OM_UPDATE_INTERVAL
             for e in self.iter_new_events(REPORT_INTERVAL):
                 s = self.consume_event(e)
                 sn[s] += 1

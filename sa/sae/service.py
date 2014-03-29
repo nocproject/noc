@@ -208,7 +208,7 @@ class Service(SAEService):
         r.expire = self.sae.config.getint("sae", "refresh_event_filter")
         # Build source filter
         for c in ManagedObject.objects.filter(activator=activator,
-                    trap_source_ip__isnull=False).only("id", "trap_source_ip"):
+                    trap_source_ip__isnull=False, collector__isnull=True).only("id", "trap_source_ip"):
             if c.profile_name.startswith("NOC."):
                 continue
             s = r.mappings.add()
