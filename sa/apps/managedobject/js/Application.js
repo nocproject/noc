@@ -95,6 +95,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onInventory
         });
 
+        me.interactionsButton = Ext.create("Ext.button.Button", {
+            text: "Command Log",
+            glyph: NOC.glyph.film,
+            scope: me,
+            handler: me.onInteractions
+        });
+
         me.ITEM_CONFIG = me.registerItem(
             Ext.create("NOC.core.RepoPreview", {
                 app: me,
@@ -117,6 +124,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         );
 
         me.ITEM_ALARM = me.registerItem("NOC.sa.managedobject.AlarmPanel");
+        me.ITEM_INTERACTIONS = me.registerItem("NOC.sa.managedobject.InteractionsPanel");
 
         Ext.apply(me, {
             columns: [
@@ -443,7 +451,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.interfacesButton,
                 me.linksButton,
                 me.discoveryButton,
-                me.alarmsButton
+                me.alarmsButton,
+                me.interactionsButton
             ]
         });
         me.callParent();
@@ -521,6 +530,11 @@ Ext.define("NOC.sa.managedobject.Application", {
     onConsole: function() {
         var me = this;
         me.showItem(me.ITEM_CONSOLE).preview(me.currentRecord);
+    },
+    //
+    onInteractions: function() {
+        var me = this;
+        me.showItem(me.ITEM_INTERACTIONS).preview(me.currentRecord);
     },
     //
     onConfig: function() {
