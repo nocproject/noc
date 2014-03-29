@@ -77,3 +77,26 @@ TABLE {
     width: 30pt;
     padding-right: 2pt;
 }
+
+.noc-int-command {
+}
+
+.noc-int-login {
+    color: #4471ed;
+}
+
+.noc-int-logout {
+    color: #edc044;
+}
+
+.noc-int-reboot {
+    color: #ed446e;
+}
+
+.noc-int-started {
+    color: #44ed7f;
+}
+
+.noc-int-config {
+    color: #edcb44;
+}
