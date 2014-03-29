@@ -14,7 +14,13 @@ class InteractionLog(document.Document):
     meta = {
         "collection": "noc.log.sa.interaction",
         "allow_inheritance": False,
-        "indexes": [("object", "-timestamp")]
+        "indexes": [
+            ("object", "-timestamp"),
+            {
+                "fields": ["expire"],
+                "expireAfterSeconds": 0
+            }
+        ]
     }
 
     OP_COMMAND = 0
@@ -26,6 +32,7 @@ class InteractionLog(document.Document):
     OP_CONFIG_CHANGED = 6
 
     timestamp = fields.DateTimeField()
+    expire = fields.DateTimeField()
     object = fields.IntField()
     user = fields.StringField()
     op = fields.IntField()
