@@ -22,7 +22,9 @@ from administrativedomain import AdministrativeDomain
 from authprofile import AuthProfile
 from managedobjectprofile import ManagedObjectProfile
 from activator import Activator
+from collector import Collector
 from objectstatus import ObjectStatus
+from objectmap import ObjectMap
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.profiles import profile_registry
@@ -59,6 +61,9 @@ class ManagedObject(models.Model):
     activator = models.ForeignKey(Activator,
             verbose_name=_("Activator"),
             limit_choices_to={"is_active": True})
+    collector = models.ForeignKey(Collector,
+            verbose_name=_("Collector"),
+            limit_choices_to={"is_active": True}, null=True, blank=True)
     profile_name = models.CharField(_("SA Profile"),
             max_length=128, choices=profile_registry.choices)
     object_profile = models.ForeignKey(ManagedObjectProfile,
@@ -258,12 +263,19 @@ class ManagedObject(models.Model):
         if old is None:
             SelectorCache.rebuild_for_object(self)
             self.event(self.EV_NEW, {"object": self})
+        if not self.collector or not self.trap_source_ip:
+            # Remove from object mappings
+            ObjectMap.delete_map(self)
+        else:
+            # Add to object mappings
+            ObjectMap.update_map(
+                self, self.collector, self.trap_source_ip)
 
-    def delete(self):
+    def delete(self, *args, **kwargs):
         # Deny to delete "SAE" object
         if self.name == "SAE":
             raise IntegrityError("Cannot delete SAE object")
-        super(ManagedObject, self).delete()
+        super(ManagedObject, self).delete(*args, **kwargs)
 
     def sync_ipam(self):
         """

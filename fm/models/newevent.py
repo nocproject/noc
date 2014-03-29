@@ -18,7 +18,7 @@ from noc.lib import nosql
 
 class NewEvent(document.Document):
     """
-    Raw unclassified event as written by SAE
+    Raw unclassified event as written by SAE or collector
     """
     meta = {
         "collection": "noc.events.new",
