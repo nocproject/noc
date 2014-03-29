@@ -93,7 +93,7 @@ class Command(BaseCommand):
         if os.path.isdir("scripts"):
             ds = os.path.join(dest, "scripts")
             for f in os.listdir(ds):
-                if f.endswith(".py") and f != "set_env.py":
+                if f.endswith(".py") or "." not in f:
                     p = os.path.join(ds, f)
                     print "CHMOD 0755 %s" % p
                     os.chmod(p, 0755)
