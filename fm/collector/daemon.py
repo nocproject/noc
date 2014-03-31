@@ -14,6 +14,7 @@ import Queue
 import itertools
 import threading
 import datetime
+import re
 ## Third-party modules
 from pymongo.mongo_client import MongoClient
 from bson import Binary
@@ -31,11 +32,13 @@ class CollectorDaemon(Daemon):
         self.client = None
         self.collection = None
         self.om_collection = None
+        self.im_collection = None
         self.syslog_collectors = []
         self.trap_collectors = []
         self.queue = Queue.Queue(10000)  # @todo: Configurable
         self.writer_thread = None
         self.om_cache = {}  # ip -> (ttl, object)
+        self.ignore_cache = {}  # Source -> (ttl, [masks])
         super(CollectorDaemon, self).__init__(*args, **kwargs)
 
     def load_config(self):
@@ -108,6 +111,7 @@ class CollectorDaemon(Daemon):
             logging.debug("Closing database connection")
             self.collection = None
             self.om_collection = None
+            self.im_collection = None
             self.client.close()
             self.client = None
 
@@ -122,6 +126,7 @@ class CollectorDaemon(Daemon):
         db = self.client[db_name]
         self.collection = db[self.config.get("collector_database", "collection")]
         self.om_collection = db[self.config.get("collector_database", "object_map")]
+        self.im_collection = db[self.config.get("collector_database", "ignore_map")]
         # @todo: Invalid db and collection
 
     def run(self):
@@ -155,10 +160,45 @@ class CollectorDaemon(Daemon):
         else:
             return r[1]
 
+    def find_ignore_masks(self, source):
+        if self.im_collection:
+            m = self.im_collection.find_one({"source": source}, {"patterns": 1})
+            if m:
+                logging.debug("Setting ignore patterns for %s: %s" % (
+                    source, m["patterns"]
+                ))
+                return [re.compile(x) for x in m["patterns"]]
+        return []
+
+    def get_ignore_masks(self, source):
+        r = self.ignore_cache.get(source)
+        t = time.time()
+        if not r or r[0] < t:
+            v = self.find_ignore_masks(source)
+            self.ignore_cache[source] = (t + 60, v)  # @todo: Configurable
+            return v
+        else:
+            return r[1]
+
     def on_event(self, timestamp, mo_id, body):
         """
         Called by collector on new event
         """
+        # Check ignore patterns
+        if "source" in body:
+            im = self.get_ignore_masks(body["source"])
+            if im:
+                if body["source"] == "syslog":
+                    msg = body.get("message", "")
+                    if any(r for r in im if r.search(msg)):
+                        logging.debug("Ignored")
+                        return
+                elif body["source"] == "SNMP Trap":
+                    oid = body.get("1.3.6.1.6.3.1.1.4.1.0", "")
+                    if any(r for r in im if r.search(oid)):
+                        logging.debug("Ignored")
+                        return
+        # Queue to writer
         ts = datetime.datetime.fromtimestamp(timestamp)
         try:
             self.queue.put((ts, mo_id, body), block=False)
