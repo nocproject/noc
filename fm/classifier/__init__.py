@@ -13,6 +13,7 @@ import time
 import datetime
 import sys
 import os
+from collections import defaultdict
 ## Django modules
 from django.db import reset_queries
 ## Third-party modules
@@ -24,6 +25,7 @@ from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models import (EventClassificationRule,
                            EventClass, MIB, EventLog, CloneClassificationRule,
                            ActiveEvent, EventTrigger, Enumeration)
+from noc.fm.models.ignorepattern import IgnorePattern
 from noc.inv.models import InterfaceProfile
 from noc.fm.correlator.scheduler import CorrelatorScheduler
 import noc.inv.models
@@ -343,6 +345,26 @@ class Classifier(Daemon):
         tmp.insert(d, safe=True)
         tmp.rename(n, dropTarget=True)
         cdb[n].ensure_index("sources")
+        logging.debug("Updating ignore rules")
+        im = cdb[self.config.get("collector_database", "ignore_map")]
+        i_patterns = defaultdict(list)
+        for p in IgnorePattern.objects.filter(is_active=True):
+            try:
+                re.compile(p.pattern)
+                i_patterns[p.source] += [p.pattern]
+            except re.error, why:
+                logging.error("Invalid ignore pattern '%s' (%s)" % (
+                    p.pattern, why
+                ))
+        # Update patterns
+        for src in i_patterns:
+            im.update(
+                {"source": src},
+                {"$set": {"patterns": list(i_patterns[src])}},
+                upsert=True
+            )
+        # Remove obsolete sources
+        im.remove({"source": {"$nin": list(i_patterns)}})
 
     ##
     ## Variable decoders

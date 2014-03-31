@@ -36,3 +36,5 @@ host = 127.0.0.1
 port = 27017
 collection = noc.events.new
 object_map = noc.object_map
+ignore_map = noc.ignore_map
+

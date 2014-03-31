@@ -63,6 +63,7 @@ from eventclassificationrule import (
 
 
 from cloneclassificationrule import CloneClassificationRule
+from ignorepattern import IgnorePattern
 
 ##
 ## Events.
