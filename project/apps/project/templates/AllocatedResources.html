@@ -87,4 +87,13 @@
     </tr>
     {{/each}}
     {{/if}}
+    {{#if subinterface.length}}
+    <tr><th colspan="2"><b>SubInterfaces</b></th></tr>
+    {{#each subinterface}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">-</td>
+    </tr>
+    {{/each}}
+    {{/if}}
 </table>

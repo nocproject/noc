@@ -10,6 +10,7 @@
 from noc.lib.app import ExtModelApplication, view
 from noc.project.models import Project
 from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
 from noc.main.models.resourcestate import ResourceState
 
 
@@ -47,6 +48,7 @@ class ProjectApplication(ExtModelApplication):
             "as": [f(o) for o in project.as_set.all()],
             "asset": [f(o) for o in project.asset_set.all()],
             "peer": [f(o) for o in project.peer_set.all()],
-            "interface": [f(o) for o in Interface.objects.filter(project=project)]
+            "interface": [f(o) for o in Interface.objects.filter(project=project)],
+            "subinterface": [f(o) for o in SubInterface.objects.filter(project=project)]
         }
         return r
