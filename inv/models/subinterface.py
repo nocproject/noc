@@ -14,6 +14,7 @@ from forwardinginstance import ForwardingInstance
 from interface import Interface
 from noc.sa.models import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.project.models.project import Project
 
 
 SUBINTERFACE_AFI = (
@@ -77,6 +78,7 @@ class SubInterface(Document):
         choices=[(x, x) for x in TUNNEL_TYPES], required=False)
     tunnel_local_address = StringField(required=False)
     tunnel_remote_address = StringField(required=False)
+    project = ForeignKeyField(Project)
 
     def __unicode__(self):
         return "%s %s" % (self.interface.managed_object.name, self.name)
