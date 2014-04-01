@@ -102,7 +102,7 @@ class EventApplication(ExtApplication):
             repeats = None
             duration = None
             n_alarms = None
-        return {
+        d = {
             "id": str(o.id),
             "status": o.status,
             "managed_object": o.managed_object.id,
@@ -116,6 +116,9 @@ class EventApplication(ExtApplication):
             "alarms": n_alarms,
             "row_class": row_class
         }
+        if fields:
+            d = dict((k, d[k]) for k in fields)
+        return d
 
     def queryset(self, request, query=None):
         """

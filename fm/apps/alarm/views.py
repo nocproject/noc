@@ -96,7 +96,7 @@ class AlarmApplication(ExtApplication):
         s = AlarmSeverity.get_severity(o.severity)
         n_events = (ActiveEvent.objects.filter(alarms=o.id).count() +
                     ArchivedEvent.objects.filter(alarms=o.id).count())
-        return {
+        d = {
             "id": str(o.id),
             "status": o.status,
             "managed_object": o.managed_object.id,
@@ -111,6 +111,9 @@ class AlarmApplication(ExtApplication):
             "duration": o.duration,
             "row_class": s.style.css_class_name
         }
+        if fields:
+            d = dict((k, d[k]) for k in fields)
+        return d
 
     def queryset(self, request, query=None):
         """
