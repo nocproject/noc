@@ -33,8 +33,7 @@ Ext.define("NOC.sa.managedobject.InteractionsPanel", {
             fields: [
                 {
                     name: "ts",
-                    type: "date",
-                    dateFormat: "Y-m-dTH:i:s"
+                    type: "date"
                 },
                 {
                     name: "op",
