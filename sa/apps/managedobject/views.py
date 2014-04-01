@@ -590,7 +590,7 @@ class ManagedObjectApplication(ExtModelApplication):
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         return [{
-            "ts": i.timestamp.isoformat(),
+            "ts": self.to_json(i.timestamp),
             "op": i.op,
             "user": i.user,
             "text": i.text
