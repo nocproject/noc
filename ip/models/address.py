@@ -48,6 +48,7 @@ class Address(models.Model):
         validators=[check_fqdn])
     project = models.ForeignKey(
         Project, verbose_name="Project",
+        on_delete=models.SET_NULL,
         null=True, blank=True, related_name="address_set")
     mac = MACField(
         "MAC",

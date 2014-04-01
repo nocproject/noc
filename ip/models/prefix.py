@@ -59,6 +59,7 @@ class Prefix(models.Model):
     )
     project = models.ForeignKey(
         Project, verbose_name="Project",
+        on_delete=models.SET_NULL,
         null=True, blank=True, related_name="prefix_set")
     vc = models.ForeignKey(
         VC,

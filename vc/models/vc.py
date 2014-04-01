@@ -43,6 +43,7 @@ class VC(models.Model):
         default=ResourceState.get_default)
     project = models.ForeignKey(
         Project, verbose_name="Project",
+        on_delete=models.SET_NULL,
         null=True, blank=True, related_name="vc_set")
     l1 = models.IntegerField("Label 1")
     l2 = models.IntegerField("Label 2", default=0)
