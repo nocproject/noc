@@ -1,0 +1,38 @@
+{
+    "name": "Cisco | Transceiver | 10G | XFP-10GZR-OC192LR",
+    "uuid": "1375df2c-1a99-403b-b552-dc7d578e3305",
+    "vendor__code": "CISCO",
+    "description": "Cisco Multirate 10GBASE-ZR/-ZW and OC-192/STM-64 LR-2 XFP Module for SMF2 ",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASEER-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASEER-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "XFP-10GZR-OC192LR"
+        }
+    }
+}
