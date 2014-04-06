@@ -1,0 +1,509 @@
+{
+    "name": "Cisco | 4500 | WS-C4948-10GE",
+    "uuid": "b068dc25-69ec-4db2-99bf-53c0f36a2a35",
+    "vendor__code": "CISCO",
+    "description": "Cisco WS-C4948-10GE Layer-3 ethernet aggregation switch, 10/100/1000BaseT (RJ45), 10GE (X2) Supervisor with 48 10/100/1000BaseT ports and 2 10GE X2 ports\n",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet management port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi2",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi3",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi4",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi5",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi6",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/7 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi7",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/8 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi8",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/9 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi9",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/10 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi10",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/11 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi11",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/12 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi12",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/13 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi13",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/14 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi14",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/15 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi15",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/16 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi16",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/17 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi17",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/18 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi18",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/19 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi19",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/20 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi20",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/21 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi21",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/22 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi22",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/23 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi23",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/24 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi24",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/25 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi25",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/26 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi26",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/27 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi27",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/28 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi28",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/29 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi29",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/30 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi30",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/31 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi31",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/32 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi32",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/33 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi33",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/34 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi34",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/35 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi35",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/36 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi36",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/37 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi37",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/38 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi38",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/39 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi39",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/40 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi40",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/41 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi41",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/42 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi42",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/43 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi43",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/44 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi44",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/45 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi45",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/46 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi46",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/47 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi47",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 1/48 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi48",
+            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Te1/49 X2 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te49_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "Te1/50 X2 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te50_x2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | X2 | Cisco"
+        },
+        {
+            "description": "PSU1 slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "psu1",
+            "type__name": "Cisco | PWR-C49-300"
+        },
+        {
+            "description": "PSU2 slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "psu2",
+            "type__name": "Cisco | PWR-C49-300"
+        }
+    ],
+    "data": {
+        "airflow": {
+            "exhaust": "r",
+            "intake": "l"
+        },
+        "asset": {
+            "part_no0": "WS-C4948-10GE"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
