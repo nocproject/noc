@@ -20,7 +20,7 @@ class Script(NOCScript):
     name = "Alcatel.7324RU.get_interfaces"
     implements = [IGetInterfaces]
     rx_vlan = re.compile(
-        r" *(?P<vid>\d+)[ ]*(?P<vname>[A-Za-z0-9\-\.]+)\n[ 0-9\n]+"
+        r" *(?P<vid>\d+)[ ]*(?P<vname>\S+)\n[ 0-9\n]+"
         r" +(?P<vstatus>enabled|disabled)[ 0-9]+\n([ \-xnf]+)\n"
         r" +(?P<portmask>[\-tu]+)"
         r" *(?P<uplinkmask>[\-tu]*)",
