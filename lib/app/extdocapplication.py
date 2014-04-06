@@ -264,7 +264,7 @@ class ExtDocApplication(ExtApplication):
             o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
-        if self.has_uuid and "uuid" not in attrs and not o.uuid:
+        if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()
         # @todo: Check for duplicates
         for k in attrs:
