@@ -58,7 +58,7 @@ class Script(NOCScript):
         """
         Get type, number and part_no
         """
-        if "RSP" in pid:
+        if "RSP" in pid or "RSP" in name:
             number = name.split()[1].split("/")[1][3]
             return "RSP", number, pid
         elif "MOD" in pid:
@@ -82,7 +82,8 @@ class Script(NOCScript):
         elif "FAN" in pid:
             number = name.split()[1].split("/")[1][2]
             return "FAN", number, pid
-        elif "Power Module" in descr:
+        elif ("Power Module" in descr or
+              "Power Supply" in descr):
             # number = 0/PM0/SP
             number = name.split()[1].split("/")[1][2:]
             return "PWR", number, pid
