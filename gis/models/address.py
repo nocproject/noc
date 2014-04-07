@@ -31,10 +31,14 @@ class Address(Document):
     # Building
     build = IntField()
     build_letter = StringField()
+    struct_letter = StringField()
     # Structure
     struct = IntField()
     struct2 = IntField()
-    struct_letter = StringField()
+    # Estate
+    estate = IntField()
+    estate2 = IntField()
+    estate_letter = StringField()
 
     data = DictField()
 
@@ -53,6 +57,14 @@ class Address(Document):
             if self.num_letter:
                 n += self.num_letter
             a += ["д. %s" % n]
+        if self.estate:
+            if self.estate2:
+                n = "%d/%d" % (self.estate, self.estate2)
+            else:
+                n = str(self.estate)
+            if self.estate_letter:
+                n += self.estate_letter
+            a += ["вл. %s" % n]
         if self.build:
             n = str(self.build)
             if self.build_letter:

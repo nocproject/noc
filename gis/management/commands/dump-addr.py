@@ -39,9 +39,11 @@ class Command(BaseCommand):
         for bld in d.get_buildings():
             row = level + [""] * (self.LEVELS - len(level))
             addr = bld.primary_address
+            if not addr:
+                continue
             row += [
-                addr.display_ru(),
                 addr.street,
+                addr.display_ru(),
                 addr.num,
                 addr.num2,
                 addr.num_letter,
@@ -69,7 +71,7 @@ class Command(BaseCommand):
         #
         header = ["LEVEL%d" % d for d in range(self.LEVELS)]
         header += [
-            "HOUSE_ADDR", "STREET",
+            "STREET", "HOUSE_ADDR",
             "NUM", "NUM2", "NUM_LETTER",
             "BUILD", "BUILD_LETTER",
             "STRUCT", "STRUCT2", "STRUCT_LETTER",
