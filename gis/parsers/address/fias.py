@@ -10,6 +10,7 @@
 import os
 from collections import namedtuple
 import re
+import csv
 ## Third-party modules
 import dbf
 ## NOC modules
@@ -25,9 +26,8 @@ class FIASParser(AddressParser):
     name = "FIAS"
     TOP_NAME = u"Российская Федерация"
 
-    rx_okato = re.compile("^(\d+), '(.+?)', '(\d+)', (\d+), (\d+|NULL), ('\d+'|NULL), (\d+), ('.+'|NULL)$")
     rx_letter = re.compile("^(\d*)([^\d]*)$")
-    rx_letter2 = re.compile("^(\d*)(/\d+)?([^\d]*)$")
+    rx_letter2 = re.compile("^(\d*)([^\d]*)(/\d+)?([^\d]*)$")
 
     def __init__(self, config):
         super(FIASParser, self).__init__(config)
@@ -36,53 +36,38 @@ class FIASParser(AddressParser):
         for opt in config.options("fias"):
             if opt.startswith("include."):
                 self.regions.add(config.get("fias", opt))
-        self.okato_codes = set()
+        self.oktmo_codes = set()
         for opt in config.options("fias"):
-            if opt.startswith("include_okato."):
-                self.okato_codes.add(config.get("fias", opt))
-        self.okato = {}  # code -> OKATO
-        self.div_cache = {}  # OKATO -> division
+            if opt.startswith("include_oktmo."):
+                self.oktmo_codes.add(config.get("fias", opt))
+        self.oktmo = {}  # code -> OKTMO
+        self.div_cache = {}  # OKTMO -> division
         self.aoid_cache = {}  # AOID -> division
         self.street_cache = {}  # AOGUID -> Street
 
     def download(self):
         return True
 
-    def load_okato(self):
-        def dq(s):
-            if s.startswith("'") and s.endswith("'"):
-                s = s[1:-1]
-            s = s.strip()
-            if s == "NULL":
-                s = None
-            return s
-
-        def no(s):
-            if not s:
-                return s
-            if len(s) < 11:
-                s += "0" * (11 - len(s))
-            return s
-
-        self.info("Loading OKATO structure")
-        path = os.path.join(self.prefix, "okato_data.sql")
+    def load_oktmo(self):
+        self.info("Load OKTMO structure")
+        # Inject top level
+        for t in self.addrobj.find({"code": {"$regex": "^\d+\d+ 0 000 000 000 000 0000 0000 000$"}}):
+            oktmo = t["okato"][:2] + "000000"
+            self.oktmo[oktmo] = OKTMO(okato=t["okato"], oktmo=oktmo,
+                                      name=t["offname"], parent=None)
+        # Load CSV
+        path = os.path.join(self.prefix, "oktmo.csv")
         with open(path) as f:
-            for l in f:
-                if l.startswith("INSERT INTO class_okato"):
-                    d = l.split("VALUES(", 1)[1].strip()[:-2]
-                    match = self.rx_okato.match(d)
-                    if not match:
-                        raise Exception("Invalid line: %s" % d)
-                    _, name, code, _, _, parent_code, _, info = [dq(x) for x in match.groups()]
-                    self.okato[no(code)] = OKATO(
-                        code=code, name=name, parent=no(parent_code),
-                        info=info
-                    )
+            reader = csv.reader(f, delimiter=";")
+            reader.next()
+            for okato, oktmo, name, parent in reader:
+                self.oktmo[oktmo] = OKTMO(okato=okato, oktmo=oktmo,
+                                          name=name, parent=parent)
 
-    def get_addrobj(self, okato=None, aoguid=None, unique=True):
+    def get_addrobj(self, oktmo=None, aoguid=None, unique=True):
         q = {}
-        if okato:
-            q["okato"] = okato
+        if oktmo:
+            q["oktmo"] = oktmo
         if aoguid:
             q["aoguid"] = aoguid
         r = list(self.addrobj.find(q, limit=2))
@@ -93,34 +78,30 @@ class FIASParser(AddressParser):
         else:
             return None
 
-    def create_division(self, okato):
+    def create_division(self, oktmo):
         """
         Create division by OKATO object
         :returns: Division
         """
-        if okato in self.div_cache:
-            return self.div_cache[okato]
-        o = self.okato[okato]
-        d = Division.objects.filter(data__OKATO=okato).first()
+        if oktmo in self.div_cache:
+            return self.div_cache[oktmo]
+        o = self.oktmo[oktmo]
+        d = Division.objects.filter(data__OKTMO=oktmo).first()
         if not d:
             if o.parent:
                 parent = self.create_division(o.parent)
             else:
                 parent = self.get_top()
-            # Skip virtual nodes
-            if o.name.endswith("/"):
-                self.div_cache[okato] = parent
-                return parent
-            ao = self.get_addrobj(okato=okato)
+            ao = self.get_addrobj(oktmo=oktmo)
             self.info("Creating %s" % o.name)
             data = {
-                "OKATO": okato
+                "OKTMO": oktmo
             }
             if ao:
                 name = ao["offname"]
                 short_name = ao["shortname"]
-                if ao.get("oktmo", "").strip():
-                    data["OKTMO"] = ao["oktmo"]
+                if ao.get("okato", "").strip():
+                    data["OKATO"] = ao["okato"]
                 if ao.get("kladr", "").strip():
                     data["KLADR"] = ao["kladr"]
                 data["FIAS_AOID"] = ao["aoid"]
@@ -136,7 +117,7 @@ class FIASParser(AddressParser):
                 data=data
             )
             d.save()
-        self.div_cache[okato] = d
+        self.div_cache[oktmo] = d
         return d
 
     def create_division2(self, ao):
@@ -150,8 +131,8 @@ class FIASParser(AddressParser):
         if not d:
             if ao["parentguid"]:
                 po = self.get_addrobj(aoguid=ao["parentguid"])
-                if po["okato"]:
-                    parent = self.create_division(po["okato"])
+                if po["oktmo"]:
+                    parent = self.create_division(po["oktmo"])
                 else:
                     parent = self.create_division2(po)
             else:
@@ -160,6 +141,8 @@ class FIASParser(AddressParser):
             data = {}
             name = ao["offname"]
             short_name = ao["shortname"]
+            if ao.get("okato", "").strip():
+                data["OKATO"] = ao["okato"]
             if ao.get("oktmo", "").strip():
                 data["OKTMO"] = ao["oktmo"]
             if ao.get("kladr", "").strip():
@@ -190,8 +173,8 @@ class FIASParser(AddressParser):
             p = self.get_addrobj(aoguid=a["parentguid"])
             if not p:
                 raise ValueError("Invalid street parent: AOGUID=%s" % a["parentguid"])
-            if p["okato"] and p["okato"] in self.okato:
-                parent = self.create_division(p["okato"])
+            if p["oktmo"] and p["oktmo"] in self.oktmo:
+                parent = self.create_division(p["oktmo"])
             else:
                 parent = self.create_division2(p)
             s = Street(
@@ -205,6 +188,13 @@ class FIASParser(AddressParser):
             s.save()
         self.street_cache[aoguid] = s
 
+    def check_oktmo(self, oktmo):
+        oktmo = oktmo.strip()
+        for o in self.oktmo_codes:
+            if oktmo.startswith(o):
+                return True
+        return False
+
     def sync_buildings(self):
         def nq(s):
             if not s:
@@ -212,6 +202,7 @@ class FIASParser(AddressParser):
             s = s.strip()
             if not s:
                 return None
+            s = s.replace(".", "/").replace("-", "/")
             return s
 
         def split_num(s):
@@ -239,13 +230,14 @@ class FIASParser(AddressParser):
             if not match:
                 print r
                 raise ValueError("Invalid number: '%s'" % s)
-            n, n2, l = match.groups()
+            n, l1, n2, l2 = match.groups()
             if not n:
                 n = None
             if n2:
                 n2 = n2[1:]  # strip /
             else:
                 n2 = None
+            l = l1 or l2
             if not l:
                 l = None
             return n, n2, l
@@ -255,8 +247,9 @@ class FIASParser(AddressParser):
         for reg in self.regions:
             with dbf.Table(os.path.join(self.prefix, "HOUSE%s.DBF" % reg)) as t:
                 for r in t:
-                    if self.okato_codes and r.okato.strip() not in self.okato_codes:
-                        continue
+                    if self.oktmo_codes:
+                        if not self.check_oktmo(r.oktmo):
+                            continue
                     bd = dict((k, str(r[k]).strip()) for k in t._meta.fields)
                     houses.insert(bd)
                     # Get house from base
@@ -266,13 +259,7 @@ class FIASParser(AddressParser):
                         pass
                     else:
                         # Create building
-                        if len(r.okato.strip().rstrip("0")) <= 5:
-                            p = self.get_addrobj(aoguid=r.aoguid)
-                            # Skip street
-                            pp = self.get_addrobj(aoguid=p["parentguid"])
-                            d = self.create_division2(pp)
-                        else:
-                            d = self.create_division(r.okato)
+                        d = self.create_division(r.oktmo)
                         bld = Building(
                             adm_division=d,
                             postal_code=r.postalcode,
@@ -291,9 +278,19 @@ class FIASParser(AddressParser):
                         street = self.create_street(r.aoguid)
                         num, num2, num_letter = split_num2(r.housenum)
                         build, build_letter = split_num(r.buildnum)
-                        struct, struct2, struct_letter = split_num2(r.strucnum)
-                        if r.eststatus == 2 and num == struct:
-                            struct = None
+                        estate, estate2, estate_letter = None, None, None
+                        struct, struct2, struct_letter = None, None, None
+                        if r.strucnum.startswith("ВЛ."):
+                            estate = r.strucnum[3:].strip()
+                        elif r.eststatus in (1, 3):
+                            estate, estate2, estate_letter = split_num2(r.strucnum)
+                        else:
+                            sn = r.strucnum
+                            if sn.startswith("СТР"):
+                                sn = sn[3:]
+                            struct, struct2, struct_letter = split_num2(sn)
+                            if r.eststatus == 2 and num == struct:
+                                struct = None
                         a = Address(
                             building=bld,
                             street=street,
@@ -305,6 +302,9 @@ class FIASParser(AddressParser):
                             struct=struct,
                             struct2=struct2,
                             struct_letter=struct_letter,
+                            estate=estate,
+                            estate2=estate2,
+                            estate_letter=estate_letter,
                             data={
                                 "FIAS_HOUSEGUID": r.houseguid
                             }
@@ -331,7 +331,7 @@ class FIASParser(AddressParser):
     def load_addrobj(self):
         self.info("Loading ADDROBJ.dbf")
         self.addrobj = get_db()["noc.cache.fias.addrobj"]
-        # return
+        return
         self.addrobj.drop()
         with dbf.Table(os.path.join(self.prefix, "ADDROBJ.DBF")) as t_addrobj:
             N = 1000
@@ -362,7 +362,7 @@ class FIASParser(AddressParser):
                 self.info("   writing %d records" % len(batch))
                 self.addrobj.insert(batch)
         self.info("    Creating indexes")
-        self.addrobj.ensure_index("okato")
+        self.addrobj.ensure_index("oktmo")
         self.addrobj.ensure_index("aoguid")
 
     def update_levels(self):
@@ -371,9 +371,9 @@ class FIASParser(AddressParser):
 
     def sync(self):
         self.load_addrobj()
-        self.load_okato()
+        self.load_oktmo()
         self.sync_buildings()
         self.update_levels()
 
 ##
-OKATO = namedtuple("OKATO", ["code", "name", "parent", "info"])
+OKTMO = namedtuple("OKTMO", ["okato", "oktmo", "name", "parent"])
