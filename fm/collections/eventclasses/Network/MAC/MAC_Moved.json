@@ -20,18 +20,12 @@
             "description": "Interface",
             "type": "interface_name",
             "required": false
-        },
-        {
-            "name": "to_interface",
-            "description": "Target interface",
-            "type": "interface_name",
-            "required": false
         }
     ],
     "text": {
         "en": {
-            "subject_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}{% if to_interface %} to interface {{to_interface}}{% endif %}",
-            "body_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}{% if to_interface %} to interface {{to_interface}}{% endif %}",
+            "subject_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+            "body_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
             "symptoms": "",
             "probable_causes": "",
             "recommended_actions": ""
