@@ -42,6 +42,7 @@ class FIASParser(AddressParser):
                 self.okato_codes.add(config.get("fias", opt))
         self.okato = {}  # code -> OKATO
         self.div_cache = {}  # OKATO -> division
+        self.aoid_cache = {}  # AOID -> division
         self.street_cache = {}  # AOGUID -> Street
 
     def download(self):
@@ -138,6 +139,44 @@ class FIASParser(AddressParser):
         self.div_cache[okato] = d
         return d
 
+    def create_division2(self, ao):
+        """
+        Create division by ADDROBJ, used when OKATO is empty
+        :returns: Division
+        """
+        if ao["aoid"] in self.aoid_cache:
+            return self.aoid_cache[ao["aoid"]]
+        d = Division.objects.filter(data__FIAS_AOID=ao["aoid"]).first()
+        if not d:
+            if ao["parentguid"]:
+                po = self.get_addrobj(aoguid=ao["parentguid"])
+                if po["okato"]:
+                    parent = self.create_division(po["okato"])
+                else:
+                    parent = self.create_division2(po)
+            else:
+                parent = self.get_top()
+            self.info("Creating %s" % ao["offname"])
+            data = {}
+            name = ao["offname"]
+            short_name = ao["shortname"]
+            if ao.get("oktmo", "").strip():
+                data["OKTMO"] = ao["oktmo"]
+            if ao.get("kladr", "").strip():
+                data["KLADR"] = ao["kladr"]
+            data["FIAS_AOID"] = ao["aoid"]
+            data["FIAS_AOGUID"] = ao["aoguid"]
+            data["FIAS_CODE"] = ao["code"]
+            d = Division(
+                name=name,
+                short_name=short_name,
+                parent=parent,
+                data=data
+            )
+            d.save()
+        self.aoid_cache[ao["aoid"]] = d
+        return d
+
     def create_street(self, aoguid):
         if aoguid in self.street_cache:
             return self.street_cache[aoguid]
@@ -148,9 +187,13 @@ class FIASParser(AddressParser):
             if not a:
                 raise ValueError("Invalid street: AOGUID=%s" % aoguid)
             self.info("Creating street %s %s" % (a["offname"], a["shortname"]))
-            parent = Division.objects.filter(data__FIAS_AOGUID=a["parentguid"]).first()
-            if not parent:
+            p = self.get_addrobj(aoguid=a["parentguid"])
+            if not p:
                 raise ValueError("Invalid street parent: AOGUID=%s" % a["parentguid"])
+            if p["okato"] and p["okato"] in self.okato:
+                parent = self.create_division(p["okato"])
+            else:
+                parent = self.create_division2(p)
             s = Street(
                 parent=parent,
                 name=a["offname"],
@@ -207,12 +250,15 @@ class FIASParser(AddressParser):
                 l = None
             return n, n2, l
 
+        houses = get_db()["noc.cache.fias.houses"]
+        houses.drop()
         for reg in self.regions:
             with dbf.Table(os.path.join(self.prefix, "HOUSE%s.DBF" % reg)) as t:
                 for r in t:
-                    # @todo: Gentler filter
-                    if r.okato.strip() not in self.okato_codes:
+                    if self.okato_codes and r.okato.strip() not in self.okato_codes:
                         continue
+                    bd = dict((k, str(r[k]).strip()) for k in t._meta.fields)
+                    houses.insert(bd)
                     # Get house from base
                     b = Building.objects.filter(data__FIAS_HOUSEGUID=r.houseguid).first()
                     if b:
@@ -220,7 +266,13 @@ class FIASParser(AddressParser):
                         pass
                     else:
                         # Create building
-                        d = self.create_division(r.okato)
+                        if len(r.okato.strip().rstrip("0")) <= 5:
+                            p = self.get_addrobj(aoguid=r.aoguid)
+                            # Skip street
+                            pp = self.get_addrobj(aoguid=p["parentguid"])
+                            d = self.create_division2(pp)
+                        else:
+                            d = self.create_division(r.okato)
                         bld = Building(
                             adm_division=d,
                             postal_code=r.postalcode,
@@ -240,6 +292,8 @@ class FIASParser(AddressParser):
                         num, num2, num_letter = split_num2(r.housenum)
                         build, build_letter = split_num(r.buildnum)
                         struct, struct2, struct_letter = split_num2(r.strucnum)
+                        if r.eststatus == 2 and num == struct:
+                            struct = None
                         a = Address(
                             building=bld,
                             street=street,
@@ -277,14 +331,16 @@ class FIASParser(AddressParser):
     def load_addrobj(self):
         self.info("Loading ADDROBJ.dbf")
         self.addrobj = get_db()["noc.cache.fias.addrobj"]
-        return
+        # return
         self.addrobj.drop()
         with dbf.Table(os.path.join(self.prefix, "ADDROBJ.DBF")) as t_addrobj:
             N = 1000
             batch = []
             for r in t_addrobj:
-                if r.regioncode != "77":
+                if r.regioncode not in self.regions:
                     continue
+                if r.actstatus != 1:
+                    continue  # Skip historical data
                 batch += [{
                     "aoid": r.aoid.strip(),
                     "aoguid": r.aoguid.strip(),
@@ -295,8 +351,8 @@ class FIASParser(AddressParser):
                     "okato": r.okato.strip(),
                     "oktmo": r.oktmo.strip(),
                     "kladr": r.code.strip(),
-                    "parentguid": r.parentguid.strip()
-                    # @todo: Centstatus
+                    "parentguid": r.parentguid.strip(),
+                    "centstatus": r.centstatus
                 }]
                 if len(batch) >= N:
                     self.info("   writing %d records" % N)
@@ -309,10 +365,15 @@ class FIASParser(AddressParser):
         self.addrobj.ensure_index("okato")
         self.addrobj.ensure_index("aoguid")
 
+    def update_levels(self):
+        self.info("Updating levels")
+        Division.update_levels()
+
     def sync(self):
         self.load_addrobj()
         self.load_okato()
         self.sync_buildings()
+        self.update_levels()
 
 ##
 OKATO = namedtuple("OKATO", ["code", "name", "parent", "info"])
