@@ -10,9 +10,9 @@ cache = local/cache/fias
 # Include region, insert top-level FIAS code
 # Include Moscow
 #include.0 = 77
-# Include OKATO codes
-# Moscow/Strogino
-include_okato.0 = 45283577000
+# Include OKTMO codes
+#inclide_oktmo.0 = 46618
 
-[okato]
-download_url = http://www.classbase.ru/public/files/okato.zip
+[oktmo]
+download_url = https://bitbucket.org/nocproject/noc/downloads/oktmo.csv.gz
+
