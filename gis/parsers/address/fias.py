@@ -41,7 +41,8 @@ class FIASParser(AddressParser):
             if opt.startswith("include_oktmo."):
                 self.oktmo_codes.add(config.get("fias", opt))
         self.oktmo = {}  # code -> OKTMO
-        self.div_cache = {}  # OKTMO -> division
+        self.okato = {}  # okato -> OKTMO
+        self.div_cache = {}  # okato -> division
         self.aoid_cache = {}  # AOID -> division
         self.street_cache = {}  # AOGUID -> Street
 
@@ -53,21 +54,27 @@ class FIASParser(AddressParser):
         # Inject top level
         for t in self.addrobj.find({"code": {"$regex": "^\d+\d+ 0 000 000 000 000 0000 0000 000$"}}):
             oktmo = t["okato"][:2] + "000000"
-            self.oktmo[oktmo] = OKTMO(okato=t["okato"], oktmo=oktmo,
-                                      name=t["offname"], parent=None)
+            o = OKTMO(okato=t["okato"], oktmo=oktmo,
+                      name=t["offname"], parent=None)
+            self.oktmo[oktmo] = o
+            self.okato[t["okato"]] = o
         # Load CSV
         path = os.path.join(self.prefix, "oktmo.csv")
         with open(path) as f:
             reader = csv.reader(f, delimiter=";")
             reader.next()
             for okato, oktmo, name, parent in reader:
-                self.oktmo[oktmo] = OKTMO(okato=okato, oktmo=oktmo,
-                                          name=name, parent=parent)
+                o = OKTMO(okato=okato, oktmo=oktmo,
+                          name=name, parent=parent)
+                self.oktmo[oktmo] = o
+                self.okato[okato] = o
 
-    def get_addrobj(self, oktmo=None, aoguid=None, unique=True):
+    def get_addrobj(self, oktmo=None, okato=None, aoguid=None, unique=True):
         q = {}
         if oktmo:
             q["oktmo"] = oktmo
+        if okato:
+            q["okato"] = okato
         if aoguid:
             q["aoguid"] = aoguid
         r = list(self.addrobj.find(q, limit=2))
@@ -78,30 +85,31 @@ class FIASParser(AddressParser):
         else:
             return None
 
-    def create_division(self, oktmo):
+    def create_division(self, okato):
         """
         Create division by OKATO object
         :returns: Division
         """
-        if oktmo in self.div_cache:
-            return self.div_cache[oktmo]
-        o = self.oktmo[oktmo]
-        d = Division.objects.filter(data__OKTMO=oktmo).first()
+        if okato in self.div_cache:
+            return self.div_cache[okato]
+        o = self.okato[okato]
+        d = Division.objects.filter(data__OKATO=okato).first()
         if not d:
             if o.parent:
-                parent = self.create_division(o.parent)
+                p = self.oktmo[o.parent].okato
+                parent = self.create_division(p)
             else:
                 parent = self.get_top()
-            ao = self.get_addrobj(oktmo=oktmo)
+            ao = self.get_addrobj(okato=okato)
             self.info("Creating %s" % o.name)
             data = {
-                "OKTMO": oktmo
+                "OKATO": okato
             }
             if ao:
                 name = ao["offname"]
                 short_name = ao["shortname"]
-                if ao.get("okato", "").strip():
-                    data["OKATO"] = ao["okato"]
+                if ao.get("oktmo", "").strip():
+                    data["OKTMO"] = ao["oktmo"]
                 if ao.get("kladr", "").strip():
                     data["KLADR"] = ao["kladr"]
                 data["FIAS_AOID"] = ao["aoid"]
@@ -117,7 +125,7 @@ class FIASParser(AddressParser):
                 data=data
             )
             d.save()
-        self.div_cache[oktmo] = d
+        self.div_cache[okato] = d
         return d
 
     def create_division2(self, ao):
@@ -131,8 +139,8 @@ class FIASParser(AddressParser):
         if not d:
             if ao["parentguid"]:
                 po = self.get_addrobj(aoguid=ao["parentguid"])
-                if po["oktmo"]:
-                    parent = self.create_division(po["oktmo"])
+                if po["okato"]:
+                    parent = self.create_division(po["okato"])
                 else:
                     parent = self.create_division2(po)
             else:
@@ -173,8 +181,8 @@ class FIASParser(AddressParser):
             p = self.get_addrobj(aoguid=a["parentguid"])
             if not p:
                 raise ValueError("Invalid street parent: AOGUID=%s" % a["parentguid"])
-            if p["oktmo"] and p["oktmo"] in self.oktmo:
-                parent = self.create_division(p["oktmo"])
+            if p["okato"] and p["okato"] in self.okato:
+                parent = self.create_division(p["okato"])
             else:
                 parent = self.create_division2(p)
             s = Street(
@@ -259,7 +267,7 @@ class FIASParser(AddressParser):
                         pass
                     else:
                         # Create building
-                        d = self.create_division(r.oktmo)
+                        d = self.create_division(r.okato)
                         bld = Building(
                             adm_division=d,
                             postal_code=r.postalcode,
