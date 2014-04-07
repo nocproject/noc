@@ -38,9 +38,10 @@ class Address(Document):
 
     data = DictField()
 
-    def display_ru(self):
+    def display_ru(self, levels=0, to_level=None):
         """
-        Russian-style display
+        Russian-style short display
+        :param levels: Number of division levels above street to show
         """
         # House number
         a = []
@@ -66,6 +67,7 @@ class Address(Document):
                 n += self.struct_letter
             a += ["стр. %s" % n]
         # Add street
+        n = []
         if self.street:
             if self.street.short_name:
                 if self.street.short_name in RU_SHORT_AFTER:
@@ -74,9 +76,25 @@ class Address(Document):
                     st = "%s %s" % (self.street.short_name, self.street.name)
             else:
                 st = self.street.name
-            return "%s %s" % (st, " ".join(a))
+            n += ["%s %s" % (st, " ".join(a))]
         else:
-            return " ".join(a)
+            n += [" ".join(a)]
+        if levels or to_level is not None:
+            if to_level is not None:
+                levels = 10
+            p = self.building.adm_division
+            while p and levels:
+                if to_level is not None and p.level == to_level:
+                    break
+                if p.short_name:
+                    n = ["%s %s" % (p.short_name, p.name)] + n
+                else:
+                    n = [p.name] + n
+                p = p.parent
+                levels -= 1
+        return " ".join(n)
+
+    # @todo: cmp_addr
 
 ##
 RU_SHORT_AFTER = set([u"б-р", u"проезд", u"пер", u"ш"])

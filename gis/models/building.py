@@ -60,5 +60,12 @@ class Building(Document):
         Update floors
         """
 
+    @property
+    def primary_address(self):
+        return Address.objects.filter(building=self.id).first()
+
 ## Setup signals
 signals.pre_save.connect(Building.update_floors, sender=Building)
+
+## Avoid circular references
+from address import Address
