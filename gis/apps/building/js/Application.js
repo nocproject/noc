@@ -12,6 +12,7 @@ Ext.define("NOC.gis.building.Application", {
         "NOC.gis.building.Model",
         "NOC.gis.building.AddressesModel",
         "NOC.gis.division.LookupField",
+        "NOC.gis.street.LookupField",
         "Ext.ux.form.DictField"
     ],
     model: "NOC.gis.building.Model",
@@ -111,7 +112,8 @@ Ext.define("NOC.gis.building.Application", {
                             text: "Street",
                             dataIndex: "street",
                             width: 150,
-                            renderer: NOC.render.Lookup("street")
+                            renderer: NOC.render.Lookup("street"),
+                            editor: "gis.street.LookupField"
                         },
                         {
                             text: "Num",
@@ -128,52 +130,62 @@ Ext.define("NOC.gis.building.Application", {
                         {
                             text: "Num Letter",
                             dataIndex: "num_letter",
-                            width: 50
+                            width: 50,
+                            editor: "textfield"
                         },
                         {
                             text: "Build",
                             dataIndex: "build",
-                            width: 50
+                            width: 50,
+                            editor: "numberfield"
                         },
                         {
                             text: "Build2",
                             dataIndex: "build2",
-                            width: 50
+                            width: 50,
+                            editor: "numberfield"
                         },
                         {
                             text: "Build Letter",
                             dataIndex: "build_letter",
-                            width: 50
+                            width: 50,
+                            editor: "textfield"
                         },
                         {
                             text: "Struct",
                             dataIndex: "struct",
-                            width: 50
+                            width: 50,
+                            editor: "numberfield"
                         },
                         {
                             text: "Struct2",
                             dataIndex: "struct2",
-                            width: 50
+                            width: 50,
+                            editor: "numberfield"
                         },
                         {
                             text: "Struct Letter",
                             dataIndex: "struct_letter",
-                            width: 50
+                            width: 50,
+                            editor: "textfield"
                         },
                         {
                             text: "Estate",
                             dataIndex: "estate",
-                            width: 50
+                            width: 50,
+                            editor: "numberfield"
                         },
                         {
                             text: "Estate2",
                             dataIndex: "estate2",
-                            width: 50
+                            width: 50,
+                            editor: "numberfield"
                         },
                         {
                             text: "Est. Letter",
                             dataIndex: "estate_letter",
-                            width: 50
+                            width: 50,
+                            editor: "textfield"
                         },
                         {
                             text: "Full Number",
