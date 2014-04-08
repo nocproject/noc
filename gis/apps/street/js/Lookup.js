@@ -8,5 +8,5 @@ console.debug("Defining NOC.gis.street.Lookup");
 
 Ext.define("NOC.gis.street.Lookup", {
     extend: "NOC.core.Lookup",
-    url: "/gis/division/lookup/"
+    url: "/gis/street/lookup/"
 });

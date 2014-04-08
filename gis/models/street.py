@@ -45,5 +45,5 @@ class Street(Document):
     def full_path(self):
         if not self.parent:
             return ""
-        r = [self.parent.full_path, unicode(self.parent)]
+        r = [self.parent.full_path, unicode(self)]
         return " | ".join(r)
