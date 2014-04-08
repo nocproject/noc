@@ -17,21 +17,24 @@ class Script(NOCScript):
     implements = [IGetSwitchport]
     rx_line = re.compile(
         r"^(?P<interface>\S*\s*\d+(\/\d+)?)\s+(?P<status>\S+)\s+"
-        r"(?P<mode>ACCESS|TRUNK)\s+\d+\s+(?P<untagged>\d+)\s+\S+\s+"
-        r"(?P<vlans>\S+)", re.MULTILINE)
+        r"(?P<mode>ACCESS|TRUNK)\s+(?P<access_vlan>\d+)\s+"
+        r"(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\S+)", re.MULTILINE)
 
     def execute(self):
         r = []
         c = self.cli("show interfaces switchport")
         for match in self.rx_line.finditer(c):
             trunk = match.group("mode") == "TRUNK"
+            pvid = None
             if trunk:
+                pvid = int(match.group("untagged"))
                 vlans = match.group("vlans")
                 if vlans == "ALL":
                     tagged = range(1, 4095)
                 else:
                     tagged = self.expand_rangelist(vlans)
             else:
+                pvid = int(match.group("access_vlan"))
                 tagged = []
             members = []
             interface = match.group("interface")
@@ -46,7 +49,7 @@ class Script(NOCScript):
                 #"description"    : "Dummy";
                 "802.1Q Enabled": trunk,
                 "802.1ad Tunnel": False,
-                "untagged": int(match.group("untagged")),
+                "untagged": pvid,
                 "tagged": tagged,
                 "members": members
                 }]
