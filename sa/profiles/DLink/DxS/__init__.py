@@ -79,7 +79,8 @@ class Profile(NOCProfile):
         r"(?P<admin_speed>Auto|10M|100M|1000M|10G)/"
         r"((?P<admin_duplex>Half|Full)/)?"
         r"(?P<admin_flowctrl>Enabled|Disabled)\s+"
-        r"(?P<status>LinkDown|Link\sDown)?((?P<speed>10M|100M|1000M|10G)/"
+        r"(?P<status>LinkDown|Link\sDown|Err\-Disabled)?"
+        r"((?P<speed>10M|100M|1000M|10G)/"
         r"(?P<duplex>Half|Full)/(?P<flowctrl>None|Disabled|802.3x))?\s+"
         r"(?P<addr_learning>Enabled|Disabled)\s*"
         r"((?P<trap_state>Enabled|Disabled)\s*)?"
@@ -120,7 +121,9 @@ class Profile(NOCProfile):
             return None
 
     def get_ports(self, script):
-        if (script.match_version(DES3200, version__gte="1.70.B007") \
+        if ((script.match_version(DES3200, version__gte="1.70.B007") \
+        and script.match_version(DES3200, version__lte="3.00.B000"))
+        or script.match_version(DES3200, version__gte="4.20.B000") \
         or script.match_version(DES3028, version__gte="2.90.B10") \
         or script.match_version(DGS3120, version__gte="3.00.B022") \
         or script.match_version(DGS3620, version__gte="2.50.017")) \
