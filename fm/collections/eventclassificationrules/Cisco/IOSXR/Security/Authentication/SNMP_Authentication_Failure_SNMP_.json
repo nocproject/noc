@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOSXR | Security | Authentication | SNMP Authentication Failure (SNMP)",
+    "uuid": "1fa975e0-9fd7-493f-ae11-015a0b92e9f6",
+    "description": "Security | Authentication | SNMP Authentication Failure",
+    "event_class__name": "Security | Authentication | SNMP Authentication Failure",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-PRODUCTS-MIB::"
+        },
+        {
+            "key_re": "^CISCO-SYSTEM-MIB::csySnmpAuthFailAddressType\\.0$",
+            "value_re": "^1$"
+        },
+        {
+            "key_re": "^CISCO-SYSTEM-MIB::csySnmpAuthFailAddress\\.0$",
+            "value_re": "^(?P<ip__bin_to_ip>.+)$"
+        }
+    ]
+}
