@@ -54,6 +54,7 @@ class Division(Document):
         return Division.objects.filter(parent__exists=False, type=type)
 
     def get_buildings(self):
+        from building import Building
         return Building.objects.filter(adm_division=self.id)
 
     @classmethod
@@ -81,6 +82,3 @@ class Division(Document):
             r = [unicode(p)] + r
             p = p.parent
         return " | ".join(r)
-
-## Avoid circular references
-from building import Building
