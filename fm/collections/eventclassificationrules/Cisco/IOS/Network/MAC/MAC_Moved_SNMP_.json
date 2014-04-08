@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOS | Network | MAC | MAC Moved (SNMP)",
+    "uuid": "a8f913f0-57a8-4345-8e5c-a2e4fe456352",
+    "description": "CISCO-MAC-NOTIFICATION-MIB::cmnMacMoveNotification",
+    "event_class__name": "Network | MAC | MAC Moved",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-MAC-NOTIFICATION-MIB::cmnMacMoveNotification$"
+        },
+        {
+            "key_re": "^CISCO-MAC-NOTIFICATION-MIB::cmnMACMoveAddress\\.0$",
+            "value_re": "^(?P<mac__bin_to_mac>.+)$"
+        },
+        {
+            "key_re": "^CISCO-MAC-NOTIFICATION-MIB::cmnMACMoveVlanNumber\\.0$",
+            "value_re": "^(?P<vlan>\\d+)$"
+        }
+    ]
+}

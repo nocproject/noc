@@ -258,6 +258,7 @@ Cisco | IOS | Network | MAC | MAC Flap #1 (SYSLOG),5f6853a6-ec54-46c2-81ac-fbc07
 Cisco | IOS | Network | MAC | MAC Flap #2 (SYSLOG),6db4d64e-5e16-4654-a92f-f66c1e457db4,Cisco/IOS/Network/MAC/MAC_Flap_2_SYSLOG_.json,4374cd9b91eb17ea93324691629a6242d72878769921582f053171053e2cd46a
 Cisco | IOS | Network | MAC | MAC Flap #3 (SYSLOG),67fa1c07-70e5-4864-b48e-dc07857ccca9,Cisco/IOS/Network/MAC/MAC_Flap_3_SYSLOG_.json,c76a7137b5b6841fdcdb3bfff6f7e3b3fc5913cbfe2a0ccc12a77bf222563809
 Cisco | IOS | Network | MAC | MAC Flap #4 (SYSLOG),a0bab3cd-bb25-4519-9c22-cf83dc6d84aa,Cisco/IOS/Network/MAC/MAC_Flap_4_SYSLOG_.json,dcea802fa7f9e38142c23c9bb8cc3271e6d5dc5ddf2eb78ebbddf9827d1ba5d2
+Cisco | IOS | Network | MAC | MAC Moved (SNMP),a8f913f0-57a8-4345-8e5c-a2e4fe456352,Cisco/IOS/Network/MAC/MAC_Moved_SNMP_.json,f7eee622122e27232b7f4a3cfca8b8434c299bc6bd67b803d32b1c12364678eb
 Cisco | IOS | Network | MPLS | LDP Neighbor Down (SYSLOG),bd8fd649-6bda-408c-b4c4-3f37bbac2f2d,Cisco/IOS/Network/MPLS/LDP_Neighbor_Down_SYSLOG_.json,123906ed9fc53681067cba4fd2e0fe27ee0b695a18ebe3bf4b1218de2c837659
 Cisco | IOS | Network | MPLS | LDP Neighbor Up (SYSLOG),0ab989e6-b4f0-4047-89aa-27c19c967ec5,Cisco/IOS/Network/MPLS/LDP_Neighbor_Up_SYSLOG_.json,1cd16a80a3cc9fabace735f85b9566ed5f3cb2230b367a81906b9bd92aa2a5d2
 Cisco | IOS | Network | MPLS | TDP Neighbor Down (SYSLOG),ea43aaa9-a461-4468-bdd3-710b5c173666,Cisco/IOS/Network/MPLS/TDP_Neighbor_Down_SYSLOG_.json,438395db87bf6ac2102b17c3020ba65b933844b605839b05bb641f4ad2d16d27
