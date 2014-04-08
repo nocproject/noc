@@ -47,6 +47,18 @@ class FIASParser(AddressParser):
         self.street_cache = {}  # AOGUID -> Street
 
     def download(self):
+        self.download_file(
+            self.config.get("oktmo", "download_url"),
+            os.path.join(self.prefix, "oktmo.csv.gz"),
+            auto_deflate=True
+        )
+        # Check for FIAS files
+        if not os.path.isfile(os.path.join(self.prefix, "ADDROBJ.DBF")):
+            self.error("FIAS database not found")
+            self.error("Please download full DBF version")
+            self.error("from http://fias.nalog.ru/Public/DownloadPage.aspx")
+            self.error("and unpack it to %s directory" % self.prefix)
+            return False
         return True
 
     def load_oktmo(self):
