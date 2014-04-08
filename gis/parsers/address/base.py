@@ -17,8 +17,9 @@ class AddressParser(object):
     # Top-level object
     TOP_NAME = None
 
-    def __init__(self, config):
+    def __init__(self, config, opts):
         self.config = config
+        self.opts = opts
 
     def info(self, msg):
         print "[%s] %s" % (self.name, msg)

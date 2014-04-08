@@ -10,6 +10,7 @@
 from ConfigParser import SafeConfigParser
 import os
 import inspect
+from optparse import make_option
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
@@ -18,6 +19,17 @@ from noc.gis.parsers.address.base import AddressParser
 
 class Command(BaseCommand):
     help = "Update address database"
+
+    option_list = BaseCommand.option_list + (
+        make_option("--no-download", action="store_false",
+                    dest="download"),
+        make_option("--download", action="store_true",
+                    dest="download", default=True),
+        make_option("--no-reset-cache", action="store_false",
+                    dest="reset_cache"),
+        make_option("--reset-cache", action="store_true",
+                    dest="reset_cache", default=True),
+    )
 
     def get_parsers(self):
         # @todo: Read directory
@@ -38,12 +50,15 @@ class Command(BaseCommand):
                     if inspect.isclass(a) and issubclass(a, AddressParser) and a != AddressParser:
                         parsers += [a]
         # Initialize parsers
-        parsers = [p(config) for p in parsers]
+        parsers = [p(config, options) for p in parsers]
         # Download
-        for p in parsers:
-            print "Downloading", p.name
-            if not p.download():
-                raise CommandError("Failed to download %s" % p.name)
+        if options["download"]:
+            for p in parsers:
+                print "Downloading", p.name
+                if not p.download():
+                    raise CommandError("Failed to download %s" % p.name)
+        else:
+            print "Skipping downloads"
         # Sync
         for p in parsers:
             print "Syncing", p.name
