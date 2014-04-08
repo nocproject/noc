@@ -36,4 +36,14 @@ class Street(Document):
     end_date = DateTimeField()
 
     def __unicode__(self):
-        return "%s, %s" % (self.name, self.short_name)
+        if self.short_name:
+            return "%s, %s" % (self.name, self.short_name)
+        else:
+            return self.name
+
+    @property
+    def full_path(self):
+        if not self.parent:
+            return ""
+        r = [self.parent.full_path, unicode(self.parent)]
+        return " | ".join(r)

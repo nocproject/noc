@@ -13,7 +13,6 @@ from noc.lib import nosql
 
 from srs import SRS
 
-
 class FontSet(nosql.Document):
     meta = {
         "collection": "noc.gis.fontsets",
