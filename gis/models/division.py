@@ -71,5 +71,16 @@ class Division(Document):
         for d in cls.get_top():
             _update(d, 0)
 
+    @property
+    def full_path(self):
+        if not self.parent:
+            return ""
+        r = [unicode(self.parent)]
+        p = self.parent.parent
+        while p:
+            r = [unicode(p)] + r
+            p = p.parent
+        return " | ".join(r)
+
 ## Avoid circular references
 from building import Building

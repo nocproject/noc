@@ -20,21 +20,11 @@ class DivisionApplication(ExtDocApplication):
     model = Division
     query_fields = ["name__icontains"]
 
-    def full_path(self, o):
-        if not o.parent:
-            return ""
-        r = [unicode(o.parent)]
-        p = o.parent.parent
-        while p:
-            r = [unicode(p)] + r
-            p = p.parent
-        return " | ".join(r)
-
     def field_full_parent(self, o):
-        return self.full_path(o)
+        return o.full_path
 
     def instance_to_lookup(self, o, fields=None):
         return {
             "id": str(o.id),
-            "label": self.full_path(o)
+            "label": o.full_path
         }
