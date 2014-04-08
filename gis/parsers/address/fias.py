@@ -341,7 +341,7 @@ class FIASParser(AddressParser):
         if not self.opts["reset_cache"]:
             self.info("Using cached ADDROBJ.dbf")
             return
-        self.info("Loading ADDROBJ.dbf")
+        self.info("Loading ADDROBJ.dbf. Regions %s" % ", ".join(self.regions))
         self.addrobj.drop()
         with dbf.Table(os.path.join(self.prefix, "ADDROBJ.DBF")) as t_addrobj:
             N = 1000
@@ -372,7 +372,7 @@ class FIASParser(AddressParser):
                 self.info("   writing %d records" % len(batch))
                 self.addrobj.insert(batch)
         self.info("    Creating indexes")
-        self.addrobj.ensure_index("oktmo")
+        self.addrobj.ensure_index("okato")
         self.addrobj.ensure_index("aoguid")
 
     def update_levels(self):
