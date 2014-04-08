@@ -29,8 +29,8 @@ class FIASParser(AddressParser):
     rx_letter = re.compile("^(\d*)([^\d]*)$")
     rx_letter2 = re.compile("^(\d*)([^\d]*)(/\d+)?([^\d]*)$")
 
-    def __init__(self, config):
-        super(FIASParser, self).__init__(config)
+    def __init__(self, config, opts):
+        super(FIASParser, self).__init__(config, opts)
         self.prefix = self.config.get("fias", "cache")
         self.regions = set()
         for opt in config.options("fias"):
@@ -337,9 +337,11 @@ class FIASParser(AddressParser):
         return " ".join(r)
 
     def load_addrobj(self):
-        self.info("Loading ADDROBJ.dbf")
         self.addrobj = get_db()["noc.cache.fias.addrobj"]
-        return
+        if not self.opts["reset_cache"]:
+            self.info("Using cached ADDROBJ.dbf")
+            return
+        self.info("Loading ADDROBJ.dbf")
         self.addrobj.drop()
         with dbf.Table(os.path.join(self.prefix, "ADDROBJ.DBF")) as t_addrobj:
             N = 1000
