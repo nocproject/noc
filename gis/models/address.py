@@ -42,7 +42,7 @@ class Address(Document):
 
     data = DictField()
 
-    def display_ru(self, levels=0, to_level=None):
+    def display_ru(self, levels=0, to_level=None, sep=", "):
         """
         Russian-style short display
         :param levels: Number of division levels above street to show
@@ -104,7 +104,7 @@ class Address(Document):
                     n = [p.name] + n
                 p = p.parent
                 levels -= 1
-        return " ".join(n)
+        return sep.join(n)
 
     # @todo: cmp_addr
 

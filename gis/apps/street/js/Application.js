@@ -70,23 +70,7 @@ Ext.define("NOC.gis.street.Application", {
                     xtype: "dictfield",
                     name: "data",
                     fieldLabel: "Data",
-                    allowBlank: true,
-                    columns: [
-                        {
-                            text: "Name",
-                            dataIndex: "name",
-                            width: 100,
-                            editor: "textfield",
-                            renderer: "htmlEncode"
-                        },
-                        {
-                            text: "Value",
-                            dataIndex: "value",
-                            flex: 1,
-                            editor: "textfield",
-                            renderer: "htmlEncode"
-                        }
-                    ]
+                    allowBlank: true
                 }
             ]
         });
