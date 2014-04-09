@@ -1,0 +1,23 @@
+#!./bin/python
+##----------------------------------------------------------------------
+## Convert DBF to csv
+##----------------------------------------------------------------------
+
+## Python modules
+import csv
+## Third-party modules
+import dbf
+
+
+def dbf2csv(dpath, ofile, codepage="cp866"):
+    writer = csv.writer(ofile)
+    with dbf.Table(dpath, codepage=codepage) as t:
+        fields = t._meta.fields
+        writer.writerow(fields)
+        for row in t:
+            writer.writerow([row[f] for f in fields])
+
+if __name__ == "__main__":
+    import sys
+    dbf2csv(sys.argv[1], sys.stdout)
+
