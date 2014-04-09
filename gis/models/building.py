@@ -27,13 +27,15 @@ class Building(Document):
     # Administrative division
     adm_division = PlainReferenceField(Division)
 
-    status = StringField(choices=[
-        ("P", "PROJECT"),
-        ("B", "BUILDING"),
-        ("R", "READY"),
-        ("E", "EVICTED"),
-        ("D", "DEMOLISHED")
-    ])
+    status = StringField(
+        choices=[
+            ("P", "PROJECT"),
+            ("B", "BUILDING"),
+            ("R", "READY"),
+            ("E", "EVICTED"),
+            ("D", "DEMOLISHED")
+        ],
+        default="R")
     ## Total homes
     homes = IntField()
     ## Maximal amount of floors
