@@ -13,7 +13,8 @@ Ext.define("NOC.gis.building.Application", {
         "NOC.gis.building.AddressesModel",
         "NOC.gis.division.LookupField",
         "NOC.gis.street.LookupField",
-        "Ext.ux.form.DictField"
+        "Ext.ux.form.DictField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.gis.building.Model",
     initComponent: function() {
@@ -101,6 +102,44 @@ Ext.define("NOC.gis.building.Application", {
                     name: "data",
                     fieldLabel: "Data",
                     allowBlank: true
+                },
+                {
+                    xtype: "gridfield",
+                    name: "entrances",
+                    fieldLabel: "Entrances",
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: "Number",
+                            dataIndex: "number",
+                            width: 75,
+                            editor: "textfield"
+                        },
+                        {
+                            text: "First Floor",
+                            dataIndex: "first_floor",
+                            width: 75,
+                            editor: "textfield"
+                        },
+                        {
+                            text: "Last Floor",
+                            dataIndex: "last_floor",
+                            width: 75,
+                            editor: "textfield"
+                        },
+                        {
+                            text: "First Home",
+                            dataIndex: "first_home",
+                            width: 75,
+                            editor: "textfield"
+                        },
+                        {
+                            text: "Last Home",
+                            dataIndex: "last_home",
+                            width: 75,
+                            editor: "textfield"
+                        }
+                    ]
                 }
             ],
             inlines: [
