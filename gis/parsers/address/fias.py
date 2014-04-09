@@ -212,6 +212,7 @@ class FIASParser(AddressParser):
             )
             s.save()
         self.street_cache[aoguid] = s
+        return s
 
     def check_oktmo(self, oktmo):
         oktmo = oktmo.strip()
