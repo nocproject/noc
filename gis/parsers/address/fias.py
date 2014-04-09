@@ -131,10 +131,8 @@ class FIASParser(AddressParser):
             else:
                 name = o.name
                 short_name = None
-            print "<%s,%s>" % (short_name, name)
             if not short_name:
                 short_name, name = normalize_division(name)
-            print "[%s,%s]" % (short_name, name)
             d = Division(
                 name=name,
                 short_name=short_name,
