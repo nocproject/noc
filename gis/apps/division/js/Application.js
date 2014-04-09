@@ -93,5 +93,13 @@ Ext.define("NOC.gis.division.Application", {
             ]
         });
         me.callParent();
-    }
+    },
+    filters: [
+        {
+            title: "By Parent",
+            name: "parent",
+            ftype: "lookup",
+            lookup: "gis.division"
+        }
+    ]
 });
