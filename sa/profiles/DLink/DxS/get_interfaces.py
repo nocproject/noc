@@ -255,9 +255,12 @@ class Script(NOCScript):
             c = ""
         ctp_enable = self.rx_ctp_gs.search(c) is not None
         if ctp_enable:
-            c = self.cli_object_stream(
-            "show loopdetect ports all", parser=self.parse_ctp,
-            cmd_next="n", cmd_stop="q")
+            try:
+                c = self.cli_object_stream(
+                "show loopdetect ports all", parser=self.parse_ctp,
+                cmd_next="n", cmd_stop="q")
+            except self.CLISyntaxError:
+                c = []
             if c == []:
                 c = self.cli_object_stream(
                 "show loopdetect ports", parser=self.parse_ctp,
