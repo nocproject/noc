@@ -34,7 +34,10 @@ class Command(BaseCommand):
     LEVELS = 10
 
     def dump_division(self, writer, d, ctr, level):
-        level = level + [d.name]
+        if d.short_name:
+            level = level + ["%s %s" % (d.short_name, d.name)]
+        else:
+            level = level + [d.name]
         # Dump buildings
         for bld in d.get_buildings():
             row = level + [""] * (self.LEVELS - len(level))
