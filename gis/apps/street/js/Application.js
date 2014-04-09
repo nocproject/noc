@@ -75,5 +75,13 @@ Ext.define("NOC.gis.street.Application", {
             ]
         });
         me.callParent();
-    }
+    },
+    filters: [
+        {
+            title: "By Parent",
+            name: "parent",
+            ftype: "lookup",
+            lookup: "gis.division"
+        }
+    ]
 });
