@@ -20,6 +20,7 @@ from noc.gis.models.street import Street
 from noc.gis.models.address import Address
 from base import AddressParser
 from noc.lib.nosql import get_db
+from noc.gis.utils.addr.ru import normalize_division
 
 
 class FIASParser(AddressParser):
@@ -130,6 +131,10 @@ class FIASParser(AddressParser):
             else:
                 name = o.name
                 short_name = None
+            print "<%s,%s>" % (short_name, name)
+            if not short_name:
+                short_name, name = normalize_division(name)
+            print "[%s,%s]" % (short_name, name)
             d = Division(
                 name=name,
                 short_name=short_name,
@@ -170,6 +175,8 @@ class FIASParser(AddressParser):
             data["FIAS_AOID"] = ao["aoid"]
             data["FIAS_AOGUID"] = ao["aoguid"]
             data["FIAS_CODE"] = ao["code"]
+            if not short_name:
+                short_name, name = normalize_division(name)
             d = Division(
                 name=name,
                 short_name=short_name,
