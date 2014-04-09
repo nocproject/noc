@@ -21,7 +21,11 @@ import re
 class Script(NOCScript):
     name = "DLink.DxS.get_mac_address_table"
     implements = [IGetMACAddressTable]
-    rx_line = re.compile(r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<mac>\S+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)\s*(\S*\s*)?$", re.MULTILINE)
+    rx_line = re.compile(
+        r"^\s*(?P<vlan_id>\d+)\s+(\S+\s+)?"
+        r"(?P<mac>[0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-"
+        r"[0-9A-F]{2}-[0-9A-F]{2})\s+"
+        r"(?P<interfaces>\S+)\s+(?P<type>\S+)\s*(\S*\s*)?$", re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show fdb"
@@ -58,6 +62,6 @@ class Script(NOCScript):
                     "del_on_timeout":"D",
                     "deleteonreset":"D",
                     "del_on_reset":"D",
-                    "blockbyaddrbind":"D"}[mactype],
+                    "blockbyaddrbind":"D"}[mactype]
             }]
         return r
