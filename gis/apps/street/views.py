@@ -27,6 +27,9 @@ class StreetApplication(ExtDocApplication):
         else:
             return ""
 
+    def field_full_path(self, o):
+        return o.full_path
+
     def instance_to_lookup(self, o, fields=None):
         return {
             "id": str(o.id),

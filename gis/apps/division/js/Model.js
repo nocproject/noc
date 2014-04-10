@@ -37,6 +37,11 @@ Ext.define("NOC.gis.division.Model", {
             persist: false
         },
         {
+            name: "full_path",
+            type: "string",
+            persist: false
+        },
+        {
             name: "level",
             type: "int"
         },
