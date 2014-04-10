@@ -45,6 +45,7 @@ class ExtApplication(Application):
     query_param = "__query"
     only_param = "__only"
     fav_status = "fav_status"
+    default_ordering = []
 
     def __init__(self, *args, **kwargs):
         super(ExtApplication, self).__init__(*args, **kwargs)
@@ -150,6 +151,7 @@ class ExtApplication(Application):
         if hasattr(data, "_as_sql"):  # For Models only
             data = data.select_related()
         # Apply sorting
+        ordering = ordering or self.default_ordering
         if ordering:
             data = data.order_by(*ordering)
         if format == "ext":
