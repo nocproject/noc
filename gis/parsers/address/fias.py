@@ -27,8 +27,8 @@ class FIASParser(AddressParser):
     name = "FIAS"
     TOP_NAME = u"Российская Федерация"
 
-    rx_letter = re.compile("^(\d*)([^\d]*)$")
-    rx_letter2 = re.compile("^(\d*)([^\d]*)(/\d+)?([^\d]*)$")
+    rx_letter = re.compile("^(\d*)([^\d]*\S*)$")
+    rx_letter2 = re.compile("^(\d*)([^/]*)(/\d+)?(\S*)$")
 
     def __init__(self, config, opts):
         super(FIASParser, self).__init__(config, opts)
@@ -254,7 +254,6 @@ class FIASParser(AddressParser):
                 s = s.replace("-", "/")
             match = self.rx_letter2.match(s)
             if not match:
-                print r
                 raise ValueError("Invalid number: '%s'" % s)
             n, l1, n2, l2 = match.groups()
             if not n:
