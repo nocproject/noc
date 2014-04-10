@@ -53,6 +53,11 @@ Ext.define("NOC.gis.division.Application", {
             ],
             fields: [
                 {
+                    name: "full_path",
+                    xtype: "displayfield",
+                    fieldLabel: "Full Path"
+                },
+                {
                     name: "type",
                     xtype: "combobox",
                     fieldLabel: "Type",

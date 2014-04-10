@@ -45,6 +45,11 @@ Ext.define("NOC.gis.street.Application", {
             ],
             fields: [
                 {
+                    name: "full_path",
+                    xtype: "displayfield",
+                    fieldLabel: "Full Path"
+                },
+                {
                     name: "parent",
                     xtype: "gis.division.LookupField",
                     fieldLabel: "Parent"

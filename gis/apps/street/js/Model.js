@@ -37,6 +37,11 @@ Ext.define("NOC.gis.street.Model", {
             persist: false
         },
         {
+            name: "full_path",
+            type: "string",
+            persist: false
+        },
+        {
             name: "is_active",
             type: "boolean",
             defaultValue: true

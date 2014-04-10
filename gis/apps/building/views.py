@@ -25,6 +25,7 @@ class BuildingApplication(ExtDocApplication):
     title = "Building"
     menu = "Setup | Buildings"
     model = Building
+    default_ordering = ["adm_division"]
 
     addresses = AddressInline(Address)
 
