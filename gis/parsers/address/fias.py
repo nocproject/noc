@@ -98,31 +98,31 @@ class FIASParser(AddressParser):
         else:
             return None
 
-    def create_division(self, okato):
+    def create_division(self, oktmo):
         """
         Create division by OKATO object
         :returns: Division
         """
-        if okato in self.div_cache:
-            return self.div_cache[okato]
-        o = self.okato[okato]
-        d = Division.objects.filter(data__OKATO=okato).first()
+        if oktmo in self.div_cache:
+            return self.div_cache[oktmo]
+        o = self.oktmo[oktmo]
+        d = Division.objects.filter(data__OKTMO=oktmo).first()
         if not d:
             if o.parent:
-                p = self.oktmo[o.parent].okato
+                p = self.oktmo[o.parent].oktmo
                 parent = self.create_division(p)
             else:
                 parent = self.get_top()
-            ao = self.get_addrobj(okato=okato)
+            ao = self.get_addrobj(oktmo=oktmo)
             self.info("Creating %s" % o.name)
             data = {
-                "OKATO": okato
+                "OKTMO": oktmo
             }
             if ao:
                 name = ao["offname"]
                 short_name = ao["shortname"]
-                if ao.get("oktmo", "").strip():
-                    data["OKTMO"] = ao["oktmo"]
+                if ao.get("okato", "").strip():
+                    data["OKATO"] = ao["okato"]
                 if ao.get("kladr", "").strip():
                     data["KLADR"] = ao["kladr"]
                 data["FIAS_AOID"] = ao["aoid"]
@@ -140,7 +140,7 @@ class FIASParser(AddressParser):
                 data=data
             )
             d.save()
-        self.div_cache[okato] = d
+        self.div_cache[oktmo] = d
         return d
 
     def create_division2(self, ao):
@@ -154,8 +154,8 @@ class FIASParser(AddressParser):
         if not d:
             if ao["parentguid"]:
                 po = self.get_addrobj(aoguid=ao["parentguid"])
-                if po["okato"]:
-                    parent = self.create_division(po["okato"])
+                if po["oktmo"]:
+                    parent = self.create_division(po["oktmo"])
                 else:
                     parent = self.create_division2(po)
             else:
@@ -198,8 +198,10 @@ class FIASParser(AddressParser):
             p = self.get_addrobj(aoguid=a["parentguid"])
             if not p:
                 raise ValueError("Invalid street parent: AOGUID=%s" % a["parentguid"])
-            if p["okato"] and p["okato"] in self.okato:
-                parent = self.create_division(p["okato"])
+            if p["oktmo"] and p["oktmo"] in self.oktmo:
+                parent = self.create_division(p["oktmo"])
+            elif p["okato"] and p["okato"] in self.okato:
+                parent = self.create_division(self.okato[p["okato"]].oktmo)
             else:
                 parent = self.create_division2(p)
             s = Street(
@@ -220,6 +222,17 @@ class FIASParser(AddressParser):
             if oktmo.startswith(o):
                 return True
         return False
+
+    def refine_oktmo(self, oktmo, okato):
+        """
+        Refine OKTMO by OKATO
+        """
+        if (okato and len(oktmo) == 8 and len(okato) == 11 and
+                okato[-3:] != "000"):
+            o = self.okato.get(okato)
+            if o:
+                return o.oktmo
+        return oktmo
 
     def sync_buildings(self):
         def nq(s):
@@ -284,7 +297,14 @@ class FIASParser(AddressParser):
                         pass
                     else:
                         # Create building
-                        d = self.create_division(r.okato)
+                        oktmo = self.refine_oktmo(r.oktmo, r.okato)
+                        if oktmo in self.oktmo:
+                            d = self.create_division(oktmo)
+                        else:
+                            # Fallback to addrobj
+                            ao = self.get_addrobj(aoguid=r.aoguid)
+                            po = self.get_addrobj(aoguid=ao["parentguid"])
+                            d = self.create_division2(po)
                         bld = Building(
                             adm_division=d,
                             postal_code=r.postalcode,
