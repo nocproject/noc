@@ -19,9 +19,13 @@ class StreetApplication(ExtDocApplication):
     menu = "Setup | Streets"
     model = Street
     query_fields = ["name__icontains"]
+    default_ordering = ["parent", "name"]
 
     def field_full_parent(self, o):
-        return o.full_path
+        if o.parent:
+            return o.parent.full_path
+        else:
+            return ""
 
     def instance_to_lookup(self, o, fields=None):
         return {
