@@ -15,6 +15,7 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.gis.parsers.address.base import AddressParser
+from noc.lib.debug import error_report
 
 
 class Command(BaseCommand):
@@ -60,6 +61,9 @@ class Command(BaseCommand):
         else:
             print "Skipping downloads"
         # Sync
-        for p in parsers:
-            print "Syncing", p.name
-            p.sync()
+        try:
+            for p in parsers:
+                print "Syncing", p.name
+                p.sync()
+        except:
+            error_report()
