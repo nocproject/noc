@@ -374,7 +374,8 @@ class FIASParser(AddressParser):
         return " ".join(r)
 
     def load_addrobj(self):
-        self.addrobj = get_db()["noc.cache.fias.addrobj"]
+        db = get_db()
+        self.addrobj = db["noc.cache.fias.addrobj"]
         if not self.opts["reset_cache"]:
             self.info("Using cached ADDROBJ.dbf")
             return
@@ -411,6 +412,7 @@ class FIASParser(AddressParser):
         self.info("    Creating indexes")
         self.addrobj.ensure_index("okato")
         self.addrobj.ensure_index("aoguid")
+        db["noc.buildings"].ensure_index("data.FIAS_HOUSEGUID")
 
     def update_levels(self):
         self.info("Updating levels")
