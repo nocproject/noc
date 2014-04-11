@@ -27,6 +27,7 @@ Ext.define("NOC.core.ModelApplication", {
     idField: "id",
     previewIcon: "icon_magnifier",
     preview: null,
+    treeFilter: null,
     //
     initComponent: function() {
         var me = this;
@@ -272,6 +273,34 @@ Ext.define("NOC.core.ModelApplication", {
                 });
             }
         });
+        //
+        var gridToolbars = [
+            {
+                xtype: "toolbar",
+                items: me.applyPermissions(gridToolbar)
+            },
+            {
+                xtype: "pagingtoolbar",
+                store: me.store,
+                dock: "bottom",
+                displayInfo: true,
+                plugins: new Ext.ux.ProgressBarPager()
+            }
+        ];
+        //
+        if(me.treeFilter) {
+            var treeFilterToolbar = Ext.create("NOC.core.TreeFilterToolbar", {
+                listeners: {
+                    scope: me,
+                    select: me.onFilter
+                }
+            });
+            gridToolbars.push(treeFilterToolbar);
+            me.filterGetters.push(
+                Ext.bind(treeFilterToolbar.getFilter, treeFilterToolbar)
+            );
+        }
+        //
         var gridPanel = Ext.create("Ext.grid.Panel", {
             itemId: "grid",
             store: me.store,
@@ -295,19 +324,7 @@ Ext.define("NOC.core.ModelApplication", {
             stateId: me.appName + "-grid",
             plugins: [Ext.create("Ext.ux.grid.AutoSize")],
             selModel: selModel,
-            dockedItems: [
-                {
-                    xtype: "toolbar",
-                    items: me.applyPermissions(gridToolbar)
-                },
-                {
-                    xtype: "pagingtoolbar",
-                    store: me.store,
-                    dock: "bottom",
-                    displayInfo: true,
-                    plugins: new Ext.ux.ProgressBarPager()
-                }
-            ],
+            dockedItems: gridToolbars,
             rbar: grid_rbar,
             viewConfig: {
                 enableTextSelection: true,

@@ -30,6 +30,7 @@ class ExtDocApplication(ExtApplication):
     query_condition = "startswith"
     int_query_fields = []  # Integer fields for exact match
     clean_fields = {}  # field name -> Parameter instance
+    parent_field = None  # Tree lookup
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
@@ -204,6 +205,29 @@ class ExtDocApplication(ExtApplication):
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
         return self.list_data(request, self.instance_to_lookup)
+
+    @view(method=["GET"], url=r"^tree_lookup/$", access="lookup", api=True)
+    def api_lookup_tree(self, request):
+        if not self.parent_field:
+            return None
+        q = dict((str(k), v[0] if len(v) == 1 else v)
+            for k, v in request.GET.lists())
+        parent = q.get("parent")
+        if not parent:
+            qs = {"%s__exists" % self.parent_field: False}
+        else:
+            qs = {"%s" % self.parent_field: parent}
+        data = self.model.objects.filter(**qs)
+        ordering = self.default_ordering
+        if ordering:
+            data = data.order_by(*ordering)
+        count = data.count()
+        data = [{"id": str(o.id), "label": unicode(o).encode("utf8")} for o in data]
+        return {
+            "total": count,
+            "success": True,
+            "data": data
+        }
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
