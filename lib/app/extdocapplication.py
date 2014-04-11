@@ -31,6 +31,7 @@ class ExtDocApplication(ExtApplication):
     int_query_fields = []  # Integer fields for exact match
     clean_fields = {}  # field name -> Parameter instance
     parent_field = None  # Tree lookup
+    parent_model = None
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
@@ -212,12 +213,13 @@ class ExtDocApplication(ExtApplication):
             return None
         q = dict((str(k), v[0] if len(v) == 1 else v)
             for k, v in request.GET.lists())
+        model = self.parent_model or self.model
         parent = q.get("parent")
         if not parent:
             qs = {"%s__exists" % self.parent_field: False}
         else:
             qs = {"%s" % self.parent_field: parent}
-        data = self.model.objects.filter(**qs)
+        data = model.objects.filter(**qs)
         ordering = self.default_ordering
         if ordering:
             data = data.order_by(*ordering)
