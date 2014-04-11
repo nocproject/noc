@@ -9,6 +9,7 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.lib.app.docinline import DocInline
+from noc.gis.models.division import Division
 from noc.gis.models.building import Building
 from noc.gis.models.address import Address
 
@@ -25,6 +26,8 @@ class BuildingApplication(ExtDocApplication):
     title = "Building"
     menu = "Setup | Buildings"
     model = Building
+    parent_model = Division
+    parent_field = "parent"
     default_ordering = ["adm_division"]
 
     addresses = AddressInline(Address)
