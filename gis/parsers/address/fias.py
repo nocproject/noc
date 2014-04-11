@@ -199,7 +199,11 @@ class FIASParser(AddressParser):
             if not p:
                 raise ValueError("Invalid street parent: AOGUID=%s" % a["parentguid"])
             if p["oktmo"] and p["oktmo"] in self.oktmo:
-                parent = self.create_division(p["oktmo"])
+                if p.get("oktmo") and p.get("okato"):
+                    oktmo = self.refine_oktmo(p["oktmo"], p["okato"])
+                else:
+                    oktmo = p["oktmo"]
+                parent = self.create_division(oktmo)
             elif p["okato"] and p["okato"] in self.okato:
                 parent = self.create_division(self.okato[p["okato"]].oktmo)
             else:
