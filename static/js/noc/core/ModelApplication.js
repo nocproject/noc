@@ -290,6 +290,8 @@ Ext.define("NOC.core.ModelApplication", {
         //
         if(me.treeFilter) {
             var treeFilterToolbar = Ext.create("NOC.core.TreeFilterToolbar", {
+                field: me.treeFilter,
+                url: me.base_url + "tree_lookup/",
                 listeners: {
                     scope: me,
                     select: me.onFilter

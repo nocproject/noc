@@ -9,8 +9,8 @@ console.debug("Defining NOC.core.TreeFilterToolbar");
 
 Ext.define("NOC.core.TreeFilterToolbar", {
     extend: "Ext.toolbar.Toolbar",
-    field: "parent",
-    url: "/gis/division/tree_lookup/",
+    field: null,
+    url: null,
 
     initComponent: function() {
         var me = this;
@@ -108,7 +108,9 @@ Ext.define("NOC.core.TreeFilterToolbar", {
     getFilter: function() {
         var me = this,
             q = {};
-        q[me.field] = me.currentFilter;
+        if(me.currentFilter) {
+            q[me.field] = me.currentFilter;
+        }
         return q;
     }
 });
