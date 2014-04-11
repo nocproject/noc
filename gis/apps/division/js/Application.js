@@ -15,6 +15,7 @@ Ext.define("NOC.gis.division.Application", {
     ],
     model: "NOC.gis.division.Model",
     search: true,
+    treeFilter: "parent",
     initComponent: function() {
         var me = this;
 
