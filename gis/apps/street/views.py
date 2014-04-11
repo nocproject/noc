@@ -8,6 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
+from noc.gis.models.division import Division
 from noc.gis.models.street import Street
 
 
@@ -18,6 +19,8 @@ class StreetApplication(ExtDocApplication):
     title = "Street"
     menu = "Setup | Streets"
     model = Street
+    parent_model = Division
+    parent_field = "parent"
     query_fields = ["name__icontains"]
     default_ordering = ["parent", "name"]
 

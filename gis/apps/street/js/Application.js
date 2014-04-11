@@ -15,6 +15,8 @@ Ext.define("NOC.gis.street.Application", {
     ],
     model: "NOC.gis.street.Model",
     search: true,
+    treeFilter: "parent",
+
     initComponent: function() {
         var me = this;
 
