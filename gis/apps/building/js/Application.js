@@ -17,6 +17,7 @@ Ext.define("NOC.gis.building.Application", {
         "Ext.ux.form.GridField"
     ],
     model: "NOC.gis.building.Model",
+    treeFilter: "adm_division",
     initComponent: function() {
         var me = this;
         Ext.apply(me, {
