@@ -17,7 +17,7 @@ class Division(Document):
     meta = {
         "collection": "noc.divisions",
         "allow_inheritance": False,
-        "indexes": ["parent", "data"]
+        "indexes": ["parent", "data", "name"]
     }
     # Division type
     type = StringField(default="A", choices=[

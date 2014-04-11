@@ -18,6 +18,7 @@ class DivisionApplication(ExtDocApplication):
     title = "Division"
     menu = "Setup | Divisions"
     model = Division
+    parent_field = "parent"
     query_fields = ["name__icontains"]
     default_ordering = ["level", "name"]
 
