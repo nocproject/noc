@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.fm.models import EventClassificationRule
+from noc.fm.models.eventclassificationrule import EventClassificationRule, EventClassificationRuleCategory
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.lib.validators import is_objectid, is_oid
@@ -25,6 +25,8 @@ class EventClassificationRuleApplication(ExtDocApplication):
     title = "Classification Rule"
     menu = "Setup | Classification Rules"
     model = EventClassificationRule
+    parent_model = EventClassificationRuleCategory
+    parent_field = "parent"
     query_condition = "icontains"
 
     @view(url="^test/$", method=["POST"], access="test", api=True)

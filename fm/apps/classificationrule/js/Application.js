@@ -16,7 +16,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
     ],
     model: "NOC.fm.classificationrule.Model",
     search: true,
-
+    treeFilter: "category",
     columns: [
         {
             text: "Name",
