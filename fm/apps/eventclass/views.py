@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.fm.models import EventClass
+from noc.fm.models.eventclass import EventClass, EventClassCategory
 
 
 class EventClassApplication(ExtDocApplication):
@@ -18,5 +18,7 @@ class EventClassApplication(ExtDocApplication):
     title = "Event Class"
     menu = "Setup | Event Classes"
     model = EventClass
+    parent_model = EventClassCategory
+    parent_field = "parent"
     query_fields = ["name", "description"]
     query_condition = "icontains"

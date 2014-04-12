@@ -13,6 +13,7 @@ Ext.define("NOC.fm.eventclass.Application", {
     ],
     model: "NOC.fm.eventclass.Model",
     search: true,
+    treeFilter: "category",
     columns: [
         {
             text: "Name",
