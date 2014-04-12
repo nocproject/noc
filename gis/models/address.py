@@ -18,7 +18,8 @@ from noc.lib.nosql import PlainReferenceField
 class Address(Document):
     meta = {
         "collection": "noc.addresses",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "indexes": ["building", "street"]
     }
     #
     building = PlainReferenceField(Building)

@@ -20,6 +20,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
     ],
     model: "NOC.inv.objectmodel.Model",
     search: true,
+    treeFilter: "category",
     filters: [
         {
             title: "By Is Builtin",

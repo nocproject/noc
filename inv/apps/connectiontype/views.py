@@ -10,6 +10,7 @@
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.connectiontype import ConnectionType
 from noc.main.models.collectioncache import CollectionCache
+from noc.main.models.doccategory import DocCategory
 
 
 class ConnectionTypeApplication(ExtDocApplication):
@@ -19,6 +20,8 @@ class ConnectionTypeApplication(ExtDocApplication):
     title = "Connection Types"
     menu = "Setup | Connection Types"
     model = ConnectionType
+    parent_model = DocCategory
+    parent_field = "parent"
     query_fields = ["name__icontains", "description__icontains"]
 
     def field_is_builtin(self, o):
