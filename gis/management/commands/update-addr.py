@@ -33,8 +33,17 @@ class Command(BaseCommand):
     )
 
     def get_parsers(self):
-        # @todo: Read directory
-        return ["fias"]
+        parsers = []
+        root = "gis/parsers/address"
+        for m in os.listdir(root):
+            if m in ("__init__.py", "base.py"):
+                continue
+            p = os.path.join(root, m)
+            if os.path.isfile(p) and p.endswith(".py"):
+                parsers += [m[:-3]]
+            elif os.path.isdir(p) and os.path.isfile(os.path.join(p, "__init__.py")):
+                parsers += [m]
+        return parsers
 
     def handle(self, *args, **options):
         #
