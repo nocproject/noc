@@ -8,6 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
+from noc.main.models.doccategory import DocCategory
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.modelinterface import ModelInterface
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
@@ -21,6 +22,8 @@ class ObjectModelApplication(ExtDocApplication):
     title = "Object Models"
     menu = "Setup | Object Models"
     model = ObjectModel
+    parent_model = DocCategory
+    parent_field = "parent"
     query_fields = ["name__icontains", "description__icontains"]
 
     def clean(self, data):

@@ -19,6 +19,7 @@ from connectiontype import ConnectionType
 from connectionrule import ConnectionRule
 from unknownmodel import UnknownModel
 from vendor import Vendor
+from noc.main.models.doccategory import DocCategory
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
@@ -101,6 +102,7 @@ class ObjectModel(Document):
     connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
     uuid = UUIDField(binary=True)
     plugins = ListField(StringField(), required=False)
+    category = ObjectIdField()
 
     def __unicode__(self):
         return self.name
@@ -248,3 +250,4 @@ def clear_unknown_models(sender, document, **kwargs):
 
 
 signals.post_save.connect(clear_unknown_models, sender=ObjectModel)
+DocCategory.register(ObjectModel)

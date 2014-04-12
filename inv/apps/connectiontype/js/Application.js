@@ -17,6 +17,7 @@ Ext.define("NOC.inv.connectiontype.Application", {
     ],
     model: "NOC.inv.connectiontype.Model",
     search: true,
+    treeFilter: "category",
     filters: [
         {
             title: "By Is Builtin",
