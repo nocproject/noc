@@ -14,6 +14,8 @@ Ext.define("NOC.fm.alarmclass.Application", {
     ],
     model: "NOC.fm.alarmclass.Model",
     search: true,
+    treeFilter: "category",
+    rowClassField: "row_class",
     columns: [
         {
             text: "Name",

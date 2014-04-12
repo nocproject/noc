@@ -96,6 +96,11 @@ Ext.define("NOC.fm.alarmclass.Model", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });
