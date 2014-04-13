@@ -208,7 +208,7 @@ class Launcher(Daemon):
                 sys.exit(1)
             # Check for configs and daemon instances
             opts = self.config.options(dn)
-            if "config" in opts:
+            if "config" in opts and self.config.get(dn, "config"):
                 configs = [("0", self.config.get(dn, "config"))]
             else:
                 configs = [(c[7:], self.config.get(dn, c))
