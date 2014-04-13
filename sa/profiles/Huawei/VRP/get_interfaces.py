@@ -58,6 +58,7 @@ class Script(NOCScript):
         "MTunnel": None,
         "Ring-if": "physical",
         "Tunnel": "tunnel",
+        "Virtual-Ethernet": None,
         "Virtual-Template": None,
         "Vlanif": "SVI"
     }
