@@ -55,6 +55,7 @@ class Script(NOCScript):
         "LoopBack": "loopback",
         "MEth": "management",
         "M-Ethernet": "management",
+        "MTunnel": None,
         "Ring-if": "physical",
         "Tunnel": "tunnel",
         "Virtual-Template": None,
