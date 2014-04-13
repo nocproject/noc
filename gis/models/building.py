@@ -22,7 +22,7 @@ class Building(Document):
     meta = {
         "collection": "noc.buildings",
         "allow_inheritance": False,
-        "indexes": ["adm_division", "data"]
+        "indexes": ["adm_division", "data", "sort_order"]
     }
     # Administrative division
     adm_division = PlainReferenceField(Division)
@@ -55,6 +55,9 @@ class Building(Document):
     #
     start_date = DateTimeField()
     end_date = DateTimeField()
+    # Internal field for sorting
+    # Filled by primary address trigger
+    sort_order = StringField()
 
     @classmethod
     def update_floors(cls, sender, document, **kwargs):
@@ -64,6 +67,11 @@ class Building(Document):
 
     @property
     def primary_address(self):
+        # Try primary address first
+        pa = Address.objects.filter(building=self.id, is_primary=True).first()
+        if pa:
+            return pa
+        # Fallback to first address found
         return Address.objects.filter(building=self.id).first()
 
 ## Setup signals

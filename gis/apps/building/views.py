@@ -28,7 +28,7 @@ class BuildingApplication(ExtDocApplication):
     model = Building
     parent_model = Division
     parent_field = "parent"
-    default_ordering = ["adm_division"]
+    default_ordering = ["sort_order"]
 
     addresses = AddressInline(Address)
 

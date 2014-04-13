@@ -8,7 +8,8 @@
 
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField, DictField
+from mongoengine.fields import StringField, IntField, DictField, BooleanField
+from mongoengine.signals import post_save
 ## NOC modules
 from street import Street
 from building import Building
@@ -32,16 +33,68 @@ class Address(Document):
     # Building
     build = IntField()
     build_letter = StringField()
-    struct_letter = StringField()
     # Structure
     struct = IntField()
     struct2 = IntField()
+    struct_letter = StringField()
     # Estate
     estate = IntField()
     estate2 = IntField()
     estate_letter = StringField()
 
     data = DictField()
+
+    is_primary = BooleanField(default=True)
+
+    @classmethod
+    def update_primary(cls, sender, document, **kwargs):
+        """
+        Reset other primary addresses from building
+        """
+        def q(x):
+            return x if x else ""
+
+        def nq(x):
+            if not x:
+                x = 0
+            return "%06d" % x
+
+        if document.is_primary:
+            # Reset other primary addresses
+            Address._get_collection().update({
+                "building": document.building.id,
+                "$ne": {
+                    "id": document.id
+                }
+            }, {
+                "$set": {
+                    "is_primary": False
+                }
+            })
+            # Fill sort order
+            so = "|".join((str(x) if x else "") for x in [
+                document.street.name,
+                q(document.street.short_name),
+                nq(document.num),
+                q(document.num_letter),
+                nq(document.num2),
+                nq(document.build),
+                q(document.build_letter),
+                nq(document.struct),
+                q(document.struct_letter),
+                nq(document.struct2),
+                nq(document.estate),
+                q(document.estate_letter),
+                nq(document.estate2)
+            ])
+            Building._get_collection().update({
+                "_id": document.building.id
+            }, {
+                "$set": {
+                    "sort_order": so
+                }
+            })
+
 
     def display_ru(self, levels=0, to_level=None, sep=", "):
         """
@@ -111,3 +164,6 @@ class Address(Document):
 
 ##
 RU_SHORT_AFTER = set([u"б-р", u"проезд", u"пер", u"ш"])
+
+## Signals
+post_save.connect(Address.update_primary, sender=Address)
