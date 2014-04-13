@@ -14,6 +14,7 @@ import stat
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.lib.collection import Collection
+from noc.main.models.doccategory import DocCategory
 from noc.gis.models.layer import Layer
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.modelinterface import ModelInterface
@@ -142,6 +143,9 @@ class Command(BaseCommand):
         elif options["cmd"] == "status":
             return self.handle_status(args[1:])
 
+    def fix_categories(self):
+        pass
+
     def get_collection(self, name):
         for n, d in self.collections:
             if n == name:
@@ -149,6 +153,7 @@ class Command(BaseCommand):
         raise CommandError("Collection not found: %s" % name)
 
     def handle_sync(self):
+        DocCategory.fix_all()
         try:
             for name, doc in self.collections:
                 lc = Collection(name, doc, local=True)

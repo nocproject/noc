@@ -64,6 +64,22 @@ class DocCategory(Document):
         else:
             document.parent = None
 
+    @classmethod
+    def fix(cls, document):
+        """
+        Initialize categories structure
+        """
+        type = cls._senders[document]
+        has_categories = bool(DocCategory.objects.filter(type=type).count())
+        has_docs = bool(document.objects.count())
+        if has_docs and not has_categories:
+            for o in document.objects.all():
+                o.save()
+
+    @classmethod
+    def fix_all(cls):
+        for document in cls._senders:
+            cls.fix(document)
 
 ## Set up signals
 signals.pre_save.connect(DocCategory.update_parent, sender=DocCategory)
