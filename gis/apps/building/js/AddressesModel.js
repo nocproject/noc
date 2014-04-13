@@ -18,7 +18,8 @@ Ext.define("NOC.gis.building.AddressesModel", {
         },
         {
             name: "street__label",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "id",
@@ -72,6 +73,10 @@ Ext.define("NOC.gis.building.AddressesModel", {
             name: "text_address",
             type: "string",
             persist: false
+        },
+        {
+            name: "is_primary",
+            type: "boolean"
         }
     ]
 });

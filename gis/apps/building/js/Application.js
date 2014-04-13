@@ -17,6 +17,7 @@ Ext.define("NOC.gis.building.Application", {
         "Ext.ux.form.GridField"
     ],
     model: "NOC.gis.building.Model",
+    search: true,
     treeFilter: "adm_division",
     initComponent: function() {
         var me = this;
@@ -149,6 +150,19 @@ Ext.define("NOC.gis.building.Application", {
                     model: "NOC.gis.building.AddressesModel",
                     columns: [
                         {
+                            text: "Primary",
+                            dataIndex: "is_primary",
+                            width: 50,
+                            renderer: NOC.render.Bool,
+                            editor: {
+                                xtype: "checkboxfield",
+                                listeners: {
+                                    scope: me,
+                                    change: me.onPrimaryAddressChange
+                                }
+                            }
+                        },
+                        {
                             text: "Street",
                             dataIndex: "street",
                             width: 150,
@@ -245,5 +259,32 @@ Ext.define("NOC.gis.building.Application", {
             ftype: "lookup",
             lookup: "gis.division"
         }
-    ]
+    ],
+    //
+    onPrimaryAddressChange: function(checkbox, newValue, oldValue, eOpts) {
+        var me = this,
+            grid = checkbox.column.up("gridpanel"),
+            store = grid.getStore(),
+            sLen = store.getCount();
+        if(sLen === 1) {
+            // Only one value
+            if(!newValue) {
+                // Restore primary address
+                store.getAt(0).set("is_primary", true);
+            }
+        } else {
+            if(!newValue) {
+                // Resetting primary address
+                checkbox.setValue(true);
+            } else {
+                // Resetting all other values
+                var currentId = grid.getSelectionModel().getSelection()[0].get("id");
+                store.each(function(r) {
+                    if(r.get("id") !== currentId) {
+                        r.set("is_primary", false);
+                    }
+                });
+            }
+        }
+    }
 });
