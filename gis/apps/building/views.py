@@ -29,6 +29,7 @@ class BuildingApplication(ExtDocApplication):
     parent_model = Division
     parent_field = "parent"
     default_ordering = ["sort_order"]
+    query_fields = ["sort_order__icontains"]
 
     addresses = AddressInline(Address)
 

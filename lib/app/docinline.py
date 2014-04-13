@@ -10,7 +10,8 @@
 from noc.sa.interfaces import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
-                               NoneParameter, InterfaceTypeError)
+                               NoneParameter, InterfaceTypeError,
+                               DocumentParameter)
 from noc.lib.validators import is_int
 from noc.lib.nosql import *
 
@@ -56,6 +57,8 @@ class DocInline(object):
                 self.clean_fields[name] = BooleanParameter()
             elif isinstance(f, IntField):
                 self.clean_fields[name] = IntParameter()
+            elif isinstance(f, PlainReferenceField):
+                self.clean_fields[name] = DocumentParameter(f.document_type)
         #
         if not self.query_fields:
             self.query_fields = ["%s__%s" % (n, self.query_condition)
