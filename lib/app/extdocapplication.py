@@ -21,6 +21,7 @@ from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
 from noc.lib.validators import is_int
 from noc.lib.serialize import json_decode
 from noc.main.models.collectioncache import CollectionCache
+from noc.main.models.doccategory import DocCategory
 
 
 class ExtDocApplication(ExtApplication):
@@ -222,6 +223,8 @@ class ExtDocApplication(ExtApplication):
             qs = {"%s__exists" % self.parent_field: False}
         else:
             qs = {"%s" % self.parent_field: parent}
+        if model == DocCategory:
+            qs["type"] = DocCategory._senders[self.model]
         data = model.objects.filter(**qs)
         ordering = self.default_ordering
         if ordering:
