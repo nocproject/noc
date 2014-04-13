@@ -24,11 +24,11 @@ class Command(BaseCommand):
     )
 
     HEADERS = {
-        "ru": ["RU_OKATO", "RU_OKTMO", "RU_FIAS_HOUSEGUID"]
+        "ru": ["RU_OKATO", "RU_OKTMO", "RU_KLADR", "RU_FIAS_HOUSEGUID"]
     }
 
     DATA = {
-        "ru": ["OKATO", "OKTMO", "FIAS_HOUSEGUID"]
+        "ru": ["OKATO", "OKTMO", "KLADR", "FIAS_HOUSEGUID"]
     }
 
     LEVELS = 10

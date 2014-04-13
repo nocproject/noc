@@ -55,7 +55,7 @@ class Division(Document):
 
     def get_buildings(self):
         from building import Building
-        return Building.objects.filter(adm_division=self.id)
+        return Building.objects.filter(adm_division=self.id).order_by("sort_order")
 
     @classmethod
     def update_levels(cls):
