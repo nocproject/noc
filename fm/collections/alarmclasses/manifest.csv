@@ -11,7 +11,7 @@ Chassis | Hardware | Hardware Warning,7045d7e2-80e3-4caa-9980-96ed94e4fac1,Chass
 Chassis | Hardware | Module | Module Error,f3d81e67-27fc-4100-ba8d-4f9f01e772da,Chassis/Hardware/Module/Module_Error.json,7a2192876af8c031bc019ac0ed0e86077eb1091046e0458672b422b6a10f2e3c
 Chassis | Linecard | LC Down,c79bdd80-f835-42e3-b6bc-e44ad60bb04b,Chassis/Linecard/LC_Down.json,c9224a5fa5d4415a427425a55f59e95d86c2350539174282661cecbf50c0669f
 Chassis | PSU | PSU Failed,d18d5446-7559-4600-a51a-44fba150f135,Chassis/PSU/PSU_Failed.json,574eb0185e4dd23db8ee87ed28fa731d85af43c4b0d00b9322ce6851fd5233da
-Chassis | PSU | Power Failed,58a480a0-97bc-4f7c-919c-43a2093475b9,Chassis/PSU/Power_Failed.json,863b9364bc38df03b2c7b8c46623721f747b86b99abb383c48ffc51446c8e5dc
+Chassis | PSU | Power Failed,58a480a0-97bc-4f7c-919c-43a2093475b9,Chassis/PSU/Power_Failed.json,2494e82ac38f4b12e9f0f07fa687dc592d70d8c41413ad68d35c8c8197697141
 Chassis | RAM | Insufficient Memory,e02309ba-800f-4da8-94a4-5bbb060457a6,Chassis/RAM/Insufficient_Memory.json,54905633bb1816fa77c58eb7c538485bc293e109d9d09e45dde7248176fb0b96
 Chassis | RAM | RAM Failed,f93e491e-3d31-4c8d-827b-a4432503128b,Chassis/RAM/RAM_Failed.json,884c3a3ecbd0962565dda5de9d883ba2555334a53d75dd71409f39ca961fc1c8
 Chassis | Stack | Stack Degraded,ed3566d9-75dc-46e6-a012-1c05387cd5dd,Chassis/Stack/Stack_Degraded.json,250272419353f7adb8158db12c2f28af1bc4b05edf89be652a9b8a604d381d9c

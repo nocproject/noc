@@ -145,7 +145,7 @@ Cisco | IOS | Chassis | PSU | PSU Recovered #6 (SYSLOG),7afc2233-b040-4122-aa0f-
 Cisco | IOS | Chassis | PSU | PSU Recovered #7 (SYSLOG),310c9f2f-9df0-494f-a3d9-75016e5c7825,Cisco/IOS/Chassis/PSU/PSU_Recovered_7_SYSLOG_.json,5ee6d5582799a02071eba3da99334efa8c46154679f5194ffec172ae3e9386f7
 Cisco | IOS | Chassis | PSU | PSU Recovered #8 (SYSLOG),dc190845-5b29-46b6-bc91-2b7569b1f3e0,Cisco/IOS/Chassis/PSU/PSU_Recovered_8_SYSLOG_.json,e2db159715a31e3651cc370401e0ed7ff7c64064b707c723cb86f98dce488b63
 Cisco | IOS | Chassis | PSU | PSU Recovered #9 (SYSLOG),77ba242c-79c1-4305-9c6d-6260369cd78a,Cisco/IOS/Chassis/PSU/PSU_Recovered_9_SYSLOG_.json,652a81c8b7b64eec526167b74fbb8abb64a0030999dc772e6e8e236286fc24ea
-Cisco | IOS | Chassis | PSU | Power Failed (SYSLOG),56d3b44b-28f6-4c96-8951-3bc0bfeeb3db,Cisco/IOS/Chassis/PSU/Power_Failed_SYSLOG_.json,43f71bfeffa8811ac6df111a229c933c99b6931b11e155d5e1864dfdd5a11c50
+Cisco | IOS | Chassis | PSU | Power Failed (SYSLOG),56d3b44b-28f6-4c96-8951-3bc0bfeeb3db,Cisco/IOS/Chassis/PSU/Power_Failed_SYSLOG_.json,6bc93a1f4a1c8ee6325d604a79404ebe529e317068a6be0c7e9d393d187fbe64
 Cisco | IOS | Chassis | RAM | Insufficient Memory (SYSLOG),0cfcd4a9-9927-4292-bc99-a7bb7d3fcac1,Cisco/IOS/Chassis/RAM/Insufficient_Memory_SYSLOG_.json,74e0d84eba99f809d81c90ac562625c5597788a198f3777502302524f7912286
 Cisco | IOS | Chassis | RAM | RAM Failed (SYSLOG),b9453dcb-bbdf-4b65-b540-61c0d5b7dcab,Cisco/IOS/Chassis/RAM/RAM_Failed_SYSLOG_.json,73574f27677864a1c16679a43cfa29e5918d9b319eabf9580a7a8fe455645fa8
 Cisco | IOS | Chassis | Supervisor | Supervisor Down #1 (SYSLOG),c832f937-37e5-4f1e-9975-0b82bc2e72a1,Cisco/IOS/Chassis/Supervisor/Supervisor_Down_1_SYSLOG_.json,82b5e370fb2381158c3acc782a21e5a7fae434eb13725a06803bc99748e7b3a1
@@ -871,8 +871,11 @@ Unknown | Ignore | Ignore Syslog Repeats (SYSLOG),2c365036-4bd2-4829-8b3b-924dc2
 Unknown | SNMP Trap,f2ab08e4-1367-400a-b5c8-aca1f7b5ecae,Unknown/SNMP_Trap.json,c052cc4a0c5706092198e05ce5350bb89f59f94fe9417656e139cd21455d1119
 Unknown | Syslog,8baad5c0-7553-4452-a359-4fc93082fa1a,Unknown/Syslog.json,64f33dafd4b80e905c24355fb5ff09f7e201c9e8472a59fda02be013347ec707
 Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter #1 (SYSLOG),93824de1-9536-4797-b981-d47a7796b94d,Vendor/Arista/EOS/VMTracer/Failed_to_connect_to_vCenter_1_SYSLOG_.json,7cceaa8669a3b84aac0826eef67c3276b4f7f1e3066d9e3c1a247ac5f527e027
+Vyatta | Vyatta | Network | Link | Link Down (SNMP),2a5dd50a-b503-4260-933e-687bdc0d52c3,Vyatta/Vyatta/Network/Link/Link_Down_SNMP_.json,2236eaf21678916b1c81dc4b75a6aff69615e51328a82dd12d70cbfa4c51d812
+Vyatta | Vyatta | Network | Link | Link Up (SNMP),8ecd8a4a-dc20-4051-87aa-a3a3a3f4aef3,Vyatta/Vyatta/Network/Link/Link_Up_SNMP_.json,03118c557deec827ae0db3ccbe78f9b541f40e541439a9e4527ae1bbdd39fca5
 Vyatta | Vyatta | System | Halt (SYSLOG),ba46f2a7-bb96-486f-be26-cebe9e476dc4,Vyatta/Vyatta/System/Halt_SYSLOG_.json,3bd06ebed9f821d81e21b0ccfe897a4a0c728676afcc42b672823548df03d0bd
 Vyatta | Vyatta | System | Reboot (SYSLOG),80addaad-39d4-4a10-a1d2-e5de141e405b,Vyatta/Vyatta/System/Reboot_SYSLOG_.json,092457cd3afd351702e37620dd8d7a3ef8c0e314e3a8ad5129a50b3dc649af69
+Vyatta | Vyatta | Unknown | nsNotify (SNMP),7b31c4b1-1123-441b-ac0e-dbe4ed64786f,Vyatta/Vyatta/Unknown/nsNotify_SNMP_.json,98202292c4fb531ce6527c8c1ada985967400892c9680a72ab29e6643ccec507
 Zebra | Zebra | Network | BGP | Established (SNMP),f16a7c17-a944-4867-91e5-ad22c8a1f621,Zebra/Zebra/Network/BGP/Established_SNMP_.json,740f242cffbf2070999b2314924fa26048197bc234740886007cc0d25d8a78fd
 Zyxel | ZyNOS | Chassis | Fan | Fan Failed (SYSLOG),740661e7-f7f0-4b64-872e-3919cf7464a3,Zyxel/ZyNOS/Chassis/Fan/Fan_Failed_SYSLOG_.json,0591d3699aed56a8554138830723ec6234f02a2336f163e8674d3b6381a4b61d
 Zyxel | ZyNOS | Chassis | Fan | Fan Recovered (SYSLOG),119c4ac7-ed88-42be-bc25-4163be4fb55d,Zyxel/ZyNOS/Chassis/Fan/Fan_Recovered_SYSLOG_.json,0be85d56556d1c7bc3c11ce4886ccebc2ed1fb84f6c17299701b8b04f35cdc84

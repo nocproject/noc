@@ -1,0 +1,21 @@
+{
+    "name": "Vyatta | Vyatta | Unknown | nsNotify (SNMP)",
+    "uuid": "7b31c4b1-1123-441b-ac0e-dbe4ed64786f",
+    "description": "NET-SNMP-AGENT-MIB::nsNotifyShutdown",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Vyatta\\.Vyatta$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^NET-SNMP-AGENT-MIB::nsNotify.+$"
+        }
+    ]
+}

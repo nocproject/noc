@@ -3,12 +3,17 @@
     "uuid": "15815c7f-edb7-45b0-be02-8fe65e9bf174",
     "action": "A",
     "vars": [
-
+        {
+            "name": "condition",
+            "description": "Condition",
+            "type": "str",
+            "required": false
+        }
     ],
     "text": {
         "en": {
-            "subject_template": "Power failed",
-            "body_template": "Power failed",
+            "subject_template": "Power failed{% if condition %} due to {{condition}}{% endif %}",
+            "body_template": "Power failed{% if condition %} due to {{condition}}{% endif %}",
             "symptoms": "",
             "probable_causes": "",
             "recommended_actions": ""
