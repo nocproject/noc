@@ -177,7 +177,10 @@ class Classifier(Daemon):
                 n += 1
         if cn:
             logging.info("%d rules are cloned" % cn)
-        self.default_rule = EventClassificationRule.objects.filter(name=self.DEFAULT_RULE).first()
+        self.default_rule = Rule(
+            self,
+            EventClassificationRule.objects.filter(name=self.DEFAULT_RULE).first()
+        )
         logging.info("%d rules are loaded in the %d profiles" % (
             n, len(self.rules)))
 
