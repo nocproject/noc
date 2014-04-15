@@ -34,6 +34,7 @@ class Scheduler(object):
     ATTR_LAST = "last"  # last run
     ATTR_LAST_STATUS = "ls"  # last completion status
     ATTR_LAST_DURATION = "ldur"  # last job duration
+    ATTR_LAST_SUCCESS = "st"  # last success timestamp
     ATTR_RUNS = "runs"  # Number of runs
     ATTR_TRACEBACK = "tb"  # Last error traceback
     ATTR_LOG = "log"  # Job log
@@ -194,6 +195,8 @@ class Scheduler(object):
             s[self.ATTR_STATUS] = status
         if last_status:
             s[self.ATTR_LAST_STATUS] = last_status
+            if last_status == Job.S_SUCCESS:
+                s[self.ATTR_LAST_SUCCESS] = datetime.datetime.now()
         if duration is not None:
             s[self.ATTR_LAST_DURATION] = duration
         if faults is not None:
