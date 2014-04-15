@@ -25,7 +25,7 @@ Chassis | Linecard | LC Up,e9fbf27a-4153-45e6-86e9-aa006b069419,Chassis/Linecard
 Chassis | PSU | PSU Changed,29f335f4-e9f5-4315-94aa-4b8ba604e50a,Chassis/PSU/PSU_Changed.json,caedb352dcfd789963d9249ef9d57258276107a82ae7163352218cf00f72f69f
 Chassis | PSU | PSU Failed,1f118a19-3fd3-4de2-9092-284c102ba051,Chassis/PSU/PSU_Failed.json,886a0bd95fe890506185e57075fdd15a5a2da1f811b74ed527dfdccd75b705aa
 Chassis | PSU | PSU Recovered,0f338208-7629-4b2b-9406-05142ad764f9,Chassis/PSU/PSU_Recovered.json,8b6879ae32ec99e5b92f16dd66bd493662ad29570ef4d33d1e9f057de071c74d
-Chassis | PSU | Power Failed,15815c7f-edb7-45b0-be02-8fe65e9bf174,Chassis/PSU/Power_Failed.json,291d9567d24221b87969337a698dece9f29c3b41e9c85bc1f4d38bc3305deec5
+Chassis | PSU | Power Failed,15815c7f-edb7-45b0-be02-8fe65e9bf174,Chassis/PSU/Power_Failed.json,7b4f6e76f0a31562f31aa6d0b621203a7a9858d0be9ae957a8d4792fe2b5afef
 Chassis | RAM | Insufficient Memory,8860b0f1-4ffd-4602-b109-8454c6867a26,Chassis/RAM/Insufficient_Memory.json,16c8f1ce7e7564c0a3501d76c8b41844553c75308f539a38830826f2a18a629a
 Chassis | RAM | RAM Failed,e9b3e884-e0cd-4f3d-a00a-324f6df951e9,Chassis/RAM/RAM_Failed.json,410a0f9ae47ad61a447fea3465e13217f4c20f5fb1f83aea1966c57adfa2b5d8
 Chassis | Stack | Stack Degraded,ff2191ec-f107-4232-b849-5045f194de3d,Chassis/Stack/Stack_Degraded.json,b9b6a7eec428d0279adeeec00e7529d02c38fe24dd32bf1f3c17173e915ec321

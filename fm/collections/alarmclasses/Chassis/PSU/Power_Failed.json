@@ -5,12 +5,15 @@
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
     "vars": [
-
+        {
+            "name": "condition",
+            "description": "Condition"
+        }
     ],
     "text": {
         "en": {
-            "subject_template": "Power failed",
-            "body_template": "Power failed",
+            "subject_template": "Power failed{% if condition %} due to {{condition}}{% endif %}",
+            "body_template": "Power failed{% if condition %} due to {{condition}}{% endif %}",
             "symptoms": "",
             "probable_causes": "",
             "recommended_actions": ""

@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%DYINGGASP-0-POWER_LOSS: Shutdown due to power loss"
+            "value_re": "%DYINGGASP-0-POWER_LOSS: Shutdown due to (?P<condition>power loss)"
         }
     ]
 }
