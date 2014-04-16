@@ -57,7 +57,7 @@ class Address(Document):
         def nq(x):
             if not x:
                 x = 0
-            return "%06d" % x
+            return "%06d" % int(x)
 
         if document.is_primary:
             # Reset other primary addresses
