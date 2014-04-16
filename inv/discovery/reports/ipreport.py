@@ -56,9 +56,13 @@ class IPReport(Report):
         if self.is_locked_range(vrf, address):
             return
         # Check address in IPAM
-        r = Address.objects.filter(vrf=vrf, afi=afi, address=address)
+        # Optimize by speed
+        try:
+            r = Address.objects.filter(vrf=vrf, afi=afi, address=address)[0]
+        except IndexError:
+            r = None
         if r:
-            self.change_address(r[0])  # Change existing address
+            self.change_address(r)  # Change existing address
         else:
             self.new_address(vrf, afi, address,
                 interface, description, mac)
