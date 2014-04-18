@@ -41,6 +41,12 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                     name: "name",
                     fieldLabel: "Name",
                     allowBlank: false
+                },
+                {
+                    xtype: "textfield",
+                    name: "serial",
+                    fieldLabel: "Serial",
+                    allowBlank: true
                 }
             ]
         });
@@ -60,8 +66,8 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                             handler: me.onPressClose
                         },
                         {
-                            text: "Add",
-                            glyph: NOC.glyph.plus,
+                            text: "Save",
+                            glyph: NOC.glyph.save,
                             scope: me,
                             handler: me.onPressAdd
                         }
@@ -91,6 +97,7 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
             jsonData: {
                 name: values.name,
                 type: values.type,
+                serial: values.serial,
                 container: me.groupContainer ? me.groupContainer.get("id") : null
             },
             scope: me,
