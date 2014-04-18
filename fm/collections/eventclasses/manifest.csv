@@ -187,8 +187,8 @@ Network | STP | Root Changed,cf0fd520-7bde-442a-b52c-9a607c589e7f,Network/STP/Ro
 Network | STP | Root Guard Recovery,a692aee5-7ecd-43eb-bf5d-509458f6e193,Network/STP/Root_Guard_Recovery.json,7bb10c62b306d042ec132ed8601e50d7d9d063e99ee7bfd50cb88d89c685f471
 Network | STP | STP Loop Cleared,92261078-fe4b-42f7-8d41-216fe05c124b,Network/STP/STP_Loop_Cleared.json,da26a5b83e509140c8d574ec481c5bbb96becb65dbfc1bb34d5b7a239f851470
 Network | STP | STP Loop Detected,0ccb9769-3dc2-422a-8317-baa7f2661da0,Network/STP/STP_Loop_Detected.json,fa83f94e43a0f0401363bb9e4728cc43e1424432590404699070a761f4554f64
-Network | STP | STP Port Role Changed,c614673d-99a0-4901-96ab-ea7b50f36ea2,Network/STP/STP_Port_Role_Changed.json,72d6cfa24c35b6c4966d0779962357dfac29f4837c0007e5244799d080391e56
-Network | STP | STP Port State Changed,d714bd19-7877-4c6b-8d75-985415d43078,Network/STP/STP_Port_State_Changed.json,1cb74e015ad5040e83a8cd240a0d458501032b87c673056e05ef683fb00f467a
+Network | STP | STP Port Role Changed,c614673d-99a0-4901-96ab-ea7b50f36ea2,Network/STP/STP_Port_Role_Changed.json,68ed19c805b842fa91dff08977d7ef5994cc1ce5526ad0ef838ce6d2a6ffaa50
+Network | STP | STP Port State Changed,d714bd19-7877-4c6b-8d75-985415d43078,Network/STP/STP_Port_State_Changed.json,6552bf93563ebf684ba8398a2914e8e94bd124c66ff656695b0d70f681e4e3b0
 Network | STP | STP Vlan Loop Cleared,0e4f62a1-36a2-4e42-9907-ad5f8614084e,Network/STP/STP_Vlan_Loop_Cleared.json,871011ac2d0669abfea621ecd63568f789086b6f9849f0dd2a545cc9bc631986
 Network | STP | STP Vlan Loop Detected,f7fa2d23-5b30-4497-bd00-1d792bcb2b70,Network/STP/STP_Vlan_Loop_Detected.json,2fed1d0bb1b435146fe134d2cc94e74bff532ccc78ff2a80996215ac6eda0396
 Network | STP | STP instances exceeded,eb0110f6-b102-4adb-83a4-b30a7524ffb5,Network/STP/STP_instances_exceeded.json,e610c1214c0cef947353be9b5d88abdfc1fafbae23e79b64e96460466d7e4861

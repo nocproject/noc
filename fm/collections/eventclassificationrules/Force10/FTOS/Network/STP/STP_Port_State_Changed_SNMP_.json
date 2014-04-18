@@ -1,0 +1,25 @@
+{
+    "name": "Force10 | FTOS | Network | STP | STP Port State Changed (SNMP)",
+    "uuid": "9c99ee88-ab77-4e1c-968d-683dec716986",
+    "description": "Link Down",
+    "event_class__name": "Network | STP | STP Port State Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Force10\\.FTOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^BRIDGE-MIB::topologyChange$"
+        },
+        {
+            "key_re": "^BRIDGE-MIB::dot1dNotifications$",
+            "value_re": "^PVST_TOPOLOGY_CHANGE: Topology change for instance: (?P<instance>\\d+) BridgeAddr: \\S+ Bridge port (?P<interface>.+) transitioned from \\S+ to (?P<state__enum__stp_state>\\S+) state\\.$"
+        }
+    ]
+}
