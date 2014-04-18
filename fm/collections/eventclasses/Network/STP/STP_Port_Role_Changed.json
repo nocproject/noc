@@ -20,12 +20,18 @@
             "description": "VLAN ID",
             "type": "int",
             "required": false
+        },
+        {
+            "name": "instance",
+            "description": "MST instance",
+            "type": "int",
+            "required": false
         }
     ],
     "text": {
         "en": {
-            "subject_template": "STP role of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{role}}",
-            "body_template": "STP role of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{role}}",
+            "subject_template": "STP role of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{role}}{% if instance %}, MST Instance {{instance}}{% endif %}",
+            "body_template": "STP role of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{role}}{% if instance %}, MST Instance {{instance}}{% endif %}",
             "symptoms": "possible start of spanning tree rebuilding or interface oper status change",
             "probable_causes": "",
             "recommended_actions": ""
