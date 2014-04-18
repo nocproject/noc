@@ -8,6 +8,7 @@
  
 ## Python modules
 import re
+import time
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
@@ -255,6 +256,7 @@ class Script(NOCScript):
             c = ""
         ctp_enable = self.rx_ctp_gs.search(c) is not None
         if ctp_enable:
+            c = []
             try:
                 c = self.cli_object_stream(
                 "show loopdetect ports all", parser=self.parse_ctp,
@@ -262,6 +264,12 @@ class Script(NOCScript):
             except self.CLISyntaxError:
                 c = []
             if c == []:
+                # Do not touch next 5 lines !!!
+                try:
+                    s = self.cli("\n\n")
+                except:
+                    pass
+                time.sleep(5)
                 c = self.cli_object_stream(
                 "show loopdetect ports", parser=self.parse_ctp,
                 cmd_next="n", cmd_stop="q")
