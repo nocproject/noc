@@ -135,15 +135,19 @@ class InvApplication(ExtApplication):
           validate={
               "container": ObjectIdParameter(required=False),
               "type": ObjectIdParameter(),
-              "name": UnicodeParameter()
+              "name": UnicodeParameter(),
+              "serial": UnicodeParameter(required=False)
           })
-    def api_add_group(self, request, type, name, container=None):
+    def api_add_group(self, request, type, name, container=None,
+                      serial=None):
         if container is None:
             c = self.get_root()
         else:
             c = self.get_object_or_404(Object, id=container)
         m = self.get_object_or_404(ObjectModel, id=type)
         o = Object(name=name, model=m, container=c.id)
+        if serial and m.get_data("asset", "part_no0"):
+            o.set_data("asset", "serial", serial)
         o.save()
         o.log("Created", user=request.user.username,
               system="WEB", op="CREATE")
