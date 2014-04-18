@@ -113,6 +113,13 @@ class Command(BaseCommand):
             return
         print msg
 
+    def not_found(self, name):
+        msg = "Collection not found: %s" % name
+        msg = "%s\nAvailable collections:" % msg
+        for n, d in self.collections:
+            msg = "%s\n  %s" % (msg, n)
+        return msg
+
     def handle(self, *args, **kwargs):
         try:
             self._handle(*args, **kwargs)
@@ -150,7 +157,7 @@ class Command(BaseCommand):
         for n, d in self.collections:
             if n == name:
                 return d
-        raise CommandError("Collection not found: %s" % name)
+        raise CommandError(self.not_found(name))
 
     def handle_sync(self):
         DocCategory.fix_all()
