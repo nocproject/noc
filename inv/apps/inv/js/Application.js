@@ -8,7 +8,7 @@ console.debug("Defining NOC.inv.inv.Application");
 
 Ext.define("NOC.inv.inv.Application", {
     extend: "NOC.core.Application",
-    layout: "border",
+    layout: "card",
     requires: [
         "NOC.inv.inv.NavModel"
     ],
@@ -40,9 +40,9 @@ Ext.define("NOC.inv.inv.Application", {
 
         me.addButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.plus,
-            tooltip: "Add group",
+            tooltip: "Add objects",
             scope: me,
-            handler: me.onAddGroup
+            handler: me.onAddObject
         });
 
         me.removeButton = Ext.create("Ext.button.Button", {
@@ -100,12 +100,25 @@ Ext.define("NOC.inv.inv.Application", {
             ]
         });
         //
-        Ext.apply(me, {
-            items: [
-                me.navTree,
-                me.tabPanel
-            ]
+        me.ITEM_MAIN = me.registerItem(
+            Ext.create("Ext.panel.Panel", {
+                        layout: "border",
+                        items: [
+                            me.navTree,
+                            me.tabPanel
+                        ]
+                    })
+        );
+        //
+        me.ITEM_ADD = me.registerItem("NOC.inv.inv.AddObjectForm", {
+            app: me
         });
+        //
+        Ext.apply(me, {
+            items: me.getRegisteredItems(),
+            activeItem: me.ITEM_MAIN
+        });
+        //
         me.callParent();
         // Process commands
         if(me.noc.cmd) {
@@ -216,7 +229,7 @@ Ext.define("NOC.inv.inv.Application", {
         })
     },
     //
-    onAddGroup: function() {
+    onAddObject: function() {
         var me = this,
             sm = me.navTree.getSelectionModel(),
             sel = sm.getSelection(),
@@ -224,10 +237,8 @@ Ext.define("NOC.inv.inv.Application", {
         if(sel.length > 0) {
             container = sel[0];
         }
-        Ext.create("NOC.inv.inv.AddGroupForm", {
-            app: me,
-            groupContainer: container
-        });
+        var i = me.showItem(me.ITEM_ADD);
+        i.setContainer(container);
     },
     //
     onNavDrop: function(node, data, overModel, dropPosition, eOpts) {
