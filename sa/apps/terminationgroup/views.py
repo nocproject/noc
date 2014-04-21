@@ -22,3 +22,9 @@ class TerminationGroupApplication(ExtModelApplication):
     model = TerminationGroup
     query_fields = ["name__icontains"]
     ippool = ModelInline(IPPool)
+
+    def field_terminators(self, o):
+        return [m.name for m in o.termination_set.all()]
+
+    def field_n_access(self, o):
+        return o.access_set.count()

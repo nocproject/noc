@@ -22,6 +22,16 @@ Ext.define("NOC.sa.terminationgroup.Model", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "terminators",
+            type: "auto",
+            persist: false
+        },
+        {
+            name: "n_access",
+            type: "integer",
+            persist: false
         }
     ]
 });
