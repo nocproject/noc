@@ -26,6 +26,18 @@ Ext.define("NOC.sa.terminationgroup.Application", {
                     width: 150
                 },
                 {
+                    text: "Terminators",
+                    dataIndex: "terminators",
+                    width: 200,
+                    sortable: false
+                },
+                {
+                    text: "Access",
+                    dataIndex: "n_access",
+                    width: 50,
+                    sortable: false
+                },
+                {
                     text: "Description",
                     dataIndex: "description",
                     flex: 1
@@ -36,6 +48,12 @@ Ext.define("NOC.sa.terminationgroup.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: "Name",
+                    allowBlank: false
+                },
+                {
+                    name: "terminators",
+                    xtype: "displayfield",
+                    fieldLabel: "Terminators",
                     allowBlank: false
                 },
                 {
