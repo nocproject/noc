@@ -67,6 +67,17 @@ th[class=project] {
     width: 5em;
 }
 
+th[class=ippoll-tg] {
+    width: 12em;
+}
+th[class=ippool-type] {
+    width: 5em;
+}
+th[class=ippool-from] {
+    width: 7em;
+}
+th[class=ippool-to]
+
 #ranges th[class=legend] {
     width: 1em;
 }

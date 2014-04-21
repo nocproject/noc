@@ -68,7 +68,6 @@ class IPAMAppplication(Application):
             dist = self.MAX_IPv4_NET_SIZE
         else:
             dist = self.ADDRESS_SPOT_DIST
-        print "area_spot", [a.address for a in prefix.address_set.all()] + extra, dist, sep
         return p.area_spot([a.address for a in prefix.address_set.all()] + extra,
                            dist=dist, sep=sep)
 
@@ -229,6 +228,8 @@ class IPAMAppplication(Application):
         if prefix.enable_ip_discovery == "I":
             t = "Inherit (%s)" % t
         prefix_info += [("IP Discovery", t)]
+        #
+        ippools = prefix.ippools
         # Add custom fields
         for f in CustomField.table_fields("ip_prefix"):
             v = getattr(prefix, f.name)
@@ -339,6 +340,7 @@ class IPAMAppplication(Application):
                            short_description=short_description,
                            long_description=long_description,
                            prefixes=prefixes, addresses=addresses,
+                           ippools=ippools,
                            prefix_info=prefix_info,
                            display_empty_message=not addresses and not prefixes,
                            can_view=can_view, can_change=can_change,

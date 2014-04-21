@@ -445,6 +445,35 @@ class Prefix(models.Model):
             """,
             [self.vrf.id, self.afi, self.prefix, self.prefix, self.prefix]))
 
+    @property
+    def ippools(self):
+        """
+        All nested IP Pools
+        """
+        return list(IPPool.objects.raw("""
+            SELECT *
+            FROM ip_ippool i
+            WHERE
+                  vrf_id = %s
+              AND afi = %s
+              AND from_address << %s
+              AND to_address << %s
+              AND NOT EXISTS (
+                SELECT id
+                FROM ip_prefix p
+                WHERE
+                      vrf_id = i.vrf_id
+                  AND afi = i.afi
+                  AND prefix << %s
+                  AND
+                    (
+                      from_address << p.prefix
+                      OR to_address << p.prefix
+                    )
+              )
+            ORDER BY from_address
+        """, [self.vrf.id, self.afi, self.prefix, self.prefix, self.prefix]))
+
     def rebase(self, vrf, new_prefix):
         """
         Rebase prefix to a new location
@@ -530,4 +559,5 @@ from address import Address
 from prefixaccess import PrefixAccess
 from prefixbookmark import PrefixBookmark
 from addressrange import AddressRange
+from ippool import IPPool
 from noc.dns.models import DNSZone

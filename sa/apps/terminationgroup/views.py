@@ -8,7 +8,9 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.sa.models import TerminationGroup
+from noc.lib.app.modelinline import ModelInline
+from noc.sa.models.terminationgroup import TerminationGroup
+from noc.ip.models.ippool import IPPool
 
 
 class TerminationGroupApplication(ExtModelApplication):
@@ -19,3 +21,4 @@ class TerminationGroupApplication(ExtModelApplication):
     menu = "Setup | Termination Groups"
     model = TerminationGroup
     query_fields = ["name__icontains"]
+    ippool = ModelInline(IPPool)
