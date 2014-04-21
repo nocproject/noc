@@ -25,6 +25,7 @@ from activator import Activator
 from collector import Collector
 from objectstatus import ObjectStatus
 from objectmap import ObjectMap
+from terminationgroup import TerminationGroup
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.profiles import profile_registry
@@ -99,6 +100,19 @@ class ManagedObject(models.Model):
     # Default VRF
     vrf = models.ForeignKey("ip.VRF", verbose_name=_("VRF"),
                             blank=True, null=True)
+    # For service terminators
+    # Name of service termination group (i.e. BRAS, SBC)
+    termination_group = models.ForeignKey(
+        TerminationGroup, verbose_name=_("Termination Group"),
+        blank=True, null=True,
+        related_name="termination_set"
+    )
+    # For access switches -- L3 terminator
+    service_terminator = models.ForeignKey(
+        TerminationGroup, verbose_name=_("Service termination"),
+        blank=True, null=True,
+        related_name="access_set"
+    )
     # Stencils
     shape = models.CharField(_("Shape"), blank=True, null=True,
         choices=stencil_registry.choices, max_length=128)

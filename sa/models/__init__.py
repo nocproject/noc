@@ -24,6 +24,7 @@ from activator import Activator
 from collector import Collector
 from managedobjectprofile import ManagedObjectProfile
 from authprofile import AuthProfile
+from terminationgroup import TerminationGroup
 from managedobject import ManagedObject, ManagedObjectAttribute
 from managedobjectselector import (ManagedObjectSelector,
                                    ManagedObjectSelectorByAttribute)

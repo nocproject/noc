@@ -8,7 +8,7 @@ console.debug("Defining NOC.sa.managedobject.Application");
 
 Ext.define("NOC.sa.managedobject.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.core.TagsField",
         "NOC.sa.managedobject.Model",
         "NOC.sa.managedobject.AttributesModel",
@@ -22,7 +22,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.main.pyrule.LookupField",
         "NOC.main.ref.profile.LookupField",
         "NOC.main.ref.stencil.LookupField",
-        "NOC.sa.authprofile.LookupField"
+        "NOC.sa.authprofile.LookupField",
+        "NOC.sa.terminationgroup.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
@@ -368,6 +369,29 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
+                    title: "Service",
+                    layout: "hbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "termination_group",
+                            xtype: "sa.terminationgroup.LookupField",
+                            fieldLabel: "Termination Group",
+                            allowBlank: true
+                        },
+                        {
+                            name: "service_terminator",
+                            xtype: "sa.terminationgroup.LookupField",
+                            fieldLabel: "Service Terminator",
+                            allowBlank: true
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
                     title: "SNMP",
                     layout: "hbox",
                     defaults: {
@@ -499,6 +523,18 @@ Ext.define("NOC.sa.managedobject.Application", {
             name: "vc_domain",
             ftype: "lookup",
             lookup: "vc.vcdomain"
+        },
+        {
+            title: "By Termination Group",
+            name: "termination_group",
+            ftype: "lookup",
+            lookup: "sa.terminationgroup"
+        },
+        {
+            title: "By Service Terminator",
+            name: "service_terminator",
+            ftype: "lookup",
+            lookup: "sa.terminationgroup"
         },
         {
             title: "By Tags",

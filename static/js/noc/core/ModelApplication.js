@@ -148,6 +148,7 @@ Ext.define("NOC.core.ModelApplication", {
                 }].concat(me.filters);
             grid_rbar = {
                 xtype: "form",
+                autoScroll: true,
                 itemId: "filters",
                 width: 208,
                 title: "Filter",

@@ -15,6 +15,7 @@ from administrativedomain import AdministrativeDomain
 from managedobject import ManagedObject, ManagedObjectAttribute
 from managedobjectprofile import ManagedObjectProfile
 from activator import Activator
+from terminationgroup import TerminationGroup
 from noc.main.models import Shard
 from noc.main.models.prefixtable import PrefixTable
 from noc.sa.profiles import profile_registry
@@ -58,6 +59,14 @@ class ManagedObjectSelector(models.Model):
             verbose_name=_("Filter by VRF"), null=True, blank=True)
     filter_vc_domain = models.ForeignKey("vc.VCDomain",
             verbose_name=_("Filter by VC Domain"), null=True, blank=True)
+    filter_termination_group = models.ForeignKey(TerminationGroup,
+            verbose_name=_("Filter by termination group"), null=True, blank=True,
+            related_name="selector_termination_group_set"
+            )
+    filter_service_terminator = models.ForeignKey(TerminationGroup,
+            verbose_name=_("Filter by service terminator"), null=True, blank=True,
+            related_name="selector_service_terminator_set"
+            )
     filter_user = models.CharField(_("Filter by User (REGEXP)"),
             max_length=256, null=True, blank=True)
     filter_remote_path = models.CharField(_("Filter by Remote Path (REGEXP)"),
@@ -121,6 +130,12 @@ class ManagedObjectSelector(models.Model):
         # Filter by VC domain
         if self.filter_vc_domain:
             q &= Q(vc_domain=self.filter_vc_domain)
+        # Filter by termination group
+        if self.filter_termination_group:
+            q &= Q(termination_group=self.filter_termination_group)
+        # Filter by termination group
+        if self.filter_service_terminator:
+            q &= Q(service_terminator=self.filter_service_terminator)
         # Filter by username
         if self.filter_user:
             q &= Q(user__regex=self.filter_user)
