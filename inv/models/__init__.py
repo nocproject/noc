@@ -21,6 +21,7 @@ from connectionrule import ConnectionRule
 from objectmodel import ObjectModel
 from unknownmodel import UnknownModel
 from modelmapping import ModelMapping
+from technology import Technology
 
 
 class SocketAttribute(EmbeddedDocument):

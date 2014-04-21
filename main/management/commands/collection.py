@@ -16,6 +16,7 @@ from django.core.management.base import BaseCommand, CommandError
 from noc.lib.collection import Collection
 from noc.main.models.doccategory import DocCategory
 from noc.gis.models.layer import Layer
+from noc.inv.models.technology import Technology
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.modelinterface import ModelInterface
 from noc.inv.models.connectiontype import ConnectionType
@@ -90,6 +91,7 @@ class Command(BaseCommand):
         # Gis
         ("gis.layers", Layer),
         # Inventory
+        ("inv.technologies", Technology),
         ("inv.vendors", Vendor),
         ("inv.modelinterfaces", ModelInterface),
         ("inv.connectiontypes", ConnectionType),
