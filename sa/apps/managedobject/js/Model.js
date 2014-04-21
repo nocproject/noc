@@ -131,6 +131,24 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "termination_group",
+            type: "int"
+        },
+        {
+            name: "termination_group__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "service_terminator",
+            type: "int"
+        },
+        {
+            name: "service_terminator__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "vrf",
             type: "int"
         },
