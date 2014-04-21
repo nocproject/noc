@@ -23,6 +23,11 @@ class TerminationGroup(models.Model):
 
     name = models.CharField("Name", max_length=64, unique=True)
     description = models.TextField("Description", null=True, blank=True)
+    # Dynamic pools oversubscription, in persent
+    # 0 - no oversub
+    # 10 -- 10% oversubscription
+    # -10  -- Reserve 10%
+    # dynamic_oversub = models.IntegerField("Dynamic Oversub", default=0)
 
     def __unicode__(self):
         return self.name

@@ -386,7 +386,8 @@ function on_mynetworks(n)
                         <th class="name">Name</th>
                         <th class="address">From Address</th>
                         <th class="address">To Address</th>
-                        <th>Description</th></tr>
+                        <th>Description</th>
+                    </tr>
                 </thead>
                 {% for r in ranges %}
                     <tr class="{% cycle 'row1' 'row2' %}">
@@ -403,6 +404,31 @@ function on_mynetworks(n)
     <!-- End ranges -->
 {% endif %}
 <!-- end addresses -->
+<!-- ip pools -->
+{% if ippools %}
+    <div class="module">
+        <table width="100%" id="ippools">
+            <caption>IP Pools</caption>
+            <thead>
+                <tr>
+                    <th class="ippool-tg">Termination Group</th>
+                    <th class="ippool-type">Type</th>
+                    <th class="ippool-from">From</th>
+                    <th class="ippool-to">To</th>
+                </tr>
+            </thead>
+            {% for p in ippools %}
+                <tr class="{% cycle 'row1' 'row2' %}">
+                    <td>{{ p.termination_group.name }}</td>
+                    <td>{% if p.type == 'D' %}Dynamic{% else %}Static{% endif %}</td>
+                    <td>{{ p.from_address }}</td>
+                    <td>{{ p.to_address }}</td>
+                </tr>
+            {%  endfor %}
+        </table>
+    </div>
+{% endif %}
+<!-- end ip pools -->
 <!-- block info -->
 <div class="module">
     <table width="100%">
