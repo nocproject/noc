@@ -412,6 +412,7 @@ function on_mynetworks(n)
             <thead>
                 <tr>
                     <th class="ippool-tg">Termination Group</th>
+                    <th class="ippool-name">Pool Name</th>
                     <th class="ippool-type">Type</th>
                     <th class="ippool-from">From</th>
                     <th class="ippool-to">To</th>
@@ -420,6 +421,7 @@ function on_mynetworks(n)
             {% for p in ippools %}
                 <tr class="{% cycle 'row1' 'row2' %}">
                     <td>{{ p.termination_group.name }}</td>
+                    <td>{{ p.name }}</td>
                     <td>{% if p.type == 'D' %}Dynamic{% else %}Static{% endif %}</td>
                     <td>{{ p.from_address }}</td>
                     <td>{{ p.to_address }}</td>
