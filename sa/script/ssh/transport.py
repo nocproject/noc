@@ -9,7 +9,7 @@
 
 ## Python modules
 import re
-from hashlib import sha1, md5
+from hashlib import sha1, sha256, md5
 import zlib
 ## NOC modules
 from noc.lib.nbsocket import ConnectedTCPSocket
@@ -131,6 +131,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     SSH_KEY_EXCHANGES = [
         "diffie-hellman-group14-sha1",
         "diffie-hellman-group1-sha1",
+        "diffie-hellman-group-exchange-sha256",
         "diffie-hellman-group-exchange-sha1"
     ]
     SSH_CYPHERS = [
@@ -170,6 +171,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         # zlib@openssh.com, must be delayed until MSG_USERAUTH_SUCCESS
         self.delayed_out_compression = None
         self.delayed_in_compression = None
+        self.kex_hash = sha1  # KEX has function
         self.buffer = ""
         self.d_buffer = ""
         self.session_id = None
@@ -510,7 +512,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
 
     def key_setup(self, shared_secret, exchange_hash):
         def get_key(c, shared_secret, exchange_hash):
-            k1 = sha1(shared_secret + exchange_hash + c + self.session_id)
+            k1 = self.kex_hash(shared_secret + exchange_hash + c + self.session_id)
             k1 = k1.digest()
             k2 = sha1(shared_secret + exchange_hash + k1).digest()
             return k1 + k2
@@ -718,12 +720,14 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             self.out_compression_type)
         )
 
+        if self.kex_alg.endswith("-sha256"):
+            self.kex_hash = sha256
         if self.kex_alg in DH_GROUPS:
             dh_prime, dh_generator = DH_GROUPS[self.kex_alg]
             self.x = self.generate_private_x(512)
             self.e = MPpow(dh_generator, self.x, dh_prime)
             self.send_packet(MSG_KEXDH_INIT, self.e)
-        elif self.kex_alg == "diffie-hellman-group-exchange-sha1":
+        elif self.kex_alg in ("diffie-hellman-group-exchange-sha1", "diffie-hellman-group-exchange-sha256"):
             self.send_packet(MSG_KEX_DH_GEX_REQUEST_OLD, "\x00\x00\x08\x00")
         else:
             raise Exception("Unknown KEX alg")
@@ -742,6 +746,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         :return:
         """
         if self.kex_alg in DH_GROUPS:
+            # diffie-hellman-groupX-sha1
             # actually MSG_KEXDH_REPLY
             dh_prime, dh_generator = DH_GROUPS[self.kex_alg]
             pub_key, packet = get_NS(packet, 1)
@@ -767,6 +772,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
                 return
             self.key_setup(shared_secret, exchange_hash)
         else:
+            # diffie-hellman-group-exchange-shaX
             self.p, rest = get_MP(packet)
             self.g, rest = get_MP(rest)
             self.x = self.generate_private_x(320)
@@ -832,7 +838,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             [ch.encode("hex") for ch in md5(pub_key).digest()]))
         server_key = Key.from_string(pub_key)
         shared_secret = MPpow(f, self.x, self.p)
-        h = sha1((
+        h = self.kex_hash((
             NS(self.SSH_VERSION_STRING) +
             NS(self.other_version_string) +
             NS(self.our_kex_init_payload) +
