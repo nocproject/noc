@@ -31,3 +31,43 @@ class TerminationGroup(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def register_dynamic_usage(self, vrf=None, name="default"):
+        """
+        Increase dynamic pool usage
+        """
+        ## Avoid circular references
+        from noc.ip.models.vrf import VRF
+        from noc.ip.models.dynamicippoolusage import DynamicIPPoolUsage
+
+        if not vrf:
+            vrf = VRF.get_global()
+        DynamicIPPoolUsage.register_usage(self, vrf, name)
+
+    def unregister_dynamic_usage(self, vrf=None, name="default"):
+        """
+        Decrease dynamic pool usage
+        """
+        ## Avoid circular references
+        from noc.ip.models.vrf import VRF
+        from noc.ip.models.dynamicippoolusage import DynamicIPPoolUsage
+
+        if not vrf:
+            vrf = VRF.get_global()
+        DynamicIPPoolUsage.unregister_usage(self, vrf, name)
+
+    @property
+    def dynamic_usage(self):
+        """
+        Retuns dict of dynamic pool name -> usage counter
+        """
+        ## Avoid circular references
+        from noc.ip.models.vrf import VRF
+        from noc.ip.models.dynamicippoolusage import DynamicIPPoolUsage
+
+        usage = {}
+        for p in self.ippool_set.filter(type="D"):
+            if p.name not in usage:
+                usage[p.name] = DynamicIPPoolUsage.get_usage(
+                    self, p.vrf, p.name)
+        return usage
