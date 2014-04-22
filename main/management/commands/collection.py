@@ -139,7 +139,7 @@ class Command(BaseCommand):
         elif options["cmd"] == "install":
             if len(args) < 2:
                 parts = args[0].split(os.path.sep)
-                if parts[1] != "collections":
+                if (len(parts) < 2 or parts[1] != "collections"):
                     raise CommandError("Usage: <collection> <file1> .. <fileN>")
                 # Generate collection name from path
                 name = "%s.%s" % (parts[0], parts[2])
