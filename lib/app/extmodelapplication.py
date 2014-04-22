@@ -19,7 +19,7 @@ from extapplication import ExtApplication, view
 from noc.sa.interfaces import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
-                               NoneParameter)
+                               NoneParameter, StringListParameter)
 from interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
@@ -79,7 +79,7 @@ class ExtModelApplication(ExtApplication):
         :type field: Field
         :return:
         """
-        from noc.lib.fields import TagsField
+        from noc.lib.fields import TagsField, TextArrayField
 
         if isinstance(field, BooleanField):
             return BooleanParameter()
@@ -93,6 +93,8 @@ class ExtModelApplication(ExtApplication):
             return DateTimeParameter()
         elif isinstance(field, TagsField):
             return TagsParameter(required=not field.null)
+        elif isinstance(field, TextArrayField):
+            return StringListParameter(required=not field.null)
         elif isinstance(field, related.ForeignKey):
             self.fk_fields[field.name] = field.rel.to
             return ModelParameter(field.rel.to,
@@ -239,7 +241,7 @@ class ExtModelApplication(ExtApplication):
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
                 if (v is not None and
-                    type(v) not in (str, unicode, int, long, bool)):
+                    type(v) not in (str, unicode, int, long, bool, list)):
                     v = unicode(v)
                 r[f.name] = v
             else:

@@ -44,6 +44,10 @@ Ext.define("NOC.sa.terminationgroup.IPPoolModel", {
         {
             name: "to_address",
             type: "string"
+        },
+        {
+            name: "technologies",
+            type: "auto"
         }
     ]
 });

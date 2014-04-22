@@ -887,8 +887,12 @@ Ext.define("NOC.core.ModelApplication", {
     showOpError: function(action, op, status) {
         var text = Ext.String.format("Failed to {0}", action);
         if(status) {
+            var m = status.message;
+            if (status.status === 400) {
+                m = status.traceback;
+            }
             text = Ext.String.format("Failed to {0}!<br>{1}",
-                action, status.message);
+                action, m);
         }
         NOC.error(text);
     },

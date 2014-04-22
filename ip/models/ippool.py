@@ -14,7 +14,7 @@ from vrf import VRF
 from afi import AFI_CHOICES
 from noc.sa.models.terminationgroup import TerminationGroup
 
-from noc.lib.fields import CIDRField
+from noc.lib.fields import CIDRField, TextArrayField
 from noc.lib.validators import check_ipv4, check_ipv6
 
 
@@ -41,6 +41,7 @@ class IPPool(models.Model):
         ("D", "Dynamic"),
         ("S", "Static")
     ])
+    technologies = TextArrayField(_("Technologies"), default=["IPoE"])
     from_address = CIDRField(_("From Address"))
     to_address = CIDRField(_("To Address"))
 
@@ -53,6 +54,7 @@ class IPPool(models.Model):
         """
         Field validation
         """
+        print "@@@ CLEAN"
         super(IPPool, self).clean()
         # Check prefix is of AFI type
         if self.afi == "4":

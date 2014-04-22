@@ -416,6 +416,7 @@ function on_mynetworks(n)
                     <th class="ippool-type">Type</th>
                     <th class="ippool-from">From</th>
                     <th class="ippool-to">To</th>
+                    <th class="ippool-tech">Technologies</th>
                 </tr>
             </thead>
             {% for p in ippools %}
@@ -425,6 +426,7 @@ function on_mynetworks(n)
                     <td>{% if p.type == 'D' %}Dynamic{% else %}Static{% endif %}</td>
                     <td>{{ p.from_address }}</td>
                     <td>{{ p.to_address }}</td>
+                    <td>{{ p.technologies|join:", " }}</td>
                 </tr>
             {%  endfor %}
         </table>

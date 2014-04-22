@@ -62,6 +62,11 @@ Ext.define("NOC.ip.ippool.Application", {
                     text: "To",
                     dataIndex: "to_address",
                     width: 100
+                },
+                {
+                    text: "Technologies",
+                    dataIndex: "technologies",
+                    flex: 1
                 }
             ],
             fields: [
@@ -114,6 +119,12 @@ Ext.define("NOC.ip.ippool.Application", {
                     xtype: "textfield",
                     fieldLabel: "To address",
                     allowBlank: false
+                },
+                {
+                    name: "technologies",
+                    xtype: "textfield",
+                    fieldLabel: "Technologies",
+                    allowBlank: true
                 }
             ]
         });
