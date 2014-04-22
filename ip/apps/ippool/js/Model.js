@@ -46,6 +46,10 @@ Ext.define("NOC.ip.ippool.Model", {
             type: "string"
         },
         {
+            name: "technologies",
+            type: "auto"
+        },
+        {
             name: "from_address",
             type: "string"
         },

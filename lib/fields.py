@@ -79,13 +79,23 @@ class TextArrayField(models.Field):
 
     def to_python(self,value):
         def to_unicode(s):
-            if type(s)==types.UnicodeType:
+            if isinstance(s, unicode):
                 return s
             else:
-                return unicode(s,"utf-8")
+                return unicode(s, "utf-8")
+
         if value is None:
             return None
         return [to_unicode(x) for x in value]
+
+    def get_default(self):
+        if self.has_default():
+            r = []
+            for v in self.default:
+                r += ["\"%s\"" % v.replace("\\", "\\\\").replace("\"", "\"\"")]
+            return "{%s}" % ",".join(r)
+        return ""
+
 ##
 ## Two-dimensioned text array field maps to PostgreSQL TEXT[][]
 ##

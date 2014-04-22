@@ -15,8 +15,10 @@ from django.db.utils import IntegrityError
 from noc.sa.interfaces import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
+                               StringListParameter,
                                NoneParameter, InterfaceTypeError)
 from noc.lib.validators import is_int
+from noc.lib.fields import TextArrayField
 
 
 class ModelInline(object):
@@ -141,6 +143,8 @@ class ModelInline(object):
             return FloatParameter()
         elif isinstance(field, AutoCompleteTagsField):
             return TagsParameter(required=not field.null)
+        elif isinstance(field, TextArrayField):
+            return StringListParameter(required=not field.null)
         elif isinstance(field, related.ForeignKey):
             self.fk_fields[field.name] = field.rel.to
             return ModelParameter(field.rel.to,
@@ -266,7 +270,7 @@ class ModelInline(object):
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
                 if (v is not None and
-                    type(v) not in (str, unicode, int, long, bool)):
+                    type(v) not in (str, unicode, int, long, bool, list)):
                     v = unicode(v)
                 r[f.name] = v
             else:

@@ -19,12 +19,13 @@ class DynamicIPPoolUsage(Document):
     meta = {
         "collection": "noc.dynamic_ippool_isage",
         "allow_inheritance": False,
-        "indexes": [("termination_group", "vrf", "pool_name")]
+        "indexes": [("termination_group", "vrf", "pool_name", "technology")]
     }
 
     termination_group = ForeignKeyField(TerminationGroup)
     vrf = ForeignKeyField(VRF)
     pool_name = StringField()
+    technology = StringField()
     usage = IntField()
 
     def __unicode__(self):
@@ -32,7 +33,7 @@ class DynamicIPPoolUsage(Document):
 
     @classmethod
     def register_usage(cls, termination_group, vrf=None,
-                       pool_name="default"):
+                       pool_name="default", technology="IPoE"):
         """
         Increase usage counter
         """
@@ -42,7 +43,8 @@ class DynamicIPPoolUsage(Document):
             {
                 "termination_group": termination_group.id,
                 "vrf": vrf.id,
-                "pool_name": pool_name
+                "pool_name": pool_name,
+                "technology": technology
             }, {
                 "$inc": {
                     "usage": 1
@@ -53,7 +55,7 @@ class DynamicIPPoolUsage(Document):
 
     @classmethod
     def unregister_usage(cls, termination_group, vrf=None,
-                       pool_name="default"):
+                       pool_name="default", technology="IPoE"):
         """
         Decrease usage counter
         """
@@ -63,7 +65,8 @@ class DynamicIPPoolUsage(Document):
             {
                 "termination_group": termination_group.id,
                 "vrf": vrf.id,
-                "pool_name": pool_name
+                "pool_name": pool_name,
+                "technology": technology
             }, {
                 "$inc": {
                     "usage": -1
@@ -74,18 +77,17 @@ class DynamicIPPoolUsage(Document):
 
     @classmethod
     def get_usage(cls, termination_group, vrf=None,
-                       pool_name="default"):
+                       pool_name="default", technology="IPoE"):
         if not vrf:
             vrf = VRF.get_global()
         r = cls._get_collection().find_one(
             {
                 "termination_group": termination_group.id,
                 "vrf": vrf.id,
-                "pool_name": pool_name
+                "pool_name": pool_name,
+                "technology": technology
             },
-            {
-                "usage": 1
-            }
+            {"usage": 1}
         )
         if r:
             return r["usage"]

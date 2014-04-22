@@ -127,6 +127,12 @@ Ext.define("NOC.sa.terminationgroup.Application", {
                     text: "To address",
                     editor: "textfield",
                     width: 100
+                },
+                {
+                    dataIndex: "technologies",
+                    text: "Technologies",
+                    editor: "textfield",
+                    flex: 1
                 }
             ]
         }
