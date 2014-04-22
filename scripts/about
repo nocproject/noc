@@ -74,7 +74,8 @@ def get_python_packages():
     o = check_output(["./bin/pip", "freeze"])
     r = []
     for l in o.splitlines():
-        r += [l.split("==", 1)]
+        if "==" in l:
+            r += [l.split("==", 1)]
     return r
 
 
