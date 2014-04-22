@@ -43,6 +43,15 @@ ensure_prog ( ) {
 cd `dirname $0`/../
 PROGNAME=`basename $0`
 ##
+## Check, if NOC is already running
+##
+if [ -f "./etc/noc-launcher.conf" ]; then
+    PIDFILE=`cat ./etc/noc-launcher.conf | grep pidfile | cut -d ' ' -f3`
+    if [ -f "$PIDFILE" ]; then
+        error_exit "NOC is running now. Shutdown it first."
+    fi
+fi
+##
 ## Include configs
 ##
 [ -f ./etc/upgrade.defaults ] && . ./etc/upgrade.defaults
