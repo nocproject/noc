@@ -70,6 +70,9 @@ th[class=project] {
 th[class=ippoll-tg] {
     width: 12em;
 }
+th[class=ippool-name] {
+    width: 7em;
+}
 th[class=ippool-type] {
     width: 5em;
 }
