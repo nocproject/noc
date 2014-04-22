@@ -19,7 +19,7 @@ class DynamicIPPoolUsage(Document):
     meta = {
         "collection": "noc.dynamic_ippool_isage",
         "allow_inheritance": False,
-        "indexes": [("termination_group", "vrf", "name")]
+        "indexes": [("termination_group", "vrf", "pool_name")]
     }
 
     termination_group = ForeignKeyField(TerminationGroup)
@@ -31,6 +31,63 @@ class DynamicIPPoolUsage(Document):
         return u"%s %s" % (self.termination_group.name, self.pool_name)
 
     @classmethod
-    def register_usage(self, termination_group, vrf=None, name="default"):
+    def register_usage(cls, termination_group, vrf=None,
+                       pool_name="default"):
+        """
+        Increase usage counter
+        """
         if not vrf:
             vrf = VRF.get_global()
+        cls._get_collection().update(
+            {
+                "termination_group": termination_group.id,
+                "vrf": vrf.id,
+                "pool_name": pool_name
+            }, {
+                "$inc": {
+                    "usage": 1
+                }
+            },
+            upsert=True
+        )
+
+    @classmethod
+    def unregister_usage(cls, termination_group, vrf=None,
+                       pool_name="default"):
+        """
+        Decrease usage counter
+        """
+        if not vrf:
+            vrf = VRF.get_global()
+        cls._get_collection().update(
+            {
+                "termination_group": termination_group.id,
+                "vrf": vrf.id,
+                "pool_name": pool_name
+            }, {
+                "$inc": {
+                    "usage": -1
+                }
+            },
+            upsert=True
+        )
+
+    @classmethod
+    def get_usage(cls, termination_group, vrf=None,
+                       pool_name="default"):
+        if not vrf:
+            vrf = VRF.get_global()
+        r = cls._get_collection().find_one(
+            {
+                "termination_group": termination_group.id,
+                "vrf": vrf.id,
+                "pool_name": pool_name
+            },
+            {
+                "usage": 1
+            }
+        )
+        if r:
+            return r["usage"]
+        else:
+            return 0
