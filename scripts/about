@@ -27,8 +27,11 @@ else:
 
 def get_branch():
     from mercurial import ui, localrepo
-    repo = localrepo.localrepository(ui.ui(), path=".")
-    return repo.dirstate.branch()
+    try:
+        repo = localrepo.localrepository(ui.ui(), path=".")
+        return repo.dirstate.branch()
+    except:
+        return "none"
 
 
 def get_pg_version():
