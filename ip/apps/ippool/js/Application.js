@@ -25,6 +25,11 @@ Ext.define("NOC.ip.ippool.Application", {
                     renderer: NOC.render.Lookup("termination_group")
                 },
                 {
+                    text: "Pool Name",
+                    dataIndex: "name",
+                    width: 100
+                },
+                {
                     text: "Type",
                     dataIndex: "type",
                     width: 70,
@@ -64,6 +69,12 @@ Ext.define("NOC.ip.ippool.Application", {
                     name: "termination_group",
                     xtype: "sa.terminationgroup.LookupField",
                     fieldLabel: "Termination Group",
+                    allowBlank: false
+                },
+                {
+                    name: "name",
+                    xtype: "textfield",
+                    fieldLabel: "Pool Name",
                     allowBlank: false
                 },
                 {

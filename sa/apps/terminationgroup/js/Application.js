@@ -72,6 +72,12 @@ Ext.define("NOC.sa.terminationgroup.Application", {
             model: "NOC.sa.terminationgroup.IPPoolModel",
             columns: [
                 {
+                    dataIndex: "name",
+                    text: "Pool Name",
+                    editor: "textfield",
+                    width: 100
+                },
+                {
                     dataIndex: "type",
                     text: "Type",
                     editor: {
