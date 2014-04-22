@@ -10,6 +10,7 @@
 ## Python modules
 import re
 from hashlib import sha1, md5
+import zlib
 ## NOC modules
 from noc.lib.nbsocket import ConnectedTCPSocket
 from noc.sa.script.cli import CLI
@@ -29,7 +30,7 @@ SSH_STATES = {
     "SSH_KEY_EXCHANGE": {
         "FAILURE": "FAILURE",
         "SSH_AUTH": "SSH_AUTH",
-        },
+    },
     "SSH_AUTH": {
         "SSH_AUTH_PASSWORD": "SSH_AUTH_PASSWORD",
         "FAILURE": "FAILURE"
@@ -127,14 +128,27 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     CLIENT_VERSION = "SSH_v2.0@nocproject.org"
     SUPPORTED_VERSIONS = ("1.99", "2.0")
     SSH_VERSION_STRING = "SSH-%s-%s" % (PROTOCOL_VERSION, CLIENT_VERSION)
-    SSH_KEY_EXCHANGES = ["diffie-hellman-group-exchange-sha1",
-                         "diffie-hellman-group1-sha1"]
-    SSH_CYPHERS = ["aes256-ctr", "aes256-cbc", "aes192-ctr", "aes192-cbc",
-                   "aes128-ctr", "aes128-cbc",
-                   "cast128-ctr", "cast128-cbc", "blowfish-ctr",
-                   "blowfish-cbc", "3des-ctr", "3des-cbc"]
-    SSH_PUBLIC_KEYS = ["ssh-rsa", "ssh-dss"]
-    SSH_COMPRESSIONS = ["none", "zlib"]
+    SSH_KEY_EXCHANGES = [
+        "diffie-hellman-group14-sha1",
+        "diffie-hellman-group1-sha1",
+        "diffie-hellman-group-exchange-sha1"
+    ]
+    SSH_CYPHERS = [
+        "aes256-ctr", "aes256-cbc",
+        "aes192-ctr", "aes192-cbc",
+        "aes128-ctr", "aes128-cbc",
+        "cast128-ctr", "cast128-cbc",
+        "blowfish-ctr", "blowfish-cbc",
+        "3des-ctr", "3des-cbc"
+    ]
+    SSH_PUBLIC_KEYS = [
+        # "ecdsa-sha2-nistp256",
+        # "ecdsa-sha2-nistp384",
+        # "ecdsa-sha2-nistp521",
+        "ssh-rsa",
+        "ssh-dss"
+    ]
+    SSH_COMPRESSIONS = ["zlib@openssh.com", "none", "zlib"]
     SSH_MACS = ["hmac-sha1", "hmac-md5"]
     SSH_LANGUAGES = []
     # SSH_AUTH_METHODS = ["publickey", "password", "keyboard-interactive", "none"]
@@ -153,6 +167,9 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.out_seq = 0
         self.out_compression = None
         self.in_compression = None
+        # zlib@openssh.com, must be delayed until MSG_USERAUTH_SUCCESS
+        self.delayed_out_compression = None
+        self.delayed_in_compression = None
         self.buffer = ""
         self.d_buffer = ""
         self.session_id = None
@@ -692,15 +709,19 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
                                  "Couldn't match proposals")
             return
         self.debug("Selecting %s %s, in=(%s %s %s) out=(%s %s %s)" % (
-        self.kex_alg, self.key_alg,
-        self.next_transform.in_cipher_type, self.next_transform.in_mac_type,
-        self.in_compression_type,
-        self.next_transform.out_cipher_type, self.next_transform.out_mac_type,
-        self.out_compression_type))
+            self.kex_alg, self.key_alg,
+            self.next_transform.in_cipher_type,
+            self.next_transform.in_mac_type,
+            self.in_compression_type,
+            self.next_transform.out_cipher_type,
+            self.next_transform.out_mac_type,
+            self.out_compression_type)
+        )
 
-        if self.kex_alg == "diffie-hellman-group1-sha1":
+        if self.kex_alg in DH_GROUPS:
+            dh_prime, dh_generator = DH_GROUPS[self.kex_alg]
             self.x = self.generate_private_x(512)
-            self.e = MPpow(DH_GENERATOR, self.x, DH_PRIME)
+            self.e = MPpow(dh_generator, self.x, dh_prime)
             self.send_packet(MSG_KEXDH_INIT, self.e)
         elif self.kex_alg == "diffie-hellman-group-exchange-sha1":
             self.send_packet(MSG_KEX_DH_GEX_REQUEST_OLD, "\x00\x00\x08\x00")
@@ -720,8 +741,9 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         :param packet:
         :return:
         """
-        if self.kex_alg == "diffie-hellman-group1-sha1":
+        if self.kex_alg in DH_GROUPS:
             # actually MSG_KEXDH_REPLY
+            dh_prime, dh_generator = DH_GROUPS[self.kex_alg]
             pub_key, packet = get_NS(packet, 1)
             f, packet = get_MP(packet)
             signature, packet = get_NS(packet, 1)
@@ -729,7 +751,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
                 [ch.encode("hex") for ch in md5(pub_key).digest()]))
             # Generate keys
             server_key = Key.from_string(pub_key)
-            shared_secret = MPpow(f, self.x, DH_PRIME)
+            shared_secret = MPpow(f, self.x, dh_prime)
             h = sha1((NS(self.SSH_VERSION_STRING) +
                       NS(self.other_version_string) +
                       NS(self.our_kex_init_payload) +
@@ -769,8 +791,12 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.next_transform = None
         if self.out_compression_type == "zlib":
             self.out_compression = zlib.compressobj(6)
+        elif self.out_compression_type == "zlib@openssh.com":
+            self.delayed_out_compression = zlib.compressobj(6)
         if self.in_compression_type == "zlib":
             self.in_compression = zlib.decompressobj()
+        elif self.in_compression_type == "zlib@openssh.com":
+            self.delayed_in_compression = zlib.decompressobj()
         if self.get_state() == "SSH_KEY_EXCHANGE":
             self.event("SSH_AUTH")
 
@@ -862,6 +888,14 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         :param packet:
         :return:
         """
+        if self.delayed_out_compression:
+            self.debug("Enabling delayed out compression %s" % self.out_compression_type)
+            self.out_compression = self.delayed_out_compression
+            self.delayed_out_compression = None
+        if self.delayed_in_compression:
+            self.debug("Enabling delayed in compression %s" % self.in_compression_type)
+            self.in_compression = self.delayed_in_compression
+            self.delayed_in_compression = None
         self.event("SSH_CHANNEL")
 
     def ssh_USERAUTH_BANNER(self, packet):
@@ -1105,12 +1139,33 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         MSG_CHANNEL_CLOSE: ssh_MSG_CHANNEL_CLOSE,
         MSG_CHANNEL_REQUEST: ssh_CHANNEL_REQUEST,
         MSG_CHANNEL_SUCCESS: ssh_CHANNEL_SUCCESS,
-        }
+    }
 
-# Diffie-Hellman primes from Oakley Group 2 [RFC 2409]
-DH_PRIME = long("17976931348623159077083915679378745319786029604875601170644"
-                "442368419718021615851936894783379586492554150218056548598050364644054819923"
-                "910005079287700335581663922955313623907650873575991482257486257500742530207"
-                "744771258955095793777842444242661733472762929938766870920560605027081084290"
-                "7692932019128194467627007L")
-DH_GENERATOR = 2L
+# name -> (DH Prime, DH Generator)
+DH_GROUPS = {
+    "diffie-hellman-group1-sha1": (
+        long(
+            "179769313486231590770839156793787453197860296048756011706444"
+            "423684197180216158519368947833795864925541502180565485980503"
+            "646440548199239100050792877003355816639229553136239076508735"
+            "759914822574862575007425302077447712589550957937778424442426"
+            "617334727629299387668709205606050270810842907692932019128194"
+            "467627007L"
+        ), 2
+    ),
+    "diffie-hellman-group14-sha1": (
+        long(
+            "323170060713110073003389139264238282488179412411402391128420"
+            "097514007417066343542226196894173635693471179017379097041917"
+            "546058732091950288537589861856221532121754125149017745202702"
+            "357960782362488842461894775876411059286460994117232454266225"
+            "221932305409190376805242355191256797158701170010580558776510"
+            "388618472802579760549035697325615261670813393617995413364765"
+            "591603683178967290731783845896806396719009772021941686472258"
+            "710314113364293195361934716365332097170774482279885885653692"
+            "086452966360772502689555059283627511211740969729980684105543"
+            "595848665832916421362182310789909994486524682624169720359118"
+            "52507045361090559L"
+        ), 2
+    )
+}
