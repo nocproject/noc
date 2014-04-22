@@ -25,6 +25,10 @@ Ext.define("NOC.ip.ippool.Model", {
             persist: false
         },
         {
+            name: "name",
+            type: "string"
+        },
+        {
             name: "vrf",
             type: "int"
         },

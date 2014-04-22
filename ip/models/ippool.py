@@ -29,6 +29,9 @@ class IPPool(models.Model):
         TerminationGroup,
         verbose_name=_("Termination Group")
     )
+    name = models.CharField(
+        _("Pool name"),
+        max_length=64, default="default")
     vrf = models.ForeignKey(VRF, verbose_name=_("VRF"))
     afi = models.CharField(
         _("Address Family"),
@@ -42,8 +45,8 @@ class IPPool(models.Model):
     to_address = CIDRField(_("To Address"))
 
     def __unicode__(self):
-        return u"%s %s %s -- %s" % (
-            self.termination_group.name, self.type,
+        return u"%s %s %s %s -- %s" % (
+            self.termination_group.name, self.type, self.name,
             self.from_address, self.to_address)
 
     def clean(self):
