@@ -18,7 +18,7 @@ import stat
 import hashlib
 import pprint
 ## NOC modules
-from noc.settings import CRASHINFO_LIMIT
+from noc.settings import CRASHINFO_LIMIT, TRACEBACK_REVERSE
 from noc.lib.version import get_version
 from noc.lib.fileutils import safe_rewrite
 
@@ -160,7 +160,7 @@ def get_execution_frames(frame):
     return frames
 
 
-def format_frames(frames, reverse=True):
+def format_frames(frames, reverse=TRACEBACK_REVERSE):
     def format_source(lineno, lines):
         r = []
         for l in lines:
@@ -194,17 +194,20 @@ def format_frames(frames, reverse=True):
     return u"\n".join(r)
 
 
-def get_traceback(reverse=True):
+def get_traceback(reverse=TRACEBACK_REVERSE):
     t, v, tb = sys.exc_info()
     now = datetime.datetime.now()
     r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
     r += ["Working directory: %s" % os.getcwd()]
     r += [str(t), str(v)]
     r += [format_frames(get_traceback_frames(tb), reverse=reverse)]
+    if not reverse:
+        r += ["UNHANDLED EXCEPTION (%s)" % str(now)]
+        r += [str(t), str(v)]
     return "\n".join(r)
 
 
-def error_report(reverse=True):
+def error_report(reverse=TRACEBACK_REVERSE):
     r = get_traceback(reverse=reverse)
     logging.error(r)
     if DEBUG_CTX_COMPONENT and DEBUG_CTX_CRASH_DIR:
