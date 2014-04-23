@@ -203,6 +203,8 @@ if config.get("main", "x_forwarded_proto"):
     SECURE_PROXY_SSL_HEADER = ("HTTP_%s" % h, "https")
 ## Set up crashinfo limit
 CRASHINFO_LIMIT = config.getint("main", "crashinfo_limit")
+## Traceback order
+TRACEBACK_REVERSE = config.get("main", "traceback_order") == "reverse"
 ## Fixed beefs directory
 ## Set up by test runner
 TEST_FIXED_BEEF_BASE = None
