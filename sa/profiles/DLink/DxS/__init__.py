@@ -10,6 +10,7 @@
 
 ## Python modules
 import re
+import time
 ## NOC modules
 from noc.sa.profiles import Profile as NOCProfile
 
@@ -79,7 +80,7 @@ class Profile(NOCProfile):
         r"(?P<admin_speed>Auto|10M|100M|1000M|10G)/"
         r"((?P<admin_duplex>Half|Full)/)?"
         r"(?P<admin_flowctrl>Enabled|Disabled)\s+"
-        r"(?P<status>LinkDown|Link\sDown|Err\-Disabled)?"
+        r"(?P<status>LinkDown|Link\sDown|Err\-Disabled|Empty)?"
         r"((?P<speed>10M|100M|1000M|10G)/"
         r"(?P<duplex>Half|Full)/(?P<flowctrl>None|Disabled|802.3x))?\s+"
         r"(?P<addr_learning>Enabled|Disabled)\s*"
@@ -148,11 +149,15 @@ class Profile(NOCProfile):
                     "desc": match.group("desc").strip()
                 }]
         else:
-            objects = script.cli_object_stream(
-                "show ports description", parser=self.parse_interface,
-                cmd_next="n", cmd_stop="q")
+            try:
+                objects = script.cli_object_stream(
+                    "show ports description", parser=self.parse_interface,
+                    cmd_next="n", cmd_stop="q")
+            except:
+                objects = []
             # DES-3226S does not support `show ports description` command
             if objects == []:
+                script.reset_cli_queue()
                 objects = script.cli_object_stream(
                     "show ports", parser=self.parse_interface,
                     cmd_next="n", cmd_stop="q")
@@ -182,7 +187,8 @@ class Profile(NOCProfile):
     r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
     r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
     r"^Member Ports\s+:\s*(?P<member_ports>\S*?)\s*\n"
-    r"^Untagged ports\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
+    r"(Static ports\s+:\s*\S+\s*\n)?"
+    r"^(Current )?Untagged ports\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def get_vlans(self, script):

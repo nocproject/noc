@@ -264,12 +264,7 @@ class Script(NOCScript):
             except self.CLISyntaxError:
                 c = []
             if c == []:
-                # Do not touch next 5 lines !!!
-                try:
-                    s = self.cli("\n\n")
-                except:
-                    pass
-                time.sleep(5)
+                self.reset_cli_queue()
                 c = self.cli_object_stream(
                 "show loopdetect ports", parser=self.parse_ctp,
                 cmd_next="n", cmd_stop="q")
