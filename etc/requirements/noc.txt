@@ -1,4 +1,5 @@
 Mercurial>=2.5.2
+ecdsa==0.11
 psycopg2>=2.5
 pymongo==2.6.3
 gmpy==1.16

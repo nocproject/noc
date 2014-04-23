@@ -143,9 +143,9 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         "3des-ctr", "3des-cbc"
     ]
     SSH_PUBLIC_KEYS = [
-        # "ecdsa-sha2-nistp256",
-        # "ecdsa-sha2-nistp384",
-        # "ecdsa-sha2-nistp521",
+        "ecdsa-sha2-nistp256",
+        "ecdsa-sha2-nistp384",
+        "ecdsa-sha2-nistp521",
         "ssh-rsa",
         "ssh-dss"
     ]
