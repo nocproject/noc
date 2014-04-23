@@ -17,7 +17,7 @@ from noc.sa.protocols.sae_pb2 import TELNET, SSH
 class Profile(noc.sa.profiles.Profile):
     name = "DLink.DGS3100"
     supported_schemes = [TELNET, SSH]
-    pattern_username = "[Uu]ser[Nn]ame:"
+    pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
     pattern_password = "[Pp]ass[Ww]ord:"
     pattern_more = [
                     (r"CTRL\+C.+?a ALL", "a"),
