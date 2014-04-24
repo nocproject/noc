@@ -1,0 +1,278 @@
+{
+    "name": "Cisco | C3500 | WS-C3550-24-DC",
+    "uuid": "8c6c6850-5b37-42cc-9af2-e4225c6d20e8",
+    "vendor__code": "CISCO",
+    "description": "Cisco Catalyst 3550 24 10/100 baseT ports + 2 Gig uplinks fixed configuration Layer 2/3 Ethernet Switch with DC power",
+    "connection_rule__name": "Generic | Switch GBIC Prefixed",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Power",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/4-G-5.08"
+        },
+        {
+            "description": "Fa0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/9 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/10 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa10",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/11 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa11",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/12 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa12",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/13 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa13",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/14 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa14",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/15 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa15",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/16 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa16",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/17 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa17",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/18 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa18",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/19 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa19",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/20 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa20",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/21 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa21",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/22 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa22",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/23 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa23",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Fa0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa24",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi0/1 GBIC port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "Gi0/2 GBIC port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi2_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "airflow": {
+            "exhaust": "r",
+            "intake": "l"
+        },
+        "asset": {
+            "part_no0": "WS-C3550-24-DC",
+            "part_no1": "WS-C3550-24-DC-SMI"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
