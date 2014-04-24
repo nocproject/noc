@@ -10,7 +10,6 @@
 
 ## Python modules
 import re
-import time
 ## NOC modules
 from noc.sa.profiles import Profile as NOCProfile
 

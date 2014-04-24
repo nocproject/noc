@@ -8,7 +8,6 @@
  
 ## Python modules
 import re
-import time
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
