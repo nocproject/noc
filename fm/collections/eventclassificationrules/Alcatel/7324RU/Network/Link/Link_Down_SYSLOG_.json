@@ -1,0 +1,21 @@
+{
+    "name": "Alcatel | 7324RU | Network | Link | Link Down (SYSLOG)",
+    "uuid": "fd13c2ff-8ea6-4b9a-ad60-5731aa26b81b",
+    "description": "DSLAM-10:MINOR,+LINE_DOWN:The line is down",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "^Alcatel\\.7324RU$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "message",
+            "value_re": "DSLAM-(?P<interface>\\d+):MINOR,\\+LINE_DOWN:The line is down$"
+        }
+    ]
+}
