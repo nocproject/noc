@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MikroTik.RouterOS.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -18,7 +18,8 @@ class Script(NOCScript):
     type_map = {
         "ether": "physical",
         "wlan": "physical",
-        "bridge": "SVI"
+        "bridge": "SVI",
+        "vlan": "SVI"
     }
 
     def execute(self):
