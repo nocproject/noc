@@ -20,9 +20,16 @@ class Script(NOCScript):
         "wlan": "physical",
         "bridge": "SVI",
         "vlan": "SVI",
+        "ppp-out": "tunnel",
+        "ppp-in": "tunnel",
+        "pppoe-out": "tunnel",
+        "pppoe-in": "tunnel",
+        "l2tp-out": "tunnel",
+        "l2tp-in": "tunnel",
         "pptp-out": "tunnel",
         "pptp-in": "tunnel",
-        "gre-tunnel": "tunnel"
+        "gre-tunnel": "tunnel",
+        "ipip-tunnel": "tunnel"
     }
     si = {}
 
@@ -49,7 +56,7 @@ class Script(NOCScript):
         # Fill interfaces
         for n, f, r in self.cli_detail(
             "/interface print detail without-paging"):
-            if not r["type"] in "vlan":
+            if not r["type"] in "vlan":  # TODO: Check other types
                 ifaces[r["name"]] = {
                     "name": r["name"],
                     "type": self.type_map[r["type"]],
