@@ -4,25 +4,24 @@
 ## OS:     RouterOS
 ## Compatible: 3.14 and above
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.sa.profiles import Profile as NOCProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(NOCProfile):
     name = "MikroTik.RouterOS"
-    supported_schemes = [TELNET, SSH]
+    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     command_submit = "\r"
     pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] > "
     pattern_more = [
         ("Please press \"Enter\" to continue!", "\n"),
-        (r"\[Q quit\|D dump\|down\]", " ")
+        (r"\[Q quit\|.+\]", " ")
     ]
     pattern_syntax_error = r"bad command name"
     config_volatile = [r"^#.*?$", r"^\s?"]
@@ -39,17 +38,21 @@ class Profile(noc.sa.profiles.Profile):
             script.access_profile.user += "+ct"
         self.add_script_method(script, "cli_detail", self.cli_detail)
 
-    def cli_detail(self, script, cmd):
+    def cli_detail(self, script, cmd, cached=False):
         """
         Parse RouterOS .... print detail output
         :param script:
         :param cmd:
+        :param cached:
         :return:
         """
-        return self.parse_detail(script.cli(cmd))
+        if cached == True:
+            return self.parse_detail(script.cli(cmd, cached=True))
+        else:
+            return self.parse_detail(script.cli(cmd))
 
     rx_p_new = re.compile("^\s*(?P<line>\d+)\s+")
-    rx_key = re.compile("([a-zA-Z\-]+)=")
+    rx_key = re.compile("([0-9a-zA-Z\-]+)=")
 
     def parse_detail(self, s):
         """
