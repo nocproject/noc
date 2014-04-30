@@ -28,6 +28,8 @@ class Script(NOCScript):
         "l2tp-in": "tunnel",
         "pptp-out": "tunnel",
         "pptp-in": "tunnel",
+        "ovpn-out": "tunnel",
+        "ovpn-in": "tunnel",
         "gre-tunnel": "tunnel",
         "ipip-tunnel": "tunnel"
     }
@@ -37,7 +39,7 @@ class Script(NOCScript):
         self.si["tunnel"] = {}
         tun = self.si["tunnel"]
         tun["type"] = tun_type
-        if tun_type in ["PPP", "PPPOE", "L2TP", "PPTP"]:
+        if tun_type in ["PPP", "PPPOE", "L2TP", "PPTP", "OVPN"]:
             if (f == "D" and afi == "IPv4"):
                 tun["local_address"] = ipif["address"].split("/", 1)[0].strip()
                 tun["remote_address"] = ipif["network"]
@@ -144,6 +146,8 @@ class Script(NOCScript):
                 self.get_tunnel("L2TP", f, afi, r)
             if t["type"].startswith("pptp-"):
                 self.get_tunnel("PPTP", f, afi, r)
+            if t["type"].startswith("ovpn-"):
+                self.get_tunnel("PPP", f, afi, r)
             if t["type"].startswith("gre-"):
                 self.get_tunnel("GRE", f, afi, r)
             if t["type"].startswith("ipip-"):
