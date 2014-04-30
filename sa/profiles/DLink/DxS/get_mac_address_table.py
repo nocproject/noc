@@ -42,7 +42,7 @@ class Script(NOCScript):
             or self.match_version(DGS3620, version__gte="1.00.00"):
                 cmd += " vlanid %d" % vlan
             else:
-                if if self.match_version(DES3500, version__gte="6.00"):
+                if self.match_version(DES3500, version__gte="6.00"):
                     cmd += " vid %d" % vlan
                 else:
                     for v in self.scripts.get_vlans():
