@@ -42,10 +42,13 @@ class Script(NOCScript):
             or self.match_version(DGS3620, version__gte="1.00.00"):
                 cmd += " vlanid %d" % vlan
             else:
-                for v in self.scripts.get_vlans():
-                    if v["vlan_id"] == vlan:
-                        cmd += " vlan %s" % v["name"]
-                        break
+                if if self.match_version(DES3500, version__gte="6.00"):
+                    cmd += " vid %d" % vlan
+                else:
+                    for v in self.scripts.get_vlans():
+                        if v["vlan_id"] == vlan:
+                            cmd += " vlan %s" % v["name"]
+                            break
         r = []
         for match in self.rx_line.finditer(self.cli(cmd)):
             mactype = match.group("type").lower()
