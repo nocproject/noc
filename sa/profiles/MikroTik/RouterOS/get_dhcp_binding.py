@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MikroTik.RouterOS.get_dhcp_binding
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -20,7 +20,8 @@ class Script(NOCScript):
     def execute(self):
         r = []
         now = datetime.datetime.now()
-        for n, f, v in self.cli_detail("/ip dhcp-server lease print detail"):
+        for n, f, v in self.cli_detail(
+            "/ip dhcp-server lease print detail without-paging"):
             r += [{
                 "ip": v["address"],
                 "mac": v["mac-address"],
