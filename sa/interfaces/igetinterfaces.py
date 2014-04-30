@@ -245,7 +245,7 @@ class IGetInterfaces(Interface):
                                 element=StringParameter(choices=[
                                     "ISIS", "OSPF", "RIP", "EIGRP", "OSPFv3",
                                     "BGP",
-                                    "LDP", "RSVP",
+                                    "LDP", "RSVP", "NDP",
                                     "PIM", "DVMRP", "IGMP", "VRRP", "SRRP"
                                 ]), required=False),
                 "untagged_vlan": VLANIDParameter(required=False),  # enabled_afi = [BRIDGE]
@@ -255,7 +255,7 @@ class IGetInterfaces(Interface):
                 # Tunnel services
                 "tunnel": DictParameter(required=False, attrs={
                     "type": StringParameter(choices=[
-                        "GRE", "IPIP", "IPsec", "PPTP"
+                        "GRE", "IPIP", "IPsec", "PPTP", "L2TP", "PPPOE", "PPP"
                     ]),
                     "local_address": IPParameter(required=False),
                     "remote_address": IPParameter(required=False)
