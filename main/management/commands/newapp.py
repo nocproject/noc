@@ -189,8 +189,13 @@ class Command(BaseCommand):
             # Initialize model if necessary
             if tv["model"]:
                 tv["requires"] = ["NOC.%s.%s.Model" % (m, tv["model"].lower())]
-                models = __import__("noc.%s.models" % m, {}, {}, "*")
+                tv["modelimport"] = "noc.%s.models.%s" % (m, a)
+                models = __import__(tv["modelimport"], {}, {}, tv["model"])
                 model = getattr(models, tv["model"])
+                if model is None:
+                    tv["modelimport"] = "noc.%s.models" % m
+                    models = __import__(tv["modelimport"], {}, {}, "*")
+                    model = getattr(models, tv["model"])
                 if issubclass(model, Model):
                     # Model
                     fields = [{
