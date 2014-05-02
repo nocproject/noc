@@ -30,4 +30,5 @@ class Command(BaseCommand):
             ["--ext", "django_extensions.management.notebook_extension"]
         )
         app.initialize(ipython_arguments)
+        app.notebook_manager.notebook_dir = ".ipython"
         app.start()
