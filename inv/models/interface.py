@@ -10,6 +10,7 @@
 from noc.lib.nosql import (Document, ForeignKeyField, StringField,
     IntField, BooleanField, PlainReferenceField, ListField)
 from interfaceprofile import InterfaceProfile
+from coverage import Coverage
 from noc.sa.models import ManagedObject
 from noc.sa.interfaces import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -59,6 +60,9 @@ class Interface(Document):
     project = ForeignKeyField(Project)
     state = ForeignKeyField(ResourceState)
     vc_domain = ForeignKeyField(VCDomain)
+    # Coverage
+    coverage = PlainReferenceField(Coverage)
+    technologies = ListField(StringField())
 
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)
