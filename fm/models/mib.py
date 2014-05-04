@@ -241,6 +241,9 @@ class MIB(nosql.Document):
                     # Same oid, same name: duplicated declaration.
                     # Silently skip
                     continue
+                # For same MIB - leave first entry
+                if oid_name.split("::", 1)[0] == o.name.split("::", 1)[0]:
+                    continue
                 # Try to resolve collision
                 if not mib_preference:
                     # No preference for target MIB
