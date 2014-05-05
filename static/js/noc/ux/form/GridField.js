@@ -13,9 +13,11 @@ Ext.define("Ext.ux.form.GridField", {
     },
     alias: "widget.gridfield",
     columns: [],
+    toolbar: null,
 
     initComponent: function() {
-        var me = this;
+        var me = this,
+            toolbar;
 
         me.fields = me.columns.map(function(v) {
             return v.dataIndex;
@@ -57,6 +59,18 @@ Ext.define("Ext.ux.form.GridField", {
             handler: me.onClone
         });
 
+        // Build toolbar
+        toolbar = [
+            me.addButton,
+            me.deleteButton,
+            "-",
+            me.cloneButton
+        ];
+        if(me.toolbar) {
+            toolbar.push("-");
+            toolbar = toolbar.concat(me.toolbar);
+        }
+
         me.grid = Ext.create("Ext.grid.Panel", {
             layout: "fit",
             store: me.store,
@@ -74,12 +88,7 @@ Ext.define("Ext.ux.form.GridField", {
                 {
                     xtype: "toolbar",
                     dock: "top",
-                    items: [
-                        me.addButton,
-                        me.deleteButton,
-                        "-",
-                        me.cloneButton
-                    ]
+                    items: toolbar
                 }
             ],
             listeners: {
