@@ -74,6 +74,23 @@ class Building(Document):
         # Fallback to first address found
         return Address.objects.filter(building=self.id).first()
 
+    def fill_entrances(self, first_entrance=1, first_home=1,
+                       n_entrances=1, first_floor=1, last_floor=1,
+                       homes_per_entrance=1):
+        e_home = first_home
+        for e in range(first_entrance, first_entrance + n_entrances):
+            self.entrances += [
+                Entrance(
+                    number=str(e),
+                    first_floor=str(first_floor),
+                    last_floor=str(last_floor),
+                    first_home=str(e_home),
+                    last_home=str(e_home + homes_per_entrance - 1)
+                )
+            ]
+            e_home += homes_per_entrance
+        self.save()
+
 ## Setup signals
 signals.pre_save.connect(Building.update_floors, sender=Building)
 
