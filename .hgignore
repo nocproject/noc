@@ -29,4 +29,3 @@ ext_*
 etc/requirements/local.txt
 static/pkg/
 share/
-solutions/
