@@ -27,6 +27,18 @@ Ext.define("NOC.gis.building.Application", {
                     text: "Address",
                     dataIndex: "full_path",
                     flex: 1
+                },
+                {
+                    text: "Floors",
+                    dataIndex: "floors",
+                    width: 75,
+                    align: "right"
+                },
+                {
+                    text: "Homes",
+                    dataIndex: "homes",
+                    width: 75,
+                    align: "right"
                 }
             ],
             fields: [
@@ -140,6 +152,14 @@ Ext.define("NOC.gis.building.Application", {
                             dataIndex: "last_home",
                             width: 75,
                             editor: "textfield"
+                        }
+                    ],
+                    toolbar: [
+                        {
+                            text: "Fill Entrances",
+                            glyph: NOC.glyph.plus_sign_alt,
+                            scope: me,
+                            handler: me.onFillEntrances
                         }
                     ]
                 }
@@ -284,6 +304,56 @@ Ext.define("NOC.gis.building.Application", {
                         r.set("is_primary", false);
                     }
                 });
+            }
+        }
+    },
+    //
+    onFillEntrances: function() {
+        var me = this;
+        Ext.create("NOC.gis.building.FillEntrancesForm", {app: me});
+    },
+    //
+    fillEntrances: function(cfg) {
+        var me = this,
+            entrance = parseInt(cfg.first_entrance),
+            firstHome = parseInt(cfg.first_home),
+            nEntrances = parseInt(cfg.n_entrances),
+            firstFloor = cfg.first_floor,
+            lastFloor = cfg.last_floor,
+            homesPerEntrance = parseInt(cfg.homes_per_entrance),
+            result = me.currentRecord.get("entrances") || [],
+            i;
+        for(i = 0; i < nEntrances; i++) {
+            result.push({
+                number: String(entrance),
+                first_floor: firstFloor,
+                last_floor: lastFloor,
+                first_home: String(firstHome),
+                last_home: String(firstHome + homesPerEntrance - 1)
+            });
+            entrance += 1;
+            firstHome += homesPerEntrance;
+
+        }
+        me.currentRecord.set("entrances", result);
+        me.form.setValues({entrances: result});
+        // Update floors
+        if(!parseInt(me.form.getValues().floors)) {
+            me.form.setValues({floors: lastFloor});
+        }
+        // Update homes
+        if(!parseInt(me.form.getValues().homes)) {
+            var homes = 0;
+            for(i = 0; i < result.length; i++) {
+                var r = result[i],
+                    f = parseInt(r.first_home),
+                    l = parseInt(r.last_home);
+                if(f && l && f <= l) {
+                    homes += l - f + 1;
+                }
+            }
+            if(homes) {
+                me.form.setValues({homes: String(homes)});
             }
         }
     }
