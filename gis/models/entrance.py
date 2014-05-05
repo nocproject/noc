@@ -23,3 +23,6 @@ class Entrance(EmbeddedDocument):
     first_home = StringField()
     last_home = StringField()
     # @todo: Managing company
+
+    def __unicode__(self):
+        return self.number
