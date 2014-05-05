@@ -24,7 +24,7 @@ from django.db import reset_queries
 ## NOC modules
 from noc.sa.sae.service import Service
 from noc.sa.sae.sae_socket import SAESocket
-from noc.sa.models import (Activator, ManagedObject, MapTask,
+from noc.sa.models import (Activator, ManagedObject, MapTask, ReduceTask,
                            script_registry, profile_registry,
                            ActivatorCapabilitiesCache, FailedScriptLog)
 from noc.fm.models import NewEvent
@@ -480,8 +480,14 @@ class SAE(Daemon):
                 managed_object__activator__shard__is_active=True,
                 managed_object__activator__shard__name__in=self.shards
                 ).select_related().select_for_update():
+            # Check reduce task still valid
+            is_valid_reduce = True
+            try:
+                mt.task
+            except ReduceTask.DoesNotExist:
+                is_valid_reduce = False
             # Check for task timeouts
-            if mt.task.stop_time < t:
+            if mt.task.stop_time < t or not is_valid_reduce:
                 mt.status = "F"
                 mt.script_result = dict(code=ERR_TIMEOUT, text="Timed out")
                 try:
