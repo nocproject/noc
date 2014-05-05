@@ -10,6 +10,7 @@
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetMACAddressTable
 from noc.sa.profiles.DLink.DxS import DES3200
+from noc.sa.profiles.DLink.DxS import DES3500
 from noc.sa.profiles.DLink.DxS import DGS3120
 from noc.sa.profiles.DLink.DxS import DGS3400
 from noc.sa.profiles.DLink.DxS import DGS3420
