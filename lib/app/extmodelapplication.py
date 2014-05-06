@@ -2,11 +2,13 @@
 ##----------------------------------------------------------------------
 ## ExtModelApplication implementation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django moules
+## Python modules
+import datetime
+## Django modules
 from django.http import HttpResponse
 from django.db.models.fields import (
     CharField, BooleanField, IntegerField, FloatField,
@@ -242,7 +244,10 @@ class ExtModelApplication(ExtApplication):
                 v = f._get_val_from_obj(o)
                 if (v is not None and
                     type(v) not in (str, unicode, int, long, bool, list)):
-                    v = unicode(v)
+                    if type(v) == datetime.datetime:
+                        v = v.isoformat()
+                    else:
+                        v = unicode(v)
                 r[f.name] = v
             else:
                 v = getattr(o, f.name)
