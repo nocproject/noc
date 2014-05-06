@@ -25,6 +25,7 @@ from noc.fm.correlator.jobs.performance_report import PerformanceReportJob
 from noc.lib.daemon import Daemon
 from noc.fm.models import ActiveEvent, EventClass,\
                           ActiveAlarm, AlarmLog, AlarmTrigger, AlarmClass
+from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.main.models import PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
@@ -224,6 +225,19 @@ class Correlator(Daemon):
             a = ActiveAlarm.objects.filter(
                 managed_object=e.managed_object_id,
                 discriminator=discriminator).first()
+            if not a:
+                # Try to reopen alarm
+                a = ArchivedAlarm.objects.filter(
+                    managed_object=e.managed_object_id,
+                    discriminator=discriminator,
+                    control_time__gte=e.timestamp
+                ).first()
+                if a:
+                    # Reopen alarm
+                    logging.debug("%s: Event %s(%s) reopens alarm %s(%s)" % (
+                        r.u_name, str(e.id), e.event_class.name,
+                        str(a.id), a.alarm_class.name))
+                    a = a.reopen("Reopened by disposition rule '%s'" % r.u_name)
             if a:
                 # Active alarm found, refresh
                 logging.debug("%s: Contributing event %s(%s) to active alarm %s(%s)" % (
@@ -292,7 +306,7 @@ class Correlator(Daemon):
                 "symptoms": a.get_translated_symptoms("en"),
                 "recommended_actions": a.get_translated_recommended_actions("en"),
                 "probable_causes": a.get_translated_probable_causes("en")
-            })
+            }, delay=a.alarm_class.get_notification_delay())
 
     def clear_alarm(self, r, e):
         if r.unique:

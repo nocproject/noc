@@ -147,6 +147,7 @@ class ManagedObject(models.Model):
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
     EV_ALARM_RISEN = "alarm_risen"  # New alarm risen
+    EV_ALARM_REOPENED = "alarm_reopened"  # Alarm has been reopen
     EV_ALARM_CLEARED = "alarm_cleared"  # Alarm cleared
     EV_ALARM_COMMENTED = "alarm_commented"  # Alarm commented
     EV_NEW = "new"  # New object created
@@ -491,7 +492,14 @@ class ManagedObject(models.Model):
                     "inv.discovery", job, self.id, delta=delta)
                 delta += duration
 
-    def event(self, event_id, data=None):
+    def event(self, event_id, data=None, delay=None, tag=None):
+        """
+        Process object-related event
+        :param event_id: ManagedObject.EV_*
+        :param data: Event context to render
+        :param delay: Notification delay in seconds
+        :param tag: Notification tag
+        """
         # Get cached selectors
         selectors = SelectorCache.get_object_selectors(self)
         # Find notification groups
@@ -505,8 +513,14 @@ class ManagedObject(models.Model):
         # Render message
         subject, body = ObjectNotification.render_message(event_id, data)
         # Send notification
+        if not tag and event_id in (
+                self.EV_ALARM_CLEARED,
+                self.EV_ALARM_COMMENTED,
+                self.EV_ALARM_REOPENED,
+                self.EV_ALARM_RISEN) and "alarm" in data:
+            tag = "alarm:%s" % data["alarm"].id
         NotificationGroup.group_notify(
-            groups, subject=subject, body=body)
+            groups, subject=subject, body=body, delay=delay, tag=tag)
         # Schedule FTS reindex
         if event_id in (
             self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED):

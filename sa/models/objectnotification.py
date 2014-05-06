@@ -31,6 +31,7 @@ class ObjectNotification(models.Model):
     # Events
     config_changed = models.BooleanField(_("Config changed"))
     alarm_risen = models.BooleanField(_("Alarm risen"))
+    alarm_reopened = models.BooleanField(_("Alarm reopened"))
     alarm_cleared = models.BooleanField(_("Alarm cleared"))
     alarm_commented = models.BooleanField(_("Alarm commented"))
     new = models.BooleanField(_("New"))

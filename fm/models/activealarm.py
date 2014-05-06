@@ -14,9 +14,11 @@ from alarmlog import AlarmLog
 from alarmclass import AlarmClass
 from noc.main.models import User
 from noc.main.models.style import Style
+from noc.main.models.notification import Notification
 from noc.sa.models.managedobject import ManagedObject
 from translation import get_translated_template, get_translated_text
 from alarmseverity import AlarmSeverity
+from noc.lib.scheduler.utils import submit_job
 
 
 class ActiveAlarm(nosql.Document):
@@ -48,6 +50,8 @@ class ActiveAlarm(nosql.Document):
     #
     custom_subject = nosql.StringField(required=False)
     custom_style = nosql.ForeignKeyField(Style, required=False)
+    #
+    reopens = nosql.IntField(required=False)
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = nosql.ObjectIdField(required=False)
@@ -134,13 +138,18 @@ class ActiveAlarm(nosql.Document):
                           log=log,
                           root=self.root,
                           opening_event=self.opening_event,
-                          closing_event=self.closing_event
+                          closing_event=self.closing_event,
+                          discriminator=self.discriminator,
+                          reopens=self.reopens
                           )
+        ct = self.alarm_class.get_control_time(self.reopens)
+        if ct:
+            a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
         a.save()
         # @todo: Clear related correlator jobs
         self.delete()
         # Send notifications
-        if not a.root:
+        if not a.root and not self.reopens:
             a.managed_object.event(a.managed_object.EV_ALARM_CLEARED, {
                 "alarm": a,
                 "subject": a.get_translated_subject("en"),
@@ -149,6 +158,10 @@ class ActiveAlarm(nosql.Document):
                 "recommended_actions": a.get_translated_recommended_actions("en"),
                 "probable_causes": a.get_translated_probable_causes("en")
             })
+        elif ct:
+            # Schedule delayed job
+            submit_job("fm.correlator", "control_notify",
+                       key=a.id, ts=a.control_time)
         return a
 
     def get_template_vars(self):
@@ -270,6 +283,8 @@ class ActiveAlarm(nosql.Document):
         root_alarm.log_message(
             "Alarm %s has been marked as child" % self.id)
         self._change_root_severity()
+        # Clear pending notifications
+        Notification.purge_delayed("alarm:%s" % self.id)
 
 ## Avoid circular references
 from archivedalarm import ArchivedAlarm

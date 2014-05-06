@@ -75,6 +75,14 @@ class AlarmClass(nosql.Document):
     handlers = fields.ListField(fields.StringField())
     # Plugin settings
     plugins = fields.ListField(fields.EmbeddedDocumentField(AlarmPlugin))
+    # Time in seconds to delay alarm risen notification
+    notification_delay = fields.IntField(required=False)
+    # Control time to reopen alarm instead of creating new
+    control_time0 = fields.IntField(required=False)
+    # Control time to reopen alarm after 1 reopen
+    control_time1 = fields.IntField(required=False)
+    # Control time to reopen alarm after >1 reopen
+    control_timeN = fields.IntField(required=False)
     #
     category = nosql.ObjectIdField()
 
@@ -226,6 +234,18 @@ class AlarmClass(nosql.Document):
             r += ["    \"plugins\": ["]
             r += [",\n".join(plugins)]
             r += ["    ]"]
+        if self.notification_delay:
+            r[-1] += ","
+            r += ["    \"notification_delay\": %d" % self.notification_delay]
+        if self.control_time0:
+            r[-1] += ","
+            r += ["    \"control_time0\": %d" % self.control_time0]
+            if self.control_time1:
+                r[-1] += ","
+                r += ["    \"control_time1\": %d" % self.control_time1]
+                if self.control_timeN:
+                    r[-1] += ","
+                    r += ["    \"control_timeN\": %d" % self.control_timeN]
         # Close
         r += ["}", ""]
         return "\n".join(r)
@@ -233,3 +253,35 @@ class AlarmClass(nosql.Document):
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
+    @property
+    def config(self):
+        if not hasattr(self, "_config"):
+            self._config = AlarmClassConfig.objects.filter(alarm_class=self.id).first()
+        return self._config
+
+    def get_notification_delay(self):
+        if self.config:
+            return self.config.notification_delay or None
+        else:
+            return self.notification_delay or None
+
+    def get_control_time(self, reopens):
+        if reopens == 0:
+            if self.config:
+                return self.config.control_time0 or None
+            else:
+                return self.control_time0 or None
+        elif reopens == 1:
+            if self.config:
+                return self.config.control_time1 or None
+            else:
+                return self.control_time1 or None
+        else:
+            if self.config:
+                return self.config.control_timeN or None
+            else:
+                return self.control_timeN or None
+
+## Avoid circular references
+from alarmclassconfig import AlarmClassConfig
