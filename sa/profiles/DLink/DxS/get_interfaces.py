@@ -79,7 +79,7 @@ class Script(NOCScript):
         r"OSPF Router ID : \S+ (\(.+\))?\s*\nState\s+: Enabled")
     rx_ospfv3_gs = re.compile(
         r"OSPFv3 Router ID : \S+(\(.+\))?\s*\nState\s+: Enabled")
-    rx_lldp_gs = re.compile(r"LLDP Status\s+: Enabled")
+    rx_lldp_gs = re.compile(r"LLDP Status\s+: Enabled?")
     rx_ctp_gs = re.compile(r"(LBD )?Status\s+: Enabled")
     rx_pim_gs = re.compile(r"PIM Global State\s+: Enabled")
     rx_gvrp_gs = re.compile(r"Global GVRP\s+: Enabled")
