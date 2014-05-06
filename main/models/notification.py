@@ -44,6 +44,16 @@ class Notification(models.Model):
         default=datetime.datetime.now)
     actual_till = models.DateTimeField(
         "Actual Till", null=True, blank=True)
+    tag = models.CharField("Tag", max_length=256, db_index=True,
+                           null=True, blank=True)
 
     def __unicode__(self):
         return self.subject
+
+    @classmethod
+    def purge_delayed(cls, tag):
+        """
+        Purge all delayed notifications with tag
+        """
+        Notification.objects.filter(
+            tag=tag, next_try__gte=datetime.datetime.now()).delete()

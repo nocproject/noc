@@ -46,6 +46,10 @@ Ext.define("NOC.main.pendingnotifications.Model", {
         {
             name: "actual_till",
             type: "date"
+        },
+        {
+            name: "tag",
+            type: "string"
         }
     ]
 });
