@@ -89,6 +89,14 @@ def submit_job(scheduler_name, job_class, key=None,
     })
 
 
+def remove_job(scheduler_name, job_class, key=None):
+    q = {Scheduler.ATTR_CLASS: job_class}
+    if key:
+        q[Scheduler.ATTR_KEY] = key
+    c = get_db()["noc.schedules.%s" % scheduler_name]
+    c.remove(q)
+
+
 def get_job(scheduler_name, job_class, key=None):
     c = get_db()["noc.schedules.%s" % scheduler_name]
     return c.find_one({
