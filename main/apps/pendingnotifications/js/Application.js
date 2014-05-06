@@ -13,7 +13,8 @@ Ext.define("NOC.main.pendingnotifications.Application", {
         {
             text: "Timestamp",
             dataIndex: "timestamp",
-            width: 100
+            width: 130,
+            renderer: NOC.render.DateTime
         },
         {
             text: "Method",
@@ -29,6 +30,11 @@ Ext.define("NOC.main.pendingnotifications.Application", {
             text: "Subject",
             dataIndex: "subject",
             flex: 1
+        },
+        {
+            text: "Tag",
+            dataIndex: "tag",
+            width: 150
         }
     ],
     fields: [
@@ -78,6 +84,12 @@ Ext.define("NOC.main.pendingnotifications.Application", {
             name: "actual_till",
             xtype: "datefield",
             fieldLabel: "Actual Till",
+            allowBlank: true
+        },
+        {
+            name: "tag",
+            xtype: "textfield",
+            fieldLabel: "Tag",
             allowBlank: true
         }
     ]
