@@ -487,7 +487,7 @@ class SAE(Daemon):
             except ReduceTask.DoesNotExist:
                 is_valid_reduce = False
             # Check for task timeouts
-            if mt.task.stop_time < t or not is_valid_reduce:
+            if not is_valid_reduce or mt.task.stop_time < t:
                 mt.status = "F"
                 mt.script_result = dict(code=ERR_TIMEOUT, text="Timed out")
                 try:
