@@ -16,8 +16,10 @@ class Profile(noc.sa.profiles.Profile):
     name = "Juniper.JUNOS"
     supported_schemes = [TELNET, SSH]
     pattern_prompt = r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
-    pattern_more = r"^---\(more.*?\)---"
-    command_more = " "
+    pattern_more = [
+        (r"^---\(more.*?\)---", " "),
+        (r"\? \[yes,no\] .*?", "y\n")
+    ]
     command_disable_pager = "set cli screen-length 0"
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"
@@ -60,3 +62,10 @@ class Profile(noc.sa.profiles.Profile):
             "}"
         ]
         return "\n".join(r)
+
+    def get_interface_names(self, name):
+        names = []
+        n = self.convert_interface_name(name)
+        if n.endswith(".0"):
+            names += [n[:-2]]
+        return names
