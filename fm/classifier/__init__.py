@@ -46,6 +46,7 @@ from trigger import Trigger
 from exception import InvalidPatternException, EventProcessingFailed
 from cloningrule import CloningRule
 from rule import Rule
+from noc.lib.solutions import get_event_class_handlers
 
 ##
 ## Exceptions
@@ -284,8 +285,10 @@ class Classifier(Daemon):
         logging.info("Loading handlers")
         self.handlers = {}
         for ec in EventClass.objects.filter():
-            if not ec.handlers:
+            handlers = get_event_class_handlers(ec)
+            if not handlers:
                 continue
+            logging.debug("    <%s>: %s", ec.name, ", ".join(handlers))
             hl = []
             for h in ec.handlers:
                 # Resolve handler

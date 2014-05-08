@@ -29,6 +29,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.main.models import PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
+from noc.lib.solutions import get_alarm_class_handlers, get_alarm_jobs
 
 
 class Correlator(Daemon):
@@ -140,23 +141,28 @@ class Correlator(Daemon):
         Load alarm jobs
         :return:
         """
+        logging.info("Loading alarm jobs")
         n = 0
         self.alarm_jobs = {}  # class id ->
-        for a in AlarmClass.objects.all():
-            if not a.jobs:
+        for ac in AlarmClass.objects.all():
+            jobs = get_alarm_jobs(ac)
+            if not jobs:
                 continue
-            self.alarm_jobs[a.id] = [
+            logging.debug("    <%s>: %s", ac.name, ", ".join(j.job for j in jobs))
+            self.alarm_jobs[ac.id] = [
                 JobLauncher(self.scheduler, j.job, j.interval, j.vars)
-                for j in a.jobs]
-            n += len(self.alarm_jobs[a.id])
+                for j in jobs]
+            n += len(jobs)
         logging.debug("%d alarm jobs have been loaded" % n)
 
     def load_handlers(self):
         logging.info("Loading handlers")
         self.handlers = {}
         for ac in AlarmClass.objects.filter():
-            if not ac.handlers:
+            handlers = get_alarm_class_handlers(ac)
+            if not handlers:
                 continue
+            logging.debug("    <%s>: %s", ac.name, ", ".join(handlers))
             hl = []
             for h in ac.handlers:
                 # Resolve handler
