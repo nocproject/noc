@@ -582,7 +582,7 @@ class Script(threading.Thread):
         return self.cli_provider
 
     def cli(self, cmd, command_submit=None, bulk_lines=None, list_re=None,
-            cached=False, file=None, ignore_errors=False):
+            cached=False, file=None, ignore_errors=False, nowait=False):
         """
         Execute CLI command and return a result.
         if list_re is None, return a string
@@ -621,7 +621,10 @@ class Script(threading.Thread):
                     bulk_lines=bulk_lines)
                 if self.cli_provider.is_broken_pipe:
                     raise self.CLIDisconnectedError()
-                data = self.cli_queue_get()
+                if nowait:
+                    data = ""
+                else:
+                    data = self.cli_queue_get()
                 if data is None:
                     if self.cli_provider.error_traceback:
                         # Transport-level CLI error occured
