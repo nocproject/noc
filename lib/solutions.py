@@ -8,6 +8,7 @@
 
 ## Python modules
 import os
+from collections import defaultdict
 ## Django modules
 from django.core import exceptions
 from django.utils.importlib import import_module
@@ -79,3 +80,189 @@ def solutions_roots():
         if config.getboolean("solutions", sn):
             vendor, name = sn.split(".", 1)
             yield os.path.join("solutions", vendor, name)
+
+
+##
+## Solutions API
+##
+def _get_alarm_class_keys(ac):
+    """
+    Get list of alarm class keys
+    """
+    from noc.fm.models.alarmclass import AlarmClass
+    if not isinstance(ac, (list, tuple)):
+        return _get_alarm_class_keys([ac])
+    r = []
+    for c in ac:
+        if isinstance(c, AlarmClass):
+            r += [c.id]
+        else:
+            c = AlarmClass.objects.filter(name=c).first()
+            if not c:
+                raise KeyError("Invalid alarm class '%s'" % c)
+            r += [c.id]
+    return r
+
+
+def _get_event_class_keys(ec):
+    """
+    Get list of alarm class keys
+    """
+    from noc.fm.models.eventclass import EventClass
+    if not isinstance(ec, (list, tuple)):
+        return _get_event_class_keys([ec])
+    r = []
+    for c in ec:
+        if isinstance(c, EventClass):
+            r += [c.id]
+        else:
+            c = EventClass.objects.filter(name=c).first()
+            if not c:
+                raise KeyError("Invalid alarm class '%s'" % c)
+            r += [c.id]
+    return r
+
+
+def _update_handlers_list(ht, keys, handlers, status, config=None):
+    def get_handlers_list(handlers):
+        def normalize(h):
+            if callable(h):
+                return "%s.%s" % (h.__module__, h.__name__)
+            else:
+                return h
+
+        if not isinstance(handlers, (list, tuple)):
+            return get_handlers_list([handlers])
+        return [normalize(h) for h in handlers]
+
+    hl = get_handlers_list(handlers)
+    for k in keys:
+        h = ht[k]
+        # Remove previous occurences
+        h = [x for x in h if x[0] not in hl]
+        # Append new occurences
+        h += [(x, status, config) for x in hl]
+        ht[k] = h
+
+
+def _get_effective_handlers(ht, key, handlers):
+    hr = ht[key]
+    disabled = set(x[0] for x in hr if not x[1])
+    h = [x for x in handlers if x not in disabled]
+    h += [x[0] for x in hr if x[1]]
+    return h
+
+
+def register_event_handler(ec, handlers):
+    """
+    Register additional event class handler
+    :param event class: Scalar or list of event class or event class names
+    """
+    _update_handlers_list(
+        _event_class_handlers,
+        _get_event_class_keys(ec),
+        handlers,
+        True
+    )
+
+def unregister_event_handler(ec, handlers):
+    """
+    Unregister event class handler
+    """
+    _update_handlers_list(
+        _event_class_handlers,
+        _get_event_class_keys(ec),
+        handlers,
+        False
+    )
+
+
+def register_alarm_handler(ac, handlers):
+    """
+    Register additional event class handler
+    """
+    _update_handlers_list(
+        _alarm_class_handlers,
+        _get_alarm_class_keys(ac),
+        handlers,
+        True
+    )
+
+
+def unregister_alarm_handler(ac, handlers):
+    """
+    Unregister event class handler
+    """
+    _update_handlers_list(
+        _alarm_class_handlers,
+        _get_alarm_class_keys(ac),
+        handlers,
+        False
+    )
+
+
+def register_alarm_job(ac, jobs, config=None):
+    """
+    Register additional alarm job
+    """
+    _update_handlers_list(
+        _alarm_job_handlers,
+        _get_alarm_class_keys(ac),
+        jobs,
+        True,
+        config
+    )
+
+
+def unregister_alarm_job(ac, jobs):
+    """
+    Unregister alarm job
+    """
+    _update_handlers_list(
+        _alarm_job_handlers,
+        _get_alarm_class_keys(ac),
+        jobs,
+        False
+    )
+
+
+def get_event_class_handlers(event_class):
+    """
+    Get effective event class handlers
+    """
+    return _get_effective_handlers(
+        _event_class_handlers,
+        event_class.id,
+        event_class.handlers
+    )
+
+
+def get_alarm_class_handlers(alarm_class):
+    """
+    Get effective event class handlers
+    """
+    return _get_effective_handlers(
+        _alarm_class_handlers,
+        alarm_class.id,
+        alarm_class.handlers
+    )
+
+
+def get_alarm_jobs(alarm_class):
+    """
+    Get effective event class handlers
+    """
+    from noc.fm.models.alarmclassjob import AlarmClassJob
+    hr = _alarm_job_handlers[alarm_class.id]
+    disabled = set(x[0] for x in hr if not x[1])
+    jobs = [j for j in alarm_class.jobs if j.job not in disabled]
+    jobs += [AlarmClassJob(job=j[0], **j[2]) for j in hr if j[1]]
+    return jobs
+
+
+# event class key -> [(handler, status, None)]
+_event_class_handlers = defaultdict(list)
+# alarm class key -> [(handler, status, None)]
+_alarm_class_handlers = defaultdict(list)
+# alarm job key -> [(handler, status, config)]
+_alarm_job_handlers = defaultdict(list)
