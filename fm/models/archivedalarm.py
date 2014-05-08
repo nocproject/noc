@@ -42,7 +42,7 @@ class ArchivedAlarm(nosql.Document):
     discriminator = nosql.StringField(required=False)
     # Control time within alarm will be reopen instead
     # instead of creating the new alarm
-    control_time = nosql.DateTimeField(required=True)
+    control_time = nosql.DateTimeField(required=False)
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = nosql.ObjectIdField(required=False)
