@@ -31,7 +31,6 @@ rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
 rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 
 
-
 class MIB(nosql.Document):
     meta = {
         "collection": "noc.mibs",
@@ -345,6 +344,24 @@ class MIB(nosql.Document):
             else:
                 rest += [l_oid.pop()]
         return oid, None
+
+    @classmethod
+    def get_description(cls, name):
+        """
+        Get longest match description by name
+        """
+        match = rx_tailing_numbers.match(name)
+        if match:
+            name, _ = match.groups()
+        # Search by primary name
+        d = MIBData.objects.filter(name=name).first()
+        if not d:
+            # Search by aliases
+            d = MIBData.objects.filter(aliases=name).first()
+        if d:
+            return d.description
+        else:
+            return None
 
     @property
     def depended_by(self):
