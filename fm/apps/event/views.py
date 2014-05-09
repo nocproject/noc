@@ -17,6 +17,7 @@ from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.mib import MIB
 from noc.fm.models import get_alarm, get_event
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
@@ -152,8 +153,24 @@ class EventApplication(ExtApplication):
             dd["symptoms"] = event.get_translated_symptoms(lang)
             dd["probable_causes"] = event.get_translated_probable_causes(lang)
             dd["recommended_actions"] = event.get_translated_recommended_actions(lang)
-            dd["vars"] = sorted(event.vars.items())
-            dd["resolved_vars"] = sorted(event.resolved_vars.items())
+            # Fill vars
+            left = set(event.vars)
+            vars = []
+            for ev in event.event_class.vars:
+                if ev.name in event.vars:
+                    vars += [(ev.name, event.vars[ev.name], ev.description)]
+                    left.remove(ev.name)
+            vars += [(v, event.vars[v], None) for v in sorted(left)]
+            dd["vars"] = vars
+            # Fill resolved vars
+            vars = []
+            is_trap = event.raw_vars.get("source") == "SNMP Trap"
+            for v in sorted(event.resolved_vars):
+                desc = None
+                if is_trap and "::" in v:
+                    desc = MIB.get_description(v)
+                vars += [(v, event.resolved_vars[v], desc)]
+            dd["resolved_vars"] = vars
         dd["raw_vars"] = sorted(event.raw_vars.items())
         # Managed object properties
         mo = event.managed_object
@@ -215,6 +232,7 @@ class EventApplication(ExtApplication):
             d["plugins"] = [
                 ("NOC.fm.event.plugins.Traceback", {})
             ]
+        print d
         return d
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/post/", method=["POST"], api=True,
