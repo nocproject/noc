@@ -49,6 +49,24 @@ Ext.define("NOC.sa.activator.Model", {
         {
             name: "tags",
             type: "auto"
+        },
+        {
+            name: "min_sessions",
+            type: "int"
+        },
+        {
+            name: "min_members",
+            type: "int"
+        },
+        {
+            name: "current_members",
+            type: "int",
+            persist: false
+        },
+        {
+            name: "current_sessions",
+            type: "int",
+            persist: false
         }
     ]
 });

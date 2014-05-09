@@ -18,3 +18,17 @@ class ActivatorApplication(ExtModelApplication):
     title = "Activator"
     menu = "Setup | Activators"
     model = Activator
+
+    def field_current_sessions(self, o):
+        c = o.get_capabilities()
+        if c:
+            return c.max_scripts
+        else:
+            return 0
+
+    def field_current_members(self, o):
+        c = o.get_capabilities()
+        if c:
+            return c.members
+        else:
+            return 0

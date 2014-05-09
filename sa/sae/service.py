@@ -170,16 +170,15 @@ class Service(SAEService):
                  error=Error(code=ERR_AUTH_FAILED,
                  text="Authencication failed for activator '%s'" % request.name))
             return
-        # Joining activator pool
-        self.sae.join_activator_pool(request.name, controller.stream)
         # Setting caps
-        logging.debug("Set capabilities: instance=%s, max_scripts=%d, can_ping=%s" % (
-            request.instance, request.max_scripts, request.can_ping))
+        logging.debug("New activator in pool '%s': instance=%s, max_scripts=%d, can_ping=%s" % (
+            request.name, request.instance, request.max_scripts, request.can_ping))
         controller.stream.max_scripts = request.max_scripts
         controller.stream.current_scripts = 0
         controller.stream.instance = request.instance
         controller.stream.can_ping = request.can_ping
-        self.sae.update_activator_capabilities(controller.stream.pool_name)
+        # Joining activator pool
+        self.sae.join_activator_pool(request.name, controller.stream)
         # Sending response
         r = AuthResponse()
         controller.stream.is_authenticated = True

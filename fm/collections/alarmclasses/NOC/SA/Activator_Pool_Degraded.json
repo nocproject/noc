@@ -1,0 +1,27 @@
+{
+    "name": "NOC | SA | Activator Pool Degraded",
+    "uuid": "70c6f606-e6eb-423a-86fb-87f0d6821f19",
+    "is_unique": true,
+    "discriminator": ["name"],
+    "user_clearable": true,
+    "default_severity__name": "MAJOR",
+    "vars": [
+        {
+            "name": "name",
+            "description": "Pool Name"
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Activator pool '{{name}}' degraded",
+            "body_template": "Activator pool '{{name}}' has been degraded. Members or session limits are below configured threshold",
+            "symptoms": "Cannot run SA tasks. Too many timeout errors",
+            "probable_causes": "noc-activator processes down",
+            "recommended_actions": "Check noc-activator processes. Check network connectivity"
+        }
+    },
+    "notification_delay": 30,
+    "control_time0": 300,
+    "control_time1": 300,
+    "control_timeN": 300
+}

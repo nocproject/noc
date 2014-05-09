@@ -89,6 +89,8 @@ class SAE(Daemon):
         self.script_lock = threading.Lock()
         #
         self.blocked_pools = set()  # Blocked activator names
+        #
+        self.default_managed_object = None
 
     def load_config(self):
         """
@@ -147,9 +149,10 @@ class SAE(Daemon):
             if hasattr(s, "max_scripts"):
                 max_scripts += s.max_scripts
         a = Activator.objects.get(name=pool)
-        a.update_capabilities(members=members, max_scripts=max_scripts)
-        logging.info("Activator pool '%s' capability: %d script threads" % (
-            pool, max_scripts))
+        c = a.update_capabilities(members=members, max_scripts=max_scripts)
+        logging.info("Activator pool '%s' capability: members=%d, sessions=%d" % (
+            pool, c.members, c.max_scripts))
+        return c
 
     def join_activator_pool(self, name, stream):
         """
@@ -158,16 +161,40 @@ class SAE(Daemon):
         stream.set_pool_name(name)
         logging.info("%s is joining activator pool '%s'" % (repr(stream), name))
         self.activators[name].add(stream)
+        c = self.update_activator_capabilities(name)
+        self.write_event({
+            "source": "system",
+            "event": "activator_join",
+            "name": name,
+            "instance": stream.instance,
+            "sessions": stream.max_scripts,
+            "pool_members": c.members,
+            "pool_sessions": c.max_scripts,
+            "min_members": c.activator.min_members,
+            "min_sessions": c.activator.min_sessions
+        })
 
     def leave_activator_pool(self, name, stream):
         """
         Remove activator stream from pool
         """
-        if stream in self.activators[name]:
-            logging.info("%s is leaving activator pool '%s'" % (
-                repr(stream), name))
-            self.activators[name].remove(stream)
-            self.update_activator_capabilities(name)
+        if stream not in self.activators[name]:
+            return
+        logging.info("%s is leaving activator pool '%s'" % (
+            repr(stream), name))
+        self.activators[name].remove(stream)
+        c = self.update_activator_capabilities(name)
+        self.write_event({
+            "source": "system",
+            "event": "activator_leave",
+            "name": name,
+            "instance": stream.instance,
+            "sessions": stream.max_scripts,
+            "pool_members": c.members,
+            "pool_sessions": c.max_scripts,
+            "min_members": c.activator.min_members,
+            "min_sessions": c.activator.min_sessions
+        })
 
     def get_pool_info(self, name):
         """
@@ -185,8 +212,29 @@ class SAE(Daemon):
         """
         logging.info("Cleaning activator capabilities cache")
         ActivatorCapabilitiesCache.reset_cache(self.shards)
+        self.check_activator_thresholds()
         self.start_listeners()
         self.factory.run(run_forever=True)
+
+    def check_activator_thresholds(self):
+        """
+        Check activator sessions thresholds
+        """
+        logging.info("Checking activator thresholds")
+        for a in Activator.objects.filter(is_active=True, shard__name__in=self.shards):
+            if a.min_sessions or a.min_members:
+                logging.info("   activator pool '%s' has lower thresholds" % a.name)
+                self.write_event({
+                    "source": "system",
+                    "event": "activator_join",
+                    "name": a.name,
+                    "instance": "0",
+                    "sessions": 0,
+                    "pool_members": 0,
+                    "pool_sessions": 0,
+                    "min_members": a.min_members,
+                    "min_sessions": a.min_sessions
+                })
 
     def tick(self):
         """
@@ -212,7 +260,11 @@ class SAE(Daemon):
         """
         if managed_object is None:
             # Set object to SAE, if not set
-            managed_object = ManagedObject.objects.get(name="SAE")
+            if not self.default_managed_object:
+                self.default_managed_object = ManagedObject.objects.get(name="SAE")
+            managed_object = self.default_managed_object
+        if timestamp is None:
+            timestamp = datetime.datetime.now()
         if type(data) == list:
             data = dict(data)
         elif type(data) != dict:
@@ -225,6 +277,8 @@ class SAE(Daemon):
         if (self.strip_syslog_severity and "source" in data
             and data["source"] == "syslog" and "severity" in data):
             del data["severity"]
+        # Normalize data
+        data = dict((k, str(data[k])) for k in data)
         # Generate sequental number
         seq = struct.pack(
             "!II",
