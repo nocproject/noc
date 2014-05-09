@@ -91,17 +91,9 @@ class Activator(Daemon, FSM):
             
         "REGISTRED": {
             "timeout": "IDLE",
-            "auth": "AUTHENTICATED",
-            "close": "IDLE",
-            "error": "IDLE",
-        },
-        "AUTHENTICATED": {
-            "caps": "CAPS",
-            "close": "IDLE",
-        },
-        "CAPS": {
             "establish": "ESTABLISHED",
             "close": "IDLE",
+            "error": "IDLE",
         },
         "ESTABLISHED": {
             "close": "IDLE",
@@ -256,20 +248,6 @@ class Activator(Daemon, FSM):
         """
         self.set_timeout(10)
         self.auth()
-
-    def on_AUTHENTICATED_enter(self):
-        """
-        Entering AUTHENTICATED state
-        """
-        self.set_timeout(10)
-        self.event("caps")
-
-    def on_CAPS_enter(self):
-        """
-        Entering CAPS state
-        """
-        logging.info("Sending capabilities")
-        self.send_caps()
 
     def on_ESTABLISHED_enter(self):
         """
@@ -581,26 +559,19 @@ class Activator(Daemon, FSM):
                 self.event("error")
                 return
             logging.info("Authenticated")
-            self.event("auth")
+            self.event("establish")
         name = self.config.get("activator", "name")
         logging.info("Authenticating as %s" % name)
         r = AuthRequest(
             name=name,
             digest=get_digest(name,
                               self.config.get("activator", "secret"),
-                              self.nonce))
+                              self.nonce),
+            max_scripts=self.max_script_threads,
+            instance=str(self.instance_id),
+            can_ping=bool(self.to_ping)
+        )
         self.sae_stream.proxy.auth(r, auth_callback)
-
-    @check_state("CAPS")
-    def send_caps(self):
-        def send_caps_callback(transaction, response=None, error=None):
-            self.event("establish")
-
-        r = SetCapsRequest()
-        r.max_scripts = self.max_script_threads
-        r.instance = str(self.instance_id)
-        r.can_ping = bool(self.to_ping)
-        self.sae_stream.proxy.set_caps(r, send_caps_callback)
 
     @check_state("ESTABLISHED")
     def refresh_object_mappings(self):
