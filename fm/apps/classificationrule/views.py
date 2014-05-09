@@ -229,8 +229,8 @@ class EventClassificationRuleApplication(ExtDocApplication):
                     patterns[k] = event.resolved_vars[k]
         data["patterns"] = [
             {
-                "key_re": k,
-                "value_re": patterns[k]
+                "key_re": "^%s$" % k,
+                "value_re": "^%s$" % patterns[k]
             } for k in patterns
         ]
         return data
