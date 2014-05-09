@@ -170,28 +170,20 @@ class Service(SAEService):
                  error=Error(code=ERR_AUTH_FAILED,
                  text="Authencication failed for activator '%s'" % request.name))
             return
-        r = AuthResponse()
-        controller.stream.is_authenticated = True
-        controller.stream.pool_name = request.name
+        # Joining activator pool
         self.sae.join_activator_pool(request.name, controller.stream)
-        done(controller, response=r)
-
-    def set_caps(self, controller, request, done):
-        """
-        Handle RPC set_caps request
-        """
-        if not controller.stream.is_authenticated:
-            done(controller,
-                 error=Error(code=ERR_AUTH_REQUIRED,
-                             text="Authentication required"))
-            return
-        logging.debug("Set capabilities: max_scripts=%d" % request.max_scripts)
+        # Setting caps
+        logging.debug("Set capabilities: instance=%s, max_scripts=%d, can_ping=%s" % (
+            request.instance, request.max_scripts, request.can_ping))
         controller.stream.max_scripts = request.max_scripts
         controller.stream.current_scripts = 0
         controller.stream.instance = request.instance
         controller.stream.can_ping = request.can_ping
         self.sae.update_activator_capabilities(controller.stream.pool_name)
-        r = SetCapsResponse()
+        # Sending response
+        r = AuthResponse()
+        controller.stream.is_authenticated = True
+        controller.stream.pool_name = request.name
         done(controller, response=r)
 
     def object_mappings(self, controller, request, done):

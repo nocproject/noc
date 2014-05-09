@@ -162,21 +162,12 @@ message RegisterResponse {
 message AuthRequest {
     required string name   = 1;
     required string digest = 2;
+    required int32 max_scripts = 3;
+    required string instance = 4;
+    required bool can_ping = 5;
 }
 
 message AuthResponse {
-}
-
-//
-// Capabilities
-//
-message SetCapsRequest {
-    required int32 max_scripts = 1;
-    required string instance = 2;
-    required bool can_ping = 3;
-}
-
-message SetCapsResponse {
 }
 
 //
@@ -298,7 +289,6 @@ service SAEService {
     rpc ping             (PingRequest)            returns (PingResponse);
     rpc register         (RegisterRequest)        returns (RegisterResponse);
     rpc auth             (AuthRequest)            returns (AuthResponse);
-    rpc set_caps         (SetCapsRequest)         returns (SetCapsResponse);
     rpc script           (ScriptRequest)          returns (ScriptResponse);
     rpc refresh_object_mappings (RefreshObjectMappingsRequest) returns (RefreshObjectMappingsResponse);
     rpc object_mappings  (ObjectMappingsRequest)  returns (ObjectMappingsResponse);
