@@ -19,6 +19,7 @@ import sys
 import csv
 import itertools
 import struct
+from collections import defaultdict
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
@@ -67,7 +68,7 @@ class SAE(Daemon):
         #
         self.factory = SocketFactory(tick_callback=self.tick)
         self.factory.sae = self
-        self.activators = {}  # pool name -> list of activators
+        self.activators = defaultdict(set)  # pool name -> set of activators
         self.object_scripts = {}  # object.id -> # of current scripts
         self.object_status = {}  # object.id -> last ping check status
         #
@@ -155,8 +156,6 @@ class SAE(Daemon):
         Add registered activator stream to pool
         """
         stream.set_pool_name(name)
-        if name not in self.activators:
-            self.activators[name] = set()
         logging.info("%s is joining activator pool '%s'" % (repr(stream), name))
         self.activators[name].add(stream)
 
@@ -164,8 +163,9 @@ class SAE(Daemon):
         """
         Remove activator stream from pool
         """
-        if name in self.activators and stream in self.activators[name]:
-            logging.info("%s is leaving activator pool '%s'" % (repr(stream), name))
+        if stream in self.activators[name]:
+            logging.info("%s is leaving activator pool '%s'" % (
+                repr(stream), name))
             self.activators[name].remove(stream)
             self.update_activator_capabilities(name)
 
@@ -173,9 +173,11 @@ class SAE(Daemon):
         """
         Get activator pool information
         """
-        if name not in self.activators:
-            return {"status": False, "members": 0}
-        return {"status": True, "members": len(self.activators[name])}
+        members = len(self.activators["name"])
+        return {
+            "status": members > 0,
+            "members": members
+        }
 
     def run(self):
         """
