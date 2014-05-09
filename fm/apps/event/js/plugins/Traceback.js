@@ -15,7 +15,7 @@ Ext.define("NOC.fm.event.plugins.Traceback", {
 
     updateData: function(data) {
         var me = this;
-        me.update("<PRE>" + data.traceback + "</PRE>");
+        me.update("<PRE>" + Ext.util.Format.htmlEncode(data.traceback) + "</PRE>");
     }
 });
 
