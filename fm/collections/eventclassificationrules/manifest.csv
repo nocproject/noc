@@ -792,6 +792,8 @@ NOC | Periodic | Periodic Failed,50546a84-f3ef-4ce1-b1fd-7596dc19a978,NOC/Period
 NOC | Periodic | Periodic Failed | PM Failed,727ed27f-c44d-4c22-a431-7f7fab05601f,NOC/Periodic/Periodic_Failed/PM_Failed.json,6f48ef7a1e9be09a4cf0fda7bad3eeaab3c8685c8f6a283c67aa0e639e1e20e5
 NOC | Periodic | Periodic OK,4abf6f8c-7ec6-4272-9ff1-16c793b993a7,NOC/Periodic/Periodic_OK.json,7467df75d92abcff8378694ca2f96896770bdd2f1934b1eb12cc2f8e981f91db
 NOC | Periodic | Probe Ok,6b1f98ea-87e3-4846-912d-189a9b600243,NOC/Periodic/Probe_Ok.json,b51ce8c31094d7810835670c178bf236e53764ca09fccedb752e537c06255a94
+NOC | SA | Join Activator Pool ,e077e236-d7ea-4489-8a41-40ffa358f7eb,NOC/SA/Join_Activator_Pool.json,b4520b4fd614aad565a6fb6e1d1bd922d2b3d56496ff83207df260323c328071
+NOC | SA | Leave Activator Pool ,b1e3f3a7-1ca2-4a27-be29-79b26189cd61,NOC/SA/Leave_Activator_Pool.json,c67d59eef357a9f0f512d6a11f9a6d9b710716943cb6506e344ed48d34cacb1a
 NOC | Unhandled Exception,f4f136da-b1db-4cf4-aede-9361337157f1,NOC/Unhandled_Exception.json,ad297dc99a5e7a8c56193414cffe6c080bf60828e6be8e3329c0ad6b46d051b1
 NOC | Unknown Event Source,5a26d15a-8263-4e54-9f35-75143b28bbe5,NOC/Unknown_Event_Source.json,98f84c63e6203aef5b77270245d5ea1ec958d901225b3c5f0b5236f2fb21f96c
 NSN | hiX56xx | Network | Link | Link Down (SNMP),579b9d36-ed95-4454-af1e-5895d1c1a84a,NSN/hiX56xx/Network/Link/Link_Down_SNMP_.json,262b50f05077d9dab382ab724162679323d3fa327997f8b4f6a4d101b1e3dcfc

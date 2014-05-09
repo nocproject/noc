@@ -202,7 +202,7 @@ class Activator(Daemon, FSM):
                 self.stop_syslog_collectors()
             if self.pm_data_collectors:
                 self.stop_pm_data_collectors()
-        self.set_timeout(3)
+        self.set_timeout(1)
 
     def on_CONNECT_enter(self):
         """

@@ -34,6 +34,8 @@ class Activator(models.Model):
     is_active = models.BooleanField(_("Is Active"), default=True)
     prefix_table = models.ForeignKey(PrefixTable, verbose_name=_("Prefix Table"))
     auth = models.CharField(_("Auth String"), max_length=64)
+    min_sessions = models.IntegerField(_("Min Scripts"), default=0)
+    min_members = models.IntegerField(_("Min Members"), default=0)
     tags = TagsField(_("Tags"), null=True, blank=True)
 
     def __unicode__(self):
@@ -94,7 +96,13 @@ class Activator(models.Model):
             c.max_scripts = max_scripts
             c.save()
         else:
-            ActivatorCapabilitiesCache(
+            c = ActivatorCapabilitiesCache(
                 activator_id=self.id,
                 members=members,
-                max_scripts=max_scripts).save()
+                max_scripts=max_scripts)
+            c.save()
+        return c
+
+    def get_capabilities(self):
+        return ActivatorCapabilitiesCache.objects.filter(
+            activator_id=self.id).first()

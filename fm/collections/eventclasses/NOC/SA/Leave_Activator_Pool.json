@@ -1,0 +1,72 @@
+{
+    "name": "NOC | SA | Leave Activator Pool",
+    "uuid": "49b06b2f-4060-4a34-9b85-e34a9f425889",
+    "action": "A",
+    "vars": [
+        {
+            "name": "name",
+            "description": "Activator pool name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "instance",
+            "description": "Activator instance",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "sessions",
+            "description": "Instance's script sessions",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "min_members",
+            "description": "Pool's members lower threshold",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "min_sessions",
+            "description": "Pool's sessions lower threshold",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "pool_members",
+            "description": "Pool's current members",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "pool_sessions",
+            "description": "Pool's current sessions limit",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Instance {{instance}} leaves activator pool {{name}}",
+            "body_template": "Pool currently has {{pool_members}} with overall limit to {{pool_sessions}} script sessions.\nConfigured lower thresholds are {{min_members}} members and {{min_sessions}} sessions",
+            "symptoms": "SA performance decreased",
+            "probable_causes": "noc-activator process been stopped",
+            "recommended_actions": "Check appropriative process"
+        }
+    },
+    "disposition": [
+        {
+            "name": "clear",
+            "condition": "(event.vars['pool_sessions'] >= event.vars['min_sessions']) and (event.vars['pool_members'] >= event.vars['min_members'])",
+            "action": "clear",
+            "alarm_class__name": "NOC | SA | Activator Pool Degraded"
+        },
+        {
+            "name": "raise",
+            "condition": "(event.vars['pool_sessions'] < event.vars['min_sessions']) or (event.vars['pool_members'] < event.vars['min_members'])",
+            "action": "raise",
+            "alarm_class__name": "NOC | SA | Activator Pool Degraded"
+        }
+    ]
+}

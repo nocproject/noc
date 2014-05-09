@@ -71,6 +71,8 @@ NOC | Managed Object | Ping Failed,3cd44497-6f0e-4a27-b6fe-3ab001681236,NOC/Mana
 NOC | Managed Object | Ping OK,121098a0-ac8c-44e4-a856-2f4ed096f454,NOC/Managed_Object/Ping_OK.json,9077519d3237067b70c82e765f05b39e6e9bb5c2148c4c16b0c9003f3eb2e699
 NOC | Periodic | Periodic Failed,919bf2f9-bc5e-43a1-8df8-f462ab4ea025,NOC/Periodic/Periodic_Failed.json,9037ef7638a0cb44eaeb4ac898a5c5e4a31a935959f9fb2e82279e3b38a1d22c
 NOC | Periodic | Periodic OK,d0b731d7-e9f1-4fdb-9c21-32ecf5ce0137,NOC/Periodic/Periodic_OK.json,fe5288f4c48e325daa8c4c76e14c86a9eae918340561ac72a4f6516d1792b6d7
+NOC | SA | Join Activator Pool,2aaf7e96-8221-44e0-bc49-aa82b3bb20bd,NOC/SA/Join_Activator_Pool.json,4d920ffeae2c3cdfb4ff644ea9efbb1b31ebcd9daba7a2db7a211c1615a436bd
+NOC | SA | Leave Activator Pool,49b06b2f-4060-4a34-9b85-e34a9f425889,NOC/SA/Leave_Activator_Pool.json,1943f798ac7d845af798f75ce924d2b5a1ef9537b54c31972957915b66609c8b
 NOC | Unhandled Exception,1d279004-cd09-4382-a405-acea050775be,NOC/Unhandled_Exception.json,3cd9fe945e4243adc5f26279c6fee2f437d0b076eaf855dc65c171e59bf08f47
 NOC | Unknown Event Source,764bd643-9c5a-41bc-bf9b-89a1e44abe70,NOC/Unknown_Event_Source.json,1a1b6fbcd4fe22e2d418567e594fcc2d600ae19fc4083dd3d8d482a8958c5b5e
 Network | 802.11 | Associated,b41cf4f1-be8f-4146-ad9c-3a22f05e2060,Network/802_11/Associated.json,ddd69cb2e6911895a6acdf29ff27048b55223fc1fa00d72e75dd4faeb90a6782
