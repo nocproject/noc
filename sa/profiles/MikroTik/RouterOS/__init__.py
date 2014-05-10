@@ -21,7 +21,8 @@ class Profile(NOCProfile):
     pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] > "
     pattern_more = [
         ("Please press \"Enter\" to continue!", "\n"),
-        (r"\[Q quit\|.+\]", " ")
+        (r"\[Q quit\|.+\]", " "),
+        (r"\[[yY]/[nN]\]", "y")
     ]
     pattern_syntax_error = r"bad command name"
     config_volatile = [r"^#.*?$", r"^\s?"]
