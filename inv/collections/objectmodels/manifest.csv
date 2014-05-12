@@ -405,6 +405,10 @@ NoName | Transceiver | 10G | XFP ER,1ede79eb-43a5-4d20-9452-d208402286d9,NoName/
 NoName | Transceiver | 10G | XFP LR,6d43fc9c-1c0d-4fd6-be82-13044dff9f85,NoName/Transceiver/10G/XFP_LR.json,57ed1675ecb877561350f5ca11a2744af26e40cc8354b08896d80a6e7ca7f9ab
 NoName | Transceiver | 10G | XFP SR,070deca5-5589-4343-866c-512472c79f5b,NoName/Transceiver/10G/XFP_SR.json,8b1873df45554ff7a47d2edb011605de3285c63c5b0db8853ab7b30020af921c
 NoName | Transceiver | 10G | XFP ZR,51a5ea17-d727-4bba-863c-13df21adbc61,NoName/Transceiver/10G/XFP_ZR.json,13d9c5634a2740696d2cc7ae7d1418ae6d4abb895ecef94cb0f88bb56dfe9e53
+NoName | Transceiver | 1G | GBIC LH,e94817bf-5500-4899-bfa0-c4c70305cf9d,NoName/Transceiver/1G/GBIC_LH.json,5ac6f0e633bc04949efc9a76409efa71d2cb05190337c2da5bc4932e9d832522
+NoName | Transceiver | 1G | GBIC LX,986049d2-9c5c-457c-b672-e48860281f5c,NoName/Transceiver/1G/GBIC_LX.json,7c7310477c69ad086851ae3b322572370837425af6786feff7097c19e36da0ca
+NoName | Transceiver | 1G | GBIC SX,0a2c727c-ee26-4fd5-a2e8-502b9ba782cb,NoName/Transceiver/1G/GBIC_SX.json,5c43926365c748aa94af42273b53a4fa9862c7e6969dc5db7bbb7053651b3719
+NoName | Transceiver | 1G | GBIC ZX,3bfb9115-e49c-445a-aef1-82cc82cc75d1,NoName/Transceiver/1G/GBIC_ZX.json,67b62c6c69cf5039a0e70c8e3cd9c47e0fb4cd5b6ec2728ad37679dd1bd51b6c
 NoName | Transceiver | 1G | SFP,5144216d-f876-4e97-ad23-b41512985be5,NoName/Transceiver/1G/SFP.json,1ad29ac7d5570e1a243bafec897c3e1c53d3567cb4708eb2ed969c402b0bfdf7
 NoName | Transceiver | 1G | SFP BX10D,705ecb31-581c-4543-91c2-cc0c6c9517cd,NoName/Transceiver/1G/SFP_BX10D.json,54e6a7ea5351503f9a832cf4f75869f9e1afd9ddd169bd7eb5b3f3d0ad994655
 NoName | Transceiver | 1G | SFP BX10U,dcbd9163-836e-4b4c-a18e-542130509eb1,NoName/Transceiver/1G/SFP_BX10U.json,ad191c2238e25ea96dc8510323554303fcbc205a74b3904ac2b76818c04cd179
