@@ -1,3 +1,4 @@
+ecdsa==0.11
 gmpy==1.16
 pycrypto>=2.6
 netifaces>=0.8
