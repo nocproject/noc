@@ -1,0 +1,277 @@
+{
+    "name": "Cisco | NEXUS | N2K-C2232PP-10GE-SUP",
+    "uuid": "f1b6783d-e132-4226-b563-e5627d3292cf",
+    "vendor__code": "CISCO",
+    "description": "Cisco Nexus C2232PP Fabric Extender Module: 32x10GE, 8x10GE Supervisor",
+    "cr_context": "SUP",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | Nexus 2k | C2232PP SUP"
+        },
+        {
+            "description": "Eth1/1 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/2 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/3 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/3",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/4 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/4",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/5 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/5",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/6 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/6",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/7 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/7",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/8 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/8",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/9 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/9",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/10 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/10",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/11 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/11",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/12 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/12",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/13 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/13",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/14 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/14",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/15 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/15",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/16 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/16",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/17 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/17",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/18 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/18",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/19 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/19",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/20 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/20",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/21 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/21",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/22 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/22",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/23 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/23",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/24 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/24",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/25 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/25",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/26 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/26",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/27 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/27",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/28 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/28",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/29 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/29",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/30 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/30",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/31 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/31",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Eth1/32 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth1/32",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "N2K-C2232PP-10GE-SUP"
+        }
+    }
+}

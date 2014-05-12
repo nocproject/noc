@@ -55,6 +55,14 @@ Cisco | Electrical | StackWise,1bf4cdf7-0063-4a58-b33b-4369ef5f6916,Cisco/Electr
 Cisco | Electrical | StackWise Plus,f3ed397f-f3a9-4522-a7b7-4e7e230460da,Cisco/Electrical/StackWise_Plus.json,e6b5e6104a29b0c7806714f31e3f32306de397e30f23c391f162ce85faa2a4e2
 Cisco | ME3400E | PSU,343d7a6d-00e3-4936-af1c-9e0698f011fd,Cisco/ME3400E/PSU.json,d4b88aa1ea4c87874297ebe086c9df5fcf737b4c0654fa67d04aaca029b677bb
 Cisco | ME3600 | PSU,cef0c7dc-3ff1-49e2-abce-d4611c8e0867,Cisco/ME3600/PSU.json,f6b3a3c42c330646632af4a8cfde2081b544df1ec98d065cce09dbffb3e336d2
+Cisco | Nexus 2k | 2200 PSU,de5db9a9-9377-455e-833c-6a5ed607056a,Cisco/Nexus_2k/2200_PSU.json,ce550e6b4a2dff30100b8d6658ab734b081ef35c747fed1ba649616f020f5d90
+Cisco | Nexus 2k | 2232PP/TM FAN,a54a01aa-f7a1-4197-ad72-07e59ed6eef2,Cisco/Nexus_2k/2232PP_TM_FAN.json,5964e64804cb5b81dc4f71591a3ed24ef7258b5a4d3666779e42ce9fa930c85f
+Cisco | Nexus 2k | C2232PP SUP,84d4b96e-c747-4cc4-b55f-5a1d5dc0e489,Cisco/Nexus_2k/C2232PP_SUP.json,4281188898f36eed5631da4053e18bd1a3bbc7faed946608fad964beae80e6ba
+Cisco | Nexus 5k | 5548 FAN,a840c16c-8c00-48cf-a977-72e40f3e07f8,Cisco/Nexus_5k/5548_FAN.json,5d81fc5bb073d50c7542650fdc96abd2729a6ffb5a787bbc4d514aefcccec3c2
+Cisco | Nexus 5k | 5548 PSU,1f47b2fa-e3cf-4392-a087-fd37b803091c,Cisco/Nexus_5k/5548_PSU.json,462866dd09275d9769bab8b37190adb281eef685ce600be0cbc32f97d8c3245e
+Cisco | Nexus 5k | 5596 FAN,5a5d1e5c-3a00-4a8e-ad31-cdff03b23cb7,Cisco/Nexus_5k/5596_FAN.json,b25c40e8150f8e1d9ab2132d9effdb9c89b544b798d7854fcaf7318db6870b90
+Cisco | Nexus 5k | 5596 PSU,417266ac-00c5-48b9-b2a2-c74ee65f2e31,Cisco/Nexus_5k/5596_PSU.json,27af04ee18cec351e2536e0232e1a3a0c67483460bcad038709e8772eafdbb70
+Cisco | Nexus 5k | 5596UP SUP,23ac32b7-4064-4011-aa27-2af18ebbed0a,Cisco/Nexus_5k/5596UP_SUP.json,887c61a7e8a16a08e111a43375714c776f653edb42c50d1070358e0c9ebf8dca
 Cisco | PWR-C49-300,3fb7b6cf-2671-405b-874d-4ba2f96393ba,Cisco/PWR-C49-300.json,433aa1da87a2f871d873dbd32a844c18b5a70896361fdccfa44f1e3d2995726c
 Cisco | SCE | SCE8000 Fan,adf75164-03ca-4ba2-8ed0-2f9b3f421c97,Cisco/SCE/SCE8000_Fan.json,eee4c0c194edde64b943700aed61adf30b9daa7cb451b14ed10edebda50f395e
 Cisco | SCE | SCE8000 OPB,2f8e75be-b431-466c-9d8d-db3d50306cd3,Cisco/SCE/SCE8000_OPB.json,5444becfa902530e73ce79e5c815a3dc37a2f6aacfb962a89a77d036a4a0cf44

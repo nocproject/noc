@@ -1,0 +1,7 @@
+{
+    "name": "Cisco | Nexus 2k | 2200 PSU",
+    "uuid": "de5db9a9-9377-455e-833c-6a5ed607056a",
+    "description": "Cisco Nexus 2200 power supply unit connection",
+    "c_group": [],
+    "genders": "mf"
+}

@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | NEXUS | N5548P-FAN-B",
+    "uuid": "066130de-22c4-4661-8282-2fd5d29b0d6c",
+    "vendor__code": "CISCO",
+    "description": "Cisco Nexus 5548UP Fan Module, Back-to-Front Airflow",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "FAN connection to switch",
+            "direction": "o",
+            "gender": "m",
+            "group": "0",
+            "name": "in",
+            "type__name": "Cisco | Nexus 5k | 5548 FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "N5548P-FAN-B"
+        }
+    }
+}

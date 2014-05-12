@@ -1,0 +1,38 @@
+{
+    "name": "Finisar | Transceiver | 10G | FTLX8570D3BCL-C1",
+    "uuid": "9c4650be-8583-4702-b6eb-cebfd3a2ef81",
+    "vendor__code": "FINISAR",
+    "description": "10GBASE-SR 850nm MMF / Fabric Extender Transceiver for Cisco Nexus",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "TX",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "RX",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "FTLX8570D3BCL-C1"
+        }
+    }
+}
