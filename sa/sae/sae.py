@@ -368,18 +368,17 @@ class SAE(Daemon):
                 callback(error=e)
                 return
             # Check object's limits
-            if object.max_scripts:
-                try:
-                    o_scripts = self.object_scripts[object.id]
-                except KeyError:
-                    o_scripts = 0
-                if o_scripts >= object.max_scripts:
+            o_limits = object.scripts_limit
+            if o_limits:
+                o_scripts = self.object_scripts.get(object.id, 0)
+                if o_scripts >= o_limits:
                     e = Error(code=ERR_OBJ_OVERLOAD,
                               text="Object's script sessions limit exceeded")
                     logging.error(e.text)
                     callback(error=e)
                     return
-                self.object_scripts[object.id] = o_scripts + 1
+                else:
+                    self.object_scripts[object.id] = o_scripts + 1
             # Update counters
             stream.current_scripts += 1
         # Build request
