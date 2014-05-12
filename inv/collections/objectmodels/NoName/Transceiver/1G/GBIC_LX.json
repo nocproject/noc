@@ -1,0 +1,34 @@
+{
+    "name": "NoName | Transceiver | 1G | GBIC LX",
+    "uuid": "986049d2-9c5c-457c-b672-e48860281f5c",
+    "vendor__code": "NONAME",
+    "description": "NoName Transceiver 1G GBIC LX",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "GBIC Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {}
+}
