@@ -607,6 +607,17 @@ class ManagedObject(models.Model):
                 snmp_rw=self.snmp_rw
             )
 
+    @property
+    def scripts_limit(self):
+        ol = self.max_scripts or None
+        pl = self.profile.max_scripts
+        if not ol:
+            return pl
+        if pl:
+            return min(ol, pl)
+        else:
+            return ol
+
 
 class ManagedObjectAttribute(models.Model):
 

@@ -152,6 +152,8 @@ class Profile(object):
     # Does the equipment supports bitlength netmasks
     # or netmask should be converted to traditional formats
     requires_netmask_conversion = False
+    # Upper concurrent scripts limit, if set
+    max_scripts = None
     #
     # Converts ip prefix to the format acceptable by router
     #
