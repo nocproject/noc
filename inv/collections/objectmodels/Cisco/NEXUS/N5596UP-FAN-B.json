@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | NEXUS | N5596UP-FAN-B",
+    "uuid": "408cf8c9-02ad-4124-af14-9879a7da09f1",
+    "vendor__code": "CISCO",
+    "description": "Cisco Nexus 5596UP/5596T Fan Module, Back-to-Front Airflow",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "FAN connection to switch",
+            "direction": "o",
+            "gender": "m",
+            "group": "0",
+            "name": "in",
+            "type__name": "Cisco | Nexus 5k | 5596 FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "N5596UP-FAN-B"
+        }
+    }
+}
