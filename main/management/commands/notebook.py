@@ -6,8 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Third-party modules
-import pkg_resources
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
@@ -17,6 +15,9 @@ class Command(BaseCommand):
     help = "Run Notebook"
 
     def handle(self, *args, **options):
+        ## Third-party modules
+        import pkg_resources
+        ## Django modules
         from django.conf import settings
         from django.db.models.loading import get_models
         ## Check ipython is installed
