@@ -53,6 +53,7 @@ Cisco | ASR9k | MPA,fec2106b-bb55-4c93-b75f-4f18375fa4a6,Cisco/ASR9k/MPA.json,c5
 Cisco | ASR9k | RSP,a39f10a0-1239-4735-8204-2c7ecb56655d,Cisco/ASR9k/RSP.json,4a9c44bd409fb806132f40c4b279bfaab201f939bafcaf946abc045934fa6bc4
 Cisco | Electrical | StackWise,1bf4cdf7-0063-4a58-b33b-4369ef5f6916,Cisco/Electrical/StackWise.json,4e2b2adce3af83294c27a90e3d0f714c0d28b527abcfc8bed147854f655dd477
 Cisco | Electrical | StackWise Plus,f3ed397f-f3a9-4522-a7b7-4e7e230460da,Cisco/Electrical/StackWise_Plus.json,e6b5e6104a29b0c7806714f31e3f32306de397e30f23c391f162ce85faa2a4e2
+Cisco | GEM | GEM2,a0c51b22-17a7-4275-b604-babd8eb6716f,Cisco/GEM/GEM2.json,f49664c8ea464c0ef29541583e271149cb79bbce46325b4b5b157737bcdb7361
 Cisco | ME3400E | PSU,343d7a6d-00e3-4936-af1c-9e0698f011fd,Cisco/ME3400E/PSU.json,d4b88aa1ea4c87874297ebe086c9df5fcf737b4c0654fa67d04aaca029b677bb
 Cisco | ME3600 | PSU,cef0c7dc-3ff1-49e2-abce-d4611c8e0867,Cisco/ME3600/PSU.json,f6b3a3c42c330646632af4a8cfde2081b544df1ec98d065cce09dbffb3e336d2
 Cisco | Nexus 2k | 2200 PSU,de5db9a9-9377-455e-833c-6a5ed607056a,Cisco/Nexus_2k/2200_PSU.json,ce550e6b4a2dff30100b8d6658ab734b081ef35c747fed1ba649616f020f5d90
