@@ -2,7 +2,7 @@
     "name": "Cisco | NEXUS | N2K-C2232PP-10GE",
     "uuid": "b6dd7983-cb05-446d-be2f-d45baef9abb8",
     "vendor__code": "CISCO",
-    "description": "Cisco Nexus C2232PP Fabric Extender Chassis. 2RU 1/10 Gigabit Ethernet and FCoE",
+    "description": "Cisco Nexus C2232PP Fabric Extender Chassis. 1RU 1/10 Gigabit Ethernet and FCoE",
     "connection_rule__name": "Cisco | Nexus",
     "cr_context": "CHASSIS",
     "connections": [
@@ -47,7 +47,7 @@
             "managed": true
         },
         "rackmount": {
-            "units": 2.0
+            "units": 1.0
         },
         "stack": {
             "stackable": true
