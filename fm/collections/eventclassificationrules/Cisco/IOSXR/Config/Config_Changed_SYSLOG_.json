@@ -6,15 +6,15 @@
     "preference": 1000,
     "patterns": [
         {
-            "key_re": "profile",
-            "value_re": "Cisco.IOSXR"
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
         },
         {
-            "key_re": "source",
-            "value_re": "syslog"
+            "key_re": "^source$",
+            "value_re": "^syslog$"
         },
         {
-            "key_re": "message",
+            "key_re": "^message$",
             "value_re": "%MGBL-CONFIG-6-DB_COMMIT : Configuration committed by user '(?P<user>.+)'. Use 'show configuration commit changes (?P<changeset>\\d+)' to view the changes."
         }
     ]
