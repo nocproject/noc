@@ -177,19 +177,12 @@ if [ $BRANCH != "none" ]; then
     fi
 fi
 ##
-## Fix broken setuptools
-##
-#if [ ! -f ./bin/easy_install ]; then
-#    info "Fixing broken setuptools"
-#    ./scripts/fetch https://bootstrap.pypa.io/ez_setup.py > /tmp/ez_setup.py
-#    (cd /tmp && $PREFIX/bin/python ez_setup.py)
-#    rm /tmp/ez_setup.py
-#fi
-##
 ## Update required python modules
 ##
 info "Upgrading PIP"
-./bin/pip install pip --upgrade
+./bin/pip install pip --upgrade || error_exit "$LINENO: Failed to update PIP"
+info "Upgrading setuptools"
+./bin/pip install setuptools --upgrade || error_exit "$LINENO: Failed to update setuptools"
 info "Updating python libraries"
 PIP_REQUIREMENTS=etc/requirements/noc.txt
 PIP_FLAG=local/.pip
