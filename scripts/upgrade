@@ -179,12 +179,12 @@ fi
 ##
 ## Fix broken setuptools
 ##
-if [ ! -f ./bin/easy_install ]; then
-    info "Fixing broken setuptools"
-    ./scripts/fetch https://bootstrap.pypa.io/ez_setup.py > /tmp/ez_setup.py
-    (cd /tmp && $PREFIX/bin/python ez_setup.py)
-    rm /tmp/ez_setup.py
-fi
+#if [ ! -f ./bin/easy_install ]; then
+#    info "Fixing broken setuptools"
+#    ./scripts/fetch https://bootstrap.pypa.io/ez_setup.py > /tmp/ez_setup.py
+#    (cd /tmp && $PREFIX/bin/python ez_setup.py)
+#    rm /tmp/ez_setup.py
+#fi
 ##
 ## Update required python modules
 ##
