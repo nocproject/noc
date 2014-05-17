@@ -1,3 +1,4 @@
+setuptools>=3.6
 Mercurial>=2.5.2
 ecdsa==0.11
 psycopg2>=2.5
