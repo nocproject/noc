@@ -181,9 +181,6 @@ fi
 ##
 info "Upgrading PIP"
 ./bin/pip install pip --upgrade || error_exit "$LINENO: Failed to update PIP"
-./bin/pip install backports.ssl_match_hostname --upgrade || error_exit "$LINENO: Failed to upgrade backports.ssl_match_hostname"
-info "Upgrading setuptools"
-./bin/pip install setuptools --upgrade || error_exit "$LINENO: Failed to update setuptools"
 info "Updating python libraries"
 PIP_REQUIREMENTS=etc/requirements/noc.txt
 PIP_FLAG=local/.pip
