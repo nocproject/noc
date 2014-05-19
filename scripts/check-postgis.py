@@ -29,6 +29,12 @@ class PGDriver(object):
                      "topology_comments.sql",
                      "legacy.sql", "legacy_gist.sql",
                      "raster_comments.sql"]
+    POSTGIS_UNINSTALL_FILES = [
+        "uninstall_legacy.sql",
+        "uninstall_topology.sql",
+        "uninstall_rtpostgisl.sql",
+        "uninstall_postgis.sql"
+    ]
 
     REQUIRED_POSTGIS_FILES = ["postgis.sql", "spatial_ref_sys.sql"]
 
@@ -41,11 +47,20 @@ class PGDriver(object):
         self.info("Checking PostGIS installation")
         self.setup_credentials()
         if self.check_postgis():
-            self.info("   ... found")
-            sys.exit(0)
+            if self.is_broken():
+                self.info("   ... broken installation. Removing")
+                if not self.uninstall_postgis():
+                    self.info("Failed to uninstall broken PostGIS installation!")
+                    self.info("Uninstall PostGIS from database manually and run upgrade again")
+                    sys.exit(1)
+            else:
+                self.info("   ... found")
+                sys.exit(0)
         # Install postgis
         self.info("   ... not found")
-        self.info("Installing postgis")
+        self.install_postgis()
+
+    def check_paths(self):
         self.pg_sharedir = self.pg_config("--sharedir")
         self.assert_dir(self.pg_sharedir)
         self.pg_contrib = os.path.join(self.pg_sharedir, "contrib")
@@ -53,7 +68,6 @@ class PGDriver(object):
         self.pg_bindir = self.pg_config("--bindir")
         self.psql_path = os.path.join(self.pg_bindir, "psql")
         self.assert_file(self.psql_path)
-        self.install_postgis()
 
     def pg_config(self, *args):
         try:
@@ -115,6 +129,23 @@ class PGDriver(object):
         c.execute("SELECT COUNT(*) FROM pg_class WHERE relname='geometry_columns'")
         return c.fetchall()[0][0] == 1
 
+    def is_broken(self):
+        """
+        Detect broken NOC 0.8 PostGIS installation with
+        doubled % in procedures code
+        """
+        cn = psycopg2.connect(**self.db_cred)
+        c = cn.cursor()
+        c.execute("""
+            SELECT COUNT(*)
+            FROM pg_proc
+            WHERE
+                  proname = 'addgeometrycolumn'
+              AND position('RAISE DEBUG ''%%''' in prosrc) > 0
+            """
+        )
+        return bool(c.fetchall()[0][0])
+
     def get_postgis_prefix(self):
         """
         Returns (postgis version, postgis prefix)
@@ -157,6 +188,8 @@ class PGDriver(object):
             self.pgpass_path = None
 
     def install_postgis(self):
+        self.info("Installing postgis")
+        self.check_paths()
         pv, prefix = self.get_postgis_prefix()
         # Build install bundle
         install = []
@@ -172,6 +205,24 @@ class PGDriver(object):
             self.psql_in(p)
         self.destroy_pgpass()
         self.info("   ... done")
+
+    def uninstall_postgis(self):
+        self.info("Uninstalling PostGIS")
+        self.check_paths()
+        pv, prefix = self.get_postgis_prefix()
+        # Build install bundle
+        uninstall = []
+        for f in self.POSTGIS_UNINSTALL_FILES:
+            path = os.path.join(prefix, f)
+            if os.path.isfile(path):
+                uninstall += [path]
+        # Uninstall files files
+        self.prepare_pgpass()
+        for p in uninstall:
+            self.psql_in(p)
+        self.destroy_pgpass()
+        self.info("   ... done")
+        return True
 
 if __name__ == "__main__":
     PGDriver().check()
