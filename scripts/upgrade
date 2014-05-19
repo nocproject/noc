@@ -42,6 +42,16 @@ ensure_prog ( ) {
 ##
 cd `dirname $0`/../
 PROGNAME=`basename $0`
+PREFIX=$PWD
+##
+## Check, if NOC is already running
+##
+if [ -f "./etc/noc-launcher.conf" ]; then
+    PIDFILE=`cat ./etc/noc-launcher.conf | grep pidfile | cut -d ' ' -f3`
+    if [ -f "$PIDFILE" ]; then
+        error_exit "NOC is running now. Shutdown it first."
+    fi
+fi
 ##
 ## Include configs
 ##
@@ -52,6 +62,11 @@ PROGNAME=`basename $0`
 ##
 if [ "$ENABLED" != "yes" ]; then
     error_exit "Upgrade is disabled. Please edit etc/upgrade.conf and run $0 again"
+fi
+## Run pre-upgrade local script
+if [ -x ./local/bin/pre-upgrade ]; then
+    info "Running ./local/bin/pre-upgrade"
+    ./local/bin/pre-upgrade
 fi
 ## Determine NOC user
 if [ -z "$NOC_USER" ]; then
@@ -148,7 +163,13 @@ if [ -x ./bin/hg ]; then
 else
     HG=`which hg`
 fi
+if [ ! -z "$NOC_BRANCH" ]; then
+    info "Forcefully set NOC branch to $NOC_BRANCH"
+    BRANCH=$NOC_BRANCH
+fi
 if [ $BRANCH != "none" ]; then
+    UPGRADETS=./local/upgrade-time
+    touch $UPGRADETS
     $HG pull -u $REPO || error_exit "$LINENO: Failed to pull repo $REPO"
     if [ `$HG branch` = "$BRANCH" ]; then
         $HG update || error_exit "$LINENO: Failed to update repo"
@@ -156,10 +177,18 @@ if [ $BRANCH != "none" ]; then
         info "Switching to branch $BRANCH"
         $HG update -c $BRANCH || error_exit "$LINENO: Failed to update to branch $BRANCH"
     fi
+    if [ ./scripts/upgrade -nt $UPGRADETS ]; then
+        info "./scripts/upgrade has been upgraded. Restarting"
+        rm -f $UPGRADETS
+        exec ./scripts/upgrade "$@"
+    fi
+    rm -f $UPGRADETS
 fi
 ##
 ## Update required python modules
 ##
+info "Upgrading PIP"
+./bin/pip install pip --upgrade || error_exit "$LINENO: Failed to update PIP"
 info "Updating python libraries"
 PIP_REQUIREMENTS=etc/requirements/noc.txt
 PIP_FLAG=local/.pip
@@ -171,7 +200,10 @@ if [ -f "etc/requirements/local.txt" ]; then
     PIP_ARGS="$PIP_ARGS -r etc/requirements/local.txt"
 fi
 if [ ! -z "$PIP_FIND_LINKS" ]; then
-    PIP_ARGS="$PIP_ARGS --find-links $PIP_FIND_LINKS"
+    if [ "$PIP_FIND_LINKS" = "http://cdn.nocproject.org/pkg/simple/" ]; then
+        PIP_FIND_LINKS=https://bitbucket.org/nocproject/noc/downloads
+    fi
+    PIP_ARGS="$PIP_ARGS --find-links $PIP_FIND_LINKS --allow-all-external"
 fi
 if [ $PIP_REQUIREMENTS -nt $PIP_FLAG ]; then
     PIP_ARGS="$PIP_ARGS --upgrade"
@@ -185,6 +217,16 @@ touch $PIP_FLAG
 info "Installing noc.pth"
 ./scripts/install-pth.py || error_exit "$LINENO: Cannot install noc.pth"
 ##
+## Install sitecustomize.py
+##
+info "Customizing Python site settings"
+./scripts/check-sitecustomize.py || error_exit "$LINENO: Cannot install check-sitecustomize.py"
+##
+## Apply local patches
+##
+info "Apply local patches"
+./scripts/apply-patches || error_exit "$LINENO: Cannot apply patches"
+##
 ## Compile bytecode
 ##
 ./scripts/compile || error_exit "$LINENO: Failed to compile bytecode"
@@ -194,13 +236,18 @@ info "Installing noc.pth"
 info "Looking for hanging .pyc files"
 ./scripts/check-pyc.py || error_exit "$LINENO: Inconsistent .pyc files found"
 ##
-## Run rest with $NOC_USER credentials
+## Run REST with $NOC_USER credentials
 ##
 info "Running the rest of upgrade process with user $NOC_USER credentials"
 if [ "$NOC_USER" = `id -n -u` ]; then
     ./scripts/upgrade-user
 else
     su $NOC_USER -c "./scripts/upgrade-user"
+fi
+## Run post-upgrade local script
+if [ -x ./local/bin/post-upgrade ]; then
+    info "Running ./local/bin/post-upgrade"
+    ./local/bin/post-upgrade
 fi
 # Done
 info "$PROGNAME complete"
