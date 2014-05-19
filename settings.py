@@ -57,6 +57,7 @@ NOSQL_DATABASE_USER = config.get("nosql_database", "user")
 NOSQL_DATABASE_PASSWORD = config.get("nosql_database", "password")
 NOSQL_DATABASE_HOST = config.get("nosql_database", "host")
 NOSQL_DATABASE_PORT = config.get("nosql_database", "port")
+NOSQL_DATABASE_REPLICA_SET = config.get("nosql_database", "replica_set")
 
 TIME_ZONE = config.get("main", "timezone")
 LANGUAGE_CODE = config.get("main", "language_code")

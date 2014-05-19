@@ -94,6 +94,8 @@ password = noc
 host =
 #
 port =
+# Mongo replica set name for HA configuration
+replica_set =
 
 #
 # NOC User Authentication
