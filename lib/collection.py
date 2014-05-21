@@ -27,6 +27,10 @@ CollectionItem = namedtuple("CollectionItem", [
     "name", "uuid", "path", "hash"])
 
 
+class DereferenceError(Exception):
+    pass
+
+
 class Collection(object):
     def __init__(self, name, doc, local=False):
         m, c = name.split(".", 1)
@@ -37,6 +41,7 @@ class Collection(object):
         self.items = {}  # uuid -> CollectionItem
         self.changed = False
         self.ref_cache = {}
+        self.partial = set()
         if hasattr(self.doc, "name"):
             # Use .name field when present
             self.get_name = attrgetter("name")
@@ -138,26 +143,19 @@ class Collection(object):
         self.log("Syncing %s.%s" % (self.module, self.name))
         sl = set(self.items)
         sr = set(collection.items)
-        partial = set()
         # Delete revoked items
         for i in collection.get_revoked_items():
             if i in self.items:
                 self.delete_item(i)
         # Check for new items
         for i in sr - sl:
-            try:
-                self.update_item(collection.items[i])
-            except ValueError:
-                partial.add(i)
+            self.update_item(collection.items[i])
         # Update changed items
         for i in sr & sl:
             if self.items[i].hash != collection.items[i].hash:
-                try:
-                    self.update_item(collection.items[i])
-                except ValueError:
-                    partial.add(i)
+                self.update_item(collection.items[i])
         # Update partial items
-        for i in partial:
+        for i in self.partial:
             self.update_item(collection.items[i])
         if self.changed:
             self.save()
@@ -171,26 +169,35 @@ class Collection(object):
         del self.items[u]
         self.changed = True
 
-    def create_item(self, mi):
-        self.log(u"    ... creating %s" % mi.name)
-        data = self.load_item(mi)
-        doc = self.doc(**self.dereference(self.doc, data))
-        doc.save()
-        self.items[mi.uuid] = mi
-        self.changed = True
+    def get_by_uuid(self, u):
+        """
+        Returns object instance or None
+        """
+        return self.doc.objects.filter(
+            Q(uuid=u) | Q(uuid=uuid.UUID(u))
+        ).first()
 
     def update_item(self, mi):
-        o = self.doc.objects.filter(
-            Q(uuid=mi.uuid) | Q(uuid=uuid.UUID(mi.uuid))
-        ).first()
-        if not o:
-            self.create_item(mi)
-            return
-        self.log(u"    ... updating %s" % unicode(o))
+        o = self.get_by_uuid(mi.uuid)
+        if o:
+            self.log(u"    ... updating %s" % unicode(o))
+        else:
+            self.log(u"    ... creating %s" % mi.name)
         data = self.load_item(mi)
-        d = self.dereference(self.doc, data)
-        for k in d:
-            setattr(o, k, d[k])
+        try:
+            d = self.dereference(self.doc, data)
+        except DereferenceError:
+            self.log(u"    ... processing delayed due to possible circular reference")
+            self.partial.add(mi.uuid)
+            return
+        if o:
+            # Update fields
+            for k in d:
+                setattr(o, k, d[k])
+            o.save()
+        else:
+            # Create item
+            o = self.doc(**d)
         o.save()
         self.items[mi.uuid] = mi
         self.changed = True
@@ -207,13 +214,16 @@ class Collection(object):
             try:
                 v = ref.objects.get(**{field: key})
             except ref.DoesNotExist:
-                self.die("lookup for %s.%s == '%s' has been failed" % (
-                    ref._meta["collection"], field, key))
+                raise DereferenceError(
+                    "lookup for %s.%s == '%s' has been failed" % (
+                        ref._meta["collection"], field, key)
+                )
             self.ref_cache[ref][field][key] = v
             return v
 
     def dereference(self, doc, d):
         r = {}
+        partial = False
         for k in d:
             v = d[k]
             # Dereference ref__name lookups
@@ -228,14 +238,20 @@ class Collection(object):
             try:
                 field = doc._fields[k]
             except KeyError:
-                continue
-                self.die("Unknown field: '%s'" % k)
+                continue  # Ignore unknown fields
             # Dereference ListFields
             if (type(field) == ListField and
                     isinstance(field.field, EmbeddedDocumentField)):
                 edoc = field.field.document_type
-                v = [edoc(**self.dereference(edoc, x)) for x in d[k]]
+                try:
+                    v = [edoc(**self.dereference(edoc, x)) for x in d[k]]
+                except DereferenceError, why:
+                    # Deferred partial
+                    v = []
+                    partial = True
             r[str(k)] = v
+        if partial:
+            self.partial.add(d["uuid"])
         return r
 
     def import_files(self, paths):
@@ -299,15 +315,16 @@ class Collection(object):
                 p = self.get_item_path(collection.items[u])
                 self.die("File not found: %s" % p)
             d = self.dereference(self.doc, d)
-            o = self.doc.objects.filter(uuid=d["uuid"]).first()
+            o = self.get_by_uuid(d["uuid"])
             if o:
-                return
+                return  # Already upgraded
             for un in unique:
                 o = self.doc.objects.filter(**{un: d[un]}).first()
                 if o:
                     self.log("    ... upgrading %s" % unicode(o))
                     o.uuid = d["uuid"]
                     o.save()
+                    break
 
         self.log("Upgrading %s.%s" % (self.module, self.name))
         # Define set of unique fields
@@ -318,7 +335,7 @@ class Collection(object):
         for u in collection.items:
             try:
                 upgrade_item(u)
-            except ValueError:
+            except DereferenceError:
                 pass
 
     def install_item(self, data, load=False):
