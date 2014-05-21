@@ -13,7 +13,7 @@ import stat
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.lib.collection import Collection
+from noc.lib.collection import Collection, DereferenceError
 from noc.main.models.doccategory import DocCategory
 from noc.gis.models.layer import Layer
 from noc.inv.models.technology import Technology
@@ -171,6 +171,8 @@ class Command(BaseCommand):
                 dc.load()
                 lc.apply(dc)
         except ValueError, why:
+            raise CommandError(why)
+        except DereferenceError, why:
             raise CommandError(why)
 
     def handle_upgrade(self, collections):
