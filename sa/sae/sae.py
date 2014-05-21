@@ -521,6 +521,16 @@ class SAE(Daemon):
                     lambda result=None, error=None: map_callback(mt.id, result, error),
                     **kwargs)
 
+        def fail_task(mt, code, text):
+            mt.status = "F"
+            mt.script_result = dict(code=code, text=text)
+            try:
+                mt.save()
+            except Exception:
+                pass  # Can raise integrity error if MRT is gone
+            self.log_mrt(logging.INFO, task=mt, status="failed",
+                code=code, error=text)
+
         t = datetime.datetime.now()
         # logging.debug("Processing MRT schedules")
         # Reset rates
@@ -535,6 +545,10 @@ class SAE(Daemon):
                 managed_object__activator__shard__is_active=True,
                 managed_object__activator__shard__name__in=self.shards
                 ).select_related().select_for_update():
+            # Check object is managed
+            if not mt.managed_object.is_managed:
+                fail_task(mt, ERR_OBJECT_NOT_MANAGED, "Object is not managed")
+                continue
             # Check reduce task still valid
             is_valid_reduce = True
             try:
@@ -543,14 +557,7 @@ class SAE(Daemon):
                 is_valid_reduce = False
             # Check for task timeouts
             if not is_valid_reduce or mt.task.stop_time < t:
-                mt.status = "F"
-                mt.script_result = dict(code=ERR_TIMEOUT, text="Timed out")
-                try:
-                    mt.save()
-                except Exception:
-                    pass  # Can raise integrity error if MRT is gone
-                self.log_mrt(logging.INFO, task=mt, status="failed",
-                    code=ERR_TIMEOUT, error="timed out")
+                fail_task(mt, ERR_TIMEOUT, text="Timed out")
                 continue
             # Check blocked pools
             if mt.managed_object.activator.name in self.blocked_pools:
