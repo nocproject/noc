@@ -57,6 +57,7 @@ enum ErrorCode {
     ERR_OBJ_OVERLOAD        =25; // Too many scripts on object
     ERR_PROTO_MISMATCH      =26; // Protocol version mismatch
     ERR_SETUP_FAILED        =27; // Cannot negotiate crypto session
+    ERR_OBJECT_NOT_MANAGED  =28; // Object is not managed
 }
 
 //
