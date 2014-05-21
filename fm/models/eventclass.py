@@ -322,6 +322,29 @@ class EventClass(Document):
             r += ["    ]"]
         else:
             r += ["    }"]
+        #
+        if c.repeat_suppression:
+            r[-1] += ","
+            r += ["    \"repeat_suppression\": ["]
+            l = []
+            for rs in c.repeat_suppression:
+                ll = ["        {"]
+                lll = ["            \"name\": \"%s\"" % q(rs.name)]
+                lll += ["            \"condition\": \"%s\"" % q(rs.condition)]
+                lll += ["            \"event_class__name\": \"%s\"" % q(rs.event_class.name)]
+                lll += ["            \"match_condition\": {"]
+                llll = []
+                for rsc in rs.match_condition:
+                    llll += ["                \"%s\": \"%s\"" % (q(rsc), q(rs.match_condition[rsc]))]
+                lll += [",\n".join(llll)]
+                lll += ["            }"]
+                lll += ["            \"window\": %d" % rs.window]
+                lll += ["            \"suppress\": %s" % ("true" if rs.suppress else "false")]
+                ll += [",\n".join(lll)]
+                ll += ["        }"]
+                l += ["\n".join(ll)]
+            r += [",\n".join(l)]
+            r += ["    ]"]
         # Plugins
         if self.plugins:
             r[-1] += ","
