@@ -299,6 +299,13 @@ class Correlator(Daemon):
                     t.call(a)
                 except:
                     error_report()
+        #
+        if not a.severity:
+            # Alarm severity has been reset to 0 by handlers
+            # Silently drop alarm
+            logging.debug("Alarm severity is 0, dropping")
+            a.delete()
+            return
         # Launch jobs when necessary
         if a.alarm_class.id in self.alarm_jobs:
             for job in self.alarm_jobs[r.alarm_class.id]:
