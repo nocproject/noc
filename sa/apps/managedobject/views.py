@@ -47,6 +47,7 @@ class ManagedObjectApplication(ExtModelApplication):
     menu = "Managed Objects"
     model = ManagedObject
     query_condition = "icontains"
+    query_fields = ["name", "description", "address"]
     # Inlines
     attrs = ModelInline(ManagedObjectAttribute)
     cfg = RepoInline("config")
@@ -244,6 +245,33 @@ class ManagedObjectApplication(ExtModelApplication):
             }
             r += [d]
         return r
+
+
+    @view(url="^actions/set_managed/$", method=["POST"],
+          access="create", api=True,
+          validate={
+              "ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)
+          })
+    def api_action_set_managed(self, request, ids):
+        for o in ids:
+            if not o.has_access(request.user):
+                continue
+            o.is_managed = True
+            o.save()
+        return "Selected objects set to managed state"
+
+    @view(url="^actions/set_unmanaged/$", method=["POST"],
+          access="create", api=True,
+          validate={
+              "ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)
+          })
+    def api_action_set_unmanaged(self, request, ids):
+        for o in ids:
+            if not o.has_access(request.user):
+                continue
+            o.is_managed = False
+            o.save()
+        return "Selected objects set to unmanaged state"
 
     @view(url="^(?P<id>\d+)/discovery/run/$", method=["POST"],
           access="change_discovery", api=True)

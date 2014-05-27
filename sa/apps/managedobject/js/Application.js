@@ -33,6 +33,16 @@ Ext.define("NOC.sa.managedobject.Application", {
             title: "Run discovery now",
             action: "run_discovery",
             glyph: NOC.glyph.play
+        },
+        {
+            title: "Set managed",
+            action: "set_managed",
+            glyph: NOC.glyph.ok
+        },
+        {
+            title: "Set unmanaged",
+            action: "set_unmanaged",
+            glyph: NOC.glyph.remove
         }
     ],
     //
