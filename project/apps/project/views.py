@@ -21,6 +21,7 @@ class ProjectApplication(ExtModelApplication):
     title = "Project"
     menu = "Projects"
     model = Project
+    query_condition = "icontains"
     query_fields = ["code", "name", "description"]
 
     @view(url="^(?P<id>\d+)/resources/$", access="read", method=["GET"],
