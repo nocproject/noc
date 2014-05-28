@@ -1,0 +1,45 @@
+{
+    "name": "Cisco | PWR | PWR-400W-DC",
+    "uuid": "051f49cb-6710-4703-98c1-a58ff7bf9993",
+    "vendor__code": "CISCO",
+    "description": "400W DC supply for Catalyst 1.5 RU switches",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": "Ground Connection",
+            "direction": "i",
+            "gender": "m",
+            "name": "GND",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "DC input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "DC input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": "PWR-400W-DC"
+        }
+    }
+}
