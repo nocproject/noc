@@ -1,0 +1,181 @@
+{
+    "name": "Cisco | 7600 | 7600-ES+20G3C",
+    "uuid": "0fa16dc0-52b3-49a6-a4e1-7b20424ea24d",
+    "vendor__code": "CISCO",
+    "description": "7600-ES+20G3C 20 ports 7600 ES+",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi3_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi4_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi5_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi6_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi7_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi8_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi9_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi10_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi11_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi12_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi13_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi14_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi15_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi16_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi17_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi18_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi19_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi20_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": "7600-ES+20G3C"
+        }
+    }
+}
