@@ -359,7 +359,7 @@ active_window = 86400
 # -1 - keep forever
 keep_events_wo_alarm = 0
 # Archive settings:
-# Keep events without alarms in archive for X days
+# Keep events with alarms in archive for X days
 # 0 - do not archive
 # -1 - keep forever
 keep_events_with_alarm = -1
