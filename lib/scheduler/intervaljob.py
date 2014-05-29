@@ -45,7 +45,8 @@ class IntervalJob(Job):
         schedule = {
             "interval": interval,
             "offset": offset,
-            "randomize": randomize
+            "randomize": randomize,
+            "scheduled": datetime.datetime.now()
         }
         if failed_interval:
             schedule["failed_interval"] = failed_interval
