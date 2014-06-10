@@ -53,6 +53,10 @@ class PGDriver(object):
                     self.info("Failed to uninstall broken PostGIS installation!")
                     self.info("Uninstall PostGIS from database manually and run upgrade again")
                     sys.exit(1)
+            elif not self.is_valid_srs():
+                self.info("   ... spatial_ref_sys is empty!")
+                self.info("Please apply spatial_ref_sys.sql from PostGIS installation and run upgrade again")
+                sys.exit(1)
             else:
                 self.info("   ... found")
                 sys.exit(0)
@@ -144,6 +148,15 @@ class PGDriver(object):
               AND position('RAISE DEBUG ''%%''' in prosrc) > 0
             """
         )
+        return bool(c.fetchall()[0][0])
+
+    def is_valid_srs(self):
+        """
+        Check spatial_ref_sys is not empty
+        """
+        cn = psycopg2.connect(**self.db_cred)
+        c = cn.cursor()
+        c.execute("SELECT COUNT(*) FROM spatial_ref_sys")
         return bool(c.fetchall()[0][0])
 
     def get_postgis_prefix(self):
