@@ -50,6 +50,7 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        self.debug = bool(options.get("debug", True))
         # Build list of comands either from input file or from argument
         commands = []
         if options.get("command"):
@@ -104,16 +105,22 @@ class Command(BaseCommand):
             # Check complete tasks
             complete = False
             for ct in MapTask.objects.filter(id__in=tasks, status__in=["C", "F"]):
-                self.report_result(ct.managed_object, ct.status, ct.script_result)
+                self.report_result(ct)
                 tasks.remove(ct.id)
                 ct.delete()
                 complete = True
             if not complete:
                 time.sleep(1)
 
-    def report_result(self, mo, status, result):
-        if status == "C":
-            print "%s: OK" % mo.name
+    def report_result(self, task):
+        mo = task.managed_object
+        result = task.script_result
+        if task.status == "C":
+            print "@@@ %s: OK" % mo.name
+            if self.debug:
+                for c, r in zip(task.script_params["commands"], result):
+                    print "> %s" % c
+                    print r
         else:
             r = []
             if "code" in result:
@@ -121,4 +128,4 @@ class Command(BaseCommand):
             if "text" in result:
                 r += [result["text"]]
             er = ": ".join(r)
-            print "%s: FAILED (%s)" % (mo.name, er)
+            print "@@@ %s: FAILED (%s)" % (mo.name, er)
