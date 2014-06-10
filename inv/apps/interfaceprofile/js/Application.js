@@ -85,6 +85,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
             }
         },
         {
+            name: "check_link_interval",
+            xtype: "textfield",
+            fieldLabel: "check_link interval",
+            allowBlank: true
+        },
+        {
             name: "mac_discovery",
             xtype: "checkbox",
             boxLabel: "MAC Discovery",
