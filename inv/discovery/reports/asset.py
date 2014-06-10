@@ -54,16 +54,10 @@ class AssetReport(Report):
                            part_no[0].startswith("Unknown | Transceiver | "))
         if not type and is_unknown_xcvr:
             type = "XCVR"
-        # Set contexts
-        self.set_context("N", number)
-        if type and type in self.rule_context:
-            scope, reset_scopes = self.rule_context[type]
-            if scope:
-                self.set_context(scope, number)
-            if reset_scopes:
-                self.reset_context(reset_scopes)
         # Skip builtin modules
         if builtin:
+            # Adjust context anyway
+            self.prepare_context(type, number)
             return  # Builtin must aways have type set
         #
         if is_unknown_xcvr:
@@ -96,20 +90,14 @@ class AssetReport(Report):
                         vnd.name, description, part_no))
                     self.register_unknown_part_no(vnd, part_no, description)
                     return
-        #
-        if type is None:
+        if m.cr_context:
+            # Override type with object mode's one
             type = m.cr_context
-            if not type:
-                self.debug("Cannot resolve type for: vendor=%s, part_no=%s (%s). Skipping" % (
-                    vnd.name, description, part_no))
-                return
-            # Set up context
-            if type in self.rule_context:
-                scope, reset_scopes = self.rule_context[type]
-                if scope:
-                    self.set_context(scope, number)
-                if reset_scopes:
-                    self.reset_context(reset_scopes)
+        if not type:
+            self.debug("Cannot resolve type for: vendor=%s, part_no=%s (%s). Skipping" % (
+                vnd.name, description, part_no))
+            return
+        self.prepare_context(type, number)
         # Get connection rule
         if not self.rule and m.connection_rule:
             self.set_rule(m.connection_rule)
@@ -171,6 +159,15 @@ class AssetReport(Report):
         # Collect stack members
         if number and o.get_data("stack", "stackable"):
             self.stack_member[o] = number
+
+    def prepare_context(self, type, number):
+        self.set_context("N", number)
+        if type and type in self.rule_context:
+            scope, reset_scopes = self.rule_context[type]
+            if scope:
+                self.set_context(scope, number)
+            if reset_scopes:
+                self.reset_context(reset_scopes)
 
     def update_name(self, object):
         n = self.get_name(object, self.object)
