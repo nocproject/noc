@@ -1,0 +1,44 @@
+{
+    "name": "Cisco | 7600 | 7600-ES20-10G3C",
+    "uuid": "bcd49412-a888-4fb3-a7a3-6b1b5c071bd3",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7600 Series Ethernet Services 20 G Line Card, 2-port 10 GE XFP and DFC-3C",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "dfc slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "dfc",
+            "type__name": "Cisco | 7600 | DFC"
+        },
+        {
+            "description": "TeX/1 XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te1_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "TeX/2 XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te2_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": "7600-ES20-10G3C"
+        }
+    }
+}
