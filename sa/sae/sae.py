@@ -422,8 +422,14 @@ class SAE(Daemon):
         Map/Reduce task logging
         """
         # Log into logfile
-        r = [u"MRT task=%d/%d object=%s(%s) script=%s status=%s" % (
-                task.task.id, task.id, task.managed_object.name,
+        rt = u"-"
+        if task.task:
+            try:
+                rt = u"%s" % task.task.id
+            except ReduceTask.DoesNotExist:
+                rt = u"?"
+        r = [u"MRT task=%s/%d object=%s(%s) script=%s status=%s" % (
+                rt, task.id, task.managed_object.name,
                 task.managed_object.address, task.map_script, status)]
         if args:
             a = repr(args)
