@@ -273,21 +273,34 @@ class ReduceTask(models.Model):
                 else:
                     raise ReduceTask.NotReady
 
-    ##
-    ## Wait untill all task complete
-    ##
     @classmethod
     def wait_for_tasks(cls, tasks):
+        """
+        Wait until all task complete
+        """
         while tasks:
-            time.sleep(3)
+            time.sleep(1)
             rest = []
             for t in tasks:
                 if t.complete:
-                    t.reduce() # delete task and trigger reduce task
+                    t.reduce()  # delete task and trigger reduce task
                     t.delete()
                 else:
                     rest += [t]
                 tasks = rest
+
+    @classmethod
+    def wait_any(cls, tasks):
+        """
+        Wait for any task to complete
+        """
+        while tasks:
+            time.sleep(1)
+            for t in tasks:
+                if t.complete:
+                    t.reduce()
+                    t.delete()
+                    return
 
 
 def reduce_object_script(task):
