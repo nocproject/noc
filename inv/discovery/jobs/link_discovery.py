@@ -45,13 +45,19 @@ class LinkDiscoveryJob(MODiscoveryJob):
         """
         i = Interface.objects.filter(
             managed_object=object.id, name=name).first()
-        if not i:
-            # JUNOS names fixup
-            si = list(SubInterface.objects.filter(
-                managed_object=object.id, name=name))
-            if len(si) == 1:
-                i = si[0].interface
-        return i
+        if i:
+            return i
+        # Construct alternative names
+        alt_names = object.profile.get_interface_names(name)
+        nn = object.profile.convert_interface_name(name)
+        if nn != name:
+            alt_names = [nn] + alt_names
+        for n in alt_names:
+            i = Interface.objects.filter(
+                managed_object=object.id, name=n).first()
+            if i:
+                return i
+        return None
 
     def submit_candidate(self, local_interface,
                          remote_object, remote_interface=None):
