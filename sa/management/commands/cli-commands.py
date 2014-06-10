@@ -26,11 +26,18 @@ class Command(BaseCommand):
         make_option(
             "-L", "--limit", dest="limit",
             action="store", type="int",
+            default=sys.maxint,
             help="Limit concurrency"),
         make_option(
             "-t", "--timeout", dest="timeout",
             action="store", type="int",
+            default=120,
             help="Script timeout"),
+        make_option(
+            "-r", "--retries", dest="retries",
+            action="store", type="int",
+            default=1,
+            help="Number of retries"),
         make_option(
             "-c", "--command", dest="command", action="store",
             help="Commands to run, separated by \\n"
@@ -87,8 +94,9 @@ class Command(BaseCommand):
             raise CommandError("Managed object selector not found: '%s'" % x)
         # Run commands
         tasks = set()
-        limit = options.get("limit", sys.maxint)
+        limit = options.get("limit")
         timeout = options.get("timeout")
+        retries = options.get("retries")
         while objects or tasks:
             # Spool next party
             while len(tasks) < limit and objects:
@@ -98,7 +106,8 @@ class Command(BaseCommand):
                     map_script="%s.commands" % o.profile_name,
                     script_params={"commands": commands},
                     next_try=datetime.datetime.now(),
-                    script_timeout=timeout
+                    script_timeout=timeout,
+                    retries_left=retries
                 )
                 mt.save()
                 tasks.add(mt.id)
