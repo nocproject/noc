@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | 7600 | 7600-MSFC4",
+    "uuid": "6c0fefc7-2bd3-4ff4-a5f0-10bb67eaae12",
+    "vendor__code": "CISCO",
+    "description": "7600-MSFC4 C7600 MSFC4 Daughterboard",
+    "cr_context": "DFC",
+    "connections": [
+        {
+            "description": "DFC slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | DFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "7600-MSFC4"
+        }
+    }
+}

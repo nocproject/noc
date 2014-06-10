@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | 7600 | 7600-PFC3CXL",
+    "uuid": "2c26750c-f9a8-4b3e-a800-29bc9d062d2c",
+    "vendor__code": "CISCO",
+    "description": "7600-PFC3C Policy Feature Card",
+    "cr_context": "DFC",
+    "connections": [
+        {
+            "description": "DFC slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | DFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "7600-PFC3CXL"
+        }
+    }
+}
