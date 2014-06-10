@@ -328,7 +328,7 @@ class SAE(Daemon):
             raise Exception("All activators are busy in pool '%s'" % name)
         return a
 
-    def script(self, object, script_name, callback, **kwargs):
+    def script(self, object, script_name, callback, timeout=None, **kwargs):
         """
         Launch a script
         """
@@ -403,6 +403,8 @@ class SAE(Daemon):
             r.access_profile.snmp_ro = credentials.snmp_ro
         if credentials.snmp_rw:
             r.access_profile.snmp_rw = credentials.snmp_rw
+        if timeout:
+            r.timeout = timeout
         attrs = [(a.key, a.value) for a in object.managedobjectattribute_set.all()]
         for k, v in attrs:
             a = r.access_profile.attrs.add()
@@ -525,6 +527,7 @@ class SAE(Daemon):
             self.log_mrt(logging.INFO, task=mt, status="running", args=kwargs)
             self.script(mt.managed_object, mt.map_script,
                     lambda result=None, error=None: map_callback(mt.id, result, error),
+                    timeout=mt.script_timeout,
                     **kwargs)
 
         def fail_task(mt, code, text):
