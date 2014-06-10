@@ -23,7 +23,14 @@ class MultiIntervalJob(IntervalJob):
     Last repeat interval will be In
     """
     def get_interval(self):
-        dt = total_seconds(datetime.datetime.now() - self.scheduler["scheduled"])
-        for t, i in self.schedule["interval"]:
+        if isinstance(self.schedule["interval"], (int, long)):
+            # Migrate IntervalJob to MultiIntervalJob
+            interval = [(None, self.schedule["interval"])]
+            dt = 0
+        else:
+            interval = self.schedule["interval"]
+            dt = total_seconds(datetime.datetime.now() - self.schedule["scheduled"])
+        # Find appropriative time time range
+        for t, i in interval:
             if t is None or t > dt:
                 return i
