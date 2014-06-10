@@ -9,7 +9,7 @@
             "description": "GigabitEthernet 1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi1",
+            "name": "Gi1_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -17,7 +17,7 @@
             "description": "GigabitEthernet 2",
             "direction": "i",
             "gender": "f",
-            "name": "Gi2",
+            "name": "Gi2_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -25,7 +25,7 @@
             "description": "GigabitEthernet 3",
             "direction": "i",
             "gender": "f",
-            "name": "Gi3",
+            "name": "Gi3_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -33,7 +33,7 @@
             "description": "GigabitEthernet 4",
             "direction": "i",
             "gender": "f",
-            "name": "Gi4",
+            "name": "Gi4_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -41,7 +41,7 @@
             "description": "GigabitEthernet 5",
             "direction": "i",
             "gender": "f",
-            "name": "Gi5",
+            "name": "Gi5_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -49,7 +49,7 @@
             "description": "GigabitEthernet 6",
             "direction": "i",
             "gender": "f",
-            "name": "Gi6",
+            "name": "Gi6_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -57,7 +57,7 @@
             "description": "GigabitEthernet 7",
             "direction": "i",
             "gender": "f",
-            "name": "Gi7",
+            "name": "Gi7_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -65,7 +65,7 @@
             "description": "GigabitEthernet 8",
             "direction": "i",
             "gender": "f",
-            "name": "Gi8",
+            "name": "Gi8_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -73,7 +73,7 @@
             "description": "GigabitEthernet 9",
             "direction": "i",
             "gender": "f",
-            "name": "Gi9",
+            "name": "Gi9_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -81,7 +81,7 @@
             "description": "GigabitEthernet 10",
             "direction": "i",
             "gender": "f",
-            "name": "Gi10",
+            "name": "Gi10_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -89,7 +89,7 @@
             "description": "GigabitEthernet 11",
             "direction": "i",
             "gender": "f",
-            "name": "Gi11",
+            "name": "Gi11_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -97,7 +97,7 @@
             "description": "GigabitEthernet 12",
             "direction": "i",
             "gender": "f",
-            "name": "Gi12",
+            "name": "Gi12_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -105,7 +105,7 @@
             "description": "GigabitEthernet 13",
             "direction": "i",
             "gender": "f",
-            "name": "Gi13",
+            "name": "Gi13_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -113,7 +113,7 @@
             "description": "GigabitEthernet 14",
             "direction": "i",
             "gender": "f",
-            "name": "Gi14",
+            "name": "Gi14_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -121,7 +121,7 @@
             "description": "GigabitEthernet 15",
             "direction": "i",
             "gender": "f",
-            "name": "Gi15",
+            "name": "Gi15_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -129,7 +129,7 @@
             "description": "GigabitEthernet 16",
             "direction": "i",
             "gender": "f",
-            "name": "Gi16",
+            "name": "Gi16_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -137,7 +137,7 @@
             "description": "GigabitEthernet 17",
             "direction": "i",
             "gender": "f",
-            "name": "Gi17",
+            "name": "Gi17_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -145,7 +145,7 @@
             "description": "GigabitEthernet 18",
             "direction": "i",
             "gender": "f",
-            "name": "Gi18",
+            "name": "Gi18_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -153,7 +153,7 @@
             "description": "GigabitEthernet 19",
             "direction": "i",
             "gender": "f",
-            "name": "Gi19",
+            "name": "Gi19_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
@@ -161,7 +161,7 @@
             "description": "GigabitEthernet 20",
             "direction": "i",
             "gender": "f",
-            "name": "Gi20",
+            "name": "Gi20_sfp",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP | Cisco"
         },
