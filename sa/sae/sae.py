@@ -499,7 +499,7 @@ class SAE(Daemon):
                         next_retries = mt.retries_left
                     else:
                         next_retries = mt.retries_left - 1
-                    if mt.retries_left and next_try < mt.task.stop_time:
+                    if mt.retries_left and (not mt.task or next_try < mt.task.stop_time):
                         # Check we're still in task time and have retries left
                         self.log_mrt(logging.INFO, task=mt, status="retry")
                         mt.next_try = next_try
@@ -562,7 +562,7 @@ class SAE(Daemon):
             except ReduceTask.DoesNotExist:
                 is_valid_reduce = False
             # Check for task timeouts
-            if not is_valid_reduce or mt.task.stop_time < t:
+            if not is_valid_reduce or (mt.task and mt.task.stop_time < t):
                 fail_task(mt, ERR_TIMEOUT, text="Timed out")
                 continue
             # Check blocked pools
