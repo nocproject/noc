@@ -204,6 +204,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             allowBlank: false
         },
         {
+            name: "check_link_interval",
+            xtype: "textfield",
+            fieldLabel: "check_link interval",
+            allowBlank: true
+        },
+        {
             xtype: "fieldcontainer",
             fieldLabel: "Discovery",
             layout: {

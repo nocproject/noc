@@ -65,6 +65,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 4000
         },
         {
+            name: "check_link_interval",
+            type: "string"
+        },
+        {
             name: "enable_config_polling",
             type: "boolean",
             defaultValue: true
