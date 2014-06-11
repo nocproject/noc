@@ -149,11 +149,11 @@ class MACDiscoveryJob(MODiscoveryJob):
         if not local_sub.tagged_vlans:
             # Untagged port
             mac = macs[0][1]
-            subs = list(SubInterface.objects.filter(
-                enabled_afi__in=["IPv4", "IPv6"], mac=mac))
+            subs = [sub for sub in SubInterface.objects.filter(
+                enabled_afi__in=["IPv4", "IPv6"], mac=mac) if self.can_link(sub.interface)]
             if len(subs) == 1:
                 r_iface = subs[0].interface
-                if self.can_link(r_iface) and not r_iface.is_linked:
+                if not r_iface.is_linked:
                     self.submit_link(iface, r_iface)
         else:
             # Tagged port
@@ -168,6 +168,8 @@ class MACDiscoveryJob(MODiscoveryJob):
                     enabled_afi__in=["IPv4", "IPv6"], mac=mac)):
                     if not sub.vlan_ids:
                         break
+                    if not self.can_link(sub.interface):
+                        break
                     vlan = sub.vlan_ids[0]
                     if vlan in left:
                         if r_iface is None:
@@ -177,10 +179,12 @@ class MACDiscoveryJob(MODiscoveryJob):
                         left.remove(vlan)
                 if left:
                     return  # Not all vlans found
-            if r_iface and self.can_link(r_iface) and not r_iface.is_linked:
+            if r_iface and not r_iface.is_linked:
                 self.submit_link(iface, r_iface)
 
     def submit_link(self, local_iface, remote_iface):
+        if local_iface.id == remote_iface.id:
+            return
         self.debug("Linking %s and %s" % (local_iface, remote_iface))
         try:
             local_iface.link_ptp(remote_iface, method="mac")
