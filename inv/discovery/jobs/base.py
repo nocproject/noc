@@ -12,6 +12,7 @@ import random
 ## Django modules
 from django.db.models import Q
 ## NOC modules
+from inv.models import Interface
 from noc.lib.scheduler.intervaljob import IntervalJob
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.script import script_registry
@@ -85,3 +86,26 @@ class MODiscoveryJob(IntervalJob):
 
     def get_group(self):
         return "discovery-%s" % self.key
+
+    def get_interface_by_name(self, object, name):
+        """
+        Find interface by name
+        :param object: Managed Object
+        :param name: interface name
+        :return: Interface instance or None
+        """
+        i = Interface.objects.filter(
+            managed_object=object.id, name=name).first()
+        if i:
+            return i
+        # Construct alternative names
+        alt_names = object.profile.get_interface_names(name)
+        nn = object.profile.convert_interface_name(name)
+        if nn != name:
+            alt_names = [nn] + alt_names
+        for n in alt_names:
+            i = Interface.objects.filter(
+                managed_object=object.id, name=n).first()
+            if i:
+                return i
+        return None

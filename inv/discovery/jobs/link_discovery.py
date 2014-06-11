@@ -14,7 +14,6 @@ from base import MODiscoveryJob
 from noc.inv.models.pendinglinkcheck import PendingLinkCheck
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
 
 
@@ -35,29 +34,6 @@ class LinkDiscoveryJob(MODiscoveryJob):
     def is_submitted(self, local_interface, remote_object,
                      remote_interface):
         return (local_interface, remote_object, remote_interface) in self.submited
-
-    def get_interface_by_name(self, object, name):
-        """
-        Find interface by name
-        :param object: Managed Object
-        :param name: interface name
-        :return: Interface instance or None
-        """
-        i = Interface.objects.filter(
-            managed_object=object.id, name=name).first()
-        if i:
-            return i
-        # Construct alternative names
-        alt_names = object.profile.get_interface_names(name)
-        nn = object.profile.convert_interface_name(name)
-        if nn != name:
-            alt_names = [nn] + alt_names
-        for n in alt_names:
-            i = Interface.objects.filter(
-                managed_object=object.id, name=n).first()
-            if i:
-                return i
-        return None
 
     def submit_candidate(self, local_interface,
                          remote_object, remote_interface=None):
