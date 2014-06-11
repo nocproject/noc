@@ -35,6 +35,12 @@ class LinkDiscoveryJob(MODiscoveryJob):
                      remote_interface):
         return (local_interface, remote_object, remote_interface) in self.submited
 
+    def can_link(self, iface):
+        """
+        Check interface can be linked
+        """
+        return not iface.is_linked
+
     def submit_candidate(self, local_interface,
                          remote_object, remote_interface=None):
         """
@@ -52,12 +58,11 @@ class LinkDiscoveryJob(MODiscoveryJob):
             (local_interface, remote_interface) in self.candidates[remote_object]):
             return  # Already submitted as candidate
         i = self.get_interface_by_name(self.object, local_interface)
-        if i:
-            if i.is_linked:
-                return  # Already linked
-        else:
+        if not i:
             self.debug("Cannot submit link candidate for interface %s: interface not found" % local_interface)
             return  # Interface not found
+        if not self.can_link(i):
+            return
         self.debug("Link candidate found: %s -> %s:%s" % (
             local_interface, remote_object.name, remote_interface))
         self.candidates[remote_object] += [
@@ -66,16 +71,27 @@ class LinkDiscoveryJob(MODiscoveryJob):
 
     def submit_link(self, local_object, local_interface,
                     remote_object, remote_interface):
+        # Get local interface
         l_iface = self.get_interface_by_name(local_object, local_interface)
         if not l_iface:
             self.error("Interface is not found: %s:%s" % (
                 local_object.name, local_interface))
             return
+        # Get remote interface
         r_iface = self.get_interface_by_name(remote_object, remote_interface)
         if not r_iface:
             self.error("Interface is not found: %s:%s" % (
                 remote_object.name, remote_interface))
             return
+        # Check interfaces can be linked
+        if not self.can_link(l_iface) or not self.can_link(r_iface):
+            return
+        # Check link does not exists
+        ll = l_iface.link
+        rl = r_iface.link
+        if ll and rl and l_iface in rl and r_iface in ll:
+            return  # Already linked
+        # Link objects
         self.info("Linking %s and %s" % (l_iface, r_iface))
         try:
             l_iface.link_ptp(r_iface, method=self.method)
@@ -146,7 +162,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
             for l, r in self.candidates[o]:
                 if not self.is_submitted(l, o, r):
                     i = self.get_interface_by_name(object, l)
-                    if i and not i.is_linked:
+                    if i and self.can_link(i):
                         self.debug("Scheduling check for %s:%s -> %s:%s" % (
                             object.name, l, o, r))
                         PendingLinkCheck.submit(self.method, o, r, object, l)
