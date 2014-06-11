@@ -80,6 +80,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
             if i.is_linked:
                 return  # Already linked
         else:
+            self.debug("Cannot submit link candidate for interface %s: interface not found" % local_interface)
             return  # Interface not found
         self.debug("Link candidate found: %s -> %s:%s" % (
             local_interface, remote_object.name, remote_interface))
