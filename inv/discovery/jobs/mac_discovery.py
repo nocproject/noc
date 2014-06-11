@@ -118,6 +118,12 @@ class MACDiscoveryJob(MODiscoveryJob):
     def get_failed_interval(self):
         return self.object.object_profile.mac_discovery_min_interval
 
+    def can_link(self, iface):
+        """
+        Check interface is suitable for linking
+        """
+        return iface.type in ("physical", "management", "aggregated")
+
     def check_port(self, port, macs):
         """
         Check link candidate and submit link if any
@@ -126,10 +132,12 @@ class MACDiscoveryJob(MODiscoveryJob):
         :return:
         """
         # Local interface
-        iface = Interface.objects.filter(
-            managed_object=self.object.id, name=port).first()
+        iface = self.get_interface_by_name(self.object, port)
         if not iface:
             return  # Not found
+        # Check interface can be linked at all
+        if not self.can_link(iface):
+            return  # Not suitable type
         # Check interface is still unlinked
         if iface.is_linked:
             return  # Already linked
@@ -145,7 +153,7 @@ class MACDiscoveryJob(MODiscoveryJob):
                 enabled_afi__in=["IPv4", "IPv6"], mac=mac))
             if len(subs) == 1:
                 r_iface = subs[0].interface
-                if not r_iface.is_linked:
+                if self.can_link(r_iface) and not r_iface.is_linked:
                     self.submit_link(iface, r_iface)
         else:
             # Tagged port
@@ -169,7 +177,7 @@ class MACDiscoveryJob(MODiscoveryJob):
                         left.remove(vlan)
                 if left:
                     return  # Not all vlans found
-            if r_iface and not r_iface.is_linked:
+            if r_iface and self.can_link(r_iface) and not r_iface.is_linked:
                 self.submit_link(iface, r_iface)
 
     def submit_link(self, local_iface, remote_iface):
