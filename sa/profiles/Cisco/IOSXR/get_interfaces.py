@@ -156,7 +156,7 @@ class Script(NOCScript):
                 if i.get("description"):
                     p["description"] = i["description"]
                 if p["name"] in ifindex:
-                    p["ifindex"] = ifindex[p["name"]]
+                    p["snmp_ifindex"] = ifindex[p["name"]]
                 if iface in ae_map:
                     # Bundle member
                     p["aggregated_interface"] = ae_map[iface]
@@ -178,7 +178,7 @@ class Script(NOCScript):
                         if ii.get("description"):
                             sp["description"] = ii["description"]
                         if sp["name"] in ifindex:
-                            sp["ifindex"] = ifindex[sp["name"]]
+                            sp["snmp_ifindex"] = ifindex[sp["name"]]
                         if ii.get("vlan_ids"):
                             sp["vlan_ids"] = ii["vlan_ids"]
                         # Process addresses
