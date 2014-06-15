@@ -10,7 +10,7 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Cisco | 6500 | PFC"
+            "type__name": "Cisco | 6500-7600 | PFC"
         }
     ],
     "data": {
