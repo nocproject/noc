@@ -1,0 +1,304 @@
+{
+    "name": "Cisco | ASR901 | A901-6CZ-FT-D",
+    "uuid": "364b86ae-3515-4402-a708-077d3f4db80f",
+    "vendor__code": "CISCO",
+    "description": "A901-6CZ-FT-D with Built-in 12GE, 2 10GE, 1FE, 8T1E1",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "FastEthernet0/0 management port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet0/0 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi0",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet0/1 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi1",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet0/2 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi2",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet0/3 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi3",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet0/4 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi4",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet0/5 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi5",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet0/6 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi6",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet0/7 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi7",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Dry contacts",
+            "direction": "s",
+            "gender": "f",
+            "name": "Alarm",
+            "type__name": "Electrical | RJ48"
+        },
+        {
+            "description": "Time-of-Day interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "TOD",
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "BITS interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "BITS",
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "1PPS mini-coax timing connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "1PPS",
+            "type__name": "Electrical | MINI-coax"
+        },
+        {
+            "description": "10Mhz mini-coax timing connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "10MHz",
+            "type__name": "Electrical | MINI-coax"
+        },
+        {
+            "description": "DC power input A",
+            "direction": "s",
+            "gender": "f",
+            "name": "DC PowerA",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/3-G-5.08"
+        },
+        {
+            "description": "DC power input B",
+            "direction": "s",
+            "gender": "f",
+            "name": "DC PowerB",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/3-G-5.08"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "AUX port",
+            "direction": "s",
+            "gender": "f",
+            "name": "AUX",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "E1/T1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se0",
+            "protocols": ["G703"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "E1/T1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se1",
+            "protocols": ["G703"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "E1/T1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se2",
+            "protocols": ["G703"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "E1/T1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se3",
+            "protocols": ["G703"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "E1/T1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se4",
+            "protocols": ["G703"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "E1/T1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se5",
+            "protocols": ["G703"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "E1/T1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se6",
+            "protocols": ["G703"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "E1/T1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Se7",
+            "protocols": ["G703"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet0/4 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi4_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet0/5 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi5_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet0/6 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi6_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet0/7 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi7_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet0/8 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi8_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet0/9 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi9_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet0/10 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi10_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet0/11 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi11_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TenGigabitEthernet0/0 SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te0_sfp",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TenGigabitEthernet0/1 SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te1_sfp",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "A901-6CZ-FT-D"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
