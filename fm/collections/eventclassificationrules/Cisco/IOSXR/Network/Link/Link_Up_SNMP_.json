@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOSXR | Network | Link | Link Up (SNMP)",
+    "uuid": "d1fc484f-d9e0-4df4-a796-9cf65a982f2e",
+    "description": "CISCO-PRODUCTS-MIB::ciscoASR9001",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco.IOSXR$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
+            "value_re": "^up$"
+        },
+        {
+            "key_re": "^IF-MIB::ifIndex\\.\\d+$",
+            "value_re": "^(?P<interface__ifindex>\\d+)$"
+        },
+        {
+            "key_re": "^IF-MIB::ifAdminStatus\\.\\d+$",
+            "value_re": "^up$"
+        }
+    ]
+}

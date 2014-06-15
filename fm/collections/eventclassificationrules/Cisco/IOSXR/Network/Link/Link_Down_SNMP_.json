@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOSXR | Network | Link | Link Down (SNMP)",
+    "uuid": "49e0013c-ce64-4b68-9ad1-3412215233ef",
+    "description": "CISCO-PRODUCTS-MIB::ciscoASR9001",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco.IOSXR$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
+            "value_re": "^down$"
+        },
+        {
+            "key_re": "^IF-MIB::ifIndex\\.\\d+$",
+            "value_re": "^(?P<interface__ifindex>\\d+)$"
+        },
+        {
+            "key_re": "^IF-MIB::ifAdminStatus\\.\\d+$",
+            "value_re": "^up$"
+        }
+    ]
+}
