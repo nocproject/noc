@@ -61,6 +61,9 @@ class Script(NOCScript):
         if "RSP" in pid or "RSP" in name:
             number = name.split()[1].split("/")[1][3]
             return "RSP", number, pid
+        elif "A9K-MODULEv" in pid:
+            number = name.split()[1].split("/")[-1]
+            return "MPA", number, pid
         elif "MOD" in pid:
             number = name.split()[1].split("/")[1]
             return "MOD", number, pid
