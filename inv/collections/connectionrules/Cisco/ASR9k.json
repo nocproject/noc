@@ -70,6 +70,14 @@
         },
         {
             "match_connection": "in",
+            "match_type": "MPA",
+            "scope": "chassis",
+            "target_connection": "MPA{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
             "match_type": "XCVR",
             "scope": "mpa",
             "target_connection": "Gi{N}_sfp",
@@ -97,6 +105,14 @@
             "match_type": "XCVR",
             "scope": "mpa",
             "target_connection": "Te{N}_xfp",
+            "target_number": "",
+            "target_type": "MPA"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "mpa",
+            "target_connection": "Te{N}_sfp",
             "target_number": "",
             "target_type": "MPA"
         },

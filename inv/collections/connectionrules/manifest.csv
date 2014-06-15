@@ -8,7 +8,7 @@ Cisco | 7100,42e3d91f-5ed1-4824-aeb5-f066bc3c3aa3,Cisco/7100.json,1f8dc6ccdc7013
 Cisco | 7200,510cc04d-648a-455e-b7ec-8e6914f093b9,Cisco/7200.json,4ee502eeaaa1ec70861a0f7c4c6a7586e4ccbdd3d6dbc5cd4eaa1ba31b7d245d
 Cisco | 7600,eaa17985-6b50-4cdb-8b30-bdab3f28f6f9,Cisco/7600.json,df651a3581d07328288a9611931a3a8ccec70a43aa1cf06b07256dcbface4572
 Cisco | ASA,dbd6557e-a3cd-496a-8f9d-1e6dfe1df492,Cisco/ASA.json,4e341867d398d64c4d75efc220ffcbfa2a6da21396f671463542decdcd80be9a
-Cisco | ASR9k,b1cea7b6-08f6-4bfd-a1b5-ce73cc8f3c56,Cisco/ASR9k.json,ad39b9e82edace5d8c7a358c6ea0fa8cc0a4f3683e4f7f6ab00dc4c6e48c3710
+Cisco | ASR9k,b1cea7b6-08f6-4bfd-a1b5-ce73cc8f3c56,Cisco/ASR9k.json,7677ebf7872e73ee8f804ffce04d442499e9607b23b4221d75ec0323c331c440
 Cisco | Nexus,fd4110ad-1ca1-436f-8384-13371645f58a,Cisco/Nexus.json,e173b20539c9ab125bc6698c98fc1ad758fcb908a8d18a332f8d08219a11a126
 Cisco | SCE,8794af60-8d77-4c9d-97d5-1215abbd2602,Cisco/SCE.json,cb1375f55552b6ff171ed9b8fb60772d3013a0e50d394c34166756ce157316ae
 DLink | DxS,08b5f8e4-345c-434a-9811-9753d6a1e6cd,DLink/DxS.json,56f782d8f392a3dfd3c328baadef08e996a7c4d9056b335dc4ca68ce1db0ea75

@@ -1,0 +1,161 @@
+{
+    "name": "Cisco | ASR9k | ASR-9001",
+    "uuid": "a200af53-df9e-4562-9fd6-98975a5c04ef",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR9001 aggregation services router",
+    "connection_rule__name": "Cisco | ASR9k",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "1PPS mini-coax timing connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "1PPS",
+            "type__name": "Electrical | MINI-coax"
+        },
+        {
+            "description": "10MHz mini-coax timing connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "10MHz",
+            "type__name": "Electrical | MINI-coax"
+        },
+        {
+            "description": "USB flash memory port",
+            "direction": "s",
+            "gender": "f",
+            "name": "USB",
+            "protocols": ["<USB20"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "IEEE1588 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "IEEE1588",
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "TOD port",
+            "direction": "s",
+            "gender": "f",
+            "name": "TOD",
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "SYNC 0 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Sync0",
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "SYNC 1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Sync1",
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "AUX port",
+            "direction": "s",
+            "gender": "f",
+            "name": "AUX",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Management LAN 0 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "MgmtLAN0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Management LAN 1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "MgmtLAN1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "EOBC 0 SFP+ port for nv cluster connection",
+            "direction": "i",
+            "gender": "f",
+            "name": "eobc0_sfp",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "EOBC 1 SFP+ port for nv cluster connection",
+            "direction": "i",
+            "gender": "f",
+            "name": "eobc1_sfp",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "FAN slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan0",
+            "type__name": "Cisco | ASR9001 | FAN"
+        },
+        {
+            "description": "Power supply 0 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "PEM0",
+            "type__name": "Cisco | ASR9001 | PSU"
+        },
+        {
+            "description": "Power supply 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "PEM1",
+            "type__name": "Cisco | ASR9001 | PSU"
+        },
+        {
+            "description": "MPA0 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "MPA0",
+            "type__name": "Cisco | ASR9k | MPA"
+        },
+        {
+            "description": "MPA1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "MPA1",
+            "type__name": "Cisco | ASR9k | MPA"
+        },
+        {
+            "description": "Virtual module for onboard ports",
+            "direction": "i",
+            "gender": "f",
+            "name": "MPA2",
+            "type__name": "Cisco | ASR9k | MPA"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "ASR-9001"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2.0
+        }
+    }
+}
