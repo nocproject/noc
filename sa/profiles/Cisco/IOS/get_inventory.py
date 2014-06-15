@@ -77,6 +77,8 @@ class Script(NOCScript):
                         # Last chance to get idprom
                         if match.group("name").startswith("Transceiver"): 
                             int = match.group("name").split()[1]
+                        elif match.group("name").startswith("GigabitEthernet"):
+                            int = match.group("name").split()[0]
                         else:
                             int = match.group("name")
                         vendor, t_sn, t_rev, part_no = self.get_idprom(
@@ -197,6 +199,7 @@ class Script(NOCScript):
                 return None, None, None, None
         except self.CLISyntaxError:
             print "sh idprom command not supported"
+            return None, None, None, None
 
 
     def get_type(self, name, pid, descr, lo):
@@ -301,7 +304,11 @@ class Script(NOCScript):
             return "PSU", name.split()[2], pid
         elif pid.startswith("FAN"):
             # Fan module
-            return "FAN", name.split()[1], pid
+            try:
+                number = int(name[-1:])
+            except:
+                number = name.split()[1]
+            return "FAN", number, pid
         elif (pid.startswith("NM-") or pid.startswith("NME-")
         or pid.startswith("EVM-") or pid.startswith("EM-")):
             # Network Module
