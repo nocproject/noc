@@ -100,7 +100,7 @@ class Interface(Document):
         Check interface is linked
         :returns: True if interface is linked, False otherwise
         """
-        return self.link is not None
+        return bool(Link.objects.filter(interfaces=self.id).limit(1).count())
 
     def unlink(self):
         """
