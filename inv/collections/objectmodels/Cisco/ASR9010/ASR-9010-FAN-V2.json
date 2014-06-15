@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASR9010 | ASR-9010-FAN-V2",
+    "uuid": "87f3fb09-1ceb-45ca-bb30-f928f782002b",
+    "vendor__code": "CISCO",
+    "description": "ASR 9010 Fan Tray Version 2",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR9010 | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "ASR-9010-FAN-V2"
+        }
+    }
+}
