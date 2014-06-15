@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Failed (SNMP)",
+    "uuid": "5e569326-adb7-49fa-bc78-3b4ed3bd6663",
+    "description": "CISCO-ENVMON-MIB::ciscoEnvMonSuppStatusChangeNotif",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco.IOS$"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonSupplyStatusDescr\\.\\d+$",
+            "value_re": "^Switch#1, (?P<name>.+), DC Unit = DC $"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonSupplyState\\.\\d+$",
+            "value_re": "^notFunctioning$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^CISCO-ENVMON-MIB::ciscoEnvMonSuppStatusChangeNotif$"
+        }
+    ]
+}

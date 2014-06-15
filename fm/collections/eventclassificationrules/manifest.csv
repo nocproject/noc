@@ -137,6 +137,7 @@ Cisco | IOS | Chassis | PSU | PSU Failed #6 (SYSLOG),c46f7329-0350-42f5-977b-729
 Cisco | IOS | Chassis | PSU | PSU Failed #7 (SYSLOG),5a06612a-6101-40df-baec-4e03b874486f,Cisco/IOS/Chassis/PSU/PSU_Failed_7_SYSLOG_.json,2e5612feb18a62b7ccffe949c612867467048624ed533b3d798d15e3e7caad10
 Cisco | IOS | Chassis | PSU | PSU Failed #8 (SYSLOG),57c8e719-6230-4a94-bf36-21ec024d0c1f,Cisco/IOS/Chassis/PSU/PSU_Failed_8_SYSLOG_.json,31ca022fbd04bf6107559419d6700997a719779b8cfc34100023f7a091482a5e
 Cisco | IOS | Chassis | PSU | PSU Failed #9 (SYSLOG),d4489978-5261-46b9-8564-ce789473a5c5,Cisco/IOS/Chassis/PSU/PSU_Failed_9_SYSLOG_.json,a8441902c5f5d4b1cb1f32380868febf1c21d00af1c776d82267a705166e16bd
+Cisco | IOS | Chassis | PSU | PSU Failed (SNMP),5e569326-adb7-49fa-bc78-3b4ed3bd6663,Cisco/IOS/Chassis/PSU/PSU_Failed_SNMP_.json,d668f846a356afb4261ab0853959c3946071984ff438ce4558abe5a7b0ab2d04
 Cisco | IOS | Chassis | PSU | PSU Recovered #10 (SYSLOG),40d31679-17bc-44d7-ac19-91ee57cb9014,Cisco/IOS/Chassis/PSU/PSU_Recovered_10_SYSLOG_.json,d6ef9dc7de901ac506519dbd034de88be03c99292be2fe6802d34297bc867d3b
 Cisco | IOS | Chassis | PSU | PSU Recovered #12 (SYSLOG),8921de9e-5281-48d4-8925-793200a0c455,Cisco/IOS/Chassis/PSU/PSU_Recovered_12_SYSLOG_.json,044eaf2ae3bd44bc6d8b1670f545643705b87a987de364fdb047d98984cd1a85
 Cisco | IOS | Chassis | PSU | PSU Recovered #2 (SYSLOG),83a63f44-f5aa-44d8-890c-7acbde06a5d2,Cisco/IOS/Chassis/PSU/PSU_Recovered_2_SYSLOG_.json,2cab6cd1113f6ac40438c75bcf6e24875e50124ddc4085603896622f2e2337ae
@@ -147,6 +148,7 @@ Cisco | IOS | Chassis | PSU | PSU Recovered #6 (SYSLOG),7afc2233-b040-4122-aa0f-
 Cisco | IOS | Chassis | PSU | PSU Recovered #7 (SYSLOG),310c9f2f-9df0-494f-a3d9-75016e5c7825,Cisco/IOS/Chassis/PSU/PSU_Recovered_7_SYSLOG_.json,5ee6d5582799a02071eba3da99334efa8c46154679f5194ffec172ae3e9386f7
 Cisco | IOS | Chassis | PSU | PSU Recovered #8 (SYSLOG),dc190845-5b29-46b6-bc91-2b7569b1f3e0,Cisco/IOS/Chassis/PSU/PSU_Recovered_8_SYSLOG_.json,e2db159715a31e3651cc370401e0ed7ff7c64064b707c723cb86f98dce488b63
 Cisco | IOS | Chassis | PSU | PSU Recovered #9 (SYSLOG),77ba242c-79c1-4305-9c6d-6260369cd78a,Cisco/IOS/Chassis/PSU/PSU_Recovered_9_SYSLOG_.json,652a81c8b7b64eec526167b74fbb8abb64a0030999dc772e6e8e236286fc24ea
+Cisco | IOS | Chassis | PSU | PSU Recovered (SNMP),78410a7b-7a9b-4b25-bdad-ff4ee6327562,Cisco/IOS/Chassis/PSU/PSU_Recovered_SNMP_.json,c9032e15f10d859cb7350b3ff14961a61fc07801c8b7e5cdd481adf951df2922
 Cisco | IOS | Chassis | PSU | Power Failed (SYSLOG),56d3b44b-28f6-4c96-8951-3bc0bfeeb3db,Cisco/IOS/Chassis/PSU/Power_Failed_SYSLOG_.json,6bc93a1f4a1c8ee6325d604a79404ebe529e317068a6be0c7e9d393d187fbe64
 Cisco | IOS | Chassis | RAM | Insufficient Memory (SYSLOG),0cfcd4a9-9927-4292-bc99-a7bb7d3fcac1,Cisco/IOS/Chassis/RAM/Insufficient_Memory_SYSLOG_.json,74e0d84eba99f809d81c90ac562625c5597788a198f3777502302524f7912286
 Cisco | IOS | Chassis | RAM | RAM Failed (SYSLOG),b9453dcb-bbdf-4b65-b540-61c0d5b7dcab,Cisco/IOS/Chassis/RAM/RAM_Failed_SYSLOG_.json,73574f27677864a1c16679a43cfa29e5918d9b319eabf9580a7a8fe455645fa8
