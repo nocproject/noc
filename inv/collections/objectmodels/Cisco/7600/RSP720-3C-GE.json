@@ -31,14 +31,14 @@
             "direction": "i",
             "gender": "f",
             "name": "msfc",
-            "type__name": "Cisco | 6500 | MSFC"
+            "type__name": "Cisco | 6500-7600 | MSFC"
         },
         {
             "description": "PFC slot",
             "direction": "i",
             "gender": "f",
             "name": "pfc",
-            "type__name": "Cisco | 6500 | PFC"
+            "type__name": "Cisco | 6500-7600 | PFC"
         },
         {
             "description": "GigabitEthernet X/1 SFP port",
