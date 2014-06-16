@@ -525,7 +525,7 @@ Ext.define("NOC.core.ModelApplication", {
                         items: [gp]
                     }
                 formInlines = formInlines.concat(r);
-                me.inlineStores = me.inlineStores.concat(istore);
+                me.inlineStores.push(istore);
             }
         };
 
@@ -910,10 +910,15 @@ Ext.define("NOC.core.ModelApplication", {
     // "clone" button pressed
     onClone: function() {
         var me = this;
+        // Reset UUID
         if(me.currentRecord && me.currentRecord.get("uuid")) {
             me.currentRecord.set("uuid", null);
             me.form.setValues({uuid: null});
         }
+        // Reset parents of inline stores
+        Ext.each(me.inlineStores, function(s) {
+            s.cloneData();
+        });
         me.currentRecord = null;  // Mark record as new
         me.setFormTitle(me.createTitle);
         me.setFormId("CLONE");
