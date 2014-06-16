@@ -222,7 +222,7 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     itemId: "interfaces",
                     text: "VC Interfaces",
-                    iconCls: "icon_page_link",
+                    glyph: NOC.glyph.list,
                     tooltip: "Show VC interfaces",
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
@@ -231,7 +231,7 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     itemId: "add_interfaces",
                     text: "Add Interfaces",
-                    iconCls: "icon_page_add",
+                    glyph: NOC.glyph.plus_sign,
                     tooltip: "Add interfaces to VC",
                     hasAccess: NOC.hasPermission("set_untagged"),
                     scope: me,
