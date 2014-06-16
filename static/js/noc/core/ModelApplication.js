@@ -11,7 +11,8 @@ Ext.define("NOC.core.ModelApplication", {
     requires: [
         "NOC.core.ModelStore",
         "NOC.core.InlineModelStore",
-        "Ext.ux.ProgressBarPager"
+        "Ext.ux.ProgressBarPager",
+        "Ext.ux.grid.column.GlyphAction"
     ],
     layout: "card",
     search: false,
@@ -204,15 +205,18 @@ Ext.define("NOC.core.ModelApplication", {
 
         var rowItems = [
             {
+                glyph: NOC.glyph.star,
                 tooltip: "Mark/Unmark",
                 scope: me,
-                getClass: function(col, meta, r) {
-                    return r.get("fav_status") ? "icon_star" : "icon_star_grey";
+                getColor: function(cls, meta, r) {
+                    return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
                 },
                 handler: me.onFavItem
             },
             {
-                iconCls: "icon_page_edit",
+                //iconCls: "icon_page_edit",
+                glyph: NOC.glyph.edit,
+                color: NOC.colors.edit,
                 tooltip: "Edit",
                 scope: me,
                 handler: function(grid, rowIndex, colIndex) {
@@ -226,7 +230,8 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.onPreview) {
             rowItems = rowItems.concat([
                 {
-                    iconCls: me.previewIcon,
+                    glyph: NOC.glyph.search,
+                    color: NOC.colors.preview,
                     tooltip: "Preview",
                     scope: me,
                     handler: function(grid, rowIndex, colIndex) {
@@ -309,7 +314,7 @@ Ext.define("NOC.core.ModelApplication", {
             store: me.store,
             columns: [
                 {
-                    xtype: "actioncolumn",
+                    xtype: "glyphactioncolumn",
                     width: 40,
                     sortable: false,
                     items: rowItems,

@@ -28,9 +28,16 @@ NOC.colors.while = "#ffffff";
 NOC.colors.add = NOC.colors.emerald;
 NOC.colors.delete = NOC.colors.pomegranate;
 NOC.colors.view = NOC.colors.sunflower;
+NOC.colors.edit = NOC.colors.asbestos;
+NOC.colors.preview = NOC.colors.sunflower;
 
 //---------------------------------------------------------------------
 // Conditions
 //
 NOC.colors.yes = NOC.colors.emerald;
 NOC.colors.no = NOC.colors.pomegranate;
+//---------------------------------------------------------------------
+// Favorites
+//
+NOC.colors.starred = NOC.colors.sunflower;
+NOC.colors.unstarred = NOC.colors.asbestos;
