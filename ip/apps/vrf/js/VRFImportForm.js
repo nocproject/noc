@@ -67,11 +67,11 @@ Ext.define("NOC.ip.vrf.VRFImportForm", {
                             editor: "textfield"
                         },
                         {
-                            xtype: "actioncolumn",
+                            xtype: "glyphactioncolumn",
                             width: 25,
                             items: [
                                 {
-                                    icon: "/static/img/fam/silk/delete.png",
+                                    glyph: NOC.glyph.minus_sign,
                                     tooltip: "Delete",
                                     handler: function(grid, rowIndex, colIndex) {
                                         grid.getStore().removeAt(rowIndex);

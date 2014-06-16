@@ -35,13 +35,13 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                     layout: "fit",
                     columns: [
                         {
-                            xtype: "actioncolumn",
+                            xtype: "glyphactioncolumn",
                             itemId: "error",
                             width: 25,
                             hidden: true,
                             items: [
                                 {
-                                    icon: "/static/img/fam/silk/error.png",
+                                    glyph: NOC.glyph.warning_sign,
                                     sortable: false,
                                     scope: me,
                                     handler: me.onShowError
@@ -67,22 +67,14 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                             dataIndex: "description",
                             flex: 1,
                             editor: "textfield"
-                        }, /*,
+                        },
                         {
-                            header: "Tag",
-                            dataIndex: "tagged",
-                            width: 35,
-                            editor: "checkboxfield",
-                            renderer: NOC.render.Bool
-                        },*/
-                        {
-                            xtype: "actioncolumn",
+                            xtype: "glyphactioncolumn",
                             width: 25,
                             items: [
                                 {
-                                    icon: "/static/img/fam/silk/delete.png",
+                                    glyph: NOC.glyph.minus_sign,
                                     tooltip: "Delete",
-                                    sortable: false,
                                     handler: me.onDeleteRecord
                                 }
                             ]
@@ -116,7 +108,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                     tbar: [
                         {
                             text: "Apply",
-                            iconCls: "icon_tick",
+                            glyph: NOC.glyph.save,
                             scope: me,
                             handler: me.applyChanges
                         }
