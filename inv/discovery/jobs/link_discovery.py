@@ -39,7 +39,8 @@ class LinkDiscoveryJob(MODiscoveryJob):
         """
         Check interface can be linked
         """
-        return not iface.is_linked
+        #return not iface.is_linked
+        return True
 
     def submit_candidate(self, local_interface,
                          remote_object, remote_interface=None):
@@ -91,6 +92,13 @@ class LinkDiscoveryJob(MODiscoveryJob):
         rl = r_iface.link
         if ll and rl and l_iface in rl and r_iface in ll:
             return  # Already linked
+        # Unlinking existing links
+        if ll:
+            self.info("Unlinking %s" % ll)
+            ll.delete()
+        if rl:
+            self.info("Unlinking %s" % rl)
+            rl.delete()
         # Link objects
         self.info("Linking %s and %s" % (l_iface, r_iface))
         try:
