@@ -35,14 +35,14 @@ Ext.define("Ext.ux.form.MultiIntervalField", {
                         {
                             tooltip: "Add",
                             glyph: NOC.glyph.plus_sign,
-                            color: "#2ecc71",
+                            color: NOC.colors.add,
                             scope: me,
                             handler: me.onAddRecord
                         },
                         {
                             tooltip: "Remove",
                             glyph: NOC.glyph.minus_sign,
-                            color: "#c0392b",
+                            color: NOC.colors.delete,
                             scope: me,
                             handler: me.onRemoveRecord
                         }
