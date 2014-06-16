@@ -90,8 +90,9 @@ class AssetReport(Report):
                         vnd.name, description, part_no))
                     self.register_unknown_part_no(vnd, part_no, description)
                     return
-        if m.cr_context:
+        if m.cr_context and type != m.cr_context:
             # Override type with object mode's one
+            self.debug("Model changes type to '%s'" % m.cr_context)
             type = m.cr_context
         if not type:
             self.debug("Cannot resolve type for: vendor=%s, part_no=%s (%s). Skipping" % (
