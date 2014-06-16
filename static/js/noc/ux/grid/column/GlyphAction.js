@@ -50,7 +50,7 @@ Ext.define("Ext.ux.grid.column.GlyphAction", {
                     prefix + 'action-col-' + String(i) +
                     ' ' + (disabled ? prefix + 'item-disabled' : ' ') + '" ' +
                     'style="font-family:' + glyphFontFamily + ';font-size:16px;padding-right:2px;line-height:normal' +
-                    (item.color ? ';color:' + item.color : '') + '"' +
+                    (Ext.isFunction(item.getColor) ? ';color:' + item.getColor.apply(item.scope || scope, arguments) : (item.color ? ';color:' + item.color : '')) + '"' +
                     (tooltip ? ' data-qtip="' + tooltip + '"' : '') +
                     '>&#' + item.glyph + ';</span>';
             } else {
