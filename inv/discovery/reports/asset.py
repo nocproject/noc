@@ -63,6 +63,7 @@ class AssetReport(Report):
         if is_unknown_xcvr:
             self.debug("%s S/N %s should be resolved later" % (
                 part_no[0], serial))
+            self.prepare_context(type, number)
             self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial)]
             return
         # Cache description
