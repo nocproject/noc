@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | ASR9001 | A9K-750W-DC",
+    "uuid": "a508848f-7bb6-4646-9600-d86a30e1da18",
+    "vendor__code": "CISCO",
+    "description": "ASR9001 750 Watt DC power supply",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | MSTB 2.5/2-G-5.08"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR9001 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "A9K-750W-DC"
+        }
+    }
+}
