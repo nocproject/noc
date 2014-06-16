@@ -22,7 +22,7 @@
     "rules": [
         {
             "match_connection": "in",
-            "match_type": "PWR",
+            "match_type": "PSU",
             "scope": "chassis",
             "target_connection": "PEM{N}",
             "target_number": "",
