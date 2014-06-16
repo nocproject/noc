@@ -62,7 +62,7 @@ Ext.define("NOC.inv.interface.LinkForm", {
                     buttons: [
                         {
                             text: "Connect",
-                            iconCls: "icon_connect",
+                            glyph: NOC.glyph.link,
                             formBind: true,
                             scope: me,
                             handler: me.onLink

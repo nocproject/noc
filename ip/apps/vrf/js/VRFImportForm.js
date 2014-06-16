@@ -110,7 +110,7 @@ Ext.define("NOC.ip.vrf.VRFImportForm", {
                             items: [
                                 {
                                     text: "Save",
-                                    iconCls: "icon_disk",
+                                    glyph: NOC.glyph.save,
                                     scope: me,
                                     handler: me.onSave
                                 }
