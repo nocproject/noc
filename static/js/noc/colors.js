@@ -28,3 +28,9 @@ NOC.colors.while = "#ffffff";
 NOC.colors.add = NOC.colors.emerald;
 NOC.colors.delete = NOC.colors.pomegranate;
 NOC.colors.view = NOC.colors.sunflower;
+
+//---------------------------------------------------------------------
+// Conditions
+//
+NOC.colors.yes = NOC.colors.emerald;
+NOC.colors.no = NOC.colors.pomegranate;

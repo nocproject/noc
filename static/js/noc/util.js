@@ -8,23 +8,17 @@
 // NOC namespace
 Ext.namespace("NOC", "NOC.render");
 //
-// Setup
-//
-_noc_bool_img = {
-    //true: "<img src='/static/pkg/famfamfam-silk/tick.png' />",
-    true: "<i class='icon-ok'></i>",
-    false: "<i class='icon-remove'></i>",
-    null: "<i class='icon-circle-blank'></i>",
-};
-
-//
 // NOC.render.Bool(v)
 //     Grid field renderer for boolean values
 //     Displays icons depending on true/false status
 //
 NOC.render.Bool = function(v) {
-    return _noc_bool_img[v];
-}
+    return {
+        true: "<i class='icon-ok' style='color:" + NOC.colors.yes + "'></i>",
+        false: "<i class='icon-remove' style='color:" + NOC.colors.no + "'></i>",
+        null: "<i class='icon-circle-blank'></i>"
+    }[v];
+};
 
 //
 // NOC.render.URL(v)
