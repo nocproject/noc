@@ -32,12 +32,13 @@ class AlarmJob(MultiIntervalJob):
         else:
             return super(AlarmJob, self).get_schedule(status)
 
-    def get_job_config(self, alarm, cfg):
+    @classmethod
+    def get_job_config(cls, alarm, cfg):
         """
         Returns Job's *submit* arguments.
         :param alarm: ActiveAlarm instance
-        :param cfg: JobLauncher instance
+        :param cfg: dict of config
         """
         return {
-            "interval": [(None, cfg.interval)]
+            "interval": [(None, cfg["interval"])]
         }
