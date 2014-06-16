@@ -11,7 +11,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     uses: [
         "NOC.sa.managedobjectprofile.Model",
         "NOC.main.style.LookupField",
-        "NOC.main.ref.stencil.LookupField"
+        "NOC.main.ref.stencil.LookupField",
+        "Ext.ux.form.MultiIntervalField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
@@ -205,7 +206,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         },
         {
             name: "check_link_interval",
-            xtype: "textfield",
+            xtype: "multiintervalfield",
             fieldLabel: "check_link interval",
             allowBlank: true
         },
