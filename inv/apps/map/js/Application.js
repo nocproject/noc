@@ -81,7 +81,7 @@ Ext.define("NOC.inv.map.Application", {
         });
         me.zoomActualButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom Actual",
-            iconCls: "icon_magnifier",
+            glyph: NOC.glyph.search,
             scope: me,
             handler: me.onZoomActual,
             disabled: true
