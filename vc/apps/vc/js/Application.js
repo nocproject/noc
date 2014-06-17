@@ -187,7 +187,7 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     itemId: "create_first",
                     text: "Add First Free",
-                    glyph: NOC.glyph.plus_sign,
+                    glyph: NOC.glyph.plus_circle,
                     tooltip: "Add first free VC",
                     hasAccess: NOC.hasPermission("create"),
                     scope: me,
@@ -231,7 +231,7 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     itemId: "add_interfaces",
                     text: "Add Interfaces",
-                    glyph: NOC.glyph.plus_sign,
+                    glyph: NOC.glyph.plus_circle,
                     tooltip: "Add interfaces to VC",
                     hasAccess: NOC.hasPermission("set_untagged"),
                     scope: me,

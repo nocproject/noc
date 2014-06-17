@@ -46,7 +46,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceStateForm", {
                     buttons: [
                         {
                             text: "Change",
-                            glyph: NOC.glyph.ok,
+                            glyph: NOC.glyph.check,
                             formBind: true,
                             scope: me,
                             handler: me.onChangeState

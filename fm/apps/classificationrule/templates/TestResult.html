@@ -4,7 +4,7 @@
 {{this}}<br/>
 {{/each}}
 {{/if}}
-<b>Result:</b> {{#if result}}<i class="icon-ok"></i> Matched{{else}}<i class="icon-warning-sign"></i> Not matched{{/if}}<br/>
+<b>Result:</b> {{#if result}}<i class="fa fa-check"></i> Matched{{else}}<i class="fa fa-exclamation-triangle"></i> Not matched{{/if}}<br/>
 <br/>
 <b>Fetched variables:</b><br/>
 <table border="1">
@@ -38,7 +38,7 @@
     </tr>
     {{#each patterns}}
     <tr>
-        <td>{{#if status}}<i class='icon-ok'></i>{{else}}<i class='icon-warning-sign'></i>{{/if}}</td>
+        <td>{{#if status}}<i class="fa fa-check"></i>{{else}}<i class="fa fa-exclamation-triangle"></i>{{/if}}</td>
         <td>{{key}}</td>
         <td>{{key_re}}</td>
         <td>{{value}}</td>

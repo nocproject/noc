@@ -274,7 +274,7 @@ Ext.define("NOC.inv.inv.Application", {
                 title: "Remove group '" + container.get("name") + "'?",
                 msg: "Would you like to remove group. All nested groups will be removed. All nested objects will be moved to Lost&Found folder",
                 buttons: Ext.Msg.YESNO,
-                glyph: NOC.glyph.question_sign,
+                glyph: NOC.glyph.question_circle,
                 fn: function(rec) {
                     if(rec === "yes") {
                         Ext.Ajax.request({

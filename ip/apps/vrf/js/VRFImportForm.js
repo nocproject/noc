@@ -71,7 +71,7 @@ Ext.define("NOC.ip.vrf.VRFImportForm", {
                             width: 25,
                             items: [
                                 {
-                                    glyph: NOC.glyph.minus_sign,
+                                    glyph: NOC.glyph.minus_circle,
                                     tooltip: "Delete",
                                     handler: function(grid, rowIndex, colIndex) {
                                         grid.getStore().removeAt(rowIndex);

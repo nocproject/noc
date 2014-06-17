@@ -23,14 +23,14 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
 
         me.approveButton = Ext.create("Ext.button.Button", {
             text: "Approve",
-            glyph: NOC.glyph.ok_circle,
+            glyph: NOC.glyph.check_circle_o,
             disabled: true,
             scope: me,
             handler: me.onApproveLink
         });
         me.rejectButton = Ext.create("Ext.button.Button", {
             text: "Reject",
-            glyph: NOC.glyph.remove_circle,
+            glyph: NOC.glyph.times_circle_o,
             disabled: true,
             scope: me,
             handler: me.onRejectLink

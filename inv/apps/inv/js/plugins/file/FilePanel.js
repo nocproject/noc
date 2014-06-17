@@ -33,7 +33,7 @@ Ext.define("NOC.inv.inv.plugins.file.FilePanel", {
 
         me.deleteButton = Ext.create("Ext.button.Button", {
             text: "Delete",
-            glyph: NOC.glyph.remove,
+            glyph: NOC.glyph.times,
             scope: me,
             handler: me.onDelete
         });
@@ -126,7 +126,7 @@ Ext.define("NOC.inv.inv.plugins.file.FilePanel", {
             title: "Remove file '" + sel[0].get("name") + "'?",
             msg: "Would you like to remove file? Once removed operation cannot be undone",
             buttons: Ext.Msg.YESNO,
-            glyph: NOC.glyph.question_sign,
+            glyph: NOC.glyph.question_circle,
             fn: function(rec) {
                 if(rec === "yes") {
                     Ext.Ajax.request({

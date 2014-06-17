@@ -55,7 +55,7 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
                 {
                     text: "Close",
                     itemId: "close",
-                    glyph: NOC.glyph.remove,
+                    glyph: NOC.glyph.times,
                     handler: function() {
                         this.up("window").close();
                     }

@@ -42,7 +42,7 @@ Ext.define("NOC.inv.map.SelectIconForm", {
                 {
                     text: "Set",
                     itemId: "set",
-                    glyph: NOC.glyph.ok,
+                    glyph: NOC.glyph.check,
                     scope: me,
                     /*formBind: true,
                     disabled: true,*/

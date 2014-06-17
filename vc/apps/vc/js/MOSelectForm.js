@@ -62,7 +62,7 @@ Ext.define("NOC.vc.vc.MOSelectForm", {
                 {
                     text: "Import",
                     itemId: "import",
-                    glyph: NOC.glyph.signin,
+                    glyph: NOC.glyph.sign_in,
                     scope: me,
                     handler: me.onImport
                 }
