@@ -110,12 +110,23 @@ Ext.define("Ext.ux.form.MultiIntervalField", {
 
     setValue: function(v) {
         var me = this,
-            parts = v.split(","),
+            parts,
             data = [];
+        if(!v) {
+            parts = [];
+        } else {
+            parts = v.split(",");
+        }
         for(var i = 0; i < parts.length; i += 2) {
             data.push({
                 time: parts[i] !== "" ? parseInt(parts[i]) : null,
                 interval: parseInt(parts[i + 1])
+            });
+        }
+        if(!data.length) {
+            data.push({
+                time: null,
+                interval: 0
             });
         }
         me.store.loadData(data);
