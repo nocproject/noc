@@ -1,0 +1,49 @@
+#!./bin/python
+#-------------------------------------------------------------
+# Build colors.css from colors.js
+#-------------------------------------------------------------
+# Copyright (C) 2007-2014, nocproject.org
+#-------------------------------------------------------------
+
+## Python modules
+import re
+
+SRC = "static/js/noc/colors.js"
+DST = "static/css/noc/colors.css"
+
+rx_expr = re.compile(
+    r"^NOC\.colors\.(?P<name>\S+)\s*=\s*(?P<value>[^;]+);",
+    re.MULTILINE
+)
+
+
+def parse(path):
+    d = {}
+    with open(path) as f:
+        data = f.read()
+    for match in rx_expr.finditer(data):
+        name, value = match.groups()
+        if value.startswith('"') and value.endswith('"'):
+            d[name] = value[1:-1]
+        elif value.startswith("NOC.colors."):
+            vn = value[11:]
+            d[name] = d[vn]
+    r = [
+        "//",
+        "// NOC colors css",
+        "// Build automatically from %s" % SRC,
+        "// Do not change manually"
+    ]
+    for n in sorted(d):
+        r += [
+            ".noc-%s {" % n,
+            "    color: %s;" % d[n],
+            "}",
+            ""
+        ]
+    return "\n".join(r)
+
+if __name__ == "__main__":
+    with open(DST, "w") as f:
+        f.write(parse(SRC))
+
