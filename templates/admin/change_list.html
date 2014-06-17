@@ -5,7 +5,7 @@
   {{ block.super }}
   <link rel="stylesheet" type="text/css" href="/media/admin/css/changelists.css" />
   {% if cl.formset %}
-    <link rel="stylesheet" type="text/css" href="/media/admin/css/css/forms.css" />
+    <link rel="stylesheet" type="text/css" href="/media/admin/css/forms.css" />
   {% endif %}
   {% if cl.formset or action_form %}
     {% url admin:jsi18n as jsi18nurl %}
@@ -82,7 +82,7 @@
       {% block filters %}
         {% if cl.has_filters %}
           <div id="changelist-filter">
-            <h2>{% trans 'Filter' %} <img id="cl-toggle-icon" src="/static/resources/themes/images/default/tab/tab-default-close.gif" style="float: right; padding: 2px"/></h2>
+            <h2>{% trans 'Filter' %} <i id="cl-toggle-icon" class="fa fa-times-circle" style="float:right;padding:2"></i></h2>
             <div id="changelist-content">
             {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
             </div>
@@ -108,10 +108,10 @@
   $("#changelist-filter h2").click(
       function () {
           $("#changelist-content").slideToggle("slow");
-          if($("#changelist #cl-toggle-icon").attr("src").search("-close")==-1) {
-              $("#changelist #cl-toggle-icon").attr("src","/static/resources/themes/images/default/tab/tab-default-close.gif");
+          if($("#changelist #cl-toggle-icon").attr("class").search("fa-times-circle") !== -1) {
+              $("#changelist #cl-toggle-icon").attr("class", "fa fa-caret-square-o-down");
           } else {
-              $("#changelist #cl-toggle-icon").attr("src","/static/resources/themes/images/default/grid/group-expand.gif");
+              $("#changelist #cl-toggle-icon").attr("class", "fa fa-times-circle");
           }
           return false;
       });
