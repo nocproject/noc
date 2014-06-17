@@ -54,7 +54,10 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
             if(tab.menu_node && tab.desktop_controller) {
                 tab.desktop_controller.on_close_tab(tab.menu_node);
             }
-            tab.items.items[0].onCloseApp();
+            var app = tab.items.first();
+            if(app && Ext.isFunction(app.onCloseApp)) {
+                app.onCloseApp();
+            }
         });
         return tab;
     },
