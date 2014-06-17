@@ -41,7 +41,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                             hidden: true,
                             items: [
                                 {
-                                    glyph: NOC.glyph.warning_sign,
+                                    glyph: NOC.glyph.exclamation_triangle,
                                     sortable: false,
                                     scope: me,
                                     handler: me.onShowError
@@ -73,7 +73,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                             width: 25,
                             items: [
                                 {
-                                    glyph: NOC.glyph.minus_sign,
+                                    glyph: NOC.glyph.minus_circle,
                                     tooltip: "Delete",
                                     handler: me.onDeleteRecord
                                 }

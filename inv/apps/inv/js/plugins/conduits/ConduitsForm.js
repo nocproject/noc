@@ -228,7 +228,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
             title: "Remove conduits to " + selection[0].get("target_name") + "?",
             msg: "Would you like to remove conduits?",
             buttons: Ext.Msg.YESNO,
-            glyph: NOC.glyph.question_sign,
+            glyph: NOC.glyph.question_circle,
             fn: function(rec) {
                 if(rec == "yes") {
                     me.deleteConduits(selection[0]);

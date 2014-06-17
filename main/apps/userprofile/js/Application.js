@@ -93,7 +93,7 @@ Ext.define("NOC.main.userprofile.Application", {
                         },
                         {
                             text: "Delete",
-                            glyph: NOC.glyph.remove,
+                            glyph: NOC.glyph.times,
                             handler: function() {
                                 var grid = this.up("panel"),
                                     sm = grid.getSelectionModel(),

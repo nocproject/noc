@@ -157,7 +157,7 @@ Ext.define("NOC.gis.building.Application", {
                     toolbar: [
                         {
                             text: "Fill Entrances",
-                            glyph: NOC.glyph.plus_sign_alt,
+                            glyph: NOC.glyph.plus_square,
                             scope: me,
                             handler: me.onFillEntrances
                         }

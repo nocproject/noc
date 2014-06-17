@@ -14,9 +14,9 @@ Ext.namespace("NOC", "NOC.render");
 //
 NOC.render.Bool = function(v) {
     return {
-        true: "<i class='icon-ok' style='color:" + NOC.colors.yes + "'></i>",
-        false: "<i class='icon-remove' style='color:" + NOC.colors.no + "'></i>",
-        null: "<i class='icon-circle-blank'></i>"
+        true: "<i class='fa fa-check' style='color:" + NOC.colors.yes + "'></i>",
+        false: "<i class='fa fa-times' style='color:" + NOC.colors.no + "'></i>",
+        null: "<i class='fa fa-circle-o'></i>"
     }[v];
 };
 

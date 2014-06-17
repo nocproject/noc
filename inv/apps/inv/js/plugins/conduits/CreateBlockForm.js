@@ -63,7 +63,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.CreateBlockForm", {
                 },
                 {
                     text: "Close",
-                    glyph: NOC.glyph.cross,
+                    glyph: NOC.glyph.times,
                     scope: me,
                     handler: me.onClose
                 }

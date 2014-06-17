@@ -37,12 +37,12 @@ Ext.define("NOC.sa.managedobject.Application", {
         {
             title: "Set managed",
             action: "set_managed",
-            glyph: NOC.glyph.ok
+            glyph: NOC.glyph.check
         },
         {
             title: "Set unmanaged",
             action: "set_unmanaged",
-            glyph: NOC.glyph.remove
+            glyph: NOC.glyph.times
         }
     ],
     //
@@ -94,7 +94,7 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.alarmsButton = Ext.create("Ext.button.Button", {
             text: "Alarms",
-            glyph: NOC.glyph.warning_sign,
+            glyph: NOC.glyph.exclamation_triangle,
             scope: me,
             handler: me.onAlarm
         });

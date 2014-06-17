@@ -168,7 +168,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
                 },
                 {
                     text: "Test",
-                    glyph: NOC.glyph.question_sign,
+                    glyph: NOC.glyph.question_circle,
                     tooltip: "Test rule",
                     hasAccess: NOC.hasPermission("test"),
                     scope: me,

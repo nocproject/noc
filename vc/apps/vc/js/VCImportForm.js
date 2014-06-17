@@ -56,7 +56,7 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                             width: 25,
                             items: [
                                 {
-                                    glyph: NOC.glyph.remove_sign,
+                                    glyph: NOC.glyph.times_circle_o,
                                     tooltip: "Delete",
                                     handler: function(grid, rowIndex, colIndex) {
                                         grid.getStore().removeAt(rowIndex);

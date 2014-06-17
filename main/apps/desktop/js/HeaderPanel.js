@@ -62,7 +62,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 {
                     id: "header_menu_about",
                     text: "About NOC",
-                    glyph: NOC.glyph.question_sign
+                    glyph: NOC.glyph.question_circle
                 },
                 {
                     id: "header_menu_toggle",
@@ -87,7 +87,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 {
                     id: "header_menu_logout",
                     text: "Logout",
-                    glyph: NOC.glyph.off
+                    glyph: NOC.glyph.power_off
                 }
             ]
         },

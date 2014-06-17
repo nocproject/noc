@@ -393,7 +393,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.deleteButton = Ext.create("Ext.button.Button", {
             itemId: "delete",
             text: "Delete",
-            glyph: NOC.glyph.remove,
+            glyph: NOC.glyph.times,
             disabled: true,
             hasAccess: NOC.hasPermission("delete"),
             scope: me,
@@ -424,7 +424,7 @@ Ext.define("NOC.core.ModelApplication", {
             formToolbar = formToolbar.concat([
                 {
                     text: "View",
-                    glyph: NOC.glyph.eye_open,
+                    glyph: NOC.glyph.eye,
                     // hasAccess:
                     scope: me,
                     handler: function() {
@@ -488,7 +488,7 @@ Ext.define("NOC.core.ModelApplication", {
                             },
                             {
                                 text: "Delete",
-                                glyph: NOC.glyph.remove,
+                                glyph: NOC.glyph.times,
                                 handler: function() {
                                     var grid = this.up("panel"),
                                         sm = grid.getSelectionModel(),

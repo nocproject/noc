@@ -29,7 +29,7 @@ Ext.define("NOC.core.JSONPreview", {
         //
         me.installButton = Ext.create("Ext.button.Button", {
             text: "Install",
-            glyph: NOC.glyph.download_alt,
+            glyph: NOC.glyph.download,
             scope: me,
             handler: me.onInstallJSON
         });

@@ -67,14 +67,14 @@ Ext.define("NOC.inv.map.Application", {
         });
         me.zoomInButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom In",
-            glyph: NOC.glyph.zoom_in,
+            glyph: NOC.glyph.search_plus,
             scope: me,
             handler: me.onZoomIn,
             disabled: true
         });
         me.zoomOutButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom Out",
-            glyph: NOC.glyph.zoom_out,
+            glyph: NOC.glyph.search_minus,
             scope: me,
             handler: me.onZoomOut,
             disabled: true
