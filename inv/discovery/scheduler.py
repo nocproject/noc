@@ -49,13 +49,14 @@ class DiscoveryScheduler(Scheduler):
             jcls = self.job_classes[job_name]
             if jcls.can_submit(managed_object):
                 s_interval = jcls.get_submit_interval(managed_object)
-                jcls.submit(
-                    scheduler=self, key=managed_object.id,
-                    interval=s_interval,
-                    failed_interval=s_interval,
-                    randomize=True,
-                    ts=datetime.datetime.now() + datetime.timedelta(
-                        seconds=random.random() * jcls.initial_submit_interval)
-                )
-                return True
+                if s_interval:
+                    jcls.submit(
+                        scheduler=self, key=managed_object.id,
+                        interval=s_interval,
+                        failed_interval=s_interval,
+                        randomize=True,
+                        ts=datetime.datetime.now() + datetime.timedelta(
+                            seconds=random.random() * jcls.initial_submit_interval)
+                    )
+                    return True
         return False

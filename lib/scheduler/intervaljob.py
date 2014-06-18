@@ -87,6 +87,8 @@ class IntervalJob(Job):
     def get_schedule(self, status):
         if status == self.S_SUCCESS:
             i = self.get_interval()
+            if not i:
+                return None  # Zero interval means disabled job
             offset = self.schedule["offset"] % i
             return self.get_next_aligned(i, next=True, offset=offset)
         elif status == self.S_DEFERRED:
