@@ -29,18 +29,30 @@ def parse(path):
             vn = value[11:]
             d[name] = d[vn]
     r = [
-        "//",
-        "// NOC colors css",
-        "// Build automatically from %s" % SRC,
-        "// Do not change manually"
+        "/*",
+        " * NOC colors css",
+        " * Build automatically from %s" % SRC,
+        " * Do not change manually",
+        " */"
     ]
     for n in sorted(d):
         r += [
             ".noc-%s {" % n,
-            "    color: %s;" % d[n],
-            "}",
-            ""
+            "    color: %s !important;" % d[n],
+            "}"
         ]
+    r += [
+        "/*",
+        " * Override favorite buttons colors",
+        " */"
+    ]
+    for n in ("starred", "unstarred"):
+        r += [
+            ".noc-%s .x-btn-glyph {" % n,
+            "    color: %s !important;" % d[n],
+            "}",
+        ]
+    r += [""]
     return "\n".join(r)
 
 if __name__ == "__main__":
