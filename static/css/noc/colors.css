@@ -1,87 +1,77 @@
-//
-// NOC colors css
-// Build automatically from static/js/noc/colors.js
-// Do not change manually
+/*
+ * NOC colors css
+ * Build automatically from static/js/noc/colors.js
+ * Do not change manually
+ */
 .noc-add {
-    color: #2ecc71;
+    color: #2ecc71 !important;
 }
-
 .noc-asbestos {
-    color: #7f8c8d;
+    color: #7f8c8d !important;
 }
-
 .noc-black {
-    color: #232323;
+    color: #232323 !important;
 }
-
 .noc-clouds {
-    color: #ecf0f1;
+    color: #ecf0f1 !important;
 }
-
 .noc-concrete {
-    color: #95a5a6;
+    color: #95a5a6 !important;
 }
-
 .noc-delete {
-    color: #c0392b;
+    color: #c0392b !important;
 }
-
 .noc-edit {
-    color: #7f8c8d;
+    color: #7f8c8d !important;
 }
-
 .noc-emerald {
-    color: #2ecc71;
+    color: #2ecc71 !important;
 }
-
 .noc-midnightblue {
-    color: #2c3e50;
+    color: #2c3e50 !important;
 }
-
 .noc-no {
-    color: #c0392b;
+    color: #c0392b !important;
 }
-
 .noc-piterriver {
-    color: #3498db;
+    color: #3498db !important;
 }
-
 .noc-pomegranate {
-    color: #c0392b;
+    color: #c0392b !important;
 }
-
 .noc-preview {
-    color: #f1c40f;
+    color: #f1c40f !important;
 }
-
 .noc-silver {
-    color: #bdc3c7;
+    color: #bdc3c7 !important;
 }
-
 .noc-starred {
-    color: #f1c40f;
+    color: #f1c40f !important;
 }
-
 .noc-sunflower {
-    color: #f1c40f;
+    color: #f1c40f !important;
 }
-
 .noc-unstarred {
-    color: #7f8c8d;
+    color: #7f8c8d !important;
 }
-
 .noc-view {
-    color: #f1c40f;
+    color: #f1c40f !important;
 }
-
 .noc-wetasphalt {
-    color: #34495e;
+    color: #34495e !important;
 }
-
 .noc-while {
-    color: #ffffff;
+    color: #ffffff !important;
 }
-
 .noc-yes {
-    color: #2ecc71;
+    color: #2ecc71 !important;
+}
+/*
+ * Override favorite buttons colors
+ */
+.noc-starred .x-btn-glyph {
+    color: #f1c40f !important;
+}
+.noc-unstarred .x-btn-glyph {
+    color: #7f8c8d !important;
 }
