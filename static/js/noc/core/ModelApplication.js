@@ -649,6 +649,16 @@ Ext.define("NOC.core.ModelApplication", {
             jsonData: result,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
+                // @todo: Update current record with data
+                if(me.currentRecord) {
+                    me.currentRecord.set(data);
+                    // @todo: Reset dirty/changed status
+                } else {
+                    // New record
+                    // @todo: Scroll to record
+                    me.showGrid();
+                    me.reloadStore();
+                }
                 me.saveInlines(data[me.idField], me.inlineStores);
             },
             failure: function(response) {
@@ -682,7 +692,7 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             });
         } else {
-            me.onClose(); // Switch to grid
+            me.showGrid();
         }
     },
     // Show Form
@@ -776,7 +786,11 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.currentQuery) {
             me.store.setFilterParams(me.currentQuery);
         }
+        // Reset grid selection (conflicts with store clear)
+        me.grid.getSelectionModel().deselectAll();
+        // Reset data buffer
         me.store.data.clear();
+        // Reload store
         me.store.load();
     },
     // Search
@@ -939,7 +953,6 @@ Ext.define("NOC.core.ModelApplication", {
     onClose: function() {
         var me = this
         me.showGrid();
-        me.reloadStore();
     },
     // "clone" button pressed
     onClone: function() {
