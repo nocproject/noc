@@ -95,7 +95,7 @@ Ext.define("NOC.core.ModelStore", {
         me.currentPage = 1;
     },
 
-    load: function(config) {
+    getOpConfig: function(config) {
         var me = this;
         config = Ext.Object.merge({
                 params: Ext.Object.merge({}, me.filterParams)
@@ -108,9 +108,14 @@ Ext.define("NOC.core.ModelStore", {
                     NOC.error("Failed to fetch data!");
             }
         }, config);
-        // Continue loading
-        me.callParent([config]);
+        return config;
     },
+
+    prefetch: function(config) {
+        var me = this;
+        me.callParent([me.getOpConfig(config)]);
+    },
+
     // override sync()
     sync: function(config) {
         var me = this,
