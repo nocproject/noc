@@ -384,8 +384,7 @@ class ExtModelApplication(ExtApplication):
                         "message": "Integrity error"
                     }, status=self.CONFLICT)
             # Check format
-            format = request.GET.get(self.format_param)
-            if format == "ext":
+            if request.is_extjs:
                 r = {
                     "success": True,
                     "data": self.instance_to_dict(o)
@@ -445,7 +444,14 @@ class ExtModelApplication(ExtApplication):
                     "status": False,
                     "message": "Integrity error"
                 }, status=self.CONFLICT)
-        return self.response(status=self.OK)
+        if request.is_extjs:
+            r = {
+                "success": True,
+                "data": self.instance_to_dict(o)
+            }
+        else:
+            r = self.instance_to_dict(o)
+        return self.response(r, status=self.OK)
 
     @view(method=["DELETE"], url="^(?P<id>\d+)/?$", access="delete", api=True)
     def api_delete(self, request, id):

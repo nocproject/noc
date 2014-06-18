@@ -259,8 +259,7 @@ class ExtDocApplication(ExtApplication):
             if k != self.pk and "__" not in k:
                 setattr(o, k, v)
         o.save()
-        format = request.GET.get(self.format_param)
-        if format == "ext":
+        if request.is_extjs:
             r = {
                 "success": True,
                 "data": self.instance_to_dict(o)
@@ -303,7 +302,14 @@ class ExtDocApplication(ExtApplication):
             if k != self.pk and "__" not in k:
                 setattr(o, k, attrs[k])
         o.save()
-        return self.response(status=self.OK)
+        if request.is_extjs:
+            r = {
+                "success": True,
+                "data": self.instance_to_dict(o)
+            }
+        else:
+            r = self.instance_to_dict(o)
+        return self.response(r, status=self.OK)
 
     @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
           access="delete", api=True)

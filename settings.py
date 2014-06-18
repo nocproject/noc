@@ -115,6 +115,7 @@ MIDDLEWARE_CLASSES = [
     "django.middleware.doc.XViewMiddleware",
     "django.middleware.transaction.TransactionMiddleware",
     "noc.lib.middleware.TLSMiddleware", # Thread local storage
+    "noc.lib.middleware.ExtFormatMiddleware"
 ]
 
 if config.get("authentication", "method") == "http":
