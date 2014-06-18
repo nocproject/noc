@@ -10,22 +10,29 @@ import re
 
 CSS = "static/pkg/font-awesome/css/font-awesome.css"
 rx_content = re.compile(
-    r"^\.fa-(?P<name>\S+):before\s+{\s+"
+    r"^(?P<name>\S+:before(?:,\S+:before)*)\s+{\s+"
     r"content:\s+\"\\(?P<code>[a-f0-9]+)\"",
     re.MULTILINE | re.DOTALL)
 
 def parse_css(path):
     with open(path) as f:
         data = f.read()
+        data = data.replace(",\n", ",")
     code = {}
     for match in rx_content.finditer(data):
-        name = match.group(1)
+        names = match.group(1)
         v = "0x%s" % match.group(2)
-        code[name] = v
-        code[name.replace("-", "_")] = v
+        for name in names.split(","):
+            if not name.startswith(".fa-"):
+                continue
+            name = name[4:-7]  # Strip .fa- and :before
+            code[name] = v
+            code[name.replace("-", "_")] = v
     r = [
         "//",
         "// Font Awesome glyph index",
+        "// Built by ./scripts/fa-index",
+        "// Do not change manually",
         "//",
         "Ext.namespace(\"NOC\");",
         "NOC.glyph = {"
