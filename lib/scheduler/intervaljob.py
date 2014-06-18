@@ -10,8 +10,6 @@
 import time
 import datetime
 import random
-## Third-party modules
-import six
 ## NOC modules
 from job import Job
 
@@ -38,17 +36,17 @@ class IntervalJob(Job):
         :return:
         """
         data = data or {}
+        # Get effective interval
+        if isinstance(interval, list):
+            # MultiIntervalJob
+            effective_interval = interval[0][0] if interval else 0
+        else:
+            # IntervalJob
+            effective_interval = interval
         if randomize:
             offset = random.random()
-        elif keep_offset and isinstance(interval, six.integer_types):
-            offset = time.time() % interval / interval
-        elif keep_offset and isinstance(interval, list) and interval:
-            # Handle MultiIntervalJob
-            i = interval[0][0]
-            if i:
-                offset = time.time() % i / i
-            else:
-                offset = 0
+        elif keep_offset and effective_interval:
+            offset = time.time() % effective_interval / effective_interval
         else:
             offset = 0
         schedule = {
@@ -60,7 +58,7 @@ class IntervalJob(Job):
         if failed_interval:
             schedule["failed_interval"] = failed_interval
         if not ts:
-            ts = cls.get_next_aligned(interval, offset=offset)
+            ts = cls.get_next_aligned(effective_interval, offset=offset)
         scheduler.submit(cls.name, key=key, data=data,
                          schedule=schedule, ts=ts)
 
