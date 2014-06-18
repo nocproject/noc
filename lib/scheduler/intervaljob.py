@@ -39,7 +39,7 @@ class IntervalJob(Job):
         # Get effective interval
         if isinstance(interval, list):
             # MultiIntervalJob
-            effective_interval = interval[0][0] if interval else 0
+            effective_interval = interval[0][1] if interval else 0
         else:
             # IntervalJob
             effective_interval = interval
