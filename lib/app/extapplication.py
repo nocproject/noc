@@ -109,13 +109,12 @@ class ExtApplication(Application):
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
-        format = q.get(self.format_param)
         query = q.get(self.query_param)
         only = q.get(self.only_param)
         if only:
             only = only.split(",")
         ordering = []
-        if format == "ext" and self.sort_param in q:
+        if request.is_extjs and self.sort_param in q:
             for r in self.deserialize(q[self.sort_param]):
                 if r["direction"] == "DESC":
                     ordering += ["-%s" % r["property"]]
@@ -154,7 +153,7 @@ class ExtApplication(Application):
         ordering = ordering or self.default_ordering
         if ordering:
             data = data.order_by(*ordering)
-        if format == "ext":
+        if request.is_extjs:
             total = data.count()  # Total unpaged count
         if start is not None and limit is not None:
             data = data[int(start):int(start) + int(limit)]
@@ -171,7 +170,7 @@ class ExtApplication(Application):
                 fav_items = self.get_favorite_items(request.user)
             for r in out:
                 r[self.fav_status] = r[self.pk] in fav_items
-        if format == "ext":
+        if request.is_extjs:
             out = {
                 "total": total,
                 "success": True,

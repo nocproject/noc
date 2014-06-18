@@ -66,6 +66,17 @@ class TLSMiddleware(object):
         _tls.user = None
 
 
+class ExtFormatMiddleware(object):
+    """
+    Set request.is_extjs when __format=ext found in request
+    """
+    def process_request(self, request):
+        if request.GET and request.GET.get("__format") == "ext":
+            request.is_extjs = True
+        else:
+            request.is_extjs = False
+
+
 def set_user(user):
     """
     Set up TLS user
