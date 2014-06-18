@@ -10,7 +10,7 @@ Ext.define("NOC.main.desktop.NavTree", {
     extend: "Ext.tree.Panel",
     id: "navtree",
     title: "Navigation",
-    iconCls: "icon_world",
+    glyph: NOC.glyph.globe,
     useArrows: true,
     rootVisible: false,
     singleExpand: true,
