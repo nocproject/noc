@@ -10,6 +10,8 @@
 import time
 import datetime
 import random
+## Third-party modules
+import six
 ## NOC modules
 from job import Job
 
@@ -38,8 +40,15 @@ class IntervalJob(Job):
         data = data or {}
         if randomize:
             offset = random.random()
-        elif keep_offset:
+        elif keep_offset and isinstance(interval, six.integer_types):
             offset = time.time() % interval / interval
+        elif keep_offset and isinstance(interval, list) and interval:
+            # Handle MultiIntervalJob
+            i = interval[0][0]
+            if i:
+                offset = time.time() % i / i
+            else:
+                offset = 0
         else:
             offset = 0
         schedule = {
@@ -51,9 +60,9 @@ class IntervalJob(Job):
         if failed_interval:
             schedule["failed_interval"] = failed_interval
         if not ts:
-            ts=cls.get_next_aligned(interval, offset=offset)
+            ts = cls.get_next_aligned(interval, offset=offset)
         scheduler.submit(cls.name, key=key, data=data,
-            schedule=schedule, ts=ts)
+                         schedule=schedule, ts=ts)
 
     @classmethod
     def get_next_aligned(cls, interval, next=False, offset=0):
@@ -75,7 +84,7 @@ class IntervalJob(Job):
 
     def get_failed_interval(self):
         return self.schedule.get("failed_interval",
-            self.get_interval())
+                                 self.get_interval())
 
     def get_schedule(self, status):
         if status == self.S_SUCCESS:
