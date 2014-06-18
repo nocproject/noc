@@ -41,7 +41,6 @@ class MODiscoveryJob(IntervalJob):
 
     @classmethod
     def initial_submit(cls, scheduler, keys):
-        now = datetime.datetime.now()
         profiles = [s.rsplit(".", 1)[0]
                     for s in script_registry.classes
                     if s.endswith(".%s" % cls.map_task)]
