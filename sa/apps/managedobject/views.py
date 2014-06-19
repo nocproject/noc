@@ -96,6 +96,7 @@ class ManagedObjectApplication(ExtModelApplication):
         qs = super(ManagedObjectApplication, self).queryset(request, query)
         if not request.user.is_superuser:
             qs = qs.filter(UserAccess.Q(request.user))
+        qs = qs.exclude(name__startswith="wiping-")
         return qs
 
     @view(url="^(?P<id>\d+)/links/$", method=["GET"],
