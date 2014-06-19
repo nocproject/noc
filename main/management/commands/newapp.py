@@ -40,6 +40,7 @@ class Command(BaseCommand):
     model_map = {
         "CharField": ("string", "textfield", None),
         "BooleanField": ("boolean", "checkboxfield", "NOC.render.Bool"),
+        "NullBooleanField": ("boolean", "checkboxfield", "NOC.render.Bool"),
         "IntegerField": ("int", "numberfield", None),
         "TextField": ("string", "textarea", None),
         "DateField": ("date", "datefield", None),
