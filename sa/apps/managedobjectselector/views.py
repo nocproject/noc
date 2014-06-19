@@ -26,4 +26,20 @@ class ManagedObjectSelectorApplication(ExtModelApplication):
     def field_expression(self, o):
         return o.expr
 
-    # @todo: test
+    @view(url="(?P<id>\d+)/objects/", method=["GET"],
+          access="read", api=True)
+    def api_test(self, request, id):
+        o = self.get_object_or_404(ManagedObjectSelector, id=int(id))
+        return [
+            {
+                "id": mo.id,
+                "name": mo.name,
+                "is_managed": mo.is_managed,
+                "profile": mo.profile_name,
+                "platform": mo.platform,
+                "administrative_domain": unicode(mo.administrative_domain),
+                "address": mo.address,
+                "description": mo.description,
+                "tags": mo.tags
+            } for mo in o.managed_objects
+        ]
