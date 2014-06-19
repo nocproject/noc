@@ -10,6 +10,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.sa.managedobjectselector.Model",
+        "NOC.sa.managedobjectselector.AttributesModel",
         "NOC.sa.managedobjectselector.M2MField",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.main.prefixtable.LookupField",
@@ -23,7 +24,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
     ],
     model: "NOC.sa.managedobjectselector.Model",
     search: true,
-    
+
     initComponent: function() {
         var me = this;
         Ext.apply(me, {
@@ -201,6 +202,26 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     fieldLabel: "Sources",
                     buttons: ["add", "remove"],
                     allowBlank: true
+                }
+            ],
+            inlines: [
+                {
+                    title: "Filter by attributes",
+                    model: "NOC.sa.managedobjectselector.AttributesModel",
+                    columns: [
+                        {
+                            text: "Key (RE)",
+                            dataIndex: "key_re",
+                            width: 100,
+                            editor: "textfield"
+                        },
+                        {
+                            text: "Value (RE)",
+                            dataIndex: "value_re",
+                            editor: "textfield",
+                            flex: 1
+                        }
+                    ]
                 }
             ]
         });

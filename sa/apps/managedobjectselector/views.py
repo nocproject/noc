@@ -8,7 +8,9 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.lib.app.modelinline import ModelInline
+from noc.sa.models.managedobjectselector import (
+    ManagedObjectSelector, ManagedObjectSelectorByAttribute)
 
 
 class ManagedObjectSelectorApplication(ExtModelApplication):
@@ -19,6 +21,7 @@ class ManagedObjectSelectorApplication(ExtModelApplication):
     menu = "Setup | ManagedObjectSelector"
     model = ManagedObjectSelector
     query_fields = ["name__icontains", "description__icontains"]
+    attrs = ModelInline(ManagedObjectSelectorByAttribute)
 
     def field_expression(self, o):
         return o.expr
