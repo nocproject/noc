@@ -27,6 +27,16 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
 
     initComponent: function() {
         var me = this;
+
+        me.ITEM_OBJECTS = me.registerItem(
+            "NOC.sa.managedobjectselector.ObjectsPanel"
+        );
+        me.objectsButton = Ext.create("Ext.button.Button", {
+            text: "Matched Objects",
+            glyph: NOC.glyph.list,
+            scope: me,
+            handler: me.onObjects
+        });
         Ext.apply(me, {
             columns: [
                 {
@@ -223,8 +233,16 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                         }
                     ]
                 }
+            ],
+            formToolbar: [
+                me.objectsButton
             ]
         });
         me.callParent();
+    },
+    //
+    onObjects: function() {
+        var me = this;
+        me.previewItem(me.ITEM_OBJECTS, me.currentRecord);
     }
 });
