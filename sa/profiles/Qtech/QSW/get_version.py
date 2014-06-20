@@ -36,8 +36,7 @@ class Script(NOCScript):
     rx_hardware1 = re.compile(
         r"^\s+HardWare Version (?P<hardware>\d\S+)$", re.MULTILINE)
     rx_serial1 = re.compile(
-        r"^\s+Device serial number (?P<serial>\d\S+)$", re.MULTILINE)
-
+        r"^\s+(?:Device serial number\s|Serial No\.:)(?P<serial>\d\S+)$", re.MULTILINE)
 
     def execute(self):
         # Try SNMP first
