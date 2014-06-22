@@ -336,7 +336,7 @@ Ext.define("NOC.core.ModelApplication", {
             columns: [
                 {
                     xtype: "glyphactioncolumn",
-                    width: 40,
+                    width: 20 * rowItems.length,
                     sortable: false,
                     items: rowItems,
                     stateId: "rowaction"
