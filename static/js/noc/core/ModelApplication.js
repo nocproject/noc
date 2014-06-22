@@ -191,6 +191,7 @@ Ext.define("NOC.core.ModelApplication", {
                     }
                 ],
                 items: filters.map(function(f) {
+                    // @todo: Smarter solution using Ext.Class.alias
                     var ft = {
                         boolean: "NOC.core.modelfilter.Boolean",
                         lookup: "NOC.core.modelfilter.Lookup",
