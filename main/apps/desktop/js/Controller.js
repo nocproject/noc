@@ -210,6 +210,9 @@ Ext.define("NOC.main.desktop.Controller", {
                 var data = Ext.decode(response.responseText);
                 me.launchTab(data["class"], data["title"], data["params"],
                                 opts.params.node, reuse);
+            },
+            failure: function() {
+                NOC.error("Cannot launch application");
             }
         });
     },
