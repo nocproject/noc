@@ -653,7 +653,6 @@ Ext.define("NOC.core.ModelApplication", {
                 // @todo: Update current record with data
                 if(me.currentRecord) {
                     me.currentRecord.set(data);
-                    // @todo: Reset dirty/changed status
                     me.currentRecord.commit();
                 } else {
                     // New record
@@ -1013,6 +1012,7 @@ Ext.define("NOC.core.ModelApplication", {
             success: function() {
                 // Invert current status
                 r.set("fav_status", !r.get("fav_status"));
+                grid.refresh();
             }
         });
     },
