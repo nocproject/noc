@@ -654,6 +654,7 @@ Ext.define("NOC.core.ModelApplication", {
                 if(me.currentRecord) {
                     me.currentRecord.set(data);
                     // @todo: Reset dirty/changed status
+                    me.currentRecord.commit();
                 } else {
                     // New record
                     // @todo: Scroll to record
