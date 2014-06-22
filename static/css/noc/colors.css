@@ -67,11 +67,17 @@
     color: #2ecc71 !important;
 }
 /*
- * Override favorite buttons colors
+ * Override buttons colors
  */
 .noc-starred .x-btn-glyph {
     color: #f1c40f !important;
 }
 .noc-unstarred .x-btn-glyph {
     color: #7f8c8d !important;
+}
+.noc-yes .x-btn-glyph {
+    color: #2ecc71 !important;
+}
+.noc-no .x-btn-glyph {
+    color: #c0392b !important;
 }
