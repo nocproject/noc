@@ -77,15 +77,10 @@ Ext.define("NOC.core.ModelStore", {
             defaultValues: defaultValues,
             storeId: config.model,
             proxy: proxy,
-            listeners: {
-                write: {
-                    scope: me,
-                    fn: me.onSyncWrite
-                }
-            },
             syncConfig: {}
         });
         me.callParent([config]);
+        me.on("write", me.onSyncWrite, me);
     },
 
     setFilterParams: function(config) {
