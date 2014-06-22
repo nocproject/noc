@@ -19,6 +19,8 @@ Ext.define("NOC.core.modelfilter.Tag", {
                 {
                     xtype: "tagsfield",
                     name: me.name,
+                    fieldLabel: me.title,
+                    labelAlign: "top",
                     // createNewOnEnter: false,
                     // createNewOnBlur: false,
                     itemId: me.name,

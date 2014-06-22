@@ -16,6 +16,8 @@ Ext.define("NOC.core.modelfilter.Lookup", {
         var me = this,
             wn = "NOC." + me.lookup + ".LookupField",
             w = Ext.create(wn, {
+                fieldLabel: me.title,
+                labelAlign: "top",
                 width: 180,
                 query: {
                     "id__referred": me.referrer + "__" + me.name
@@ -28,7 +30,9 @@ Ext.define("NOC.core.modelfilter.Lookup", {
                 }
             });
 
-        Ext.apply(me, {items: [w]});
+        Ext.apply(me, {
+            items: [w]
+        });
         me.callParent();
         me.combo = w;
     },
