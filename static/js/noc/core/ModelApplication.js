@@ -48,14 +48,14 @@ Ext.define("NOC.core.ModelApplication", {
             leadingBufferZone: bs,
             numFromEdge: Math.ceil(bs / 2),
             trailingBufferZone: bs,
-            buffered: true,
+            buffered: true
         });
         me.store.on("beforeload", me.onBeforeLoad, me);
         me.store.on("load", me.onLoad, me);
         me.store.on("exception", me.onLoadError, me);
 
         me.idField = me.store.idProperty;
-        // Generate persistend field names
+        // Generate persistent field names
         me.persistentFields = {};
         Ext.each(me.store.model.getFields(), function(f) {
             if(f.persist) {
@@ -354,7 +354,7 @@ Ext.define("NOC.core.ModelApplication", {
             //plugins: [Ext.create("Ext.ux.grid.AutoSize")],
             plugins: [
                 {
-                    ptype: "bufferedrenderer",
+                    ptype: "bufferedrenderer"
                     //trailingBufferZone: 50,
                     //leadingBufferZone: 50
                 }
@@ -789,10 +789,8 @@ Ext.define("NOC.core.ModelApplication", {
         }
         // Reset grid selection (conflicts with store clear)
         me.grid.getSelectionModel().deselectAll();
-        // Reset data buffer
-        me.store.data.clear();
         // Reload store
-        me.store.load();
+        me.store.reload();
     },
     // Search
     onSearch: function() {
