@@ -140,8 +140,15 @@ Ext.define("NOC.main.desktop.Application", {
     // Toggle all panels except workplace
     onPanelsToggle: function() {
         var me = this;
-        me.headerPanel.collapse(Ext.Component.DIRECTION_TOP);
-        me.navPanel.collapse(Ext.Component.DIRECTION_LEFT);
+        if(me.headerPanel.isHidden()) {
+            me.headerPanel.show();
+            me.navPanel.show();
+            me.workplacePanel.setCollapsed();
+        } else {
+            me.headerPanel.hide();
+            me.navPanel.hide();
+            me.workplacePanel.setExpanded();
+        }
     },
     // Show user profile panel
     onUserProfile: function() {

@@ -44,12 +44,6 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                     scope: me.app,
                     handler: me.app.onAbout
                 },
-                {
-                    text: "Collapse all panels",
-                    glyph: NOC.glyph.expand,
-                    scope: me.app,
-                    handler: me.app.onPanelsToggle
-                },
                 "-",
                 {
                     text: "User profile ...",
