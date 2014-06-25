@@ -22,6 +22,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
         me.expandButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.expand,
             tooltip: "Collapse panels",
+            enableToggle: true,
             scope: me,
             handler: me.onExpand
         });
