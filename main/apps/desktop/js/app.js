@@ -15,23 +15,31 @@ Ext.application({
         console.log("Initializing history API");
         Ext.History.init();
         console.log("NOC application starting");
+        var controller = me.controllers.first();
+        NOC.run = controller.launchTab;
+        NOC.launch = Ext.bind(controller.launchApp, controller);
+        // Set unload handler
+        Ext.EventManager.addListener(window, "beforeunload",
+            me.onUnload, me, {normalized: false});
+        // Create viewport
+        console.log("Creating viewport");
         Ext.create("Ext.Viewport", {
             layout: "border",
             items: [
                 Ext.create("NOC.main.desktop.HeaderPanel"),
                 Ext.create("NOC.main.desktop.NavPanel"),
                 Ext.create("NOC.main.desktop.WorkplacePanel")
-            ]
+            ],
+            listeners: {
+                scope: me,
+                afterrender: me.onViewportRendered
+            }
         });
-        console.log("NOC application ready");
-        var controller = me.controllers.first();
-        NOC.run = controller.launchTab;
-        NOC.launch = Ext.bind(controller.launchApp, controller);
-        // Set unload handler
-        Ext.EventManager.addListener(window, "beforeunload",
-            me.onUnload, me, {mormalized: false});
-        //
+    },
+    // Viewport is rendered, launch application from history
+    onViewportRendered: function() {
         var h = Ext.History.getHash();
+        console.log("NOC application ready");
         if(h) {
             // Open application tab
             var p = h.split("/"),
