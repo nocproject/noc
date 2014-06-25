@@ -92,18 +92,13 @@ Ext.define("NOC.core.ModelStore", {
 
     getOpConfig: function(config) {
         var me = this;
-        config = Ext.Object.merge({
-                params: Ext.Object.merge({}, me.filterParams)
+        return Ext.apply({
+                params: Ext.apply({}, me.filterParams),
+                callback: function(records, operation, success) {
+                    if(!success)
+                        NOC.error("Failed to fetch data!");
+                }
             }, config);
-        // Override callback
-        // @todo: Call original callback
-        config = Ext.Object.merge({
-            callback: function(records, operation, success) {
-                if(!success)
-                    NOC.error("Failed to fetch data!");
-            }
-        }, config);
-        return config;
     },
 
     prefetch: function(config) {
