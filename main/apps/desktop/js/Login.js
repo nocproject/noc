@@ -15,77 +15,84 @@ Ext.define("NOC.main.desktop.Login", {
     resizable: false,
     closable: false,
     modal: true,
+    app: null,
+    fields: [],
+    width: 300,
 
     initComponent: function() {
-        console.log(this.fields);
-        Ext.applyIf(this, {
-            items: [
-                {
-                    xtype: "form",
-                    bodyPadding: 4,
-                    border: false,
-                    defaults: {
-                        enableKeyEvents: true,
-                        listeners: {
-                            scope: this,
-                            specialkey: function(field, key) {
-                                if (field.xtype != "textfield")
-                                    return;
-                                var get_button = function(scope, name) {
-                                    return scope.down("panel").dockedItems.items[0].getComponent(name);
-                                }
-                                switch(key.getKey()) {
-                                    case Ext.EventObject.ENTER:
-                                        var b = get_button(this, "login");
-                                        key.stopEvent();
-                                        b.handler.call(b);
-                                        break;
-                                    case Ext.EventObject.ESC:
-                                        var b = get_button(this, "reset");
-                                        key.stopEvent();
-                                        b.handler.call(b);
-                                }
-                            }
-                        }
-                    },
-                    items: this.login_fields,
-                    buttonAlign: "center",
-                    buttons: [
-                        {
-                            text: "Reset",
-                            itemId: "reset",
-                            glyph: NOC.glyph.undo,
-                            handler: function() {
-                                this.up("form").getForm().reset();
-                            }
-                        },
+        var me = this;
 
-                        {
-                            text: "Login",
-                            itemId: "login",
-                            glyph: NOC.glyph.sign_in,
-                            disabled: true,
-                            formBind: true,
-                            handler: function() {
-                                // Validate form
-                                var win = this.up("window");
-                                var form = this.up("form").getForm();
-                                if(!form.isValid())
-                                    return;
-                                var v = form.getValues();
-                                win.controller.do_login(v);
-                            }
-                        }
-                    ],
-                    listeners: {
-                        afterrender: function() {
-                            this.getForm().getFields().first().focus(false, 100);
-                            return true;
-                        }
-                    }
+        me.form = Ext.create("Ext.form.Panel", {
+            bodyPadding: 4,
+            border: false,
+            defaults: {
+                enableKeyEvents: true,
+                anchor: "100%",
+                listeners: {
+                    scope: me,
+                    specialkey: me.onSpecialKey
+                }
+            },
+            items: me.fields,
+            buttonAlign: "center",
+            buttons: [
+                {
+                    text: "Reset",
+                    itemId: "reset",
+                    glyph: NOC.glyph.undo,
+                    scope: me,
+                    handler: me.onReset
+                },
+
+                {
+                    text: "Login",
+                    itemId: "login",
+                    glyph: NOC.glyph.sign_in,
+                    disabled: true,
+                    formBind: true,
+                    scope: me,
+                    handler: me.onLogin
                 }
             ]
         });
-        this.callParent()
+
+        Ext.apply(me, {
+            items: [me.form]
+        });
+        me.callParent()
+    },
+    //
+    afterRender: function() {
+        var me = this;
+        me.form.getForm().getFields().first().focus();
+    },
+    // Reset button pressed
+    onReset: function() {
+        var me = this;
+        me.form.getForm().reset();
+    },
+    // Login button pressed
+    onLogin: function() {
+        var me = this,
+            form = me.form.getForm();
+        if(form.isValid) {
+            me.app.login(form.getValues());
+        }
+    },
+    // Process special fields
+    onSpecialKey: function(field, key) {
+        var me = this;
+        if (field.xtype != "textfield")
+            return;
+        switch(key.getKey()) {
+            case Ext.EventObject.ENTER:
+                key.stopEvent();
+                me.onLogin();
+                break;
+            case Ext.EventObject.ESC:
+                key.stopEvent();
+                me.onReset();
+                break;
+        }
     }
 });

@@ -8,91 +8,119 @@ console.debug("Defining NOC.main.desktop.ChangeCredentials");
 
 Ext.define("NOC.main.desktop.ChangeCredentials", {
     extend: "Ext.Window",
-    title: "Change password",
+    title: "Change Password",
     layout: "fit",
     autoShow: true,
     draggable: false,
     resizable: false,
     closable: false,
     modal: true,
+    app: null,
+    fields: [],
+    width: 400,
     
     initComponent: function() {
-        console.log(this.fields);
-        Ext.applyIf(this, {
-            items: [
-                {
-                    xtype: "form",
-                    bodyPadding: 4,
-                    border: false,
-                    defaults: {
-                        enableKeyEvents: true,
-                        listeners: {
-                            specialkey: function(field, key) {
-                                if (field.xtype != "textfield")
-                                    return;
-                                var get_button = function(scope, name) {
-                                    return scope.up("panel").up("panel").dockedItems.items[1].getComponent(name);
-                                }
-                                switch(key.getKey()) {
-                                    case Ext.EventObject.ENTER:
-                                        var b = get_button(this, "login");
-                                        key.stopEvent();
-                                        b.handler.call(b);
-                                        break;
-                                    case Ext.EventObject.ESC:
-                                        var b = get_button(this, "reset");
-                                        key.stopEvent();
-                                        b.handler.call(b);
-                                }
-                            }
-                        }
-                    },
-                    items: this.change_credentials_fields
+        var me = this;
+        //
+        me.form = Ext.create("Ext.form.Panel", {
+            bodyPadding: 4,
+            border: false,
+            defaults: {
+                enableKeyEvents: true,
+                anchor: "100%",
+                listeners: {
+                    scope: me,
+                    specialkey: me.onSpecialKey
                 }
-            ],
+            },
+            items: me.fields,
             buttonAlign: "center",
             buttons: [
                 {
                     text: "Close",
-                    itemId: "close",
                     glyph: NOC.glyph.times,
-                    handler: function() {
-                        this.up("window").close();
-                    }
+                    scope: me,
+                    handler: me.onClose
                 },
                 {
                     text: "Reset",
-                    itemId: "reset",
                     glyph: NOC.glyph.undo,
-                    handler: function() {
-                        this.up("window").down("form").getForm().reset();
-                    }
+                    scope: me,
+                    handler: me.onReset
                 },
-        
                 {
                     text: "Change",
-                    itemId: "change",
                     glyph: NOC.glyph.save,
-                    // disabled: true,
-                    // formBind: true,  @todo: Fix
-                    handler: function() {
-                        // Validate form
-                        var win = this.up("window");
-                        var form = win.down("form").getForm();
-                        if(!form.isValid())
-                            return;
-                        var v = form.getValues();
-                        win.controller.do_change_credentials(v);
-                    }
+                    disabled: true,
+                    formBind: true,
+                    scope: me,
+                    handler: me.onChangeCredentials
                 }
-            ],
-            listeners: {
-                afterrender: function() {
-                    this.down("form").getForm().getFields().first().focus(false, 100);
-                    return true;
-                }
+            ]
+        });
+
+        Ext.apply(me, {
+            items: [me.form]
+        });
+        me.callParent()
+    },
+    //
+    afterRender: function() {
+        var me = this;
+        me.callParent();
+        // Focus on first field
+        me.form.getForm().getFields().first().focus();
+    },
+    // Close button pressed. Close window
+    onClose: function() {
+        var me = this;
+        me.close();
+    },
+    // Reset button pressed. Clear form
+    onReset: function() {
+        var me = this;
+        me.form.getForm().reset();
+    },
+    // Change credentials form pressed
+    onChangeCredentials: function() {
+        var me = this,
+            form = me.form.getForm();
+        if(form.isValid()) {
+            me.changeCredentials(form.getValues());
+        }
+    },
+    //
+    changeCredentials: function(values) {
+        var me = this;
+        Ext.Ajax.request({
+            method: "POST",
+            url: "/main/desktop/change_credentials/",
+            params: values,
+            scope: me,
+            success: function() {
+                NOC.info("Credentials has been changed");
+                me.close();
+            },
+            failure: function(response) {
+                var status = Ext.decode(response.responseText);
+                NOC.error("Failed to change credentials: " + status.error);
             }
         });
-        this.callParent()
+    },
+    //
+    onSpecialKey: function(field, key) {
+        var me = this;
+        if (field.xtype !== "textfield")
+            return;
+        switch(key.getKey()) {
+            case Ext.EventObject.ENTER:
+                key.stopEvent();
+                me.onChangeCredentials();
+                break;
+            case Ext.EventObject.ESC:
+                key.stopEvent();
+                me.onReset();
+                break;
+        }
     }
 });
