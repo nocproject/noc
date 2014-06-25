@@ -14,12 +14,26 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     border: false,
     layout: "fit",
     items: [],
-    controller: undefined,
     app: null,
     //
     initComponent: function() {
         var me = this;
+
+        me.expandButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.expand,
+            tooltip: "Collapse panels",
+            scope: me,
+            handler: me.onExpand
+        });
         Ext.apply(me, {
+            tabBar: {
+                items: [
+                    {
+                        xtype: "tbfill"
+                    },
+                    me.expandButton
+                ]
+            },
             listeners: {
                 scope: me,
                 tabchange: me.onTabChange,
@@ -33,9 +47,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
         var me = this,
             app = Ext.create(panel_class, {
                 noc: params,
-                "title": title,
-                "controller": me.controller,
-                //
+                title: title,
                 closable: true
             }),
             tab = me.add({
@@ -82,5 +94,23 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     },
     // Process history
     onAfterRender: function() {
+    },
+    //
+    onExpand: function() {
+        var me = this;
+        me.app.onPanelsToggle();
+    },
+    //
+    setExpanded: function() {
+        var me = this;
+        me.expandButton.setGlyph(NOC.glyph.compress);
+        me.expandButton.setTooltip("Expand panels");
+    },
+    //
+    setCollapsed: function() {
+        var me = this;
+        me.expandButton.setGlyph(NOC.glyph.expand);
+        me.expandButton.setTooltip("Collapse panels");
     }
+
 });
