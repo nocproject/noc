@@ -15,6 +15,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     layout: "fit",
     items: [],
     controller: undefined,
+    app: null,
     //
     initComponent: function() {
         var me = this;
@@ -28,7 +29,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
         me.callParent();
     },
     // Launch application in tab
-    launchTab: function(panel_class, title, params) {
+    launchTab: function(panel_class, title, params, node) {
         var me = this,
             app = Ext.create(panel_class, {
                 noc: params,
@@ -41,7 +42,12 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
                 title: title,
                 closable: true,
                 layout: "fit",
-                items: [app]
+                items: [app],
+                listeners: {
+                    scope: me,
+                    beforeclose: me.onTabClose
+                },
+                menuNode: node
             });
         // Close Welcome tab, if any
         var first = me.items.first();
@@ -50,15 +56,6 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
         }
         //
         me.setActiveTab(tab);
-        tab.on("beforeclose", function(tab) {
-            if(tab.menu_node && tab.desktop_controller) {
-                tab.desktop_controller.on_close_tab(tab.menu_node);
-            }
-            var app = tab.items.first();
-            if(app && Ext.isFunction(app.onCloseApp)) {
-                app.onCloseApp();
-            }
-        });
         return tab;
     },
     //
@@ -68,6 +65,19 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
             h = app.getHistoryHash();
         if(h !== "main.welcome") {
             Ext.History.setHash(h);
+        }
+    },
+    //
+    onTabClose: function(tab) {
+        var me = this;
+        // Run desktop's onCloseApp
+        if(tab.menu_node) {
+            me.app.onCloseApp(tab.menuNode);
+        }
+        // Run application's onCloseApp
+        var app = tab.items.first();
+        if(app && Ext.isFunction(app.onCloseApp)) {
+            app.onCloseApp();
         }
     },
     // Process history

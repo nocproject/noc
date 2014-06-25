@@ -16,9 +16,22 @@ Ext.define("NOC.main.desktop.NavPanel", {
     collapseMode: "mini",
     split: true,
     header: false,
-    layout: "accordion",
-    items: [
-        Ext.create("NOC.main.desktop.NavTree")/*,
-        Ext.create("NOC.main.desktop.Favorites")*/
-    ]
+    layout: "fit",
+    app: null,
+
+    initComponent: function() {
+        var me = this;
+        me.navTreePanel = Ext.create("NOC.main.desktop.NavTree", {app: me.app});
+        Ext.apply(me, {
+            items: [
+                me.navTreePanel
+            ]
+        });
+        me.callParent();
+    },
+    //
+    updateMenu: function() {
+        var me = this;
+        me.navTreePanel.updateMenu();
+    }
 });
