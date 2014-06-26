@@ -111,7 +111,7 @@ Ext.define("NOC.core.RepoPreview", {
         });
 
         me.swapRevButton = Ext.create("Ext.button.Button", {
-            glyph: NOC.glyph.arrows_h,
+            glyph: NOC.glyph.exchange,
             tooltip: "Swap revisions",
             disabled: true,
             scope: me,
