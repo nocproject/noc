@@ -118,7 +118,7 @@ Ext.define("NOC.core.ModelApplication", {
             handler: me.onRefresh
         });
 
-        me.create_button = Ext.create("Ext.button.Button", {
+        me.createButton = Ext.create("Ext.button.Button", {
             itemId: "create",
             text: "Add",
             glyph: NOC.glyph.plus,
@@ -128,7 +128,7 @@ Ext.define("NOC.core.ModelApplication", {
             handler: me.onNewRecord
         });
 
-        gridToolbar.push(me.search_field, me.refreshButton, me.create_button);
+        gridToolbar.push(me.search_field, me.refreshButton, me.createButton);
         // admin actions
         if(me.actions) {
             me.actionMenu = Ext.create("Ext.button.Button", {
@@ -625,8 +625,9 @@ Ext.define("NOC.core.ModelApplication", {
     // Save changed data
     saveRecord: function(data) {
         var me = this,
-            model = me.store.createModel(data),
-            mv = model.validate(),
+            Model = me.store.getModel(),
+            record = new Model(data, me.store.getSession()),
+            mv = record.validate(),
             result = {};
 
         if(!mv.isValid()) {
@@ -635,7 +636,7 @@ Ext.define("NOC.core.ModelApplication", {
             return;
         }
         // Normalize
-        data = model.getData();
+        data = record.getData();
         for(var name in data) {
             if(me.persistentFields[name]) {
                 result[name] = data[name];
@@ -650,15 +651,8 @@ Ext.define("NOC.core.ModelApplication", {
             success: function(response) {
                 var data = Ext.decode(response.responseText);
                 // @todo: Update current record with data
-                if(me.currentRecord) {
-                    me.currentRecord.set(data);
-                    me.currentRecord.commit();
-                } else {
-                    // New record
-                    // @todo: Scroll to record
-                    me.showGrid();
-                    me.reloadStore();
-                }
+                me.showGrid();
+                me.reloadStore();
                 me.saveInlines(data[me.idField], me.inlineStores);
             },
             failure: function(response) {
