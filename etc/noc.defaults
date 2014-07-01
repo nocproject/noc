@@ -219,7 +219,6 @@ blue.css = /static/pkg/extjs/resources/css/ext-all.css
 blue.enabled = true
 
 gray.name = Gray
-gray.css = /static/pkg/extjs/resources/css/ext-all-gray.css
 gray.enabled = true
 
 access.name = Access
