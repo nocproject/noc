@@ -76,12 +76,10 @@ Ext.define("NOC.core.LookupField", {
             var v = me.getValue();
 
             if(!v || v != value) {
-                console.log("store", me.store);
                 me.store.load({
                     params: {id: value},
                     scope: me,
                     callback: function(records, operation, success) {
-                        console.log("loaded", arguments);
                         if(success && records.length > 0) {
                             me.setValue(records[0]);
                             me.fireEvent("select", me, [records[0]]);
