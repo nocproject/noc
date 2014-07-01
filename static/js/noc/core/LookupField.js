@@ -29,9 +29,9 @@ Ext.define("NOC.core.LookupField", {
 
     initComponent: function() {
         var me = this,
-            sclass = me.__proto__.$className.replace("LookupField",
-                                                     "Lookup");
-        Ext.applyIf(me, {
+            // Get store class name
+            sclass = me.$className.replace("LookupField", "Lookup");
+        Ext.apply(me, {
             store: Ext.create(sclass)
         });
         if(me.query) {
@@ -49,7 +49,7 @@ Ext.define("NOC.core.LookupField", {
     setValue: function(value) {
         var me = this;
 
-        if(me.store.loading) {
+        if(me.store.isLoading()) {
             // Value will actually be set
             // by store.load callback.
             // Ignore it now
@@ -76,10 +76,12 @@ Ext.define("NOC.core.LookupField", {
             var v = me.getValue();
 
             if(!v || v != value) {
+                console.log("store", me.store);
                 me.store.load({
                     params: {id: value},
                     scope: me,
                     callback: function(records, operation, success) {
+                        console.log("loaded", arguments);
                         if(success && records.length > 0) {
                             me.setValue(records[0]);
                             me.fireEvent("select", me, [records[0]]);
