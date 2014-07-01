@@ -211,19 +211,19 @@ branding_color = #000
 #
 [themes]
 neptune.name = Neptune
-neptune.css = /static/pkg/extjs/resources/css/ext-all-neptune.css
 neptune.enabled = true
 
 blue.name = Blue
-blue.css = /static/pkg/extjs/resources/css/ext-all.css
 blue.enabled = true
 
 gray.name = Gray
 gray.enabled = true
 
 access.name = Access
-access.css = /static/pkg/extjs/resources/css/ext-all-access.css
 access.enabled = true
+
+crisp.name = Crisp
+crisp.enabled = true
 
 #
 # cm module setup

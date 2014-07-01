@@ -11,6 +11,7 @@ Ext.define("NOC.main.desktop.Application", {
 
     initComponent: function() {
         var me = this;
+        me.restartReason = null;
         // Setup helpers
         NOC.run = Ext.bind(me.launchTab, me);
         NOC.launch = Ext.bind(me.launchApp, me);
@@ -31,6 +32,9 @@ Ext.define("NOC.main.desktop.Application", {
             ]
         });
         me.callParent();
+        // Set unload handler
+        Ext.EventManager.addListener(window, "beforeunload",
+            me.onUnload, me, {normalized: false});
     },
     //
     afterRender: function() {
@@ -254,6 +258,11 @@ Ext.define("NOC.main.desktop.Application", {
             success: function(response) {
                 var settings = Ext.decode(response.responseText),
                     displayName = [];
+                // Check theme
+                if(settings.theme != NOC.settings.theme) {
+                    // User has non-default theme
+                    me.restartApplication("Applying theme changes");
+                }
                 // Save settings
                 NOC.username = settings.username;
                 // Build display name
@@ -273,8 +282,6 @@ Ext.define("NOC.main.desktop.Application", {
                 me.launchedTabs = {};
                 // Load menu
                 me.updateMenu();
-                // Change theme
-                me.changeTheme(settings.theme);
                 // Setup idle timer
                 me.setIdleTimeout(settings.idle_timeout);
             }
@@ -293,31 +300,12 @@ Ext.define("NOC.main.desktop.Application", {
             scope: me,
             success: function(response) {
                 me.stopIdleTimer();
-                //
-                me.headerPanel.hideUserMenu();
-                // Close all applications
-                me.workplacePanel.removeAll(true);
-                //
-                me.updateMenu();
-                me.showLogin();
+                me.restartApplication("Logging out");
             },
             failure: function(response) {
                 Ext.Msg.alert("Failed", "Logout failed");
             }
         });
-    },
-    // Change current theme
-    changeTheme: function(theme) {
-        console.log("WARNING!!! changeTheme is not implemented");
-        return;
-        var me = this;
-        if(theme == "default" || theme == "blue") {
-            theme = "ext-all.css";
-        } else {
-            theme = "ext-all-" + theme + ".css";
-        }
-        Ext.util.CSS.swapStyleSheet("theme",
-            "/static/pkg/extjs/resources/css/" + theme);
     },
     // Update navigation menu
     updateMenu: function() {
@@ -367,5 +355,26 @@ Ext.define("NOC.main.desktop.Application", {
         if(me.idleTimeout) {
             me.idleTimerId = Ext.Function.defer(me.onLogout, me.idleTimeout, me);
         }
+    },
+    //
+    onUnload: function(e) {
+        var me = this,
+            msg = "You're trying to close NOC application. Unsaved changes may be lost.";
+        if(me.restartReason) {
+            return;
+        }
+        if(e) {
+            e.returnValue = msg;
+        }
+        if(window.event) {
+            window.event.returnValue = msg;
+        }
+        return msg;
+    },
+    //
+    restartApplication: function(reason) {
+        var me = this;
+        me.restartReason = reason;
+        window.location.reload();
     }
 });

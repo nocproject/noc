@@ -70,6 +70,20 @@ class DesktopApplication(ExtApplication):
             self.error("Group '%s' is not found" % name)
             return None
 
+    def get_theme(self, request):
+        """
+        Get theme for request
+        """
+        user = request.user
+        if user.is_authenticated():
+            try:
+                profile = user.get_profile()
+            except:
+                profile = None
+            if profile and profile.theme and profile.theme in self.themes:
+                return profile.theme
+        return self.default_theme
+
     @view(method=["GET"], url="^$", url_name="desktop", access=True)
     def view_desktop(self, request):
         """
@@ -104,10 +118,12 @@ class DesktopApplication(ExtApplication):
             "enable_gis_base_google_sat": config.getboolean("gis", "enable_google_sat"),
             "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap")
         }
+        theme = self.get_theme(request)
         return self.render(
             request, "desktop.html", apps=apps, setup=setup,
-            theme_css=self.themes[self.default_theme]["css"],
-            theme_js=self.themes[self.default_theme]["js"]
+            theme=theme,
+            theme_css=self.themes[theme]["css"],
+            theme_js=self.themes[theme]["js"]
         )
 
     ##
@@ -230,19 +246,11 @@ class DesktopApplication(ExtApplication):
         Get user settings
         """
         user = request.user
-        try:
-            profile = user.get_profile()
-        except:
-            profile = None
-        if profile and profile.theme and profile.theme in self.themes:
-            theme = profile.theme
-        else:
-            theme = self.default_theme
         return {
             "username": user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "theme": theme,
+            "theme": self.get_theme(request),
             "can_change_credentials": auth_backend.can_change_credentials,
             "idle_timeout": self.idle_timeout
         }
