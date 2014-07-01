@@ -540,7 +540,6 @@ Ext.override(Ext.tree.Column, {
         if(iconCls && iconCls.indexOf("fa fa-") == 0) {
             glyphCls = iconCls;
             iconCls = null;
-            console.log(glyphCls);
         }
 
         return {

@@ -8,7 +8,6 @@ console.debug("Defining NOC.main.desktop.NavTree");
 
 Ext.define("NOC.main.desktop.NavTree", {
     extend: "Ext.tree.Panel",
-    id: "navtree",
     title: "Navigation",
     glyph: NOC.glyph.globe,
     useArrows: true,

@@ -7,7 +7,7 @@
 console.debug("Defining NOC.core.ModelStore");
 
 Ext.define("NOC.core.ModelStore", {
-    extend: "Ext.data.Store",
+    extend: "Ext.data.BufferedStore",
     filterParams: undefined,
     url: undefined,
     model: undefined,

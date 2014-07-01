@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.desktop.Login");
 
 Ext.define("NOC.main.desktop.Login", {
-    extend: "Ext.Window",
+    extend: "Ext.window.Window",
     title: "NOC Login: " + NOC.settings.installation_name,
     layout: "fit",
     autoShow: true,
@@ -18,6 +18,7 @@ Ext.define("NOC.main.desktop.Login", {
     app: null,
     fields: [],
     width: 300,
+    autoScroll: true,
 
     initComponent: function() {
         var me = this;
@@ -38,7 +39,6 @@ Ext.define("NOC.main.desktop.Login", {
             buttons: [
                 {
                     text: "Reset",
-                    itemId: "reset",
                     glyph: NOC.glyph.undo,
                     scope: me,
                     handler: me.onReset
@@ -46,7 +46,6 @@ Ext.define("NOC.main.desktop.Login", {
 
                 {
                     text: "Login",
-                    itemId: "login",
                     glyph: NOC.glyph.sign_in,
                     disabled: true,
                     formBind: true,
@@ -75,7 +74,7 @@ Ext.define("NOC.main.desktop.Login", {
     onLogin: function() {
         var me = this,
             form = me.form.getForm();
-        if(form.isValid) {
+        if(form.isValid()) {
             me.app.login(form.getValues());
         }
     },

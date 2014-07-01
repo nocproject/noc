@@ -37,25 +37,15 @@ class DesktopApplication(ExtApplication):
             if o.endswith(".name"):
                 theme_id = o[:-5]
                 nk = "%s.name" % theme_id
-                ck = "%s.css" % theme_id
                 ek = "%s.enabled" % theme_id
                 if (config.has_option("themes", nk) and
-                    config.has_option("themes", ck) and
                     config.has_option("themes", ek) and
                     config.getboolean("themes", ek)):
-                    css = config.get("themes", ck).strip()
-                    if css.startswith("/static/resources/css"):
-                        css = css.replace(
-                            "/static/resources/css",
-                            "/static/pkg/extjs/resources/css"
-                        )
-                        warnings.warn(
-                            "Deprecated theme's css path. "
-                            "Change noc.conf:[themes]/%s to %s" % (ck, css))
                     self.themes[theme_id] = {
                         "id": theme_id,
                         "name": config.get("themes", nk).strip(),
-                        "css": css
+                        "css": "/static/pkg/extjs/packages/ext-theme-%s/build/resources/ext-theme-%s-all.css" % (theme_id, theme_id),
+                        "js": "/static/pkg/extjs/packages/ext-theme-%s/build/ext-theme-%s.js" % (theme_id, theme_id)
                     }
         # Login restrictions
         self.restrict_to_group = self.get_group(
@@ -114,8 +104,11 @@ class DesktopApplication(ExtApplication):
             "enable_gis_base_google_sat": config.getboolean("gis", "enable_google_sat"),
             "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap")
         }
-        return self.render(request, "desktop.html", apps=apps, setup=setup,
-                           theme_css=self.themes[self.default_theme]["css"])
+        return self.render(
+            request, "desktop.html", apps=apps, setup=setup,
+            theme_css=self.themes[self.default_theme]["css"],
+            theme_js=self.themes[self.default_theme]["js"]
+        )
 
     ##
     ## Exposed Public API
