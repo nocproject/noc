@@ -187,10 +187,11 @@ Ext.define("NOC.main.desktop.Application", {
             scope: me,
             success: function(response) {
                 var status = Ext.decode(response.responseText);
-                if (status)
+                if (status) {
                     me.onLogin();
-                else
+                } else {
                     me.showLogin();
+                }
             },
             failure: function(response) {
                 me.showLogin();
@@ -307,6 +308,8 @@ Ext.define("NOC.main.desktop.Application", {
     },
     // Change current theme
     changeTheme: function(theme) {
+        console.log("WARNING!!! changeTheme is not implemented");
+        return;
         var me = this;
         if(theme == "default" || theme == "blue") {
             theme = "ext-all.css";

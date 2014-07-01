@@ -7,7 +7,6 @@
 console.debug("Defining NOC.main.desktop.HeaderPanel");
 Ext.define("NOC.main.desktop.HeaderPanel", {
     extend: "Ext.Panel",
-    id: "header",
     region: "north",
     layout: {
         type: "hbox",
@@ -52,8 +51,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                     handler: me.app.onUserProfile
                 },
                 {
-                    id: "header_menu_change_password",
-                    itemId: Ext.getCmp("header"),
+                    itemId: "header_menu_change_password",
                     text: "Change password ...",
                     disabled: true, // Changed on login
                     glyph: NOC.glyph.lock,
@@ -106,11 +104,10 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 me.userMenuButton,
                 // Search field
                 {
-                    id: "search",
                     xtype: "textfield",
                     padding: "0 0 0 4",
                     emptyText: "Search...",
-                    inputType: "search",
+                    //inputType: "search",
                     listeners: {
                         specialkey: function(field, event) {
                             var k = event.getKey();

@@ -7,13 +7,11 @@
 console.debug("Defining NOC.main.desktop.WorkplacePanel");
 
 Ext.define("NOC.main.desktop.WorkplacePanel", {
-    extend: "Ext.TabPanel",
-    id: "workplace",
+    extend: "Ext.tab.Panel",
     region: "center", // Always required for border layout
     activeTab: 0,
     border: false,
     layout: "fit",
-    items: [],
     app: null,
     //
     initComponent: function() {
@@ -24,17 +22,10 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
             tooltip: "Collapse panels",
             enableToggle: true,
             scope: me,
-            handler: me.onExpand
+            handler: me.onExpand,
+            getActualRotation: function() {return 0;}
         });
         Ext.apply(me, {
-            tabBar: {
-                items: [
-                    {
-                        xtype: "tbfill"
-                    },
-                    me.expandButton
-                ]
-            },
             listeners: {
                 scope: me,
                 tabchange: me.onTabChange,
@@ -42,6 +33,11 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
             }
         });
         me.callParent();
+        me.tabBar.add({
+            xtype: "tbfill",
+            getActualRotation: function() {return 0;}
+        });
+        me.tabBar.add(me.expandButton);
     },
     // Launch application in tab
     launchTab: function(panel_class, title, params, node) {

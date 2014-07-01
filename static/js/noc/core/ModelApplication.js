@@ -47,8 +47,7 @@ Ext.define("NOC.core.ModelApplication", {
             pageSize: bs,
             leadingBufferZone: bs,
             numFromEdge: Math.ceil(bs / 2),
-            trailingBufferZone: bs,
-            buffered: true
+            trailingBufferZone: bs
         });
         me.store.on("beforeload", me.onBeforeLoad, me);
         me.store.on("load", me.onLoad, me);
@@ -99,7 +98,7 @@ Ext.define("NOC.core.ModelApplication", {
                 name: "search_field",
                 itemId: "search_field",
                 emptyText: "Search...",
-                inputType: "search",
+                // inputType: "search",
                 hideLabel: true,
                 width: 200,
                 hasAccess: function(app) { return app.search === true;},

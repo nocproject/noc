@@ -8,7 +8,6 @@ console.debug("Defining NOC.main.desktop.NavPanel");
 
 Ext.define("NOC.main.desktop.NavPanel", {
     extend: "Ext.Panel",
-    id: "nav",
     region: "west",
     width: 200,
     collapsible: true,

@@ -37,7 +37,6 @@ Ext.define("NOC.core.LookupField", {
         if(me.query) {
             Ext.apply(me.store.proxy.extraParams, me.query);
         }
-        me.addEvents("clear");
         me.callParent();
         me.on("specialkey", me.onSpecialKey, me, {delay: 100});
     },
