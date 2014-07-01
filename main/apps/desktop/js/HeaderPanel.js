@@ -77,8 +77,10 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 // NOC logo
                 Ext.create("Ext.Img",{
                     src: NOC.settings.logo_url,
-                    width: NOC.settings.logo_width,
-                    height: NOC.settings.logo_height
+                    style: {
+                        width: NOC.settings.logo_width + "px",
+                        height: NOC.settings.logo_height + "px"
+                    }
                 }),
                 // Bold NOC|
                 {
