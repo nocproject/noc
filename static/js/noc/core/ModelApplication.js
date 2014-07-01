@@ -94,21 +94,13 @@ Ext.define("NOC.core.ModelApplication", {
         // Setup Grid toolbar
         var gridToolbar = [];
 
-        me.search_field = Ext.create("Ext.form.field.Text", {
+        me.searchField = Ext.create("Ext.ux.form.SearchField", {
                 name: "search_field",
-                itemId: "search_field",
-                emptyText: "Search...",
-                // inputType: "search",
                 hideLabel: true,
                 width: 200,
                 hasAccess: function(app) { return app.search === true;},
-                listeners: {
-                    change: {
-                        fn: me.onSearch,
-                        scope: me,
-                        buffer: 200
-                    }
-                }
+                scope: me,
+                handler: me.onSearch
             });
 
         me.refreshButton = Ext.create("Ext.button.Button", {
@@ -128,7 +120,7 @@ Ext.define("NOC.core.ModelApplication", {
             handler: me.onNewRecord
         });
 
-        gridToolbar.push(me.search_field, me.refreshButton, me.createButton);
+        gridToolbar.push(me.searchField, me.refreshButton, me.createButton);
         // admin actions
         if(me.actions) {
             me.actionMenu = Ext.create("Ext.button.Button", {
@@ -790,13 +782,13 @@ Ext.define("NOC.core.ModelApplication", {
         me.store.reload();
     },
     // Search
-    onSearch: function() {
-        var me = this,
-            v = me.search_field.getValue();
-        if(v)
-            me.currentQuery["__query"] = v;
-        else
+    onSearch: function(query) {
+        var me = this;
+        if(query && query.length > 0) {
+            me.currentQuery["__query"] = query;
+        } else {
             delete me.currentQuery["__query"];
+        }
         me.reloadStore();
     },
     // Filter

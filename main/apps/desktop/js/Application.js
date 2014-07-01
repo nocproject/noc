@@ -8,6 +8,9 @@ console.debug("Defining NOC.main.desktop.Application");
 Ext.define("NOC.main.desktop.Application", {
     extend: "Ext.Viewport",
     layout: "border",
+    requires: [
+        "Ext.ux.form.SearchField"
+    ],
 
     initComponent: function() {
         var me = this;
