@@ -106,20 +106,10 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 me.userMenuButton,
                 // Search field
                 {
-                    xtype: "textfield",
+                    xtype: "searchfield",
                     padding: "0 0 0 4",
-                    emptyText: "Search...",
-                    //inputType: "search",
-                    listeners: {
-                        specialkey: function(field, event) {
-                            var k = event.getKey();
-                            if(k == event.ENTER) {
-                                me.app.onSearch(field.getValue());
-                            } else if(k == event.ESC) {
-                                field.reset();
-                            }
-                        }
-                    }
+                    scope: me,
+                    handler: me.app.onSearch
                 }
             ]
         });
