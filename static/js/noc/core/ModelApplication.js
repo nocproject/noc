@@ -776,13 +776,17 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // Reload store with current query
     reloadStore: function() {
-        var me = this;
+        var me = this,
+            onReload = function() {
+                me.grid.getView().refresh();
+            };
         if(me.currentQuery) {
             me.store.setFilterParams(me.currentQuery);
         }
         // Reset grid selection (conflicts with store clear)
         me.grid.getSelectionModel().deselectAll();
         // Reload store
+        me.store.on("load", onReload, me, {single: true});
         me.store.reload();
     },
     // Search
