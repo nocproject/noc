@@ -13,7 +13,8 @@ Ext.define("NOC.main.desktop.Application", {
         "NOC.core.TagsField",
         "NOC.core.StringListField",
         "Ext.ux.form.GridField",
-        "Ext.ux.form.DictField"
+        "Ext.ux.form.DictField",
+        "Ext.ux.grid.column.GlyphAction"
     ],
 
     initComponent: function() {
