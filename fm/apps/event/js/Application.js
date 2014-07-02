@@ -21,17 +21,21 @@ Ext.define("NOC.fm.event.Application", {
     pollingInterval: 30000,
     //
     initComponent: function() {
-        var me = this;
+        var me = this,
+            bs = Math.ceil(screen.height / 24);
         me.currentQuery = {status: "A"};
         me.pollingTaskHandler = Ext.bind(me.pollingTask, me);
         me.store = Ext.create("NOC.core.ModelStore", {
             model: "NOC.fm.event.Model",
             autoLoad: false,
-            pageSize: 1,
             customFields: [],
             filterParams: {
                 status: "A"
-            }
+            },
+            pageSize: bs,
+            leadingBufferZone: bs,
+            numFromEdge: Math.ceil(bs / 2),
+            trailingBufferZone: bs
         });
 
         me.typeCombo = Ext.create("Ext.form.ComboBox", {
@@ -126,12 +130,6 @@ Ext.define("NOC.fm.event.Application", {
                         me.fromDateField,
                         me.toDateField
                     ]
-                },
-                {
-                    xtype: "pagingtoolbar",
-                    store: me.store,
-                    dock: "bottom",
-                    displayInfo: true
                 }
             ],
             columns: [
