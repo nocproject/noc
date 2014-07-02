@@ -138,7 +138,11 @@ Ext.define("NOC.main.userprofile.Application", {
                         me.emailField,
                         me.languageField,
                         me.themeField,
-                        me.contactsGrid
+                        {
+                            xtype: "fieldset",
+                            title: "Notification Contacts",
+                            items: [me.contactsGrid]
+                        }
                     ]
                 }
             ],
