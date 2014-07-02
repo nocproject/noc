@@ -11,7 +11,6 @@ Ext.define("NOC.fm.classificationrule.Application", {
     requires: [
         "NOC.fm.classificationrule.Model",
         "NOC.fm.eventclass.LookupField",
-        "Ext.ux.form.GridField",
         "NOC.fm.classificationrule.templates.TestResult"
     ],
     model: "NOC.fm.classificationrule.Model",

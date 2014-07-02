@@ -9,7 +9,6 @@ console.debug("Defining NOC.inv.connectionrule.Application");
 Ext.define("NOC.inv.connectionrule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "Ext.ux.form.GridField",
         "NOC.inv.connectionrule.Model",
         "NOC.core.StringListField"
     ],
