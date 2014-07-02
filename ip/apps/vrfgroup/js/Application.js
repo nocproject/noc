@@ -9,8 +9,7 @@ console.debug("Defining NOC.ip.vrfgroup.Application");
 Ext.define("NOC.ip.vrfgroup.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.ip.vrfgroup.Model",
-        "NOC.core.TagsField"
+        "NOC.ip.vrfgroup.Model"
     ],
     model: "NOC.ip.vrfgroup.Model",
     search: true,

@@ -13,7 +13,6 @@ Ext.define("NOC.peer.peer.Application", {
         "NOC.peer.peeringpoint.LookupField",
         "NOC.peer.peergroup.LookupField",
         "NOC.project.project.LookupField",
-        "NOC.core.TagsField",
         "NOC.peer.as.LookupField"
     ],
     model: "NOC.peer.peer.Model",

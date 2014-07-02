@@ -13,8 +13,7 @@ Ext.define("NOC.ip.vrf.Application", {
         "NOC.ip.vrfgroup.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.resourcestate.LookupField",
-        "NOC.project.project.LookupField",
-        "NOC.core.TagsField"
+        "NOC.project.project.LookupField"
     ],
     model: "NOC.ip.vrf.Model",
     search: true,

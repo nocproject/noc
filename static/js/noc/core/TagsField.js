@@ -2,13 +2,13 @@
 // NOC.core.TagsField -
 // Tags Field
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2014 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.TagsField");
 
 Ext.define("NOC.core.TagsField", {
-    extend: "Ext.ux.form.field.BoxSelect",
+    extend: "Ext.form.field.Tag",
     alias: ["widget.tagsfield"],
     forceSelection: false,
     displayField: "label",
