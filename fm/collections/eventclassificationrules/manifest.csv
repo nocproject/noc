@@ -345,7 +345,7 @@ Cisco | IOS | Security | Authentication | SSH - Login Failed (SYSLOG),435a5c49-5
 Cisco | IOS | Security | Authentication | SSH - Logout (SYSLOG),e682e2d2-8bf7-4915-833d-80411fe79871,Cisco/IOS/Security/Authentication/SSH_-_Logout_SYSLOG_.json,45b8b18bbd1c0cae4e74a57f8ef92e7ca70dc1c396b1e3e3ce6010ffeaee146e
 Cisco | IOS | Security | Authentication | SSH - Unexpected message type (SYSLOG),8b8b48ea-e341-4a9f-a700-7dc831422c31,Cisco/IOS/Security/Authentication/SSH_-_Unexpected_message_type_SYSLOG_.json,7d863c1ff0811fd0bc7c2f067d3faaa09d82fbfb4951ad40a95b652f714f3d17
 Cisco | IOS | System | Reboot (SNMP),1acccb88-f6bb-4e35-a96a-82169a1e9cc7,Cisco/IOS/System/Reboot_SNMP_.json,a1da757d64ae19404697237c451b62a3cb04ff111f4128014691fccb7769d175
-Cisco | IOS | System | Reboot (SYSLOG),efbcd3b3-11b6-42d4-8c8f-a676fed9529b,Cisco/IOS/System/Reboot_SYSLOG_.json,5639819fb73e49493c31e90f8181012ed6c694409d2270b56a215a95ac742955
+Cisco | IOS | System | Reboot (SYSLOG),efbcd3b3-11b6-42d4-8c8f-a676fed9529b,Cisco/IOS/System/Reboot_SYSLOG_.json,85e42edbab1c3a3642a5b57259c767186791ac39b13f11e0590678366cd13ece
 Cisco | IOS | Unknown | Ignore ACL logging (SYSLOG),d1a0fa2a-218c-4b7b-9b8c-ab9d576791a4,Cisco/IOS/Unknown/Ignore_ACL_logging_SYSLOG_.json,268feb4db6059f63bef049fdcb2268d5f42f6b58e2d7fb36c6fd826b21355041
 Cisco | IOS | Unknown | Ignore BGP Notification #1 (SNMP),3a965a56-8842-4532-8ba2-2ba1d5a6b721,Cisco/IOS/Unknown/Ignore_BGP_Notification_1_SNMP_.json,feb32d3642e0d4701ae6c793ad9c134c6a4977c64c38a1959b05e4b5b7810f3f
 Cisco | IOS | Unknown | Ignore BGP Notification #1 (SYSLOG),90198911-507e-46e2-85de-8fa2b1a2be53,Cisco/IOS/Unknown/Ignore_BGP_Notification_1_SYSLOG_.json,8bb348437195c079f51200b2295690bc84d652a6f5edde1cf0636f727002e213
