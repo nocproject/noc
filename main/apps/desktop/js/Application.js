@@ -308,6 +308,7 @@ Ext.define("NOC.main.desktop.Application", {
             scope: me,
             success: function(response) {
                 me.stopIdleTimer();
+                Ext.History.setHash("");
                 me.restartApplication("Logging out");
             },
             failure: function(response) {
