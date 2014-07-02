@@ -6,12 +6,12 @@
     "preference": 1000,
     "vars": [
         {
-            "name": "from_interface"
+            "name": "from_interface",
             "value": "Null0"
         },
 
         {
-            "name": "to_interface"
+            "name": "to_interface",
             "value": "Null0"
         }
     ],

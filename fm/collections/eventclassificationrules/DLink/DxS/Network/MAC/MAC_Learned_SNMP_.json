@@ -6,7 +6,7 @@
     "preference": 1000,
     "vars": [
         {
-            "name": "interface"
+            "name": "interface",
             "value": "=str(ord(iface[1]))"
         }
     ],

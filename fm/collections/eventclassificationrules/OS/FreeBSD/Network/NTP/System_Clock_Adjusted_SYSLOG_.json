@@ -6,7 +6,7 @@
     "preference": 1000,
     "vars": [
         {
-            "name": "adjustment_ms"
+            "name": "adjustment_ms",
             "value": "=str(int(float(adjustment_s) * 1000))"
         }
     ],
