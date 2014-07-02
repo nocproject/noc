@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%TRANSCEIVER-DFC\\d+-6-INSERTED: [Tt]ransceiver module inserted in \\D+(?P<module>\\d+)/(?P<interface>\\S+)"
+            "value_re": "%TRANSCEIVER(?:-DFC\\d+)?-6-INSERTED: [Tt]ransceiver module inserted in \\D+(?P<module>\\d+)/(?P<interface>\\S+)"
         }
     ]
 }

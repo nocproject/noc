@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%TRANSCEIVER-DFC\\d+-6-REMOVED: [Tt]ransceiver module removed from \\D+(?P<module>\\d+)/(?P<interface>\\S+)"
+            "value_re": "%TRANSCEIVER(?:-DFC\\d+)?-6-REMOVED: [Tt]ransceiver module removed from \\D+(?P<module>\\d+)/(?P<interface>\\S+)"
         }
     ]
 }
