@@ -90,7 +90,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
         # Check link does not exists
         ll = l_iface.link
         rl = r_iface.link
-        if ll and rl and l_iface in rl and r_iface in ll:
+        if ll and rl and rl.contains(l_iface) and ll.contains(r_iface):
             return  # Already linked
         # Unlinking existing links
         if ll:
