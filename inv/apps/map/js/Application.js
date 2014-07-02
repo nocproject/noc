@@ -261,8 +261,14 @@ Ext.define("NOC.inv.map.Application", {
         mxLoadStylesheets = false;  // window scope
         mxImageBasePath = "/static/pkg/mxgraph/images/";
         mxLoadResources = false;
-        load_scripts(["/static/pkg/mxgraph/mxClient.js"], me,
-            me.onLoadJS);
+        Ext.Loader.loadScript({
+            url: "/static/pkg/mxgraph/mxClient.js",
+            scope: me,
+            onLoad: me.onLoadJS,
+            onError: function() {
+                NOC.error("Failed to load script");
+            }
+        });
     },
     //
     onLoadJS: function() {
