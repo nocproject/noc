@@ -379,5 +379,29 @@ Ext.define("NOC.main.desktop.Application", {
         var me = this;
         me.restartReason = reason;
         window.location.reload();
+    },
+    // Request full-screen mode
+    requestFullscreen: function() {
+        var me = this,
+            element = document.body,
+            method = element.requestFullScreen
+                || element.webkitRequestFullScreen
+                || element.mozRequestFullScreen
+                || element.msRequestFullScreen;
+        if(method) {
+            method(element);
+        }
+    },
+    exitFullscreen: function() {
+        var me = this,
+            method = element.exitFullScreen
+                || element.webkitExitFullScreen
+                || element.mozCancelFullScreen
+                || element.msExitFullScreen;
+        if(method) {
+            method();
+        }
+
+
     }
 });
