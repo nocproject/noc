@@ -4,12 +4,6 @@
     "description": "%LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
     "event_class__name": "Security | Audit | Command",
     "preference": 1000,
-    "vars": [
-        {
-            "name": "command"
-            "value": "='interface %s shutdown' % iface"
-        }
-    ],
     "patterns": [
         {
             "key_re": "^source$",
