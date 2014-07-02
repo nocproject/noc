@@ -63,6 +63,7 @@ Ext.define("NOC.main.desktop.Login", {
     //
     afterRender: function() {
         var me = this;
+        me.callParent();
         me.form.getForm().getFields().first().focus();
     },
     // Reset button pressed
