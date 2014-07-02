@@ -9,7 +9,6 @@ console.debug("Defining NOC.dns.dnszone.Application");
 Ext.define("NOC.dns.dnszone.Application", {
     extend: "NOC.core.ModelApplication",
     uses: [
-        "NOC.core.TagsField",
         "NOC.dns.dnszone.Model",
         "NOC.dns.dnszone.RecordsModel",
         "NOC.dns.dnszone.RRTypeField",

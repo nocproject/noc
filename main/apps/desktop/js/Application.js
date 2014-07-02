@@ -9,7 +9,8 @@ Ext.define("NOC.main.desktop.Application", {
     extend: "Ext.Viewport",
     layout: "border",
     requires: [
-        "Ext.ux.form.SearchField"
+        "Ext.ux.form.SearchField",
+        "NOC.core.TagsField"
     ],
 
     initComponent: function() {
