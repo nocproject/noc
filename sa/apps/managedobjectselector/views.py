@@ -1,87 +1,45 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## ManagedObjectSelector Manager
+## sa.managedobjectselector application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.contrib import admin
-from django import forms
 ## NOC modules
-from noc.lib.app import ModelApplication, HasPerm, view
-from noc.sa.models import ManagedObjectSelector, ManagedObjectSelectorByAttribute
+from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.modelinline import ModelInline
+from noc.sa.models.managedobjectselector import (
+    ManagedObjectSelector, ManagedObjectSelectorByAttribute)
 
-##
-## Filter by attributes inline form
-##
-class ManagedObjectSeletorByAttributeInlineForm(forms.ModelForm):
-    class Meta:
-        model=ManagedObjectSelectorByAttribute
 
-##
-## Filter by attributes inline
-##
-class ManagedObjectAttributeInline(admin.TabularInline):
-    form=ManagedObjectSeletorByAttributeInlineForm
-    model=ManagedObjectSelectorByAttribute
-    extra=3
+class ManagedObjectSelectorApplication(ExtModelApplication):
+    """
+    ManagedObjectSelector application
+    """
+    title = "ManagedObjectSelector"
+    menu = "Setup | ManagedObjectSelector"
+    model = ManagedObjectSelector
+    query_fields = ["name__icontains", "description__icontains"]
+    attrs = ModelInline(ManagedObjectSelectorByAttribute)
 
-##
-##
-##
-class ManagedObjectSelectorForm(forms.ModelForm):
-    class Meta:
-        model = ManagedObjectSelector
-    
-    def __init__(self, *args, **kwargs):
-        super(ManagedObjectSelectorForm, self).__init__(*args, **kwargs)
-        # Prevent recursion
-        if self.instance.id:
-            f_src = self.fields["sources"]
-            f_src.queryset = ManagedObjectSelector.objects.exclude(
-                                id__exact=self.instance.id).exclude(
-                                id__in=self.instance.sources_set.all())
-    
+    def field_expression(self, o):
+        return o.expr
 
-##
-## ManagedObjectSelector admin
-##
-class ManagedObjectSelectorAdmin(admin.ModelAdmin):
-    list_display=["name","is_enabled","description"]
-    list_filter=["is_enabled"]
-    actions=["test_selectors"]
-    search_fields=["name"]
-    filter_horizontal=["filter_groups","sources"]
-    inlines=[ManagedObjectAttributeInline]
-    form = ManagedObjectSelectorForm
-    ##
-    ## Test selected seletors
-    ##
-    def test_selectors(self,request,queryset):
-        return self.app.response_redirect("test/%s/"%",".join([str(p.id) for p in queryset]))
-    test_selectors.short_description="Test selected Object Selectors"
-    
-##
-## ManagedObjectSelector application
-##
-class ManagedObjectSelectorApplication(ModelApplication):
-    model=ManagedObjectSelector
-    model_admin=ManagedObjectSelectorAdmin
-    menu="Setup | Object Selectors"
-    ##
-    ## Test Selectors
-    ##
-    def view_test(self,request,objects):
-        r=[{"name":q.name,"objects":sorted(q.managed_objects,lambda x,y:cmp(x.name,y.name))}
-            for q in[self.get_object_or_404(ManagedObjectSelector,id=int(x)) for x in objects.split(",")]]
-        return self.render(request,"test.html",{"data":r})
-    view_test.url=r"^test/(?P<objects>\d+(?:,\d+)*)/$"
-    view_test.access=HasPerm("change")
-
-    @view(url="^(?P<selector_id>\d+)/members/", method=["GET"],
-        access="read", api=True)
-    def api_members(self, request, selector_id):
-        s = self.get_object_or_404(ManagedObjectSelector, id=int(selector_id))
-        return [o.id for o in s.managed_objects]
+    @view(url="(?P<id>\d+)/objects/", method=["GET"],
+          access="read", api=True)
+    def api_test(self, request, id):
+        o = self.get_object_or_404(ManagedObjectSelector, id=int(id))
+        return [
+            {
+                "id": mo.id,
+                "name": mo.name,
+                "is_managed": mo.is_managed,
+                "profile": mo.profile_name,
+                "platform": mo.platform,
+                "administrative_domain": unicode(mo.administrative_domain),
+                "address": mo.address,
+                "description": mo.description,
+                "tags": mo.tags
+            } for mo in o.managed_objects
+        ]
