@@ -329,7 +329,7 @@ Cisco | IOS | Security | ACL | ACL Permit #3 (SYSLOG),24e6bfd7-d361-4be9-9472-74
 Cisco | IOS | Security | Attack | IP Spoofing #1 (SYSLOG),566d7efb-60a9-49a0-aa01-0a71d77488d5,Cisco/IOS/Security/Attack/IP_Spoofing_1_SYSLOG_.json,9230344cd9b0feaffa33a4f363e2cefcb954dc7b979e8a343f2ac1f6217d0a42
 Cisco | IOS | Security | Audit | Clearing Counters,b26d2ae7-56f3-4e49-b4e5-2bce4fb75098,Cisco/IOS/Security/Audit/Clearing_Counters.json,de384d0c3d782f8f98acdba181691462c0f967b10cf4501ae23446290d04fd86
 Cisco | IOS | Security | Audit | Command #1 (SYSLOG),bd1598fd-097f-44e3-94cc-82c5b9d2cc3b,Cisco/IOS/Security/Audit/Command_1_SYSLOG_.json,dddcfaf7f4f71a2059471097694baa8b118e60f84391b29ad8bc9fbe7e4f9289
-Cisco | IOS | Security | Audit | Command #2 (SYSLOG),595b5c77-0af9-4dbb-b1dd-9e4138dc70b2,Cisco/IOS/Security/Audit/Command_2_SYSLOG_.json,b91b90ccd870259a0a060747e944d1abdcb44367853287176e80c5d9d5df3a91
+Cisco | IOS | Security | Audit | Command #2 (SYSLOG),595b5c77-0af9-4dbb-b1dd-9e4138dc70b2,Cisco/IOS/Security/Audit/Command_2_SYSLOG_.json,470a19cd4a26fe3a026e4cf0240c68f3c9752efad6b2d97dfa2668948896baf1
 Cisco | IOS | Security | Audit | Command (SNMP),e13adb65-077d-4308-9622-88702fc6011a,Cisco/IOS/Security/Audit/Command_SNMP_.json,54b6732e1a7218b83322d6e42bd06dce33c5518f426f327066930ab75d0076c5
 Cisco | IOS | Security | Authentication | Authentication Failed (SNMP),c6c58a36-00ce-4618-bd17-e279d5cbc333,Cisco/IOS/Security/Authentication/Authentication_Failed_SNMP_.json,37825d955a3664945d04f4121a493ba4ad45bded992d151eedd3ad0d624c859e
 Cisco | IOS | Security | Authentication | Login (SYSLOG),43b3a842-e2b7-4bae-a343-ff5fc231fd6a,Cisco/IOS/Security/Authentication/Login_SYSLOG_.json,5d1328934adbab68e011b732dd7b94297e9f473db6fe8456ba2bb5aea34a7774
