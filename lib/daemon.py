@@ -40,6 +40,8 @@ class Daemon(object):
     # Initialize custom fields and solutions
     use_solutions = False
 
+    LOG_FORMAT = "%(asctime)s %(message)s"
+
     LOG_LEVELS = {
         "debug": logging.DEBUG,
         "info": logging.INFO,
@@ -152,7 +154,7 @@ class Daemon(object):
                 )
                 # @todo: Configurable parameter
                 rf_handler.setFormatter(
-                    logging.Formatter('%(asctime)s %(message)s', None))
+                    logging.Formatter(self.LOG_FORMAT, None))
                 logging.root.addHandler(rf_handler)
             if syslog_host:
                 # Log to remote host
@@ -165,7 +167,7 @@ class Daemon(object):
                     )
                     # @todo: Configurable parameter
                     syslog_handler.setFormatter(
-                        logging.Formatter('%(asctime)s %(message)s', None))
+                        logging.Formatter(self.LOG_FORMAT, None))
                     logging.root.addHandler(syslog_handler)
             self.pidfile = self.config.get("main", "pidfile").replace(
                 "{{instance}}", self.instance_id)
@@ -185,8 +187,18 @@ class Daemon(object):
             if self.pidfile:
                 self.check_writable(self.pidfile)
         else:
-            logging.basicConfig(level=logging.DEBUG,
-                                format='%(asctime)s %(message)s')
+            # Log to stdout
+            handler = logging.StreamHandler(None)
+            if self.is_stderr_supports_color():
+                formatter = DaemonLogColorFormatter(
+                    "%(color)s" + self.LOG_FORMAT + "%(endcolor)s",
+                    None
+                )
+            else:
+                formatter = logging.Formatter(self.LOG_FORMAT, None)
+            handler.setFormatter(formatter)
+            logging.root.addHandler(handler)
+            logging.root.setLevel(logging.DEBUG)
 
     def die(self, msg):
         logging.error(msg)
@@ -452,6 +464,23 @@ class Daemon(object):
                 pass
         logging.info("STOP")
 
+    def is_stderr_supports_color(self):
+        """
+        Check stderr is TTY and supports color
+        """
+        try:
+            import curses
+        except ImportError:
+            return False
+        if hasattr(sys.stderr, "isatty") and sys.stderr.isatty():
+            try:
+                curses.setupterm()
+                if curses.tigetnum("colors") > 0:
+                    return True
+            except Exception:
+                pass
+        return False
+
     def SIGUSR2(self, signo, frame):
         """
         Dump current execution frame trace on SIGUSR2
@@ -505,3 +534,58 @@ class Daemon(object):
         logging.info("SIGTERM received. Exiting")
         self.at_exit()
         os._exit(0)
+
+
+class DaemonLogColorFormatter(logging.Formatter):
+    """
+    Colored terminal formatter
+    """
+    DEFAULT_LOG_COLORS = {
+        logging.DEBUG: 4,  # Blue
+        logging.INFO: 2,  # Green
+        logging.WARNING: 3,  # Yellow
+        logging.ERROR: 1,  # Red
+    }
+
+    def __init__(self, *args, **kwargs):
+        self._colors = {}
+        self._end_color = ""
+        self.setup_colors()
+        super(DaemonLogColorFormatter, self).__init__(*args, **kwargs)
+
+    def format(self, record):
+        def safe_unicode(s):
+            try:
+                return unicode(s)
+            except UnicodeDecodeError:
+                return repr(s)
+
+        try:
+            message = record.getMessage()
+            assert isinstance(message, (str, unicode))
+            record.message = safe_unicode(message)
+        except Exception as e:
+            record.message = "Bad message (%r): %r" % (e, record.__dict__)
+        record.asctime = self.formatTime(record, self.datefmt)
+        record.color = ""
+        if record.levelno in self._colors:
+            record.color = self._colors[record.levelno]
+        record.endcolor = self._end_color
+        formatted = self._fmt % record.__dict__
+        return formatted.replace("\n", "\n    ")
+
+    def setup_colors(self):
+        """
+        Set up terminal colors
+        """
+        import curses
+        self._colors = {}
+        fg_color = (curses.tigetstr("setaf") or
+                    curses.tigetstr("setf") or
+                    "")
+        for level in self.DEFAULT_LOG_COLORS:
+            self._colors[level] = unicode(
+                curses.tparm(fg_color, self.DEFAULT_LOG_COLORS[level]),
+                "ascii"
+            )
+        self._end_color = unicode(curses.tigetstr("sgr0"), "ascii")
