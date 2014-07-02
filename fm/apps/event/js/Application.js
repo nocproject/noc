@@ -11,8 +11,7 @@ Ext.define("NOC.fm.event.Application", {
     requires: [
         "NOC.fm.event.templates.Overview",
         "NOC.fm.event.templates.Help",
-        "NOC.fm.event.templates.Data",
-        "Ext.ux.ProgressBarPager"
+        "NOC.fm.event.templates.Data"
     ],
     layout: "card",
     STATUS_MAP: {
@@ -109,7 +108,13 @@ Ext.define("NOC.fm.event.Application", {
             border: false,
             stateful: true,
             stateId: "fm.event-grid",
-            plugins: [Ext.create("Ext.ux.grid.AutoSize")],
+            plugins: [
+                {
+                    ptype: "bufferedrenderer"
+                    //trailingBufferZone: 50,
+                    //leadingBufferZone: 50
+                }
+            ],
             dockedItems: [
                 {
                     xtype: "toolbar",
@@ -126,8 +131,7 @@ Ext.define("NOC.fm.event.Application", {
                     xtype: "pagingtoolbar",
                     store: me.store,
                     dock: "bottom",
-                    displayInfo: true,
-                    plugins: new Ext.ux.ProgressBarPager()
+                    displayInfo: true
                 }
             ],
             columns: [
