@@ -9,7 +9,6 @@ console.debug("Defining NOC.inv.connectiontype.Application");
 Ext.define("NOC.inv.connectiontype.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "Ext.ux.form.GridField",
         "Ext.ux.form.ModelDataField",
         "NOC.inv.connectiontype.LookupField",
         "NOC.inv.connectiontype.templates.Test"

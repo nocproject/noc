@@ -10,8 +10,7 @@ Ext.define("NOC.gis.street.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.gis.street.Model",
-        "NOC.gis.division.LookupField",
-        "Ext.ux.form.DictField"
+        "NOC.gis.division.LookupField"
     ],
     model: "NOC.gis.street.Model",
     search: true,

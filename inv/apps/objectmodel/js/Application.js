@@ -9,7 +9,6 @@ console.debug("Defining NOC.inv.objectmodel.Application");
 Ext.define("NOC.inv.objectmodel.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "Ext.ux.form.GridField",
         "Ext.ux.form.ModelDataField",
         "NOC.inv.objectmodel.Model",
         "NOC.inv.vendor.LookupField",

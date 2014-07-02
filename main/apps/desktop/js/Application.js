@@ -11,7 +11,9 @@ Ext.define("NOC.main.desktop.Application", {
     requires: [
         "Ext.ux.form.SearchField",
         "NOC.core.TagsField",
-        "NOC.core.StringListField"
+        "NOC.core.StringListField",
+        "Ext.ux.form.GridField",
+        "Ext.ux.form.DictField"
     ],
 
     initComponent: function() {
