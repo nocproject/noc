@@ -73,6 +73,9 @@ class Profile(NOCProfile):
             match = self.rx_cable_if.search(interface)
             if match:
                 return "Ca %s/%s" % (match.group('pr_if'), match.group('sub_if'))
+        # Fake name. Used only with FM
+        if il == "all":
+            return "all"
         return self.convert_interface_name_cisco(interface)
 
     def generate_prefix_list(self, name, pl):
