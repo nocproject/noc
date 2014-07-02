@@ -19,7 +19,6 @@ Ext.define("NOC.core.TreeFilterToolbar", {
         Ext.apply(me, {
             items: []
         });
-        me.addEvents("select");
         me.callParent();
         me.addCombo();
     },

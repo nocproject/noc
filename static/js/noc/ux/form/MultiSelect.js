@@ -149,7 +149,6 @@ Ext.define('Ext.ux.form.MultiSelect', {
         
         me.callParent();
         me.initField();
-        me.addEvents('drop');    
     },
     
     setupItems: function() {
