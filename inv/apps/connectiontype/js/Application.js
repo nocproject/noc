@@ -12,7 +12,6 @@ Ext.define("NOC.inv.connectiontype.Application", {
         "Ext.ux.form.GridField",
         "Ext.ux.form.ModelDataField",
         "NOC.inv.connectiontype.LookupField",
-        "NOC.core.StringListField",
         "NOC.inv.connectiontype.templates.Test"
     ],
     model: "NOC.inv.connectiontype.Model",
