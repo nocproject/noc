@@ -14,15 +14,15 @@ Ext.define("NOC.wf.workflow.LanesModel", {
     fields: [
         {
             name: "id",
-            type: "str"
+            type: "string"
         },
         {
             name: "workflow",
-            type: "str"
+            type: "string"
         },
         {
             name: "name",
-            type: "str"
+            type: "string"
         },
         {
             name: "is_active",

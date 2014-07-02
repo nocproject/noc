@@ -14,6 +14,7 @@ Ext.define("NOC.core.ModelStore", {
     remoteSort: true,
     remoteFilter: true,
     customFields: [],
+    autoLoad: false,
 
     constructor: function(config) {
         var me = this,
@@ -36,7 +37,6 @@ Ext.define("NOC.core.ModelStore", {
                 persist: false
             }
         ]);
-
         var proxy = Ext.create("Ext.data.RestProxy", {
                 url: model.rest_url,
                 pageParam: "__page",
@@ -72,7 +72,6 @@ Ext.define("NOC.core.ModelStore", {
 
         me.idProperty = model.idProperty;
         Ext.apply(config, {
-            // model: config.model,
             model: sModel,
             defaultValues: defaultValues,
             storeId: config.model,

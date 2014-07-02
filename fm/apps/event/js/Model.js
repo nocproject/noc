@@ -40,7 +40,7 @@ Ext.define("NOC.fm.event.Model", {
         },
         {
             name: "subject",
-            type: "str"
+            type: "string"
         },
         {
             name: "repeats",

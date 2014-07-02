@@ -22,20 +22,23 @@ Ext.define("NOC.fm.alarm.Application", {
     pollingInterval: 30000,
     //
     initComponent: function() {
-        var me = this;
+        var me = this,
+            bs = Math.ceil(screen.height / 24);
         me.currentQuery = {status: "A"};
         me.pollingTaskHandler = Ext.bind(me.pollingTask, me);
         me.store = Ext.create("NOC.core.ModelStore", {
             model: "NOC.fm.alarm.Model",
             autoLoad: false,
-            pageSize: 1,
             customFields: [],
             filterParams: {
                 status: "A",
                 collapse: 1
-            }
+            },
+            pageSize: bs,
+            leadingBufferZone: bs,
+            numFromEdge: Math.ceil(bs / 2),
+            trailingBufferZone: bs
         });
-
         me.typeCombo = Ext.create("Ext.form.ComboBox", {
             fieldLabel: "State",
             labelWidth: 30,
