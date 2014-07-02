@@ -11,7 +11,6 @@ Ext.define("NOC.core.ModelApplication", {
     requires: [
         "NOC.core.ModelStore",
         "NOC.core.InlineModelStore",
-        "Ext.ux.ProgressBarPager",
         "Ext.ux.grid.column.GlyphAction"
     ],
     layout: "card",
@@ -342,7 +341,6 @@ Ext.define("NOC.core.ModelApplication", {
             autoScroll: true,
             stateful: true,
             stateId: me.appName + "-grid",
-            //plugins: [Ext.create("Ext.ux.grid.AutoSize")],
             plugins: [
                 {
                     ptype: "bufferedrenderer"
@@ -534,15 +532,14 @@ Ext.define("NOC.core.ModelApplication", {
                                     });
                             }
                         }
-                    },
-                    r = {
-                        xtype: "fieldset",
-                        anchor: "100%",
-                        title: inline.title,
-                        collapsible: true,
-                        items: [gp]
-                    }
-                formInlines = formInlines.concat(r);
+                    };
+                formInlines.push({
+                    xtype: "fieldset",
+                    anchor: "100%",
+                    title: inline.title,
+                    collapsible: true,
+                    items: [gp]
+                });
                 me.inlineStores.push(istore);
             }
         };
