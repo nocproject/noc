@@ -88,10 +88,10 @@ def audit_trail_save(sender, instance, **kwargs):
     if sender._meta.db_table in AUDIT_TRAIL_EXCLUDE:
         return
     #
-    if instance.id:
+    if instance.pk:
         # Update
         try:
-            old = sender.objects.get(id=instance.id)
+            old = sender.objects.get(pk=instance.pk)
         except sender.DoesNotExist:
             # Protection for correct test fixtures loading
             return
