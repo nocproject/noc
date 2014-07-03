@@ -36,7 +36,7 @@
                 "managed_object": "event.managed_object.id",
                 "vars__ip": "vars['ip']"
             },
-            "window": 45,
+            "window": 900,
             "suppress": true
         }
     ]

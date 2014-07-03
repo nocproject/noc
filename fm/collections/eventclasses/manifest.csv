@@ -238,7 +238,7 @@ Security | Authentication | Privilege Level Change Fail,5d099c4d-42bc-47ab-b91a-
 Security | Authentication | Privilege Level Changed,601bc6a1-e7a4-4652-998e-a42a214967d8,Security/Authentication/Privilege_Level_Changed.json,822f8805945389ac8781db50c2947e1fbd64947cbd87208d71f66a2803e94509
 Security | Authentication | RADIUS server failed,4c8ae9b3-472f-4aa4-9fe0-201fdff4a523,Security/Authentication/RADIUS_server_failed.json,76f2367b523bd6c9c9c1a7acd8396b0fc435e597b8d7fbbba0ad27385ab4961f
 Security | Authentication | RADIUS server recovered,d39a3fb7-68d0-4e6a-bda6-4efacddf6f89,Security/Authentication/RADIUS_server_recovered.json,718a01436cffa55f6da561a4a0ae9d20093c78a8169628f86ee0ced22bc3bcdd
-Security | Authentication | SNMP Authentication Failure,91094f01-18a3-4fdf-849b-26de6e751b61,Security/Authentication/SNMP_Authentication_Failure.json,fe453db0f98ec495359eaa6f8ff4d52ab5dc7d65257a23a05a70b50f14f9470b
+Security | Authentication | SNMP Authentication Failure,91094f01-18a3-4fdf-849b-26de6e751b61,Security/Authentication/SNMP_Authentication_Failure.json,eb9bacb46bb87097322a0cec30f802854186e7cb526387e86a3f73917071393b
 Security | Authentication | TACACS+ server failed,d4500ab1-1b8c-46b8-b0c5-4348465569f0,Security/Authentication/TACACS+_server_failed.json,7e321427416c3b2a6635b8e5d8393d0667444a51ae4cad613afa659f6cd1675c
 Security | Authentication | TACACS+ server recovered,46e7f27a-caea-41db-87b3-fc2e7ac766db,Security/Authentication/TACACS+_server_recovered.json,88ecff2f3e96a60b2cf7eb0f5e18d347eb22ce93ee3893b884d9b9ecda47ce5a
 System | Halt,4d17166c-9c01-4b63-be45-ce6c8b693c9f,System/Halt.json,3754c8607e3ac9896fead1bcc9261b1da346ad4f87cf2f861387536c5608e593
