@@ -172,14 +172,23 @@ Ext.define("NOC.core.RepoPreview", {
             }],
             items: [{
                 xtype: "container",
-                autoScroll: true,
-                padding: 4
+                autoScroll: true
             }]
         });
         me.callParent();
         //
         me.urlTemplate = Handlebars.compile(me.restUrl);
         me.titleTemplate = Handlebars.compile(me.previewName);
+        me.viewer = null;
+    },
+    //
+    afterRender: function() {
+        var me = this;
+        me.callParent();
+        me.viewer = new CodeMirror(me.items.first().el.dom, {
+            readOnly: true,
+            lineNumbers: true
+        });
     },
     //
     startPreview: function(record, backItem) {
@@ -299,8 +308,7 @@ Ext.define("NOC.core.RepoPreview", {
     //
     renderText: function(text, syntax) {
         var me = this;
-        syntax = syntax || me.syntax;
-        NOC.SyntaxHighlight.highlight(me.items.first(), text, syntax);
+        me.viewer.setValue(text);
     },
     //
     onSelectRev: function(combo, records, eOpts) {
