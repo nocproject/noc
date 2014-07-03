@@ -10,8 +10,7 @@ Ext.define("NOC.core.ModelApplication", {
     extend: "NOC.core.Application",
     requires: [
         "NOC.core.ModelStore",
-        "NOC.core.InlineModelStore",
-        "Ext.ux.grid.column.GlyphAction"
+        "NOC.core.InlineModelStore"
     ],
     layout: "card",
     search: false,
@@ -94,13 +93,13 @@ Ext.define("NOC.core.ModelApplication", {
         var gridToolbar = [];
 
         me.searchField = Ext.create("Ext.ux.form.SearchField", {
-                name: "search_field",
-                hideLabel: true,
-                width: 200,
-                hasAccess: function(app) { return app.search === true;},
-                scope: me,
-                handler: me.onSearch
-            });
+            name: "search_field",
+            hideLabel: true,
+            width: 200,
+            hasAccess: function(app) { return app.search === true;},
+            scope: me,
+            handler: me.onSearch
+        });
 
         me.refreshButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
@@ -786,6 +785,7 @@ Ext.define("NOC.core.ModelApplication", {
         } else {
             delete me.currentQuery["__query"];
         }
+        console.log("onSearch", me.currentQuery);
         me.reloadStore();
     },
     // Filter
