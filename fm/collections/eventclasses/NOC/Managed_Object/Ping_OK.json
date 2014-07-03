@@ -27,5 +27,27 @@
             "action": "clear",
             "alarm_class__name": "Chassis | PSU | Power Failed"
         }
+    ],
+    "repeat_suppression": [
+        {
+            "name": "Do not suppress after Ping Failed",
+            "condition": "True",
+            "event_class__name": "NOC | Managed Object | Ping Failed",
+            "match_condition": {
+                "managed_object": "event.managed_object.id"
+            },
+            "window": 3600,
+            "suppress": false
+        },
+        {
+            "name": "Suppress after Ping OK",
+            "condition": "True",
+            "event_class__name": "NOC | Managed Object | Ping OK",
+            "match_condition": {
+                "managed_object": "event.managed_object.id"
+            },
+            "window": 3600,
+            "suppress": true
+        }
     ]
 }

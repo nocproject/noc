@@ -18,5 +18,18 @@
             "probable_causes": "Cable damage, hardware or software error either from this or from another side",
             "recommended_actions": "Check configuration, both sides of links and hardware"
         }
-    }
+    },
+    "repeat_suppression": [
+        {
+            "name": "Workaround for console flood on some Cisco routers",
+            "condition": "True",
+            "event_class__name": "Network | Link | Connection Problem",
+            "match_condition": {
+                "vars__interface": "vars['interface']",
+                "managed_object": "event.managed_object.id"
+            },
+            "window": 45,
+            "suppress": true
+        }
+    ]
 }
