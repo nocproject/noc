@@ -69,7 +69,6 @@
 .x-display-tag {
     display: inline-block;
     position: relative;
-    *display:inline; /* IE7 */
     zoom:1; /* IE */
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
