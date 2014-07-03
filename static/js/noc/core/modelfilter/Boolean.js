@@ -22,7 +22,7 @@ Ext.define("NOC.core.modelfilter.Boolean", {
                     toggleGroup: "boolgroup",
                     scope: me,
                     handler: function (button, e) {
-                        me._value = button.pressed ? "4" : undefined;
+                        me._value = button.pressed ? true : undefined;
                         me.onChange();
                     }
                 },
@@ -33,7 +33,7 @@ Ext.define("NOC.core.modelfilter.Boolean", {
                     toggleGroup: "boolgroup",
                     scope: me,
                     handler: function (button, e) {
-                        me._value = button.pressed ? "6" : undefined;
+                        me._value = button.pressed ? false : undefined;
                         me.onChange();
                     }
                 },
