@@ -18,5 +18,18 @@
             "probable_causes": "An unregistered cable modem has been deleted to avoid unaccounted bandwidth usage.",
             "recommended_actions": "Check the cable modem interface configuration for registration bypass, or check for errors in the TFTP configuration file. "
         }
-    }
+    },
+    "repeat_suppression": [
+        {
+            "name": "Do not suppress after cable modem has been deleted",
+            "condition": "True",
+            "event_class__name": "Network | DOCSIS | Unregistered Modem Deleted",
+            "match_condition": {
+                "vars__mac": "vars['mac']",
+                "managed_object": "event.managed_object.id"
+            },
+            "window": 450,
+            "suppress": true
+        }
+    ]
 }
