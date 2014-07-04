@@ -45,10 +45,10 @@
             "condition": "True",
             "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded",
             "match_condition": {
-                "managed_object": "event.managed_object.id",
+                "vars__state": "vars['state']",
                 "vars__farm": "vars['farm']",
                 "vars__real": "vars['real']",
-                "vars__state": "vars['state']"
+                "managed_object": "event.managed_object.id"
             },
             "window": 15,
             "suppress": true
