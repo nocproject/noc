@@ -20,6 +20,10 @@ class Script(NOCScript):
         r"received, (\d+\.)?\d+% packet loss\nround-trip min/avg/max/stddev "
         r"= (?P<min>\d+\.\d+)/(?P<avg>\d+\.\d+)/(?P<max>\d+\.\d+)/\d+\.\d+ ms",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_result1 = re.compile(
+        r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets "
+        r"received, (\d+\.)?\d+% packet loss\n",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self, address, count=None, source_address=None, size=None,
     df=None):
@@ -35,11 +39,19 @@ class Script(NOCScript):
         if df:
             cmd += " do-not-fragment"
         cmd += " %s" % address
-        match = self.rx_result.search(self.cli(cmd))
-        return {
-            "success": match.group("success"),
-            "count": match.group("count"),
-            "min": match.group("min"),
-            "avg": match.group("avg"),
-            "max": match.group("max"),
-        }
+        s = self.cli(cmd)
+        match = self.rx_result.search(s)
+        if match:
+            return {
+                "success": match.group("success"),
+                "count": match.group("count"),
+                "min": match.group("min"),
+                "avg": match.group("avg"),
+                "max": match.group("max")
+            }
+        else:
+            match = self.rx_result1.search(s)
+            return {
+                "success": match.group("success"),
+                "count": match.group("count")
+            }
