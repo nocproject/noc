@@ -15,12 +15,13 @@ Ext.define('Ext.ux.form.SearchField', {
 
     initComponent: function() {
         var me = this;
+        me.lastChars = 0;
         me.callParent();
         me.on("specialkey", me.onSpecialKey, me);
         if(me.typeAhead) {
             me.on("change", me.onChange, me, {
                 buffer: me.typeAheadDelay
-            })
+            });
         }
     },
     //
@@ -36,10 +37,12 @@ Ext.define('Ext.ux.form.SearchField', {
     //
     onChange: function() {
         var me = this,
-            query = me.getValue();
-        if(query.length >= me.minChars || query.length == 0) {
+            query = me.getValue(),
+            ql = query.length;
+        if(!ql || ql < me.lastChars || ql >= me.minChars) {
             Ext.callback(me.handler, me.scope || this, [query]);
         }
+        me.lastChars = ql;
     },
     //
     onSearch: function() {
