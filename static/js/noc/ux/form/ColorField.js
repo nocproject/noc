@@ -1,90 +1,68 @@
 //---------------------------------------------------
-// Ext.ux.form.GeoField
-//     ExtJS4 form field
-//     with attached color picker
+// ColorField:
+// ComboBox with color picker
+// Based on
+// http://www.learnsomethings.com/2012/03/20/extjs4-color-picker-in-a-drop-down-control-for-use-on-forms-and-in-editable-grids/
 //---------------------------------------------------
-// http://www.sencha.com/forum/showthread.php?140793
-//---------------------------------------------------
+console.debug("Defining Ext.ux.form.ColorField");
 
 Ext.define("Ext.ux.form.ColorField", {
-    extend: 'Ext.form.field.Trigger',
+    extend: 'Ext.form.field.Text',
     alias: 'widget.colorfield',
-    requires: ['Ext.form.field.VTypes', 'Ext.layout.component.field.Text'],
-
-    lengthText: "Color hex values must be either 3 or 6 characters.",
-    blankText: "Must have a hexidecimal value in the format ABCDEF.",
-
-    regex: /^[0-9a-f]{3,6}$/i,
-
-    validateValue : function(value){
-        if(!this.getEl()) {
-            return true;
+    triggers: {
+        color: {
+            scope: "this",
+            handler: "onTriggerClick"
         }
-        if(value.length!=3 && value.length!=6) {
-            this.markInvalid(Ext.String.format(this.lengthText, value));
-            return false;
-        }
-        if((value.length < 1 && !this.allowBlank) || !this.regex.test(value)) {
-            this.markInvalid(Ext.String.format(this.blankText, value));
-            return false;
-        }
+    },
+    width: 190,
+    vtype: "color",
 
-        this.markInvalid();
-        this.setColor(value);
-        return true;
+    onTriggerClick: function() {
+        var me = this;
+        if(!me.picker) {
+            me.picker = Ext.create("Ext.picker.Color", {
+                pickerField: me,
+                ownerCt: me,
+                floating: true,
+                hidden: true,
+                focusOnShow: true,
+                defaultAlign: "tl-bl",
+                alignTarget: me.inputEl,
+                style: {
+                    backgroundColor: "#ffffff"
+                },
+                listeners: {
+                    scope: me,
+                    select: me.onSelectColor,
+                    show: me.onShowPicker
+                }
+            });
+        }
+        me.picker.show(me.inputEl);
     },
 
-    markInvalid : function( msg ) {
-        Ext.ux.form.ColorField.superclass.markInvalid.call(this, msg);
-        this.inputEl.setStyle({
-            'background-image': 'url(../resources/themes/images/default/grid/invalid_line.gif)'
+    onSelectColor: function(field, value, opts) {
+        var me = this;
+        me.setValue(value);
+        me.picker.hide();
+    },
+
+    onShowPicker: function(field, opt) {
+        field.getEl().monitorMouseLeave(500, field.hide, field);
+    },
+    // Set field color
+    setColor: function(color) {
+        var me = this;
+        me.setFieldStyle({
+            backgroundColor: "#" + color,
+            backgroundImage: "none"
         });
     },
-
-    setValue : function(hex){
-        Ext.ux.form.ColorField.superclass.setValue.call(this, hex);
-        this.setColor(hex);
-    },
-
-    setColor : function(hex) {
-        Ext.ux.form.ColorField.superclass.setFieldStyle.call(this, {
-            'background-color': '#' + hex,
-            'background-image': 'none'
-        });
-    },
-
-    menuListeners : {
-        select: function(m, d){
-            this.setValue(d);
-        },
-        show : function(){
-            this.onFocus();
-        },
-        hide : function(){
-            this.focus();
-            var ml = this.menuListeners;
-            this.menu.un("select", ml.select,  this);
-            this.menu.un("show", ml.show,  this);
-            this.menu.un("hide", ml.hide,  this);
-        }
-    },
-
-    onTriggerClick : function(e){
-        if(this.disabled){
-            return;
-        }
-
-        this.menu = new Ext.menu.ColorPicker({
-            shadow: true,
-            autoShow : true
-        });
-        this.menu.alignTo(this.inputEl, 'tl-bl?');
-        this.menu.doLayout();
-
-        this.menu.on(Ext.apply({}, this.menuListeners, {
-            scope:this
-        }));
-
-        this.menu.show(this.inputEl);
+    //
+    setValue: function(value) {
+        var me = this;
+        me.callParent([value]);
+        me.setColor(value);
     }
 });

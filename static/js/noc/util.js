@@ -383,6 +383,16 @@ Ext.apply(Ext.form.field.VTypes, {
     ASorASSETText: "Not valid AS or ASSET, must be in form AS3505, AS-SET, AS-MEGA-SET or AS3245:AS-TEST",
     ASorASSETMask: /[A-Z0-9-:]/i
 });
+// Custom VType for vtype: "color"
+Ext.apply(Ext.form.field.VTypes, {
+    color: function(val, field) {
+        var me = this;
+        return me.colorMask.test(val);
+    },
+    colorMask: /^[0-9a-f]{6}$/i,
+    colorText: "Invalid color, must be 6 hexadecimals"
+});
+
 //
 // Handlebars helpers
 //

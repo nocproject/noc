@@ -14,6 +14,7 @@ Ext.define("NOC.main.desktop.Application", {
         "NOC.core.StringListField",
         "Ext.ux.form.GridField",
         "Ext.ux.form.DictField",
+        "Ext.ux.form.ColorField",
         "Ext.ux.grid.column.GlyphAction"
     ],
 
