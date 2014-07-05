@@ -1,160 +1,166 @@
 //----------------------------------------------------------------------
 // Various javascript utilities
 //----------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2014 The NOC Project
 // See LICENSE for details
 //----------------------------------------------------------------------
 
 // NOC namespace
 Ext.namespace("NOC", "NOC.render");
-//
-// NOC.render.Bool(v)
-//     Grid field renderer for boolean values
-//     Displays icons depending on true/false status
-//
-NOC.render.Bool = function(v) {
-    return {
-        true: "<i class='fa fa-check' style='color:" + NOC.colors.yes + "'></i>",
-        false: "<i class='fa fa-times' style='color:" + NOC.colors.no + "'></i>",
-        null: "<i class='fa fa-circle-o'></i>"
-    }[v];
-};
 
 //
-// NOC.render.URL(v)
-//      Grid field renderer for URLs
+// Custom column renderers
 //
-NOC.render.URL = function(v) {
-    return "<a href =' " + v + "' target='_'>" + v + "</a>";
-}
+Ext.apply(NOC.render, {
+    //
+    // NOC.render.Bool(v)
+    //     Grid field renderer for boolean values
+    //     Displays icons depending on true/false status
+    //
+    Bool: function (v) {
+        return {
+            true: "<i class='fa fa-check' style='color:" + NOC.colors.yes + "'></i>",
+            false: "<i class='fa fa-times' style='color:" + NOC.colors.no + "'></i>",
+            null: "<i class='fa fa-circle-o'></i>"
+        }[v];
+    },
 
-//
-// NOC.render.Tags(v)
-//      Grid field renderer for tags
-//
-NOC.render.Tags = function(v) {
-    if(v) {
-        return v.map(function(x) {
-            return "<span class='x-display-tag'>" + x + "</span>";
-        }).join(" ");
-    } else {
-        return "";
-    }
-}
+    //
+    // NOC.render.URL(v)
+    //      Grid field renderer for URLs
+    //
+    URL: function (v) {
+        return "<a href =' " + v + "' target='_'>" + v + "</a>";
+    },
 
-NOC.render.Lookup = function(name) {
-    var l = name + "__label";
-    return function(value, meta, record) {
-        if(value) {
-            return record.get(l)
+    //
+    // NOC.render.Tags(v)
+    //      Grid field renderer for tags
+    //
+    Tags: function (v) {
+        if (v) {
+            return v.map(function (x) {
+                return "<span class='x-display-tag'>" + x + "</span>";
+            }).join(" ");
         } else {
             return "";
         }
-    };
-};
+    },
 
-NOC.render.Clickable = function(value) {
-    return "<a href='#' class='noc-clickable-cell'>" + value + "</a>";
-};
+    Lookup: function(name) {
+        var l = name + "__label";
+        return function(value, meta, record) {
+            if(value) {
+                return record.get(l)
+            } else {
+                return "";
+            }
+        };
+    },
 
-NOC.render.ClickableLookup = function(name) {
-    var l = name + "__label";
-    return function(value, meta, record) {
-        var v = value ? record.get(l) : "...";
-        return "<a href='#' class='noc-clickable-cell' title='Click to change...'>" + v + "</a>";
-    };
-};
+    Clickable: function(value) {
+        return "<a href='#' class='noc-clickable-cell'>" + value + "</a>";
+    },
 
-NOC.render.WrapColumn = function (val){
-    return '<div style="white-space:normal !important;">'+ val +'</div>';
-};
+    ClickableLookup: function(name) {
+        var l = name + "__label";
+        return function(value, meta, record) {
+            var v = value ? record.get(l) : "...";
+            return "<a href='#' class='noc-clickable-cell' title='Click to change...'>" + v + "</a>";
+        };
+    },
 
-NOC.render.Date = function(val) {
-    if(!val) {
-        return "";
-    }
-    return Ext.Date.format(val, "Y-m-d")
-};
+    WrapColumn: function (val){
+        return '<div style="white-space:normal !important;">'+ val +'</div>';
+    },
 
-NOC.render.DateTime = function(val) {
-    if(!val) {
-        return "";
-    }
-    return Ext.Date.format(val, "Y-m-d H:i:s")
-};
-
-NOC.render.Choices = function(choices) {
-    return function(value) {
-        return choices[value];
-    }
-};
-
-NOC.render.Timestamp = function(val) {
-    if(!val) {
-        return "";
-    }
-    var d = new Date(val * 1000),
-        y = d.getFullYear(),
-        m = d.getMonth() + 1,
-        D = d.getDate(),
-        h = d.getHours(),
-        M = d.getMinutes(),
-        s = d.getSeconds(),
-        f = function(v) {
-            return v <= 9 ? '0' + v : v;
+    Date: function(val) {
+        if(!val) {
+            return "";
         }
-    return "" + y + "-" + f(m) + "-" + f(D) + " " +
-        f(h) + ":" + f(M) + ":" + f(s);
-};
+        return Ext.Date.format(val, "Y-m-d")
+    },
 
-NOC.render.Duration = function(val) {
-    var f = function(v) {
-        return v <= 9 ? '0' + v : v;
-    };
+    DateTime: function(val) {
+        if(!val) {
+            return "";
+        }
+        return Ext.Date.format(val, "Y-m-d H:i:s")
+    },
 
-    if(!val) {
-        return "";
-    }
-    val = +val;
-    if(isNaN(val)) {
-        return "";
-    }
-    if(val < 60) {
-        // XXs
-        return "" + val + "s";
-    }
-    if(val < 86400) {
-        // HH:MM:SS
-        var h = Math.floor(val / 3600),
-            m = Math.floor((val - h * 3600) / 60),
-            s = val - h * 3600 - m * 60;
+    Choices: function(choices) {
+        return function(value) {
+            return choices[value];
+        }
+    },
 
-        return f(h) + ":" + f(m) + ":" + f(s);
-    }
-    // DDd HHh
-    var d = Math.floor(val / 86400),
-        h = Math.floor((val - d * 86400) / 3600);
-    return "" + d + "d " + f(h) + "h";
-};
+    Timestamp: function(val) {
+        if(!val) {
+            return "";
+        }
+        var d = new Date(val * 1000),
+            y = d.getFullYear(),
+            m = d.getMonth() + 1,
+            D = d.getDate(),
+            h = d.getHours(),
+            M = d.getMinutes(),
+            s = d.getSeconds(),
+            f = function(v) {
+                return v <= 9 ? '0' + v : v;
+            };
+        return "" + y + "-" + f(m) + "-" + f(D) + " " +
+            f(h) + ":" + f(M) + ":" + f(s);
+    },
 
-NOC.render.Size = function(v) {
-    if (v === null || v === undefined) {
-        return "";
-    }
-    if(v > 10000000) {
-        return Math.round(v / 1000000) + "M";
-    }
-    if(v > 1000) {
-        return Math.round(v / 1000) + "K";
-    }
-    return "" + v;
-}
+    Duration: function(val) {
+        var f = function(v) {
+            return v <= 9 ? '0' + v : v;
+        };
 
-NOC.render.Join = function(sep) {
-    return function(value) {
-        return value.join(sep);
+        if(!val) {
+            return "";
+        }
+        val = +val;
+        if(isNaN(val)) {
+            return "";
+        }
+        if(val < 60) {
+            // XXs
+            return "" + val + "s";
+        }
+        if(val < 86400) {
+            // HH:MM:SS
+            var h = Math.floor(val / 3600),
+                m = Math.floor((val - h * 3600) / 60),
+                s = val - h * 3600 - m * 60;
+
+            return f(h) + ":" + f(m) + ":" + f(s);
+        }
+        // DDd HHh
+        var d = Math.floor(val / 86400),
+            h = Math.floor((val - d * 86400) / 3600);
+        return "" + d + "d " + f(h) + "h";
+    },
+
+    Size: function(v) {
+        if (v === null || v === undefined) {
+            return "";
+        }
+        if(v > 10000000) {
+            return Math.round(v / 1000000) + "M";
+        }
+        if(v > 1000) {
+            return Math.round(v / 1000) + "K";
+        }
+        return "" + v;
+    },
+
+    Join: function(sep) {
+        return function(value) {
+            return value.join(sep);
+        }
     }
-}
+});
 
 //
 // Run new Map/Reduce task
