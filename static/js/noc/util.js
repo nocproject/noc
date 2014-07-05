@@ -282,109 +282,89 @@ NOC.is_ipv4_prefix = function(value) {
 // init quick labels for vtype validators
 Ext.QuickTips.init();
 Ext.form.Field.prototype.msgTarget = 'side';
+
 //
-// custom Vtype for vtype:"VlanID"
+// Custom VTypes
+//
 Ext.apply(Ext.form.field.VTypes, {
+    // VLAN ID checking
     VlanID: function(val, field) {
         try {
-            var id = parseInt(field.getValue());
+            var id = parseInt(val);
             return NOC.is_vlanid(id);
         } catch(e) {
             return false;
         }
     },
     VlanIDText: "Must be a numeric value [1-4095]",
-    VlanIDMask: /[\d\/]/
-});
-//
-// custom Vtype for vtype:"ASN" - autonomous system number
-Ext.apply(Ext.form.field.VTypes, {
+    VlanIDMask: /[\d\/]/,
+
+    // Autonomous system name checking
     ASN: function(val, field) {
         try {
-            var asn = parseInt(field.getValue());
+            var asn = parseInt(val);
             return NOC.is_asn(asn);
         } catch(e) {
             return false;
         }
     },
     ASNText: "AS num must be a numeric value > 0",
-    ASNMask: /[\d\/]/
-});
-//
-// custom Vtype for vtype:"IPv4"
-Ext.apply(Ext.form.field.VTypes, {
+    ASNMask: /[\d\/]/,
+
+    // IPv4 check
     IPv4: function(val, field){
         try {
-            var ipv4 = field.getValue();
-            return NOC.is_ipv4(ipv4);
+            return NOC.is_ipv4(val);
         } catch(e) {
             return false;
         }
     },
     IPv4Text: "Must be a numeric value 0.0.0.0 - 255.255.255.255",
-    IPv4Mask: /[\d\.]/i
-});
-//
-// custom Vtype for vtype:"IPv4Prefix"
-Ext.apply(Ext.form.field.VTypes, {
+    IPv4Mask: /[\d\.]/i,
+
+    // IPv4 prefix check
     IPv4Prefix: function(val, field){
         try {
-            var ipv4pref = field.getValue();
-            return NOC.is_ipv4_prefix(ipv4pref);
+            return NOC.is_ipv4_prefix(val);
         } catch(e) {
             return false;
         }
     },
     IPv4PrefixText: "Must be a numeric value 0.0.0.0/0 - 255.255.255.255/32",
-    IPv4PrefixMask: /[\d\.\/]/i
-});
-//
-// custom Vtype for vtype:"FQDN"
-Ext.apply(Ext.form.field.VTypes, {
+    IPv4PrefixMask: /[\d\.\/]/i,
+
+    // FQDN check
     FQDN: function(val, field){
+        var me = this;
         try {
-            var fqdntest = /^([a-z0-9\-]+\.)+[a-z0-9\-]+$/i;
-            var fqdn = field.getValue();
-            return fqdntest.test(fqdn);
+            return me.FQDNMask.test(val);
         } catch(e) {
             return false;
         }
     },
     FQDNText: "Not valid FQDN",
-    FQDNMask: /[-.a-zA-Z0-9]/i
-});
-//
-// custom Vtype for vtype:"ASSET"
-Ext.apply(Ext.form.field.VTypes, {
-    ASSET: function(val, field){ 
+    FQDNMask: /^([a-z0-9\-]+\.)+[a-z0-9\-]+$/i,
+
+    // AS-set check
+    ASSET: function(val, field){
+        var me = this;
         try {
-            var assettest = /^AS(-\w+)+$/i;
-            var asset = field.getValue();
-            return assettest.test(asset); 
+            return me.ASSETMask.test(val);
         } catch(e) {
             return false;
         }
     },   
     ASSETText: "Not valid ASSET, must be in form AS-SET or AS-MEGA-SET",
-    ASSETMask: /[A-Z0-9-]/i
-});
-//
-// custom Vtype for vtype:"ASorASSET"
-Ext.apply(Ext.form.field.VTypes, {
+    ASSETMask: /^AS(-\w+)+$/i,
+
+    // AS/AS-set check
     ASorASSET: function(val, field){
-        try {
-            var asorassettest = /^(AS(\d+|(-\w+)+)(:\S+)?(\s+AS(\d+|(-\w+)+)(:\S+)?)*$)/i;
-            var asorasset = field.getValue();
-            return asorassettest.test(asorasset);
-        } catch(e) {
-            return false;
-        }
+        var me = this;
+        return me.ASN(val, field) || me.ASSET(val, field);
     },
     ASorASSETText: "Not valid AS or ASSET, must be in form AS3505, AS-SET, AS-MEGA-SET or AS3245:AS-TEST",
-    ASorASSETMask: /[A-Z0-9-:]/i
-});
-// Custom VType for vtype: "color"
-Ext.apply(Ext.form.field.VTypes, {
+
+    // Color check
     color: function(val, field) {
         var me = this;
         return me.colorMask.test(val);
