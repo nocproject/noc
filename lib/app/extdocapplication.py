@@ -259,6 +259,8 @@ class ExtDocApplication(ExtApplication):
             if k != self.pk and "__" not in k:
                 setattr(o, k, v)
         o.save()
+        # Reread result
+        o = self.model.objects.get(**{self.pk: o.pk})
         if request.is_extjs:
             r = {
                 "success": True,
@@ -302,6 +304,8 @@ class ExtDocApplication(ExtApplication):
             if k != self.pk and "__" not in k:
                 setattr(o, k, attrs[k])
         o.save()
+        # Reread result
+        o = self.model.objects.get(**{self.pk: id})
         if request.is_extjs:
             r = {
                 "success": True,
