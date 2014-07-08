@@ -34,7 +34,7 @@ Environment | UPS | Input Power Low,0b7db31a-06fe-47fc-895e-92b14158dcb8,Environ
 Environment | UPS | Self-Test Failed,cd8a2c67-969e-472a-a32e-624edda8e29a,Environment/UPS/Self-Test_Failed.json,185fdce3e41e7fcb77eb4fc5353ab7113deacd3fb854812f2dbd98d6f8e00a32
 NOC | IPAM | VRF Group Address Collision,099d5271-1581-4059-9872-b8b98621e529,NOC/IPAM/VRF_Group_Address_Collision.json,5e20ab2f5a3e58fc0587e57369b2731cc58c94e0674916cc0706eb6e05bf1fa7
 NOC | Managed Object | Configuration Errors | Misconfigured SNMP,fad2b0ca-b717-404c-af00-7489baf6b15b,NOC/Managed_Object/Configuration_Errors/Misconfigured_SNMP.json,c0da48922d9e2684595eea05e62253fda1930584abde84394b578edab90a7d69
-NOC | Managed Object | Ping Failed,ec26e28d-0b64-4738-8c07-5ee3daca16f4,NOC/Managed_Object/Ping_Failed.json,2fc8f9d8d721776fcbf9b10c6dd36bd36f167fae050a625022281c60d0a554e3
+NOC | Managed Object | Ping Failed,ec26e28d-0b64-4738-8c07-5ee3daca16f4,NOC/Managed_Object/Ping_Failed.json,6edd8d6547ef0f240504d97579b5ac58e11c12555a63de5bcdc0cf87953abc64
 NOC | Periodic | Periodic Failed,19331749-daac-435d-829c-b9fedf85603f,NOC/Periodic/Periodic_Failed.json,af998074fa6f882bb2cd0658ff98561b983a060f36518c60538e5f5df71fe387
 NOC | SA | Activator Pool Degraded,70c6f606-e6eb-423a-86fb-87f0d6821f19,NOC/SA/Activator_Pool_Degraded.json,fef7671aeb8542c1aeac5e022fc9dd30420c3e2c0704005ddcb5a23e4ac30f06
 Network | BFD | Session Down,6b3a8cff-44fa-461a-8cb2-454ea2d7b2c6,Network/BFD/Session_Down.json,b4bab554fb9d6547328b950fb130e579bf339400577a0f4a28d377d7da97ae48
@@ -102,6 +102,8 @@ Security | Attack | Teardrop Attack,a0f6d92d-9988-434d-8e3e-f07d6622a5f7,Securit
 Security | Authentication | RADIUS server failed,fa641bed-9f72-49b6-b95d-b33936dc3690,Security/Authentication/RADIUS_server_failed.json,41b8815e3a34484510cb1343c4e1cdbb750bea60fb5f501550ca08a8de232c3d
 Security | Authentication | TACACS+ server failed,2e5a0caf-d984-498e-9cdf-974fa74997c5,Security/Authentication/TACACS+_server_failed.json,f17281d98788e65974974a1fb852b911a594fdee95cd9763937aeec0353163da
 System | Insufficient Memory,077cdef4-fd9b-4eda-85f4-c43ae6f541b7,System/Insufficient_Memory.json,37194eb1c514fa5480548509613d8882c744dcf6daba8df402696b3e9a8ac5b4
+System | Process Crashed,a4ecaee2-e7cb-4f80-928e-ccf92e374e85,System/Process_Crashed.json,64b8102989a8c3267bafa5649a7d33553959829774749f141a0cd8dccc038895
+System | Reboot,16f51199-4c36-477c-b311-2110a87666a0,System/Reboot.json,771468a9312f13808d5f40997d21b4f2ae4f95615f58de68faf20415e1c05318
 Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter,9c73f93b-9249-4296-b386-4ee1f1cb7e83,Vendor/Arista/EOS/VMTracer/Failed_to_connect_to_vCenter.json,1b167852a34c48279c3dbd492ebc3e4128a6260cd02984379695f6ada850a19d
 Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded,0c6d4a8f-2122-40a7-83c1-00dfa3e74991,Vendor/Cisco/IOS/Network/Load_Balance/Server_Farm_Degraded.json,243fb8f690426540670720eac9701d2f2ba6b91133c279de1e6f03fb7c810de6
 Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service,c4ebe882-c66b-42ec-9c33-47bb6caa25c3,Vendor/Cisco/IOS/Network/Load_Balance/vserver_Out_of_Service.json,80510284baaa4cec2065dc353837fc83f7eb50b598a947c55041de3be16002e3
