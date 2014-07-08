@@ -12,16 +12,16 @@
     ],
     "patterns": [
         {
-            "key_re": "profile",
-            "value_re": "Cisco.IOSXR"
+            "key_re": "^source$",
+            "value_re": "^syslog$"
         },
         {
-            "key_re": "source",
-            "value_re": "syslog"
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
         },
         {
-            "key_re": "message",
-            "value_re": "%PKT_INFRA-LINK-5-CHANGED : Interface (?P<iface>.+), changed state to Administratively Down$"
+            "key_re": "^message$",
+            "value_re": "%PKT_INFRA-LINK-5-CHANGED : Interface (?P<iface>.+), changed state to Administratively Down"
         }
     ]
 }
