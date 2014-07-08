@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%UBR\\d+00-4-BADTXOFFSET: Bad timing offset \\d+ detected for cable modem (?P<mac>\\S+)\\.$"
+            "value_re": "%UBR\\d+00-4-BADTXOFFSET: Bad timing offset (?P<offset>\\S+) detected for cable modem (?P<mac>\\S+)\\.$"
         }
     ]
 }
