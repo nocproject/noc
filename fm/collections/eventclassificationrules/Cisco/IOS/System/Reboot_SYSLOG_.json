@@ -10,6 +10,10 @@
             "value_re": "^syslog$"
         },
         {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
             "key_re": "^message$",
             "value_re": "%SYS-5-(?:SCHEDULED_)?RELOAD: Reload requested.+ by (?P<user>\\S+) on vty\\d+ (\\S+). Reload Reason: Reload Command."
         }
