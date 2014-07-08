@@ -42,6 +42,8 @@ class Profile(noc.sa.profiles.Profile):
     def cmp_version(self, x, y):
         return cmp([int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)])
 
+    def root_interface(self, name):
+        return name
 
 ## DES-1210-series
 def DES1210(v):
