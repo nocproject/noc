@@ -37,7 +37,7 @@ NOC | Managed Object | Configuration Errors | Misconfigured SNMP,fad2b0ca-b717-4
 NOC | Managed Object | Ping Failed,ec26e28d-0b64-4738-8c07-5ee3daca16f4,NOC/Managed_Object/Ping_Failed.json,6edd8d6547ef0f240504d97579b5ac58e11c12555a63de5bcdc0cf87953abc64
 NOC | Periodic | Periodic Failed,19331749-daac-435d-829c-b9fedf85603f,NOC/Periodic/Periodic_Failed.json,af998074fa6f882bb2cd0658ff98561b983a060f36518c60538e5f5df71fe387
 NOC | SA | Activator Pool Degraded,70c6f606-e6eb-423a-86fb-87f0d6821f19,NOC/SA/Activator_Pool_Degraded.json,fef7671aeb8542c1aeac5e022fc9dd30420c3e2c0704005ddcb5a23e4ac30f06
-Network | BFD | Session Down,6b3a8cff-44fa-461a-8cb2-454ea2d7b2c6,Network/BFD/Session_Down.json,b4bab554fb9d6547328b950fb130e579bf339400577a0f4a28d377d7da97ae48
+Network | BFD | Session Down,6b3a8cff-44fa-461a-8cb2-454ea2d7b2c6,Network/BFD/Session_Down.json,2299b1a0d592a9bfea64b52ff7047418a03774ee909eef172e2eaabadbd65be0
 Network | BGP | Peer Down,1b01710e-b3e7-4ff5-b718-2b6925bc6537,Network/BGP/Peer_Down.json,372a7fc05eb00c127c964c4d58d0a843bccf7800137ebe265528b2ed244a7458
 Network | BGP | Prefix Limit Exceeded,8a0ffe77-c3c0-4327-b52b-7b482e710aec,Network/BGP/Prefix_Limit_Exceeded.json,10e2fd2757694c99015a407610793780e4802ba2fe5dac5d90ad86dd5c698298
 Network | DHCP | Untrusted Server,86a5bbc4-803e-4eb9-906a-fb358e27d7ac,Network/DHCP/Untrusted_Server.json,c510ddc9358c294ce4dea79eb13703f0b5b3dc1925c8de1ac1e6c5322db5c6df
