@@ -223,6 +223,11 @@ class ForeignKeyField(BaseField):
                 instance._data[self.name] = value
         return super(ForeignKeyField, self).__get__(instance, owner)
 
+    def __set__(self, instance, value):
+        if not value:
+            value = None
+        super(ForeignKeyField, self).__set__(instance, value)
+
     def to_mongo(self, document):
         if isinstance(document, Model):
             # We need the id from the saved object to create the DBRef

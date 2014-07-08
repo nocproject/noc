@@ -44,5 +44,18 @@
             "action": "raise",
             "alarm_class__name": "Network | MAC | MAC Flap"
         }
+    ],
+    "repeat_suppression": [
+        {
+            "name": "Workaround for console flood on some Cisco routers",
+            "condition": "True",
+            "event_class__name": "Network | MAC | MAC Flap",
+            "match_condition": {
+                "vars__mac": "vars['mac']",
+                "managed_object": "event.managed_object.id"
+            },
+            "window": 160,
+            "suppress": true
+        }
     ]
 }

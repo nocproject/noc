@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetMACAddressTable
 import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable
 
 
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name = "Cisco.IOS.get_mac_address_table"
     implements = [IGetMACAddressTable]
     rx_line = re.compile(
@@ -20,7 +21,7 @@ class Script(noc.sa.script.Script):
         r"^(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+"
         r"(?P<interfaces>.*)$")  # Catalyst 3500XL
     ignored_interfaces = (
-        "router", "switch", "stby-switch", "yes", "no", "-", "cpu"
+        "router", "switch", "stby-switch", "yes", "no", "-", "cpu", "drop"
     )
 
     def is_ignored_interface(self, i):
@@ -76,6 +77,6 @@ class Script(noc.sa.script.Script):
                     "vlan_id": match.group("vlan_id"),
                     "mac": mac,
                     "interfaces": interfaces,
-                    "type": m_type,
+                    "type": m_type
                 }]
         return r

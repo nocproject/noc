@@ -26,5 +26,18 @@
             "action": "raise",
             "alarm_class__name": "NOC | Managed Object | Configuration Errors | Misconfigured SNMP"
         }
+    ],
+    "repeat_suppression": [
+        {
+            "name": "Workaround for console flood",
+            "condition": "True",
+            "event_class__name": "Security | Authentication | SNMP Authentication Failure",
+            "match_condition": {
+                "managed_object": "event.managed_object.id",
+                "vars__ip": "vars['ip']"
+            },
+            "window": 900,
+            "suppress": true
+        }
     ]
 }

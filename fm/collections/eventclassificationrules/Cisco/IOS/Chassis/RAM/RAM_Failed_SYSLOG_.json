@@ -6,7 +6,7 @@
     "preference": 1000,
     "vars": [
         {
-            "name": "bank"
+            "name": "bank",
             "value": "Mistral ASIC"
         }
     ],

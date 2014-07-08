@@ -60,7 +60,7 @@ class Script(NOCScript):
         re.MULTILINE)
 
     @NOCScript.match(platform__regex=r"^([123][678]\d\d|7[235]\d\d|107\d\d|"
-        r"C[23][69]00[a-z]?$|C8[759]0|C1700|C18[01]X|C1900|C2951|ASR\d+)")
+        r"C[23][69]00[a-z]?$|C8[7859]0|C1700|C18[01]X|C1900|C2951|ASR\d+)")
 
     def execute_vlan_switch(self):
         try:

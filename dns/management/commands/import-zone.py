@@ -171,7 +171,8 @@ class Command(BaseCommand):
             else:
                 rr = DNSZoneRecord(
                     zone=z, name=name, type=t,
-                    ttl=ttl, priority=priority
+                    ttl=ttl, priority=priority,
+                    content=value
                 )
             if rr:
                 self.info("Creating %s %s" % (rr.type, rr.name))
