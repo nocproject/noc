@@ -34,6 +34,7 @@ APC | AOS | Security | Authentication | SNMP Authentication Failure (SYSLOG),0b2
 APC | AOS | System | Started (SYSLOG),7e136f0a-b171-4b92-a796-21a301a15c07,APC/AOS/System/Started_SYSLOG_.json,33dbc54816649c39482420b2a091ec1445fad0800d7cac62144ad37d004f1141
 Alcatel | 7324RU | Network | Link | Link Down (SYSLOG),fd13c2ff-8ea6-4b9a-ad60-5731aa26b81b,Alcatel/7324RU/Network/Link/Link_Down_SYSLOG_.json,b4e419d0bcfe150416eb8881372f06ab4190171d24ec058324860494d65fbb23
 Alcatel | 7324RU | Network | Link | Link Up (SYSLOG),d1463555-3696-42d0-96d8-b5fcd462be64,Alcatel/7324RU/Network/Link/Link_Up_SYSLOG_.json,cebca3ad60bb102b32f3e0b8211fa72643325da9c8182efc5330fafbe8394c87
+Alcatel | 7324RU | System | Reboot (SYSLOG),5289a949-5ef8-4633-a4f9-150add393935,Alcatel/7324RU/System/Reboot_SYSLOG_.json,aa10aad82938d2a13e6ca91a7fd17c8741b15e9ffc483224662447f3c350e101
 Alcatel | 7324RU | System | Started (SYSLOG),b06df8c6-b62b-412f-adaf-3478651a3107,Alcatel/7324RU/System/Started_SYSLOG_.json,38ca59e8630711c5ade7dd40ded44ba474a1ef4fe5843fe651d589a82cff3b71
 Alcatel | AOS | Network | Link | Link Down (SYSLOG),2892cc0b-9022-4d68-b94a-4dcb4761ada3,Alcatel/AOS/Network/Link/Link_Down_SYSLOG_.json,2ec28adb138630533dbf0cf0f1ef8ced076214596c62acb43fe3019525dc742c
 Alcatel | AOS | Network | Link | Link Up (SYSLOG),5a59104a-eccd-458c-a86b-60315956b575,Alcatel/AOS/Network/Link/Link_Up_SYSLOG_.json,f33e9372a88c09f4cec863c050ec524b25f7a476dceb58c5e9509bcb83efe0e4
