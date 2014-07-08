@@ -46,6 +46,9 @@ class Profile(NOCProfile):
             r += [name[2:]]
         return r
 
+    def root_interface(self, name):
+        return name
+
     cluster_member = None
     dlink_pager = False
     rx_pager = re.compile(r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$",

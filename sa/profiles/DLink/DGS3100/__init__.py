@@ -46,6 +46,8 @@ class Profile(noc.sa.profiles.Profile):
             r += [name[2:]]
         return r
 
+    def root_interface(self, name):
+        return name
 
 ## DGS-3100-series
 def DGS3100(v):
