@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%PKT_INFRA-LINK-3-UPDOWN\\s*: \\s*Interface (?P<interface>.+), changed state to Down$"
+            "value_re": "%PKT_INFRA-LINK-3-UPDOWN\\s*: .*Interface (?P<interface>.+), changed state to Down$"
         }
     ]
 }

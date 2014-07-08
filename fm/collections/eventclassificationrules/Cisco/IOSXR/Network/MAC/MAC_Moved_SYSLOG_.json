@@ -6,7 +6,7 @@
     "preference": 1000,
     "vars": [
         {
-            "name": "interface"
+            "name": "interface",
             "value": "='%s/%s/%s/%s' % (iface1, iface2, iface3, iface4)"
         }
     ],

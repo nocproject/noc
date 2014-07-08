@@ -6,7 +6,7 @@
     "preference": 1000,
     "vars": [
         {
-            "name": "to_interface"
+            "name": "to_interface",
             "value": "Null0"
         }
     ],
