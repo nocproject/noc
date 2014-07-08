@@ -1,0 +1,19 @@
+{
+    "name": "System | Process Crashed",
+    "uuid": "a4ecaee2-e7cb-4f80-928e-ccf92e374e85",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "INFO",
+    "vars": [
+
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Process crashed: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
+            "body_template": "Process crashed: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    }
+}
