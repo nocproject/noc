@@ -10,6 +10,10 @@
             "value_re": "^syslog$"
         },
         {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
             "key_re": "^message$",
             "value_re": "SHELL/\\d/TIMEOUT.+VTY login from (?P<ip>\\S+) is time out"
         }

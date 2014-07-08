@@ -347,7 +347,7 @@ Cisco | IOS | Security | Authentication | SSH - Login Failed (SYSLOG),435a5c49-5
 Cisco | IOS | Security | Authentication | SSH - Logout (SYSLOG),e682e2d2-8bf7-4915-833d-80411fe79871,Cisco/IOS/Security/Authentication/SSH_-_Logout_SYSLOG_.json,45b8b18bbd1c0cae4e74a57f8ef92e7ca70dc1c396b1e3e3ce6010ffeaee146e
 Cisco | IOS | Security | Authentication | SSH - Unexpected message type (SYSLOG),8b8b48ea-e341-4a9f-a700-7dc831422c31,Cisco/IOS/Security/Authentication/SSH_-_Unexpected_message_type_SYSLOG_.json,7d863c1ff0811fd0bc7c2f067d3faaa09d82fbfb4951ad40a95b652f714f3d17
 Cisco | IOS | System | Reboot (SNMP),1acccb88-f6bb-4e35-a96a-82169a1e9cc7,Cisco/IOS/System/Reboot_SNMP_.json,a1da757d64ae19404697237c451b62a3cb04ff111f4128014691fccb7769d175
-Cisco | IOS | System | Reboot (SYSLOG),efbcd3b3-11b6-42d4-8c8f-a676fed9529b,Cisco/IOS/System/Reboot_SYSLOG_.json,7e015e609195fbc17da7fc953fca93fded63d43dd299cad33a6cb43e96fb574a
+Cisco | IOS | System | Reboot (SYSLOG),efbcd3b3-11b6-42d4-8c8f-a676fed9529b,Cisco/IOS/System/Reboot_SYSLOG_.json,9bbf22aa1c4f9f4377108b22cbb464e8c406eb610e90df46592d6991f5e66d85
 Cisco | IOS | System | Started (SYSLOG),453eb5ce-2b55-48bd-80fe-2ae0988a2b3c,Cisco/IOS/System/Started_SYSLOG_.json,6c7c8ff90f13d40e74c879ae1bf697662bf4f53373fb9f42589009b16bcec1c8
 Cisco | IOS | Unknown | Ignore ACL logging (SYSLOG),d1a0fa2a-218c-4b7b-9b8c-ab9d576791a4,Cisco/IOS/Unknown/Ignore_ACL_logging_SYSLOG_.json,268feb4db6059f63bef049fdcb2268d5f42f6b58e2d7fb36c6fd826b21355041
 Cisco | IOS | Unknown | Ignore BGP Notification #1 (SNMP),3a965a56-8842-4532-8ba2-2ba1d5a6b721,Cisco/IOS/Unknown/Ignore_BGP_Notification_1_SNMP_.json,feb32d3642e0d4701ae6c793ad9c134c6a4977c64c38a1959b05e4b5b7810f3f
@@ -716,7 +716,7 @@ Huawei | VRP | Security | Authentication | Login Failed #1 (SYSLOG),32b8da21-ae9
 Huawei | VRP | Security | Authentication | Login Failed #2 (SYSLOG),79924896-8dad-4c05-b88d-2e46b34e83f0,Huawei/VRP/Security/Authentication/Login_Failed_2_SYSLOG_.json,19537653e2b0c527eb75148ee893cb8bfd1aceb86f0e47346820844f87b2419a
 Huawei | VRP | Security | Authentication | Logout # 1(SYSLOG),4664b575-f27c-4350-a202-22a835a2cea1,Huawei/VRP/Security/Authentication/Logout_1_SYSLOG_.json,ffa50d0a0793554cc23e4f0df2ee633acd8c9ba5f0824e54d218d7089f801e01
 Huawei | VRP | Security | Authentication | Logout #2 (SYSLOG),f6a5d9e5-ebdf-4f9a-bc6c-6be586103663,Huawei/VRP/Security/Authentication/Logout_2_SYSLOG_.json,f1d75eee96e2641e5227e62a96e53316a507ba524cea840d4c106b1b58fb41fc
-Huawei | VRP | Security | Authentication | Logout #3 (SYSLOG),4c204dd8-25e8-42cd-9fc7-b024c55a0c35,Huawei/VRP/Security/Authentication/Logout_3_SYSLOG_.json,e175e2d54c5fb5dde229a28003fce15de9271d39f4dc135ff2a726919593c7af
+Huawei | VRP | Security | Authentication | Logout #3 (SYSLOG),4c204dd8-25e8-42cd-9fc7-b024c55a0c35,Huawei/VRP/Security/Authentication/Logout_3_SYSLOG_.json,1847a43175691f2194cb6e09d5b232e8950aa07a61fccaa55118810f9177def4
 Huawei | VRP | Security | Authentication | RADIUS server failed (SYSLOG),d63918ad-be0b-4790-b5c3-e469e1f8a248,Huawei/VRP/Security/Authentication/RADIUS_server_failed_SYSLOG_.json,27da48d00d0b1483584da758b6c739f3b3b25c49ecefa7fb45046ce6776007bd
 Huawei | VRP | Unknown | Ignore FIB refresh (SYSLOG),6e62dee4-2f54-416a-9681-1aac9e2d7afa,Huawei/VRP/Unknown/Ignore_FIB_refresh_SYSLOG_.json,4b7ade7c627a8a8ed525bb76676232706decd8674d59ce6e16571652eddf37b4
 Huawei | VRP | Unknown | Ignore NTP #1 (SYSLOG),c6ebaf67-d0cd-4a70-b493-b37def7a56ac,Huawei/VRP/Unknown/Ignore_NTP_1_SYSLOG_.json,8def574710a9afbe21fc64089ff7df9753ff9b66aabbec513fc9f6883d7a912a
