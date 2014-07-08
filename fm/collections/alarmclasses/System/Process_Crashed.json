@@ -2,6 +2,7 @@
     "name": "System | Process Crashed",
     "uuid": "a4ecaee2-e7cb-4f80-928e-ccf92e374e85",
     "is_unique": true,
+    "discriminator": ["name"],
     "user_clearable": true,
     "default_severity__name": "INFO",
     "vars": [

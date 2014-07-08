@@ -21,5 +21,13 @@
             "probable_causes": "",
             "recommended_actions": ""
         }
-    }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "System | Reboot"
+        }
+    ]
 }
