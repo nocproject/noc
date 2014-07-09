@@ -39,6 +39,10 @@ Ext.define("NOC.main.desktop.NavTree", {
         var me = this;
         var reuse = !event.shiftKey;
 
+        if(!record.isLeaf()) {
+            return;
+        }
+
         Ext.Ajax.request({
             method: "GET",
             url: "/main/desktop/launch_info/",
@@ -55,6 +59,5 @@ Ext.define("NOC.main.desktop.NavTree", {
                 NOC.error("Cannot launch application");
             }
         });
-    },
-
+    }
 });
