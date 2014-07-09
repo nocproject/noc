@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%DUAL-5-NBRCHANGE: (?:IP-EIGRP(\\(\\d+\\))?|EIGRP-IPv4)(:\\(\\d+\\))? (?P<as>\\d+): Neighbor (?P<neighbor>\\S+) \\((?P<interface>.+?)\\) is (?P<to_state>up): (?P<reason>.*)$"
+            "value_re": "%DUAL-5-NBRCHANGE: (?:IP-EIGRP(\\(\\d+\\))?|EIGRP-IPv4|EIGRP-IPv6)(:\\(\\d+\\))? (?P<as>\\d+): Neighbor (?P<neighbor>\\S+) \\((?P<interface>.+?)\\) is (?P<to_state>up): (?P<reason>.*)$"
         }
     ]
 }
