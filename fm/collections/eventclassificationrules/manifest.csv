@@ -350,6 +350,8 @@ Cisco | IOS | Security | Authentication | SSH - Login (SYSLOG),18ef90ef-8f6d-4d2
 Cisco | IOS | Security | Authentication | SSH - Login Failed (SYSLOG),435a5c49-58f5-476f-b84c-31faa16017db,Cisco/IOS/Security/Authentication/SSH_-_Login_Failed_SYSLOG_.json,afe7f1689096e72ec8e258e484856e5024b3f2af9d1bfdb47c5654a3c22052b0
 Cisco | IOS | Security | Authentication | SSH - Logout (SYSLOG),e682e2d2-8bf7-4915-833d-80411fe79871,Cisco/IOS/Security/Authentication/SSH_-_Logout_SYSLOG_.json,45b8b18bbd1c0cae4e74a57f8ef92e7ca70dc1c396b1e3e3ce6010ffeaee146e
 Cisco | IOS | Security | Authentication | SSH - Unexpected message type (SYSLOG),8b8b48ea-e341-4a9f-a700-7dc831422c31,Cisco/IOS/Security/Authentication/SSH_-_Unexpected_message_type_SYSLOG_.json,7d863c1ff0811fd0bc7c2f067d3faaa09d82fbfb4951ad40a95b652f714f3d17
+Cisco | IOS | System | Process Started (SYSLOG),c11025a4-1e91-41a2-8672-3fef0fae0f77,Cisco/IOS/System/Process_Started_SYSLOG_.json,1eaf108b678dfa741dca9b7e805cb0d1d526d5da20ce0e0974a570aee49e38e3
+Cisco | IOS | System | Process Started (SYSLOG) #2,adacf242-d225-4c28-8f09-98df378aa4e8,Cisco/IOS/System/Process_Started_SYSLOG_2.json,924ec64ed4b76a1e593b33262881c58cdbd81fe24dae2d191d7917a4bfffca68
 Cisco | IOS | System | Reboot (SNMP),1acccb88-f6bb-4e35-a96a-82169a1e9cc7,Cisco/IOS/System/Reboot_SNMP_.json,a1da757d64ae19404697237c451b62a3cb04ff111f4128014691fccb7769d175
 Cisco | IOS | System | Reboot (SYSLOG),efbcd3b3-11b6-42d4-8c8f-a676fed9529b,Cisco/IOS/System/Reboot_SYSLOG_.json,9bbf22aa1c4f9f4377108b22cbb464e8c406eb610e90df46592d6991f5e66d85
 Cisco | IOS | System | Started (SYSLOG),453eb5ce-2b55-48bd-80fe-2ae0988a2b3c,Cisco/IOS/System/Started_SYSLOG_.json,6c7c8ff90f13d40e74c879ae1bf697662bf4f53373fb9f42589009b16bcec1c8
