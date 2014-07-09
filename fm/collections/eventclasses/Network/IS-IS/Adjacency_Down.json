@@ -4,8 +4,8 @@
     "action": "A",
     "vars": [
         {
-            "name": "level",
-            "description": "Level",
+            "name": "neighbor",
+            "description": "Neighbor's NSAP or name",
             "type": "str",
             "required": true
         },
@@ -16,22 +16,22 @@
             "required": true
         },
         {
-            "name": "neighbor",
-            "description": "Neighbor's NSAP or name",
+            "name": "level",
+            "description": "Level",
             "type": "str",
-            "required": true
+            "required": false
         },
         {
             "name": "reason",
             "description": "Adjacency lost reason",
             "type": "str",
-            "required": true
+            "required": false
         }
     ],
     "text": {
         "en": {
-            "subject_template": "IS-IS lost {{level}} adjacency to {{neighbor}} on {{interface}}. Reason: {{reason}}",
-            "body_template": "IS-IS lost {{level}} adjacency to {{neighbor}} on {{interface}}\nReason: {{reason}}",
+            "subject_template": "IS-IS lost{% if level %} {{level}}{% endif %} adjacency to {{neighbor}} on {{interface}}{% if reason %}. Reason: {{reason}}{% endif %}",
+            "body_template": "IS-IS lost{% if level %} {{level}}{% endif %} adjacency to {{neighbor}} on {{interface}}{% if reason %}\nReason: {{reason}}{% endif %}",
             "symptoms": "Routing table changes and possible lost of connectivity",
             "probable_causes": "ISIS successfully established adjacency with neighbor",
             "recommended_actions": "Check links and local and neighbor's router configuration"

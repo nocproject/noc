@@ -239,6 +239,8 @@ Cisco | IOS | Network | EIGRP | Neighbor Up (SYSLOG),9c3fca87-b1e8-47c0-b91d-1bb
 Cisco | IOS | Network | IP | Address Conflict (SYSLOG),686e6e16-ab18-4b61-8fd1-0de312a4f9e9,Cisco/IOS/Network/IP/Address_Conflict_SYSLOG_.json,a2657bca0c2cc4ee7be0dff40ee0b9c917b9fc7bdd7196b4507271f84f8a2e9f
 Cisco | IOS | Network | IP | Route Limit Exceeded (SYSLOG),0eb6eb1e-9d3a-4f50-be3e-861121926306,Cisco/IOS/Network/IP/Route_Limit_Exceeded_SYSLOG_.json,62742a8799b8e9561164347c2ba794be5824b881d1430697fd316d6c59eb0d43
 Cisco | IOS | Network | IP | Route Limit Warning (SYSLOG),4c0b5344-fa07-4463-99cf-24693dc7c535,Cisco/IOS/Network/IP/Route_Limit_Warning_SYSLOG_.json,3346a8b154867c1f3d03dfb50aa146cd15ff81cd12e8bced46c9bf5fc3701f05
+Cisco | IOS | Network | IS-IS | Adjacency Down (SYSLOG),df270065-62a8-49ed-aa13-16fa629866b9,Cisco/IOS/Network/IS-IS/Adjacency_Down_SYSLOG_.json,e9119b80c6a3eab279004f8b7af54d60a0dbaf88c24a97e826664e1fa70d6b88
+Cisco | IOS | Network | IS-IS | Adjacency Up (SYSLOG),ef2d0003-cd5f-4a5d-8d36-c4f9387b7a66,Cisco/IOS/Network/IS-IS/Adjacency_Up_SYSLOG_.json,6256d8f6bdbc12f61a718f4d6295a5f3433ca3433252053659a3659047594272
 Cisco | IOS | Network | LAG | Bundle (SYSLOG),58427f64-de1e-4b51-bbc8-9bc825d9f4b6,Cisco/IOS/Network/LAG/Bundle_SYSLOG_.json,bcf2ea3f7a1e2410742c02ad7fd226bdf547cf6abbe93a304ffc64d5ba531145
 Cisco | IOS | Network | LAG | Unbundle (SYSLOG),ace36c61-f05f-468c-aa9e-8fb073ab1df1,Cisco/IOS/Network/LAG/Unbundle_SYSLOG_.json,9c734982ebfb444a93aa5d2dc6f465c9a6ffc179790aed5d4e88dd46e7e6e24e
 Cisco | IOS | Network | LBD | Loop Cleared (SYSLOG),c3a7ce71-35c3-4a44-85c7-cae435b109be,Cisco/IOS/Network/LBD/Loop_Cleared_SYSLOG_.json,5c303b8163e0ce780b917605c1869eeed4e97d4fa0b9fbc1032b7ddf02581190

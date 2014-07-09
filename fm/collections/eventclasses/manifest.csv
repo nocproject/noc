@@ -115,8 +115,8 @@ Network | IP | IP Flap,16efc0f6-d3f0-4527-850c-e783b1287926,Network/IP/IP_Flap.j
 Network | IP | Port Exhaustion,c10a55e0-29ed-44ae-89b1-0d6019a23bd7,Network/IP/Port_Exhaustion.json,b023aee9cc1f1b1977fac4048ee3fe2d01975de208c6a6349a8f607a4930c363
 Network | IP | Route Limit Exceeded,64654abe-bea8-47e2-822f-2d57614f5c9a,Network/IP/Route_Limit_Exceeded.json,bf4b88d2238daaa8317a815933d4355194e3f2b2f4b455e1bbc80add202430fc
 Network | IP | Route Limit Warning,a533af93-c5e7-4f95-8c00-b30ae5ec9a88,Network/IP/Route_Limit_Warning.json,318e1c3291b14cf0af688d5124ac3b6ed9236e92073d9a1d5c663fdd8a2019b2
-Network | IS-IS | Adjacency Down,87e5b0e2-43de-4983-99fc-0af4029ff305,Network/IS-IS/Adjacency_Down.json,44f0820bb0764eb95916cec88a1e6f84f99571582633bfcdaea99a8f78623f59
-Network | IS-IS | Adjacency Up,a4af4dd8-4139-4577-85e6-236d85e4d838,Network/IS-IS/Adjacency_Up.json,67d30ed4ea5d5d89db32c0775371eb9627dde3dcbcf11941dc8adeb8e759a882
+Network | IS-IS | Adjacency Down,87e5b0e2-43de-4983-99fc-0af4029ff305,Network/IS-IS/Adjacency_Down.json,46409754b593c7bc162a279a538e89fc14ee8852fbc53de1ae0528bb1917fbd5
+Network | IS-IS | Adjacency Up,a4af4dd8-4139-4577-85e6-236d85e4d838,Network/IS-IS/Adjacency_Up.json,e01cc89648eef861a35209e011fa272980f9eedd69cdc03f4044fd165f4ec135
 Network | LAG | Bundle,09b69b0d-e7dc-4d24-9fb8-4828f7d3c6cf,Network/LAG/Bundle.json,f193b12c07024335721b5bb50cd3a2e4d351e0b14b04fe76bfc9f39f33ad02ae
 Network | LAG | Unbundle,5b434de9-1e39-409f-aea4-c3ba49be6b2a,Network/LAG/Unbundle.json,5c315e807bf76e6392d6c864f5f89965a8ac36a8048e69b2a68abc1c30ff8fb8
 Network | LBD | Loop Cleared,f0739e3d-12ee-4a12-98fe-290819163582,Network/LBD/Loop_Cleared.json,d87380e0dabb86da83ed1a830875cbb247a430cb66d2bb3b938bae02a9221ad8
