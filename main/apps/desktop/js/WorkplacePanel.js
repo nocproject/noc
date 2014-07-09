@@ -88,6 +88,10 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
         if(app && Ext.isFunction(app.onCloseApp)) {
             app.onCloseApp();
         }
+        if(me.items.length === 1) {
+            // Except *Expand* button
+            Ext.History.setHash("");
+        }
     },
     // Process history
     onAfterRender: function() {
