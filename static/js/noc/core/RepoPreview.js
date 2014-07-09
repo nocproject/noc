@@ -13,6 +13,7 @@ Ext.define("NOC.core.RepoPreview", {
     syntax: null,
     restUrl: null,
     historyHashPrefix: null,
+    theme: "twilight",
 
     initComponent: function() {
         var me = this;
@@ -145,6 +146,19 @@ Ext.define("NOC.core.RepoPreview", {
             diffRange: 30
         });
 
+        me.cmContainer = Ext.create({
+            xtype: "container",
+            layout: "fit",
+            tpl: [
+                '<div id="{cmpId}-cmEl" class="{cmpCls}" style="{size}"></div>'
+            ],
+            data: {
+                cmpId: me.id,
+                cmpCls: Ext.baseCSSPrefix + "codemirror " + Ext.baseCSSPrefix + 'html-editor-wrap ' + Ext.baseCSSPrefix + 'html-editor-input',
+                size: "width:100%;height:100%"
+            }
+        });
+
         Ext.apply(me, {
             dockedItems: [{
                 xtype: "toolbar",
@@ -170,25 +184,44 @@ Ext.define("NOC.core.RepoPreview", {
                     me.lastMonthButton
                 ]
             }],
-            items: [{
-                xtype: "container",
-                autoScroll: true
-            }]
+            items: [me.cmContainer],
+            listeners: {
+                scope: me,
+                resize: me.onResize
+            }
         });
         me.callParent();
         //
         me.urlTemplate = Handlebars.compile(me.restUrl);
         me.titleTemplate = Handlebars.compile(me.previewName);
-        me.viewer = null;
     },
     //
     afterRender: function() {
         var me = this;
-        me.callParent();
-        me.viewer = new CodeMirror(me.items.first().el.dom, {
+        me.callParent(arguments);
+        me.initViewer();
+    },
+    //
+    initViewer: function() {
+        var me = this,
+            el = me.cmContainer.el.getById(me.id + "-cmEl", true);
+        // Create CodeMirror
+        me.viewer = new CodeMirror(el, {
             readOnly: true,
-            lineNumbers: true
+            lineNumbers: true,
+            theme: me.theme
         });
+        // change the codemirror css
+        var css = Ext.util.CSS.getRule('.CodeMirror');
+        if(css){
+            css.style.height = '100%';
+            css.style.position = 'relative';
+            css.style.overflow = 'hidden';
+        }
+        css = Ext.util.CSS.getRule('.CodeMirror-Scroll');
+        if(css){
+            css.style.height = '100%';
+        }
     },
     //
     startPreview: function(record, backItem) {
@@ -458,5 +491,12 @@ Ext.define("NOC.core.RepoPreview", {
             );
         });
         me.requestDiff(rev1, rev2);
+    },
+    //
+    onResize: function() {
+        var me = this;
+        if(me.viewer) {
+            me.viewer.refresh();
+        }
     }
 });
