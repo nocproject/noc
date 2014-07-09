@@ -245,6 +245,7 @@ Cisco | IOS | Network | LAG | Bundle (SYSLOG),58427f64-de1e-4b51-bbc8-9bc825d9f4
 Cisco | IOS | Network | LAG | Unbundle (SYSLOG),ace36c61-f05f-468c-aa9e-8fb073ab1df1,Cisco/IOS/Network/LAG/Unbundle_SYSLOG_.json,9c734982ebfb444a93aa5d2dc6f465c9a6ffc179790aed5d4e88dd46e7e6e24e
 Cisco | IOS | Network | LBD | Loop Cleared (SYSLOG),c3a7ce71-35c3-4a44-85c7-cae435b109be,Cisco/IOS/Network/LBD/Loop_Cleared_SYSLOG_.json,5c303b8163e0ce780b917605c1869eeed4e97d4fa0b9fbc1032b7ddf02581190
 Cisco | IOS | Network | LBD | Loop Detected (SYSLOG),2025caa3-ecc7-45d9-95fd-199afa7cbbbd,Cisco/IOS/Network/LBD/Loop_Detected_SYSLOG_.json,1af628fe826c16501b03ba3ac042660d01423241fd0a863f4a7fcef0e7a26c55
+Cisco | IOS | Network | Link | Connection Problem #2 (SYSLOG),c9c79a0b-096d-4b1c-99d8-132fa5f536a1,Cisco/IOS/Network/Link/Connection_Problem_2_SYSLOG_.json,46fe66d9d4549a175e3a5de72aec0a137151aeecbef7923e867b7643c596b238
 Cisco | IOS | Network | Link | Connection Problem (SNMP),5cc91d44-b361-4e52-924f-5ec28269d3c1,Cisco/IOS/Network/Link/Connection_Problem_SNMP_.json,94741ed8580a46fd5520a93af2fc5b03bea38e0b49bc744fad15ed30f6d78f31
 Cisco | IOS | Network | Link | Connection Problem (SYSLOG),f231b9d3-f9e7-44af-9b35-bff75158d7eb,Cisco/IOS/Network/Link/Connection_Problem_SYSLOG_.json,81e368522c147cd22e8f3c5942b5616a5925e44d9cd956edb0012fb8bddea26b
 Cisco | IOS | Network | Link | DOM | Alarm: Out of Threshold (SYSLOG),f61c2e46-13e3-4517-839b-e87cadd8c395,Cisco/IOS/Network/Link/DOM/Alarm_Out_of_Threshold_SYSLOG_.json,632d65a8df3c08f565f6de8f4df3b2d8012221e2b8b30b04e84db65660c01f1f
