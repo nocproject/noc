@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | BFD | Session Down (SYSLOG)",
+    "uuid": "5cc5c237-9568-446c-bf35-fb57e25a9e51",
+    "description": "%L2-BFD-6-SESSION_STATE_DOWN : BFD session to neighbor 192.168.1.1 on interface GigabitEthernet0/1/0/19 has gone down. Reason: Echo function failed",
+    "event_class__name": "Network | BFD | Session Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%L2-BFD-6-SESSION_STATE_DOWN : BFD session to neighbor (?P<peer>\\S+) on interface (?P<interface>\\S+) has gone down. Reason: (?P<reason>.+)$"
+        }
+    ]
+}
