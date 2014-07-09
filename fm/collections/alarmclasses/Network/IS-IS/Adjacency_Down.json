@@ -2,14 +2,10 @@
     "name": "Network | IS-IS | Adjacency Down",
     "uuid": "52ea3beb-fa6d-40f9-97f0-f3958d0c8089",
     "is_unique": true,
-    "discriminator": ["level", "neighbor"],
+    "discriminator": ["neighbor", "interface"],
     "user_clearable": true,
     "default_severity__name": "WARNING",
     "vars": [
-        {
-            "name": "level",
-            "description": "Level"
-        },
         {
             "name": "interface",
             "description": "Interface"
@@ -19,14 +15,18 @@
             "description": "Neighbor's NSAP or name"
         },
         {
+            "name": "level",
+            "description": "Level"
+        },
+        {
             "name": "reason",
             "description": "Adjacency lost reason"
         }
     ],
     "text": {
         "en": {
-            "subject_template": "IS-IS lost {{level}} adjacency to {{neighbor}}. Reason: {{reason}}",
-            "body_template": "IS-IS lost {{level}} adjacency to {{neighbor}}\nReason: {{reason}}",
+            "subject_template": "IS-IS lost{% if level %} {{level}}{% endif %} adjacency to {{neighbor}}{% if reason %}.Reason: {{reason}}{% endif %}",
+            "body_template": "IS-IS lost{% if level %} {{level}}{% endif %} adjacency to {{neighbor}}{% if reason %}\nReason: {{reason}}{% endif %}",
             "symptoms": "Routing table changes and possible lost of connectivity",
             "probable_causes": "Link failure or protocol misconfiguration",
             "recommended_actions": "Check links and local and neighbor router configuration"
