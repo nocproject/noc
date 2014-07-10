@@ -32,7 +32,7 @@ requests==2.2.1
 noc-pkg-handlebars==1.0.0
 noc-pkg-famfamfam-silk==1.3
 noc-pkg-silk-companion1==1.0
-noc-pkg-extjs==4.2.1
+noc-pkg-extjs==5.0.0
 noc-pkg-mxgraph==1.10.4.2
 noc-pkg-openlayers==2.13
 noc-pkg-cubism==1.2.2
