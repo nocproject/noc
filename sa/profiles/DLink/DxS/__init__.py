@@ -163,18 +163,20 @@ class Profile(NOCProfile):
                 objects = script.cli_object_stream(
                     "show ports", parser=self.parse_interface,
                     cmd_next="n", cmd_stop="q")
-        prev_i = None
+        prev_port = None
         ports = []
         for i in objects:
-            if prev_i and (prev_i['port'] == i['port']):
+            if prev_port and (prev_port == i['port']):
                 if i['status'] == True:
+                    k = 0
                     for j in ports:
                         if j['port'] == i['port']:
-                            j = i
+                            ports[k] = i
                             break
+                        k = k + 1
             else:
                 ports += [i]
-            prev_i = i
+            prev_port = i['port']
         return ports
 
     rx_vlan = re.compile(r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
