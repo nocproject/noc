@@ -223,7 +223,7 @@ Ext.define("NOC.fm.event.Application", {
         me.callParent();
         //
         me.startPolling();
-        if(me.noc.cmd && me.noc.cmd.cmd == "history") {
+        if(me.getCmd() === "history") {
             me.showEvent(me.noc.cmd.args[0]);
         }
 
@@ -305,6 +305,12 @@ Ext.define("NOC.fm.event.Application", {
     showForm: function() {
         var me = this;
         me.showItem(me.ITEM_FORM);
+    },
+    //
+    showEvent: function(id) {
+        var me = this,
+            panel = me.showItem(me.ITEM_FORM);
+        panel.showEvent(id);
     },
     //
     onCloseApp: function() {

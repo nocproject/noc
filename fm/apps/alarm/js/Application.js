@@ -232,7 +232,7 @@ Ext.define("NOC.fm.alarm.Application", {
         //
         me.startPolling();
         //
-        if(me.noc.cmd && me.noc.cmd.cmd == "history") {
+        if(me.getCmd() === "history") {
             me.showAlarm(me.noc.cmd.args[0]);
         }
     },
