@@ -121,13 +121,11 @@ Ext.define("NOC.inv.inv.Application", {
         //
         me.callParent();
         // Process commands
-        if(me.noc.cmd) {
-            switch(me.noc.cmd.cmd) {
-                case "history":
-                    me.restoreHistory(me.noc.cmd.args);
-                    return;
-                    break;
-            }
+        switch(me.getCmd()) {
+            case "history":
+                me.restoreHistory(me.noc.cmd.args);
+                return;
+                break;
         }
     },
     //
