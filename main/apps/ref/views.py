@@ -2,10 +2,12 @@
 ##----------------------------------------------------------------------
 ## main.ref application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
 ## Django modules
 from django.db import models
 ## NOC modules
@@ -106,6 +108,23 @@ class RefAppplication(ExtApplication):
             } for t in themes],
             key=lambda x: x["label"].lower()
         )
+
+    def build_cmtheme(self):
+        """
+        CodeMirror themes
+        """
+        r = [{
+            "id": "default",
+            "label": "default"
+        }]
+        for f in os.listdir("static/pkg/codemirror/theme"):
+            if f.endswith(".css"):
+                t = f[:-4]
+                r += [{
+                    "id": t,
+                    "label": t
+                }]
+        return r
 
     def build_unotificationmethod(self):
         return sorted(({"id": s[0], "label": s[1]}
