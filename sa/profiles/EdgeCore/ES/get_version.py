@@ -117,6 +117,10 @@ class Script(NOCScript):
             vendor = "MRV"
         elif platform.lower() == "8 sfp ports + 4 gigabit combo ports l2/l3/l4 managed standalone switch":
             platform = "ES4612"
+        elif platform == "Managed 8G+4GSFP Switch":
+            platform = "ECS4210-12T"
+        elif platform == "Managed 24G+4GSFP Switch":
+            platform = "ECS4210-28T"
         else:
             raise self.NotSupportedError(platform)
         r = {
@@ -126,7 +130,7 @@ class Script(NOCScript):
             "attributes": {}
         }
         v = self.cli("show version", cached=True)
-	match = self.rx_boot_35.search(v)
+        match = self.rx_boot_35.search(v)
         if match:
             r["attributes"].update({"Boot PROM": match.group("boot")})
         match = self.rx_hw_35.search(v)
