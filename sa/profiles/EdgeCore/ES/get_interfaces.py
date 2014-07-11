@@ -160,10 +160,12 @@ class Script(NOCScript):
             self.match_version(platform__contains="3526") or
             self.match_version(platform__contains="3528") or
             self.match_version(platform__contains="2228N") or
-            self.match_version(platform__contains="3552")):
+            self.match_version(platform__contains="3552") or
+            self.match_version(platform__contains="ECS4210")):
 
             # Dirty-hack 3510MA managment SVI interface
-            if (self.match_version(platform__contains="3510MA")):
+            if (self.match_version(platform__contains="3510MA") or
+            self.match_version(platform__contains="ECS4210")):
                 for ls in self.cli("show ip interface").splitlines():
                     match = self.rx_svi_name_stat_3510MA.search(ls)
                     if match:

@@ -52,7 +52,8 @@ class Script(NOCScript):
            self.match_version(platform__contains="2228N") or
            self.match_version(platform__contains="3528") or
            self.match_version(platform__contains="3552") or
-           self.match_version(platform__contains="4612")):
+           self.match_version(platform__contains="4612") or
+           self.match_version(platform__contains="ECS4210")):
             cmd = self.cli("show interface switchport")
             for block in cmd.rstrip("\n\n").split("\n\n"):
                 matchint = self.rx_interface_3526.search(block)
