@@ -476,6 +476,7 @@ DLink | DxS | Chassis | Fan | Fan Recovered (SYSLOG),ce29ef15-8094-4bc3-9ae1-fe0
 DLink | DxS | Chassis | Hardware | Hardware Error (SYSLOG),8adabf6f-c863-46fb-8954-d98b7d13fb3b,DLink/DxS/Chassis/Hardware/Hardware_Error_SYSLOG_.json,31a08c23496a710195efa0747ba82d302a28cd11bfd448cf6e861868486d18f7
 DLink | DxS | Chassis | PSU | PSU Failed (SYSLOG),29680163-a6bb-4df4-9a46-32937b6ba248,DLink/DxS/Chassis/PSU/PSU_Failed_SYSLOG_.json,ebe8944243ba6e9af6fbaf2e38e1dd257a7d54fabeda4541545a89ea92f62683
 DLink | DxS | Chassis | PSU | PSU Recovered (SYSLOG),02e2b9b7-661f-4254-879a-b3902961fb1b,DLink/DxS/Chassis/PSU/PSU_Recovered_SYSLOG_.json,3698b9857dd401d42ba4cad60ee8b15f3a86144d817d9145c45a2715c3598010
+DLink | DxS | Chassis | PSU | Power Failed (SNMP),3f00b4a5-6208-4128-b7e1-7f5a536421ea,DLink/DxS/Chassis/PSU/Power_Failed_SNMP_.json,5ca5a79a2821acb367ae4065d0e558e7bbf7636a9041b088d8a2355dbbdb27a1
 DLink | DxS | Chassis | Stack | Stack Degraded (SYSLOG),dd1bfb6e-58d2-44d1-9088-2114e25b3362,DLink/DxS/Chassis/Stack/Stack_Degraded_SYSLOG_.json,a54e25feff78e81c0d93f16b927b5dc9a1a5ce51b2fc568f762ddd8fa974e7a2
 DLink | DxS | Chassis | Stack | Stack is Raised (SYSLOG),1d58ca1f-ff02-4cdf-95aa-cc0ea65d5fd9,DLink/DxS/Chassis/Stack/Stack_is_Raised_SYSLOG_.json,b86cf822cab87c5ed0c01a5137a8da685432acf1dacfb87f9a88cf228befc2f8
 DLink | DxS | Config | Config Changed #1 (SNMP),f7d557cb-5849-414b-9c8a-e177bd683b44,DLink/DxS/Config/Config_Changed_1_SNMP_.json,d81d8584ec4b9692ac92bb467760d456bfe440d3a2d436938324eef639f0048f

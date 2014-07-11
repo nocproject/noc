@@ -1,0 +1,29 @@
+{
+    "name": "DLink | DxS | Chassis | PSU | Power Failed (SNMP)",
+    "uuid": "3f00b4a5-6208-4128-b7e1-7f5a536421ea",
+    "description": "DOT3-OAM-MIB::dot3OamNonThresholdEvent",
+    "event_class__name": "Chassis | PSU | Power Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^DOT3-OAM-MIB::dot3OamNonThresholdEvent$"
+        },
+        {
+            "key_re": "^DOT3-OAM-MIB::dot3OamEventLogLocation\\.(?P<interface>\\d+)\\.\\d+$",
+            "value_re": "^local$"
+        },
+        {
+            "key_re": "^DOT3-OAM-MIB::dot3OamEventLogType\\.\\d+\\.\\d+$",
+            "value_re": "^257$"
+        }
+    ]
+}
