@@ -46,6 +46,8 @@ class Script(NOCScript):
             try:
                 platform = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.15.0",
                                         cached=True)
+                if platform == '':
+                    raise self.snmp.TimeOutError
                 platform = platform.split(' ')[1]
                 version = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.2.0",
                                         cached=True)
