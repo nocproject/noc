@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Qtech.QSW.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -19,7 +19,8 @@ class Script(NOCScript):
     cache = True
 
     rx_plat_ver = re.compile(
-        r"^software version\s+:\s+QTECH\s+(?P<platform>\S+)\s+(?P<version>\S+)$", re.MULTILINE)
+        r"^software version\s+:\s+QTECH\s+(?P<platform>\S+)\s+"
+        r"(?P<version>\S+)$", re.MULTILINE)
     rx_bootprom = re.compile(
         r"^bootrom version\s+:\s+V+(?P<bootprom>\S+)$", re.MULTILINE)
     rx_hardware = re.compile(
@@ -30,13 +31,14 @@ class Script(NOCScript):
     rx_plat1 = re.compile(
         r"^\s+(?P<platform>QSW-\S+) Device, Compiled on", re.MULTILINE)
     rx_soft1 = re.compile(
-        r"^\s+SoftWare Version (?P<version>\d\S+)$", re.MULTILINE)
+        r"^\s+SoftWare( Package)? Version (?P<version>\d\S+)$", re.MULTILINE)
     rx_bootprom1 = re.compile(
         r"^\s+BootRom Version (?P<bootprom>\d\S+)$", re.MULTILINE)
     rx_hardware1 = re.compile(
         r"^\s+HardWare Version (?P<hardware>\d\S+)$", re.MULTILINE)
     rx_serial1 = re.compile(
-        r"^\s+(?:Device serial number\s|Serial No\.:)(?P<serial>\d\S+)$", re.MULTILINE)
+        r"^\s+(?:Device serial number\s|Serial No\.:)(?P<serial>\d\S+)$",
+        re.MULTILINE)
 
     def execute(self):
         # Try SNMP first
