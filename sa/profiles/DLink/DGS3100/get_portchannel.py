@@ -38,7 +38,7 @@ class Script(NOCScript):
                     "type": "L" if match.group("type").lower() == "lacp" else "S"
                     }]
         for match in self.rx_trunk1.finditer(t):
-            if match.group("status").lower() == "enabled":
+            if match.group("status").lower() == "enable":
                 r += [{
                     "interface": "T%s" % match.group("trunk"),
                     "members": self.expand_rangelist(match.group("members")),
