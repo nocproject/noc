@@ -19,14 +19,14 @@ rx_interface=re.compile(r"\n##\s+INTERFACE:\s*(?P<interface>\S+)",re.MULTILINE|r
 ## Command handler
 ##
 class Command(BaseCommand):
-    help="Syncronize built-in pyRules"
+    help="Synchronize built-in pyRules"
     def handle(self, *args, **options):
         transaction.enter_transaction_management()
         self.sync_pyrules()
         transaction.leave_transaction_management()
     
     def sync_pyrules(self):
-        print "Syncronizing pyRules"
+        print "Synchronizing pyRules"
         left=set(PyRule.objects.filter(is_builtin=True).values_list("name",flat=True))
         p=os.path.join("main","pyrules")
         for fn in os.listdir(p):

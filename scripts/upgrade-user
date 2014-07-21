@@ -13,7 +13,7 @@
 PROGNAME=`basename $0`
 
 error_exit ( ) {
-    echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
+    echo -e "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m" 1>&2
     echo "Terminating" 1>&2
     exit 1
 }
@@ -34,14 +34,14 @@ info "Checking postgresql database connection"
 # Check mongodb database connection
 info "Checking mongodb database connection"
 ./scripts/check-db.py --mongo || error_exit "$LINENO: Unable to connect to mongodb database. Check noc.conf settings"
-# Syncronize database
-info "Syncronizing database"
+# Synchronize database
+info "Synchronizing database"
 ./noc syncdb --noinput || error_exit "$LINENO: syncdb failed"
 # Migrate database
 info "Migrating database"
 ./noc migrate --ignore-ghost-migrations || error_exit "$LINENO: migrate failed"
-# Syncronize mongodb collections
-info "Syncronize collections"
+# Synchronize mongodb collections
+info "Synchronize collections"
 ./noc collection --sync || error_exit "$LINENO: collection --sync failed"
 # Generate SSH keys
 if [ ! -f etc/ssh/id_rsa ]; then
@@ -51,17 +51,17 @@ fi
 # Update manifests
 info "Updating manifests"
 ./noc sync-manifest || error_exit "$LINENO: failed to update manifests"
-# Syncronize pyRules
-info "Syncronizing pyRules"
+# Synchronize pyRules
+info "Synchronizing pyRules"
 ./noc sync-pyrules || error_exit "$LINENO: sync-pyrules failed"
 # Set up permissions
 info "Setting up permissions"
 ./noc sync-perm || error_exit "$LINENO: sync-perm failed"
-# Syncronize refbooks
-info "Syncronizing refbooks"
+# Synchronize refbooks
+info "Synchronizing refbooks"
 ./noc sync-refbooks || error_exit "$LINENO: sync-refbooks failed"
-# Syncronize MIBS
-info "Syncronize MIBs"
+# Synchronize MIBS
+info "Synchronize MIBs"
 ./noc sync-mibs || error_exit "$LINENO: sync-mibs failed"
 # Check FTS index
 info "Checking FTS index"
