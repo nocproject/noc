@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%ROUTING-ISIS-5-ADJCHANGE : Adjacency to (?P<neighbor>\\S+)\\s+\\((?P<interface>.+)\\)\\s\\((?P<level>\\S+)\\) Up, New adjacency"
+            "value_re": "%ROUTING-ISIS-5-ADJCHANGE : Adjacency to (?P<neighbor>\\S+)\\s+\\((?P<interface>.+)\\)\\s\\((?P<level>\\S+)\\) Up, (?P<reason>.+)$"
         }
     ]
 }
