@@ -27,7 +27,7 @@ INIT = "__init__.py"
 ## Command handler
 ##
 class Command(BaseCommand):
-    help = "Syncronize online documentation"
+    help = "Synchronize online documentation"
     
     ##
     ## Rebuild supported equipment database.

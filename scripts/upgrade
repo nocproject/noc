@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Initialize and upgrade NOC
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 ## Helper functions definitions
 ##
 error_exit ( ) {
-    echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
+    echo -e "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m" 1>&2
     echo "Terminating" 1>&2
     exit 1
 }
@@ -47,7 +47,7 @@ PREFIX=$PWD
 ## Check, if NOC is already running
 ##
 if [ -f "./etc/noc-launcher.conf" ]; then
-    PIDFILE=`cat ./etc/noc-launcher.conf | grep pidfile | cut -d ' ' -f3`
+    PIDFILE=`grep pidfile ./etc/noc-launcher.conf | cut -d '=' -f2 | sed 's/[ \t]*//'`
     if [ -f "$PIDFILE" ]; then
         error_exit "NOC is running now. Shutdown it first."
     fi
