@@ -254,12 +254,14 @@ Cisco | IOS | Network | Link | Half-Duplex (SYSLOG),0a60acb2-a4dd-461e-8e09-84a1
 Cisco | IOS | Network | Link | Link Down #1 (SNMP),281a5329-c290-428a-b522-47fb50fe8ee3,Cisco/IOS/Network/Link/Link_Down_1_SNMP_.json,8947b9a6170481d0848248783e7564daa0ac6ee37e8b6c3b510311a1932dd981
 Cisco | IOS | Network | Link | Link Down #2 (SNMP),6265ec7b-c62d-49e3-8f32-6b5fc159e99b,Cisco/IOS/Network/Link/Link_Down_2_SNMP_.json,3bf1f151546d2fec4867ff79a1bbbb2c6315dd0d645b0a4137fb818be3907914
 Cisco | IOS | Network | Link | Link Down #3 (SNMP),b2250a7c-3dad-4bc8-badb-e5983b7855f8,Cisco/IOS/Network/Link/Link_Down_3_SNMP_.json,fc9f47bfa271b2f8c2072ab7492fca5de61338d083de99b8600794ec8aa1ae8f
+Cisco | IOS | Network | Link | Link Down #4 (SNMP),1c690ede-ee9c-4184-a2e3-b32a54a843f6,Cisco/IOS/Network/Link/Link_Down_4_SNMP_.json,b7761bf02b7560a0931e03139e7582ce0a77787b8e01e187e5d07b5b6aef5892
 Cisco | IOS | Network | Link | Link Down (SYSLOG),d76f13f0-f153-4aa4-b68d-3460f5013bcf,Cisco/IOS/Network/Link/Link_Down_SYSLOG_.json,808f1f23a3f8dec2e60e96ca90338c8e780d4ca4fd91b1717562edd00cec5e44
 Cisco | IOS | Network | Link | Link Flap Error Detected (SYSLOG),8bcec903-efa2-46f1-8510-cc3ac8d9c8c0,Cisco/IOS/Network/Link/Link_Flap_Error_Detected_SYSLOG_.json,94baec0ba6176c9fb5316480971cac5fdab740275ae62655518c8ac50a5c5855
 Cisco | IOS | Network | Link | Link Flap Error Recovery (SYSLOG),1e2e78c0-92b7-4e78-957d-4163ef9d1f5d,Cisco/IOS/Network/Link/Link_Flap_Error_Recovery_SYSLOG_.json,e61bfba8c351cb844d4c2e96bd5a9e4e870090159b9538485083f7bddd55d9a4
 Cisco | IOS | Network | Link | Link Up #1 (SNMP),e37547ff-d2c1-4990-a5cf-12ce843a2b53,Cisco/IOS/Network/Link/Link_Up_1_SNMP_.json,106b3216c288ec85c53f1a0a283560086dd374c0efa00d13a2f833e3bcf89df0
 Cisco | IOS | Network | Link | Link Up #2 (SNMP),eeda4346-8ee7-42b0-a940-5e279d7a00fd,Cisco/IOS/Network/Link/Link_Up_2_SNMP_.json,c3afb9643455df7a5a2f89ae58f49d016dfb78dbebdc3b07409d576ad68466be
 Cisco | IOS | Network | Link | Link Up #3 (SNMP),75bb9a4d-2817-42a6-a14d-c8a990cbf04b,Cisco/IOS/Network/Link/Link_Up_3_SNMP_.json,f27b597809857a453ac530b5ce65fa7c6b4df1c2a1516b3dee229775d11cf581
+Cisco | IOS | Network | Link | Link Up #4 (SNMP),b44b9b18-ac24-46b5-9bbe-2d9b9ee0fb52,Cisco/IOS/Network/Link/Link_Up_4_SNMP_.json,eb1f4ffa32a91aa541ab3716dbfcd950723e629bfa01c9b0af2b3cd2f191a05e
 Cisco | IOS | Network | Link | Link Up (SYSLOG),c803765b-0e6c-4d10-8ded-fe50cb6799e1,Cisco/IOS/Network/Link/Link_Up_SYSLOG_.json,8afa0ef2f317d2c33b860a56145b1e1ceb20b90336e169fa7e6603f31e23dabc
 Cisco | IOS | Network | MAC | Duplicate MAC (SYSLOG),2a3fad74-728d-4a80-aeae-3adec67d8734,Cisco/IOS/Network/MAC/Duplicate_MAC_SYSLOG_.json,6f0f0df1c0137ab5c3f4ef87f7ffd86136d752e6078bf703b521818387e139b2
 Cisco | IOS | Network | MAC | Invalid MAC (SYSLOG),b905216c-8605-4269-aa48-64786de510b9,Cisco/IOS/Network/MAC/Invalid_MAC_SYSLOG_.json,6b308c02c93f8f09515562533fd630081095bfe8c3f13276ebc413cab46fbd54
@@ -735,7 +737,6 @@ Huawei | VRP | Unknown | Ignore repeats (SYSLOG),c0ae34b8-ffe7-4973-a0d4-466f4c0
 Huawei | VRP3 | Network | LBD | Vlan Loop Detected (SYSLOG),07ab2097-0d3b-4921-90b1-b57494977f55,Huawei/VRP3/Network/LBD/Vlan_Loop_Detected_SYSLOG_.json,8b909ec1dbdd79d58815aeddb5848d8d0b7145a9c3220934d11f3fcd2c248361
 Huawei | VRP3 | Network | Link | Link Down (SYSLOG),c0b573ab-4391-4d9e-81a3-acaa7b312bb1,Huawei/VRP3/Network/Link/Link_Down_SYSLOG_.json,fec6773bb05d9f49536018284bb9ba7725832930ce8ddce3c7a5e8f03acf2118
 Huawei | VRP3 | Network | Link | Link Up (SYSLOG),c5ab4444-3baf-46ad-b715-5387142a0eca,Huawei/VRP3/Network/Link/Link_Up_SYSLOG_.json,89725f5a6cd71c57db04ee54c684f21b996cf0b7b4166dc4e5392af69b80d532
-Juniper | JUNOS | Authentication | Login (SNMP),5e730aa6-740c-45fa-a4f8-b3739419423d,Juniper/JUNOS/Authentication/Login_SNMP_.json,983b29c188e136b40bf1a9026a6e074d4285929e1f9497981e1e1e057e99e861
 Juniper | JUNOS | Chassis | PSU | PSU Failed (SNMP),9cb8e984-80a3-4820-b699-a02c40a1fa39,Juniper/JUNOS/Chassis/PSU/PSU_Failed_SNMP_.json,b977a243c049e825ffc71995f4f03335b34ef146cff6780f99b0d8b5c5a5c4ec
 Juniper | JUNOS | Config | Config Changed (SNMP),5341d9a1-8304-42d3-b689-6a9fd532ad6c,Juniper/JUNOS/Config/Config_Changed_SNMP_.json,3f5f635f0b796103216edfd5a4635caa124df369edcd53707d59798c12dcd4c1
 Juniper | JUNOS | Config | Entering Configuration Mode,fde68ee3-ca62-4461-bbfc-c180415ab3e0,Juniper/JUNOS/Config/Entering_Configuration_Mode.json,5e29766a1f722ed758b18f11498a3057be5e2c524fe2c74b108a85ae929d7aeb
@@ -762,6 +763,8 @@ Juniper | JUNOS | Network | RSVP | Neighbor Down (SYSLOG),26f4fc74-6e18-4042-a33
 Juniper | JUNOS | Network | RSVP | Neighbor Up (SYSLOG),f9a02ea4-71a3-420c-b48a-a93d03ceb79f,Juniper/JUNOS/Network/RSVP/Neighbor_Up_SYSLOG_.json,27bf46b26535e504d5c3512d4c890fddf9d2e9949c6f68c5362c1f91355e00ac
 Juniper | JUNOS | Security | Audit | Command (SYSLOG),c2aef895-27d8-4ad9-b453-1751d828ef65,Juniper/JUNOS/Security/Audit/Command_SYSLOG_.json,c5808c2dda3c64f77a2334412cec908b5de4ff096865c33c4c20eebe51e7ec92
 Juniper | JUNOS | Security | Audit | Cron (SYSLOG),cfe929ba-cd01-495a-8b17-a7fde6a95d17,Juniper/JUNOS/Security/Audit/Cron_SYSLOG_.json,59f1956ee836662def57e7f8e2b7a3fa33a3e86b4c2abd562fc2f9a83bbb17b4
+Juniper | JUNOS | Security | Authentication | Login #2 (SYSLOG),05e6c5ed-2dc4-4346-8293-e269666aaf02,Juniper/JUNOS/Security/Authentication/Login_2_SYSLOG_.json,26f0803e0b5ab7733cb1e71409e6b329f4ff8819c67ee7e4542eff8be9f4bfb9
+Juniper | JUNOS | Security | Authentication | Login (SNMP),5e730aa6-740c-45fa-a4f8-b3739419423d,Juniper/JUNOS/Security/Authentication/Login_SNMP_.json,45b1c12ff0329dc54524418a2cf6199ba35b59fc7aa54db53762f32e3d9fc090
 Juniper | JUNOS | Security | Authentication | Login (SYSLOG),d45ae618-6c83-4670-8f91-ad926e64319a,Juniper/JUNOS/Security/Authentication/Login_SYSLOG_.json,3a2a3af38db782d6fbe09ff976c4b8bff8dc407534cbea0f68a28aaa42381823
 Juniper | JUNOS | Security | Authentication | Login Failed #2 (SYSLOG),4784720f-18b5-4407-8293-a582a4f5cbf9,Juniper/JUNOS/Security/Authentication/Login_Failed_2_SYSLOG_.json,164f25b64bba7ea5c22db144bab6e47e9a34db927e45f97f3e07eb6c4c87d9d2
 Juniper | JUNOS | Security | Authentication | Login Failed (SYSLOG),81fe8a24-6de8-4e47-932e-e94871ad64ba,Juniper/JUNOS/Security/Authentication/Login_Failed_SYSLOG_.json,6f844879c3e5a42545f2845454eaec842049f09576b74c67f248cc650a905c71
