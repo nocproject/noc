@@ -1,5 +1,5 @@
 {
-    "name": "Juniper | JUNOS | Authentication | Login (SNMP)",
+    "name": "Juniper | JUNOS | Security | Authentication | Login (SNMP)",
     "uuid": "5e730aa6-740c-45fa-a4f8-b3739419423d",
     "description": "UI_LOGIN_EVENT: User 'noc' login, class 'j-super-user' [1866]",
     "event_class__name": "Security | Authentication | Login",
