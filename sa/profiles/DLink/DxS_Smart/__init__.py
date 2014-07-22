@@ -42,6 +42,12 @@ class Profile(noc.sa.profiles.Profile):
     def cmp_version(self, x, y):
         return cmp([int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)])
 
+    def get_interface_names(self, name):
+        r = []
+        if name.startswith("1/"):
+            r += [name[2:]]
+        return r
+
     def root_interface(self, name):
         return name
 
