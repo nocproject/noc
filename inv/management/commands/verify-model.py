@@ -31,6 +31,7 @@ class Command(BaseCommand):
             "Electrical | DB9": self.check_ct_db9,
             "Electrical | RJ45": self.check_ct_rj45,
             "Electrical | Power | IEC 60320 C14": self.check_ct_c14,
+            "Electrical | SFF-8470": self.check_ct_sff8470,
             "Transceiver | SFP": self.check_ct_sfp,
             "Transceiver | SFP+": self.check_ct_sfp_plus,
             "Transceiver | QSFP+": self.check_ct_qsfp_plus,
@@ -84,6 +85,13 @@ class Command(BaseCommand):
             self.e(c, "C14 must have direction 's' (has '%s')" % c.direction)
         self.check_protocols(c, [
             ">220VAC", "<220VAC", ">110VAC", "<110VAC"
+        ])
+
+    def check_ct_sff8470(self, c):
+        if c.direction != "s":
+            self.e(c, "SFF-8470 must have direction 's' (has '%s')" % c.direction)
+        self.check_protocols(c, [
+            "10GBASECX4"
         ])
 
     def check_ct_sfp(self, c):

@@ -13,17 +13,19 @@
             "type__name": "DLink | DGS3610 | Module"
         },
         {
-            "description": "CX4 port 0",
-            "direction": "s",
-            "gender": "f",
-            "name": "port0",
-            "type__name": "Electrical | SFF-8470"
-        },
-        {
             "description": "CX4 port 1",
             "direction": "s",
             "gender": "f",
-            "name": "port1",
+            "name": "cx4_1",
+            "protocols": ["10GBASECX4"],
+            "type__name": "Electrical | SFF-8470"
+        },
+        {
+            "description": "CX4 port 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "cx4_2",
+            "protocols": ["10GBASECX4"],
             "type__name": "Electrical | SFF-8470"
         }
     ],
