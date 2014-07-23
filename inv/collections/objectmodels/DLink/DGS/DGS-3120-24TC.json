@@ -242,6 +242,7 @@
             "direction": "s",
             "gender": "f",
             "name": "cx4_1",
+            "protocols": ["10GBASECX4"],
             "type__name": "Electrical | SFF-8470"
         },
         {
@@ -249,6 +250,7 @@
             "direction": "s",
             "gender": "f",
             "name": "cx4_2",
+            "protocols": ["10GBASECX4"],
             "type__name": "Electrical | SFF-8470"
         },
         {
