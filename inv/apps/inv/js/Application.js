@@ -135,6 +135,7 @@ Ext.define("NOC.inv.inv.Application", {
     },
     //
     runPlugin: function(objectId, pData) {
+        console.log("runPlugin", pData.name);
         var me = this,
             plugin = Ext.create(pData.xtype, {app: me});
         me.tabPanel.add(plugin);
