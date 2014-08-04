@@ -12,7 +12,8 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
         "NOC.inv.interfaceclassificationrule.Model",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.inv.interfaceprofile.LookupField",
-        "Ext.ux.form.GridField"
+        "NOC.main.prefixtable.LookupField",
+        "NOC.vc.vcfilter.LookupField"
     ],
     model: "NOC.inv.interfaceclassificationrule.Model",
     search: true,
@@ -141,9 +142,10 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
                             text: "Prefix",
                             dataIndex: "prefix_table",
                             editor: {
-                                xtype: "ip.prefixtable.LookupField",
+                                xtype: "main.prefixtable.LookupField",
                                 allowBlank: true
                             },
+                            renderer: NOC.render.Lookup("prefix_table"),
                             width: 150
                         },
                         {
@@ -153,6 +155,7 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
                                 xtype: "vc.vcfilter.LookupField",
                                 allowBlank: true
                             },
+                            renderer: NOC.render.Lookup("vc_filter"),
                             width: 150
                         },
                         {
@@ -169,5 +172,10 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
             ]
         });
         me.callParent();
+    },
+    //
+    onMatchSelect: function(field, records, eOpts) {
+        var me = this;
+        console.log("Field", field);
     }
 });
