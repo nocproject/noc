@@ -61,7 +61,7 @@ Ext.define("NOC.sa.managedobject.scripts.TablePreview", {
             name: "search_field",
             hideLabel: true,
             scope: me,
-            handler: me.onSearch,
+            handler: me.onSearch
         });
         return me.searchField;
     },
