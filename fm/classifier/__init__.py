@@ -348,7 +348,8 @@ class Classifier(Daemon):
         ntmp = n + "_tmp"
         cdb.drop_collection(ntmp)
         tmp = cdb[ntmp]
-        tmp.insert(d, safe=True)
+        if d:
+            tmp.insert(d, safe=True)
         tmp.rename(n, dropTarget=True)
         cdb[n].ensure_index("sources")
         logging.debug("Updating ignore rules")
