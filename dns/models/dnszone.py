@@ -671,3 +671,22 @@ def on_save(sender, instance, created, **kwargs):
 def on_delete(sender, instance, **kwargs):
     sync_request(instance.channels, "list", delta=5)
     # @todo: Delete from repo
+
+
+@receiver(post_save, sender=Address)
+def on_address_save(sender, instance, created, **kwargs):
+    """
+    Fires after Address.save()
+    """
+    if created:
+        old = Address.objects.get(id=instance.id)
+        DNSZone.touch(old.address)
+        DNSZone.touch(old.fqdn)
+    DNSZone.touch(instance.address)
+    DNSZone.touch(instance.fqdn)
+
+
+@receiver(pre_delete, sender=Address)
+def on_address_delete(sender, instance, **kwargs):
+    DNSZone.touch(instance.fqdn)
+    DNSZone.touch(instance.address)
