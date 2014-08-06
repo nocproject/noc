@@ -66,7 +66,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             "    return iface.name.lower() == %s" % repr(self.value.lower())
         ])
 
-    def compile_name_regex(self, f_name):
+    def compile_name_regexp(self, f_name):
         return "\n".join([
             "rx_%s = re.compile(%s, re.IGNORECASE)" % (f_name, repr(self.value)),
             "def %s(iface):" % f_name,
@@ -80,13 +80,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             "    return iface.description.lower() == %s" % repr(self.value.lower())
         ])
 
-    def compile_description_contains(self, f_name):
-        return "\n".join([
-            "def %s(iface):" % f_name,
-            "    return iface.description and %s in iface.description.lower()" % repr(self.value.lower())
-        ])
-
-    def compile_description_regex(self, f_name):
+    def compile_description_regexp(self, f_name):
         return "\n".join([
             "rx_%s = re.compile(%s, re.IGNORECASE)" % (f_name, repr(self.value1)),
             "def %s(iface):" % f_name,
@@ -212,7 +206,7 @@ class InterfaceClassificationRule(Document):
         r = ["import re"]
         mf = [
             "gsc = {}",
-            "def classify(cls, interface):",
+            "def classify(interface):",
             "    def in_selector(o, s):",
             "        if s in s_cache:",
             "            return s_cache[s]",

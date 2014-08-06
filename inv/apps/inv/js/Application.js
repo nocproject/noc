@@ -121,13 +121,11 @@ Ext.define("NOC.inv.inv.Application", {
         //
         me.callParent();
         // Process commands
-        if(me.noc.cmd) {
-            switch(me.noc.cmd.cmd) {
-                case "history":
-                    me.restoreHistory(me.noc.cmd.args);
-                    return;
-                    break;
-            }
+        switch(me.getCmd()) {
+            case "history":
+                me.restoreHistory(me.noc.cmd.args);
+                return;
+                break;
         }
     },
     //
@@ -137,6 +135,7 @@ Ext.define("NOC.inv.inv.Application", {
     },
     //
     runPlugin: function(objectId, pData) {
+        console.log("runPlugin", pData.name);
         var me = this,
             plugin = Ext.create(pData.xtype, {app: me});
         me.tabPanel.add(plugin);
@@ -187,6 +186,7 @@ Ext.define("NOC.inv.inv.Application", {
             objectId = record.get("id"),
             plugins = record.get("plugins");
         me.addButton.setDisabled(!record.get("can_add"));
+        me.removeButton.setDisabled(!record.get("can_delete"));
         me.invPlugins = {};
         me.tabPanel.removeAll();
         Ext.each(plugins, function(p) {

@@ -185,7 +185,7 @@ class MapApplication(ExtApplication):
         return self.render_response("\n".join(r), content_type="text/xml")
 
     @view(url="^stencils/(?P<status>[nwau])/(?P<shape>.+)/$",
-        method=["GET"], access="launch", api=True)
+        method=["GET"], access=True, api=True)
     def api_stencil(self, request, status, shape):
         svg = stencil_registry.get_svg(status, shape)
         if not svg:

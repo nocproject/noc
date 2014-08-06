@@ -56,30 +56,24 @@ Ext.define("NOC.sa.managedobject.scripts.TablePreview", {
     //
     getSearchField: function(cfg) {
         var me = this;
-        me.searchField = Ext.create("Ext.form.field.Text", {
+        me.searchField = Ext.create({
+            xtype: "searchfield",
             name: "search_field",
-            emptyText: "Search...",
-            inputType: "search",
             hideLabel: true,
-            width: 200,
-            listeners: {
-                change: {
-                    fn: me.onSearch,
-                    scope: me,
-                    buffer: 200
-                }
-            }
+            scope: me,
+            handler: me.onSearch
         });
         return me.searchField;
     },
     //
-    onSearch: function() {
-        var me = this,
-            text = me.searchField.getValue().toLowerCase();
+    onSearch: function(value) {
+        var me = this;
+        value = value.toLowerCase();
+        me.store.clearFilter(true);
         me.store.filterBy(function(record) {
             for(var i in me.searchFields) {
                 var n = me.searchFields[i];
-                if(String(record.get(n)).toLowerCase().indexOf(text) !== -1) {
+                if(String(record.get(n)).toLowerCase().indexOf(value) !== -1) {
                     return true;
                 }
             }

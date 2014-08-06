@@ -115,6 +115,7 @@ class Application(object):
     __metaclass__ = ApplicationBase
     title = "APPLICATION TITLE"
     icon = "icon_application"
+    glyph = "file"
     extra_permissions = []  # List of additional permissions, not related with views
     implied_permissions = {}  # permission -> list of implied permissions
 

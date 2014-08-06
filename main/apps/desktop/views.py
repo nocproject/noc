@@ -37,25 +37,15 @@ class DesktopApplication(ExtApplication):
             if o.endswith(".name"):
                 theme_id = o[:-5]
                 nk = "%s.name" % theme_id
-                ck = "%s.css" % theme_id
                 ek = "%s.enabled" % theme_id
                 if (config.has_option("themes", nk) and
-                    config.has_option("themes", ck) and
                     config.has_option("themes", ek) and
                     config.getboolean("themes", ek)):
-                    css = config.get("themes", ck).strip()
-                    if css.startswith("/static/resources/css"):
-                        css = css.replace(
-                            "/static/resources/css",
-                            "/static/pkg/extjs/resources/css"
-                        )
-                        warnings.warn(
-                            "Deprecated theme's css path. "
-                            "Change noc.conf:[themes]/%s to %s" % (ck, css))
                     self.themes[theme_id] = {
                         "id": theme_id,
                         "name": config.get("themes", nk).strip(),
-                        "css": css
+                        "css": "/static/pkg/extjs/packages/ext-theme-%s/build/resources/ext-theme-%s-all.css" % (theme_id, theme_id),
+                        "js": "/static/pkg/extjs/packages/ext-theme-%s/build/ext-theme-%s.js" % (theme_id, theme_id)
                     }
         # Login restrictions
         self.restrict_to_group = self.get_group(
@@ -79,6 +69,20 @@ class DesktopApplication(ExtApplication):
         except Group.DoesNotExist:
             self.error("Group '%s' is not found" % name)
             return None
+
+    def get_theme(self, request):
+        """
+        Get theme for request
+        """
+        user = request.user
+        if user.is_authenticated():
+            try:
+                profile = user.get_profile()
+            except:
+                profile = None
+            if profile and profile.theme and profile.theme in self.themes:
+                return profile.theme
+        return self.default_theme
 
     @view(method=["GET"], url="^$", url_name="desktop", access=True)
     def view_desktop(self, request):
@@ -112,10 +116,16 @@ class DesktopApplication(ExtApplication):
             "install_collection": config.getboolean("develop", "install_collection"),
             "enable_gis_base_osm": config.getboolean("gis", "enable_osm"),
             "enable_gis_base_google_sat": config.getboolean("gis", "enable_google_sat"),
-            "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap")
+            "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap"),
+            "trace_extjs_events": config.getboolean("main", "trace_extjs_events")
         }
-        return self.render(request, "desktop.html", apps=apps, setup=setup,
-                           theme_css=self.themes[self.default_theme]["css"])
+        theme = self.get_theme(request)
+        return self.render(
+            request, "desktop.html", apps=apps, setup=setup,
+            theme=theme,
+            theme_css=self.themes[theme]["css"],
+            theme_js=self.themes[theme]["js"]
+        )
 
     ##
     ## Exposed Public API
@@ -237,19 +247,11 @@ class DesktopApplication(ExtApplication):
         Get user settings
         """
         user = request.user
-        try:
-            profile = user.get_profile()
-        except:
-            profile = None
-        if profile and profile.theme and profile.theme in self.themes:
-            theme = profile.theme
-        else:
-            theme = self.default_theme
         return {
             "username": user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "theme": theme,
+            "theme": self.get_theme(request),
             "can_change_credentials": auth_backend.can_change_credentials,
             "idle_timeout": self.idle_timeout
         }

@@ -110,7 +110,6 @@ Ext.define("Ext.ux.form.GridField", {
         });
         me.currentSelection = undefined;
         me.callParent();
-        me.addEvents(["clone"]);
     },
 
     getValue: function() {

@@ -24,6 +24,10 @@ Ext.define("NOC.inv.inv.NavModel", {
         {
             name: "can_add",
             type: "boolean"
+        },
+        {
+            name: "can_delete",
+            type: "boolean"
         }
     ]
 });

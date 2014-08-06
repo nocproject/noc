@@ -30,13 +30,13 @@ Whoosh==2.5.4
 dbf==0.95.004
 requests==2.2.1
 noc-pkg-handlebars==1.0.0
-noc-pkg-shjs==0.6
 noc-pkg-famfamfam-silk==1.3
 noc-pkg-silk-companion1==1.0
-noc-pkg-extjs==4.2.1
+noc-pkg-extjs==5.0.0
 noc-pkg-mxgraph==1.10.4.2
 noc-pkg-openlayers==2.13
 noc-pkg-cubism==1.2.2
 noc-pkg-d3==3.2.2
 noc-pkg-font-awesome==4.1.0
-
+noc-pkg-codemirror==4.3.1
+noc-pkg-stacktrace==1.0.0

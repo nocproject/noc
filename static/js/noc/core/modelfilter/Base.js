@@ -8,16 +8,15 @@
 console.debug("Defining NOC.core.modelfilter.Base");
 
 Ext.define("NOC.core.modelfilter.Base", {
-    extend: "Ext.form.FieldSet",
+    extend: "Ext.container.Container",
     ftype: "base",
     name: null,
-    collapsible: false,
     handler: undefined,
-    border: false,
 
     onChange: function() {
-        if(Ext.isDefined(this.handler))
-            this.handler();
+        var me = this;
+        if(Ext.isDefined(me.handler))
+            me.handler();
     },
 
     getFilter: function() {

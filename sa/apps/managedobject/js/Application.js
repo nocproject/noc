@@ -9,7 +9,6 @@ console.debug("Defining NOC.sa.managedobject.Application");
 Ext.define("NOC.sa.managedobject.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
         "NOC.sa.managedobject.Model",
         "NOC.sa.managedobject.AttributesModel",
         "NOC.sa.managedobject.SchemeLookupField",

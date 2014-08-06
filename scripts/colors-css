@@ -43,10 +43,10 @@ def parse(path):
         ]
     r += [
         "/*",
-        " * Override favorite buttons colors",
+        " * Override buttons colors",
         " */"
     ]
-    for n in ("starred", "unstarred"):
+    for n in ("starred", "unstarred", "yes", "no"):
         r += [
             ".noc-%s .x-btn-glyph {" % n,
             "    color: %s !important;" % d[n],

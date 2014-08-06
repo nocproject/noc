@@ -399,7 +399,7 @@ class ExtModelApplication(ExtApplication):
         Returns dict with object's fields and values
         """
         try:
-            o = self.queryset(request).get(id=int(id))
+            o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
         only = request.GET.get(self.only_param)
@@ -429,7 +429,7 @@ class ExtModelApplication(ExtApplication):
                     "traceback": str(why)
                 }, status=self.BAD_REQUEST)
         try:
-            o = self.queryset(request).get(id=int(id))
+            o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
         for k, v in attrs.items():
@@ -456,7 +456,7 @@ class ExtModelApplication(ExtApplication):
     @view(method=["DELETE"], url="^(?P<id>\d+)/?$", access="delete", api=True)
     def api_delete(self, request, id):
         try:
-            o = self.queryset(request).get(id=int(id))
+            o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return self.render_json({
                 "status": False,

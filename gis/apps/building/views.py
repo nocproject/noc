@@ -25,6 +25,7 @@ class BuildingApplication(ExtDocApplication):
     """
     title = "Building"
     menu = "Setup | Buildings"
+    glyph = "building"
     model = Building
     parent_model = Division
     parent_field = "parent"

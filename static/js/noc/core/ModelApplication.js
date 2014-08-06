@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelApplication
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2014 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelApplication");
@@ -10,9 +10,7 @@ Ext.define("NOC.core.ModelApplication", {
     extend: "NOC.core.Application",
     requires: [
         "NOC.core.ModelStore",
-        "NOC.core.InlineModelStore",
-        "Ext.ux.ProgressBarPager",
-        "Ext.ux.grid.column.GlyphAction"
+        "NOC.core.InlineModelStore"
     ],
     layout: "card",
     search: false,
@@ -39,14 +37,31 @@ Ext.define("NOC.core.ModelApplication", {
         // Variables
         me.currentQuery = {};
         // Create store
+        var bs = Math.ceil(screen.height / 24);
         me.store = Ext.create("NOC.core.ModelStore", {
             model: me.model,
             customFields: me.noc.cust_model_fields || [],
             autoLoad: false,
-            pageSize: 1  // Increased by AutoSize plugin
+            pageSize: bs,
+            leadingBufferZone: bs,
+            numFromEdge: Math.ceil(bs / 2),
+            trailingBufferZone: bs
         });
+        me.store.on("beforeload", me.onBeforeLoad, me);
+        me.store.on("load", me.onLoad, me);
+        me.store.on("exception", me.onLoadError, me);
+
         me.idField = me.store.idProperty;
+        // Generate persistent field names
+        me.persistentFields = {};
+        Ext.each(me.store.model.getFields(), function(f) {
+            if(f.persist) {
+                me.persistentFields[f.name] = true;
+            }
+        });
+        // Create GRID card
         me.ITEM_GRID = me.registerItem(me.createGrid());
+        // Create FORM card
         me.ITEM_FORM = me.registerItem(me.createForm());
         //
         Ext.apply(me, {
@@ -57,16 +72,16 @@ Ext.define("NOC.core.ModelApplication", {
         me.callParent();
         me.currentRecord = null;
         // Process commands
-        if(me.noc.cmd) {
-            switch(me.noc.cmd.cmd) {
-                case "open":
-                    me.store.setFilterParams({id: me.noc.cmd.id});
-                    break;
-                case "history":
-                    me.restoreHistory(me.noc.cmd.args);
-                    return;
-                    break;
-            }
+        switch(me.getCmd()) {
+            case "open":
+                var fp = {};
+                fp[me.idField] = me.noc.cmd.id;
+                me.store.setFilterParams(fp);
+                break;
+            case "history":
+                me.restoreHistory(me.noc.cmd.args);
+                return;
+                break;
         }
         // Finally, load the store
         me.store.load();
@@ -77,24 +92,23 @@ Ext.define("NOC.core.ModelApplication", {
         // Setup Grid toolbar
         var gridToolbar = [];
 
-        me.search_field = Ext.create("Ext.form.field.Text", {
-                name: "search_field",
-                itemId: "search_field",
-                emptyText: "Search...",
-                inputType: "search",
-                hideLabel: true,
-                width: 200,
-                hasAccess: function(app) { return app.search === true;},
-                listeners: {
-                    change: {
-                        fn: me.onSearch,
-                        scope: me,
-                        buffer: 200
-                    }
-                }
-            });
+        me.searchField = Ext.create("Ext.ux.form.SearchField", {
+            name: "search_field",
+            hideLabel: true,
+            width: 200,
+            hasAccess: function(app) { return app.search === true;},
+            scope: me,
+            handler: me.onSearch
+        });
 
-        me.create_button = Ext.create("Ext.button.Button", {
+        me.refreshButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.refresh,
+            tooltip: "Refresh",
+            scope: me,
+            handler: me.onRefresh
+        });
+
+        me.createButton = Ext.create("Ext.button.Button", {
             itemId: "create",
             text: "Add",
             glyph: NOC.glyph.plus,
@@ -104,7 +118,7 @@ Ext.define("NOC.core.ModelApplication", {
             handler: me.onNewRecord
         });
 
-        gridToolbar.push(me.search_field, me.create_button);
+        gridToolbar.push(me.searchField, me.refreshButton, me.createButton);
         // admin actions
         if(me.actions) {
             me.actionMenu = Ext.create("Ext.button.Button", {
@@ -136,6 +150,9 @@ Ext.define("NOC.core.ModelApplication", {
             gridToolbar.push(me.actionMenu);
         }
         gridToolbar = gridToolbar.concat(me.gridToolbar);
+        gridToolbar.push("->");
+        me.totalField = Ext.create("Ext.form.field.Display");
+        gridToolbar.push(me.totalField);
         // Initialize panels
         // Filters
         var grid_rbar = null;
@@ -163,6 +180,7 @@ Ext.define("NOC.core.ModelApplication", {
                     }
                 ],
                 items: filters.map(function(f) {
+                    // @todo: Smarter solution using Ext.Class.alias
                     var ft = {
                         boolean: "NOC.core.modelfilter.Boolean",
                         lookup: "NOC.core.modelfilter.Lookup",
@@ -214,7 +232,6 @@ Ext.define("NOC.core.ModelApplication", {
                 handler: me.onFavItem
             },
             {
-                //iconCls: "icon_page_edit",
                 glyph: NOC.glyph.edit,
                 color: NOC.colors.edit,
                 tooltip: "Edit",
@@ -253,7 +270,8 @@ Ext.define("NOC.core.ModelApplication", {
             );
             rowItems = rowItems.concat([
                 {
-                    iconCls: me.previewIcon,
+                    glyph: NOC.glyph.search,
+                    color: NOC.colors.preview,
                     tooltip: "Preview",
                     scope: me,
                     handler: function(grid, rowIndex, colIndex) {
@@ -284,13 +302,6 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 xtype: "toolbar",
                 items: me.applyPermissions(gridToolbar)
-            },
-            {
-                xtype: "pagingtoolbar",
-                store: me.store,
-                dock: "bottom",
-                displayInfo: true,
-                plugins: new Ext.ux.ProgressBarPager()
             }
         ];
         //
@@ -315,7 +326,7 @@ Ext.define("NOC.core.ModelApplication", {
             columns: [
                 {
                     xtype: "glyphactioncolumn",
-                    width: 40,
+                    width: 20 * rowItems.length,
                     sortable: false,
                     items: rowItems,
                     stateId: "rowaction"
@@ -330,7 +341,13 @@ Ext.define("NOC.core.ModelApplication", {
             autoScroll: true,
             stateful: true,
             stateId: me.appName + "-grid",
-            plugins: [Ext.create("Ext.ux.grid.AutoSize")],
+            plugins: [
+                {
+                    ptype: "bufferedrenderer"
+                    //trailingBufferZone: 50,
+                    //leadingBufferZone: 50
+                }
+            ],
             selModel: selModel,
             dockedItems: gridToolbars,
             rbar: grid_rbar,
@@ -343,11 +360,9 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             },
             listeners: {
-                itemdblclick: {
-                    scope: me,
-                    fn: function(grid, record) {
-                        this.onEditRecord(record);
-                    }
+                scope: me,
+                itemdblclick: function(grid, record) {
+                    this.onEditRecord(record);
                 }
             }
         });
@@ -421,24 +436,25 @@ Ext.define("NOC.core.ModelApplication", {
         ];
         // Add View button
         if(me.onPreview) {
-            formToolbar = formToolbar.concat([
-                {
-                    text: "View",
-                    glyph: NOC.glyph.eye,
-                    // hasAccess:
-                    scope: me,
-                    handler: function() {
-                        var me = this;
-                        me.onPreview(me.currentRecord)
-                    }
+            formToolbar.push({
+                text: "View",
+                glyph: NOC.glyph.eye,
+                // hasAccess:
+                scope: me,
+                handler: function() {
+                    var me = this;
+                    me.onPreview(me.currentRecord)
                 }
-            ]);
+            });
         }
+        if(me.formToolbar && me.formToolbar.length) {
+            formToolbar.push("-");
+        }
+        formToolbar = formToolbar.concat(me.formToolbar);
         me.toolbarIdField = Ext.create("Ext.form.field.Display", {
             fieldLabel: "ID",
             labelWidth: 15
-        })
-        formToolbar = formToolbar.concat(me.formToolbar);
+        });
         formToolbar = formToolbar.concat([
             "->",
             me.toolbarIdField
@@ -516,15 +532,14 @@ Ext.define("NOC.core.ModelApplication", {
                                     });
                             }
                         }
-                    },
-                    r = {
-                        xtype: "fieldset",
-                        anchor: "100%",
-                        title: inline.title,
-                        collapsible: true,
-                        items: [gp]
-                    }
-                formInlines = formInlines.concat(r);
+                    };
+                formInlines.push({
+                    xtype: "fieldset",
+                    anchor: "100%",
+                    title: inline.title,
+                    collapsible: true,
+                    items: [gp]
+                });
                 me.inlineStores.push(istore);
             }
         };
@@ -537,15 +552,25 @@ Ext.define("NOC.core.ModelApplication", {
                 fontWeight: "bold"
             }
         });
-
-        var formFields = [
-            me.formTitle,
-            {
+        // Build form fields
+        var formFields = [];
+        // Append configured fields
+        formFields = formFields.concat(me.fields);
+        // Check if id field is configured
+        var hasIdField = false;
+        Ext.each(me.fields, function(f) {
+            if(f.name === me.idField) {
+                hasIdField = true;
+            }
+        }, this);
+        //
+        if(!hasIdField) {
+            formFields.push({
                 xtype: "hiddenfield",
                 name: me.idField
-            }
-        ];
-        formFields = formFields.concat(me.fields);
+            });
+        }
+        // Append custom fields
         if(me.noc.cust_form_fields) {
             formFields = formFields.concat(me.noc.cust_form_fields);
         }
@@ -599,42 +624,44 @@ Ext.define("NOC.core.ModelApplication", {
     // Save changed data
     saveRecord: function(data) {
         var me = this,
-            mv = Ext.create(me.model, data).validate(),
-            record,
-            rIndex = null;
+            Model = me.store.getModel(),
+            record = new Model(data, me.store.getSession()),
+            mv = record.validate(),
+            result = {};
+
         if(!mv.isValid()) {
             // @todo: Error report
             NOC.error("Invalid data!");
             return;
         }
-        if (me.currentRecord) {
-            // Change
-            record = me.currentRecord;
-            record.set(data);
-        } else {
-            // Create
-            record = me.store.add([data])[0];
-            rIndex = me.store.indexOf(record);
+        // Normalize
+        data = record.getData();
+        for(var name in data) {
+            if(me.persistentFields[name]) {
+                result[name] = data[name];
+            }
         }
-        me.store.sync({
+        // Save data
+        Ext.Ajax.request({
+            url: me.base_url + (me.currentRecord ? result[me.idField] + "/" : ""),
+            method: me.currentRecord ? "PUT" : "POST",
             scope: me,
-            success: function() {
-                var me = this,
-                    parent = record.get(me.idField);
-                if(!parent && rIndex != null) {
-                    parent = me.store.getAt(rIndex).get(me.idField);
-                }
-                me.saveInlines(parent, me.inlineStores);
+            jsonData: result,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                // @todo: Update current record with data
+                me.showGrid();
+                me.reloadStore();
+                me.saveInlines(data[me.idField], me.inlineStores);
             },
-            failure: function(response, op, status) {
-                var me = this;
-                if(record.phantom) {
-                    // Remove from store
-                    me.store.remove(record);
+            failure: function(response) {
+                var data = Ext.decode(response.responseText);
+                if(data && data.status === false) {
+                    NOC.error(data["message"]);
                 } else {
-                    record.setDirty();
+                    NOC.error("Error saving record!");
+                    console.log(response.responseText);
                 }
-                me.showOpError("save", op, status);
             }
         });
     },
@@ -658,9 +685,7 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             });
         } else {
-            // Save completed
             me.showGrid();
-            me.reloadStore();
         }
     },
     // Show Form
@@ -733,26 +758,39 @@ Ext.define("NOC.core.ModelApplication", {
     // Delete record
     deleteRecord: function() {
         var me = this;
-        me.store.remove(me.currentRecord);
-        me.currentRecord = null;
-        me.store.sync();
-        me.showGrid();
+        Ext.Ajax.request({
+            url: me.base_url + me.currentRecord.get(me.idField) + "/",
+            method: "DELETE",
+            scope: me,
+            success: function() {
+                me.currentRecord = null;
+                me.reloadStore();
+                me.showGrid();
+            },
+            failure: function(response) {
+                var data = Ext.decode(response.responseText);
+                NOC.error(data.message);
+            }
+        });
     },
     // Reload store with current query
     reloadStore: function() {
         var me = this;
-        if(me.currentQuery)
-            me.store.setFilterParams(me.currentQuery);
+        me.store.setFilterParams(me.currentQuery);
+        // Reload store
+        // ExtJS 5.0.0 WARNING:
+        // me.store.reload() sometimes leaves empty grid
+        // so we must use load() instead
         me.store.load();
     },
     // Search
-    onSearch: function() {
-        var me = this,
-            v = me.search_field.getValue();
-        if(v)
-            me.currentQuery["__query"] = v;
-        else
-            delete me.currentQuery["__query"];
+    onSearch: function(query) {
+        var me = this;
+        if(query && query.length > 0) {
+            me.currentQuery.__query = query;
+        } else {
+            delete me.currentQuery.__query;
+        }
         me.reloadStore();
     },
     // Filter
@@ -762,8 +800,9 @@ Ext.define("NOC.core.ModelApplication", {
         Ext.each(me.filterGetters, function(g) {
             fexp = Ext.Object.merge(fexp, g());
         });
-        if(me.currentQuery["__query"])
-            fexp["__query"] = me.currentQuery["__query"];
+        if(me.currentQuery.__query) {
+            fexp.__query = me.currentQuery.__query;
+        }
         me.currentQuery = fexp;
         me.reloadStore();
     },
@@ -810,8 +849,9 @@ Ext.define("NOC.core.ModelApplication", {
         me.cleanData(v);
         // Fetch comboboxes labels
         me.form.getFields().each(function(field) {
-            if(Ext.isDefined(field.getLookupData))
+            if(Ext.isDefined(field.getLookupData)) {
                 v[field.name + "__label"] = field.getLookupData();
+            }
         });
         me.saveRecord(v);
     },
@@ -903,9 +943,18 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // "close" button pressed
     onClose: function() {
-        var me = this;
+        var me = this,
+            toReload = me.idField in me.currentQuery;
+        if(toReload) {
+            // Remove filter set by loadById
+            delete me.currentQuery[me.idField];
+        }
+        // Apply updated filter
+        me.store.setFilterParams(me.currentQuery);
         me.showGrid();
-        me.reloadStore();
+        if(toReload) {
+            me.reloadStore();
+        }
     },
     // "clone" button pressed
     onClone: function() {
@@ -964,6 +1013,7 @@ Ext.define("NOC.core.ModelApplication", {
             success: function() {
                 // Invert current status
                 r.set("fav_status", !r.get("fav_status"));
+                grid.refresh();
             }
         });
     },
@@ -990,7 +1040,8 @@ Ext.define("NOC.core.ModelApplication", {
     onInlineEdit: function() {
         var me = this;
         if(me.currentRecord) {
-            me.currentRecord.setDirty();
+            // deprecated method
+            // me.currentRecord.setDirty();
         }
     },
     // Admin action selected
@@ -1081,9 +1132,12 @@ Ext.define("NOC.core.ModelApplication", {
     // Callback is the function(record)
     //
     loadById: function(id, callback) {
-        var me = this;
+        var me = this,
+            fp = {};
+        fp[me.idField] = id;
+        me.currentQuery[me.idField] = id;
+        me.store.setFilterParams(fp);
         me.store.load({
-            params: {id: id},
             scope: me,
             callback: function(records, operation, success) {
                 if(success && records.length === 1) {
@@ -1100,5 +1154,33 @@ Ext.define("NOC.core.ModelApplication", {
                 me.onEditRecord(record);
             });
         }
+    },
+    //
+    onBeforeLoad: function() {
+        var me = this;
+        if(me.rendered) {
+            me.refreshButton.setDisabled(true);
+        }
+    },
+    //
+    onLoad: function() {
+        var me = this,
+            total = me.store.getTotalCount();
+        me.totalField.setValue("Total: " + total);
+        if(me.rendered) {
+            me.refreshButton.setDisabled(false);
+        }
+    },
+    //
+    onLoadError: function() {
+        var me = this;
+        if(me.rendered) {
+            me.refreshButton.setDisabled(false);
+        }
+    },
+    //
+    onRefresh: function() {
+        var me = this;
+        me.reloadStore();
     }
 });

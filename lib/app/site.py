@@ -32,6 +32,7 @@ from noc.lib.serialize import json_decode
 class DynamicMenu(object):
     title = "DYNAMIC MENU"
     icon = "icon_folder"
+    glyph = "folder"
 
     @property
     def items(self):
@@ -81,9 +82,9 @@ class Site(object):
     Application site. Registers applications, builds menu and
     handling views
     """
-    folder_icons = {
-        "Setup": "icon_wrench_orange",
-        "Reports": "icon_report"
+    folder_glyps = {
+        "Setup": "wrench noc-edit",
+        "Reports": "file-text noc-preview"
     }
 
     def __init__(self):
@@ -296,8 +297,8 @@ class Site(object):
                 root = n
             else:
                 r = {"title": p, "children": []}
-                if p in self.folder_icons:
-                    r["iconCls"] = self.folder_icons[p]
+                if p in self.folder_glyps:
+                    r["iconCls"] = "fa fa-%s" % self.folder_glyps[p]
                 self.set_menu_id(r, path)
                 root["children"] += [r]
                 root = r
@@ -308,7 +309,7 @@ class Site(object):
             "title": parts[0],
             "app": app,
             "access": self.site_access(app, v),
-            "iconCls": app.icon
+            "iconCls": "fa fa-%s noc-edit" % app.glyph
         }
         self.set_menu_id(r, path)
         root["children"] += [r]
@@ -333,8 +334,8 @@ class Site(object):
                 root = n
             else:
                 r = {"title": p, "children": []}
-                if p == "Setup":
-                    r["iconCls"] = "icon_wrench_orange"
+                if p in self.folder_glyps:
+                    r["iconCls"] = "fa fa-%s" % self.folder_glyps[p]
                 self.set_menu_id(r, path)
                 root["children"] += [r]
                 root = r
@@ -343,7 +344,7 @@ class Site(object):
             "title": parts[0],
             "app": app,
             "access": lambda user: app.launch_access.check(app, user),
-            "iconCls": app.icon
+            "iconCls": "fa fa-%s noc-edit" % app.glyph
         }
         self.set_menu_id(r, path)
         root["children"] += [r]

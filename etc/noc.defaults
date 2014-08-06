@@ -2,6 +2,8 @@
 debug = false
 # Load non-minified versions of js libraries, if not false
 debug_js = false
+# Trace ExtJS events
+trace_extjs_events = false
 # Traceback order. One of
 # forward -- top of stack last
 # reverse -- top of stack first
@@ -211,20 +213,19 @@ branding_color = #000
 #
 [themes]
 neptune.name = Neptune
-neptune.css = /static/pkg/extjs/resources/css/ext-all-neptune.css
 neptune.enabled = true
 
 blue.name = Blue
-blue.css = /static/pkg/extjs/resources/css/ext-all.css
 blue.enabled = true
 
 gray.name = Gray
-gray.css = /static/pkg/extjs/resources/css/ext-all-gray.css
 gray.enabled = true
 
 access.name = Access
-access.css = /static/pkg/extjs/resources/css/ext-all-access.css
 access.enabled = true
+
+crisp.name = Crisp
+crisp.enabled = true
 
 #
 # cm module setup

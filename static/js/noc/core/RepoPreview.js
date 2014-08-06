@@ -13,14 +13,18 @@ Ext.define("NOC.core.RepoPreview", {
     syntax: null,
     restUrl: null,
     historyHashPrefix: null,
+    theme: "default",
 
     initComponent: function() {
         var me = this;
 
+        me.currentTheme = "default";
+
         me.revCombo = Ext.create("Ext.form.ComboBox", {
             fieldLabel: "Version",
             labelWidth: 45,
-            width: 200,
+            labelAlign: "right",
+            width: 210,
             queryMode: "local",
             displayField: "ts_label",
             valueField: "id",
@@ -55,7 +59,8 @@ Ext.define("NOC.core.RepoPreview", {
             fieldLabel: "Compare",
             disabled: true,
             labelWidth: 45,
-            width: 200,
+            labelAlign: "right",
+            width: 210,
             queryMode: "local",
             displayField: "ts_label",
             valueField: "id",
@@ -111,7 +116,7 @@ Ext.define("NOC.core.RepoPreview", {
         });
 
         me.swapRevButton = Ext.create("Ext.button.Button", {
-            glyph: NOC.glyph.arrows_h,
+            glyph: NOC.glyph.exchange,
             tooltip: "Swap revisions",
             disabled: true,
             scope: me,
@@ -145,6 +150,30 @@ Ext.define("NOC.core.RepoPreview", {
             diffRange: 30
         });
 
+        me.themeField = Ext.create("NOC.main.ref.cmtheme.LookupField", {
+            fieldLabel: "Theme",
+            labelAlign: "right",
+            stateful: true,
+            stateId: "noc-repopreview-theme",
+            listeners: {
+                scope: me,
+                select: me.onSelectTheme
+            }
+        });
+
+        me.cmContainer = Ext.create({
+            xtype: "container",
+            layout: "fit",
+            tpl: [
+                '<div id="{cmpId}-cmEl" class="{cmpCls}" style="{size}"></div>'
+            ],
+            data: {
+                cmpId: me.id,
+                cmpCls: Ext.baseCSSPrefix + "codemirror " + Ext.baseCSSPrefix + 'html-editor-wrap ' + Ext.baseCSSPrefix + 'html-editor-input',
+                size: "width:100%;height:100%"
+            }
+        });
+
         Ext.apply(me, {
             dockedItems: [{
                 xtype: "toolbar",
@@ -167,19 +196,70 @@ Ext.define("NOC.core.RepoPreview", {
                     "-",
                     me.lastDayButton,
                     me.lastWeekButton,
-                    me.lastMonthButton
+                    me.lastMonthButton,
+                    "->",
+                    me.themeField
                 ]
             }],
-            items: [{
-                xtype: "container",
-                autoScroll: true,
-                padding: 4
-            }]
+            items: [me.cmContainer],
+            listeners: {
+                scope: me,
+                resize: me.onResize
+            }
         });
         me.callParent();
         //
         me.urlTemplate = Handlebars.compile(me.restUrl);
         me.titleTemplate = Handlebars.compile(me.previewName);
+    },
+    //
+    afterRender: function() {
+        var me = this;
+        me.callParent(arguments);
+        me.initViewer();
+    },
+    //
+    initViewer: function() {
+        var me = this,
+            el = me.cmContainer.el.getById(me.id + "-cmEl", true);
+        // Create CodeMirror
+        me.viewer = new CodeMirror(el, {
+            readOnly: true,
+            lineNumbers: true
+        });
+        // change the codemirror css
+        var css = Ext.util.CSS.getRule(".CodeMirror");
+        if(css){
+            css.style.height = "100%";
+            css.style.position = "relative";
+            css.style.overflow = "hidden";
+        }
+        css = Ext.util.CSS.getRule('.CodeMirror-Scroll');
+        if(css){
+            css.style.height = '100%';
+        }
+        me.setTheme(me.theme);
+    },
+    // Set CodeMirror theme
+    setTheme: function(name) {
+        var me = this;
+        if(name === me.currentTheme) {
+            return;
+        }
+        if(name !== "default") {
+            Ext.util.CSS.swapStyleSheet(
+                "cmcss-" + me.id,  // Fake one
+                "/static/pkg/codemirror/theme/" + name + ".css"
+            );
+        }
+        me.currentTheme = name;
+        me.viewer.setOption("theme", name);
+        me.themeField.setValue(name);
+    },
+    //
+    onSelectTheme: function(combo, records, opts) {
+        var me = this;
+        me.setTheme(records[0].get("id"))
     },
     //
     startPreview: function(record, backItem) {
@@ -299,8 +379,7 @@ Ext.define("NOC.core.RepoPreview", {
     //
     renderText: function(text, syntax) {
         var me = this;
-        syntax = syntax || me.syntax;
-        NOC.SyntaxHighlight.highlight(me.items.first(), text, syntax);
+        me.viewer.setValue(text);
     },
     //
     onSelectRev: function(combo, records, eOpts) {
@@ -450,5 +529,12 @@ Ext.define("NOC.core.RepoPreview", {
             );
         });
         me.requestDiff(rev1, rev2);
+    },
+    //
+    onResize: function() {
+        var me = this;
+        if(me.viewer) {
+            me.viewer.refresh();
+        }
     }
 });

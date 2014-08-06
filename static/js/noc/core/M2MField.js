@@ -23,18 +23,46 @@ Ext.define("NOC.core.M2MField", {
     stateful: false,
     autoSelect: false,
     pageSize: 0,
+    fromTitle: "Available",
+    toTitle: "Selected",
+    buttons: ["add", "remove"],
+    buttonsGlyph: {
+        add: NOC.glyph.arrow_right,
+        remove: NOC.glyph.arrow_left
+    },
 
     initComponent: function() {
         var me = this,
-            sclass = me.__proto__.$className.replace("M2MField",
-                                                     "Lookup");
-        Ext.applyIf(me, {
-            store: Ext.create(sclass)
+            sclass = me.$className.replace("M2MField", "Lookup");
+        Ext.apply(me, {
+            store: Ext.create(sclass, {
+                autoLoad: true
+            })
         });
         me.callParent();
     },
 
-    setValue: function(value) {
+    createButtons: function() {
+        var me = this,
+            buttons = [];
+
+        if (!me.hideNavIcons) {
+            Ext.Array.forEach(me.buttons, function(name) {
+                buttons.push({
+                    xtype: "button",
+                    tooltip: me.buttonsText[name],
+                    handler: me["on" + Ext.String.capitalize(name) + "BtnClick"],
+                    glyph: me.buttonsGlyph[name],
+                    navBtn: true,
+                    scope: me,
+                    margin: "4 0 0 0"
+                });
+            });
+        }
+        return buttons;
+    },
+
+    _setValue: function(value) {
         var me = this;
         if(value === undefined) {
             return;
@@ -47,16 +75,16 @@ Ext.define("NOC.core.M2MField", {
             return me;
         }
 
-        var fromStore = me.fromField.boundList.getStore();
-        var toStore = me.toField.boundList.getStore();
         me.store.load({
             scope: me,
             callback: function(records, operation, success) {
                 if(success) {
+                    var fromStore = me.fromField.boundList.getStore(),
+                        toStore = me.toField.boundList.getStore();
                     fromStore.removeAll();
                     toStore.removeAll();
                     fromStore.loadRecords(records);
-                    me.setRawValue(value);
+                    // me.setRawValue(value);
                 }
             }
         });

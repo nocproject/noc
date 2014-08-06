@@ -11,8 +11,7 @@ Ext.define("NOC.sa.activator.Application", {
     requires: [
         "NOC.sa.activator.Model",
         "NOC.main.shard.LookupField",
-        "NOC.main.prefixtable.LookupField",
-        "NOC.core.TagsField"
+        "NOC.main.prefixtable.LookupField"
     ],
     model: "NOC.sa.activator.Model",
     columns: [

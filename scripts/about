@@ -75,10 +75,22 @@ def get_brand():
 
 def get_python_packages():
     o = check_output(["./bin/pip", "freeze"])
-    r = []
+    r = [["Installed packages", ""]]
     for l in o.splitlines():
         if "==" in l:
             r += [l.split("==", 1)]
+    return r
+
+
+def get_solutions():
+    """
+    Get installed solutions
+    """
+    r = [["Solutions", ""]]
+    config = settings.config
+    for sn in config.options("solutions"):
+        if config.getboolean("solutions", sn):
+            r += [["", sn]]
     return r
 
 
@@ -96,6 +108,7 @@ def about():
         ["PostgreSQL", get_pg_version()],
         ["MongoDB", get_mongo_version()]
     ]
+    versions += get_solutions()
     versions += get_python_packages()
     for c, v in versions:
         print "|%s|%s|" % (c, v.replace("\n", " "))

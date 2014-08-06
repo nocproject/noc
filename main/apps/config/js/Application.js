@@ -20,28 +20,47 @@ Ext.define("NOC.main.config.Application", {
             groupField: "section",
             autoLoad: false
         });
+
         me.configListStore = Ext.create("Ext.data.Store", {
             model: null,
             fields: ["id", "name"],
             data: [],
             autoLoad: false
         });
+
+        me.searchField = Ext.create({
+            xtype: "searchfield",
+            name: "search",
+            disabled: true,
+            scope: me,
+            handler: me.onSearch
+        });
+
+        me.saveButton = Ext.create("Ext.button.Button", {
+            name: "save",
+            text: "Save",
+            glyph: NOC.glyph.save,
+            disabled: true,
+            scope: me,
+            handler: me.onSave
+        });
+
         me.grid = Ext.create("Ext.grid.Panel", {
             border: false,
             autoScroll: true,
             stateful: true,
             stateId: "main.config-grid",
+            bufferedRenderer: false, // Conflicts with grouping+cellediting
             store: me.store,
             features: [{
                 ftype: "grouping",
                 groupHeaderTpl: "[{name}]"
             }],
             selType: "rowmodel",
-            plugins: [
-                Ext.create("Ext.grid.plugin.RowEditing", {
-                    clicksToEdit: 1
-                })
-            ],
+            plugins: [{
+                ptype: "cellediting",
+                clicksToEdit: 1
+            }],
             columns: [
                 {
                     text: "Section",
@@ -65,63 +84,39 @@ Ext.define("NOC.main.config.Application", {
                     flex: 1
                 }
             ],
-            tbar: [
-                "Config:",
+            dockedItems: [
                 {
-                    xtype: "combobox",
-                    name: "config",
-                    itemId: "config",
-                    width: 150,
-                    emptyText: "Select Config ...",
-                    store: me.configListStore,
-                    queryMode: "local",
-                    displayField: "name",
-                    valueField: "id",
-                    listeners: {
-                        change: {
-                            scope: me,
-                            fn: me.onConfigSelect
-                        }
-                    }
-                },
-                {
-                    xtype: "textfield",
-                    name: "search",
-                    itemId: "search",
-                    inputType: "search",
-                    disabled: true,
-                    emptyText: "Search ...",
-                    listeners: {
-                        change: {
-                            scope: me,
-                            fn: me.onSearch
-                        }
-                    }
-                },
-                "-",
-                {
-                    itemId: "save",
-                    name: "save",
-                    text: "Save",
-                    glyph: NOC.glyph.save,
-                    disabled: true,
-                    scope: me,
-                    handler: me.onSave
+                    xtype: "toolbar",
+                    dock: "top",
+                    items: [
+                        "Config:",
+                        {
+                            xtype: "combobox",
+                            name: "config",
+                            itemId: "config",
+                            width: 150,
+                            emptyText: "Select Config ...",
+                            store: me.configListStore,
+                            queryMode: "local",
+                            displayField: "name",
+                            valueField: "id",
+                            listeners: {
+                                scope: me,
+                                change: me.onConfigSelect
+                            }
+                        },
+                        me.searchField,
+                        "-",
+                        me.saveButton
+                    ]
                 }
             ]
         });
         Ext.apply(me, {
-            items: [
-                me.grid
-            ]
+            items: [me.grid]
         });
         me.callParent();
-
-        var gt = me.grid.dockedItems.items[1];
-        me.searchField = gt.getComponent("search");
-        me.saveButton = gt.getComponent("save");
         me.current = null;
-        console.log(gt, me);
         // Load config list
         Ext.Ajax.request({
             url: "/main/config/",
@@ -142,7 +137,7 @@ Ext.define("NOC.main.config.Application", {
     // Load config
     loadConfig: function(id) {
         var me = this;
-        me.current = id || me.current
+        me.current = id || me.current;
         Ext.Ajax.request({
             url: "/main/config/" + me.current + "/",
             method: "GET",
@@ -150,7 +145,7 @@ Ext.define("NOC.main.config.Application", {
             success: me.onConfigLoad,
             failure: function() {
                 NOC.error("Failed to get config");
-                this.resetAll();
+                me.resetAll();
             }
         });
     },
@@ -163,7 +158,8 @@ Ext.define("NOC.main.config.Application", {
     onConfigLoad: function(response) {
         var me = this,
             data = Ext.decode(response.responseText);
-        // @todo: Reset search
+        me.searchField.setValue("");
+        me.store.clearFilter(true);
         me.store.loadData(data);
         // Enable buttons
         me.saveButton.enable();
@@ -203,14 +199,16 @@ Ext.define("NOC.main.config.Application", {
         });
     },
     // Search
-    onSearch: function(field, value) {
+    onSearch: function(value) {
         var me = this;
+        me.store.clearFilter(true);
         me.store.filterBy(function(r) {
             return (
                 (value === "")
-                    || (r.data.key.indexOf(value) != -1)
-                    || (r.data.value.indexOf(value) != -1)
-                    || (r.data.default.indexOf(value) != -1));
+                    || (r.get("key").indexOf(value) != -1)
+                    || (r.get("value").indexOf(value) != -1)
+                    || (r.get("default").indexOf(value) != -1)
+            );
         });
     }
 });

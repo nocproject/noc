@@ -91,11 +91,12 @@ Ext.define("NOC.core.Application", {
     },
     //
     processCommands: function() {
-        var me = this;
-        if(me.noc.cmd) {
-            var cmd = me["onCmd_" + me.noc.cmd.cmd];
-            if(cmd) {
-                cmd.call(me, me.noc.cmd);
+        var me = this,
+            cmd = me.getCmd();
+        if(cmd) {
+            var handler = me["onCmd_" + cmd];
+            if(handler) {
+                cmd.call(me, handler);
             }
         }
     },
@@ -111,5 +112,19 @@ Ext.define("NOC.core.Application", {
         Ext.History.setHash(me.currentHistoryHash);
     },
     //
-    onCloseApp: function() {}
+    onCloseApp: function() {},
+    //
+    getCmd: function() {
+        var me = this;
+        return (me.noc.cmd && me.noc.cmd.cmd) ? me.noc.cmd.cmd : null;
+    },
+    //
+    log: function() {
+        var me = this,
+            msg = [me.$className + ":"];
+        for(var i = 0; i < arguments.length; i++) {
+            msg.push(arguments[i]);
+        }
+        console.log.apply(console, msg);
+    }
 });

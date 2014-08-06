@@ -11,11 +11,13 @@ Ext.define("NOC.core.Lookup", {
     extend: "Ext.data.Store",
     fields: ["id", "label"],
     url: null,
-    //autoLoad: true,
+
     constructor: function(config) {
         var me = this;
-        Ext.apply(me, {
-            proxy: Ext.create("Ext.data.RestProxy", {
+        config = config || {};
+        Ext.apply(config, {
+            proxy: {
+                type: "rest",
                 url: me.url,
                 pageParam: "__page",
                 startParam: "__start",
@@ -26,12 +28,12 @@ Ext.define("NOC.core.Lookup", {
                 },
                 reader: {
                     type: "json",
-                    root: "data",
+                    rootProperty: "data",
                     totalProperty: "total",
                     successProperty: "success"
                 }
-                })
+            }
         });
-        me.callParent(config);
+        me.callParent([config]);
     }
 });

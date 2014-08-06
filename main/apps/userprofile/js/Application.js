@@ -17,6 +17,8 @@ Ext.define("NOC.main.userprofile.Application", {
     initComponent: function() {
         var me = this,
             lw = 60;
+        me.currentTheme = null;
+
         me.usernameField = Ext.create("Ext.form.field.Display", {
             fieldLabel: "Login",
             labelWidth: lw
@@ -136,7 +138,11 @@ Ext.define("NOC.main.userprofile.Application", {
                         me.emailField,
                         me.languageField,
                         me.themeField,
-                        me.contactsGrid
+                        {
+                            xtype: "fieldset",
+                            title: "Notification Contacts",
+                            items: [me.contactsGrid]
+                        }
                     ]
                 }
             ],
@@ -157,6 +163,7 @@ Ext.define("NOC.main.userprofile.Application", {
         });
         me.callParent();
         me.loadData();
+        me.setHistoryHash();
     },
     //
     loadData: function() {
@@ -182,6 +189,7 @@ Ext.define("NOC.main.userprofile.Application", {
         me.languageField.setValue(data.preferred_language);
         me.themeField.setValue(data.theme);
         me.contactsStore.loadData(data.contacts);
+        me.currentTheme = data.theme;
     },
     //
     onSave: function() {
@@ -199,6 +207,9 @@ Ext.define("NOC.main.userprofile.Application", {
             jsonData: data,
             success: function(response) {
                 NOC.info("Profile saved");
+                if(data.theme !== me.currentTheme) {
+                    NOC.app.app.restartApplication("Applying theme changes");
+                }
             },
             failure: function() {
                 NOC.error("Failed to save")
