@@ -50,7 +50,6 @@ Ext.define("NOC.core.ModelApplication", {
         me.store.on("beforeload", me.onBeforeLoad, me);
         me.store.on("load", me.onLoad, me);
         me.store.on("exception", me.onLoadError, me);
-        me.pendingReloads = 0;
 
         me.idField = me.store.idProperty;
         // Generate persistent field names
@@ -776,24 +775,13 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // Reload store with current query
     reloadStore: function() {
-        var me = this,
-            onReload = function() {
-                if(me.pendingReloads > 1) {
-                    me.pendingReloads = 0;
-                    me.reloadStore();
-                } else {
-                    me.pendingReloads = 0;
-                    me.grid.getView().refresh();
-                }
-            };
-        me.pendingReloads++;
-        if(me.pendingReloads > 1) {
-            return;
-        }
+        var me = this;
         me.store.setFilterParams(me.currentQuery);
         // Reload store
-        me.store.on("load", onReload, me, {single: true});
-        me.store.reload();
+        // ExtJS 5.0.0 WARNING:
+        // me.store.reload() sometimes leaves empty grid
+        // so we must use load() instead
+        me.store.load();
     },
     // Search
     onSearch: function(query) {
