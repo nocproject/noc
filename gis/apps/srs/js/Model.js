@@ -9,6 +9,7 @@ console.debug("Defining NOC.gis.srs.Model");
 Ext.define("NOC.gis.srs.Model", {
     extend: "Ext.data.Model",
     rest_url: "/gis/srs/",
+    idProperty: "srid",
 
     fields: [
         {

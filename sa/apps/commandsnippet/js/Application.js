@@ -10,7 +10,6 @@ Ext.define("NOC.sa.commandsnippet.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.sa.commandsnippet.Model",
-        "NOC.core.TagsField",
         "NOC.sa.managedobjectselector.LookupField"
     ],
     model: "NOC.sa.commandsnippet.Model",

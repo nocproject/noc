@@ -50,5 +50,13 @@ Ext.define("NOC.main.language.Application", {
             name: "is_active",
             inputValue: true
         }
+    ],
+
+    filters: [
+        {
+            title: "By Is Active",
+            ftype: "boolean",
+            name: "is_active"
+        }
     ]
 });

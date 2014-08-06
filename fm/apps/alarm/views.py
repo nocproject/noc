@@ -29,7 +29,7 @@ class AlarmApplication(ExtApplication):
     """
     title = "Alarm"
     menu = "Alarms"
-    icon = "icon_error"
+    glyph = "exclamation-triangle"
 
     implied_permissions = {
         "launch": ["sa:managedobject:alarm"]

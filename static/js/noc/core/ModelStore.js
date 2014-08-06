@@ -1,19 +1,20 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelStore
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2014 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelStore");
 
 Ext.define("NOC.core.ModelStore", {
-    extend: "Ext.data.Store",
+    extend: "Ext.data.BufferedStore",
     filterParams: undefined,
     url: undefined,
     model: undefined,
     remoteSort: true,
     remoteFilter: true,
     customFields: [],
+    autoLoad: false,
 
     constructor: function(config) {
         var me = this,
@@ -36,7 +37,6 @@ Ext.define("NOC.core.ModelStore", {
                 persist: false
             }
         ]);
-
         var proxy = Ext.create("Ext.data.RestProxy", {
                 url: model.rest_url,
                 pageParam: "__page",
@@ -48,18 +48,12 @@ Ext.define("NOC.core.ModelStore", {
                 },
                 reader: {
                     type: "json",
-                    root: "data",
+                    rootProperty: "data",
                     totalProperty: "total",
                     successProperty: "success"
                 },
                 writer: {
                     type: "json"
-                },
-                listeners: {
-                    exception: {
-                        scope: me,
-                        fn: me.onSyncException
-                    }
                 }
             }),
             modelName = config.model + "-sm",
@@ -72,17 +66,10 @@ Ext.define("NOC.core.ModelStore", {
 
         me.idProperty = model.idProperty;
         Ext.apply(config, {
-            // model: config.model,
             model: sModel,
             defaultValues: defaultValues,
             storeId: config.model,
             proxy: proxy,
-            listeners: {
-                write: {
-                    scope: me,
-                    fn: me.onSyncWrite
-                }
-            },
             syncConfig: {}
         });
         me.callParent([config]);
@@ -90,54 +77,26 @@ Ext.define("NOC.core.ModelStore", {
 
     setFilterParams: function(config) {
         var me = this;
-        me.filterParams = Ext.Object.merge({}, config);
+        me.filterParams = Ext.apply({}, config);
         // Forcefully go to first page
         me.currentPage = 1;
     },
 
-    load: function(config) {
+    getOpConfig: function(config) {
         var me = this;
-        config = Ext.Object.merge({
-                params: Ext.Object.merge({}, me.filterParams)
+        return Ext.apply({
+                params: Ext.apply({}, me.filterParams),
+                callback: function(records, operation, success) {
+                    if(!success) {
+                        NOC.error("Failed to fetch data!");
+                    }
+                }
             }, config);
-        // Override callback
-        // @todo: Call original callback
-        config = Ext.Object.merge({
-            callback: function(records, operation, success) {
-                if(!success)
-                    NOC.error("Failed to fetch data!");
-            }
-        }, config);
-        // Continue loading
-        me.callParent([config]);
     },
-    // override sync()
-    sync: function(config) {
-        var me = this,
-            conf = config || {};
-        me.syncConfig = Ext.Object.merge({}, conf);
-        if(!me.getNewRecords().length && !me.getUpdatedRecords().length
-            && !me.getRemovedRecords().length) {
-            // No changed records, call success callback
-            Ext.callback(me.syncConfig.success,
-                me.syncConfig.scope || me);
-        } else {
-            // Having changed records. Start sync process
-            me.callParent();
-        }
-    },
-    onSyncWrite: function() {
+
+    prefetch: function(config) {
         var me = this;
-        Ext.callback(me.syncConfig.success,
-            me.syncConfig.scope || me);
-    },
-    onSyncException: function(proxy, response, op, opts) {
-        var me = this,
-            status = {
-                status: response.status,
-                message: response.responseText
-            };
-        Ext.callback(me.syncConfig.failure,
-            me.syncConfig.scope || me, [response, op, status]);
+        config = me.getOpConfig(config);
+        me.callParent([config]);
     }
 });

@@ -11,15 +11,12 @@ Ext.define("NOC.main.search.Application", {
     initComponent: function() {
         var me = this;
         me.store = Ext.create("NOC.main.search.SearchStore");
-        me.searchField = Ext.create("Ext.form.field.Text", {
-            inputType: "search",
+        me.searchField = Ext.create("Ext.ux.form.SearchField", {
             fieldLabel: "Search",
             labelWidth: 40,
             width: "500",
-            listeners: {
-                scope: me,
-                specialkey: me.onSearchSpecialKey
-            }
+            scope: me,
+            handler: me.doSearch
         });
         me.grid = Ext.create("Ext.grid.Panel", {
             store: me.store,
@@ -69,16 +66,6 @@ Ext.define("NOC.main.search.Application", {
         var v = me.searchField.getValue();
         if(v !== "") {
             me.doSearch(v);
-        }
-    },
-    //
-    onSearchSpecialKey: function(field, event) {
-        var me = this,
-            k = event.getKey();
-        if(k == event.ENTER) {
-            me.doSearch(field.getValue());
-        } else if(k == event.ESC) {
-            field.reset();
         }
     },
     //

@@ -1,160 +1,166 @@
 //----------------------------------------------------------------------
 // Various javascript utilities
 //----------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2014 The NOC Project
 // See LICENSE for details
 //----------------------------------------------------------------------
 
 // NOC namespace
 Ext.namespace("NOC", "NOC.render");
-//
-// NOC.render.Bool(v)
-//     Grid field renderer for boolean values
-//     Displays icons depending on true/false status
-//
-NOC.render.Bool = function(v) {
-    return {
-        true: "<i class='fa fa-check' style='color:" + NOC.colors.yes + "'></i>",
-        false: "<i class='fa fa-times' style='color:" + NOC.colors.no + "'></i>",
-        null: "<i class='fa fa-circle-o'></i>"
-    }[v];
-};
 
 //
-// NOC.render.URL(v)
-//      Grid field renderer for URLs
+// Custom column renderers
 //
-NOC.render.URL = function(v) {
-    return "<a href =' " + v + "' target='_'>" + v + "</a>";
-}
+Ext.apply(NOC.render, {
+    //
+    // NOC.render.Bool(v)
+    //     Grid field renderer for boolean values
+    //     Displays icons depending on true/false status
+    //
+    Bool: function (v) {
+        return {
+            true: "<i class='fa fa-check' style='color:" + NOC.colors.yes + "'></i>",
+            false: "<i class='fa fa-times' style='color:" + NOC.colors.no + "'></i>",
+            null: "<i class='fa fa-circle-o'></i>"
+        }[v];
+    },
 
-//
-// NOC.render.Tags(v)
-//      Grid field renderer for tags
-//
-NOC.render.Tags = function(v) {
-    if(v) {
-        return v.map(function(x) {
-            return "<span class='x-display-tag'>" + x + "</span>";
-        }).join(" ");
-    } else {
-        return "";
-    }
-}
+    //
+    // NOC.render.URL(v)
+    //      Grid field renderer for URLs
+    //
+    URL: function (v) {
+        return "<a href =' " + v + "' target='_'>" + v + "</a>";
+    },
 
-NOC.render.Lookup = function(name) {
-    var l = name + "__label";
-    return function(value, meta, record) {
-        if(value) {
-            return record.get(l)
+    //
+    // NOC.render.Tags(v)
+    //      Grid field renderer for tags
+    //
+    Tags: function (v) {
+        if (v) {
+            return v.map(function (x) {
+                return "<span class='x-display-tag'>" + x + "</span>";
+            }).join(" ");
         } else {
             return "";
         }
-    };
-};
+    },
 
-NOC.render.Clickable = function(value) {
-    return "<a href='#' class='noc-clickable-cell'>" + value + "</a>";
-};
+    Lookup: function(name) {
+        var l = name + "__label";
+        return function(value, meta, record) {
+            if(value) {
+                return record.get(l)
+            } else {
+                return "";
+            }
+        };
+    },
 
-NOC.render.ClickableLookup = function(name) {
-    var l = name + "__label";
-    return function(value, meta, record) {
-        var v = value ? record.get(l) : "...";
-        return "<a href='#' class='noc-clickable-cell' title='Click to change...'>" + v + "</a>";
-    };
-};
+    Clickable: function(value) {
+        return "<a href='#' class='noc-clickable-cell'>" + value + "</a>";
+    },
 
-NOC.render.WrapColumn = function (val){
-    return '<div style="white-space:normal !important;">'+ val +'</div>';
-};
+    ClickableLookup: function(name) {
+        var l = name + "__label";
+        return function(value, meta, record) {
+            var v = value ? record.get(l) : "...";
+            return "<a href='#' class='noc-clickable-cell' title='Click to change...'>" + v + "</a>";
+        };
+    },
 
-NOC.render.Date = function(val) {
-    if(!val) {
-        return "";
-    }
-    return Ext.Date.format(val, "Y-m-d")
-};
+    WrapColumn: function (val){
+        return '<div style="white-space:normal !important;">'+ val +'</div>';
+    },
 
-NOC.render.DateTime = function(val) {
-    if(!val) {
-        return "";
-    }
-    return Ext.Date.format(val, "Y-m-d H:i:s")
-};
-
-NOC.render.Choices = function(choices) {
-    return function(value) {
-        return choices[value];
-    }
-};
-
-NOC.render.Timestamp = function(val) {
-    if(!val) {
-        return "";
-    }
-    var d = new Date(val * 1000),
-        y = d.getFullYear(),
-        m = d.getMonth() + 1,
-        D = d.getDate(),
-        h = d.getHours(),
-        M = d.getMinutes(),
-        s = d.getSeconds(),
-        f = function(v) {
-            return v <= 9 ? '0' + v : v;
+    Date: function(val) {
+        if(!val) {
+            return "";
         }
-    return "" + y + "-" + f(m) + "-" + f(D) + " " +
-        f(h) + ":" + f(M) + ":" + f(s);
-};
+        return Ext.Date.format(val, "Y-m-d")
+    },
 
-NOC.render.Duration = function(val) {
-    var f = function(v) {
-        return v <= 9 ? '0' + v : v;
-    };
+    DateTime: function(val) {
+        if(!val) {
+            return "";
+        }
+        return Ext.Date.format(val, "Y-m-d H:i:s")
+    },
 
-    if(!val) {
-        return "";
-    }
-    val = +val;
-    if(isNaN(val)) {
-        return "";
-    }
-    if(val < 60) {
-        // XXs
-        return "" + val + "s";
-    }
-    if(val < 86400) {
-        // HH:MM:SS
-        var h = Math.floor(val / 3600),
-            m = Math.floor((val - h * 3600) / 60),
-            s = val - h * 3600 - m * 60;
+    Choices: function(choices) {
+        return function(value) {
+            return choices[value];
+        }
+    },
 
-        return f(h) + ":" + f(m) + ":" + f(s);
-    }
-    // DDd HHh
-    var d = Math.floor(val / 86400),
-        h = Math.floor((val - d * 86400) / 3600);
-    return "" + d + "d " + f(h) + "h";
-};
+    Timestamp: function(val) {
+        if(!val) {
+            return "";
+        }
+        var d = new Date(val * 1000),
+            y = d.getFullYear(),
+            m = d.getMonth() + 1,
+            D = d.getDate(),
+            h = d.getHours(),
+            M = d.getMinutes(),
+            s = d.getSeconds(),
+            f = function(v) {
+                return v <= 9 ? '0' + v : v;
+            };
+        return "" + y + "-" + f(m) + "-" + f(D) + " " +
+            f(h) + ":" + f(M) + ":" + f(s);
+    },
 
-NOC.render.Size = function(v) {
-    if (v === null || v === undefined) {
-        return "";
-    }
-    if(v > 10000000) {
-        return Math.round(v / 1000000) + "M";
-    }
-    if(v > 1000) {
-        return Math.round(v / 1000) + "K";
-    }
-    return "" + v;
-}
+    Duration: function(val) {
+        var f = function(v) {
+            return v <= 9 ? '0' + v : v;
+        };
 
-NOC.render.Join = function(sep) {
-    return function(value) {
-        return value.join(sep);
+        if(!val) {
+            return "";
+        }
+        val = +val;
+        if(isNaN(val)) {
+            return "";
+        }
+        if(val < 60) {
+            // XXs
+            return "" + val + "s";
+        }
+        if(val < 86400) {
+            // HH:MM:SS
+            var h = Math.floor(val / 3600),
+                m = Math.floor((val - h * 3600) / 60),
+                s = val - h * 3600 - m * 60;
+
+            return f(h) + ":" + f(m) + ":" + f(s);
+        }
+        // DDd HHh
+        var d = Math.floor(val / 86400),
+            h = Math.floor((val - d * 86400) / 3600);
+        return "" + d + "d " + f(h) + "h";
+    },
+
+    Size: function(v) {
+        if (v === null || v === undefined) {
+            return "";
+        }
+        if(v > 10000000) {
+            return Math.round(v / 1000000) + "M";
+        }
+        if(v > 1000) {
+            return Math.round(v / 1000) + "K";
+        }
+        return "" + v;
+    },
+
+    Join: function(sep) {
+        return function(value) {
+            return value.join(sep);
+        }
     }
-}
+});
 
 //
 // Run new Map/Reduce task
@@ -228,81 +234,6 @@ NOC.listToRanges = function(lst) {
     return r.join(",")
 };
 //
-// SHJS wrapper
-//
-Ext.define("NOC.SyntaxHighlight", {
-    singleton: true,
-    langCache: {},
-    withLang: function(lang, callback) {
-        var me = this;
-        if(lang in me.langCache) {
-            Ext.callback(callback, me, [me.langCache[lang]]);
-        } else {
-            Ext.Ajax.request({
-                url: "/static/js/highlight/" + lang + ".js",
-                scope: me,
-                success: function(response) {
-                    // Override SHJS's global scope
-                    with(this) {
-                        this.sh_languages = {};
-                        eval(response.responseText);
-                        me.langCache[lang] = this.sh_languages[lang];
-                    }
-                    Ext.callback(callback, me, [me.langCache[lang]]);
-                }
-            });
-        }
-    },
-    highlight: function(el, text, lang) {
-        var me = this,
-            showNumbers = lang != "diff",
-            updateEl = function(el, html) {
-                var out = [];
-                // Append line numbers, if required
-                if(showNumbers) {
-                    var l = html.match(/\n/g).length;
-                    out.push("<div class='noc-numbers'>");
-                    for(var i = 1; i <= l; i++) {
-                        out.push(i + "<br/>");
-                    }
-                    out.push("</div>");
-                }
-                // Append code
-                out = out.concat(["<pre class='sh_sourcecode'>", html, "</pre>"]);
-                // Update element
-                el.update(out.join(""));
-            };
-        if(lang) {
-            me.withLang(lang, function(l) {
-                var tags = sh_highlightString(text, l);
-                //
-                // Fill text nodes
-                var last = undefined;
-                for(var i in tags) {
-                    var t = tags[i];
-                    if(last) {
-                        last.end = t.pos;
-                    }
-                    last = t;
-                }
-                // Generate HTML
-                var html = tags.map(function(v) {
-                    var t = text.substr(v.pos, v.end - v.pos);
-                    if(v.node) {
-                        return "<span class='" + v.node.className + "'>" +
-                            t + "</span>";
-                    } else {
-                        return t;
-                    }
-                }).join("");
-                updateEl(el, html);
-            });
-        } else {
-            updateEl(el, text);
-        }
-    }
-});
-//
 //validate function def
 //
 NOC.is_vlanid = function(value) {
@@ -357,137 +288,95 @@ NOC.is_ipv4_prefix = function(value) {
 // init quick labels for vtype validators
 Ext.QuickTips.init();
 Ext.form.Field.prototype.msgTarget = 'side';
+
 //
-// custom Vtype for vtype:"VlanID"
+// Custom VTypes
+//
 Ext.apply(Ext.form.field.VTypes, {
+    // VLAN ID checking
     VlanID: function(val, field) {
         try {
-            var id = parseInt(field.getValue());
+            var id = parseInt(val);
             return NOC.is_vlanid(id);
         } catch(e) {
             return false;
         }
     },
     VlanIDText: "Must be a numeric value [1-4095]",
-    VlanIDMask: /[\d\/]/
-});
-//
-// custom Vtype for vtype:"ASN" - autonomous system number
-Ext.apply(Ext.form.field.VTypes, {
+    VlanIDMask: /[\d\/]/,
+
+    // Autonomous system name checking
     ASN: function(val, field) {
         try {
-            var asn = parseInt(field.getValue());
+            var asn = parseInt(val);
             return NOC.is_asn(asn);
         } catch(e) {
             return false;
         }
     },
     ASNText: "AS num must be a numeric value > 0",
-    ASNMask: /[\d\/]/
-});
-//
-// custom Vtype for vtype:"IPv4"
-Ext.apply(Ext.form.field.VTypes, {
+    ASNMask: /[\d\/]/,
+
+    // IPv4 check
     IPv4: function(val, field){
         try {
-            var ipv4 = field.getValue();
-            return NOC.is_ipv4(ipv4);
+            return NOC.is_ipv4(val);
         } catch(e) {
             return false;
         }
     },
     IPv4Text: "Must be a numeric value 0.0.0.0 - 255.255.255.255",
-    IPv4Mask: /[\d\.]/i
-});
-//
-// custom Vtype for vtype:"IPv4Prefix"
-Ext.apply(Ext.form.field.VTypes, {
+    IPv4Mask: /[\d\.]/i,
+
+    // IPv4 prefix check
     IPv4Prefix: function(val, field){
         try {
-            var ipv4pref = field.getValue();
-            return NOC.is_ipv4_prefix(ipv4pref);
+            return NOC.is_ipv4_prefix(val);
         } catch(e) {
             return false;
         }
     },
     IPv4PrefixText: "Must be a numeric value 0.0.0.0/0 - 255.255.255.255/32",
-    IPv4PrefixMask: /[\d\.\/]/i
-});
-//
-// custom Vtype for vtype:"FQDN"
-Ext.apply(Ext.form.field.VTypes, {
+    IPv4PrefixMask: /[\d\.\/]/i,
+
+    // FQDN check
     FQDN: function(val, field){
+        var me = this;
         try {
-            var fqdntest = /^([a-z0-9\-]+\.)+[a-z0-9\-]+$/i;
-            var fqdn = field.getValue();
-            return fqdntest.test(fqdn);
+            return me.FQDNMask.test(val);
         } catch(e) {
             return false;
         }
     },
     FQDNText: "Not valid FQDN",
-    FQDNMask: /[-.a-zA-Z0-9]/i
-});
-//
-// custom Vtype for vtype:"ASSET"
-Ext.apply(Ext.form.field.VTypes, {
-    ASSET: function(val, field){ 
+    FQDNMask: /^([a-z0-9\-]+\.)+[a-z0-9\-]+$/i,
+
+    // AS-set check
+    ASSET: function(val, field){
+        var me = this;
         try {
-            var assettest = /^AS(-\w+)+$/i;
-            var asset = field.getValue();
-            return assettest.test(asset); 
+            return me.ASSETMask.test(val);
         } catch(e) {
             return false;
         }
     },   
     ASSETText: "Not valid ASSET, must be in form AS-SET or AS-MEGA-SET",
-    ASSETMask: /[A-Z0-9-]/i
-});
-//
-// custom Vtype for vtype:"ASorASSET"
-Ext.apply(Ext.form.field.VTypes, {
+    ASSETMask: /^AS(-\w+)+$/i,
+
+    // AS/AS-set check
     ASorASSET: function(val, field){
-        try {
-            var asorassettest = /^(AS(\d+|(-\w+)+)(:\S+)?(\s+AS(\d+|(-\w+)+)(:\S+)?)*$)/i;
-            var asorasset = field.getValue();
-            return asorassettest.test(asorasset);
-        } catch(e) {
-            return false;
-        }
+        var me = this;
+        return me.ASN(val, field) || me.ASSET(val, field);
     },
     ASorASSETText: "Not valid AS or ASSET, must be in form AS3505, AS-SET, AS-MEGA-SET or AS3245:AS-TEST",
-    ASorASSETMask: /[A-Z0-9-:]/i
-});
-//
-// Override grid column state ids
-//
-Ext.override(Ext.grid.column.Column, {
-    getStateId: function() {
-        return this.stateId || this.dataIndex || this.headerId;
-    }
-});
-//
-// Override form field labels
-//
-Ext.override(Ext.form.Panel, {
-    initComponent: function() {
-        var me = this,
-            applyLabelStyle = function(field) {
-                if((field.xtype == "fieldset") || (field.xtype == "container")) {
-                    Ext.each(field.items.items, function(f) {
-                        applyLabelStyle(f);
-                    });
-                } else {
-                    if(!field.allowBlank) {
-                        field.labelClsExtra = "noc-label-required";
-                    }
-                }
-            };
-        me.on("beforeadd", function(form, field) {
-            applyLabelStyle(field);
-        });
-        me.callParent();
-    }
+
+    // Color check
+    color: function(val, field) {
+        var me = this;
+        return me.colorMask.test(val);
+    },
+    colorMask: /^[0-9a-f]{6}$/i,
+    colorText: "Invalid color, must be 6 hexadecimals"
 });
 
 //

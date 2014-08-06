@@ -12,8 +12,7 @@ Ext.define("NOC.fm.alarm.Application", {
         "NOC.fm.alarm.templates.Overview",
         "NOC.fm.alarm.templates.Help",
         "NOC.fm.alarm.templates.Data",
-        "NOC.fm.alarm.templates.SummaryPanel",
-        "Ext.ux.ProgressBarPager"
+        "NOC.fm.alarm.templates.SummaryPanel"
     ],
     layout: "card",
     STATUS_MAP: {
@@ -23,20 +22,23 @@ Ext.define("NOC.fm.alarm.Application", {
     pollingInterval: 30000,
     //
     initComponent: function() {
-        var me = this;
+        var me = this,
+            bs = Math.ceil(screen.height / 24);
         me.currentQuery = {status: "A"};
         me.pollingTaskHandler = Ext.bind(me.pollingTask, me);
         me.store = Ext.create("NOC.core.ModelStore", {
             model: "NOC.fm.alarm.Model",
             autoLoad: false,
-            pageSize: 1,
             customFields: [],
             filterParams: {
                 status: "A",
                 collapse: 1
-            }
+            },
+            pageSize: bs,
+            leadingBufferZone: bs,
+            numFromEdge: Math.ceil(bs / 2),
+            trailingBufferZone: bs
         });
-
         me.typeCombo = Ext.create("Ext.form.ComboBox", {
             fieldLabel: "State",
             labelWidth: 30,
@@ -118,7 +120,13 @@ Ext.define("NOC.fm.alarm.Application", {
             border: false,
             stateful: true,
             stateId: "fm.alarm-grid",
-            plugins: [Ext.create("Ext.ux.grid.AutoSize")],
+            plugins: [
+                {
+                    ptype: "bufferedrenderer"
+                    //trailingBufferZone: 50,
+                    //leadingBufferZone: 50
+                }
+            ],
             dockedItems: [
                 {
                     xtype: "toolbar",
@@ -136,8 +144,7 @@ Ext.define("NOC.fm.alarm.Application", {
                     xtype: "pagingtoolbar",
                     store: me.store,
                     dock: "bottom",
-                    displayInfo: true,
-                    plugins: new Ext.ux.ProgressBarPager()
+                    displayInfo: true
                 }
             ],
             columns: [
@@ -225,7 +232,7 @@ Ext.define("NOC.fm.alarm.Application", {
         //
         me.startPolling();
         //
-        if(me.noc.cmd && me.noc.cmd.cmd == "history") {
+        if(me.getCmd() === "history") {
             me.showAlarm(me.noc.cmd.args[0]);
         }
     },

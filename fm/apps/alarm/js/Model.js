@@ -40,7 +40,7 @@ Ext.define("NOC.fm.alarm.Model", {
         },
         {
             name: "subject",
-            type: "str"
+            type: "string"
         },
         {
             name: "events",

@@ -9,7 +9,6 @@ console.debug("Defining NOC.dns.dnszone.Application");
 Ext.define("NOC.dns.dnszone.Application", {
     extend: "NOC.core.ModelApplication",
     uses: [
-        "NOC.core.TagsField",
         "NOC.dns.dnszone.Model",
         "NOC.dns.dnszone.RecordsModel",
         "NOC.dns.dnszone.RRTypeField",
@@ -206,14 +205,5 @@ Ext.define("NOC.dns.dnszone.Application", {
         syntax: "bind",
         previewName: "Zone: {{name}}",
         restUrl: "/dns/dnszone/{{id}}/repo/zone/"
-    },
-    //
-    _onPreview: function(record) {
-        var me = this;
-        Ext.create("NOC.core.RepoPreview", {
-            title: Ext.String.format("Preview zone: {0}", record.get("name")),
-            rootUrl: Ext.String.format("/dns/dnszone/{0}/repo/zone/", record.get("id")),
-            syntax: "bind"
-        });
     }
 });

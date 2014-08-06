@@ -44,6 +44,16 @@ Ext.define("NOC.inv.interface.Application", {
             disabled: true
         });
         //
+        me.searchField = Ext.create({
+            xtype: "searchfield",
+            name: "search",
+            disabled: true,
+            emptyText: "Search ...",
+            typeAhead: true,
+            scope: me,
+            handler: me.onSearch
+        });
+        //
         Ext.apply(me, {
             items: [
                 Ext.create("Ext.tab.Panel", {
@@ -78,24 +88,10 @@ Ext.define("NOC.inv.interface.Application", {
                         }
                     }
                 },
-                {
-                    xtype: "textfield",
-                    name: "search",
-                    itemId: "search",
-                    inputType: "search",
-                    disabled: true,
-                    emptyText: "Search ...",
-                    listeners: {
-                        change: {
-                            scope: me,
-                            fn: me.onSearch
-                        }
-                    }
-                }
+                me.searchField
             ]
         });
         me.callParent();
-        me.searchField = me.dockedItems.items[0].getComponent("search");
         me.tabPanel = me.getComponent("tab");
     },
     // Called when managed object changed
@@ -141,13 +137,13 @@ Ext.define("NOC.inv.interface.Application", {
         me.searchField.setValue("");
     },
     //
-    onSearch: function(field, value) {
+    onSearch: function(value) {
         var me = this,
             s = value.toLowerCase(),
             // Match substring
             smatch = function(record, field, s) {
                 return record.get(field).toLowerCase().indexOf(s) != -1;
-            }
+            };
         // Search L1
         me.l1Store.filterBy(function(r) {
             return (

@@ -40,7 +40,7 @@ Ext.define("NOC.core.InlineModelStore", {
             },
             reader: {
                 type: "json",
-                root: "data",
+                rootProperty: "data",
                 totalProperty: "total",
                 successProperty: "success"
             },

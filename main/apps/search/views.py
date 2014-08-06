@@ -23,6 +23,7 @@ class SearchApplication(ExtApplication):
     menu = "Search"
     INDEX = "local/index"
     LIMIT = 1000
+    glyph = "search noc-preview"
 
     @view(url="^$", method=["POST"], access="launch", api=True,
           validate={

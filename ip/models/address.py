@@ -141,27 +141,7 @@ class Address(models.Model):
         self.afi = self.get_afi(self.address)
         # Set proper prefix
         self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
-        old = None
-        if self.pk:
-            old = Address.objects.get(pk=self.pk)
         super(Address, self).save(**kwargs)
-        # If address or fqdn changed, touch zones
-        if (not old or self.address != old.address or
-            self.fqdn != old.fqdn or self.vrf != old.vrf):
-            # Touch reverse zone
-            DNSZone.touch(self.address)
-            # Touch forward zone
-            DNSZone.touch(self.fqdn)
-            if old and old.fqdn and old.fqdn != self.fqdn:
-                # Touch old forward zone too
-                DNSZone.touch(old.fqdn)
-
-    def delete(self):
-        fqdn = self.fqdn
-        address = self.address
-        super(Address, self).delete()
-        DNSZone.touch(fqdn)
-        DNSZone.touch(address)
 
     def clean(self):
         """
@@ -176,11 +156,11 @@ class Address(models.Model):
         elif self.afi == "6":
             check_ipv6(self.address)
 
-    ##
-    ## First line of description
-    ##
     @property
     def short_description(self):
+        """
+        First line of description
+        """
         if self.description:
             return self.description.split("\n", 1)[0].strip()
         else:
@@ -220,6 +200,3 @@ class Address(models.Model):
                 )
             }
         )
-
-## Prevent import loop
-from noc.dns.models import DNSZone

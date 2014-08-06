@@ -10,7 +10,6 @@ Ext.define("NOC.vc.vc.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.vc.vc.Model",
-        "NOC.core.TagsField",
         "NOC.main.style.LookupField",
         "NOC.main.resourcestate.LookupField",
         "NOC.project.project.LookupField",

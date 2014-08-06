@@ -9,8 +9,7 @@ console.debug("Defining NOC.inv.inv.plugins.data.DataPanel");
 Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
     extend: "Ext.panel.Panel",
     requires: [
-        "NOC.inv.inv.plugins.data.DataModel",
-        "NOC.inv.inv.plugins.data.LogModel"
+        "NOC.inv.inv.plugins.data.DataModel"
     ],
     title: "Data",
     closable: false,
@@ -33,6 +32,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                     autoScroll: true,
                     stateful: true,
                     stateId: "inv.inv-data-grid",
+                    bufferedRenderer: false,
                     store: me.store,
                     region: "center",
                     columns: [
@@ -57,7 +57,9 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                             renderer: me.onCellRender
                         }
                     ],
-                    features: [{ftype:'grouping'}],
+                    features: [{
+                        ftype: "grouping"
+                    }],
                     selType: "cellmodel",
                     plugins: [
                         Ext.create("Ext.grid.plugin.CellEditing", {

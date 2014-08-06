@@ -19,7 +19,6 @@ Ext.define("NOC.core.TreeFilterToolbar", {
         Ext.apply(me, {
             items: []
         });
-        me.addEvents("select");
         me.callParent();
         me.addCombo();
     },
@@ -39,7 +38,7 @@ Ext.define("NOC.core.TreeFilterToolbar", {
                     },
                     reader: {
                         type: "json",
-                        root: "data",
+                        rootProperty: "data",
                         totalProperty: "total",
                         successProperty: "success"
                     }

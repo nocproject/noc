@@ -26,6 +26,8 @@ class LayerApplication(ExtDocApplication):
         "fill_color": ColorParameter()
     }
 
+    query_fields = ["name__icontains", "description__icontains"]
+
     def field_stroke_color(self, o):
         if o is None:
             return None
