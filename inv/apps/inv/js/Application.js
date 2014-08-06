@@ -186,6 +186,7 @@ Ext.define("NOC.inv.inv.Application", {
             objectId = record.get("id"),
             plugins = record.get("plugins");
         me.addButton.setDisabled(!record.get("can_add"));
+        me.removeButton.setDisabled(!record.get("can_delete"));
         me.invPlugins = {};
         me.tabPanel.removeAll();
         Ext.each(plugins, function(p) {
