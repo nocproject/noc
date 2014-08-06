@@ -2,6 +2,8 @@
 debug = false
 # Load non-minified versions of js libraries, if not false
 debug_js = false
+# Trace ExtJS events
+trace_extjs_events = false
 # Traceback order. One of
 # forward -- top of stack last
 # reverse -- top of stack first
