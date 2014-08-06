@@ -46,7 +46,9 @@ Ext.override(Ext.form.Panel, {
         me.callParent();
     }
 });
-
+//
+// Glyphs in tree column
+//
 Ext.override(Ext.tree.Column, {
     cellTpl: [
         '<tpl for="lines">',
@@ -139,3 +141,12 @@ Ext.override(Ext.tree.Column, {
         return me.getTpl('cellTpl').apply(rendererData);
     }
 });
+// Trace events
+if(NOC.settings.traceExtJSEvents) {
+    console.log("Enabling event tracing");
+    Ext.mixin.Observable.prototype.fireEvent =
+        Ext.Function.createInterceptor(Ext.mixin.Observable.prototype.fireEvent, function () {
+            console.log("EVENT", this.$className, arguments, this);
+            return true;
+        });
+}
