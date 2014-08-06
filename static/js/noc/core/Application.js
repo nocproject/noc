@@ -117,5 +117,14 @@ Ext.define("NOC.core.Application", {
     getCmd: function() {
         var me = this;
         return (me.noc.cmd && me.noc.cmd.cmd) ? me.noc.cmd.cmd : null;
+    },
+    //
+    log: function() {
+        var me = this,
+            msg = [me.$className + ":"];
+        for(var i = 0; i < arguments.length; i++) {
+            msg.push(arguments[i]);
+        }
+        console.log.apply(console, msg);
     }
 });
