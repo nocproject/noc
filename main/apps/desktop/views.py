@@ -116,7 +116,8 @@ class DesktopApplication(ExtApplication):
             "install_collection": config.getboolean("develop", "install_collection"),
             "enable_gis_base_osm": config.getboolean("gis", "enable_osm"),
             "enable_gis_base_google_sat": config.getboolean("gis", "enable_google_sat"),
-            "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap")
+            "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap"),
+            "trace_extjs_events": config.getboolean("main", "trace_extjs_events")
         }
         theme = self.get_theme(request)
         return self.render(
