@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelApplication
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2014 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelApplication");
@@ -50,6 +50,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.store.on("beforeload", me.onBeforeLoad, me);
         me.store.on("load", me.onLoad, me);
         me.store.on("exception", me.onLoadError, me);
+        me.pendingReloads = 0;
 
         me.idField = me.store.idProperty;
         // Generate persistent field names
@@ -72,16 +73,16 @@ Ext.define("NOC.core.ModelApplication", {
         me.callParent();
         me.currentRecord = null;
         // Process commands
-        if(me.noc.cmd) {
-            switch(me.noc.cmd.cmd) {
-                case "open":
-                    me.store.setFilterParams({id: me.noc.cmd.id});
-                    break;
-                case "history":
-                    me.restoreHistory(me.noc.cmd.args);
-                    return;
-                    break;
-            }
+        switch(me.getCmd()) {
+            case "open":
+                var fp = {};
+                fp[me.idField] = me.noc.cmd.id;
+                me.store.setFilterParams(fp);
+                break;
+            case "history":
+                me.restoreHistory(me.noc.cmd.args);
+                return;
+                break;
         }
         // Finally, load the store
         me.store.load();
@@ -270,7 +271,8 @@ Ext.define("NOC.core.ModelApplication", {
             );
             rowItems = rowItems.concat([
                 {
-                    iconCls: me.previewIcon,
+                    glyph: NOC.glyph.search,
+                    color: NOC.colors.preview,
                     tooltip: "Preview",
                     scope: me,
                     handler: function(grid, rowIndex, colIndex) {
@@ -551,15 +553,25 @@ Ext.define("NOC.core.ModelApplication", {
                 fontWeight: "bold"
             }
         });
-
-        var formFields = [
-            me.formTitle,
-            {
+        // Build form fields
+        var formFields = [];
+        // Append configured fields
+        formFields = formFields.concat(me.fields);
+        // Check if id field is configured
+        var hasIdField = false;
+        Ext.each(me.fields, function(f) {
+            if(f.name === me.idField) {
+                hasIdField = true;
+            }
+        }, this);
+        //
+        if(!hasIdField) {
+            formFields.push({
                 xtype: "hiddenfield",
                 name: me.idField
-            }
-        ];
-        formFields = formFields.concat(me.fields);
+            });
+        }
+        // Append custom fields
         if(me.noc.cust_form_fields) {
             formFields = formFields.concat(me.noc.cust_form_fields);
         }
@@ -766,13 +778,19 @@ Ext.define("NOC.core.ModelApplication", {
     reloadStore: function() {
         var me = this,
             onReload = function() {
-                me.grid.getView().refresh();
+                if(me.pendingReloads > 1) {
+                    me.pendingReloads = 0;
+                    me.reloadStore();
+                } else {
+                    me.pendingReloads = 0;
+                    me.grid.getView().refresh();
+                }
             };
-        if(me.currentQuery) {
-            me.store.setFilterParams(me.currentQuery);
+        me.pendingReloads++;
+        if(me.pendingReloads > 1) {
+            return;
         }
-        // Reset grid selection (conflicts with store clear)
-        me.grid.getSelectionModel().deselectAll();
+        me.store.setFilterParams(me.currentQuery);
         // Reload store
         me.store.on("load", onReload, me, {single: true});
         me.store.reload();
@@ -781,11 +799,10 @@ Ext.define("NOC.core.ModelApplication", {
     onSearch: function(query) {
         var me = this;
         if(query && query.length > 0) {
-            me.currentQuery["__query"] = query;
+            me.currentQuery.__query = query;
         } else {
-            delete me.currentQuery["__query"];
+            delete me.currentQuery.__query;
         }
-        console.log("onSearch", me.currentQuery);
         me.reloadStore();
     },
     // Filter
@@ -795,8 +812,9 @@ Ext.define("NOC.core.ModelApplication", {
         Ext.each(me.filterGetters, function(g) {
             fexp = Ext.Object.merge(fexp, g());
         });
-        if(me.currentQuery["__query"])
-            fexp["__query"] = me.currentQuery["__query"];
+        if(me.currentQuery.__query) {
+            fexp.__query = me.currentQuery.__query;
+        }
         me.currentQuery = fexp;
         me.reloadStore();
     },
@@ -843,8 +861,9 @@ Ext.define("NOC.core.ModelApplication", {
         me.cleanData(v);
         // Fetch comboboxes labels
         me.form.getFields().each(function(field) {
-            if(Ext.isDefined(field.getLookupData))
+            if(Ext.isDefined(field.getLookupData)) {
                 v[field.name + "__label"] = field.getLookupData();
+            }
         });
         me.saveRecord(v);
     },
@@ -936,8 +955,18 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // "close" button pressed
     onClose: function() {
-        var me = this
+        var me = this,
+            toReload = me.idField in me.currentQuery;
+        if(toReload) {
+            // Remove filter set by loadById
+            delete me.currentQuery[me.idField];
+        }
+        // Apply updated filter
+        me.store.setFilterParams(me.currentQuery);
         me.showGrid();
+        if(toReload) {
+            me.reloadStore();
+        }
     },
     // "clone" button pressed
     onClone: function() {
@@ -1023,7 +1052,8 @@ Ext.define("NOC.core.ModelApplication", {
     onInlineEdit: function() {
         var me = this;
         if(me.currentRecord) {
-            me.currentRecord.setDirty();
+            // deprecated method
+            // me.currentRecord.setDirty();
         }
     },
     // Admin action selected
@@ -1114,9 +1144,12 @@ Ext.define("NOC.core.ModelApplication", {
     // Callback is the function(record)
     //
     loadById: function(id, callback) {
-        var me = this;
+        var me = this,
+            fp = {};
+        fp[me.idField] = id;
+        me.currentQuery[me.idField] = id;
+        me.store.setFilterParams(fp);
         me.store.load({
-            params: {id: id},
             scope: me,
             callback: function(records, operation, success) {
                 if(success && records.length === 1) {
@@ -1160,6 +1193,6 @@ Ext.define("NOC.core.ModelApplication", {
     //
     onRefresh: function() {
         var me = this;
-        me.reloadStore(); // @todo: Reload at current position
+        me.reloadStore();
     }
 });
