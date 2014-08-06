@@ -146,7 +146,8 @@ if(NOC.settings.traceExtJSEvents) {
     console.log("Enabling event tracing");
     Ext.mixin.Observable.prototype.fireEvent =
         Ext.Function.createInterceptor(Ext.mixin.Observable.prototype.fireEvent, function () {
-            console.log("EVENT", this.$className, arguments, this);
+            console.log("EVENT", this.$className, arguments[0], Array.prototype.slice.call(arguments, 1));
+            console.log("Stack trace:\n" + printStackTrace().join("\n"));
             return true;
         });
 }
