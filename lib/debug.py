@@ -207,6 +207,19 @@ def get_traceback(reverse=TRACEBACK_REVERSE):
     return "\n".join(r)
 
 
+def excepthook(t, v, tb):
+    """
+    Override default exception handler
+    """
+    now = datetime.datetime.now()
+    r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
+    r += ["Working directory: %s" % os.getcwd()]
+    r += [str(t), str(v)]
+    r += [format_frames(get_traceback_frames(tb))]
+    sys.stderr.write("\n".join(r))
+    sys.stderr.flush()
+
+
 def error_report(reverse=TRACEBACK_REVERSE):
     r = get_traceback(reverse=reverse)
     logging.error(r)
