@@ -50,6 +50,7 @@ Ext.define("NOC.main.desktop.Application", {
         var me = this;
         me.callParent();
         console.log("NOC application ready");
+        me.hideSplashScreen();
         me.checkLogged();
         me.launchAppsFromHistory();
     },
@@ -408,7 +409,13 @@ Ext.define("NOC.main.desktop.Application", {
         if(method) {
             method();
         }
-
-
+    },
+    //
+    hideSplashScreen: function() {
+        var me = this,
+            mask = Ext.get("noc-loading-mask"),
+            parent = Ext.get("noc-loading");
+        mask.fadeOut({callback: function(){mask.destroy();}});
+        parent.fadeOut({callback: function(){parent.destroy();}});
     }
 });
