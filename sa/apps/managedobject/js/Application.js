@@ -230,7 +230,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                     name: "is_managed",
                     xtype: "checkboxfield",
                     boxLabel: "Is Managed?",
-                    allowBlank: false
+                    allowBlank: false,
+                    groupEdit: true
                 },
                 {
                     name: "description",
@@ -242,13 +243,15 @@ Ext.define("NOC.sa.managedobject.Application", {
                     name: "object_profile",
                     xtype: "sa.managedobjectprofile.LookupField",
                     fieldLabel: "Object Profile",
-                    allowBlank: false
+                    allowBlank: false,
+                    groupEdit: true
                 },
                 {
                     name: "shape",
                     xtype: "main.ref.stencil.LookupField",
                     fieldLabel: "Shape",
-                    allowBlank: true
+                    allowBlank: true,
+                    groupEdit: true
                 },
                 {
                     xtype: "fieldset",
@@ -264,33 +267,38 @@ Ext.define("NOC.sa.managedobject.Application", {
                             xtype: "sa.administrativedomain.LookupField",
                             fieldLabel: "Administrative Domain",
                             width: 200,
-                            allowBlank: false
+                            allowBlank: false,
+                            groupEdit: true
                         },
                         {
                             name: "activator",
                             xtype: "sa.activator.LookupField",
                             fieldLabel: "Activator",
                             width: 100,
-                            allowBlank: false
+                            allowBlank: false,
+                            groupEdit: true
                         },
                         {
                             name: "collector",
                             xtype: "sa.collector.LookupField",
                             fieldLabel: "Collector",
                             width: 100,
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "vrf",
                             xtype: "ip.vrf.LookupField",
                             fieldLabel: "VRF",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "vc_domain",
                             xtype: "vc.vcdomain.LookupField",
                             fieldLabel: "VC Domain",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         }
                     ]
                 },
@@ -344,27 +352,31 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "auth_profile",
                                     xtype: "sa.authprofile.LookupField",
                                     fieldLabel: "Auth Profile",
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "user",
                                     xtype: "textfield",
                                     fieldLabel: "User",
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "password",
                                     xtype: "textfield",
                                     fieldLabel: "Password",
                                     allowBlank: true,
-                                    inputType: "password"
+                                    inputType: "password",
+                                    groupEdit: true
                                 },
                                 {
                                     name: "super_password",
                                     xtype: "textfield",
                                     fieldLabel: "Super Password",
                                     allowBlank: true,
-                                    inputType: "password"
+                                    inputType: "password",
+                                    groupEdit: true
                                 }
                             ]
                         },
@@ -389,13 +401,15 @@ Ext.define("NOC.sa.managedobject.Application", {
                             name: "termination_group",
                             xtype: "sa.terminationgroup.LookupField",
                             fieldLabel: "Termination Group",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "service_terminator",
                             xtype: "sa.terminationgroup.LookupField",
                             fieldLabel: "Service Terminator",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         }
                     ]
                 },
@@ -418,19 +432,22 @@ Ext.define("NOC.sa.managedobject.Application", {
                             name: "trap_community",
                             xtype: "textfield",
                             fieldLabel: "Trap Community",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "snmp_ro",
                             xtype: "textfield",
                             fieldLabel: "RO Community",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "snmp_rw",
                             xtype: "textfield",
                             fieldLabel: "RW Community",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         }
                     ]
                 },
@@ -447,19 +464,22 @@ Ext.define("NOC.sa.managedobject.Application", {
                             name: "config_filter_rule",
                             xtype: "main.pyrule.LookupField",
                             fieldLabel: "Config Filter pyRule",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "config_diff_filter_rule",
                             xtype: "main.pyrule.LookupField",
                             fieldLabel: "Config Diff Filter Rule",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "config_validation_rule",
                             xtype: "main.pyrule.LookupField",
                             fieldLabel: "Config Validation pyRule",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         }
                     ]
                 },

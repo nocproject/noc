@@ -21,7 +21,9 @@ from extapplication import ExtApplication, view
 from noc.sa.interfaces import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
-                               NoneParameter, StringListParameter)
+                               NoneParameter, StringListParameter,
+                               DictParameter, ListOfParameter,
+                               ModelParameter)
 from interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
@@ -464,3 +466,35 @@ class ExtModelApplication(ExtApplication):
             }, status=self.NOT_FOUND)
         o.delete()  # @todo: Detect errors
         return HttpResponse(status=self.DELETED)
+
+    @view(url="^actions/group_edit/$", method=["POST"],
+          access="update", api=True)
+    def api_action_group_edit(self, request):
+        validator = DictParameter(attrs={
+            "ids": ListOfParameter(element=ModelParameter(self.model),
+                                   convert=True)
+        })
+        rv = self.deserialize(request.raw_post_data)
+        try:
+            v = validator.clean(rv)
+        except InterfaceTypeError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+            }, status=self.BAD_REQUEST)
+        objects = v["ids"]
+        del v["ids"]
+        try:
+            v = self.clean(v)
+        except ValueError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+            }, status=self.BAD_REQUEST)
+        for o in objects:
+            for p in v:
+                setattr(o, p, v[p])
+            o.save()
+        return "%d records has been updated" % len(objects)
