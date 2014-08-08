@@ -79,9 +79,12 @@
         <script type="text/javascript" src="/main/desktop/js/app.js"></script>
     </head>
     <body>
+    <!-- "Loading" Splash Screen -->
+    <div id="noc-loading-mask"></div>
+    <div id="noc-loading">Loading NOC. Please wait ...</div>
     <form id="history-form" class="x-hide-display">
         <input type="hidden" id="x-history-field" />
-        <iframe id="x-history-frame"></iframe>
+        <iframe id="x-history-frame" style="display:none"></iframe>
     </form>
     </body>
 </html>
