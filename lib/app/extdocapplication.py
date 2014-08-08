@@ -17,7 +17,8 @@ from noc.lib.nosql import (StringField, BooleanField, GeoPointField,
                            ListField, Q, EmbeddedDocumentField)
 from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
                                ModelParameter, ListOfParameter,
-                               EmbeddedDocumentParameter)
+                               EmbeddedDocumentParameter, DictParameter,
+                               InterfaceTypeError, DocumentParameter)
 from noc.lib.validators import is_int
 from noc.lib.serialize import json_decode
 from noc.main.models.collectioncache import CollectionCache
@@ -350,3 +351,37 @@ class ExtDocApplication(ExtApplication):
         Expose is_builtin field for JSON collections
         """
         return bool(CollectionCache.objects.filter(uuid=o.uuid))
+
+    @view(url="^actions/group_edit/$", method=["POST"],
+          access="update", api=True)
+    def api_action_group_edit(self, request):
+        validator = DictParameter(attrs={
+            "ids": ListOfParameter(
+                element=DocumentParameter(self.model),
+                convert=True)
+            }
+        )
+        rv = self.deserialize(request.raw_post_data)
+        try:
+            v = validator.clean(rv)
+        except InterfaceTypeError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+            }, status=self.BAD_REQUEST)
+        objects = v["ids"]
+        del v["ids"]
+        try:
+            v = self.clean(v)
+        except ValueError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+            }, status=self.BAD_REQUEST)
+        for o in objects:
+            for p in v:
+                setattr(o, p, v[p])
+            o.save()
+        return "%d records has been updated" % len(objects)

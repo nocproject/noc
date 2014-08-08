@@ -21,6 +21,7 @@ Ext.define("NOC.core.ModelApplication", {
     appTitle: null,
     createTitle: "Create {0}",
     changeTitle: "Change {0}",
+    groupChangeTitle: "Change {0} {1}",
     rowClassField: undefined,
     actions: undefined,
     idField: "id",
@@ -59,10 +60,16 @@ Ext.define("NOC.core.ModelApplication", {
                 me.persistentFields[f.name] = true;
             }
         });
+        //
+        me.hasGroupEdit = me.checkGroupEdit();
         // Create GRID card
         me.ITEM_GRID = me.registerItem(me.createGrid());
         // Create FORM card
         me.ITEM_FORM = me.registerItem(me.createForm());
+        // Create Group Edit form when necessary
+        if(me.hasGroupEdit) {
+            me.ITEM_GROUP_FORM = me.registerItem(me.createGroupForm())
+        }
         //
         Ext.apply(me, {
             items: me.getRegisteredItems(),
@@ -120,34 +127,8 @@ Ext.define("NOC.core.ModelApplication", {
 
         gridToolbar.push(me.searchField, me.refreshButton, me.createButton);
         // admin actions
-        if(me.actions) {
-            me.actionMenu = Ext.create("Ext.button.Button", {
-                glyph: NOC.glyph.download,
-                tooltip: "Group actions",
-                hasAccess: NOC.hasPermission("update"),
-                itemId: "action_menu",
-                disabled: true,
-                menu: {
-                    xtype: "menu",
-                    plain: true,
-                    items: me.actions.map(function(o) {
-                        return {
-                            text: o.title,
-                            itemId: o.action,
-                            form: o.form,
-                            glyph: o.glyph,
-                            resultTemplate: o.resultTemplate
-                        }
-                    }),
-                    listeners: {
-                        click: {
-                            scope: me,
-                            fn: me.onAction
-                        }
-                    }
-                }
-            });
-            gridToolbar.push(me.actionMenu);
+        if(me.actions || me.hasGroupEdit) {
+            gridToolbar.push(me.createActionMenu());
         }
         gridToolbar = gridToolbar.concat(me.gridToolbar);
         gridToolbar.push("->");
@@ -542,7 +523,7 @@ Ext.define("NOC.core.ModelApplication", {
                 });
                 me.inlineStores.push(istore);
             }
-        };
+        }
 
         me.formTitle = Ext.create("Ext.container.Container", {
             html: "Title",
@@ -553,7 +534,7 @@ Ext.define("NOC.core.ModelApplication", {
             }
         });
         // Build form fields
-        var formFields = [];
+        var formFields = [me.formTitle];
         // Append configured fields
         formFields = formFields.concat(me.fields);
         // Check if id field is configured
@@ -1050,6 +1031,10 @@ Ext.define("NOC.core.ModelApplication", {
             records = me.grid.getSelectionModel().getSelection().map(function(o) {
                 return o.get(me.idField)
             });
+        if(me.hasGroupEdit || item.itemId === "group_edit") {
+            me.showGroupEditForm(records);
+            return;
+        }
         if(item.form) {
             me.showActionForm(item, records);
         } else {
@@ -1182,5 +1167,214 @@ Ext.define("NOC.core.ModelApplication", {
     onRefresh: function() {
         var me = this;
         me.reloadStore();
+    },
+    // Returns true if form has at least one groupEdit: true
+    checkGroupEdit: function() {
+        var me = this,
+            check = function(seq) {
+                for(var i = 0; i < seq.length; i++) {
+                    var v = seq[i];
+                    if(v.groupEdit === true) {
+                        return true;
+                    }
+                    if(v.items && v.items.length && check(v.items)) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+        return NOC.hasPermission("update") && check(me.fields);
+    },
+    //
+    createGroupForm: function() {
+        var me = this,
+            form,
+            getFormItems = function(fields) {
+                var items = [];
+                Ext.each(fields, function(v) {
+                    var x;
+                    switch(v.xtype) {
+                        case "fieldset":
+                        case "container":
+                            x = {
+                                xtype: v.xtype,
+                                title: v.title,
+                                items: getFormItems(v.items)
+                            };
+                            if(v.layout) {
+                                x.layout = v.layout;
+                            }
+                            if(v.defaults) {
+                                x.defaults = v.defaults;
+                            }
+                            items.push(x);
+                            break;
+                        case "checkbox":
+                        case "checkboxfield":
+                            if(v.groupEdit === true) {
+                                x = {
+                                    xtype: "combobox",
+                                    fieldLabel: v.boxLabel,
+                                    name: v.name,
+                                    store: [
+                                        [0, "Leave unchanged"],
+                                        [true, "Set"],
+                                        [false, "Reset"]
+                                    ],
+                                    value: 0
+                                }
+                            } else {
+                                x = v.cloneConfig ? v.cloneConfig() : v;
+                                if(x.setDisabled) {
+                                    x.setDisabled(true);
+                                } else {
+                                    x.disabled = true;
+                                }
+                            }
+                            items.push(x);
+                            me.groupCheckboxFields[v.name] = true;
+                            break;
+                        default:
+                            x = v.cloneConfig ? v.cloneConfig() : v;
+                            if(x.setDisabled) {
+                                x.setDisabled(x.groupEdit !== true);
+                            } else {
+                                x.disabled = x.groupEdit !== true;
+                            }
+                            items.push(x);
+                            break;
+                    }
+                });
+                return items;
+            };
+
+        me.groupCheckboxFields = {};
+
+        me.groupFormTitle = Ext.create("Ext.container.Container", {
+            html: "Title",
+            padding: 4,
+            style: {
+                fontWeight: "bold"
+            }
+        });
+
+        form = Ext.create("Ext.form.Panel", {
+            padding: 4,
+            bodyPadding: 4,
+            autoScroll: true,
+            items: [me.groupFormTitle].concat(getFormItems(me.fields)),
+            dockedItems: [
+                {
+                    xtype: "toolbar",
+                    dock: "top",
+                    items: [
+                        {
+                            text: "Save",
+                            glyph: NOC.glyph.save,
+                            // formBind: true,
+                            // disabled: true,
+                            scope: me,
+                            // @todo: check access
+                            handler: me.onGroupSave
+                        },
+                        {
+                            text: "Close",
+                            glyph: NOC.glyph.arrow_left,
+                            scope: me,
+                            handler: me.onGroupClose
+                        }
+                    ]
+                }
+            ]
+        });
+        me.groupForm = form.getForm();
+        return form;
+    },
+    //
+    createActionMenu: function() {
+        var me = this,
+            items = [];
+        // Group edit
+        if(me.hasGroupEdit) {
+            items.push({
+                text: "Group Edit",
+                itemId: "group_edit",
+                glyph: NOC.glyph.edit
+            });
+        }
+        // Other items
+        if(me.actions) {
+            items = items.concat(me.actions.map(function(o) {
+                return {
+                    text: o.title,
+                    itemId: o.action,
+                    form: o.form,
+                    glyph: o.glyph,
+                    resultTemplate: o.resultTemplate
+                }
+            }));
+        }
+
+        me.actionMenu = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.download,
+            tooltip: "Group actions",
+            hasAccess: NOC.hasPermission("update"),
+            itemId: "action_menu",
+            disabled: true,
+            menu: {
+                xtype: "menu",
+                plain: true,
+                items: items,
+                listeners: {
+                    click: {
+                        scope: me,
+                        fn: me.onAction
+                    }
+                }
+            }
+        });
+        return me.actionMenu;
+    },
+    //
+    showGroupEditForm: function(items) {
+        var me = this;
+        me.groupEditItems = items;
+        me.groupFormTitle.update(Ext.String.format(
+            me.groupChangeTitle, items.length, me.appTitle
+        ));
+        me.showItem(me.ITEM_GROUP_FORM);
+    },
+    //
+    onGroupClose: function() {
+        var me = this;
+        me.showGrid();
+    },
+    //
+    onGroupSave: function() {
+        var me = this,
+            values;
+        // @todo: Form validation
+        values = me.groupForm.getValues();
+        // Normalize checkboxes and fields
+        Ext.Object.each(values, function(v) {
+            if((me.groupCheckboxFields[v] && values[v] === 0) || values[v] === "") {
+                delete values[v];
+            }
+        });
+        values.ids = me.groupEditItems;
+        Ext.Ajax.request({
+            url: me.base_url + "actions/group_edit/",
+            method: "POST",
+            scope: me,
+            jsonData: values,
+            success: function(response) {
+                NOC.info("Records has been updated");
+                me.showGrid();
+                me.reloadStore();
+            },
+            failure: function() {
+                NOC.error("Failed");
+            }
+        });
     }
 });
