@@ -1,6 +1,6 @@
 noc-pkg-handlebars-debug==1.0.0
 noc-pkg-shjs-debug==0.6
-noc-pkg-extjs-debug==5.0.0
+noc-pkg-extjs-debug==5.0.1
 noc-pkg-mxgraph-debug==1.10.4.2
 noc-pkg-openlayers-debug==2.13
 noc-pkg-d3-debug==3.2.2
