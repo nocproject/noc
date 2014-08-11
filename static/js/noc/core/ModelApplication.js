@@ -1031,7 +1031,7 @@ Ext.define("NOC.core.ModelApplication", {
             records = me.grid.getSelectionModel().getSelection().map(function(o) {
                 return o.get(me.idField)
             });
-        if(me.hasGroupEdit || item.itemId === "group_edit") {
+        if(me.hasGroupEdit && item.itemId === "group_edit") {
             me.showGroupEditForm(records);
             return;
         }
