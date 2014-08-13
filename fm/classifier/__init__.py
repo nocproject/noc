@@ -350,7 +350,7 @@ class Classifier(Daemon):
         tmp = cdb[ntmp]
         if d:
             tmp.insert(d, safe=True)
-        tmp.rename(n, dropTarget=True)
+            tmp.rename(n, dropTarget=True)
         cdb[n].ensure_index("sources")
         logging.debug("Updating ignore rules")
         im = cdb[self.config.get("collector_database", "ignore_map")]
