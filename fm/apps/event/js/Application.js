@@ -74,6 +74,28 @@ Ext.define("NOC.fm.event.Application", {
             }
         });
 
+        me.selectorCombo = Ext.create("NOC.sa.managedobjectselector.LookupField", {
+            fieldLabel: "Selector",
+            labelWidth: 40,
+            width: 200,
+            listeners: {
+                scope: me,
+                select: me.onChangeFilter,
+                clear: me.onChangeFilter
+            }
+        });
+
+        me.admdomCombo = Ext.create("NOC.sa.administrativedomain.LookupField", {
+            fieldLabel: "Adm. Domain",
+            labelWidth: 40,
+            width: 200,
+            listeners: {
+                scope: me,
+                select: me.onChangeFilter,
+                clear: me.onChangeFilter
+            }
+        });
+
         me.eventClassCombo = Ext.create("NOC.fm.eventclass.LookupField", {
             fieldLabel: "Class",
             labelWidth: 40,
@@ -125,6 +147,8 @@ Ext.define("NOC.fm.event.Application", {
                     dock: "top",
                     items: [
                         me.typeCombo,
+                        me.admdomCombo,
+                        me.selectorCombo,
                         me.objectCombo,
                         me.eventClassCombo,
                         me.fromDateField,
@@ -150,6 +174,12 @@ Ext.define("NOC.fm.event.Application", {
                     dataIndex: "timestamp",
                     width: 100,
                     renderer: NOC.render.DateTime
+                },
+                {
+                    text: "Administrative Domain",
+                    dataIndex: "administrative_domain",
+                    width: 200,
+                    renderer: NOC.render.Lookup("administrative_domain")
                 },
                 {
                     text: "Object",
@@ -247,6 +277,10 @@ Ext.define("NOC.fm.event.Application", {
 
         // Status
         q.status = me.typeCombo.getValue();
+        // Selector
+        setIf("managedobjectselector", me.selectorCombo.getValue());
+        // Adm Domain
+        setIf("administrative_domain", me.admdomCombo.getValue());
         // Object
         setIf("managed_object", me.objectCombo.getValue());
         // Class

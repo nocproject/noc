@@ -18,6 +18,8 @@ from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models import get_alarm, get_event
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models import AdministrativeDomain
+from noc.sa.models.selectorcache import SelectorCache
 from noc.main.models import User
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
@@ -83,6 +85,18 @@ class AlarmApplication(ExtApplication):
             qp = p.split("__")[0]
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].form_clean(q[p])
+        if "administrative_domain" in q:
+            a = AdministrativeDomain.objects.get(id = q["administrative_domain"])
+            q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
+            q.pop("administrative_domain")
+        if "managedobjectselector" in q:
+            s = SelectorCache.objects.filter(selector = q["managedobjectselector"]).values_list("object")
+            if "managed_object__in" in q:
+                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
+            else:
+                q["managed_object__in"] = s
+            q.pop("managedobjectselector")
+
         #
         if "collapse" in q:
             c = q["collapse"]
@@ -101,6 +115,8 @@ class AlarmApplication(ExtApplication):
             "status": o.status,
             "managed_object": o.managed_object.id,
             "managed_object__label": o.managed_object.name,
+            "administrative_domain": o.managed_object.administrative_domain_id,
+            "administrative_domain__label": o.managed_object.administrative_domain.name,
             "severity": o.severity,
             "severity__label": s.name,
             "alarm_class": str(o.alarm_class.id),
