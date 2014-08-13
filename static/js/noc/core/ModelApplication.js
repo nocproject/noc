@@ -606,7 +606,7 @@ Ext.define("NOC.core.ModelApplication", {
     saveRecord: function(data) {
         var me = this,
             Model = me.store.getModel(),
-            record = new Model(data, me.store.getSession()),
+            record = new Model(data),
             mv = record.validate(),
             result = {};
 
@@ -722,7 +722,9 @@ Ext.define("NOC.core.ModelApplication", {
         // Show edit form
         me.showForm();
         // Load records
+        console.log("loadRecord", record);
         me.form.loadRecord(record);
+        console.log("done");
         me.loadInlines();
         // Focus on first field
         me.focusOnFirstField();

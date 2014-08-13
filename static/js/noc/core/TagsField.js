@@ -13,7 +13,7 @@ Ext.define("NOC.core.TagsField", {
     forceSelection: false,
     displayField: "label",
     valueField: "label",
-    queryMode: "remote",
+    queryMode: "local",
     queryParam: "__query",
     createNewOnEnter: true,
     createNewOnBlur: true,
@@ -44,5 +44,31 @@ Ext.define("NOC.core.TagsField", {
             })
         });
         me.callParent();
+    },
+    //
+    // Convert array of strings to array of models
+    //
+    setValue: function(value) {
+        var me = this,
+            valueRecord, cls, i, len;
+        if (Ext.isEmpty(value)) {
+            value = null;
+        }
+        if (Ext.isString(value) && me.multiSelect) {
+            value = value.split(me.delimiter);
+        }
+        value = Ext.Array.from(value, true);
+        for (i = 0, len = value.length; i < len; i++) {
+            record = value[i];
+            if (!record || !record.isModel) {
+                valueRecord = {};
+                valueRecord[me.valueField] = record;
+                valueRecord[me.displayField] = record;
+                cls = me.valueStore.getModel();
+                valueRecord = new cls(valueRecord);
+                value[i] = valueRecord;
+            }
+        }
+        me.callParent([value]);
     }
 });
