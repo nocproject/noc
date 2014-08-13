@@ -7,163 +7,125 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-from collections import defaultdict
 import logging
+import inspect
 ## NOC modules
 from noc.lib.daemon import Daemon
-from noc.lib.stomp.threadclient import ThreadedSTOMPClient
-from noc.pm.models.storage import PMStorage
-from noc.pm.models.ts import PMTS
-from noc.pm.models.probe import PMProbe
-from noc.pm.models.check import PMCheck
-
-
-MAX32 = 0xFFFFFFFFL
-MAX64 = 0xFFFFFFFFFFFFFFFFL
+from noc.lib.nbsocket.socketfactory import SocketFactory
+from noc.lib.nbsocket.acceptedtcpsocket import AcceptedTCPSocket
+from noc.pm.pmwriter.protocols.line import LineProtocolSocket
+from noc.pm.pmwriter.protocols.pickle import PickleProtocolSocket
+from noc.pm.models.storagerule import StorageRule
+from cache import MetricsCache
+from writer import Writer
+from noc.pm.storage.base import TimeSeriesDatabase
+from noc.settings import config
 
 
 class PMWriterDaemon(Daemon):
     daemon_name = "noc-pmwriter"
 
+    LISTENERS = {
+        "line_listener": LineProtocolSocket,
+        "pickle_listener": PickleProtocolSocket
+    }
+
     def __init__(self, *args, **kwargs):
-        self.stomp_client = None
-        self.storages = {}
-        self.ts = {}  # ts_id -> PMTS
-        # Last measures for COUNTER and DERIVE types
-        self.last_measure = {}  # ts_id -> (timestamp, value)
+        self.factory = SocketFactory(controller=self)
+        self.line_listener = None
+        self.pickle_listener = None
+        self.storage_rules = {}
+        self.default_storage_rule = None
+        self.cache = MetricsCache()
+        self.writers = []
+        self.storage_class = None
         super(PMWriterDaemon, self).__init__(*args, **kwargs)
 
     def load_config(self):
         super(PMWriterDaemon, self).load_config()
-        self.stomp_host = self.config.get("stomp", "host")
-        self.stomp_port = self.config.getint("stomp", "port")
-        self.stomp_client_id = self.config.get("stomp", "client_id")
-        self.stomp_login = self.config.get("stomp", "login")
-        self.stomp_password = self.config.get("stomp", "password")
-        self.load_storages()
-
-    def load_storages(self):
-        for s in PMStorage.objects.all():
-            if s.id not in self.storages:
-                self.storages[s.id] = s
+        self.load_storage_rules()
+        self.setup_listener("line_listener")
+        self.setup_listener("pickle_listener")
+        strategy = self.config.get("cache", "drain_strategy")
+        logging.info("Setting cache drain strategy to '%s'" % strategy)
+        self.cache.set_strategy(strategy)
+        if not self.storage_class:
+            self.setup_storage_class()
+        self.run_writers()
 
     def run(self):
-        self.stomp_client = ThreadedSTOMPClient(
-            host=self.stomp_host,
-            port=self.stomp_port,
-            login=self.stomp_login,
-            passcode=self.stomp_password,
-            client_id=self.stomp_client_id
-        )
-        self.stomp_client.start()
-        self.stomp_client.subscribe("/queue/pm/data/", self.on_data)
-        self.stomp_client.subscribe("/queue/pm/config/", self.on_config)
-        self.stomp_client.subscribe("/queue/pm/check/change/",
-                                    self.on_check_change)
-        self.stomp_client.wait()
+        logging.info("Running")
+        self.factory.run(True)
 
-    def on_data(self, destination, body):
+    def register_metric(self, metric, value, timestamp):
+        self.cache.register_metric(metric, value, timestamp)
+
+    def setup_listener(self, name):
         """
-        Write timeseries data.
-        Accepts list of (ts id, timestamp, value)
-        :param destination:
-        :param body:
-        :return:
+        Setup collector listener
         """
-        # Split data to storages
-        spool = defaultdict(list)
-        for ts_id, timestamp, value in body:
-            ts = self.ts.get(ts_id)
-            if ts is None:
-                logging.error("Unknown time series id %s" % ts_id)
+        enabled = self.config.getboolean(name, "enabled")
+        address = self.config.get(name, "listen")
+        port = self.config.getint(name, "port")
+        s = getattr(self, name)
+        logging.info("Setup listener %s enabled=%s %s:%s" % (name, enabled, address, port))
+        if (s and
+                ((enabled and (s.address != address or s.port != port)) or
+                     not enabled)):
+            # Address/port changed
+            logging.info("Closing %s" % name)
+            s.close()
+            setattr(self, name, None)
+        if enabled and not s:
+            logging.info("Running %s at %s:%s" % (name, address, port))
+            sc = self.LISTENERS[name]
+            if issubclass(sc, AcceptedTCPSocket):
+                # TCP
+                s = self.factory.listen_tcp(address, port, sc)
             else:
-                # Check time series is enabled
-                if not ts.is_active:
-                    logging.debug("Ignore inactive time series %s" % ts)
-                    continue  # Ignore inactive time series
-                # Convert value
-                if ts.type == "C":
-                    value = self.convert_counter(ts, timestamp, value)
-                elif ts.type == "D":
-                    value = self.convert_derive(ts, timestamp, value)
-                if value is None:
-                    continue  # Skip round
-                # Spool data for bulk save
-                spool[ts.storage.id] += [(ts_id, timestamp, value)]
-        # Write data
-        for storage_id in spool:
-            self.storages[storage_id].register(spool[storage_id])
+                # UDP
+                pass
+            setattr(self, name, s)
 
-    def get_check_config(self, check):
-        """
-        Serialize check to STOMP-transportable config
-        :param check:
-        :return:
-        """
-        c = {
-            "id": str(check.id),
-            "check": check.check,
-            "interval": check.interval,
-            "config": check.config,
-            "ts": {}
-        }
-        for ts in PMTS.objects.filter(check=check):
-            self.ts[ts.id] = ts
-            c["ts"][ts.name] = ts.id
-        return c
+    def load_storage_rules(self):
+        logging.info("Loading storage rules")
+        rules = {}
+        self.default_storage_rule = None
+        for sr in StorageRule.objects.all():
+            r = {
+                "retentions": sr.get_retention(),
+                "aggregation_method": sr.aggregation_method,
+                "xfilesfactor": sr.xfilesfactor,
+                "name": sr.name
+            }
+            rules[sr.name] = r
+            if sr.name == "default":
+                self.default_storage_rule = r
+        if not self.default_storage_rule:
+            self.die("No default storage rule")
+        self.storage_rules = rules
 
-    def on_config(self, destination, body):
-        probe_name = body["probe"]
-        probe = PMProbe.objects.filter(
-            name=probe_name, is_active=True).first()
-        if not probe:
-            logging.error("Invalid probe: '%s'" % probe_name)
+    def setup_storage_class(self):
+        sc = config.get("pm_storage", "type")
+        logging.info("Setting storage class to '%s'" % sc)
+        m = __import__("noc.pm.storage.%s_storage" % sc, {}, {}, "*")
+        for a in dir(m):
+            o = getattr(m, a)
+            if (inspect.isclass(o) and
+                    issubclass(o, TimeSeriesDatabase) and o.name == sc):
+                self.storage_class = o
+                break
+        if not self.storage_class:
+            raise ValueError("Invalid storage type '%s'" % sc)
+
+    def run_writers(self):
+        if self.writers:
             return
-        cfg = [self.get_check_config(c)
-               for c in PMCheck.objects.filter(probe=probe)]
-        self.stomp_client.send(cfg, "/queue/pm/config/%s/" % probe_name)
+        for i in range(self.config.getint("writer", "workers")):
+            logging.info("Running writer instance %d" % i)
+            w = Writer(self, i, self.storage_class)
+            self.writers += [w]
+            w.start()
 
-    def on_check_change(self, destination, body):
-        check_id = body["check"]
-        check = PMCheck.objects.filter(id=check_id).first()
-        if check:
-            cfg = [self.get_check_config(check)]
-            self.stomp_client.send(
-                cfg,
-                "/queue/pm/config/%s/" % check.probe.name
-            )
-        else:
-            # Delete check
-            # @todo: !!!
-            pass
-
-    def get_last_measure(self, ts):
-        if ts.id not in self.last_measure:
-            # Not in cache, fetch from database
-            last_timestamp, last_value = ts.last_measure
-            self.last_measure[ts.id] = (last_timestamp, last_value)
-        return self.last_measure[ts.id]
-
-    def convert_counter(self, ts, timestamp, value):
-        last_timestamp, last_value = self.get_last_measure(ts)
-        # Update last measure
-        self.last_measure[ts.id] = (timestamp, value)
-        if last_timestamp is None:
-            # No data yet, save last measure and skip the round
-            return None
-        else:
-            if value < last_value:
-                # Counter wrapping adjustment
-                mc = MAX64 if last_value >= MAX32 else MAX32
-                last_value -= mc
-            return (value - last_value) / (timestamp - last_timestamp)
-
-    def convert_derive(self, ts, timestamp, value):
-        last_timestamp, last_value = self.get_last_measure(ts)
-        # Update last measure
-        self.last_measure[ts.id] = (timestamp, value)
-        if last_timestamp is None:
-            # No data yet, save last measure and skip the round
-            return None
-        else:
-            return (value - last_value) / (timestamp - last_timestamp)
+    def get_storage_rule(self, metric):
+        return self.default_storage_rule
