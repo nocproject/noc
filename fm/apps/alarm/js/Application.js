@@ -62,6 +62,17 @@ Ext.define("NOC.fm.alarm.Application", {
             }
         });
 
+        me.admdomCombo = Ext.create("NOC.sa.administrativedomain.LookupField", {
+            fieldLabel: "Adm. Domain",
+            labelWidth: 40, 
+            width: 200,
+            listeners: {
+                scope: me, 
+                select: me.onChangeFilter,
+                clear: me.onChangeFilter
+            }   
+        }); 
+
         me.objectCombo = Ext.create("NOC.sa.managedobject.LookupField", {
             fieldLabel: "Object",
             labelWidth: 40,
@@ -72,6 +83,17 @@ Ext.define("NOC.fm.alarm.Application", {
                 clear: me.onChangeFilter
             }
         });
+
+        me.selectorCombo = Ext.create("NOC.sa.managedobjectselector.LookupField", {
+            fieldLabel: "Selector",
+            labelWidth: 40, 
+            width: 200,
+            listeners: {
+                scope: me, 
+                select: me.onChangeFilter,
+                clear: me.onChangeFilter
+            }   
+        }); 
 
         me.alarmClassCombo = Ext.create("NOC.fm.alarmclass.LookupField", {
             fieldLabel: "Class",
@@ -133,6 +155,8 @@ Ext.define("NOC.fm.alarm.Application", {
                     dock: "top",
                     items: [
                         me.typeCombo,
+                        me.selectorCombo,
+                        me.admdomCombo,
                         me.objectCombo,
                         me.alarmClassCombo,
                         me.fromDateField,
@@ -255,6 +279,10 @@ Ext.define("NOC.fm.alarm.Application", {
 
         // Status
         q.status = me.typeCombo.getValue();
+        // Selector
+        setIf("managedobjectselector", me.selectorCombo.getValue());
+        // Adm Domain
+        setIf("administrative_domain", me.admdomCombo.getValue());
         // Object
         setIf("managed_object", me.objectCombo.getValue());
         // Class
