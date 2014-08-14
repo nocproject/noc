@@ -47,6 +47,7 @@ class Script(NOCScript):
         re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$", re.IGNORECASE)
+    rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
 
     types = {
            "As": "physical",    # Async
@@ -317,6 +318,9 @@ class Script(NOCScript):
                 }
                 if ifname in lldp:
                     iface["enabled_protocols"] += ["LLDP"]
+                match1 = self.rx_ctp.search(v)
+                if match1:
+                    iface["enabled_protocols"] += ["CTP"]
                 if match.group("desc"):
                     iface["description"] = match.group("desc")
                 if "mac" in sub:
