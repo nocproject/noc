@@ -2,12 +2,9 @@
 ##----------------------------------------------------------------------
 ## Performance management models
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from db import PMDatabase
-from storage import PMStorage
+from storagerule import StorageRule
 from probe import PMProbe
-from check import PMCheck
-from ts import PMTS
