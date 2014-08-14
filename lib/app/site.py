@@ -160,6 +160,15 @@ class Site(object):
         """
         # Render view
         def inner(request, *args, **kwargs):
+            def nq(s):
+                """
+                Convert var[]=xxxx to var=xxxx
+                """
+                if s.endswith("[]"):
+                    return s[:-2]
+                else:
+                    return s
+
             try:
                 v = view_map[request.method]
             except KeyError:
@@ -176,7 +185,7 @@ class Site(object):
                     if isinstance(v.validate, DictParameter):
                         # Validate via NOC interfaces
                         if request.method == "GET":
-                            g = dict((k, v[0] if len(v) == 1 else v)
+                            g = dict((nq(k), v[0] if len(v) == 1 else v)
                                      for k, v in request.GET.lists()
                                      if k != "_dc")
                         else:
