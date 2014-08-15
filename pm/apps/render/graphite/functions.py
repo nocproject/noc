@@ -19,6 +19,7 @@ import math
 import re
 import random
 import time
+from ..data import TimeSeries
 
 from attime import parseTimeOffset
 # from graphite.events import models
