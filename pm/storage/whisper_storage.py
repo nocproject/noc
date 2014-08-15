@@ -91,3 +91,26 @@ class WhisperDatabase(TimeSeriesDatabase):
             raise ValueError("Invalid metadata key: %s" % key)
         path = self.get_path(metric)
         return whisper.setAggregationMethod(path, value)
+
+    def fetch(self, metric, start, end):
+        """
+        Returns a all metric's value within range in form
+        (start, end, step), [value1, ..., valueN]
+        """
+        path = self.get_path(metric)
+        return whisper.fetch(path, start, end)
+
+    def iter_metrics(self, d, pattern):
+        """
+        Yield all metrics from given directory
+        """
+        pattern += ".wsp"
+        for f in self.match_entries(os.listdir(d), pattern):
+            if os.path.isfile(os.path.join(d, f)):
+                yield f[:-4]
+
+    def find(self, path_expr):
+        """
+        Find all metrics belonging to path expression
+        """
+        return list(self.find_metrics(self.data_dir, path_expr))

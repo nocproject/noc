@@ -210,6 +210,12 @@ TRACEBACK_REVERSE = config.get("main", "traceback_order") == "reverse"
 ## Fixed beefs directory
 ## Set up by test runner
 TEST_FIXED_BEEF_BASE = None
+
+##
+## Graphite settings
+##
+GRAPHTEMPLATES_CONF = ""
+LEGEND_MAX_ITEMS = 10
 ## Set up logging
 ## Disable SQL statement logging
 import logging
