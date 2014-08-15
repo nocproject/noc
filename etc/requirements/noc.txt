@@ -21,11 +21,12 @@ pyasn1-modules==0.0.5
 pyparsing==2.0.2
 pysnmp==4.2.1
 python-creole==0.2.4
+pytz>=2014.4
 docutils==0.7
 Pygments==1.2.2
 mongoengine==0.6.20
 backports.ssl_match_hostname>=3.4.0.2
-tornado==3.2.1
+tornado==4.0.1
 six>=1.7.2
 sleekxmpp==1.1.11
 vectorformats==0.1
