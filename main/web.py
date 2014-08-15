@@ -40,6 +40,15 @@ class AppStaticFileHandler(tornado.web.StaticFileHandler):
         return super(AppStaticFileHandler, self).get(path, include_body)
 
 
+class AppHandler(tornado.web.FallbackHandler):
+    def prepare(self):
+        if self.request.path == "/render":
+            # Rewrite /render -> /pm/render/
+            self.request.path = "/pm/render/"
+            self.request.uri = "/pm/render/" + self.request.uri[7:]
+        super(AppHandler, self).prepare()
+
+
 class Web(Daemon):
     """
     noc-web daemon
@@ -86,7 +95,7 @@ class Web(Daemon):
             # / -> /main/desktop/
             (r"^/$", tornado.web.RedirectHandler, {"url": "/main/desktop/"}),
             # Pass to NOC
-            (r"^.*$", tornado.web.FallbackHandler, {"fallback": noc_wsgi})
+            (r"^.*$", AppHandler, {"fallback": noc_wsgi})
         ])
         logging.info("Running NOC %s webserver" % get_version())
         logging.info("Loading site")
