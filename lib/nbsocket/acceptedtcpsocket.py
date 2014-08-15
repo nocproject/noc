@@ -43,6 +43,9 @@ class AcceptedTCPSocket(TCPSocket):
         """
         Process incoming data
         """
+        if self.socket is None:
+            self.close()
+            return
         try:
             data = self.socket.recv(self.READ_CHUNK)
         except socket.error, why:
