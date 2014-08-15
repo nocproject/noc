@@ -574,6 +574,16 @@ reboot_ttl = 0
 # Store config changed log
 config_changed_ttl = 1y
 
+[pm_render]
+# Cache metric data and rendered graphs
+# Time in seconds
+cache_duration = 60
+# CarbonLinks for carbon cache access
+# ip:port, comma-separated
+carbonlink_hosts = 127.0.0.1:7002
+# CarbonLink connection timeout
+carbonlink_timeout = 1.0
+
 [pm_storage]
 # PM storage type
 # Available types are:
