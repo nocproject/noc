@@ -134,7 +134,6 @@ class RenderApplication(ExtApplication):
                 if not v or v.lower() == "default":
                     continue
                 graph_opts[opt] = v
-        start = time.time()
         use_cache = not request_opts["noCache"]
         cache_timeout = request_opts["cacheTimeout"]
         ctx = {
@@ -190,7 +189,7 @@ class RenderApplication(ExtApplication):
         r["Cache-Control"] = "no-cache"
         return r
 
-    def get_raw_reponse(self, data, opts):
+    def get_raw_response(self, data, opts):
         response = HttpResponse(mimetype="text/plain")
         for series in data:
             response.write(
@@ -232,7 +231,7 @@ class RenderApplication(ExtApplication):
                 content=c
             )
 
-    def get_pickle(self, data, opts):
+    def get_pickle_response(self, data, opts):
         response = HttpResponse(mimetype="application/pickle")
         info = [series.getInfo() for series in data]
         pickle.dump(info, response, protocol=-1)
