@@ -134,7 +134,7 @@ TEMPLATE_DIRS = (
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache"
+        "BACKEND": "noc.lib.cache.MongoDBCache"
     }
 }
 
