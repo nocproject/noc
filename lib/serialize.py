@@ -29,3 +29,11 @@ elif JSON_TYPE == "django_simplejson":
     json_decode = simplejson.loads
 else:
     raise ValueError("Cannot detect proper JSON handler")
+
+##
+## Pickle
+##
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
