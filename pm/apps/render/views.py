@@ -24,6 +24,7 @@ from noc.sa.interfaces.base import (StringParameter, IntParameter,
                                     ListOfParameter)
 from settings import config, TIME_ZONE
 from noc.lib.serialize import json_encode
+from data import TimeSeries
 ## Graphite contribution
 from graphite.glyph import GraphTypes
 from graphite.attime import parseATTime
@@ -177,7 +178,14 @@ class RenderApplication(ExtApplication):
                 for t in request_opts["targets"]:
                     data.extend(evaluateTarget(ctx, t))
                 if use_cache:
-                    cache.set(data_key, data, cache_timeout)
+                    cache.set(
+                        data_key,
+                        [d.getInfo() for d in data],
+                        cache_timeout
+                    )
+            else:
+                # Convert cached data to Time Series
+                data = [TimeSeries(**a) for a in cached_data]
         # Return data in requested format
         h = getattr(self, "get_%s_response" % request_opts["format"], None)
         if h:
@@ -193,7 +201,7 @@ class RenderApplication(ExtApplication):
         response = HttpResponse(mimetype="text/plain")
         for series in data:
             response.write(
-                "%s,%d,%d.%d|%s\n" % (
+                "%s,%d,%d,%d|%s\n" % (
                     series.name, series.start, series.end, series.step,
                     ",".join(str(x) for x in series))
             )
