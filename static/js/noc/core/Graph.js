@@ -27,6 +27,11 @@ Ext.define("NOC.core.Graph", {
     // * bar
     // * scatterplot
     renderer: "line",
+    // Graph interpolation
+    // * cardinal
+    // * line
+    // * step-before
+    interpolation: "cardinal",
     //
     // List of time series
     // Available series options
@@ -148,6 +153,7 @@ Ext.define("NOC.core.Graph", {
             width: me.width - me.legendWidth - me.yAxisWidth - 25,  // Legend padding 10 + 4
             height: me.height,
             stroke: true,
+            interpolation: me.interpolation,
             renderer: me.renderer,
             series: me._series
         });
