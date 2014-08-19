@@ -42,14 +42,14 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                             dataIndex: "name",
                             width: 200,
                             editor: "textfield",
-                            renderer: "htmlEncode"
+                            renderer: NOC.render.htmlEncode
                         },
                         {
                             header: "Description",
                             dataIndex: "description",
                             flex: 1,
                             editor: "textfield",
-                            renderer: "htmlEncode"
+                            renderer: NOC.render.htmlEncode
                         },
                         {
                             xtype: "glyphactioncolumn",
