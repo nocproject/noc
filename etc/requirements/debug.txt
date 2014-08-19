@@ -4,3 +4,4 @@ noc-pkg-extjs-debug==5.0.1
 noc-pkg-mxgraph-debug==1.10.4.2
 noc-pkg-openlayers-debug==2.13
 noc-pkg-d3-debug==3.2.2
+noc-pkg-rickshaw-debug==1.5.0
