@@ -13,7 +13,6 @@ Ext.define("NOC.core.Graph", {
     // Refresh inverval in ms
     // null - fetch data and disable refresh
     refreshInterval: null,
-    defaultRenderer: "line",
     defaultInterpolation: "step-before",
     colorScheme: "classic9",
     defaultHoverRenderer: Ext.identityFn,
@@ -22,15 +21,18 @@ Ext.define("NOC.core.Graph", {
     dataURL: "/pm/render/",
     // Graphite data format
     format: "json",
+    // Graph renderer, one of
+    // * line
+    // * area
+    // * bar
+    // * scatterplot
+    renderer: "line",
     //
     // List of time series
     // Available series options
     //    * name - target name
     //    * title - legend title
     //    * color - graph color (auto-assigned from pallete by default)
-    //    * renderer - defaultRenderer if empty, one of
-    //          * line
-    //          * area
     //    * min
     //    * max
     //    * nullAs
@@ -74,7 +76,6 @@ Ext.define("NOC.core.Graph", {
                 name: item.name,
                 title: item.title || item.name,
                 color: item.color || me.palette.color(),
-                renderer: item.renderer || me.defaultRenderer,
                 nullAs: item.nullAs || me.defaultNullAs
             };
             me._targets[item.name] = t;
@@ -146,7 +147,7 @@ Ext.define("NOC.core.Graph", {
             width: me.width - me.legendWidth - me.yAxisWidth - 25,  // Legend padding 10 + 4
             height: me.height,
             stroke: true,
-            //renderer: "line",
+            renderer: me.renderer,
             series: me._series
         });
         // Create X-axis
