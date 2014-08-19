@@ -96,7 +96,7 @@ Ext.define("NOC.core.Application", {
         if(cmd) {
             var handler = me["onCmd_" + cmd];
             if(handler) {
-                cmd.call(me, handler);
+                handler.call(me, me.noc.cmd);
             }
         }
     },
