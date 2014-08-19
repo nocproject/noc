@@ -61,6 +61,7 @@ Ext.define("NOC.core.Graph", {
         var me = this;
         //
         me.graph = null;
+        me.refreshTask = null;
         //
         me.parseGraphiteData = {
             "json": me.parseGraphiteJSONData,
@@ -184,8 +185,17 @@ Ext.define("NOC.core.Graph", {
     //
     updateGraph: function(data) {
         var me = this;
-        // @todo: Implement
-        throw "updateGraph is not implemented yet";
+        me.applyData(data);
+        me.graph.render();
+    },
+    //
+    startRefresh: function() {
+        var me = this;
+        me.refreshTask = Ext.TaskManager.start({
+            scope: me,
+            run: me.refreshGraph,
+            interval: me.refreshInterval
+        });
     },
     // Request graphite data and update chart
     refreshGraph: function () {
@@ -209,6 +219,10 @@ Ext.define("NOC.core.Graph", {
         if(!me.graph) {
             me.createGraph(data);
             me.graph.render();
+            if(me.refreshInterval) {
+                var task = new Ext.util.DelayedTask(me.startRefresh, me);
+                task.delay(me.refreshInterval);
+            }
         } else {
             me.updateGraph(data);
         }
