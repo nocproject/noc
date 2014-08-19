@@ -44,4 +44,5 @@ noc-pkg-cubism==1.2.2
 noc-pkg-d3==3.2.2
 noc-pkg-font-awesome==4.1.0
 noc-pkg-codemirror==4.3.1
+noc-pkg-rickshaw==1.5.0
 noc-pkg-stacktrace==1.0.0
