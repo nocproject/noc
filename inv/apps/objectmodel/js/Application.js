@@ -207,7 +207,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             dataIndex: "protocols",
                             width: 150,
                             editor: "textfield",
-                            renderer: "htmlEncode"
+                            renderer: NOC.render.htmlEncode
                         },
                         {
                             text: "Internal name",

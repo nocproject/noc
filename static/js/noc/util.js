@@ -159,6 +159,10 @@ Ext.apply(NOC.render, {
         return function(value) {
             return value.join(sep);
         }
+    },
+
+    htmlEncode: function(v) {
+        return Ext.util.Format.htmlEncode(v);
     }
 });
 
