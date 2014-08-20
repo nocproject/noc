@@ -20,11 +20,12 @@ class Profile(noc.sa.profiles.Profile):
     pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
     pattern_password = "[Pp]ass[Ww]ord:"
     pattern_more = [
-    ("--More--", " "),
-    ("CTRL\+C.+?(a All)|(r Refresh)", "a")
+        ("--More--", " "),
+        ("CTRL\+C.+?(a All)|(r Refresh)", "a")
     ]
     pattern_unpriveleged_prompt = r"^\S+:(3|6|user|operator)#"
-    pattern_syntax_error = r"(% Invalid (Command|input detected at))|((Available commands|Next possible completions):)"
+    pattern_syntax_error = r"(% Invalid (Command|input detected at))|"
+    r"((Available commands|Next possible completions):)"
     command_super = "enable admin"
     pattern_prompt = r"(?P<hostname>\S+(:\S+)*)[#>]"
     command_disable_pager = ""
@@ -32,25 +33,37 @@ class Profile(noc.sa.profiles.Profile):
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
-    ##
-    ## Version comparison
-    ## Version format:
-    ## <major>.<minor><sep><patch>
-    ##
+    #
+    # Version comparison
+    # Version format:
+    # <major>.<minor><sep><patch>
+    #
     rx_ver = re.compile(r"\d+")
 
     def cmp_version(self, x, y):
-        return cmp([int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)])
+        return cmp(
+            [int(z) for z in self.rx_ver.findall(x)],
+            [int(z) for z in self.rx_ver.findall(y)])
 
-    def get_interface_names(self, name):
-        r = []
-        if name.startswith("1/"):
-            r += [name[2:]]
-        return r
+    def get_pmib(self, v):
+        if DGS121052(v):
+            return "1.3.6.1.4.1.171.10.76.17"
+        if DGS121048(v):
+            return "1.3.6.1.4.1.171.10.76.11"
+        if DES1210(v):
+            return "1.3.6.1.4.1.171.10.75.7"
+        return None
 
-    def root_interface(self, name):
-        return name
 
-## DES-1210-series
+# DES-1210-series
 def DES1210(v):
     return v["platform"].startswith("DES-1210")
+
+
+# DGS-1210-series
+def DGS121048(v):
+    return v["platform"].startswith("DGS-1210-48")
+
+
+def DGS121052(v):
+    return v["platform"].startswith("DGS-1210-52")
