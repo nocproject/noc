@@ -45,14 +45,14 @@ Ext.define("Ext.ux.form.DictField", {
                     dataIndex: "key",
                     width: 150,
                     editor: "textfield",
-                    renderer: "htmlEncode"
+                    renderer: NOC.render.htmlEncode
                 },
                 {
                     text: "Value",
                     dataIndex: "value",
                     flex: 1,
                     editor: "textfield",
-                    renderer: "htmlEncode"
+                    renderer: NOC.renderer.htmlEncode
                 }
             ],
             plugins: [
