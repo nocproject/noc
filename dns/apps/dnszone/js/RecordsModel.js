@@ -23,12 +23,12 @@ Ext.define("NOC.dns.dnszone.RecordsModel", {
         {
             name: "ttl",
             type: "integer",
-            useNull: true
+            allowNull: true
         },
         {
             name: "priority",
             type: "integer",
-            useNull: true
+            allowNull: true
         },
         {
             name: "type",
