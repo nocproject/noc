@@ -7,4 +7,4 @@
 ##----------------------------------------------------------------------
 
 from storagerule import StorageRule
-from probe import PMProbe
+from probe import Probe
