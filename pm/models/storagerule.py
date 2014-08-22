@@ -54,6 +54,7 @@ class StorageRule(Document):
         "allow_inheritance": False
     }
     name = StringField(unique=True)
+    description = StringField(required=False)
     aggregation_method = StringField(
         default="average",
         choices=[
@@ -65,10 +66,14 @@ class StorageRule(Document):
         ]
     )
     retentions = ListField(EmbeddedDocumentField(RetentionRule))
-    xfilesfactor = FloatField(required=False)
+    xfilesfactor = FloatField(required=False,
+                              min_value=0.0, max_value=1.0)
 
     def __unicode__(self):
         return self.name
 
     def get_retention(self):
         return [r.get_retention() for r in self.retentions]
+
+    def get_interval(self):
+        return self.retentions[0].get_retention()[0]
