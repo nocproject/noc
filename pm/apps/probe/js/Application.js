@@ -37,6 +37,12 @@ Ext.define("NOC.pm.probe.Application", {
             name: "is_active",
             xtype: "checkboxfield",
             boxLabel: "Active"
+        },
+        {
+            name: "description",
+            xtype: "textarea",
+            fieldLabel: "Description",
+            allowBlank: true
         }
     ],
     filters: [

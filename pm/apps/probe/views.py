@@ -8,14 +8,14 @@
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.pm.models import PMProbe
+from noc.pm.models.probe import Probe
 
 
-class PMProbeApplication(ExtDocApplication):
+class ProbeApplication(ExtDocApplication):
     """
     PMProbe application
     """
-    title = "PM Probe"
-    menu = "Setup | PM Probes"
-    model = PMProbe
+    title = "Probe"
+    menu = "Setup | Probes"
+    model = Probe
     query_fields = ["name"]

@@ -23,6 +23,10 @@ Ext.define("NOC.pm.probe.Model", {
         {
             name: "name",
             type: "string"
+        },
+        {
+            name: "description",
+            type: "string"
         }
     ]
 });
