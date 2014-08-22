@@ -94,6 +94,17 @@ Ext.apply(NOC.render, {
         }
     },
 
+    ArrayChoices: function(choices) {
+        return function(value) {
+            for(var i = 0; i < choices.length; i++) {
+                var v = choices[i];
+                if(value == v[0]) {
+                    return v[1];
+                }
+            }
+        }
+    },
+
     Timestamp: function(val) {
         if(!val) {
             return "";
