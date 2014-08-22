@@ -8,3 +8,4 @@
 
 from storagerule import StorageRule
 from probe import Probe
+from metrictype import MetricType
