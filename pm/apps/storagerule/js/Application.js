@@ -69,6 +69,12 @@ Ext.define("NOC.pm.storagerule.Application", {
                     ]
                 },
                 {
+                    name: "description",
+                    xtype: "textarea",
+                    fieldLabel: "Description",
+                    allowBlank: true
+                },
+                {
                     name: "xfilesfactor",
                     xtype: "numberfield",
                     fieldLabel: "XFilesFactor",
