@@ -96,7 +96,7 @@ class PlainReferenceField(BaseField):
         # Get value from document instance if available
         value = instance._data.get(self.name)
         # Dereference DBRefs
-        if isinstance(value, ObjectId):
+        if isinstance(value, ObjectId) or (isinstance(value, basestring) and len(value) == 24):
             v = self.document_type.objects(id=value).first()
             if v is not None:
                 instance._data[self.name] = v
