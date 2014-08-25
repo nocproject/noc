@@ -574,6 +574,11 @@ reboot_ttl = 0
 # Store config changed log
 config_changed_ttl = 1y
 
+[pm]
+# Solution processing effective metric settings
+# and setting probes and graphite names
+metric_router = noc.solutions.noc.default.pm.router.DefaultRouter
+
 [pm_render]
 # Cache metric data and rendered graphs
 # Time in seconds
