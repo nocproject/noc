@@ -10,3 +10,4 @@ from storagerule import StorageRule
 from probe import Probe
 from metrictype import MetricType
 from metricset import MetricSet
+from metricsettings import MetricSettings
