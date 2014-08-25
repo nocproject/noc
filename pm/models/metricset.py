@@ -70,5 +70,5 @@ class MetricSet(Document):
         for mi in self.metrics:
             apply_settings(mi.metric_type.name, mi)
         # Fetch leaf nodes
-        r = [mi[0] for mi in mt_tree.itervalues() if mi[0].is_active and not mi[1]]
+        r = [mi[0] for mi in mt_tree.itervalues() if not mi[1]]
         return r
