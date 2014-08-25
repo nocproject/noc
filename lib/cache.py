@@ -17,7 +17,6 @@ import bson
 ## NOC modules
 from noc.lib.nosql import get_db
 from noc.lib.serialize import pickle
-from noc.main.models.cache import Cache as CacheCollection
 
 
 class Cache(object):
@@ -103,6 +102,10 @@ class MongoDBCache(BaseDatabaseCache):
     """
     Based on https://github.com/django-nonrel/mongodb-cache
     """
+    def __init__(self, *args, **kwargs):
+        super(MongoDBCache, self).__init__(*args, **kwargs)
+        self._collection = get_db().noc.cache
+
     def validate_key(self, key):
         if "." in key or "$" in key:
             raise ValueError("Cache keys cannot contain '.' or '$'")
@@ -175,7 +178,7 @@ class MongoDBCache(BaseDatabaseCache):
         self._collection_for_write().drop()
 
     def _collection_for_read(self):
-        return CacheCollection._get_collection()
+        return self._collection
 
     def _collection_for_write(self):
-        return CacheCollection._get_collection()
+        return self._collection
