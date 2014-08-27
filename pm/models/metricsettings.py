@@ -19,6 +19,7 @@ from metricset import MetricSet
 from effectivesettings import EffectiveSettings
 from noc.lib.solutions import get_solution
 from noc.settings import config
+from noc.pm.probes.base import probe_registry
 
 
 class MetricSettingsItem(EmbeddedDocument):
@@ -81,7 +82,7 @@ class MetricSettings(Document):
         return self.get_model().objects.get(id=self.object_id)
 
     @classmethod
-    def get_model_id(self, object):
+    def get_model_id(cls, object):
         if isinstance(object._meta, dict):
             # Document
             return u"%s.%s" % (object.__module__.split(".")[1],
@@ -102,10 +103,30 @@ class MetricSettings(Document):
         ).first()
 
     @classmethod
-    def get_effective_settings(cls, object):
+    def get_effective_settings(cls, object, trace=False):
         """
         Returns a list of effective settings for object
         """
+        def get_config(name):
+            if name in cvars:
+                v = cvars[name]
+                if isinstance(v, ValueError):
+                    raise v
+            else:
+                try:
+                    v = gc(name)
+                    cvars[name] = v
+                except ValueError, why:
+                    cvars[name] = ValueError(why)
+                    raise cvars[name]
+            return v
+
+        def get_handler(v):
+            return "%s.%s.%s" % (
+                v.im_class.__module__,
+                v.im_class.__name__,
+                v.__name__)
+
         s_seq = []
         # Check profiles
         model_id = cls.get_model_id(object)
@@ -132,6 +153,8 @@ class MetricSettings(Document):
                     mt[mi.metric_type] = mi
                     sr[mi.metric_type] = ms.metric_set.storage_rule
         r = []
+        cvars = {}
+        gc = getattr(object, "get_probe_config", None)
         # Pass through router solution
         for m, mi in mt.iteritems():
             if not mi.is_active:
@@ -147,7 +170,62 @@ class MetricSettings(Document):
                             mi.high_warn, mi.high_error]
             )
             _router(object, es)
-            if es.is_active or not es.metric or not es.probe:
+            if not es.is_active:
+                es.error("Deactivated by router")
+                continue
+            if not es.metric:
+                es.error("No graphite metric found")
+                continue
+            if not es.probe:
+                es.error("Not assigned to probe daemon")
+                continue
+            # Get handler
+            for h in probe_registry.iter_handlers(m.name):
+                if trace:
+                    es.trace("Checking %s" % get_handler(h.handler))
+                config = {}
+                failed = False
+                # Check required parameters
+                if h.req:
+                    if gc:
+                        for name in h.req:
+                            try:
+                                config[name] = get_config(name)
+                            except ValueError:
+                                failed = True
+                                if trace:
+                                    es.trace("Cannot get required variable '%s'" % name)
+                                break
+                    else:
+                        continue
+                if failed:
+                    if trace:
+                        es.trace("Giving up")
+                    continue
+                # Get optional parameters
+                if gc:
+                    for name in h.opt:
+                        try:
+                            config[name] = get_config(name)
+                        except ValueError:
+                            continue
+                # Handler found
+                if h.match(config):
+                    es.handler = get_handler(h.handler)
+                    es.config = config
+                    if trace:
+                        es.trace("Matched handler %s(%s)" % (
+                            get_handler(h.handler), config))
+                    break
+                elif trace:
+                    es.trace("Handler mismatch")
+            #
+            es.is_active = bool(es.handler)
+            if trace and not es.handler:
+                if not gc:
+                    es.error("No get_probe_config method for %s" % model_id)
+                es.error("No handler found")
+            if es.is_active or trace:
                 r += [es]
         return r
 

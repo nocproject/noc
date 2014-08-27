@@ -24,7 +24,6 @@ class MetricType(Document):
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
-    model = StringField(required=False)
     is_vector = BooleanField(default=False)
 
     def __unicode__(self):
@@ -37,8 +36,6 @@ class MetricType(Document):
             "uuid": self.uuid,
             "description": self.description
         }
-        if self.model:
-            r["model"] = self.model
         if self.is_vector:
             r["is_vector"] = self.is_vector
         return r
@@ -46,7 +43,7 @@ class MetricType(Document):
     def to_json(self):
         return to_json(self.json_data,
                        order=["name", "uuid", "description",
-                              "model", "is_vector", "plugins"])
+                              "is_vector", "plugins"])
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

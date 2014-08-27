@@ -1,14 +1,14 @@
 //---------------------------------------------------------------------
-// pm.metrictype Model
+// pm.metricsettings Model
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2014 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.pm.metrictype.Model");
+console.debug("Defining NOC.pm.metricsettings.Model");
 
-Ext.define("NOC.pm.metrictype.Model", {
+Ext.define("NOC.pm.metricsettings.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/pm/metrictype/",
+    rest_url: "/pm/metricsettings/",
 
     fields: [
         {
@@ -16,25 +16,17 @@ Ext.define("NOC.pm.metrictype.Model", {
             type: "string"
         },
         {
-            name: "uuid",
+            name: "model_id",
             type: "string"
         },
         {
-            name: "description",
+            name: "object_id",
             type: "string"
         },
         {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "is_vector",
-            type: "boolean"
-        },
-        {
-            name: "is_builtin",
-            type: "boolean",
-            persist: false
+            name: "metric_sets",
+            type: "auto",
+            defaultValue: <function <lambda> at 0x110099de8>
         }
     ]
 });
