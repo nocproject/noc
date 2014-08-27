@@ -41,3 +41,13 @@ class DefaultRouter(BaseRouter):
                                     cls.q_type(settings.metric_type)])
         settings.is_active = mo.is_managed
         settings.probe = cls.get_default_probe()
+
+    @classmethod
+    @BaseRouter.model_handler("inv.InterfaceProfile")
+    def route_iface_profile(cls, object, settings):
+        settings.is_active = False
+
+    @classmethod
+    @BaseRouter.model_handler("sa.ManagedObjectProfile")
+    def route_mo_profile(cls, object, settings):
+        settings.is_active = False
