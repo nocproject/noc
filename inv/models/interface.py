@@ -201,6 +201,24 @@ class Interface(Document):
             raise ValueError("Cannot net LAG members for not-aggregated interface")
         return Interface.objects.filter(aggregated_interface=self.id)
 
+    def get_probe_config(self, config):
+        if config == "interface__name":
+            return self.name
+        elif config == "interface__ifindex":
+            if self.ifindex is None:
+                raise ValueError("No ifindex for %s" % self)
+            else:
+                return self.ifindex
+        elif config == "address":
+            return self.managed_object.address
+        elif config == "snmp__ro":
+            if self.managed_object.snmp_ro is None:
+                raise ValueError("No snmp ro community for %s" % self)
+            else:
+                return self.managed_object.snmp_ro
+        raise ValueError("Invalid config '%s'" % config)
+
+
 ## Avoid circular references
 from subinterface import SubInterface
 from link import Link

@@ -39,11 +39,6 @@ Ext.define("NOC.pm.metrictype.Application", {
                     sortable: false
                 },
                 {
-                    text: "Model",
-                    dataIndex: "model",
-                    width: 120
-                },
-                {
                     text: "Vector",
                     dataIndex: "is_vector",
                     width: 35,
@@ -73,13 +68,6 @@ Ext.define("NOC.pm.metrictype.Application", {
                     xtype: "textareafield",
                     fieldLabel: "Description",
                     allowBlank: true
-                },
-                {
-                    name: "model",
-                    xtype: "textfield",
-                    fieldLabel: "Model",
-                    allowBlank: true,
-                    regex: /^[a-z]+\.[a-zA-Z0-9]+$/
                 },
                 {
                     name: "is_vector",
