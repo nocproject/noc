@@ -28,6 +28,7 @@ Ext.define("NOC.core.ModelApplication", {
     previewIcon: "icon_magnifier",
     preview: null,
     treeFilter: null,
+    metricModelId: null,  // Add MetricSettings button
     //
     initComponent: function() {
         var me = this;
@@ -64,6 +65,15 @@ Ext.define("NOC.core.ModelApplication", {
         me.hasGroupEdit = me.checkGroupEdit();
         // Create GRID card
         me.ITEM_GRID = me.registerItem(me.createGrid());
+        // Create metrics editor card
+        if(me.metricModelId) {
+            me.ITEM_METRIC_SETTINGS = me.registerItem(
+                Ext.create("NOC.core.MetricSettingsPanel", {
+                    app: me,
+                    metricModelId: me.metricModelId
+                })
+            );
+        }
         // Create FORM card
         me.ITEM_FORM = me.registerItem(me.createForm());
         // Create Group Edit form when necessary
@@ -425,6 +435,18 @@ Ext.define("NOC.core.ModelApplication", {
                 handler: function() {
                     var me = this;
                     me.onPreview(me.currentRecord)
+                }
+            });
+        }
+        if(me.metricModelId) {
+            // Create *Show metrics* button
+            formToolbar.push({
+                text: "Metrics",
+                glyph: NOC.glyph.bar_chart_o,
+                scope: me,
+                handler: function() {
+                    var me = this;
+                    me.onMetrics(me.currentRecord);
                 }
             });
         }
@@ -1378,5 +1400,10 @@ Ext.define("NOC.core.ModelApplication", {
                 NOC.error("Failed");
             }
         });
+    },
+    //
+    onMetrics: function(record) {
+        var me = this;
+        me.showItem(me.ITEM_METRIC_SETTINGS).preview(record);
     }
 });

@@ -50,3 +50,6 @@ class InterfaceProfile(Document):
             cls._default_profile = cls.objects.filter(
                 name="default").first()
             return cls._default_profile
+
+    def get_probe_config(self, config):
+        raise ValueError("Invalid config '%s'" % config)
