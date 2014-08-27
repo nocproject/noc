@@ -80,6 +80,9 @@ class ProbeBase(type):
                 else:
                     mx = reduce(lambda x, y: x | y, mx)
                 r, o = mx.get_vars()
+                r |= set(value._required_config)
+                o |= set(value._opt_config)
+                o -= r
                 probe_registry.register(value, mx.compile(), r, o,
                                         value._preference)
         return m
