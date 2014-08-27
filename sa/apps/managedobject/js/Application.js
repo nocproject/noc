@@ -126,6 +126,12 @@ Ext.define("NOC.sa.managedobject.Application", {
         );
         me.ITEM_INVENTORY = me.registerItem("NOC.sa.managedobject.InventoryPanel");
         me.ITEM_INTERFACE = me.registerItem("NOC.sa.managedobject.InterfacePanel");
+        me.ITEM_INTERFACE_METRICS = me.registerItem(
+            Ext.create("NOC.core.MetricSettingsPanel", {
+                app: me,
+                metricModelId: "inv.Interface"
+            })
+        );
         me.ITEM_SCRIPTS = me.registerItem("NOC.sa.managedobject.ScriptPanel");
         me.ITEM_LINKS = me.registerItem("NOC.sa.managedobject.LinksPanel");
 
