@@ -123,7 +123,7 @@ class Profile(NOCProfile):
         else:
             return None
 
-    def get_ports(self, script):
+    def get_ports(self, script, interface=None):
         if ((script.match_version(DES3200, version__gte="1.70.B007") \
         and script.match_version(DES3200, version__lte="3.00.B000"))
         or script.match_version(DES3200, version__gte="4.20.B000") \
@@ -132,7 +132,10 @@ class Profile(NOCProfile):
         or script.match_version(DGS3620, version__gte="2.50.017")) \
         and not script.match_version(DES3200, platform="DES-3200-28F"):
             objects = []
-            c = script.cli("show ports description")
+            if interface is not None:
+                c = script.cli(("show ports %s description" % interface))
+            else:
+                c = script.cli("show ports description")
             for match in self.rx_port.finditer(c):
                 objects += [{
                     "port": match.group("port"),
@@ -152,9 +155,15 @@ class Profile(NOCProfile):
                 }]
         else:
             try:
-                objects = script.cli_object_stream(
-                    "show ports description", parser=self.parse_interface,
-                    cmd_next="n", cmd_stop="q")
+                if interface is not None:
+                    objects = script.cli_object_stream(
+                        ("show ports %s description" % interface),
+                        parser=self.parse_interface,
+                        cmd_next="n", cmd_stop="q")
+                else:
+                    objects = script.cli_object_stream(
+                        "show ports description", parser=self.parse_interface,
+                        cmd_next="n", cmd_stop="q")
             except:
                 objects = []
             # DES-3226S does not support `show ports description` command
