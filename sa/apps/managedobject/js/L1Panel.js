@@ -110,7 +110,14 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                     viewConfig: {
                         getRowClass: Ext.bind(me.getRowClass, me)
                     },
-                    plugins: gridPlugins
+                    plugins: gridPlugins,
+                    listeners: {
+                        scope: me,
+                        select: function(panel, record) {
+                            me.app.metricsCurrentRecord = record;
+                            me.app.metricsButton.setDisabled(false);
+                        }
+                    }
                 }
             ]
         });
