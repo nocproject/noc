@@ -43,8 +43,8 @@ class EffectiveSettings(object):
                   "is_active", "storage_rule",
                   "probe", "interval", "thresholds", "handler",
                   "config", "errors", "traces"]:
-            r += ["%s='%s'" % (n, getattr(self, n))]
-        return " ".join(r)
+            r += ["%20s : %s" % (n, getattr(self, n))]
+        return "\n".join(r)
 
     def error(self, msg):
         self.errors += [msg]
