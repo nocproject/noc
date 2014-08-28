@@ -10,7 +10,7 @@ class EffectiveSettings(object):
     def __init__(self, metric=None, metric_type=None, is_active=True,
                  storage_rule=None, probe=None, interval=None,
                  thresholds=None, handler=None, config=None,
-                 errors=None):
+                 errors=None, model_id=None, object=None):
         """
         :param metric: Graphite metric name
         :param metric_type: MetricType object
@@ -34,10 +34,13 @@ class EffectiveSettings(object):
         self.config = config
         self.errors = errors or []
         self.traces = []
+        self.model_id = model_id
+        self.object = object
 
     def dump(self):
         r = []
-        for n in ["metric", "metric_type", "is_active", "storage_rule",
+        for n in ["model_id", "object", "metric", "metric_type",
+                  "is_active", "storage_rule",
                   "probe", "interval", "thresholds", "handler",
                   "config", "errors", "traces"]:
             r += ["%s='%s'" % (n, getattr(self, n))]
