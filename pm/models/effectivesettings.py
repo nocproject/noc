@@ -6,6 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import uuid
+
+
 class EffectiveSettings(object):
     def __init__(self, metric=None, metric_type=None, is_active=True,
                  storage_rule=None, probe=None, interval=None,
@@ -51,3 +55,13 @@ class EffectiveSettings(object):
 
     def trace(self, msg):
         self.traces += [msg]
+
+    @property
+    def uuid(self):
+        return str(
+            uuid.uuid5(
+                uuid.NAMESPACE_URL,
+                "%s-%s-%s" % (str(self.model_id), str(self.object.id),
+                              str(self.metric_type.id))
+            )
+        )

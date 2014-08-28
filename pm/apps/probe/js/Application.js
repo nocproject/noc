@@ -8,8 +8,9 @@ console.debug("Defining NOC.pm.probe.Application");
 
 Ext.define("NOC.pm.probe.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
-        "NOC.pm.pmprobe.Model"
+    requires: [
+        "NOC.pm.probe.Model",
+        "NOC.main.user.LookupField"
     ],
     model: "NOC.pm.probe.Model",
     search: true,
@@ -23,7 +24,13 @@ Ext.define("NOC.pm.probe.Application", {
             text: "Active",
             dataIndex: "is_active",
             renderer: NOC.render.Bool,
-            flex: 1
+            width: 50
+        },
+        {
+            text: "Credentials",
+            dataIndex: "user",
+            flex: 1,
+            renderer: NOC.render.Lookup("user")
         }
     ],
     fields: [
@@ -31,12 +38,18 @@ Ext.define("NOC.pm.probe.Application", {
             name: "name",
             xtype: "textfield",
             allowBlank: false,
-            fieldLabel: "Name"
+            fieldLabel: "Name",
+            regex: /^[0-9a-zA-Z\-_\.]+$/
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
             boxLabel: "Active"
+        },
+        {
+            name: "user",
+            xtype: "main.user.LookupField",
+            fieldLabel: "Credentials"
         },
         {
             name: "description",

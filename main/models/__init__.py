@@ -44,6 +44,10 @@ periodic_registry.register_all()
 ## Full-text searchable models
 fts_models = {}  # name -> model
 from fts_queue import FTSQueue
+from noc.pm.models.probeconfig import ProbeConfig
+
+
+ProbeConfig.install()
 
 
 def update_fts(sender, instance, **kwargs):
