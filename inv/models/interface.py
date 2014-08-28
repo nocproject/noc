@@ -64,6 +64,8 @@ class Interface(Document):
     coverage = PlainReferenceField(Coverage)
     technologies = ListField(StringField())
 
+    PROFILE_LINK = "profile"
+
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)
 
