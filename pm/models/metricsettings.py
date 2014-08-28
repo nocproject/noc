@@ -168,15 +168,18 @@ class MetricSettings(Document):
             _router(object, es)
             if not es.is_active:
                 es.error("Deactivated by router")
-                r += [es]
+                if trace:
+                    r += [es]
                 continue
             if not es.metric:
                 es.error("No graphite metric found")
-                r += [es]
+                if trace:
+                    r += [es]
                 continue
             if not es.probe:
                 es.error("Not assigned to probe daemon")
-                r += [es]
+                if trace:
+                    r += [es]
                 continue
             # Get handler
             for h in probe_registry.iter_handlers(m.name):

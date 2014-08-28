@@ -7,7 +7,9 @@
 ##----------------------------------------------------------------------
 
 ## NOC Modules
-from noc.lib.nosql import Document, StringField, BooleanField
+from noc.lib.nosql import (Document, StringField,
+                           BooleanField, ForeignKeyField)
+from noc.main.models import User
 
 
 class Probe(Document):
@@ -22,6 +24,7 @@ class Probe(Document):
     name = StringField(unique=True)
     is_active = BooleanField(default=True)
     description = StringField()
+    user = ForeignKeyField(User)
 
     def __unicode__(self):
         return self.name
