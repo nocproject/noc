@@ -23,7 +23,8 @@ class ProbeConfig(Document):
     meta = {
         "collection": "noc.pm.probeconfig",
         "allow_inheritance": False,
-        "indexes": [("model_id", "object_id"), "probe_id", "uuid"]
+        "indexes": [("model_id", "object_id"), "probe_id", "uuid",
+                    "expire", "changed"]
     }
 
     # Reference to model or document, like sa.ManagedObject
@@ -35,7 +36,8 @@ class ProbeConfig(Document):
     #
     uuid = StringField()
     #
-    expired = DateTimeField()
+    changed = DateTimeField(default=datetime.datetime.now)
+    expire = DateTimeField()
     # Configuration section
     metric = StringField(unique=True)
     metric_type = StringField()
@@ -104,18 +106,20 @@ class ProbeConfig(Document):
     @classmethod
     def refresh_object(cls, object):
         # @todo: Make configurable
-        expire = datetime.datetime.now() + datetime.timedelta(seconds=3600)
+        now = datetime.datetime.now()
+        expire = now + datetime.timedelta(seconds=3600)
         config = [{
+            "uuid": es.uuid,
             "model_id": es.model_id,
             "object_id": str(es.object.id) if es.object else None,
-            "expired": expire,
+            "changed": now,
+            "expire": expire,
             "metric": es.metric,
             "metric_type": es.metric_type.name,
             "handler": es.handler,
             "interval": es.interval,
             "thresholds": es.thresholds,
             "probe_id": str(es.probe.id),
-            "uuid": es.uuid,
             "config": es.config
         } for es in MetricSettings.get_effective_settings(object)]
         cls.clean_for_object(object)
