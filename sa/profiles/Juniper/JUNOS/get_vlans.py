@@ -17,7 +17,7 @@ class Script(NOCScript):
     name = "Juniper.JUNOS.get_vlans"
     implements = [IGetVlans]
 
-    rx_vlan_line = re.compile(r"^(?P<name>\S+)\s+(?P<vlan_id>\d+)")
+    rx_vlan_line = re.compile(r"^(?P<name>\S+)\s+(?P<vlan_id>\d+)\s+")
 
     def execute(self):
         return self.cli("show vlan brief", list_re=self.rx_vlan_line)
