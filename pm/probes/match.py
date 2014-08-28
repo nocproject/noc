@@ -57,6 +57,93 @@ class MatchEq(MatchExpr):
                                config[self.name] == self.value)
 
 
+class MatchIn(MatchExpr):
+    op = "in"
+
+    def compile(self):
+        return lambda config: (self.name in config and
+                               config[self.name] in self.value)
+
+
+class MatchStartswith(MatchExpr):
+    op = "startswith"
+
+    def compile(self):
+        return lambda config: (self.name in config and
+                               config[self.name].startswith(self.value))
+
+
+class MatchIStartswith(MatchExpr):
+    op = "istartswith"
+
+    def compile(self):
+        return lambda config: (self.name in config and
+                               config[self.name].lower().startswith(self.value.lower()))
+
+
+class MatchContains(MatchExpr):
+    op = "contains"
+
+    def compile(self):
+        return lambda config: (self.name in config and
+                               self.value in config[self.name])
+
+
+class MatchIContains(MatchExpr):
+    op = "icontains"
+
+    def compile(self):
+        return lambda config: (self.name in config and
+                               self.value.lower() in config[self.name].lower())
+
+
+class MatchGT(MatchExpr):
+    op = "gt"
+
+    def compile(self):
+        return lambda config: (self.name in config and
+                               config[self.name] > self.value)
+
+
+class MatchGTE(MatchExpr):
+    op = "gte"
+
+    def compile(self):
+        return lambda config: (self.name in config and
+                               config[self.name] >= self.value)
+
+
+class MatchLT(MatchExpr):
+    op = "lt"
+
+    def compile(self):
+        return lambda config: (self.name in config and
+                               config[self.name] < self.value)
+
+
+class MatchLTE(MatchExpr):
+    op = "lte"
+
+    def compile(self):
+        return lambda config: (self.name in config and
+                               config[self.name] <= self.value)
+
+
+class MatchRange(MatchExpr):
+    op = "range"
+
+    def __init__(self, name, value):
+        super(MatchRange, self).__init__(name, value)
+        assert isinstance(value, [dict, tuple]), "Range value must be dict or tuple"
+        assert len(value) == 2, "Range must be (min, max)"
+        self.min = min(value[0], value[1])
+        self.max = max(value[0], value[1])
+
+    def compile(self):
+        return lambda config: (self.name in config and
+                               self.min <= config[self.name] <= self.max)
+
+
 class MatchAnd(object):
     def __init__(self, left, right):
         self.left = left
