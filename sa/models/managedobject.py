@@ -157,6 +157,8 @@ class ManagedObject(models.Model):
     EV_SCRIPT_FAILED = "script_failed"  # Script error
     EV_CONFIG_POLICY_VIOLATION = "config_policy_violation"  # Policy violations found
 
+    PROFILE_LINK = "object_profile"
+
     ## object.scripts. ...
     class ScriptsProxy(object):
         class CallWrapper(object):

@@ -47,12 +47,6 @@ class MetricSettings(Document):
     # List of metric sets
     metric_sets = ListField(EmbeddedDocumentField(MetricSettingsItem))
 
-    # Object profiles mappings
-    # model_id -> profile field name
-    OBJECT_PROFILES = {
-        "sa.ManagedObject": "object_profile",
-        "inv.Interface": "profile"
-    }
     _model_cache = {}  # model id -> model class
     _document_cache = {}  # model id -> document
 
@@ -130,7 +124,7 @@ class MetricSettings(Document):
         s_seq = []
         # Check profiles
         model_id = cls.get_model_id(object)
-        p_field = cls.OBJECT_PROFILES.get(model_id)
+        p_field = getattr(object, "PROFILE_LINK", None)
         if p_field:
             p = getattr(object, p_field)
             if p:
@@ -236,3 +230,7 @@ class MetricSettings(Document):
 
 
 _router = get_solution(config.get("pm", "metric_router")).route
+
+##
+import probeconfig
+probeconfig.MetricSettings = MetricSettings
