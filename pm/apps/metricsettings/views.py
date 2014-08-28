@@ -80,7 +80,10 @@ class MetricSettingsApplication(ExtDocApplication):
         if not o:
             return self.response_not_found()
         r = []
+        retentions = {}
         for es in MetricSettings.get_effective_settings(o, trace=True):
+            if es.storage_rule not in retentions:
+                retentions[es.storage_rule] = ", ".join(unicode(s) for s in es.storage_rule.retentions)
             r += [{
                 "metric": es.metric or None,
                 "metric_type": es.metric_type.name,
@@ -92,6 +95,7 @@ class MetricSettingsApplication(ExtDocApplication):
                 "handler": es.handler,
                 "config": es.config,
                 "errors": es.errors,
-                "traces": es.traces
+                "traces": es.traces,
+                "retentions": retentions.get(es.storage_rule)
             }]
         return r
