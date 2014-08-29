@@ -57,7 +57,8 @@ class ProbeApplication(ExtDocApplication):
         # Get configs
         qs = ProbeConfig.objects.filter(probe_id=probe_id)
         if last:
-            last = datetime.datetime.strptime(last, "%Y-%m-%dT%H:%M:%S")
+            last = datetime.datetime.strptime(last,
+                                              "%Y-%m-%dT%H:%M:%S.%f")
             qs = qs.filter(changed__gte=last)
         config = [{
             "uuid": pc.uuid,
@@ -72,9 +73,14 @@ class ProbeApplication(ExtDocApplication):
         } for pc in qs]
         if config:
             expire = min(c["expire"] for c in config)
+            # Wipe out deleted configs
+            deleted = [c["uuid"] for c in config if c["changed"] == c["expire"]]
+            if deleted:
+                ProbeConfig.objects.filter(uuid__in=deleted).delete()
         else:
             expire = None
         return {
+            "now": now.isoformat(),
             "last": last.isoformat() if last else None,
             "expire": expire,
             "config": config

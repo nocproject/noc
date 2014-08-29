@@ -48,6 +48,8 @@ class ProbeConfig(Document):
 
     PROFILES = defaultdict(list)  # model -> [(model, field), ...]
     MODELS = []
+    EXPIRE = 3600
+    DELETE_DATE = datetime.datetime(2030, 1, 1)
 
     def __unicode__(self):
         return self.metric
@@ -75,7 +77,7 @@ class ProbeConfig(Document):
             django.db.models.signals.post_save.connect(
                 cls.on_change_model, sender=sender)
             django.db.models.signals.pre_delete.connect(
-                cls.on_delete, sender=sender)
+                cls.on_delete_model, sender=sender)
             p_field = getattr(sender, "PROFILE_LINK", None)
             if p_field:
                 for f in sender._meta.fields:
@@ -91,63 +93,100 @@ class ProbeConfig(Document):
             mongoengine.signals.post_save.connect(
                 cls.on_change_document, sender=sender)
             mongoengine.signals.pre_delete.connect(
-                cls.on_delete, sender=sender)
+                cls.on_delete_document, sender=sender)
             p_field = getattr(sender, "PROFILE_LINK", None)
             if p_field:
                 pm = sender._fields[p_field].document_type_obj
                 cls.PROFILES[pm] += [(sender, p_field)]
 
     @classmethod
-    def clean_for_object(cls, object):
-        cls._get_collection().remove(
-            {
+    def _delete_object(cls, object):
+        cls._get_collection().update({
                 "model_id": cls.get_model_id(object),
                 "object_id": str(object.id)
+            },
+            {
+                "$set": {
+                    "changed": cls.DELETE_DATE,
+                    "expire": cls.DELETE_DATE
+                }
             },
             multi=True
         )
 
     @classmethod
-    def refresh_object(cls, object):
+    def _refresh_object(cls, object):
+        def get_refresh_ops(bulk, o):
+            # Cleanup
+            bulk.find(
+                {
+                    "model_id": cls.get_model_id(o),
+                    "object_id": str(o.id)
+                }
+            ).update(
+                {
+                    "$set": {
+                        "changed": cls.DELETE_DATE,
+                        "expire": cls.DELETE_DATE
+                    }
+                }
+            )
+            for es in MetricSettings.get_effective_settings(o):
+                bulk.find(
+                    {
+                        "uuid": es.uuid
+                    }
+                ).upsert().update(
+                    {
+                        "$set": {
+                            "model_id": es.model_id,
+                            "object_id": str(es.object.id) if es.object else None,
+                            "changed": now,
+                            "expire": expire,
+                            "metric": es.metric,
+                            "metric_type": es.metric_type.name,
+                            "handler": es.handler,
+                            "interval": es.interval,
+                            "thresholds": es.thresholds,
+                            "probe_id": str(es.probe.id),
+                            "config": es.config
+                        }
+                    }
+                )
+            for m, n in cls.PROFILES[object.__class__]:
+                for obj in m.objects.filter(**{n: o.id}):
+                    get_refresh_ops(bulk, obj)
+
         # @todo: Make configurable
         now = datetime.datetime.now()
-        expire = now + datetime.timedelta(seconds=3600)
-        config = [{
-            "uuid": es.uuid,
-            "model_id": es.model_id,
-            "object_id": str(es.object.id) if es.object else None,
-            "changed": now,
-            "expire": expire,
-            "metric": es.metric,
-            "metric_type": es.metric_type.name,
-            "handler": es.handler,
-            "interval": es.interval,
-            "thresholds": es.thresholds,
-            "probe_id": str(es.probe.id),
-            "config": es.config
-        } for es in MetricSettings.get_effective_settings(object)]
-        cls.clean_for_object(object)
-        if config:
-            cls._get_collection().insert(config)
-        for m, n in cls.PROFILES[object.__class__]:
-            for obj in m.objects.filter(**{n: object.id}):
-                cls.refresh_object(obj)
+        expire = now + datetime.timedelta(seconds=cls.EXPIRE)
+        bulk = cls._get_collection().initialize_ordered_bulk_op()
+        get_refresh_ops(bulk, object)
+        bulk.execute()
 
     @classmethod
     def on_change_model(cls, sender, instance, *args, **kwargs):
-        cls.refresh_object(instance)
+        cls._refresh_object(instance)
 
     @classmethod
     def on_change_document(cls, sender, document=None, *args, **kwargs):
-        cls.refresh_object(document)
+        cls._refresh_object(document)
 
     @classmethod
-    def on_delete(cls, sender, instance, *args, **kwargs):
-        cls.clean_for_object(instance)
+    def on_delete_model(cls, sender, instance, *args, **kwargs):
+        cls._delete_object(instance)
         # Rebuild configs for related objects
         for m, n in cls.PROFILES[sender]:
             for obj in m.objects.filter(**{n: instance.id}):
-                cls.refresh_object(obj)
+                cls._refresh_object(obj)
+
+    @classmethod
+    def on_delete_document(cls, sender, document, *args, **kwargs):
+        cls._delete_object(document)
+        # Rebuild configs for related objects
+        for m, n in cls.PROFILES[sender]:
+            for obj in m.objects.filter(**{n: document.id}):
+                cls._refresh_object(obj)
 
     @classmethod
     def rebuild(cls, model_id=None):
