@@ -72,8 +72,10 @@ class ProbeConfig(Document):
     def on_new_model(cls, sender, *args, **kwargs):
         if hasattr(sender, "get_probe_config"):
             cls.MODELS += [sender]
-            django.db.models.signals.post_save.connect(cls.on_change_model)
-            django.db.models.signals.pre_delete.connect(cls.on_delete)
+            django.db.models.signals.post_save.connect(
+                cls.on_change_model, sender=sender)
+            django.db.models.signals.pre_delete.connect(
+                cls.on_delete, sender=sender)
             p_field = getattr(sender, "PROFILE_LINK", None)
             if p_field:
                 for f in sender._meta.fields:
@@ -86,8 +88,10 @@ class ProbeConfig(Document):
     def on_new_document(cls, sender, *args, **kwargs):
         if hasattr(sender, "get_probe_config"):
             cls.MODELS += [sender]
-            mongoengine.signals.post_save.connect(cls.on_change_document)
-            mongoengine.signals.pre_delete.connect(cls.on_delete)
+            mongoengine.signals.post_save.connect(
+                cls.on_change_document, sender=sender)
+            mongoengine.signals.pre_delete.connect(
+                cls.on_delete, sender=sender)
             p_field = getattr(sender, "PROFILE_LINK", None)
             if p_field:
                 pm = sender._fields[p_field].document_type_obj
