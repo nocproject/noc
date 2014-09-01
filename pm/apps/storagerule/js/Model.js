@@ -45,6 +45,15 @@ Ext.define("NOC.pm.storagerule.Model", {
             name: "interval",
             type: "string",
             persist: false
+        },
+        {
+            name: "storage",
+            type: "string"
+        },
+        {
+            name: "storage__label",
+            type: "string",
+            persist: false
         }
     ]
 });

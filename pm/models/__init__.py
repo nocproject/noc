@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from storage import Storage
 from storagerule import StorageRule
 from probe import Probe
 from metrictype import MetricType
