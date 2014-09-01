@@ -10,6 +10,9 @@
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (EmbeddedDocumentField, ListField,
                                 StringField, IntField, FloatField)
+## NOC modules
+from storage import Storage
+from noc.lib.nosql import PlainReferenceField
 
 
 UNITS = {
@@ -55,6 +58,7 @@ class StorageRule(Document):
     }
     name = StringField(unique=True)
     description = StringField(required=False)
+    storage = PlainReferenceField(Storage)
     aggregation_method = StringField(
         default="average",
         choices=[

@@ -9,7 +9,8 @@ console.debug("Defining NOC.pm.storagerule.Application");
 Ext.define("NOC.pm.storagerule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.pm.storagerule.Model"
+        "NOC.pm.storagerule.Model",
+        "NOC.pm.storage.LookupField"
     ],
     model: "NOC.pm.storagerule.Model",
     precisionUnits: [
@@ -29,6 +30,12 @@ Ext.define("NOC.pm.storagerule.Application", {
                     text: "Name",
                     dataIndex: "name",
                     width: 100
+                },
+                {
+                    text: "Storage",
+                    dataIndex: "storage",
+                    width: 100,
+                    renderer: NOC.render.Lookup("storage")
                 },
                 {
                     text: "Aggregation",
@@ -54,7 +61,14 @@ Ext.define("NOC.pm.storagerule.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name"
+                    fieldLabel: "Name",
+                    allowBlank: false
+                },
+                {
+                    name: "storage",
+                    xtype: "pm.storage.LookupField",
+                    fieldLabel: "Storage",
+                    allowBlank: false
                 },
                 {
                     name: "aggregation_method",
