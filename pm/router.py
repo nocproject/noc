@@ -72,6 +72,10 @@ class BaseRouter(object):
         return r
 
     @classmethod
+    def get_probe(cls, name):
+        return Probe.objects.get(name=name)
+
+    @classmethod
     def get_default_probe(cls):
         dp = getattr(cls, "_default_probe", None)
         if not dp:

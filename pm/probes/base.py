@@ -17,13 +17,17 @@ from noc.lib.solutions import solutions_roots
 from match import MatchExpr, MatchTrue
 
 
-HandlerItem = namedtuple("HandlerItem", ["handler", "match", "req", "opt", "preference"])
+HandlerItem = namedtuple("HandlerItem", [
+    "handler", "handler_name", "match", "req", "opt", "preference",
+    "convert"
+])
 
 
 class ProbeRegistry(object):
     def __init__(self):
         self.loaded = False
-        self.probes = defaultdict(list)  #  metric type -> [probes]
+        self.probes = defaultdict(list)  #  metric type -> [HandlerItem]
+        self.handlers = {}  # name -> callable
 
     def load_all(self):
         if self.loaded:
@@ -50,16 +54,32 @@ class ProbeRegistry(object):
         # Prevent further loading
         self.loaded = True
 
-    def register(self, handler, match, req, opt, preference):
+    def register(self, handler, match, req, opt, preference, convert):
         for mt in handler._metrics:
+            hname = self.get_handler_name(handler)
             self.probes[mt] += [
-                HandlerItem(handler=handler, match=match,
-                            req=req, opt=opt, preference=preference)
+                HandlerItem(
+                    handler=handler,
+                    handler_name=hname, match=match,
+                    req=req, opt=opt, preference=preference,
+                    convert=convert
+                )
             ]
+            self.handlers[hname] = handler
 
     def iter_handlers(self, metric_type):
         for h in self.probes[metric_type]:
             yield h
+
+    @classmethod
+    def get_handler_name(cls, v):
+        return "%s.%s.%s" % (
+            v.im_class.__module__,
+            v.im_class.__name__,
+            v.__name__)
+
+    def get_handler(self, name):
+        return self.handlers[name]
 
 
 probe_registry = ProbeRegistry()
@@ -83,8 +103,10 @@ class ProbeBase(type):
                 r |= set(value._required_config)
                 o |= set(value._opt_config)
                 o -= r
-                probe_registry.register(value, mx.compile(), r, o,
-                                        value._preference)
+                probe_registry.register(
+                    value, mx.compile(), r, o,
+                    value._preference, value._convert
+                )
         return m
 
 
