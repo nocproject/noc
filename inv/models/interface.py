@@ -17,6 +17,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
+from noc.lib.solutions import get_probe_config
 
 
 INTERFACE_TYPES = (IGetInterfaces.returns
@@ -204,6 +205,12 @@ class Interface(Document):
         return Interface.objects.filter(aggregated_interface=self.id)
 
     def get_probe_config(self, config):
+        # Get via solutions
+        try:
+            return get_probe_config(self, config)
+        except ValueError:
+            pass
+        # Fallback
         if config == "interface__name":
             return self.name
         elif config == "interface__ifindex":
