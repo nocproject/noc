@@ -14,17 +14,30 @@ import django.db.models.signals
 ## Third-party modules
 import mongoengine.signals
 ## NOC Modules
-from noc.lib.nosql import (Document, StringField,
+from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
                            IntField, DictField, DateTimeField,
-                           ListField, ObjectIdField)
+                           ListField, EmbeddedDocumentField)
+
+
+class ProbeConfigMetric(EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+
+    metric = StringField
+    metric_type = StringField()
+    thresholds = ListField()
+    convert = StringField()
+    collector = StringField()
 
 
 class ProbeConfig(Document):
     meta = {
         "collection": "noc.pm.probeconfig",
         "allow_inheritance": False,
-        "indexes": [("model_id", "object_id"), "probe_id", "uuid",
-                    "expire", "changed"]
+        "indexes": [("model_id", "object_id"),
+                    ("probe_id", "instance_id"),
+                    "uuid", "expire", "changed"]
     }
 
     # Reference to model or document, like sa.ManagedObject
@@ -33,18 +46,17 @@ class ProbeConfig(Document):
     object_id = StringField()
     #
     probe_id = StringField()
+    instance_id = IntField()
     #
     uuid = StringField()
     #
     changed = DateTimeField(default=datetime.datetime.now)
     expire = DateTimeField()
     # Configuration section
-    metric = StringField(unique=True)
-    metric_type = StringField()
     handler = StringField()
     interval = IntField()
-    thresholds = ListField()
     config = DictField()
+    metrics = ListField(EmbeddedDocumentField(ProbeConfigMetric))
 
     PROFILES = defaultdict(list)  # model -> [(model, field), ...]
     MODELS = []
@@ -116,6 +128,21 @@ class ProbeConfig(Document):
 
     @classmethod
     def _refresh_object(cls, object):
+        def get_collector(storage_rule):
+            c = collectors.get(storage_rule)
+            if c:
+                return c
+            dc = storage_rule.storage.default_collector
+            collectors[storage_rule] = dc
+            return dc
+
+        def get_instance(probe, uuid):
+            ni = probe.n_instances
+            if ni < 1:
+                return 0
+            else:
+                return int(str(uuid)[:8], 16) % ni
+
         def get_refresh_ops(bulk, o):
             # Cleanup
             bulk.find(
@@ -132,6 +159,7 @@ class ProbeConfig(Document):
                 }
             )
             for es in MetricSettings.get_effective_settings(o):
+                collector = get_collector(es.storage_rule)
                 bulk.find(
                     {
                         "uuid": es.uuid
@@ -143,13 +171,18 @@ class ProbeConfig(Document):
                             "object_id": str(es.object.id) if es.object else None,
                             "changed": now,
                             "expire": expire,
-                            "metric": es.metric,
-                            "metric_type": es.metric_type.name,
                             "handler": es.handler,
                             "interval": es.interval,
-                            "thresholds": es.thresholds,
                             "probe_id": str(es.probe.id),
-                            "config": es.config
+                            "instance_id": get_instance(es.probe, es.uuid),
+                            "config": es.config,
+                            "metrics": [{
+                                "metric": m.metric,
+                                "metric_type": m.metric_type.name,
+                                "thresholds": m.thresholds,
+                                "convert": m.convert,
+                                "collector": collector
+                            } for m in es.metrics]
                         }
                     }
                 )
@@ -157,6 +190,7 @@ class ProbeConfig(Document):
                 for obj in m.objects.filter(**{n: o.id}):
                     get_refresh_ops(bulk, obj)
 
+        collectors = {}  # Storage rule -> collector url
         # @todo: Make configurable
         now = datetime.datetime.now()
         expire = now + datetime.timedelta(seconds=cls.EXPIRE)
