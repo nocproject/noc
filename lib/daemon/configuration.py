@@ -53,8 +53,10 @@ class ConfigurationThread(threading.Thread):
             self.name = name
             if url.endswith("/"):
                 url = url[:-1]
-            self.url = "%s%s%s/config/" % (
-                url, self.daemon.AUTOCONF_PATH, self.name)
+            self.url = "%s%s%s/%s/config/" % (
+                url, self.daemon.AUTOCONF_PATH, self.name,
+                self.daemon.instance_id
+            )
             if user and passwd:
                 self.auth = "Basic %s" % base64.encodestring(
                     "%s:%s" % (user, passwd)
