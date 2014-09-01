@@ -27,6 +27,12 @@ Ext.define("NOC.pm.probe.Application", {
             width: 50
         },
         {
+            text: "Instances",
+            dataIndex: "n_instances",
+            width: 70,
+            align: "right"
+        },
+        {
             text: "Credentials",
             dataIndex: "user",
             flex: 1,
@@ -50,6 +56,12 @@ Ext.define("NOC.pm.probe.Application", {
             name: "user",
             xtype: "main.user.LookupField",
             fieldLabel: "Credentials"
+        },
+        {
+            name: "n_instances",
+            xtype: "numberfield",
+            fieldLabel: "Instances",
+            minValue: 1
         },
         {
             name: "description",

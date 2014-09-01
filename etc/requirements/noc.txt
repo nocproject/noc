@@ -5,7 +5,7 @@ cairocffi==0.5.4
 ceres==0.10.0
 ecdsa==0.11
 psycopg2>=2.5
-pymongo==2.6.3
+pymongo==2.7.2
 gmpy==1.16
 geopy==0.97
 pycrypto>=2.6
