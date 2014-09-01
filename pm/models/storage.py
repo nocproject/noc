@@ -55,10 +55,10 @@ class Storage(Document):
     @property
     def default_collector(self):
         """
-        Returns tuple of (address, port, protocol) of first active
+        Returns URL of first active
         collector. Returns None if no default collector set
         """
         for c in self.collectors:
             if c.is_active:
-                return c.address, c.port, c.protocol
+                return "%s://%s:%s" % (c.protocol, c.address, c.port)
         return None

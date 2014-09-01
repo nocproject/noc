@@ -16,7 +16,7 @@ from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
                            ListField, EmbeddedDocumentField,
                            PlainReferenceField)
 from metricset import MetricSet
-from effectivesettings import EffectiveSettings
+from effectivesettings import EffectiveSettings, EffectiveSettingsMetric
 from noc.lib.solutions import get_solution
 from noc.settings import config
 from noc.pm.probes.base import probe_registry
@@ -115,12 +115,6 @@ class MetricSettings(Document):
                     raise cvars[name]
             return v
 
-        def get_handler(v):
-            return "%s.%s.%s" % (
-                v.im_class.__module__,
-                v.im_class.__name__,
-                v.__name__)
-
         s_seq = []
         # Check profiles
         model_id = cls.get_model_id(object)
@@ -184,7 +178,7 @@ class MetricSettings(Document):
             # Get handler
             for h in probe_registry.iter_handlers(m.name):
                 if trace:
-                    es.trace("Checking %s" % get_handler(h.handler))
+                    es.trace("Checking %s" % h.handler_name)
                 config = {}
                 failed = False
                 # Check required parameters
@@ -213,11 +207,12 @@ class MetricSettings(Document):
                             continue
                 # Handler found
                 if h.match(config):
-                    es.handler = get_handler(h.handler)
+                    es.handler = h.handler_name
                     es.config = config
+                    es.convert = h.convert
                     if trace:
                         es.trace("Matched handler %s(%s)" % (
-                            get_handler(h.handler), config))
+                            h.handler_name, config))
                     break
                 elif trace:
                     es.trace("Handler mismatch")
@@ -229,7 +224,30 @@ class MetricSettings(Document):
                 es.error("No handler found")
             if es.is_active or trace:
                 r += [es]
-        return r
+        # Collapse around handlers
+        rr = {}
+        for es in r:
+            if es.handler:
+                key = (es.probe.id, es.handler, es.interval)
+            else:
+                key = (es.probe.id, es.metric, es.metric_type, es.interval)
+            if key in rr:
+                e = rr[key]
+                e.metrics += [EffectiveSettingsMetric(
+                    metric=es.metric, metric_type=es.metric_type,
+                    thresholds=es.thresholds, convert=es.convert
+                )]
+            else:
+                es.metrics = [EffectiveSettingsMetric(
+                    metric=es.metric, metric_type=es.metric_type,
+                    thresholds=es.thresholds, convert=es.convert
+                )]
+                es.metric = None
+                es.metric_type = None
+                es.thresholds = None
+                es.convert = None
+                rr[key] = es
+        return rr.values()
 
 
 _router = get_solution(config.get("pm", "metric_router")).route
