@@ -218,13 +218,10 @@ class Interface(Document):
                 raise ValueError("No ifindex for %s" % self)
             else:
                 return self.ifindex
-        elif config == "address":
-            return self.managed_object.address
-        elif config == "snmp__ro":
-            if not self.managed_object.snmp_ro:
-                raise ValueError("No snmp ro community for %s" % self)
-            else:
-                return self.managed_object.snmp_ro
+        try:
+            return self.managed_object.get_probe_config(config)
+        except ValueError:
+            pass
         # Fallback to interface profile
         return self.profile.get_probe_config(config)
 

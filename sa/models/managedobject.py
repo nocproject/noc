@@ -36,12 +36,14 @@ from noc.lib.stencil import stencil_registry
 from noc.lib.gridvcs.manager import GridVCSField
 from noc.main.models.fts_queue import FTSQueue
 from noc.settings import config
+from noc.lib.solutions import get_probe_config
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
 CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
+
 
 class ManagedObject(models.Model):
     """
@@ -619,6 +621,22 @@ class ManagedObject(models.Model):
             return min(ol, pl)
         else:
             return ol
+
+    def get_probe_config(self, config):
+        # Get via solutions
+        try:
+            return get_probe_config(self, config)
+        except ValueError:
+            pass
+        if config == "address":
+            return self.address
+        elif config == "snmp__ro":
+            s = self.credentials.snmp_ro
+            if not s:
+                raise ValueError("No SNMP RO community")
+            else:
+                return s
+        raise ValueError("Invalid config parameter '%s'" % config)
 
 
 class ManagedObjectAttribute(models.Model):
