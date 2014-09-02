@@ -32,6 +32,7 @@ from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.fm.models.cloneclassificationrule import CloneClassificationRule
+from noc.pm.models.metrictype import MetricType
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
 from noc.lib.debug import error_report
@@ -107,7 +108,9 @@ class Command(BaseCommand):
         ("fm.alarmclasses", AlarmClass),
         ("fm.eventclasses", EventClass),
         ("fm.eventclassificationrules", EventClassificationRule),
-        ("fm.cloneclassificationrules", CloneClassificationRule)
+        ("fm.cloneclassificationrules", CloneClassificationRule),
+        # Performance Management
+        ("pm.metrictypes", MetricType)
     ]
 
     def log(self, msg):
