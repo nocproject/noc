@@ -45,6 +45,11 @@ Ext.define("NOC.pm.metrictype.Application", {
                     renderer: NOC.render.Bool
                 },
                 {
+                    text: "Measure",
+                    dataIndex: "measure",
+                    width: 75
+                },
+                {
                     text: "Description",
                     dataIndex: "description",
                     flex: 1
@@ -73,6 +78,11 @@ Ext.define("NOC.pm.metrictype.Application", {
                     name: "is_vector",
                     xtype: "checkbox",
                     boxLabel: "Vector"
+                },
+                {
+                    name: "measure",
+                    xtype: "textfield",
+                    fieldLabel: "Measure"
                 }
             ],
             formToolbar: [
