@@ -28,7 +28,7 @@ class Script(NOCScript):
         r"\((?P<image>[^)]+)\), (Experimental )?Version (?P<version>[^,]+),",
         re.MULTILINE | re.DOTALL)
     rx_platform = re.compile(
-        r"^cisco (?P<platform>\S+) \(\S+\) processor with",
+        r"^cisco (?P<platform>\S+) \(\S+\) processor( \(revision \S+\))? with",
         re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
@@ -51,7 +51,7 @@ class Script(NOCScript):
         v = self.cli("show version", cached=True)
         match = self.re_search(self.rx_ver, v)
         platform = match.group("platform")
-        if platform == "IOS-XE":
+        if platform in ["IOS-XE", "EGR"]:
             # Process IOS XE platform
             pmatch = self.re_search(self.rx_platform, v)
             if pmatch:
