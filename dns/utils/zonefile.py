@@ -82,7 +82,7 @@ $TTL %(ttl)d
             if type == "CNAME" and content.endswith(nsuffix):
                 # Strip domain from content
                 content = content[:-lnsuffix]
-            if prio is not None:
+            if prio:
                 content = "%s %s" % (prio, content)
             if not name and type == "NS":
                 nses += [(name, type, content)]
