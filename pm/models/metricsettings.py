@@ -228,10 +228,11 @@ class MetricSettings(Document):
         # Collapse around handlers
         rr = {}
         for es in r:
+            probe_id = es.probe.id if es.probe else None
             if es.handler:
-                key = (es.probe.id, es.handler, es.interval)
+                key = (probe_id, es.handler, es.interval)
             else:
-                key = (es.probe.id, es.metric, es.metric_type, es.interval)
+                key = (probe_id, es.metric, es.metric_type, es.interval)
             if key in rr:
                 e = rr[key]
                 e.metrics += [EffectiveSettingsMetric(
