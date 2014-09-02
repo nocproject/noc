@@ -91,9 +91,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Process commands
         switch(me.getCmd()) {
             case "open":
-                var fp = {};
-                fp[me.idField] = me.noc.cmd.id;
-                me.store.setFilterParams(fp);
+                me.loadById(me.noc.cmd.id);
                 break;
             case "history":
                 me.restoreHistory(me.noc.cmd.args);
@@ -654,6 +652,9 @@ Ext.define("NOC.core.ModelApplication", {
             success: function(response) {
                 var data = Ext.decode(response.responseText);
                 // @todo: Update current record with data
+                if(me.currentQuery[me.idField]) {
+                    delete me.currentQuery[me.idField];
+                }
                 me.showGrid();
                 me.reloadStore();
                 me.saveInlines(data[me.idField], me.inlineStores);
