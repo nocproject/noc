@@ -74,6 +74,7 @@ class ProbeApplication(ExtDocApplication):
                     "metric_type": m.metric_type,
                     "thresholds": m.thresholds,
                     "convert": m.convert,
+                    "scale": m.scale,
                     "collector": m.collector
                 } for m in pc.metrics
             ],
