@@ -21,17 +21,19 @@ class Metric(object):
         self.last_value = None
         self.last_time = None
         self.convert = None
+        self.scale = None
         self.collector = None
         self.cvt = None
 
     def configure(self, metric, metric_type, thresholds, convert,
-                  collector, **kwargs):
+                  collector, scale=1.0, **kwargs):
         if metric_type != self.metric_type:
             self.reset()
             self.metric_type = metric_type
         self.metric = metric
         self.thresholds = thresholds
         self.collector = collector
+        self.scale = scale
         if convert != self.convert:
             self.reset()
             self.convert = convert
@@ -42,6 +44,7 @@ class Metric(object):
         self.last_time = t
         self.last_value = v
         if r is not None:
+            r *= self.scale
             self.daemon.sender.feed(self.collector, self.metric, int(t), r)
             # @todo: Check thresholds
 

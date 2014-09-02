@@ -19,7 +19,7 @@ from match import MatchExpr, MatchTrue
 
 HandlerItem = namedtuple("HandlerItem", [
     "handler", "handler_name", "match", "req", "opt", "preference",
-    "convert"
+    "convert", "scale"
 ])
 
 
@@ -54,7 +54,8 @@ class ProbeRegistry(object):
         # Prevent further loading
         self.loaded = True
 
-    def register(self, handler, match, req, opt, preference, convert):
+    def register(self, handler, match, req, opt, preference, convert,
+                 scale):
         for mt in handler._metrics:
             hname = self.get_handler_name(handler)
             self.probes[mt] += [
@@ -62,7 +63,7 @@ class ProbeRegistry(object):
                     handler=handler,
                     handler_name=hname, match=match,
                     req=req, opt=opt, preference=preference,
-                    convert=convert
+                    convert=convert, scale=scale
                 )
             ]
             self.handlers[hname] = handler
@@ -105,7 +106,7 @@ class ProbeBase(type):
                 o -= r
                 probe_registry.register(
                     value, mx.compile(), r, o,
-                    value._preference, value._convert
+                    value._preference, value._convert, value._scale
                 )
         return m
 
@@ -115,6 +116,9 @@ class Probe(object):
 
     def __init__(self, daemon):
         self.daemon = daemon
+
+    def snmp_v2c_get(self, oid, community, address, port=161):
+        return self.daemon.io.snmp_v2c_get(oid, community, address, port)
 
 
 class metric(object):
@@ -135,12 +139,13 @@ class metric(object):
     MATCH_OPS = ["eq", "in"]
 
     def __init__(self, metrics, preference=PREF_COMMON, convert=NONE,
-                 **kwargs):
+                 scale=1.0, **kwargs):
         if isinstance(metrics, basestring):
             metrics = [metrics]
         self.metrics = metrics
         self.preference = preference
         self.convert = convert
+        self.scale = scale
         self.selector = kwargs
 
     def __call__(self, f):
@@ -164,6 +169,7 @@ class metric(object):
         f._opt_config = ov
         f._preference = self.preference
         f._convert = self.convert
+        f._scale = self.scale
         return f
 
     def parse_match(self, match):

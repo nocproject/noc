@@ -16,7 +16,7 @@ import mongoengine.signals
 ## NOC Modules
 from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
                            IntField, DictField, DateTimeField,
-                           ListField, EmbeddedDocumentField)
+                           FloatField, ListField, EmbeddedDocumentField)
 
 
 class ProbeConfigMetric(EmbeddedDocument):
@@ -28,6 +28,7 @@ class ProbeConfigMetric(EmbeddedDocument):
     metric_type = StringField()
     thresholds = ListField()
     convert = StringField()
+    scale = FloatField(default=1.0)
     collector = StringField()
 
 
@@ -181,6 +182,7 @@ class ProbeConfig(Document):
                                 "metric_type": m.metric_type.name,
                                 "thresholds": m.thresholds,
                                 "convert": m.convert,
+                                "scale": m.scale,
                                 "collector": collector
                             } for m in es.metrics]
                         }

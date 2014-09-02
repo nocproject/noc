@@ -11,7 +11,7 @@ import uuid
 from collections import namedtuple
 
 EffectiveSettingsMetric = namedtuple("EffectiveSettingsMetric", [
-    "metric", "metric_type", "thresholds", "convert"
+    "metric", "metric_type", "thresholds", "convert", "scale"
 ])
 
 class EffectiveSettings(object):
@@ -19,7 +19,7 @@ class EffectiveSettings(object):
                  storage_rule=None, probe=None, interval=None,
                  thresholds=None, handler=None, config=None,
                  errors=None, model_id=None, object=None, convert=None,
-                 metrics=None):
+                 scale=1.0, metrics=None):
         """
         :param metric: Graphite metric name
         :param metric_type: MetricType object
@@ -46,6 +46,7 @@ class EffectiveSettings(object):
         self.model_id = model_id
         self.object = object
         self.convert = convert
+        self.scale = scale
         self.metrics = metrics
 
     def dump(self):
@@ -57,7 +58,8 @@ class EffectiveSettings(object):
         if self.metrics:
             r += ["%20s :" % "metrics"]
             for m in self.metrics:
-                for n in ["metric", "metric_type", "convert", "thresholds"]:
+                for n in ["metric", "metric_type", "convert", "scale",
+                          "thresholds"]:
                     r += ["%30s : %s" % (n, getattr(m, n))]
         if self.config:
             r += ["%20s :" % "config"]

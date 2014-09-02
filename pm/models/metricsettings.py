@@ -210,6 +210,7 @@ class MetricSettings(Document):
                     es.handler = h.handler_name
                     es.config = config
                     es.convert = h.convert
+                    es.scale = h.scale
                     if trace:
                         es.trace("Matched handler %s(%s)" % (
                             h.handler_name, config))
@@ -235,17 +236,20 @@ class MetricSettings(Document):
                 e = rr[key]
                 e.metrics += [EffectiveSettingsMetric(
                     metric=es.metric, metric_type=es.metric_type,
-                    thresholds=es.thresholds, convert=es.convert
+                    thresholds=es.thresholds, convert=es.convert,
+                    scale=es.scale
                 )]
             else:
                 es.metrics = [EffectiveSettingsMetric(
                     metric=es.metric, metric_type=es.metric_type,
-                    thresholds=es.thresholds, convert=es.convert
+                    thresholds=es.thresholds, convert=es.convert,
+                    scale=es.scale
                 )]
                 es.metric = None
                 es.metric_type = None
                 es.thresholds = None
                 es.convert = None
+                es.scale = None
                 rr[key] = es
         return rr.values()
 
