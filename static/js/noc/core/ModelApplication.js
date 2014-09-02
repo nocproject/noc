@@ -1200,6 +1200,9 @@ Ext.define("NOC.core.ModelApplication", {
     checkGroupEdit: function() {
         var me = this,
             check = function(seq) {
+                if(!seq) {
+                    return false;
+                }
                 for(var i = 0; i < seq.length; i++) {
                     var v = seq[i];
                     if(v.groupEdit === true) {
