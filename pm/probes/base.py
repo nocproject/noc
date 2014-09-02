@@ -15,6 +15,7 @@ import functools
 ## NOC modules
 from noc.lib.solutions import solutions_roots
 from match import MatchExpr, MatchTrue
+import noc.lib.snmp.version
 
 
 HandlerItem = namedtuple("HandlerItem", [
@@ -114,11 +115,24 @@ class ProbeBase(type):
 class Probe(object):
     __metaclass__ = ProbeBase
 
+    SNMP_v2c = noc.lib.snmp.version.SNMP_v2c
+
     def __init__(self, daemon):
         self.daemon = daemon
 
-    def snmp_v2c_get(self, oid, community, address, port=161):
-        return self.daemon.io.snmp_v2c_get(oid, community, address, port)
+    def snmp_get(self, oids, address, port=161,
+                 community="public", version=SNMP_v2c):
+        """
+        Perform SNMP request to one or more OIDs.
+        oids can be string or dict.
+        When oid is string returns value
+        When oid is dict of <metric type> : oid, returns
+        dict of <metric type>: value
+        """
+        return self.daemon.io.snmp_get(
+            oids, address, port,
+            community=community,
+            version=version)
 
 
 class metric(object):

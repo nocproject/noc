@@ -16,6 +16,7 @@ import Queue
 from noc.lib.daemon.autoconf import AutoConfDaemon
 from task import Task
 from sender import Sender
+from io.base import IOThread
 from noc.lib.threadpool import Pool
 
 
@@ -31,11 +32,14 @@ class ProbeDaemon(AutoConfDaemon):
         self.pending_lock = Lock()
         self.thread_pool = None
         self.sender = None
+        self.io = None
 
     def run(self):
         # Run sender thread
         self.sender = Sender(self)
         self.sender.start()
+        self.io = IOThread(self)
+        self.io.start()
         # Prepare thread pool
         self.thread_pool = Pool(
             start_threads=self.config.getint("thread_pool", "start_threads"),
