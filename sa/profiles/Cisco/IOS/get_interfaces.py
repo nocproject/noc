@@ -305,7 +305,7 @@ class Script(NOCScript):
                 sub["enabled_protocols"] += ["OSPF"]
 
             if full_ifname in ifindex:
-                sub["ifindex"] = ifindex[full_ifname]
+                sub["snmp_ifindex"] = ifindex[full_ifname]
 
             if "." not in ifname and ":" not in ifname:
                 iface = {
@@ -337,7 +337,7 @@ class Script(NOCScript):
                     iface["enabled_protocols"] += ["LACP"]
                 # Ifindex
                 if full_ifname in ifindex:
-                    iface["ifindex"] = ifindex[full_ifname]
+                    iface["snmp_ifindex"] = ifindex[full_ifname]
                 interfaces += [iface]
             else:
                 # Append additional subinterface
