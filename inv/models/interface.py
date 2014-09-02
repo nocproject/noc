@@ -221,11 +221,12 @@ class Interface(Document):
         elif config == "address":
             return self.managed_object.address
         elif config == "snmp__ro":
-            if self.managed_object.snmp_ro is None:
+            if not self.managed_object.snmp_ro:
                 raise ValueError("No snmp ro community for %s" % self)
             else:
                 return self.managed_object.snmp_ro
-        raise ValueError("Invalid config '%s'" % config)
+        # Fallback to interface profile
+        return self.profile.get_probe_config(config)
 
 
 ## Avoid circular references
