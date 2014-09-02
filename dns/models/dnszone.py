@@ -201,13 +201,9 @@ class DNSZone(models.Model):
             if type == "CNAME" and content.endswith(nsuffix):
                 # Strip domain from content
                 content = content[:-lnsuffix]
-            if prio is not None:
+            if prio:
                 content = "%s %s" % (prio, content)
-
-            if prio is not None:
-                return name, type, "%s %s" % (prio, content)
-            else:
-                return name, type, content
+            return name, type, content
 
         suffix = self.name + "."
         nsuffix = "." + suffix

@@ -489,6 +489,7 @@ Ext.define("NOC.core.ModelApplication", {
                                 clicksToEdit: 2,
                                 listeners: {
                                     scope: me,
+                                    beforeedit: me.onInlineBeforeEdit,
                                     edit: me.onInlineEdit
                                 }
                             })
@@ -744,9 +745,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Show edit form
         me.showForm();
         // Load records
-        console.log("loadRecord", record);
         me.form.loadRecord(record);
-        console.log("done");
         me.loadInlines();
         // Focus on first field
         me.focusOnFirstField();
@@ -1048,6 +1047,10 @@ Ext.define("NOC.core.ModelApplication", {
             // deprecated method
             // me.currentRecord.setDirty();
         }
+    },
+    //
+    onInlineBeforeEdit: function(editor, context, eOpts) {
+        var me = this;
     },
     // Admin action selected
     onAction: function(menu, item, e) {

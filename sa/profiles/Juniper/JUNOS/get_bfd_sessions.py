@@ -18,25 +18,28 @@ class Script(NOCScript):
     name = "Juniper.JUNOS.get_bfd_sessions"
     implements = [IGetBFDSessions]
 
-    rx_session = re.compile(
-        r"^(?P<remote_address>\S+)\s+(?P<state>Up)\s+"
-        r"(?P<local_interface>\S+)\s+(?P<detect_time>\d+\.\d+)\s+"
-        r"(?P<transmit>\d+\.\d+)\s+(?P<multiplier>\d+)\s*\n"
-        r"^\s+Client\s+(?P<client>[^,]+),.+?\n"
-        r".+?"
-        r"^\s+Local discriminator (?P<local_discriminator>\d+), "
-        r"remote discriminator (?P<remote_discriminator>\d+)",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
-    )
-
     # JUNOS to interface client type mappings
     client_map = {
         "L2": "L2",
         "RSVP-OAM": "RSVP",
         "ISIS": "ISIS",
         "OSPF": "OSPF",
-        "BGP": "BGP"
+        "BGP": "BGP",
+        "PIM": "PIM"
     }
+
+    rx_session = re.compile(
+        r"^(?P<remote_address>\S+)\s+(?P<state>Up)\s+"
+        r"(?P<local_interface>\S+)\s+(?P<detect_time>\d+\.\d+)\s+"
+        r"(?P<transmit>\d+\.\d+)\s+(?P<multiplier>\d+)\s*\n"
+        r"^\s+Client\s+(?P<client>(?:%s)(?:\s+(?:%s))*).+?\n"
+        r".+?"
+        r"^\s+Local discriminator (?P<local_discriminator>\d+), "
+        r"remote discriminator (?P<remote_discriminator>\d+)" % (
+            "|".join(client_map), "|".join(client_map)
+        ),
+        re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
 
     def execute(self):
         r = []
