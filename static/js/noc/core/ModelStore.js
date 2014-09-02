@@ -57,12 +57,17 @@ Ext.define("NOC.core.ModelStore", {
                 }
             }),
             modelName = config.model + "-sm",
+            schema = Ext.data.schema.Schema.get("default"),
+            sModel = schema.getEntity(modelName);
+
+        if(!sModel) {
             sModel = Ext.define(modelName, {
                 extend: "Ext.data.Model",
                 fields: fields,
                 proxy: proxy,
                 idProperty: model.idProperty
             });
+        }
 
         me.idProperty = model.idProperty;
         Ext.apply(config, {

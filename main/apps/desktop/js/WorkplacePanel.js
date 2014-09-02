@@ -80,7 +80,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     onTabClose: function(tab) {
         var me = this;
         // Run desktop's onCloseApp
-        if(tab.menu_node) {
+        if(tab.menuNode) {
             me.app.onCloseApp(tab.menuNode);
         }
         // Run application's onCloseApp
