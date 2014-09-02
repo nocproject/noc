@@ -45,7 +45,6 @@ class Sender(threading.Thread):
             self.channels[url] = c
             return c
 
-
     def feed(self, collector, metric, t, v):
         """
         Feed result to sender.
