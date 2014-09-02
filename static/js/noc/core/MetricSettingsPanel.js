@@ -8,6 +8,9 @@ console.debug("Defining NOC.core.MetricSettingsPanel");
 
 Ext.define("NOC.core.MetricSettingsPanel", {
     extend: "Ext.tab.Panel",
+    requires: [
+        "NOC.pm.metricset.LookupField"
+    ],
     layout: "fit",
     app: null,
     template: null,
@@ -55,7 +58,8 @@ Ext.define("NOC.core.MetricSettingsPanel", {
                             text: "Metric Set",
                             dataIndex: "metric_set",
                             flex: 1,
-                            renderer: NOC.render.Lookup("metric_set")
+                            renderer: NOC.render.Lookup("metric_set"),
+                            editor: "pm.metricset.LookupField"
                         }
                     ]
                 }
