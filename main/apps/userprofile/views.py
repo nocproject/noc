@@ -33,6 +33,7 @@ class UserProfileApplication(ExtApplication):
             profile = user.get_profile()
             language = profile.preferred_language
             theme = profile.theme
+            preview_theme = profile.preview_theme
             contacts = [
                 {
                     "time_pattern": c.time_pattern.id,
@@ -45,6 +46,7 @@ class UserProfileApplication(ExtApplication):
         except UserProfile.DoesNotExist:
             language = None
             theme = None
+            preview_theme = None
             contacts = []
         return {
             "username": user.username,
@@ -54,6 +56,7 @@ class UserProfileApplication(ExtApplication):
             "email": user.email,
             "preferred_language": language,
             "theme": theme,
+            "preview_theme": preview_theme,
             "contacts": contacts
         }
 
@@ -61,6 +64,7 @@ class UserProfileApplication(ExtApplication):
           validate={
               "preferred_language": StringParameter(choices=[x[0] for x in LANGUAGES]),
               "theme": StringParameter(),
+              "preview_theme": StringParameter(),
               "contacts": ListOfParameter(
                   element=DictParameter(attrs={
                       "time_pattern": ModelParameter(TimePattern),
@@ -69,7 +73,8 @@ class UserProfileApplication(ExtApplication):
                   })
               )
           })
-    def api_save(self, request, preferred_language, theme, contacts):
+    def api_save(self, request, preferred_language, theme,
+                 preview_theme, contacts):
         user = request.user
         try:
             profile = user.get_profile()
@@ -77,6 +82,7 @@ class UserProfileApplication(ExtApplication):
             profile = UserProfile(user=user)
         profile.preferred_language = preferred_language
         profile.theme = theme
+        profile.preview_theme = preview_theme
         profile.save()
         # Setup contacts
         for c in profile.userprofilecontact_set.all():

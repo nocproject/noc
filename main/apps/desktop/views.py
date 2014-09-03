@@ -75,14 +75,30 @@ class DesktopApplication(ExtApplication):
         Get theme for request
         """
         user = request.user
+        theme = self.default_theme
         if user.is_authenticated():
             try:
                 profile = user.get_profile()
+                if profile.theme:
+                    theme = profile.theme
             except:
-                profile = None
-            if profile and profile.theme and profile.theme in self.themes:
-                return profile.theme
-        return self.default_theme
+                pass
+        return theme
+
+    def get_preview_theme(self, request):
+        """
+        Get theme for request
+        """
+        user = request.user
+        preview_theme = "default"
+        if user.is_authenticated():
+            try:
+                profile = user.get_profile()
+                if profile.preview_theme:
+                    preview_theme = profile.preview_theme
+            except:
+                pass
+        return preview_theme
 
     @view(method=["GET"], url="^$", url_name="desktop", access=True)
     def view_desktop(self, request):
@@ -117,7 +133,8 @@ class DesktopApplication(ExtApplication):
             "enable_gis_base_osm": config.getboolean("gis", "enable_osm"),
             "enable_gis_base_google_sat": config.getboolean("gis", "enable_google_sat"),
             "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap"),
-            "trace_extjs_events": config.getboolean("main", "trace_extjs_events")
+            "trace_extjs_events": config.getboolean("main", "trace_extjs_events"),
+            "preview_theme": self.get_preview_theme(request)
         }
         theme = self.get_theme(request)
         return self.render(

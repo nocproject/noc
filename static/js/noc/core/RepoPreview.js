@@ -13,7 +13,6 @@ Ext.define("NOC.core.RepoPreview", {
     syntax: null,
     restUrl: null,
     historyHashPrefix: null,
-    theme: "default",
 
     initComponent: function() {
         var me = this;
@@ -150,17 +149,6 @@ Ext.define("NOC.core.RepoPreview", {
             diffRange: 30
         });
 
-        me.themeField = Ext.create("NOC.main.ref.cmtheme.LookupField", {
-            fieldLabel: "Theme",
-            labelAlign: "right",
-            stateful: true,
-            stateId: "noc-repopreview-theme",
-            listeners: {
-                scope: me,
-                select: me.onSelectTheme
-            }
-        });
-
         me.cmContainer = Ext.create({
             xtype: "container",
             layout: "fit",
@@ -196,9 +184,7 @@ Ext.define("NOC.core.RepoPreview", {
                     "-",
                     me.lastDayButton,
                     me.lastWeekButton,
-                    me.lastMonthButton,
-                    "->",
-                    me.themeField
+                    me.lastMonthButton
                 ]
             }],
             items: [me.cmContainer],
@@ -239,28 +225,18 @@ Ext.define("NOC.core.RepoPreview", {
         if(css){
             css.style.height = '100%';
         }
-        me.setTheme(me.theme);
+        me.setTheme(NOC.settings.preview_theme);
     },
     // Set CodeMirror theme
     setTheme: function(name) {
         var me = this;
-        if(name === me.currentTheme) {
-            return;
-        }
         if(name !== "default") {
             Ext.util.CSS.swapStyleSheet(
                 "cmcss-" + me.id,  // Fake one
                 "/static/pkg/codemirror/theme/" + name + ".css"
             );
         }
-        me.currentTheme = name;
         me.viewer.setOption("theme", name);
-        me.themeField.setValue(name);
-    },
-    //
-    onSelectTheme: function(combo, records, opts) {
-        var me = this;
-        me.setTheme(records[0].get("id"))
     },
     //
     startPreview: function(record, backItem) {

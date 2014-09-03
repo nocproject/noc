@@ -42,9 +42,7 @@ Ext.define("NOC.core.Preview", {
                         glyph: NOC.glyph.arrow_left,
                         scope: me,
                         handler: me.onClose
-                    },
-                    me.revCombo,
-                    me.diffCombo
+                    }
                 ]
             }],
             items: [me.cmContainer],
@@ -83,6 +81,18 @@ Ext.define("NOC.core.Preview", {
         if(css){
             css.style.height = '100%';
         }
+        me.setTheme(NOC.settings.preview_theme);
+    },
+    // Set CodeMirror theme
+    setTheme: function(name) {
+        var me = this;
+        if(name !== "default") {
+            Ext.util.CSS.swapStyleSheet(
+                "cmcss-" + me.id,  // Fake one
+                "/static/pkg/codemirror/theme/" + name + ".css"
+            );
+        }
+        me.viewer.setOption("theme", name);
     },
     //
     preview: function(record) {
