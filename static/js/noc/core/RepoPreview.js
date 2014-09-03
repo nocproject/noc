@@ -225,7 +225,8 @@ Ext.define("NOC.core.RepoPreview", {
         // Create CodeMirror
         me.viewer = new CodeMirror(el, {
             readOnly: true,
-            lineNumbers: true
+            lineNumbers: true,
+            styleActiveLine: true
         });
         // change the codemirror css
         var css = Ext.util.CSS.getRule(".CodeMirror");
