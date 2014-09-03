@@ -56,6 +56,8 @@ class UserProfile(models.Model):
         choices=settings.LANGUAGES)
     theme = models.CharField(
         "Theme", max_length=32, null=True, blank=True)
+    preview_theme = models.CharField(
+        "Preview Theme", max_length=32, null=True, blank=True)
     #
     objects = UserProfileManager()
 

@@ -17,8 +17,6 @@ Ext.define("NOC.main.userprofile.Application", {
     initComponent: function() {
         var me = this,
             lw = 60;
-        me.currentTheme = null;
-
         me.usernameField = Ext.create("Ext.form.field.Display", {
             fieldLabel: "Login",
             labelWidth: lw
@@ -37,6 +35,10 @@ Ext.define("NOC.main.userprofile.Application", {
         });
         me.themeField = Ext.create("NOC.main.ref.theme.LookupField", {
             fieldLabel: "Theme",
+            labelWidth: lw
+        });
+        me.previewThemeField = Ext.create("NOC.main.ref.cmtheme.LookupField", {
+            fieldLabel: "Preview Theme",
             labelWidth: lw
         });
         // Contacts grid
@@ -138,6 +140,7 @@ Ext.define("NOC.main.userprofile.Application", {
                         me.emailField,
                         me.languageField,
                         me.themeField,
+                        me.previewThemeField,
                         {
                             xtype: "fieldset",
                             title: "Notification Contacts",
@@ -183,20 +186,24 @@ Ext.define("NOC.main.userprofile.Application", {
     //
     setData: function(data) {
         var me = this;
+        me.profileData = data;
         me.usernameField.setValue(data.username);
         me.nameField.setValue(data.name);
         me.emailField.setValue(data.email);
         me.languageField.setValue(data.preferred_language);
         me.themeField.setValue(data.theme);
+        me.previewThemeField.setValue(data.preview_theme);
         me.contactsStore.loadData(data.contacts);
-        me.currentTheme = data.theme;
     },
     //
     onSave: function() {
         var me = this,
+            theme = me.themeField.getValue(),
+            previewTheme = me.previewThemeField.getValue(),
             data = {
                 preferred_language: me.languageField.getValue(),
-                theme: me.themeField.getValue(),
+                theme: theme,
+                preview_theme: previewTheme,
                 contacts: me.contactsStore.data.items.map(function(x) {
                     return x.data
                 })
@@ -207,7 +214,7 @@ Ext.define("NOC.main.userprofile.Application", {
             jsonData: data,
             success: function(response) {
                 NOC.info("Profile saved");
-                if(data.theme !== me.currentTheme) {
+                if(me.profileData.theme !== theme || me.profileData.preview_theme !== previewTheme) {
                     NOC.app.app.restartApplication("Applying theme changes");
                 }
             },
