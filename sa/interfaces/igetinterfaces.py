@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## IGetInterfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from base import *
@@ -11,7 +11,7 @@ from base import *
 class IGetInterfaces(Interface):
     """
     IGetInterfaces.
-    
+
     Common usage scenarios
 
     L3 IPv4/IPv6 port.
@@ -70,7 +70,7 @@ class IGetInterfaces(Interface):
                 name = interface name (same as physical name for most platforms)
                 enabled_afi = ["BRIDGE"]
                 tagged_vlans = VLANS (list)
-    
+
     L3-terminated 802.1Q trunk (in VLAN1 and VLAN2)
     -----------------------------------------------
     forwarding_instance:
@@ -85,12 +85,12 @@ class IGetInterfaces(Interface):
                 vlan_ids = [VLAN1]
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = [list of VLAN1 addresses]
-                
+
                 name = interface name.VLAN2 (for most platforms)
                 vlan_ids = [VLAN2]
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = [list of VLAN2 addresses]
-    
+
     L3 portchannel (if1 is aggregated interface of if2 and if3 with LACP)
     -----------------------------------------------------------
     forwarding_instance:
@@ -109,13 +109,13 @@ class IGetInterfaces(Interface):
             is_lacp = True  # @todo: Deprecated
             enabled_protoocols = ["LACP"]
             aggregated_interface = "if1"
-            
+
             name = if3
             type = "physical"
             is_lacp = True  # @todo: Deprecated
             enabled_protoocols = ["LACP"]
             aggregated_interface = "if1"
-    
+
     L2 portchannel, tagged (if1 is aggregated interface of if2(LACP) and if3(static))
     ---------------------------------------------------------------------------------
     forwarding_instance:
@@ -128,17 +128,16 @@ class IGetInterfaces(Interface):
                 name = interface name (same as parent for most platforms)
                 enabled_afi = ["BRIDGE"]
                 tagged_vlans = list of tagged vlans
-    
+
             name = if2
             type = "aggregate"
             enabled_protocols = ["LACP"]
             aggregated_interface = "if1"
-            
+
             name = if3
             type = "aggregate"
-            enabled_protocols = ["LACP"]
             aggregated_interface = "if1"
-    
+
     802.1Q trunk. (VLAN1 is L3, VLAN2 in VRF1)
     -----------------------------------------
     forwarding_instance:
