@@ -97,13 +97,20 @@ class ConfigurationThread(threading.Thread):
         return data
 
     def apply_config(self, config):
+        n = 0
+        n_created = 0
+        n_changed = 0
+        n_errors = 0
+        n_deleted = 0
         for cfg in config["config"]:
+            n += 1
             try:
                 u_id = cfg["uuid"]
                 changed = cfg.pop("changed")
                 expire = cfg.pop("expire")
             except KeyError, v:
                 self.error("Configuration error: '%s' is missed" % v)
+                n_errors += 1
                 continue
             if u_id not in self.configs:
                 # Create new object
@@ -111,20 +118,25 @@ class ConfigurationThread(threading.Thread):
                 self.changes[u_id] = changed
                 self.debug("Creating object %s: %s" % (u_id, cfg))
                 self.daemon.on_object_create(**cfg)
+                n_created += 1
             elif changed == expire:
                 # Object deleted
                 self.debug("Deleting object %s" % u_id)
                 self.daemon.on_object_delete(u_id)
                 del self.configs[u_id]
                 del self.changes[u_id]
+                n_deleted += 1
             elif self.changes[u_id] != changed:
                 # Object changed
                 self.configs[u_id] = cfg
                 self.changes[u_id] = changed
                 self.debug("Changing object %s: %s" % (u_id, cfg))
                 self.daemon.on_object_change(**cfg)
+                n_changed += 1
         # Update last value
         self.last = config.get("now", datetime.datetime.now().isoformat())
+        self.debug("Configuration has been applied: "
+                   "Items: %d, Created: %d, Changed: %d, Deleted: %d, Errors: %d" % (n, n_created, n_changed, n_deleted, n_errors))
 
     def run(self):
         self.info("Starting configuration thread")
