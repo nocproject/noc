@@ -1,0 +1,49 @@
+#!./bin/python
+##----------------------------------------------------------------------
+## mongo profiling tool
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import time
+import sys
+import csv
+## NOC modules
+from noc.lib.nosql import get_db
+
+COLLECT_TIME = 10
+
+
+def iter_profile(collect_time=COLLECT_TIME):
+    db = get_db()
+    db.system.profile.drop()
+    db.set_profiling_level(2)
+    time.sleep(collect_time)
+    db.set_profiling_level(0)
+    for c in db.system.profile.find():
+        yield c
+
+
+def dump_profile(gen):
+    writer = csv.writer(sys.stdout, delimiter="\t")
+    writer.writerow([
+        "ts", "op", "ns", "millis", "nreturned", "nscanned",
+        "response_length", "query"
+    ])
+    for r in gen:
+        writer.writerow([
+            r["ts"].isoformat(),
+            r["op"],
+            r["ns"],
+            r["millis"],
+            r.get("nreturned", ""),
+            r.get("nscanned", ""),
+            r.get("responseLength", ""),
+            r.get("query", "")
+        ])
+
+
+if __name__ == "__main__":
+    dump_profile(iter_profile(COLLECT_TIME))
