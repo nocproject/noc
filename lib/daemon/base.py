@@ -40,7 +40,7 @@ class Daemon(object):
     # Initialize custom fields and solutions
     use_solutions = False
 
-    LOG_FORMAT = "%(asctime)s %(message)s"
+    LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
 
     LOG_LEVELS = {
         "debug": logging.DEBUG,

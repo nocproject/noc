@@ -2,11 +2,13 @@
 ##----------------------------------------------------------------------
 ## Various serializers
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 import logging
+
+logger = logging.getLogger(__name__)
 
 JSON_TYPE = None
 try:
@@ -20,7 +22,7 @@ except ImportError:
 
 
 ## Install handlers
-logging.info("Using JSON library: %s" % JSON_TYPE)
+logger.info("Using JSON library: %s", JSON_TYPE)
 if JSON_TYPE == "cjson":
     json_encode = cjson.encode
     json_decode = cjson.decode

@@ -28,6 +28,8 @@ from noc.settings import INSTALLED_APPS, config
 from noc.lib.debug import get_traceback, error_report
 from noc.lib.serialize import json_decode
 
+logger = logging.getLogger(__name__)
+
 
 class DynamicMenu(object):
     title = "DYNAMIC MENU"
@@ -172,11 +174,13 @@ class Site(object):
             try:
                 v = view_map[request.method]
             except KeyError:
+                logger.info("No handler for '%s' method", request.method)
                 return HttpResponseNotFound("No handler for '%s' method" % request.method)
             if not request.user or not v.access.check(app, request.user):
                 return HttpResponseForbidden()
             to_log_api_call = (self.log_api_calls and
                                hasattr(v, "api") and v.api)
+            app_logger = v.im_self.logger
             try:
                 # Validate requests
                 if (hasattr(v, "validate") and v.validate):
@@ -211,7 +215,7 @@ class Site(object):
                     if errors:
                         #
                         if to_log_api_call:
-                            logging.debug("ERROR: %s" % errors)
+                            app_logger.error("ERROR: %s", errors)
                         # Return error response
                         ext_format = ("__format=ext"
                                     in request.META["QUERY_STRING"].split("&"))
@@ -232,12 +236,12 @@ class Site(object):
                             a = json_decode(request.raw_post_data)
                         else:
                             a = dict((k, v[0] if len(v) == 1 else v)
-                                       for k, v in request.POST.lists())
+                                     for k, v in request.POST.lists())
                     elif request.method == "GET":
                         a = dict((k, v[0] if len(v) == 1 else v)
                                  for k, v in request.GET.lists())
-                    logging.debug("API %s %s %s" % (request.method,
-                                                    request.path, a))
+                    app_logger.debug("API %s %s %s",
+                                     request.method, request.path, a)
                 # Call handler
                 r = v(request, *args, **kwargs)
                 # Dump SQL statements
@@ -250,12 +254,12 @@ class Site(object):
                             stmt = q["sql"].strip().split(" ", 1)[0].upper()
                             sc[stmt] += 1
                             tsc += 1
-                            logging.debug("SQL %(sql)s %(time)ss" % q)
+                            app_logger.debug("SQL %(sql)s %(time)ss" % q)
                     x = ", ".join(["%s: %d" % (k, v)
                                    for k, v in sc.iteritems()])
                     if x:
                         x = " (%s)" % x
-                    logging.debug("SQL statements: %d%s" % (tsc, x))
+                    app_logger.debug("SQL statements: %d%s" % (tsc, x))
             except PermissionDenied, why:
                 return HttpResponseForbidden(why)
             except Http404, why:
@@ -263,16 +267,19 @@ class Site(object):
             except:
                 tb = get_traceback()
                 if to_log_api_call:
-                    error_report()
+                    error_report(logger=app_logger)
                 # Generate 500
                 r = HttpResponse(content=tb, status=500,
                                  mimetype="text/plain; charset=utf-8")
             # Serialize response when necessary
             if not isinstance(r, HttpResponse):
                 try:
-                    r = HttpResponse(JSONEncoder(ensure_ascii=False).encode(r),
-                        mimetype="text/json; charset=utf-8")
+                    r = HttpResponse(
+                        JSONEncoder(ensure_ascii=False).encode(r),
+                        mimetype="text/json; charset=utf-8"
+                    )
                 except:
+                    error_report(logger=app_logger)
                     r = HttpResponse(get_traceback(), status=500)
             r["Pragma"] = "no-cache"
             r["Cache-Control"] = "no-cache"

@@ -172,6 +172,7 @@ class Script(threading.Thread):
     UnexpectedResultError = UnexpectedResultError
     #
     _execute_chain = []
+    logger = logging.getLogger(name or "script")
 
     def __init__(self, profile, _activator, object_name, access_profile,
                  timeout=0, parent=None, **kwargs):
@@ -373,11 +374,11 @@ class Script(threading.Thread):
         """Debug log message"""
         if self.activator.use_canned_session:
             return
-        logging.debug(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
+        self.logger.debug(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
 
     def error(self, msg):
         """Error log message"""
-        logging.error(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
+        self.logger.error(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
 
     @property
     def root(self):
