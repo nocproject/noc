@@ -637,3 +637,31 @@ slice_caching = latest
 # get filled in, which means instead of a simple 8-byte write to a new file we
 # could end up doing an (8 * MAX_SLICE_GAP)-byte write to the latest slice.
 max_slice_gap = 80
+
+[pm_router]
+# Model to graphite mapping metrics
+# Used by noc.default solution
+# Graphite metric mappings defines as
+# map.<model_id> = <django template>
+# Following variables are exposed to django template
+#     * object -- object instance
+#     * model_id -- model_id
+#     * metric_type -- name of the metric type
+# Additional filters are available
+#     {{object|dirhash:"<width>:<levels>"}} -- hashed directory tree up to
+#           <levels> depts. Each level consists of <width>-letter directory
+#           Examples:
+#               {{object|dirhash:"4.2"}}  -> 23F3.EE18
+#               {{object|dirhash:"4.4"}}  -> 23F3.EE18.AB23.2156
+#               {{object|dirhash:"2.2"}}  -> 23.F3
+#               {{object|dirhash:"2.4"}}  -> 23.F3.EE.18
+#     {{string|qm}} -- directory-safe quoting.
+#
+# object.XXXX.YYYY.<object name>.<metric type>
+map.sa.ManagedObject = object.{{object|dirhash:"4.2"}}.{{object.name|qm}}.{{metric_type|qm}}
+# object.XXXX.YYYY.<object name>.interface.<name>.<metric type>
+map.inv.Interface = object.{{object.managed_object|dirhash:"4.2"}}.{{object.managed_object.name|qm}}.interface.{{object.name|qm}}.{{metric_type|qm}}
+# Additional metric control defined in form of rules
+# metric.<N> = <regular expression>
+# probe.<N> = <probe name>
+# active.<N> = true | false

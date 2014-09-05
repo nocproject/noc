@@ -26,12 +26,16 @@ class BaseRouter(object):
         Calls are routed to classmethod annotated by
         @BaseRouter.model_handler(...) functions
         """
-        model_id = MetricSettings.get_model_id(object)
+        model_id = cls.get_model_id(object)
         handler = cls._MODEL_ROUTE.get(model_id)
         if handler:
             return handler(cls, object, settings)
         else:
             cls.default_route(object, settings)
+
+    @classmethod
+    def get_model_id(cls, object):
+        return MetricSettings.get_model_id(object)
 
     @classmethod
     def model_handler(cls, model_id):
