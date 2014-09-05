@@ -22,6 +22,9 @@ from noc.settings import CRASHINFO_LIMIT, TRACEBACK_REVERSE
 from noc.lib.version import get_version
 from noc.lib.fileutils import safe_rewrite
 
+logger = logging.getLogger(__name__)
+
+
 #
 # Error reporting context
 #
@@ -220,9 +223,9 @@ def excepthook(t, v, tb):
     sys.stderr.flush()
 
 
-def error_report(reverse=TRACEBACK_REVERSE):
+def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
     r = get_traceback(reverse=reverse)
-    logging.error(r)
+    logger.error(r)
     if DEBUG_CTX_COMPONENT and DEBUG_CTX_CRASH_DIR:
         # Build crashinfo file
         c = {
@@ -244,10 +247,10 @@ def error_report(reverse=TRACEBACK_REVERSE):
             if DEBUG_CTX_SET_UID:  # Change crashinfo userid to directory"s owner
                 os.chown(path, DEBUG_CTX_SET_UID, -1)
         except OSError, why:
-            logging.error("Unable to write crashinfo: %s" % why)
+            logger.error("Unable to write crashinfo: %s", why)
 
 
-def frame_report(frame, caption=None):
+def frame_report(frame, caption=None, logger=logger):
     now = datetime.datetime.now()
     r = []
     if caption:
@@ -255,7 +258,7 @@ def frame_report(frame, caption=None):
     r += ["EXECUTION FRAME REPORT (%s)" % str(now)]
     r += ["Working directory: %s" % os.getcwd()]
     r += [format_frames(get_execution_frames(frame))]
-    logging.error("\n".join(r))
+    logger.error("\n".join(r))
 
 
 def error_fingerprint():

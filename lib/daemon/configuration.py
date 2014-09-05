@@ -17,6 +17,8 @@ import datetime
 from noc.lib.serialize import json_decode
 from noc.lib.debug import error_report
 
+logger = logging.getLogger(__name__)
+
 
 class ConfigurationThread(threading.Thread):
     def __init__(self, daemon):
@@ -34,21 +36,13 @@ class ConfigurationThread(threading.Thread):
         self.configs = {}  # uuid -> config
         self.changes = {}  # uuid -> change
 
-    def info(self, msg):
-        logging.info(msg)
-
-    def debug(self, msg):
-        logging.debug(msg)
-
-    def error(self, msg):
-        logging.debug(msg)
-
     def shutdown(self):
+        logger.debug("Shutting down")
         self.to_shutdown = None
 
     def configure(self, name, url, user=None, passwd=None,
                   timeout=60, interval=60, failed_interval=10):
-        self.debug("Configuring name=%s url=%s user=%s" % (name, url, user))
+        logger.debug("Configuring name=%s url=%s user=%s" % (name, url, user))
         with self.conf_lock:
             self.name = name
             if url.endswith("/"):
@@ -74,7 +68,7 @@ class ConfigurationThread(threading.Thread):
         Fetch config
         Returns dict or None
         """
-        self.debug("Getting config")
+        logger.debug("Getting config")
         with self.conf_lock:
             url = self.url
         if self.last:
@@ -85,15 +79,15 @@ class ConfigurationThread(threading.Thread):
         try:
             resp = urllib2.urlopen(req, timeout=self.timeout)
         except urllib2.URLError, why:
-            self.error("Cannot get config from %s: %s" % (
+            logger.error("Cannot get config from %s: %s" % (
                 self.url, why))
             return None
         try:
             data = json_decode(resp.read())
         except:
-            self.error("Failed to parse config")
+            logger.error("Failed to parse config")
             return None
-        self.debug("Config retrieved")
+        logger.debug("Config retrieved")
         return data
 
     def apply_config(self, config):
@@ -109,19 +103,19 @@ class ConfigurationThread(threading.Thread):
                 changed = cfg.pop("changed")
                 expire = cfg.pop("expire")
             except KeyError, v:
-                self.error("Configuration error: '%s' is missed" % v)
+                logger.error("Configuration error: '%s' is missed" % v)
                 n_errors += 1
                 continue
             if u_id not in self.configs:
                 # Create new object
                 self.configs[u_id] = cfg
                 self.changes[u_id] = changed
-                self.debug("Creating object %s: %s" % (u_id, cfg))
+                logger.debug("Creating object %s: %s" % (u_id, cfg))
                 self.daemon.on_object_create(**cfg)
                 n_created += 1
             elif changed == expire:
                 # Object deleted
-                self.debug("Deleting object %s" % u_id)
+                logger.debug("Deleting object %s" % u_id)
                 self.daemon.on_object_delete(u_id)
                 del self.configs[u_id]
                 del self.changes[u_id]
@@ -130,16 +124,16 @@ class ConfigurationThread(threading.Thread):
                 # Object changed
                 self.configs[u_id] = cfg
                 self.changes[u_id] = changed
-                self.debug("Changing object %s: %s" % (u_id, cfg))
+                logger.debug("Changing object %s: %s" % (u_id, cfg))
                 self.daemon.on_object_change(**cfg)
                 n_changed += 1
         # Update last value
         self.last = config.get("now", datetime.datetime.now().isoformat())
-        self.debug("Configuration has been applied: "
+        logger.debug("Configuration has been applied: "
                    "Items: %d, Created: %d, Changed: %d, Deleted: %d, Errors: %d" % (n, n_created, n_changed, n_deleted, n_errors))
 
     def run(self):
-        self.info("Starting configuration thread")
+        logger.info("Starting configuration thread")
         while not self.to_shutdown:
             try:
                 t0 = time.time()
@@ -155,4 +149,4 @@ class ConfigurationThread(threading.Thread):
                     time.sleep(nt - t)
             except:
                 error_report()
-        self.info("Configuration thread stopped")
+        logger.info("Configuration thread stopped")

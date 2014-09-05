@@ -133,6 +133,7 @@ class Application(object):
             ["MODULE_NAME"]).MODULE_NAME
         self.app_id = "%s.%s" % (self.module, self.app)
         self.menu_url = None   # Set by site.autodiscover()
+        self.logger = logging.getLogger(self.app_id)
 
     @classmethod
     def add_to_class(cls, name, value):
@@ -367,10 +368,10 @@ class Application(object):
     ## Logging
     ##
     def debug(self, message):
-        logging.debug(message)
+        self.logger.debug(message)
 
     def error(self, message):
-        logging.error(message)
+        self.logger.error(message)
 
     def cursor(self):
         """
