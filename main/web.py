@@ -97,15 +97,15 @@ class Web(Daemon):
             # Pass to NOC
             (r"^.*$", AppHandler, {"fallback": noc_wsgi})
         ])
-        logging.info("Running NOC %s webserver" % get_version())
-        logging.info("Loading site")
-        logging.info("Listening %s:%s" % (address, port))
+        self.logger.info("Running NOC %s webserver" % get_version())
+        self.logger.info("Loading site")
+        self.logger.info("Listening %s:%s" % (address, port))
         # Create tornado server
         self.server = tornado.httpserver.HTTPServer(application)
         try:
             self.server.bind(port, address)
         except socket.error, why:
-            logging.error(str(why))
+            self.logger.error("Unable to bind socket: %s", why)
             os._exit(1)
         # Run children
         nc = self.config.getint("web", "workers")
@@ -119,9 +119,9 @@ class Web(Daemon):
                 if pid == 0:
                     self.children_loop()
                 elif pid < 0:
-                    logging.error("Unable to fork child")
+                    self.logger.error("Unable to fork child")
                 else:
-                    logging.info("Running child %d" % pid)
+                    self.logger.info("Running child %d" % pid)
                     self.t_children.add(pid)
             # Wait for status
             try:
@@ -133,7 +133,7 @@ class Web(Daemon):
             if pid not in self.t_children:
                 continue
             self.t_children.remove(pid)
-            logging.info("Exiting child %d" % pid)
+            self.logger.info("Exiting child %d" % pid)
 
     def children_loop(self):
         self.t_children = None
@@ -144,16 +144,16 @@ class Web(Daemon):
         # Connect to mongodb
         import noc.lib.nosql
         # Initialize site
-        logging.info("Registering web applications")
+        self.logger.info("Registering web applications")
         from noc.lib.app import site
         site.autodiscover()
         # Run children's I/O loop
-        logging.info("Starting to serve requests")
+        self.logger.info("Starting to serve requests")
         tornado.ioloop.IOLoop.instance().start()
 
     def at_exit(self):
         if self.t_children:
             for pid in self.t_children:
-                logging.info("Stopping child %d" % pid)
+                self.logger.info("Stopping child %d" % pid)
                 os.kill(pid, signal.SIGTERM)
         super(Web, self).at_exit()

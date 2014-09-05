@@ -20,6 +20,8 @@ from acceptedtcpsocket import AcceptedTCPSocket
 from pollers.detect import get_poller
 from pipesocket import PipeSocket
 
+logger = logging.getLogger(__name__)
+
 
 class SocketFactory(object):
     """
@@ -55,14 +57,14 @@ class SocketFactory(object):
         """
         Shut down socket factory and exit next event loop
         """
-        logging.info("Shutting down the factory")
+        logger.info("Shutting down the factory")
         self.to_shutdown = True
 
     def register_socket(self, socket, name=None):
         """
         Register socket to a factory. Socket became a new socket
         """
-        logging.debug("register_socket(%s,%s)" % (socket, name))
+        logger.debug("Register socket %s (%s)", socket, name)
         with self.register_lock:
             self.new_sockets += [(socket, name)]
 
@@ -71,7 +73,7 @@ class SocketFactory(object):
         Remove socket from factory
         """
         with self.register_lock:
-            logging.debug("unregister_socket(%s)" % socket)
+            logger.debug("Unregister socket %s", socket)
             self.set_status(socket, r=False, w=False)
             if socket not in self.socket_name:  # Not in factory yet
                 return
@@ -166,7 +168,7 @@ class SocketFactory(object):
         """Detect and close stale sockets"""
         with self.register_lock:
             for s in [s for s in self.sockets.values() if s.is_stale()]:
-                logging.debug("Closing stale socket %s" % s)
+                logger.debug("Closing stale socket %s", s)
                 s.stale = True
                 s.close()
 
@@ -178,12 +180,6 @@ class SocketFactory(object):
                 self.init_socket(socket, name)
 
     def set_status(self, sock, r=None, w=None):
-        l = []
-        if r is not None:
-            l += ["+READ" if r else "-READ"]
-        if w is not None:
-            l += ["+WRITE" if w else "-WRITE"]
-        # logging.debug("%s set_status: %s" % (sock, " ".join(l)))
         with self.register_lock:
             if r is not None:
                 if r:
@@ -225,7 +221,7 @@ class SocketFactory(object):
         :param run_forever: Run event loop forever, when True, else shutdown
                             fabric when no sockets available
         """
-        logging.debug("Running socket factory (%s)" % self.poller.__class__.__name__)
+        logger.info("Running socket factory (%s)", self.poller.__class__.__name__)
         self.create_pending_sockets()
         if run_forever:
             cond = lambda: True
@@ -246,9 +242,9 @@ class SocketFactory(object):
                     self.tick_callback()
                 except Exception:
                     error_report()
-                    logging.info("Restoring from tick() failure")
+                    logger.info("Restoring from tick() failure")
                 last_tick = t
             if t - last_stale >= 1:
                 self.close_stale()
                 last_stale = t
-        logging.debug("Stopping socket factory")
+        logger.info("Stopping socket factory")
