@@ -35,7 +35,7 @@ def dump_profile(gen):
     for r in gen:
         writer.writerow([
             r["ts"].isoformat(),
-            r["op"],
+            r.get("op", ""),
             r["ns"],
             r["millis"],
             r.get("nreturned", ""),

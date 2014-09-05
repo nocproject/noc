@@ -22,6 +22,7 @@ from bson import Binary
 from noc.lib.daemon import Daemon
 from noc.lib.nbsocket.socketfactory import SocketFactory
 from noc.lib.debug import error_report
+from noc.sa.models.managedobject import ManagedObject
 
 
 class CollectorDaemon(Daemon):
@@ -31,6 +32,7 @@ class CollectorDaemon(Daemon):
         self.factory = SocketFactory()
         self.client = None
         self.collection = None
+        self.default_object = ManagedObject.objects.get(name="SAE").id
         self.om_collection = None
         self.im_collection = None
         self.syslog_collectors = []
@@ -200,6 +202,7 @@ class CollectorDaemon(Daemon):
                         return
         # Queue to writer
         ts = datetime.datetime.fromtimestamp(timestamp)
+        mo_id = mo_id or self.default_object
         try:
             self.queue.put((ts, mo_id, body), block=False)
         except Queue.Full:

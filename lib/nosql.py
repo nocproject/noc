@@ -9,6 +9,7 @@
 ## Python modules
 import logging
 import sys
+import time
 ## Django modules
 from django.db.models import Model
 from django.db import IntegrityError
@@ -71,12 +72,16 @@ class PlainReferenceField(BaseField):
     A reference to the document that will be automatically
     dereferenced on access (lazily). Maps to plain ObjectId
     """
+
+    _DEREF_CACHE = {}
+
     def __init__(self, document_type, *args, **kwargs):
         if not isinstance(document_type, basestring):
             if not issubclass(document_type, (Document, basestring)):
                 raise ValidationError("Argument to PlainReferenceField constructor "
                                       "must be a document class or a string")
         self.document_type_obj = document_type
+        self.ttl = None
         super(PlainReferenceField, self).__init__(*args, **kwargs)
 
     @property
@@ -97,7 +102,16 @@ class PlainReferenceField(BaseField):
         value = instance._data.get(self.name)
         # Dereference DBRefs
         if isinstance(value, ObjectId) or (isinstance(value, basestring) and len(value) == 24):
-            v = self.document_type.objects(id=value).first()
+            v = None
+            if self.ttl:
+                t = time.time()
+                expire, v = self._DEREF_CACHE.get(str(value), (0, None))
+                if expire < t:
+                    v = None
+            if v is None:
+                v = self.document_type.objects(id=value).first()
+                if v and self.ttl:
+                    self._DEREF_CACHE[str(value)] = (t + self.ttl, v)
             if v is not None:
                 instance._data[self.name] = v
             else:
@@ -128,6 +142,9 @@ class PlainReferenceField(BaseField):
         if value is None:
             return None
         return self.to_mongo(value)
+
+    def set_cache(self, ttl=None):
+        self.ttl = ttl
 
 
 class PlainReferenceListField(PlainReferenceField):

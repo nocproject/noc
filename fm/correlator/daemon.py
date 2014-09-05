@@ -457,5 +457,6 @@ class Correlator(Daemon):
         """
         Main daemon loop
         """
+        ActiveAlarm.enable_caching(600)
         self.reset_stats()
         self.scheduler.run()
