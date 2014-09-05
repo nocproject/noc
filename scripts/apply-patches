@@ -36,6 +36,8 @@ def apply_patches(project, version):
     patch_root = os.path.join(PATCHES_ROOT, project, version)
     for root, dirnames, files in os.walk(patch_root):
         for f in files:
+            if f.endswith(".pyc"):
+                continue
             rpath = root.split(os.sep)[3:]
             patch = os.path.join(root, f)
             t_root = os.sep.join([SITE_PACKAGES] + rpath)
