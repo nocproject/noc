@@ -25,7 +25,10 @@ class ActiveAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.active",
         "allow_inheritance": False,
-        "indexes": ["timestamp", "discriminator", "root", "-severity"]
+        "indexes": [
+            "timestamp", "discriminator", "root", "-severity",
+            ("timestamp", "managed_object")
+        ]
     }
     status = "A"
 
@@ -285,6 +288,10 @@ class ActiveAlarm(nosql.Document):
         self._change_root_severity()
         # Clear pending notifications
         Notification.purge_delayed("alarm:%s" % self.id)
+
+    @classmethod
+    def enable_caching(cls, ttl=600):
+        cls._fields["alarm_class"].set_cache(ttl)
 
 ## Avoid circular references
 from archivedalarm import ArchivedAlarm

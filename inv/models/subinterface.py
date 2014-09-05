@@ -44,6 +44,7 @@ class SubInterface(Document):
         "allow_inheritance": False,
         "indexes": [
             ("managed_object", "ifindex"),
+            ("managed_object", "vlan_ids"),
             "interface", "managed_object",
             "untagged_vlan", "tagged_vlans",
             "enabled_afi"
