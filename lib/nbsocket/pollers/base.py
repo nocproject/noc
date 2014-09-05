@@ -6,9 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import os
-
 
 class Poller(object):
     def add_reader(self, sock):

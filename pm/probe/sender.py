@@ -14,6 +14,8 @@ import re
 from noc.lib.nbsocket.socketfactory import SocketFactory
 from protocols.line import LineProtocolSocket
 
+logger = logging.getLogger(__name__)
+
 
 class Sender(threading.Thread):
     rx_url = re.compile("^(?P<proto>\S+)://(?P<address>\S+):(?P<port>\d+)/?$")
@@ -25,11 +27,8 @@ class Sender(threading.Thread):
         self.channels = {}  # collector url -> Socket
         self.create_lock = threading.Lock()
 
-    def debug(self, msg):
-        logging.debug("[sender] %s" % msg)
-
     def run(self):
-        self.debug("Running sender thread")
+        logger.info("Running sender thread")
         self.factory.run(run_forever=True)
 
     def create_channel(self, url):
@@ -37,7 +36,7 @@ class Sender(threading.Thread):
             c = self.channels.get(url)
             if c:
                 return c
-            self.debug("Creating channel %s" % url)
+            logger.info("Creating channel %s", url)
             match = self.rx_url.match(url)
             proto, address, port = match.groups()
             c = getattr(self, "create_%s_channel" % proto)(
@@ -56,7 +55,7 @@ class Sender(threading.Thread):
         ch = self.channels.get(collector)
         if not ch:
             ch = self.create_channel(collector)
-        self.debug("sending %s %s %s %s" % (collector, metric, t, v))
+        logger.debug("sending %s %s %s %s", collector, metric, t, v)
         ch.feed(metric, t, v)
 
     def create_line_channel(self, url, address, port):
@@ -64,6 +63,6 @@ class Sender(threading.Thread):
 
     def on_close(self, url):
         with self.create_lock:
-            self.debug("Closing channel %s" % url)
+            logging.info("Closing channel %s", url)
             if url in self.channels:
                 del self.channels[url]

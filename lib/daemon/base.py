@@ -51,6 +51,7 @@ class Daemon(object):
     }
 
     def __init__(self):
+        self.logger = logging.getLogger(self.daemon_name)
         # Chdir to the root of project
         os.chdir(os.path.join(os.path.dirname(sys.argv[0]), ".."))
         self.prefix = os.getcwd()
@@ -90,13 +91,13 @@ class Daemon(object):
             try:
                 sig = getattr(signal, s)
             except AttributeError:
-                logging.error(
+                self.logger.error(
                     "Signal '%s' is not supported on this platform" % s)
                 continue
             signal.signal(sig, getattr(self, s))
         #atexit.register(self.at_exit)
         if self.use_solutions:
-            logging.info("Initializing solutions")
+            self.logger.info("Initializing solutions")
             from noc.lib.solutions import init_solutions
             init_solutions()
 
@@ -107,7 +108,7 @@ class Daemon(object):
         """
         first_run = True
         if self.config:
-            logging.info("Loading config")
+            self.logger.info("Loading config")
             first_run = False
         self.config = ConfigParser.SafeConfigParser()
         if self.defaults_config_path:
@@ -201,7 +202,7 @@ class Daemon(object):
             logging.root.setLevel(logging.DEBUG)
 
     def die(self, msg):
-        logging.error(msg)
+        self.logger.error(msg)
         self.at_exit()
         os._exit(1)
 
@@ -353,11 +354,11 @@ class Daemon(object):
         :return:
         """
         if self.pidfile and self.heartbeat_enable:
-            logging.debug("Touching pidfile: %s" % self.pidfile)
+            self.logger.debug("Touching pidfile: %s" % self.pidfile)
             try:
                 os.utime(self.pidfile, None)
             except OSError, why:
-                logging.error("Unable to touch pidfile %s: %s" % (self.pidfile,
+                self.logger.error("Unable to touch pidfile %s: %s" % (self.pidfile,
                                                                   why))
 
     def setup_opt_parser(self):
@@ -384,9 +385,9 @@ class Daemon(object):
         except KeyboardInterrupt:
             pass
         except MemoryError:
-            logging.error("Out of memory. Exiting.")
+            self.logger.error("Out of memory. Exiting.")
         except SystemExit:
-            logging.info("Exiting")
+            self.logger.info("Exiting")
         except:
             error_report()
         self.at_exit()
@@ -415,7 +416,7 @@ class Daemon(object):
                 else:
                     pid = None
             if pid is not None:
-                logging.info("Stopping %s pid=%s" % (self.daemon_name, pid))
+                self.logger.info("Stopping %s pid=%s" % (self.daemon_name, pid))
                 try:
                     os.kill(pid, signal.SIGTERM)
                 except:
@@ -458,11 +459,11 @@ class Daemon(object):
     def at_exit(self):
         if self.pidfile:
             try:
-                logging.info("Removing pidfile: %s" % self.pidfile)
+                self.logger.info("Removing pidfile: %s" % self.pidfile)
                 os.unlink(self.pidfile)
             except OSError:
                 pass
-        logging.info("STOP")
+        self.logger.info("STOP")
 
     def is_stderr_supports_color(self):
         """
@@ -520,7 +521,7 @@ class Daemon(object):
         :param frame:
         :return:
         """
-        logging.info("SIGINT received. Exiting")
+        self.logger.info("SIGINT received. Exiting")
         self.at_exit()
         os._exit(0)
 
@@ -531,7 +532,7 @@ class Daemon(object):
         :param frame:
         :return:
         """
-        logging.info("SIGTERM received. Exiting")
+        self.logger.info("SIGTERM received. Exiting")
         self.at_exit()
         os._exit(0)
 
