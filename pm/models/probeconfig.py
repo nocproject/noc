@@ -24,7 +24,7 @@ class ProbeConfigMetric(EmbeddedDocument):
         "allow_inheritance": False
     }
 
-    metric = StringField
+    metric = StringField()
     metric_type = StringField()
     thresholds = ListField()
     convert = StringField()
