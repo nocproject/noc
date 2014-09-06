@@ -14,6 +14,7 @@ from cStringIO import StringIO
 import hashlib
 import uuid
 from operator import attrgetter
+import logging
 ## Third-party modules
 from mongoengine.fields import ListField, EmbeddedDocumentField
 from mongoengine.queryset import Q
@@ -21,6 +22,8 @@ from mongoengine.queryset import Q
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.serialize import json_decode
 from noc.main.models.collectioncache import CollectionCache
+
+logger = logging.getLogger(__name__)
 
 
 CollectionItem = namedtuple("CollectionItem", [
@@ -47,7 +50,14 @@ class Collection(object):
             self.get_name = attrgetter("name")
         else:
             # Or first unique field otherwise
-            self.get_name = attrgetter(self.doc._meta["unique_indexes"][0][0][0])
+            uname = None
+            for spec in self.doc._meta["index_specs"]:
+                if spec["unique"] and len(spec["fields"]) == 1:
+                    uname = spec["fields"][0][0]
+            if not uname:
+                logger.error("Cannot find unique index")
+                raise ValueError("No unique index")
+            self.get_name = attrgetter(uname)
 
     def log(self, msg):
         print msg
@@ -329,9 +339,10 @@ class Collection(object):
         self.log("Upgrading %s.%s" % (self.module, self.name))
         # Define set of unique fields
         unique = set()
-        for index in self.doc._meta["unique_indexes"]:
-            for f, flag in index:
-                unique.add(f)
+        for spec in self.doc._meta["index_specs"]:
+            if spec["unique"]:
+                for f, flag in spec["fields"]:
+                    unique.add(f)
         for u in collection.items:
             try:
                 upgrade_item(u)
