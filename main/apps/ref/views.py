@@ -15,7 +15,6 @@ from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces import interface_registry
 from noc.sa.models import profile_registry
 from noc.lib.stencil import stencil_registry
-from noc.pm.pmprobe.checks.base import check_registry
 from noc import settings
 from noc.main.models.notification import USER_NOTIFICATION_METHOD_CHOICES
 
@@ -72,14 +71,6 @@ class RefAppplication(ExtApplication):
         return sorted(({"id": m._meta.db_table,
                         "label": m._meta.db_table}
             for m in models.get_models()),
-            key=lambda x: x["label"])
-
-    def build_check(self):
-        """
-        PM Checks
-        :return:
-        """
-        return sorted(({"id": s[0], "label": s[1]} for s in check_registry.choices),
             key=lambda x: x["label"])
 
     def build_ulanguage(self):
