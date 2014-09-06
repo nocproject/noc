@@ -11,6 +11,9 @@ from collections import defaultdict
 from threading import Condition
 import inspect
 from noc.pm.pmwriter.strategies.base import DrainStrategy
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class MetricsCache(object):
@@ -32,6 +35,7 @@ class MetricsCache(object):
                 self.strategy = o(self.cache)
                 break
         if not self.strategy:
+            logger.error("Invalid drain strategy: %s", strategy)
             raise ValueError("Invalid drain strategy: %s" % strategy)
 
     def register_metric(self, metric, value, timestamp):

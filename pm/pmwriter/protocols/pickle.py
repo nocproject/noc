@@ -14,6 +14,8 @@ from base import PMCollectorTCPSocket
 from noc.lib.nbsocket.protocols import Protocol
 from ..utils import get_unpickler
 
+logger = logging.getLogger(__name__)
+
 
 class PickleProtocol(Protocol):
     """
@@ -32,15 +34,17 @@ class PickleProtocol(Protocol):
                 data = self.parent.unpickler.loads(pdu)
             except:
                 # Unpickle error
+                logger.error("Unpickling error")
                 continue
             for i in data:
                 try:
                     metric, (value, timestamp) = i
                     value = float(value)
                     timestamp = float(timestamp)
-                except ValueError:
+                except ValueError, why:
+                    logger.error("Invalid PDU: %s", why)
                     continue
-            yield metric, value, timestamp
+                yield metric, value, timestamp
 
 
 class PickleProtocolSocket(PMCollectorTCPSocket):

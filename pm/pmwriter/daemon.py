@@ -47,14 +47,14 @@ class PMWriterDaemon(Daemon):
         self.setup_listener("line_listener")
         self.setup_listener("pickle_listener")
         strategy = self.config.get("cache", "drain_strategy")
-        logging.info("Setting cache drain strategy to '%s'" % strategy)
+        self.logger.info("Setting cache drain strategy to '%s'" % strategy)
         self.cache.set_strategy(strategy)
         if not self.storage_class:
             self.setup_storage_class()
         self.run_writers()
 
     def run(self):
-        logging.info("Running")
+        self.logger.info("Running")
         self.factory.run(True)
 
     def register_metric(self, metric, value, timestamp):
@@ -68,16 +68,16 @@ class PMWriterDaemon(Daemon):
         address = self.config.get(name, "listen")
         port = self.config.getint(name, "port")
         s = getattr(self, name)
-        logging.info("Setup listener %s enabled=%s %s:%s" % (name, enabled, address, port))
+        self.logger.info("Setup listener %s enabled=%s %s:%s" % (name, enabled, address, port))
         if (s and
                 ((enabled and (s.address != address or s.port != port)) or
                      not enabled)):
             # Address/port changed
-            logging.info("Closing %s" % name)
+            self.logger.info("Closing %s" % name)
             s.close()
             setattr(self, name, None)
         if enabled and not s:
-            logging.info("Running %s at %s:%s" % (name, address, port))
+            self.logger.info("Running %s at %s:%s" % (name, address, port))
             sc = self.LISTENERS[name]
             if issubclass(sc, AcceptedTCPSocket):
                 # TCP
@@ -88,7 +88,7 @@ class PMWriterDaemon(Daemon):
             setattr(self, name, s)
 
     def load_storage_rules(self):
-        logging.info("Loading storage rules")
+        self.logger.info("Loading storage rules")
         rules = {}
         self.default_storage_rule = None
         for sr in StorageRule.objects.all():
@@ -107,7 +107,7 @@ class PMWriterDaemon(Daemon):
 
     def setup_storage_class(self):
         sc = config.get("pm_storage", "type")
-        logging.info("Setting storage class to '%s'" % sc)
+        self.logger.info("Setting storage class to '%s'" % sc)
         m = __import__("noc.pm.storage.%s_storage" % sc, {}, {}, "*")
         for a in dir(m):
             o = getattr(m, a)
@@ -122,7 +122,7 @@ class PMWriterDaemon(Daemon):
         if self.writers:
             return
         for i in range(self.config.getint("writer", "workers")):
-            logging.info("Running writer instance %d" % i)
+            self.logger.info("Running writer instance %d" % i)
             w = Writer(self, i, self.storage_class)
             self.writers += [w]
             w.start()
