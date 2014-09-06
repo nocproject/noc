@@ -12,6 +12,8 @@ import logging
 from base import PMCollectorTCPSocket
 from noc.lib.nbsocket.protocols import Protocol
 
+logger = logging.getLogger(__name__)
+
 
 class LineProtocol(Protocol):
     """
@@ -26,7 +28,7 @@ class LineProtocol(Protocol):
                 value = float(value)
                 timestamp = float(timestamp)
             except ValueError, why:
-                logging.error("Invalid PDU", why)
+                logger.error("Invalid PDU: %s", why)
                 continue  # Invalid PDU
             yield metric, value, timestamp
 

@@ -19,34 +19,26 @@ class Writer(threading.Thread):
         self.daemon = daemon
         self.instance = instance
         self.storage = storage_class()
-
-    def info(self, msg):
-        logging.info("[writer-%s] %s" % (self.instance, msg))
-
-    def debug(self, msg):
-        logging.debug("[writer-%s] %s" % (self.instance, msg))
-
-    def error(self, msg):
-        logging.error("[writer-%s] %s" % (self.instance, msg))
+        self.logger = logging.getLogger("writer-%s" % instance)
 
     def run(self):
         for metric, datapoints in self.daemon.cache.iter_metrics():
-            self.debug("Writing %s %s" % (metric, datapoints))
+            self.logger.debug("Writing %s %s" % (metric, datapoints))
             sr = self.daemon.get_storage_rule(metric)
             if not self.storage.exists(metric):
-                self.info("Creating metric %s" % metric)
+                self.logger.info("Creating metric %s" % metric)
                 try:
                     self.storage.create(metric, **sr)
                 except Exception, why:
-                    self.error("Failed to create metric %s: %s" % (
+                    self.logger.error("Failed to create metric %s: %s" % (
                         metric, why))
                     self.daemon.cache.release_metric(metric)
                     continue
-                self.info("Done")
+                self.logger.info("Done")
             try:
                 self.storage.write(metric, datapoints)
             except Exception, why:
-                self.error("Failed to write metric %s: %s" % (
+                self.logger.error("Failed to write metric %s: %s" % (
                     metric, why))
             self.daemon.cache.release_metric(metric)
-        self.info("Stopping")
+        self.logger.info("Stopping")
