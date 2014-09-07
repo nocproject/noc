@@ -12,6 +12,7 @@ import logging
 import os
 import datetime
 import functools
+import types
 ## Django modules
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect,\
@@ -150,6 +151,7 @@ class Application(object):
                  menu=None, method=None, validate=None, api=False):
         # Decorate function to clear attributes
         f = functools.partial(func)
+        f.im_self = func.im_self
         # Add to class
         cls.add_to_class(name,
             view(url=url, access=access, url_name=url_name, menu=menu,
