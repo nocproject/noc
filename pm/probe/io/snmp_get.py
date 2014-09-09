@@ -8,10 +8,14 @@
 
 ## Python modules
 import threading
+import logging
 ## NOC modules
 from noc.lib.nbsocket.udpsocket import UDPSocket
 from noc.lib.snmp.get import get_pdu, parse_get_response
 from noc.lib.snmp.version import SNMP_v2c
+from noc.lib.snmp.error import NO_ERROR, SNMPError
+
+logger = logging.getLogger(__name__)
 
 
 class SNMPGetSocket(UDPSocket):
@@ -43,14 +47,20 @@ class SNMPGetSocket(UDPSocket):
 
     def on_read(self, data, address, port):
         resp = parse_get_response(data)
-        # @todo: Check for error
-        if self.oid_map:
-            self.result = {}
-            for k, v in resp.varbinds:
-                if k in self.oid_map:
-                    self.result[self.oid_map[k]] = v
+        if resp.error_status != NO_ERROR:
+            oid = None
+            if resp.error_index and resp.varbinds:
+                oid = resp.varbinds[resp.error_index - 1][0]
+            self.result = SNMPError(code=resp.error_status, oid=oid)
         else:
-            self.result = resp.varbinds[0][1]
+            # Success
+            if self.oid_map:
+                self.result = {}
+                for k, v in resp.varbinds:
+                    if k in self.oid_map:
+                        self.result[self.oid_map[k]] = v
+            else:
+                self.result = resp.varbinds[0][1]
         self.result_event.set()
         self.close()
 

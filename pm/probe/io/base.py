@@ -13,6 +13,7 @@ import logging
 from noc.lib.nbsocket.socketfactory import SocketFactory
 from snmp_get import SNMPGetSocket
 from noc.lib.snmp.version import SNMP_v2c
+from noc.lib.snmp.error import SNMPError
 
 logger = logging.getLogger(__name__)
 
@@ -35,5 +36,9 @@ class IOThread(threading.Thread):
             s = SNMPGetSocket(self, oids, address, port,
                               community=community, version=version)
         r = s.get_result()
-        logger.debug("SNMP GET RESULT [%s] %s %s" % (address, oids, r))
+        if isinstance(r, SNMPError):
+            logger.info("SNMP GET ERROR [%s] %s: code %s",
+                        address, oids, r.code)
+            raise r
+        logger.debug("SNMP GET RESULT [%s] %s %s", address, oids, r)
         return r
