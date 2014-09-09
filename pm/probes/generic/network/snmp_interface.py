@@ -8,6 +8,7 @@
 
 ## NOC modules
 from noc.pm.probes.base import Probe, metric
+from noc.lib.mib import mib
 
 
 class SNMPInterfaceProbe(Probe):
@@ -18,10 +19,14 @@ class SNMPInterfaceProbe(Probe):
                            interface__ifindex):
         return self.snmp_get(
             {
-                # IF-MIB::ifInOctets.{{interface__ifindex}}
-                "Interface | Load | In": "1.3.6.1.2.1.2.2.1.10.%s" % interface__ifindex,
-                # IF-MIB::ifOutOctets.{{interface__ifindex}}
-                "Interface | Load | Out": "1.3.6.1.2.1.2.2.1.16.%s" % interface__ifindex
+                "Interface | Load | In": [
+                    mib["IF-MIB::ifHCInOctets", interface__ifindex],
+                    mib["IF-MIB::ifInOctets", interface__ifindex]
+                ],
+                "Interface | Load | Out": [
+                    mib["IF-MIB::ifHCOutOctets", interface__ifindex],
+                    mib["IF-MIB::ifOutOctets", interface__ifindex]
+                ]
             },
             address=address, community=snmp__ro
         )
@@ -33,10 +38,8 @@ class SNMPInterfaceProbe(Probe):
                              interface__ifindex):
         return self.snmp_get(
             {
-                # IF-MIB::ifInErrors.{{interface__ifindex}}
-                "Interface | Errors | In": "1.3.6.1.2.1.2.2.1.14.%s" % interface__ifindex,
-                # IF-MIB::ifOutErrors.{{interface__ifindex}}
-                "Interface | Errors | Out": "1.3.6.1.2.1.2.2.1.20.%s" % interface__ifindex
+                "Interface | Errors | In": mib["IF-MIB::ifInErrors", interface__ifindex],
+                "Interface | Errors | Out": mib["IF-MIB::ifOutErrors", interface__ifindex]
             },
             address=address, community=snmp__ro
         )
@@ -49,9 +52,9 @@ class SNMPInterfaceProbe(Probe):
         return self.snmp_get(
             {
                 # IF-MIB::ifInDiscards.{{interface__ifindex}}
-                "Interface | Discards | In": "1.3.6.1.2.1.2.2.1.13.%s" % interface__ifindex,
+                "Interface | Discards | In": mib["IF-MIB::ifInDiscards", interface__ifindex],
                 # IF-MIB::ifOutDiscards.{{interface__ifindex}}
-                "Interface | Discards | Out": "1.3.6.1.2.1.2.2.1.19.%s" % interface__ifindex
+                "Interface | Discards | Out": mib["IF-MIB::ifOutDiscards", interface__ifindex]
             },
             address=address, community=snmp__ro
         )
