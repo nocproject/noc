@@ -9,6 +9,7 @@
 ## Python modules
 from collections import defaultdict
 import datetime
+import logging
 ## Django modules
 import django.db.models.signals
 ## Third-party modules
@@ -17,6 +18,8 @@ import mongoengine.signals
 from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
                            IntField, DictField, DateTimeField,
                            FloatField, ListField, EmbeddedDocumentField)
+
+logger = logging.getLogger(__name__)
 
 
 class ProbeConfigMetric(EmbeddedDocument):
@@ -145,10 +148,12 @@ class ProbeConfig(Document):
                 return int(str(uuid)[:8], 16) % ni
 
         def get_refresh_ops(bulk, o):
+            model_id = cls.get_model_id(o)
+            logger.debug("Bulk refresh %s %s", model_id, o)
             # Cleanup
             bulk.find(
                 {
-                    "model_id": cls.get_model_id(o),
+                    "model_id": model_id,
                     "object_id": str(o.id)
                 }
             ).update(
@@ -192,6 +197,7 @@ class ProbeConfig(Document):
                 for obj in m.objects.filter(**{n: o.id}):
                     get_refresh_ops(bulk, obj)
 
+        logger.debug("Refresh object %s", object)
         collectors = {}  # Storage rule -> collector url
         # @todo: Make configurable
         now = datetime.datetime.now()
@@ -223,6 +229,26 @@ class ProbeConfig(Document):
         for m, n in cls.PROFILES[sender]:
             for obj in m.objects.filter(**{n: document.id}):
                 cls._refresh_object(obj)
+
+    @classmethod
+    def on_change_metric_settings(cls, sender, document=None, *args, **kwargs):
+        object = document.get_object()
+        logger.debug("Apply changed MetricSettings for '%s'", object)
+        cls._refresh_object(object)
+
+    @classmethod
+    def on_delete_metric_settings(cls, sender, document, *args, **kwargs):
+        object = document.get_object()
+        logger.debug("Apply deleted MetricSettings for '%s'", object)
+        cls._refresh_object(object)
+
+    @classmethod
+    def on_change_metric_set(cls, sender, document=None, *args, **kwargs):
+        logger.info("Applying changes to MetricSet '%s'", document.name)
+        # Find all affected metric settings
+        for ms in MetricSettings.objects.filter(
+                metric_sets__metric_set=document.id):
+            cls._refresh_object(ms.get_object())
 
     @classmethod
     def rebuild(cls, model_id=None):
