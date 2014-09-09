@@ -34,7 +34,7 @@ class Script(NOCScript):
         r"Port\s*ID\s*:\s*(?P<ipif>\S+)\s*\n\s*\-+\s*\nAdmin\s*Status\s*:\s*"
         r"(?:Tx_and_Rx|Tx_only|Rx_only)")
     rx_ports = re.compile(
-        r"^\s*(?P<port>(?:ch|\d+):\d+)\s*(?P<admin_state>Enabled|Disabled)\s+"
+        r"^\s*(?P<port>(?:ch|\d+:)\d+)\s*(?P<admin_state>Enabled|Disabled)\s+"
         r"(?P<admin_speed>Auto|10M|100M|1000M)/"
         r"((?P<admin_duplex>Half|Full|Auto)/)?"
         r"(?P<admin_flowctrl>Enabled|Disabled|Auto)\s+(?P<status>Link Down)?"
