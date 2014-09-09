@@ -204,7 +204,6 @@ class Collection(object):
             # Update fields
             for k in d:
                 setattr(o, k, d[k])
-            o.save()
         else:
             # Create item
             o = self.doc(**d)
@@ -340,8 +339,8 @@ class Collection(object):
         # Define set of unique fields
         unique = set()
         for spec in self.doc._meta["index_specs"]:
-            if spec["unique"]:
-                for f, flag in spec["fields"]:
+            for f, flag in spec["fields"]:
+                if spec.get("unique") and len(spec["fields"]) == 2:
                     unique.add(f)
         for u in collection.items:
             try:
