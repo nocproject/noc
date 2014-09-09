@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+import mongoengine.signals
 ## NOC Modules
 from noc.lib.nosql import (Document, StringField, BooleanField,
                            ListField, EmbeddedDocumentField,
@@ -72,3 +74,10 @@ class MetricSet(Document):
         # Fetch leaf nodes
         r = [mi[0] for mi in mt_tree.itervalues() if not mi[1]]
         return r
+
+##
+from probeconfig import ProbeConfig
+mongoengine.signals.post_save.connect(
+    ProbeConfig.on_change_metric_set,
+    sender=MetricSet
+)

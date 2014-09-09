@@ -10,6 +10,7 @@
 from django.db.models import get_model
 ## Third-party modules
 from mongoengine.base import _document_registry
+import mongoengine.signals
 ## NOC Modules
 from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
                            BooleanField,
@@ -260,3 +261,11 @@ _router = get_solution(config.get("pm", "metric_router")).route
 ##
 import probeconfig
 probeconfig.MetricSettings = MetricSettings
+mongoengine.signals.post_save.connect(
+    probeconfig.ProbeConfig.on_change_metric_settings,
+    sender=MetricSettings
+)
+mongoengine.signals.post_delete.connect(
+    probeconfig.ProbeConfig.on_delete_metric_settings,
+    sender=MetricSettings
+)
