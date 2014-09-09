@@ -9,19 +9,23 @@
 ## Python modules
 import os
 import inspect
+import time
 from collections import defaultdict
 from collections import namedtuple
-import functools
+import logging
 ## NOC modules
 from noc.lib.solutions import solutions_roots
 from match import MatchExpr, MatchTrue
 import noc.lib.snmp.version
+from noc.lib.snmp.error import SNMPError, NO_SUCH_NAME
 
 
 HandlerItem = namedtuple("HandlerItem", [
     "handler", "handler_name", "match", "req", "opt", "preference",
     "convert", "scale"
 ])
+
+logger = logging.getLogger(__name__)
 
 
 class ProbeRegistry(object):
@@ -117,8 +121,27 @@ class Probe(object):
 
     SNMP_v2c = noc.lib.snmp.version.SNMP_v2c
 
+    INVALID_OID_TTL = 3600
+
     def __init__(self, daemon):
         self.daemon = daemon
+        self.missed_oids = {}  # oid -> expire time
+
+    def disable(self):
+        raise NotImplementedError()
+
+    def is_missed_oid(self, oid):
+        t = self.missed_oids.get(oid)
+        if t:
+            if t > time.time():
+                return True
+            else:
+                del self.missed_oids[oid]
+        return False
+
+    def set_missed_oid(self, oid):
+        logger.info("Disabling missed oid %s", oid)
+        self.missed_oids[oid] = time.time() + self.INVALID_OID_TTL
 
     def snmp_get(self, oids, address, port=161,
                  community="public", version=SNMP_v2c):
@@ -129,10 +152,49 @@ class Probe(object):
         When oid is dict of <metric type> : oid, returns
         dict of <metric type>: value
         """
-        return self.daemon.io.snmp_get(
-            oids, address, port,
-            community=community,
-            version=version)
+        def first_valid(oids):
+            if isinstance(oids, basestring):
+                if not self.is_missed_oid(oids):
+                    return oids
+            else:
+                for oid in oids:
+                    if not self.is_missed_oid(oid):
+                        return oid
+            return None
+
+        def iter_oids(oids):
+            if isinstance(oids, basestring):
+                # OID is string
+                if not self.is_missed_oid(oids):
+                    yield oids
+            elif isinstance(oids, dict) and oids:
+                r = {}
+                for k, v in oids.iteritems():
+                    v = first_valid(v)
+                    if v is None:
+                        raise StopIteration()
+                    r[k] = v
+                yield r
+
+        while True:
+            to_continue = False
+            for o in iter_oids(oids):
+                try:
+                    return self.daemon.io.snmp_get(
+                        o, address, port,
+                        community=community,
+                        version=version)
+                except SNMPError, why:
+                    if why.code == NO_SUCH_NAME:
+                        # Disable invalid oid
+                        self.set_missed_oid(why.oid)
+                        to_continue = True
+                        break  # Restart
+                    else:
+                        return None
+            if not to_continue:
+                logger.info("No valid OIDs to poll")
+                break
 
 
 class metric(object):
