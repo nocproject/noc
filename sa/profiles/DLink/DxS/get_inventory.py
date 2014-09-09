@@ -46,9 +46,10 @@ class Script(NOCScript):
         revision = match.group("revision")
         if part_no.startswith("DES-3200-") and revision != "A1":
             part_no = "%s/%s" % (part_no, revision)
-        if (part_no.startswith("DES-1210-10/ME/B") or
-            part_no.startswith("DES-1210-26/ME/B") or
-            part_no.startswith("DES-1210-28/ME/B")):
+        if (part_no.startswith("DES-1210-10/ME") or
+            part_no.startswith("DES-1210-26/ME") or
+            part_no.startswith("DES-1210-28/ME") and
+            revision != "A1"):
             part_no = "%s/%s" % (part_no, revision)
         p = {
             "type": "CHASSIS",
