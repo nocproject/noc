@@ -16,32 +16,32 @@ class Script(NOCScript):
     name = "DLink.DGS3100.get_portchannel"
     implements = [IGetPortchannel]
     rx_trunk = re.compile(
-        r"Group ID\s+:\s+(?P<trunk>\d+).+?Type\s+:\s+(?P<type>\S+).+?"
-        r"Member Port\s+:\s+(?P<members>\S+).+?Status\s+:\s+(?P<status>\S+)",
-        re.MULTILINE | re.DOTALL)
-    rx_trunk1 = re.compile(
         r"Group ID\s+:\s+(?P<trunk>\d+)\n"
-        r"Member Port\s+:\s+(?P<members>\S+).+?Status\s+:\s+(?P<status>\S+)",
+        r"Member Port\s+:\s*(?P<members>\S+)*\n"
+        r"Active Port\s+:\s*(?P<active>\S+)*\n"
+        r"Status\s+:\s+(?P<status>\S+)\s+",
+        re.MULTILINE | re.DOTALL)
+    rx_type = re.compile(
+        r"create link_aggregation group_id (?P<group_id>\d+) type (?P<type>\S+)\s+",
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
         try:
-            t = self.cli("show link_aggregation")
+            c = self.cli("show link_aggregation")
+            t = self.cli("show config running include link_aggregation")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         r = []
-        for match in self.rx_trunk.finditer(t):
-            if match.group("status").lower() == "enabled":
+        for match in self.rx_trunk.finditer(c):
+            if match.group("status").lower() == "enable" and match.group("members") is not None:
                 r += [{
-                    "interface": "T%s" % match.group("trunk"),
-                    "members": self.expand_rangelist(match.group("members")),
-                    "type": "L" if match.group("type").lower() == "lacp" else "S"
-                    }]
-        for match in self.rx_trunk1.finditer(t):
-            if match.group("status").lower() == "enable":
-                r += [{
-                    "interface": "T%s" % match.group("trunk"),
-                    "members": self.expand_rangelist(match.group("members")),
+                    "interface": "ch%s" % match.group("trunk"),
+                    "members": self.expand_interface_range(self.profile.open_brackets(match.group("members"))),
                     "type": "S"
                     }]
+        for match in self.rx_type.finditer(t):
+            if match.group("type") == "lacp":
+                for i in r:
+                    if i["interface"] == "ch" + match.group("group_id"):
+                       i["type"] = "L"
         return r
