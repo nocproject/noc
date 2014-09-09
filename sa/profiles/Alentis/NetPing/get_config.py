@@ -2,10 +2,12 @@
 ##----------------------------------------------------------------------
 ## Alentis.NetPing.get_config
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import json
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetConfig
@@ -14,20 +16,16 @@ from noc.sa.interfaces import IGetConfig
 class Script(NOCScript):
     name = "Alentis.NetPing.get_config"
     implements = [IGetConfig]
+    TIMEOUT = 300
 
     def execute(self):
-        config1 = self.http.get("/setup_get.cgi")
-        config1 = config1.split("var data={")[1]
-        config2 = self.http.get("/remcom_get.cgi")
-        config2 = config2.split("var data={")[1]
-#        config3 = self.http.get("/pwr_m_get.cgi")
-#        config3 = config3.split("var data=")[1]
-#        config4 = self.http.get("/pwr_get.cgi")
-#        config4 = config4.split("var data=")[1]
-#        config5 = self.http.get("/termo_get.cgi")
-#        config5 = config5.split("var data=")[1]
-        return "General Setup:\n" + config1 + \
-        "\nSerial port setup:\n" + config2  # + \
-        #"\nPWR setup:\n" + config3 + \
-        #"\nWotchdog setup:\n" + config4 + \
-        #"\nTemperature setup:\n" + config5
+        r = ''
+        for url in ["/setup_get.cgi", "/termo_get.cgi", "/remcom_get.cgi",
+            "/relay_get.cgi", "/sms_get.cgi", "/sendmail_get.cgi",
+            "/io_get.cgi", "/curdet_get.cgi", "/ir_get.cgi", "/logic_get.cgi",
+            "/pwr_get.cgi"]:
+            conf = self.profile.var_data(self, url)
+            conf = json.dumps(conf,
+                sort_keys=True, indent=4, separators=(',', ': '))
+            r = r + conf + '\n\n'
+        return r
