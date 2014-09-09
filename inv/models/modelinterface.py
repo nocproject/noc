@@ -53,7 +53,7 @@ class ModelInterfaceAttr(EmbeddedDocument):
             self.is_const == v.is_const
         )
 
-    def clean(self, value):
+    def _clean(self, value):
         return getattr(self, "clean_%s" % self.type)(value)
 
     def clean_str(self, value):
@@ -143,5 +143,5 @@ class ModelInterface(Document):
             v = d[i_name]
             for a in mi.attrs:
                 if a.name in v:
-                    v[a.name] = T_MAP[a.type].clean(v[a.name])
+                    v[a.name] = T_MAP[a.type]._clean(v[a.name])
         return d
