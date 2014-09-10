@@ -2,10 +2,12 @@
 ##----------------------------------------------------------------------
 ## inv.inv plugins
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import logging
 ## NOC modules
 from noc.inv.models.object import Object
 
@@ -15,6 +17,8 @@ class InvPlugin(object):
 
     def __init__(self, app):
         self.app = app
+        self.logger = logging.getLogger(
+            "%s.%s" % (__name__.rsplit(".", 1)[0], self.name))
         self.init_plugin()
 
     def set_app(self, app):
