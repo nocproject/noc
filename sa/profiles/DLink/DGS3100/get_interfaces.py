@@ -39,7 +39,7 @@ class Script(NOCScript):
         r"((?P<admin_duplex>Half|Full|Auto)/)?"
         r"(?P<admin_flowctrl>Enabled|Disabled|Auto)\s+(?P<status>Link Down)?"
         r"((?P<speed>10M|100M|1000M)/(?P<duplex>Half|Full)/"
-        r"(?P<flowctrl>None|802.3x|Disabled))?\s+"
+        r"(?P<flowctrl>None|802.3x|Disabled|Enabled))?\s+"
         r"(?P<addr_learning>Enabled|Disabled)\s*$", re.MULTILINE)
     rx_descrs = re.compile(
         r"^\s*(?P<port>\d+(/|:)?\d*)\s*(?P<description>[a-zA-Z0-9_ \-]+)?$",
@@ -124,8 +124,7 @@ class Script(NOCScript):
                     self.profile.open_brackets(match.group("member_ports")))
                 tagged_ports = []
                 untagged_ports = self.expand_interface_range(
-                    match.group("untagged_ports").replace("(",
-                    "").replace(")", ""))
+                    self.profile.open_brackets(match.group("untagged_ports")))
                 for p in members:
                     if not(p in untagged_ports):
                         tagged_ports += [p]
