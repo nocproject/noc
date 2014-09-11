@@ -12,7 +12,7 @@ import csv
 from collections import namedtuple
 from cStringIO import StringIO
 import hashlib
-import uuid
+from uuid import UUID
 from operator import attrgetter
 import logging
 ## Third-party modules
@@ -88,8 +88,10 @@ class Collection(object):
             reader = csv.reader(f)
             header = reader.next()
             for name, uuid, path, hash in reader:
+                uuid = UUID(uuid)
                 mi = CollectionItem(
-                    name=name, uuid=uuid, path=path, hash=hash)
+                    name=name, uuid=uuid,
+                    path=path, hash=hash)
                 self.items[uuid] = mi
 
     def save(self):
@@ -183,9 +185,17 @@ class Collection(object):
         """
         Returns object instance or None
         """
-        return self.doc.objects.filter(
-            Q(uuid=u) | Q(uuid=uuid.UUID(u))
-        ).first()
+        d = self.doc.objects.filter(uuid=u).first()
+        if d:
+            return d
+        else:
+            # Try to fix UUID
+            c = self.doc._get_collection()
+            d = c.find_one({"uuid": str(u)})
+            if d and isinstance(d["uuid"], basestring):
+                self.log(u"    .... Fixing UUID %s" % u)
+                c.update({"uuid": str(u)}, {"$set": {"uuid": u}})
+                return self.doc.objects.filter(uuid=u).first()
 
     def update_item(self, mi):
         o = self.get_by_uuid(mi.uuid)
@@ -235,6 +245,9 @@ class Collection(object):
         partial = False
         for k in d:
             v = d[k]
+            if k == "uuid":
+                r["uuid"] = UUID(v)
+                continue
             # Dereference ref__name lookups
             if "__" in k:
                 # Lookup
