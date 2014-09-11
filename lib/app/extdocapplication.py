@@ -350,6 +350,7 @@ class ExtDocApplication(ExtApplication):
         """
         Expose is_builtin field for JSON collections
         """
+        print "is_builtin", o, bool(CollectionCache.objects.filter(uuid=o.uuid)), o.uuid
         return bool(CollectionCache.objects.filter(uuid=o.uuid))
 
     @view(url="^actions/group_edit/$", method=["POST"],
