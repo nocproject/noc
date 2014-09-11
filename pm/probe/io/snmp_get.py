@@ -64,6 +64,10 @@ class SNMPGetSocket(UDPSocket):
         self.result_event.set()
         self.close()
 
+    def on_close(self):
+        super(SNMPGetSocket, self).on_close()
+        self.result_event.set()
+
     def get_result(self):
         self.result_event.wait()
         return self.result
