@@ -136,7 +136,7 @@ class TimeSeriesDatabase(object):
                            if os.path.isdir(os.path.join(d, e))]
                 for sd in self.match_entries(subdirs, pattern):
                     for m in _find_paths(os.path.join(d, sd), rest):
-                        yield "%s.%s" % (pattern, m)
+                        yield "%s.%s" % (sd, m)
             else:
                 # Last term, find metrics
                 for m in self.iter_metrics(d, pattern):
