@@ -90,7 +90,7 @@ def fetchData(ctx, path):
     for metric in db.find(path):
         (s, e, step), values = db.fetch(metric, start, end)
         ts = TimeSeries(metric, s, e, step, values)
-        ts.pathExpr = metric
+        ts.pathExpression = metric
         series += [ts]
     return series
 
