@@ -10,11 +10,13 @@
 import uuid
 ## Django modules
 from django.http import HttpResponse
+## Third-party modules
+from mongoengine.fields import (StringField, BooleanField, ListField,
+                                EmbeddedDocumentField, ReferenceField)
 ## NOC modules
 from extapplication import ExtApplication, view
-from noc.lib.nosql import (StringField, BooleanField, GeoPointField,
-                           ForeignKeyField, PlainReferenceField,
-                           ListField, Q, EmbeddedDocumentField)
+from noc.lib.nosql import (GeoPointField, ForeignKeyField,
+                           PlainReferenceField, Q)
 from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
                                ModelParameter, ListOfParameter,
                                EmbeddedDocumentParameter, DictParameter,
@@ -174,6 +176,12 @@ class ExtDocApplication(ExtApplication):
                     r["%s__label" % f.name] = unicode(v)
                     v = v.id
                 elif isinstance(f, PlainReferenceField):
+                    r["%s__label" % f.name] = unicode(v)
+                    if hasattr(v, "id"):
+                        v = str(v.id)
+                    else:
+                        v = str(v)
+                elif isinstance(f, ReferenceField):
                     r["%s__label" % f.name] = unicode(v)
                     if hasattr(v, "id"):
                         v = str(v.id)
@@ -350,7 +358,6 @@ class ExtDocApplication(ExtApplication):
         """
         Expose is_builtin field for JSON collections
         """
-        print "is_builtin", o, bool(CollectionCache.objects.filter(uuid=o.uuid)), o.uuid
         return bool(CollectionCache.objects.filter(uuid=o.uuid))
 
     @view(url="^actions/group_edit/$", method=["POST"],
