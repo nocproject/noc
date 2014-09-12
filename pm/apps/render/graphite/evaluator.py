@@ -21,7 +21,7 @@ def evaluateTokens(requestContext, tokens):
     return fetchData(requestContext, tokens.pathExpression)
 
   elif tokens.call:
-    func = SeriesFunctions[tokens.call.func]
+    func = SeriesFunctions[tokens.call.funcname]
     args = [evaluateTokens(requestContext, arg) for arg in tokens.call.args]
     return func(requestContext, *args)
 
@@ -41,4 +41,4 @@ def evaluateTokens(requestContext, tokens):
 
 
 #Avoid import circularities
-from functions import SeriesFunctions
+from .functions import SeriesFunctions
