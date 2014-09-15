@@ -62,9 +62,9 @@ class ProbeRegistry(object):
         # Prevent further loading
         self.loaded = True
 
-    def register(self, handler, match, req, opt, preference, convert,
-                 scale):
-        for mt in handler._metrics:
+    def register(self, metrics, handler, match, req, opt,
+                 preference, convert, scale):
+        for mt in metrics:
             hname = self.get_handler_name(handler)
             cn = hname.rsplit(".", 1)[0]
             hi = HandlerItem(
@@ -114,7 +114,6 @@ probe_registry = ProbeRegistry()
 class ProbeBase(type):
     def __new__(mcs, name, bases, attrs):
         m = type.__new__(mcs, name, bases, attrs)
-        m._METRICS = set()
         class_name = "%s.%s" % (m.__module__, m.__name__)
         # Normalize configuration form
         if m.CONFIG_FORM:
@@ -143,25 +142,29 @@ class ProbeBase(type):
         #
         probe_registry.register_class(
             m, class_name)
+        m._METRICS = set()
         # Get all decorated members
-        for name, value in inspect.getmembers(m):
-            # @todo: better checks for unbound methods
-            if hasattr(value, "_metrics"):
-                m._METRICS.update(value._metrics)
-                mx = value._match_expr
-                if not mx:
-                    mx = MatchTrue()
-                elif len(mx) == 1:
-                    mx = mx[0]
-                else:
-                    mx = reduce(lambda x, y: x | y, mx)
-                r, o = mx.get_vars()
-                r |= set(value._required_config)
-                o |= set(value._opt_config)
-                o -= r
+        for name, value in inspect.getmembers(m, lambda v: hasattr(v, "_metrics")):
+            # Build match expression
+            mx = value._match_expr
+            if not mx:
+                mx = MatchTrue()
+            elif len(mx) == 1:
+                mx = mx[0]
+            else:
+                mx = reduce(lambda x, y: x | y, mx)
+            mxc = mx.compile()
+            # Build required and optional variables
+            r, o = mx.get_vars()
+            r |= set(value._required_config)
+            o |= set(value._opt_config)
+            o -= r
+            # Register handler
+            for mi in value._metrics:
+                m._METRICS.update(mi.metrics)
                 probe_registry.register(
-                    value, mx.compile(), r, o,
-                    value._preference, value._convert, value._scale
+                    mi.metrics, value, mxc, r, o,
+                    mi.preference, mi.convert, mi.scale
                 )
         return m
 
@@ -291,8 +294,10 @@ class metric(object):
         self.selector = kwargs
 
     def __call__(self, f):
-        f._metrics = self.metrics
-        f._preference = self.preference
+        if hasattr(f, "_metrics"):
+            f._metrics += [self]
+        else:
+            f._metrics = [self]
         # Get config options
         spec = inspect.getargspec(f)
         rv, ov = spec.args[1:], []
@@ -309,9 +314,6 @@ class metric(object):
         #
         f._required_config = rv
         f._opt_config = ov
-        f._preference = self.preference
-        f._convert = self.convert
-        f._scale = self.scale
         return f
 
     def parse_match(self, match):
