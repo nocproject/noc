@@ -55,6 +55,8 @@ class ExtDocApplication(ExtApplication):
                 if isinstance(f.field, EmbeddedDocumentField):
                     self.clean_fields[f.name] = ListOfParameter(
                         element=EmbeddedDocumentParameter(f.field.document_type))
+            elif isinstance(f, ReferenceField):
+                self.clean_fields[f.name] = DocumentParameter(f.document_type_obj)
             if f.primary_key:
                 self.pk = name
             if name == "uuid":
