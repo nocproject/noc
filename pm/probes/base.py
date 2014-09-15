@@ -154,6 +154,7 @@ class ProbeBase(type):
             else:
                 mx = reduce(lambda x, y: x | y, mx)
             mxc = mx.compile()
+            mxc._match = mx
             # Build required and optional variables
             r, o = mx.get_vars()
             r |= set(value._required_config)
