@@ -23,22 +23,22 @@ class Writer(threading.Thread):
 
     def run(self):
         for metric, datapoints in self.daemon.cache.iter_metrics():
-            self.logger.debug("Writing %s %s" % (metric, datapoints))
+            self.logger.debug("Writing %s %s", metric, datapoints)
             sr = self.daemon.get_storage_rule(metric)
             if not self.storage.exists(metric):
-                self.logger.info("Creating metric %s" % metric)
+                self.logger.info("Creating metric %s", metric)
                 try:
                     self.storage.create(metric, **sr)
                 except Exception, why:
-                    self.logger.error("Failed to create metric %s: %s" % (
-                        metric, why))
+                    self.logger.error("Failed to create metric %s: %s",
+                                      metric, why)
                     self.daemon.cache.release_metric(metric)
                     continue
                 self.logger.info("Done")
             try:
                 self.storage.write(metric, datapoints)
             except Exception, why:
-                self.logger.error("Failed to write metric %s: %s" % (
-                    metric, why))
+                self.logger.error("Failed to write metric %s: %s",
+                                  metric, why)
             self.daemon.cache.release_metric(metric)
         self.logger.info("Stopping")
