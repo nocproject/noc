@@ -59,6 +59,8 @@ class MetricSettings(Document):
             n = "%s.%s" % (v.__module__.split(".")[1],
                            v.__name__)
             self._document_cache[n] = v
+        from noc.pm.models.metricconfig import MetricConfig
+        self._document_cache["pm.MetricConfig"] = MetricConfig
 
     def get_model(self):
         m = self._model_cache.get(self.model_id)

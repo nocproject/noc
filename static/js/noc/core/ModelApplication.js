@@ -578,7 +578,7 @@ Ext.define("NOC.core.ModelApplication", {
         }
         formFields = formFields.concat(formInlines);
 
-        var formPanel = Ext.create("Ext.container.Container", {
+        me.formPanel = Ext.create("Ext.container.Container", {
             itemId: "form",
             layout: "fit",
             items: {
@@ -601,8 +601,8 @@ Ext.define("NOC.core.ModelApplication", {
                 tbar: me.applyPermissions(formToolbar)
             }
         });
-        me.form = formPanel.items.first().getForm();
-        return formPanel;
+        me.form = me.formPanel.items.first().getForm();
+        return me.formPanel;
     },
     // Show grid
     showGrid: function() {
