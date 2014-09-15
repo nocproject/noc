@@ -124,3 +124,9 @@ TABLE {
     vertical-align: top;
     margin: 0 0 0 10px;
 }
+
+.x-boundlist-item .item-description {
+    color: #404040 !important;
+    font-style: italic !important;
+    padding-left: 10px !important;
+}

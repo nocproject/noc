@@ -78,6 +78,7 @@
                 paths: {
                     {% for m, a in apps %}"NOC.{{m}}.{{a}}.templates": "/{{m}}/{{a}}/templates",{% endfor %}
                     {% for m, a in apps %}"NOC.{{m}}.{{a}}": "/{{m}}/{{a}}/js",{% endfor %}
+                    "NOC.metricconfig": "/pm/metricconfig/config",
                     "NOC.models": "/static/js/noc/models",
                     "NOC.widgets": "/static/js/noc/widgets",
                     "NOC.core": "/static/js/noc/core",

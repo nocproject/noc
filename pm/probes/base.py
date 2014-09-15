@@ -32,7 +32,10 @@ class ProbeRegistry(object):
     def __init__(self):
         self.loaded = False
         self.probes = defaultdict(list)  #  metric type -> [HandlerItem]
+        self.class_probes = {}  # class name -> metric type -> [HandlerItem]
         self.handlers = {}  # name -> callable
+        self.probe_classes = {}  # name -> class
+        self.configurable_classes = {}  # name -> class
 
     def load_all(self):
         if self.loaded:
@@ -63,19 +66,33 @@ class ProbeRegistry(object):
                  scale):
         for mt in handler._metrics:
             hname = self.get_handler_name(handler)
-            self.probes[mt] += [
-                HandlerItem(
-                    handler=handler,
-                    handler_name=hname, match=match,
-                    req=req, opt=opt, preference=preference,
-                    convert=convert, scale=scale
-                )
-            ]
+            cn = hname.rsplit(".", 1)[0]
+            hi = HandlerItem(
+                handler=handler,
+                handler_name=hname, match=match,
+                req=req, opt=opt, preference=preference,
+                convert=convert, scale=scale
+            )
+            self.probes[mt] += [hi]
+            if cn not in self.class_probes:
+                self.class_probes[cn] = defaultdict(list)
+            self.class_probes[cn][mt] += [hi]
             self.handlers[hname] = handler
 
     def iter_handlers(self, metric_type):
         for h in self.probes[metric_type]:
             yield h
+
+    def iter_class_handlers(self, cname, metric_type):
+        if cname in self.class_probes:
+            for h in self.class_probes[cname][metric_type]:
+                yield h
+
+    def register_class(self, cls, name):
+        if name != "%s.Probe" % cls.__module__:
+            self.probe_classes[name] = cls
+            if cls.CONFIG_FORM:
+                self.configurable_classes[name] = cls
 
     @classmethod
     def get_handler_name(cls, v):
@@ -87,17 +104,50 @@ class ProbeRegistry(object):
     def get_handler(self, name):
         return self.handlers[name]
 
+    def get_probe_class(self, name):
+        return self.probe_classes[name]
+
 
 probe_registry = ProbeRegistry()
 
 
 class ProbeBase(type):
-    def __new__(cls, name, bases, attrs):
-        m = type.__new__(cls, name, bases, attrs)
+    def __new__(mcs, name, bases, attrs):
+        m = type.__new__(mcs, name, bases, attrs)
+        m._METRICS = set()
+        class_name = "%s.%s" % (m.__module__, m.__name__)
+        # Normalize configuration form
+        if m.CONFIG_FORM:
+            if m.CONFIG_FORM.endswith(".js"):
+                m.CONFIG_FORM = m.CONFIG_FORM[:-3]
+            if "." not in m.CONFIG_FORM:
+                parts = m.__module__.split(".")
+                if parts[0] == "noc":
+                    parts = parts[1:-1]
+                else:
+                    parts = parts[:-1]
+                m.CONFIG_FORM = "NOC.metricconfig.%s.%s" % (
+                    ".".join(parts), m.CONFIG_FORM
+                )
+            # Check JS path
+            parts = m.CONFIG_FORM.split(".")[2:]
+            js_parts = parts[:-1] + [parts[-1] + ".js"]
+            js_path = os.path.join(*js_parts)
+            if not os.path.isfile(js_path):
+                logger.error(
+                    "Invalid configuration form for probe %s. "
+                    "File not found: %s",
+                    class_name, js_path
+                )
+                m.CONFIG_FORM = None
+        #
+        probe_registry.register_class(
+            m, class_name)
         # Get all decorated members
         for name, value in inspect.getmembers(m):
             # @todo: better checks for unbound methods
             if hasattr(value, "_metrics"):
+                m._METRICS.update(value._metrics)
                 mx = value._match_expr
                 if not mx:
                     mx = MatchTrue()
@@ -118,6 +168,21 @@ class ProbeBase(type):
 
 class Probe(object):
     __metaclass__ = ProbeBase
+    # Form class JS file name
+
+    # Human-readable probe title.
+    # Means only for human-configurable probes
+    TITLE = None
+    # Human-readable description
+    # Means only for human-configurable probes
+    DESCRIPTION = None
+    # Human-readable tags for plugin classification.
+    # List of strings
+    # Means only for human-configurable probes
+    TAGS = []
+    # JS file name with configuration form
+    # Means only for human-configurable probes
+    CONFIG_FORM = None
 
     SNMP_v2c = noc.lib.snmp.version.SNMP_v2c
 
@@ -126,6 +191,7 @@ class Probe(object):
     def __init__(self, daemon):
         self.daemon = daemon
         self.missed_oids = {}  # oid -> expire time
+        self.logger = logging.getLogger(self.__module__)
 
     def disable(self):
         raise NotImplementedError()
