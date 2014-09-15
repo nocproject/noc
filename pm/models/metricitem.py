@@ -6,8 +6,11 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from mongoengine.document import EmbeddedDocument
+from mongoengine.fields import (StringField, BooleanField,
+                                FloatField, ReferenceField)
 ## NOC Modules
-from noc.lib.nosql import EmbeddedDocument, BooleanField, FloatField, PlainReferenceField
 from metrictype import MetricType
 
 
@@ -16,8 +19,10 @@ class MetricItem(EmbeddedDocument):
         "allow_inheritance": False,
     }
 
-    metric_type = PlainReferenceField(MetricType)
+    metric_type = ReferenceField(MetricType)
     is_active = BooleanField(default=True)
+    # Optional graphite metric name
+    metric = StringField(required=False)
     low_error = FloatField(required=False)
     low_warn = FloatField(required=False)
     high_warn = FloatField(required=False)

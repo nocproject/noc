@@ -207,6 +207,79 @@ class ProbeConfig(Document):
         bulk.execute()
 
     @classmethod
+    def _refresh_config(cls, object):
+        def get_collector(storage_rule):
+            c = collectors.get(storage_rule)
+            if c:
+                return c
+            dc = storage_rule.storage.default_collector
+            collectors[storage_rule] = dc
+            return dc
+
+        def get_instance(probe, uuid):
+            ni = probe.n_instances
+            if ni < 1:
+                return 0
+            else:
+                return int(str(uuid)[:8], 16) % ni
+
+        def get_refresh_ops(bulk, o):
+            model_id = cls.get_model_id(o)
+            logger.debug("Bulk refresh %s %s", model_id, o)
+            # Cleanup
+            bulk.find(
+                {
+                    "model_id": "pm.MetricConfig",
+                    "object_id": str(o.id)
+                }
+            ).update(
+                {
+                    "$set": {
+                        "changed": cls.DELETE_DATE,
+                        "expire": cls.DELETE_DATE
+                    }
+                }
+            )
+            for es in o.get_effective_settings():
+                collector = get_collector(es.storage_rule)
+                bulk.find(
+                    {
+                        "uuid": es.uuid
+                    }
+                ).upsert().update(
+                    {
+                        "$set": {
+                            "model_id": "pm.MetricConfig",
+                            "object_id": o.id,
+                            "changed": now,
+                            "expire": expire,
+                            "handler": es.handler,
+                            "interval": es.interval,
+                            "probe_id": str(es.probe.id),
+                            "instance_id": get_instance(es.probe, es.uuid),
+                            "config": es.config,
+                            "metrics": [{
+                                "metric": m.metric,
+                                "metric_type": m.metric_type.name,
+                                "thresholds": m.thresholds,
+                                "convert": m.convert,
+                                "scale": m.scale,
+                                "collector": collector
+                            } for m in es.metrics]
+                        }
+                    }
+                )
+
+        logger.debug("Refresh metric config %s", object.name)
+        collectors = {}  # Storage rule -> collector url
+        # @todo: Make configurable
+        now = datetime.datetime.now()
+        expire = now + datetime.timedelta(seconds=cls.EXPIRE)
+        bulk = cls._get_collection().initialize_ordered_bulk_op()
+        get_refresh_ops(bulk, object)
+        bulk.execute()
+
+    @classmethod
     def on_change_model(cls, sender, instance, *args, **kwargs):
         cls._refresh_object(instance)
 
@@ -241,6 +314,16 @@ class ProbeConfig(Document):
         object = document.get_object()
         logger.debug("Apply deleted MetricSettings for '%s'", object)
         cls._refresh_object(object)
+
+    @classmethod
+    def on_change_metric_config(cls, sender, document=None, *args, **kwargs):
+        logger.debug("Apply changed MetricConfig for '%s'", document.name)
+        cls._refresh_config(document)
+
+    @classmethod
+    def on_delete_metric_config(cls, sender, document, *args, **kwargs):
+        logger.debug("Apply deleted MetricConfig for '%s'", document.name)
+        cls._refresh_object(document)
 
     @classmethod
     def on_change_metric_set(cls, sender, document=None, *args, **kwargs):
