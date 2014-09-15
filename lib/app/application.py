@@ -26,6 +26,7 @@ from django.template import loader
 from django import forms
 from django.utils.datastructures import SortedDict
 from django.utils.timezone import get_current_timezone
+from django.views.static import serve as serve_static
 ## NOC modules
 from access import HasPerm, Permit, Deny
 from site import site
@@ -299,6 +300,10 @@ class Application(object):
         return self.site.views.main.message.wait(request, subject=subject,
                                                  text=text, timeout=timeout,
                                                  url=url, progress=progress)
+
+    def render_static(self, request, path, document_root=None):
+        document_root = document_root or self.document_root
+        return serve_static(request, path, document_root=document_root)
 
     def response_redirect(self, url, *args, **kwargs):
         """
