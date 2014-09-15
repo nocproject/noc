@@ -20,12 +20,14 @@ class ReportMetricsApplication(SimpleReport):
             for hi in probe_registry.probes[mt]:
                 r += [[
                     mt, hi.handler_name, hi.preference, hi.convert,
-                    hi.scale, ", ".join(hi.req), ", ".join(hi.opt)
+                    hi.scale, repr(hi.match._match),
+                    ", ".join(hi.req), ", ".join(hi.opt)
                 ]]
         r = sorted(r, key=lambda x: (x[0], x[2]))
         return self.from_dataset(
             title=self.title,
             columns=["Metric Type", "Handler", "Preference",
-                     "Convert", "Scale", "Required", "Optional"],
-            data=r
+                     "Convert", "Scale", "Match",
+                     "Required", "Optional"],
+            data=r, enumerate=True
         )

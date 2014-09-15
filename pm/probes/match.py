@@ -191,6 +191,9 @@ class MatchTrue(object):
     def __init__(self):
         pass
 
+    def __repr__(self):
+        return "(TRUE)"
+
     def get_vars(self):
         return set(), set()
 
@@ -201,6 +204,9 @@ class MatchTrue(object):
 class MatchFalse(object):
     def __init__(self):
         pass
+
+    def __repr__(self):
+        return "(FALSE)"
 
     def get_vars(self):
         return set(), set()
