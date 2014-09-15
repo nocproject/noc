@@ -10,7 +10,6 @@
 from __future__ import with_statement
 import os
 ## Django modules
-from django.views.static import serve as serve_static
 from django.http import HttpResponse
 ## NOC modules
 from application import Application, view
@@ -184,7 +183,7 @@ class ExtApplication(Application):
         """
         Static file server
         """
-        return serve_static(request, path, document_root=self.document_root)
+        return self.render_static(request, path)
 
     @view(url="^favorites/app/(?P<action>set|reset)/$",
         method=["POST"],
