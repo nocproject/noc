@@ -183,6 +183,17 @@ class Pool(object):
         # Block, timeout
         self.queue.put((title, target, args, kwargs))
 
+    def configure(self, max_threads=None, min_spare=None,
+                  max_spare=None, backlog=None):
+        if max_threads is not None:
+            self.max_threads = max_threads
+        if min_spare is not None:
+            self.min_spare = min_spare
+        if max_spare is not None:
+            self.max_spare = max_spare
+        if backlog is not None:
+            self.backlog = backlog
+
 
 class LabeledPool(object):
     def __init__(self, config):
