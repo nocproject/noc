@@ -14,10 +14,11 @@ import logging
 import django.db.models.signals
 ## Third-party modules
 import mongoengine.signals
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    StringField, IntField, DictField, DateTimeField, FloatField,
+    ListField, EmbeddedDocumentField)
 ## NOC Modules
-from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
-                           IntField, DictField, DateTimeField,
-                           FloatField, ListField, EmbeddedDocumentField)
 
 logger = logging.getLogger(__name__)
 
@@ -367,8 +368,23 @@ class ProbeConfig(Document):
             cls._refresh_object(ms.get_object())
 
     @classmethod
+    def on_change_storage_rule(cls, sender, document=None, *args, **kwargs):
+        logger.info("Applying changes to StorageRule '%s'", document.name)
+        # Apply changes to metric config
+        for mc in MetricConfig.objects.filter(storage_rule=document):
+            cls.on_change_metric_config(MetricConfig, document=mc)
+        # Find all affected metric settings
+        msets = [x.id for x in MetricSet.objects.filter(storage_rule=document.id)]
+        for ms in MetricSettings.objects.filter(
+                metric_sets__metric_set__in=msets):
+            cls.on_change_metric_settings(MetricSettings, document=ms)
+
+    @classmethod
     def rebuild(cls, model_id=None):
         pass
 
-## Will be set later
-MetricSettings = None
+##
+from metricset import MetricSet
+from metricsettings import MetricSettings
+from metricconfig import MetricConfig
+from storagerule import StorageRule
