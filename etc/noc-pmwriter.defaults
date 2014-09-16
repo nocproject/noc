@@ -29,6 +29,7 @@ port = 2003
 enabled = false
 listen = 0.0.0.0
 port = 2004
+insecure = false
 
 [udp_listener]
 enabled = false
