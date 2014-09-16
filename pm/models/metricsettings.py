@@ -265,13 +265,12 @@ class MetricSettings(Document):
 _router = get_solution(config.get("pm", "metric_router")).route
 
 ##
-import probeconfig
-probeconfig.MetricSettings = MetricSettings
+from probeconfig import ProbeConfig
 mongoengine.signals.post_save.connect(
-    probeconfig.ProbeConfig.on_change_metric_settings,
+    ProbeConfig.on_change_metric_settings,
     sender=MetricSettings
 )
 mongoengine.signals.post_delete.connect(
-    probeconfig.ProbeConfig.on_delete_metric_settings,
+    ProbeConfig.on_delete_metric_settings,
     sender=MetricSettings
 )

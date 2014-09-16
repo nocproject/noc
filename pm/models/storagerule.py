@@ -10,6 +10,7 @@
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (EmbeddedDocumentField, ListField,
                                 StringField, IntField, FloatField)
+import mongoengine.signals
 ## NOC modules
 from storage import Storage
 from noc.lib.nosql import PlainReferenceField
@@ -81,3 +82,10 @@ class StorageRule(Document):
 
     def get_interval(self):
         return self.retentions[0].get_retention()[0]
+
+##
+from probeconfig import ProbeConfig
+mongoengine.signals.post_save.connect(
+    ProbeConfig.on_change_storage_rule,
+    sender=StorageRule
+)
