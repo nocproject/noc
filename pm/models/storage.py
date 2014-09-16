@@ -20,6 +20,7 @@ class CollectorProtocol(EmbeddedDocument):
     port = IntField()
     protocol = StringField()
     is_active = BooleanField(default=True)
+    is_selectable = BooleanField(default=True)
 
     def __unicode__(self):
         return "%s:%s %s" % (self.address, self.port, self.protocol)
@@ -43,9 +44,21 @@ class Storage(Document):
         "allow_inheritance": False
     }
 
+    ALL = "all"
+    PRIORITY = "pri"
+    ROUNDROBIN = "rr"
+    RANDOM = "rnd"
+
     name = StringField(unique=True)
     description = StringField(required=False)
     type = StringField()
+    select_policy = StringField(choices=[
+        (ALL, "All"),
+        (PRIORITY, "Priority"),
+        (ROUNDROBIN, "Round-Robin"),
+        (RANDOM, "Random")
+    ], default=PRIORITY)
+    write_concern = IntField(default=1)
     collectors = ListField(EmbeddedDocumentField(CollectorProtocol))
     access = ListField(EmbeddedDocumentField(AccessProtocol))
 
@@ -58,7 +71,27 @@ class Storage(Document):
         Returns URL of first active
         collector. Returns None if no default collector set
         """
-        for c in self.collectors:
-            if c.is_active:
-                return "%s://%s:%s" % (c.protocol, c.address, c.port)
-        return None
+        selectable = [
+            c for c in self.collectors
+            if c.is_active and c.is_selectable
+        ]
+        if not selectable:
+            return None
+        if len(selectable) <= self.write_concern:
+            policy = self.ALL
+            wc = len(selectable)
+        else:
+            policy = self.select_policy
+            wc = self.write_concern
+        return {
+            "policy": policy,
+            "write_concern": wc,
+            "collectors": [
+                {
+                    "proto": c.protocol,
+                    "address": c.address,
+                    "port": c.port
+                }
+                for c in selectable
+            ]
+        }

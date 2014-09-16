@@ -56,7 +56,8 @@ class ProbeApplication(ExtDocApplication):
         for model_id, object_id in expired:
             object = MetricSettings(
                 model_id=model_id, object_id=object_id).get_object()
-            ProbeConfig._refresh_object(object)
+            if object:
+                ProbeConfig._refresh_object(object)
         # Get configs
         qs = ProbeConfig.objects.filter(probe_id=probe_id,
                                         instance_id=instance)
@@ -75,7 +76,17 @@ class ProbeApplication(ExtDocApplication):
                     "thresholds": m.thresholds,
                     "convert": m.convert,
                     "scale": m.scale,
-                    "collector": m.collector
+                    "collectors": {
+                        "policy": m.collectors.policy,
+                        "write_concern": m.collectors.write_concern,
+                        "collectors": [
+                            {
+                                "proto": c.proto,
+                                "address": c.address,
+                                "port": c.port
+                            } for c in m.collectors.collectors
+                        ]
+                    }
                 } for m in pc.metrics
             ],
             "config": pc.config,

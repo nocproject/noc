@@ -13,9 +13,9 @@ from noc.lib.nbsocket import ConnectedTCPSocket
 
 
 class LineProtocolSocket(ConnectedTCPSocket):
-    def __init__(self, sender, url, factory, address, port, local_address=None):
+    def __init__(self, sender, factory, address, port, local_address=None):
         self.sender = sender
-        self.url = url
+        self.ch = ("line", address, port)
         self.feed_lock = Lock()
         super(LineProtocolSocket, self).__init__(factory, address,
                                                  port, local_address)
@@ -25,7 +25,7 @@ class LineProtocolSocket(ConnectedTCPSocket):
             self.write("%s %s %s\n" % (metric, v, t))
 
     def on_close(self):
-        self.sender.on_close(self.url)
+        self.sender.on_close(self.ch)
 
     def on_conn_refused(self):
-        self.sender.on_close(self.url)
+        self.sender.on_close(self.ch)

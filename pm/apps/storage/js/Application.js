@@ -57,6 +57,25 @@ Ext.define("NOC.pm.storage.Application", {
                     fieldLabel: "Description"
                 },
                 {
+                    name: "select_policy",
+                    xtype: "combobox",
+                    fieldLabel: "Select Policy",
+                    store: [
+                        ["all", "All"],
+                        ["pri", "Priority"],
+                        ["rr", "Round-Robin"],
+                        ["rnd", "Random"]
+                    ],
+                    allowBlank: false
+                },
+                {
+                    name: "write_concern",
+                    xtype: "numberfield",
+                    fieldLabel: "Write Concern",
+                    minValue: 1,
+                    maxValue: 100
+                },
+                {
                     name: "collectors",
                     xtype: "gridfield",
                     fieldLabel: "Collectors",
@@ -90,6 +109,13 @@ Ext.define("NOC.pm.storage.Application", {
                             dataIndex: "port",
                             width: 75,
                             editor: "numberfield"
+                        },
+                        {
+                            text: "Selectable",
+                            dataIndex: "is_selectable",
+                            width: 75,
+                            renderer: NOC.render.Bool,
+                            editor: "checkbox"
                         }
                     ]
                 },
