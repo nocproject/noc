@@ -30,7 +30,8 @@ class Script(NOCScript):
         "STALE": "stale",
         "DELAY": "delay",
         "PROBE": "probe",
-        "DELETE": "incomplete"
+        "DELETE": "incomplete",
+        "GLEAN": "incomplete"
     }
 
     def execute(self, vrf=None):
