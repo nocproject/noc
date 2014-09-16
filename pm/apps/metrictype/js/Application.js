@@ -13,6 +13,7 @@ Ext.define("NOC.pm.metrictype.Application", {
     ],
     model: "NOC.pm.metrictype.Model",
     search: true,
+    treeFilter: "category",
     initComponent: function() {
         var me = this;
 

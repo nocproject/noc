@@ -9,13 +9,16 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.pm.models.metrictype import MetricType
+from noc.main.models.doccategory import DocCategory
 
 
 class MetricTypeApplication(ExtDocApplication):
     """
     MetricType application
     """
-    title = "MetricType"
+    title = "Metric Type"
     menu = "Setup | Metric Types"
     model = MetricType
+    parent_model = DocCategory
+    parent_field = "parent"
     query_fields = ["name", "description"]
