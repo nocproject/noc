@@ -16,7 +16,13 @@ from noc.lib.nosql import (Document, StringField,
 class Cache(Document):
     meta = {
         "collection": "noc.cache",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "indexes": [
+            {
+                "fields": ["expires"],
+                "expireAfterSeconds": 0
+            }
+        ]
     }
     key = StringField(db_field="_id", primary_key=True)
     value = BinaryField(db_field="v")
@@ -25,11 +31,3 @@ class Cache(Document):
 
     def __unicode__(self):
         return unicode(self.key)
-
-
-## @todo: MongoEngine 0.7.x and later allows to specify ttl index
-## directly in the meta's indexes
-Cache._get_collection().ensure_index(
-    "e",
-    expireAfterSeconds=0
-)
