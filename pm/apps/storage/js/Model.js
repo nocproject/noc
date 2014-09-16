@@ -28,6 +28,14 @@ Ext.define("NOC.pm.storage.Model", {
             type: "auto"
         },
         {
+            name: "select_policy",
+            type: "string"
+        },
+        {
+            name: "write_concern",
+            type: "integer"
+        },
+        {
             name: "type",
             type: "string"
         },

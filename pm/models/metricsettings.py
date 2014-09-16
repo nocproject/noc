@@ -76,7 +76,11 @@ class MetricSettings(Document):
         return m
 
     def get_object(self):
-        return self.get_model().objects.get(id=self.object_id)
+        m = self.get_model()
+        try:
+            return m.objects.get(id=self.object_id)
+        except m.DoesNotExist:
+            return None
 
     @classmethod
     def get_model_id(cls, object):

@@ -189,7 +189,7 @@ mongoengine.signals.post_save.connect(
     ProbeConfig.on_change_metric_config,
     sender=MetricConfig
 )
-mongoengine.signals.pre_delete.connect(
+mongoengine.signals.post_delete.connect(
     ProbeConfig.on_delete_metric_config,
     sender=MetricConfig
 )

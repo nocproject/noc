@@ -22,6 +22,24 @@ from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
 logger = logging.getLogger(__name__)
 
 
+class CollectorAddress(EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    proto = StringField()
+    address = StringField()
+    port = IntField()
+
+
+class MetricCollectors(EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    policy = StringField(default="prio")
+    write_concern = IntField(default=1)
+    collectors = ListField(EmbeddedDocumentField(CollectorAddress))
+
+
 class ProbeConfigMetric(EmbeddedDocument):
     meta = {
         "allow_inheritance": False
@@ -32,7 +50,7 @@ class ProbeConfigMetric(EmbeddedDocument):
     thresholds = ListField()
     convert = StringField()
     scale = FloatField(default=1.0)
-    collector = StringField()
+    collectors = EmbeddedDocumentField(MetricCollectors)
 
 
 class ProbeConfig(Document):
@@ -70,6 +88,15 @@ class ProbeConfig(Document):
     def __unicode__(self):
         return self.metric
 
+    @property
+    def is_deleted(self):
+        return (self.changed == self.expire and
+                self.expire == self.DELETE_DATE)
+
+    @property
+    def is_expired(self):
+        return self.expire <= datetime.datetime.now()
+
     @classmethod
     def get_model_id(cls, object):
         if isinstance(object._meta, dict):
@@ -80,6 +107,12 @@ class ProbeConfig(Document):
             # Model
             return u"%s.%s" % (object._meta.app_label,
                                object._meta.object_name)
+
+    def get_object(self):
+        return MetricSettings(
+            model_id=self.model_id,
+            object_id=self.object_id
+        ).get_object()
 
     @classmethod
     def install(cls):
@@ -188,7 +221,7 @@ class ProbeConfig(Document):
                                 "thresholds": m.thresholds,
                                 "convert": m.convert,
                                 "scale": m.scale,
-                                "collector": collector
+                                "collectors": collector
                             } for m in es.metrics]
                         }
                     }
@@ -250,7 +283,7 @@ class ProbeConfig(Document):
                     {
                         "$set": {
                             "model_id": "pm.MetricConfig",
-                            "object_id": o.id,
+                            "object_id": str(o.id),
                             "changed": now,
                             "expire": expire,
                             "handler": es.handler,
@@ -264,7 +297,7 @@ class ProbeConfig(Document):
                                 "thresholds": m.thresholds,
                                 "convert": m.convert,
                                 "scale": m.scale,
-                                "collector": collector
+                                "collectors": collector
                             } for m in es.metrics]
                         }
                     }
@@ -323,7 +356,7 @@ class ProbeConfig(Document):
     @classmethod
     def on_delete_metric_config(cls, sender, document, *args, **kwargs):
         logger.debug("Apply deleted MetricConfig for '%s'", document.name)
-        cls._refresh_object(document)
+        cls._delete_object(document)
 
     @classmethod
     def on_change_metric_set(cls, sender, document=None, *args, **kwargs):
