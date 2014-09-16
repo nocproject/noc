@@ -12,6 +12,7 @@ import logging
 ## NOC modules
 from noc.lib.nbsocket.socketfactory import SocketFactory
 from protocols.line import LineProtocolSocket
+from protocols.pickle import PickleProtocolSocket
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +59,9 @@ class Sender(threading.Thread):
 
     def create_line_channel(self, address, port):
         return LineProtocolSocket(self, self.factory, address, port)
+
+    def create_pickle_channel(self, address, port):
+        return PickleProtocolSocket(self, self.factory, address, port)
 
     def on_close(self, ch):
         with self.create_lock:

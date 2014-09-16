@@ -9,6 +9,7 @@
 ## Python modules
 import logging
 import sys
+import struct
 ## NOC modules
 from base import PMCollectorTCPSocket
 from noc.lib.nbsocket.protocols import Protocol
@@ -21,21 +22,25 @@ class PickleProtocol(Protocol):
     """
     Python pickle PDUs
     """
-    MAX_LINE = 1048576
+    def __init__(self, parent, callback):
+        super(PickleProtocol, self).__init__(parent, callback)
+        self.unpickler = get_unpickler(
+            insecure=self.parent.server.config.getboolean(
+                "pickle_listener", "insecure")
+        )
 
     def parse_pdu(self):
-        if len(self.in_buffer) > self.MAX_LINE:
-            # Drop long strings
-            self.in_buffer = ""
-        pdus = self.in_buffer.split("\n")
-        self.in_buffer = pdus.pop(-1)
-        for pdu in pdus:
-            try:
-                data = self.parent.unpickler.loads(pdu)
-            except:
-                # Unpickle error
-                logger.error("Unpickling error")
-                continue
+        HS = 4
+        while len(self.in_buffer) > HS:
+            l, = struct.unpack("!L", self.in_buffer[:HS])
+            if len(self.in_buffer) < l + HS:
+                break
+            #try:
+            data = self.unpickler.loads(self.in_buffer[HS:l + HS])
+            #except:
+            #    # Unpickle error
+            #    logger.error("Unpickling error")
+            #    continue
             for i in data:
                 try:
                     metric, (value, timestamp) = i
@@ -45,14 +50,8 @@ class PickleProtocol(Protocol):
                     logger.error("Invalid PDU: %s", why)
                     continue
                 yield metric, value, timestamp
+            self.in_buffer = self.in_buffer[l + HS:]
 
 
 class PickleProtocolSocket(PMCollectorTCPSocket):
     protocol_class = PickleProtocol
-
-    def __init__(self, *args, **kwargs):
-        super(PickleProtocolSocket, self).__init__(*args, **kwargs)
-        self.unpickler = get_unpickler(
-            insecure=self.controller.config.getboolean(
-                "listen_pickle", "insecure")
-        )

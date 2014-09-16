@@ -87,7 +87,8 @@ Ext.define("NOC.pm.storage.Application", {
                             editor: {
                                 xtype: "combobox",
                                 store: [
-                                    ["line", "line"]
+                                    ["line", "line"],
+                                    ["pickle", "pickle"]
                                 ]
                             }
                         },
