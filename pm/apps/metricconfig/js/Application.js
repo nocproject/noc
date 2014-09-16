@@ -16,6 +16,7 @@ Ext.define("NOC.pm.metricconfig.Application", {
         "NOC.main.ref.probehandler.LookupField"
     ],
     model: "NOC.pm.metricconfig.Model",
+    search: true,
     initComponent: function() {
         var me = this;
 
