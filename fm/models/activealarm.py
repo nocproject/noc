@@ -27,6 +27,7 @@ class ActiveAlarm(nosql.Document):
         "allow_inheritance": False,
         "indexes": [
             "timestamp", "discriminator", "root", "-severity",
+            "alarm_class",
             ("timestamp", "managed_object")
         ]
     }
