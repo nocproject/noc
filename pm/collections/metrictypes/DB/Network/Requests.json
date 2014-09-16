@@ -1,0 +1,6 @@
+{
+    "name": "DB | Network | Requests",
+    "uuid": "4185f5e9-f093-404d-a45f-af53b5eff385",
+    "description": "Database network requests",
+    "measure": "req/s"
+}

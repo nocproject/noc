@@ -1,0 +1,6 @@
+{
+    "name": "DB | Connections | Available",
+    "uuid": "9de387ed-9bcc-4984-bb26-bc6d2b789a3d",
+    "description": "Available database connections",
+    "measure": "conns"
+}

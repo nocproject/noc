@@ -1,11 +1,37 @@
 name,uuid,path,hash
+DB,2574a02b-832b-4352-ac4f-7953b0be0bda,DB.json,8ed1ec1f94d022c5e1a8bc1a484c2012c49063c7810330400d61b922cb563ef4
+DB | Connections | Available,9de387ed-9bcc-4984-bb26-bc6d2b789a3d,DB/Connections/Available.json,84dcedf8503d668e094dc12748844c4c5a53679de5dfebbfd920dccf07cfb364
+DB | Connections | Current,cca0e4b7-e2b1-4b9a-a033-9c89bd4ff7ee,DB/Connections/Current.json,a9f04e4737f05b966ffbd293fff78b3398f7e401818ad7f90ad9e0e5325daaba
+DB | Connections | Rate,0561273d-7230-46e3-a532-028bf4d3b0db,DB/Connections/Rate.json,76952b79fa9883ac3c19b81987f8d08caf3948d29ae3ac4afe0527c06f3c083a
+DB | Index,2385bf8b-8cdf-4cb5-a7b1-fa747160439e,DB/Index.json,8fd81e5ee439c9a539000ca7ab4449332e5e66c22b7a92ca715f59da9476dc74
+DB | Index | Access,1824c192-d256-4c08-b69c-a8674c8c9fae,DB/Index/Access.json,02031733c6ac64e139320410fd54629aeb19e687f2644aeb8c35363b9101366c
+DB | Index | Hits,aaab0f0f-35d3-4a42-9c1c-486f90a5bbbe,DB/Index/Hits.json,18af3ebb8d4c5c2e173f34e2988417bc24d9eac45bf35fefa04f9cdfd985f2fc
+DB | Index | Misses,b855dc3a-7f34-4876-86e9-b89cfc29daf0,DB/Index/Misses.json,4b94e9a29412d8c2fa1360527d372c9cca22370246efb247f9ada4154d8e6191
+DB | Network | In,19142098-faf2-4009-a79a-80ddf2413aac,DB/Network/In.json,63042f745a7a11f75ee909baeca55933fa1867f5c5393e3cd7f99d5e80c3e0ea
+DB | Network | Out,f5921f85-2b66-43e3-8589-8110cf2f724d,DB/Network/Out.json,a56a0a39fad2463a6a4e52e952c561e5fa8f69ad96218d61658c250572eded99
+DB | Network | Requests,4185f5e9-f093-404d-a45f-af53b5eff385,DB/Network/Requests.json,1eee652c2f7f548dd3ad92a8f5a545aacfe4b53ee8e76c0c8ef7e4efe73b580c
+DB | Ops,7b9d9e91-f1d0-48e8-84d7-10e76aa6d237,DB/Ops.json,0b9de64b531092a87992ea0860d0477db0afc73a027f284f8a55b6f1efe30ba7
+DB | Ops | Command,c123516c-a0d0-4889-9f38-1ad07458c5ab,DB/Ops/Command.json,7ad89d6bf06dd1bb4ccbe6c747e9bc2ad549f99e5e7e29b4548d0fb1f6d04020
+DB | Ops | Delete,85c83b5f-7831-4138-a794-d9c34ec0da6b,DB/Ops/Delete.json,ab5a7bb3afa08c7459bfa12311dc0bbf6640640e346f46d39bf83605e42ffdf1
+DB | Ops | Insert,06cb01db-c5cf-4954-83cd-f31b8154be3a,DB/Ops/Insert.json,7a7e5eb081f6818676f474afcc77079b78edaf5d664d8c386a927c7c993a0a76
+DB | Ops | Query,4ceb2fc1-6aa4-4d7a-8660-93e37722267b,DB/Ops/Query.json,8843dff812d4b3be271661d0f4cd63125e684c11bcf0dc445699f9f083f4ea90
+DB | Ops | Update,619e1722-1b70-4f64-9f19-203237b34fb5,DB/Ops/Update.json,75898d2baacf1e0a5896969956556798c08e427fc04a9a237d9baa666e5054ac
+DB | Transaction | Commit,c184d91c-30c0-4bde-a8c7-9a3ee4156921,DB/Transaction/Commit.json,3005a019fba3af47cc81ea1ca799f21741bc053c28779c11e48d6f3bfaf114ed
 Interface,cdd44cf5-562f-4a83-8716-1b77173d56f4,Interface.json,a6b2df711a5cfb8b86ea2d952fd4accd048c03217cd6b9452b8dbb0edb04551c
 Interface | Discards,382b0f8a-8f66-4d06-b7f0-cc81245db3ef,Interface/Discards.json,3d370e407d99fb773c6f54719f8e817180924d30eeb27ba8ff4427cb01e6076b
 Interface | Discards | In,ded6776c-04b3-456d-8cfd-9d00091e6065,Interface/Discards/In.json,16168a5ee14fff3abca47b7d81fb1673eedb9901eaf54b8791308bb1d699fd05
 Interface | Discards | Out,4bdb1cea-c70c-45af-8bbc-05051216d9ca,Interface/Discards/Out.json,1bf1f51470d33aa968b818680ce68e1b08c58e2e301ceeb6157dccafad183853
 Interface | Errors,da6c8cdb-15a7-4d58-a6e0-1095f8953db5,Interface/Errors.json,259ec7567ca193992d9f7c3c99876e1ac2262193dc9b6f324f1773e5681d8034
-Interface | Errors | In,7675d109-ff47-4624-b076-ee62f2a72c90,Interface/Errors/In.json,782433621796b820164eb96a410e4cb358148d6400184c09bfee71570e30e0f3
+Interface | Errors | In,7675d109-ff47-4624-b076-ee62f2a72c90,Interface/Errors/In.json,96b84620f76d812b463bf2f48bb833ca57a5a37eb5c4954b7a36ae035d9aeb07
 Interface | Errors | Out,b457bc43-47ab-4794-9437-511352264fe0,Interface/Errors/Out.json,851bc9c202211abb7dd39b70555a64425ca1a8fc4acd03f292ddf8c9033599d3
 Interface | Load,4ef4268b-aee8-447c-8346-a20fa2db04e9,Interface/Load.json,6574141d56ce9c2049ac7f68e4cefd0d4991fb75db822ebf505c50608a5a877b
 Interface | Load | In,9bcc9ac1-0c42-4d77-9bd3-c59e98895c94,Interface/Load/In.json,377f15f10fd2a5c75d02c0970a3d617c8f4c88f5095220aa87ad7fd8f8d75334
 Interface | Load | Out,1ab5d01e-2416-4ebd-91f9-a761b9ec4c2b,Interface/Load/Out.json,35441cbc21febe09b865dbc08b85658955b318eff7e2e3e526978dfdffcc0dca
+MongoDB,de020336-673a-4b3f-b4e3-f5ae0e08939c,MongoDB.json,66d4ad3497f5878635da2ff3df6aaf55cf5e8a6132ca129b9368c5635138361d
+MongoDB | TTL,dbc44fc9-1ae9-453d-81cb-d0fc954dae9f,MongoDB/TTL.json,7cf6a122d8bbdeeffeda8218544834c525b6ebc2b43760b049a460463fb32af4
+MongoDB | TTL | Deleted,01802e37-61da-4053-a68b-a96e348f85f0,MongoDB/TTL/Deleted.json,ec1bfb9621106332aa57c8d6593db40eca81a37f4aa642089eafa04432965631
+Process,2b554a0b-99a1-4c0c-9003-4ab8ecf9ab7a,Process.json,349a9e60f070c529b95b830eff607429dde091937d15367f98675889ebe7d013
+Process | Memory,fdd729c3-657b-45f2-af3e-fa4505f395d4,Process/Memory.json,d7aca8d64450f586b198d8ba306642c9c7cc22c4f19c0814d3fc8496ade4d714
+Process | Memory | Mapped,ea9814ee-a9f1-41f4-9d36-606bf8cb77fc,Process/Memory/Mapped.json,8e4a3758fa8afbde6811f89281bce080666240e008121159869fc5cc44bf52dc
+Process | Memory | Page Faults,543516fc-c478-447a-b9aa-9cf42d48c8d0,Process/Memory/Page_Faults.json,a20671f3e2cd3d7f04e8a8e047f383a49b333bda5b928e54af4aecd8cb50c48d
+Process | Memory | Virtual,1b2975d1-3c7a-4720-b194-50b24f067033,Process/Memory/Virtual.json,6b550605a2f0eee6a3332976ef269fcc088753a316787c27a144414e3e495632
