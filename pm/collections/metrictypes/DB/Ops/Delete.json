@@ -1,0 +1,6 @@
+{
+    "name": "DB | Ops | Delete",
+    "uuid": "85c83b5f-7831-4138-a794-d9c34ec0da6b",
+    "description": "Database deletes",
+    "measure": "ops/sec"
+}

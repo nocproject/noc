@@ -1,0 +1,6 @@
+{
+    "name": "Process | Memory | Virtual",
+    "uuid": "1b2975d1-3c7a-4720-b194-50b24f067033",
+    "description": "Process virtual memory",
+    "measure": "bytes"
+}

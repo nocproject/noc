@@ -1,0 +1,6 @@
+{
+    "name": "DB | Transaction | Commit",
+    "uuid": "c184d91c-30c0-4bde-a8c7-9a3ee4156921",
+    "description": "Database commits",
+    "measure": "ops/sec"
+}
