@@ -380,6 +380,20 @@ class ProbeConfig(Document):
             cls.on_change_metric_settings(MetricSettings, document=ms)
 
     @classmethod
+    def on_change_probe(cls, sender, document=None, *args, **kwargs):
+        logger.info("Applying changes to Probe '%s'", document.name)
+        for pc in ProbeConfig.objects.filter(probe_id=str(document.id)):
+            pc.refresh()
+
+    def refresh(self):
+        logger.debug("Refreshing %s", self.uuid)
+        o = self.get_object()
+        if self.model_id == "pm.MetricConfig":
+            self._refresh_config(o)
+        else:
+            self._refresh_object(o)
+
+    @classmethod
     def rebuild(cls, model_id=None):
         pass
 
@@ -387,4 +401,3 @@ class ProbeConfig(Document):
 from metricset import MetricSet
 from metricsettings import MetricSettings
 from metricconfig import MetricConfig
-from storagerule import StorageRule

@@ -6,10 +6,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+import mongoengine.signals
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, IntField, BooleanField)
 ## NOC Modules
-from noc.lib.nosql import (Document, StringField, IntField,
-                           BooleanField, ForeignKeyField)
 from noc.main.models import User
+from noc.lib.nosql import ForeignKeyField
 
 
 class Probe(Document):
@@ -29,3 +32,10 @@ class Probe(Document):
 
     def __unicode__(self):
         return self.name
+
+##
+from probeconfig import ProbeConfig
+mongoengine.signals.post_save.connect(
+    ProbeConfig.on_change_probe,
+    sender=Probe
+)
