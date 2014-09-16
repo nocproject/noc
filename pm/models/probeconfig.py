@@ -385,6 +385,12 @@ class ProbeConfig(Document):
         for pc in ProbeConfig.objects.filter(probe_id=str(document.id)):
             pc.refresh()
 
+    @classmethod
+    def on_change_storage(cls, sender, document=None, *args, **kwargs):
+        logger.info("Applying changes to Storage '%s'", document.name)
+        for sr in StorageRule.objects.filter(storage=document.id):
+            cls.on_change_storage_rule(StorageRule, document=sr)
+
     def refresh(self):
         logger.debug("Refreshing %s", self.uuid)
         o = self.get_object()
@@ -401,3 +407,4 @@ class ProbeConfig(Document):
 from metricset import MetricSet
 from metricsettings import MetricSettings
 from metricconfig import MetricConfig
+from storagerule import StorageRule
