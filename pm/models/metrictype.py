@@ -8,8 +8,12 @@
 
 ## Python modules
 import os
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import (Document, StringField, BooleanField,
+                                UUIDField, ObjectIdField)
 ## NOC Modules
-from noc.lib.nosql import Document, StringField, BooleanField, UUIDField
+from noc.main.models.doccategory import DocCategory
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 
@@ -26,6 +30,7 @@ class MetricType(Document):
     description = StringField(required=False)
     is_vector = BooleanField(default=False)
     measure = StringField(default="")
+    category = ObjectIdField()
 
     def __unicode__(self):
         return self.name
@@ -51,3 +56,5 @@ class MetricType(Document):
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
+DocCategory.register(MetricType)
