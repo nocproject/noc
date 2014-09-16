@@ -63,3 +63,8 @@ class Metric(object):
             mc = MAX64 if self.last_value >= MAX32 else MAX32
             self.last_value -= mc
         return (v - self.last_value) / (t - self.last_time)
+
+    def convert_derive(self, t, v):
+        if not self.last_time or not self.last_value:
+            return None
+        return (v - self.last_value) / (t - self.last_time)

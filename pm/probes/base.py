@@ -281,6 +281,7 @@ class metric(object):
     # Conversion methods
     NONE = "none"
     COUNTER = "counter"
+    DERIVE = "derive"
 
     MATCH_OPS = ["eq", "in"]
 
