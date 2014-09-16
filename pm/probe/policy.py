@@ -15,7 +15,7 @@ class FeedPolicy(object):
         self.write_concern = 0
         self.collectors = []
         self.gen = None
-        self.rri = 0
+        self.rri = random.randint(0, 0xFFFF)
 
     def configure(self, collectors):
         self.write_concern = collectors["write_concern"]
@@ -35,15 +35,15 @@ class FeedPolicy(object):
         for c in self.collectors:
             yield c
 
-    def iter_prio(self):
+    def iter_pri(self):
         for c, _ in zip(self.collectors, range(self.write_concern)):
             yield c
 
     def iter_rr(self):
         cl = len(self.collectors)
         for i in range(self.write_concern):
-            yield self.collectors[self.parent.rri % cl]
-            self.parent.rri += 1
+            yield self.collectors[self.rri % cl]
+            self.rri = (self.rri + 1) % cl
 
     def iter_rnd(self):
         for c in random.sample(self.collectors, self.write_concern):
