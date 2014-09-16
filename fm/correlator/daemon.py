@@ -13,6 +13,7 @@ import datetime
 import time
 import logging
 import re
+from collections import defaultdict
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
@@ -41,7 +42,7 @@ class Correlator(Daemon):
         self.back_rules = {}  # event_class -> [Rule]
         self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
-        self.rca_reverse = {}  # alarm_class -> set([alarm_class])
+        self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
         self.alarm_jobs = {}  # alarm_class -> [JobLauncher, ..]
         self.handlers = {}  # alamr class id -> [<handler>]
         logging.info("Running noc-correlator")
@@ -121,7 +122,7 @@ class Correlator(Daemon):
         logging.debug("Loading RCA Rules")
         n = 0
         self.rca_forward = {}
-        self.rca_reverse = {}
+        self.rca_reverse = defaultdict(set)
         for a in AlarmClass.objects.all():
             if not a.root_cause:
                 continue
@@ -129,10 +130,7 @@ class Correlator(Daemon):
             for c in a.root_cause:
                 rc = RCACondition(a, c)
                 self.rca_forward[a.id] += [rc]
-                try:
-                    self.rca_reverse[rc.root.id].add(a.id)
-                except KeyError:
-                    self.rca_reverse[rc.root.id] = set([a.id])
+                self.rca_reverse[rc.root.id].add(str(a.id))
                 n += 1
         logging.debug("%d RCA Rules have been loaded" % n)
 
@@ -282,7 +280,7 @@ class Correlator(Daemon):
         # Check alarm is root cause for existing ones
         if a.alarm_class.id in self.rca_reverse:
             # @todo: Restrict to window
-            for aa in ActiveAlarm.objects.filter(alarm_class__in=self.rca_reverse):
+            for aa in ActiveAlarm.objects.filter(alarm_class__in=self.rca_reverse[a.alarm_class.id]):
                 if aa.alarm_class.id in self.rca_forward and a.id != aa.id:
                     self.set_root_cause(aa, a)
         # Call handlers
