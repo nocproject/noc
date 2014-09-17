@@ -138,6 +138,7 @@ class ProbeBase(type):
                     "File not found: %s",
                     class_name, js_path
                 )
+                m._CONFIG_FORM = m.CONFIG_FORM  # Store for update-probe-form
                 m.CONFIG_FORM = None
         #
         probe_registry.register_class(
