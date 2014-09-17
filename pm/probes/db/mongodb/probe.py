@@ -44,6 +44,7 @@ class MongoDBProbe(Probe):
         if not pymongo:
             self.logger.error("pymongo is not installed. Disabling probe")
             self.disable()
+            return
         try:
             mc = pymongo.MongoClient(host=host, port=int(port))
         except pymongo.errors.ConnectionFailure, why:
