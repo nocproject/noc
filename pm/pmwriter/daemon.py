@@ -13,8 +13,9 @@ import inspect
 from noc.lib.daemon import Daemon
 from noc.lib.nbsocket.socketfactory import SocketFactory
 from noc.lib.nbsocket.acceptedtcpsocket import AcceptedTCPSocket
-from noc.pm.pmwriter.protocols.line import LineProtocolSocket
-from noc.pm.pmwriter.protocols.pickle import PickleProtocolSocket
+from protocols.line import LineProtocolSocket
+from protocols.pickle import PickleProtocolSocket
+from protocols.udp import UDPProtocolSocket
 from noc.pm.models.storagerule import StorageRule
 from cache import MetricsCache
 from writer import Writer
@@ -27,13 +28,15 @@ class PMWriterDaemon(Daemon):
 
     LISTENERS = {
         "line_listener": LineProtocolSocket,
-        "pickle_listener": PickleProtocolSocket
+        "pickle_listener": PickleProtocolSocket,
+        "udp_listener": UDPProtocolSocket
     }
 
     def __init__(self, *args, **kwargs):
         self.factory = SocketFactory(controller=self)
         self.line_listener = None
         self.pickle_listener = None
+        self.udp_listener = None
         self.storage_rules = {}
         self.default_storage_rule = None
         self.cache = MetricsCache()
@@ -46,6 +49,7 @@ class PMWriterDaemon(Daemon):
         self.load_storage_rules()
         self.setup_listener("line_listener")
         self.setup_listener("pickle_listener")
+        self.setup_listener("udp_listener")
         strategy = self.config.get("cache", "drain_strategy")
         self.logger.info("Setting cache drain strategy to '%s'" % strategy)
         self.cache.set_strategy(strategy)
@@ -86,7 +90,7 @@ class PMWriterDaemon(Daemon):
                 s = self.factory.listen_tcp(address, port, sc)
             else:
                 # UDP
-                pass
+                s = UDPProtocolSocket(self.factory, address, port)
             setattr(self, name, s)
 
     def load_storage_rules(self):

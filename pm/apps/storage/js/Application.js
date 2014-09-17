@@ -88,7 +88,8 @@ Ext.define("NOC.pm.storage.Application", {
                                 xtype: "combobox",
                                 store: [
                                     ["line", "line"],
-                                    ["pickle", "pickle"]
+                                    ["pickle", "pickle"],
+                                    ["udp", "udp"]
                                 ]
                             }
                         },

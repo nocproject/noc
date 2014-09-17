@@ -13,6 +13,7 @@ import logging
 from noc.lib.nbsocket.socketfactory import SocketFactory
 from protocols.line import LineProtocolSocket
 from protocols.pickle import PickleProtocolSocket
+from protocols.udp import UDPProtocolSocket
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +63,9 @@ class Sender(threading.Thread):
 
     def create_pickle_channel(self, address, port):
         return PickleProtocolSocket(self, self.factory, address, port)
+
+    def create_udp_channel(self, address, port):
+        return UDPProtocolSocket(self, self.factory, address, port)
 
     def on_close(self, ch):
         with self.create_lock:

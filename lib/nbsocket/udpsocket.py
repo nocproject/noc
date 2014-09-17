@@ -24,6 +24,8 @@ class UDPSocket(Socket):
     def create_socket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         super(UDPSocket, self).create_socket()
+        if self.out_buffer:
+            self.set_status(w=True)
 
     def handle_write(self):
         while self.out_buffer:
@@ -54,4 +56,5 @@ class UDPSocket(Socket):
 
     def sendto(self, msg, addr):
         self.out_buffer += [(msg, addr)]
-        self.set_status(w=bool(self.out_buffer))
+        if self.socket:
+            self.set_status(w=bool(self.out_buffer))
