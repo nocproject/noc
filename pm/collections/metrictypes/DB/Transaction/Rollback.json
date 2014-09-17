@@ -1,0 +1,6 @@
+{
+    "name": "DB | Transaction | Rollback",
+    "uuid": "b085e4b8-3a02-425b-96b4-c6e5182fdb10",
+    "description": "Database rollbacks",
+    "measure": "ops/sec"
+}

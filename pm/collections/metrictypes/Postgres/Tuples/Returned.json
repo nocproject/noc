@@ -1,0 +1,6 @@
+{
+    "name": "Postgres | Tuples | Returned",
+    "uuid": "ee6c968e-cf68-498b-9fee-d5eb7717c0ab",
+    "description": "Amount of tuples returned",
+    "measure": "rec/sec"
+}

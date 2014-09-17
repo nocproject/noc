@@ -1,0 +1,5 @@
+{
+    "name": "Postgres",
+    "uuid": "bf2e0461-d7d1-4f11-8e0b-b2d50b6deac5",
+    "description": "Postgres-specific metrics"
+}
