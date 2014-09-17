@@ -51,7 +51,7 @@ class DocCategory(Document):
         c_name = " | ".join(document.name.split(" | ")[:-1])
         c = DocCategory.objects.filter(type=type, name=c_name).first()
         if not c:
-            logger.debug("Creating category %s (%w)", c_name, type)
+            logger.debug("Creating category %s (%s)", c_name, type)
             c = DocCategory(type=type, name=c_name)
             c.save()
         document.category = c.id
@@ -64,7 +64,7 @@ class DocCategory(Document):
                 type=document.type, name=p_name).first()
             if not p:
                 # Create parent
-                logger.debug("Creating category %s (%w)", p_name, document.type)
+                logger.debug("Creating category %s (%s)", p_name, document.type)
                 p = DocCategory(type=document.type, name=p_name)
                 p.save()
             document.parent = p.id
