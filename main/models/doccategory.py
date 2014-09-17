@@ -37,7 +37,7 @@ class DocCategory(Document):
         """
         Register document to category
         """
-        logger.debug("Registering %s", document)
+        logger.debug("Registering %s", document.__name__)
         cls._senders[document] = document._meta["collection"]
         signals.pre_save.connect(DocCategory.update_category,
                                  sender=document)
