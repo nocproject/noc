@@ -1,0 +1,6 @@
+{
+    "name": "Postgres | Tuples | Updated",
+    "uuid": "f16c16a2-42c0-4e1c-938e-79ac6ac44d93",
+    "description": "Amount of tuples updated",
+    "measure": "rec/sec"
+}

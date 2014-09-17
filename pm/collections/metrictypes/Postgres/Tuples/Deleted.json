@@ -1,0 +1,6 @@
+{
+    "name": "Postgres | Tuples | Deleted",
+    "uuid": "44cfb7cd-cc87-4592-b255-338458f47548",
+    "description": "Amount of tuples updated",
+    "measure": "rec/sec"
+}
