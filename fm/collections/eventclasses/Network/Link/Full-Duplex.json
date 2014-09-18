@@ -10,6 +10,7 @@
             "required": true
         }
     ],
+    "link_event": true,
     "text": {
         "en": {
             "subject_template": "Link going into full-duplex state: {{interface}}",

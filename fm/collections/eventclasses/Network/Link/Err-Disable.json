@@ -16,6 +16,7 @@
             "required": false
         }
     ],
+    "link_event": true,
     "text": {
         "en": {
             "subject_template": "Link err-disable: {{interface}} ({{reason}})",
