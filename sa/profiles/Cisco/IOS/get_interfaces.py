@@ -80,6 +80,7 @@ class Script(NOCScript):
            "SR": "physical",    # Spatial Reuse Protocol
            "Sr": "physical",    # Spatial Reuse Protocol
            "Se": "physical",    # Serial
+           "Sp": "physical",    # Special-Services-Engine
            "Te": "physical",    # TenGigabitEthernet
            "To": "physical",    # TokenRing
            "Tu": "tunnel",      # Tunnel
