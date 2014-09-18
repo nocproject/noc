@@ -64,7 +64,7 @@ class SocketFactory(object):
         """
         Register socket to a factory. Socket became a new socket
         """
-        logger.debug("Register socket %s (%s)", socket, name)
+        logger.debug("Register socket %s (%s)", socket.get_label(), name)
         with self.register_lock:
             self.new_sockets += [(socket, name)]
 
@@ -73,7 +73,7 @@ class SocketFactory(object):
         Remove socket from factory
         """
         with self.register_lock:
-            logger.debug("Unregister socket %s", socket)
+            logger.debug("Unregister socket %s", socket.get_label())
             self.set_status(socket, r=False, w=False)
             if socket not in self.socket_name:  # Not in factory yet
                 return
@@ -168,7 +168,7 @@ class SocketFactory(object):
         """Detect and close stale sockets"""
         with self.register_lock:
             for s in [s for s in self.sockets.values() if s.is_stale()]:
-                logger.debug("Closing stale socket %s", s)
+                logger.debug("Closing stale socket %s", s.get_label())
                 s.stale = True
                 s.close()
 

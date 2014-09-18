@@ -7,12 +7,14 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
-import socket
 import time
 import logging
+import warnings
 ## NOC modules
 from noc.lib.nbsocket.exceptions import *
+from noc.lib.log import PrefixLoggerAdapter
+
+logger = logging.getLogger(__name__)
 
 
 class Socket(object):
@@ -24,6 +26,7 @@ class Socket(object):
     CLOSE_ON_ERROR = True  # Call .close() from .on_error()
 
     def __init__(self, factory, socket=None):
+        self.logger = PrefixLoggerAdapter(logger, self.get_label())
         self.factory = factory
         self.socket = socket
         self.start_time = time.time()
@@ -41,6 +44,9 @@ class Socket(object):
         return "<%s(0x%x, %s)>" % (
             self.__class__.__name__, id(self),
             ", ".join(self.get_flags()))
+
+    def get_label(self):
+        return self.__class__.__name__
 
     def get_flags(self):
         """
@@ -75,7 +81,7 @@ class Socket(object):
         :type ttl: int
         """
         if ttl and ttl != self.ttl:
-            self.debug("Set timeout to %s secs" % ttl)
+            self.logger.debug("Set timeout to %s secs" % ttl)
             self.ttl = ttl
 
     def socket_is_ready(self):
@@ -122,7 +128,7 @@ class Socket(object):
 
         :param exc: SocketException
         """
-        self.error(exc.message)
+        self.logger.error(exc.message)
         if self.CLOSE_ON_ERROR:
             self.close()
 
@@ -132,7 +138,7 @@ class Socket(object):
         """
         if self.closing:
             return
-        self.debug("Closing socket")
+        self.logger.debug("Closing socket")
         self.closing = True
         if self.socket:
             self.factory.unregister_socket(self)
@@ -151,7 +157,9 @@ class Socket(object):
         :param msg: Message
         :type msg: str
         """
-        logging.debug("[%r] %s" % (self, msg))
+        warnings.warn("Using deprecated Socket.debug() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.debug(msg)
 
     def info(self, msg):
         """
@@ -160,7 +168,9 @@ class Socket(object):
         :param msg: Message
         :type msg: str
         """
-        logging.info("[%r] %s" % (self, msg))
+        warnings.warn("Using deprecated Socket.info() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.info(msg)
 
     def error(self, msg):
         """
@@ -169,8 +179,9 @@ class Socket(object):
         :param msg: Message
         :type msg: str
         """
-
-        logging.error("[%r] %s" % (self, msg))
+        warnings.warn("Using deprecated Socket.error() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.error(msg)
 
     def set_name(self, name):
         """
