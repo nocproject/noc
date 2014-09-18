@@ -25,6 +25,8 @@ class Sender(threading.Thread):
         self.factory = SocketFactory()
         self.channels = {}  # (proto, address, port) -> Socket
         self.create_lock = threading.Lock()
+        self.feed_lock = threading.Lock()
+        self.ready_channels = set()
 
     def run(self):
         logger.info("Running sender thread")
@@ -50,13 +52,25 @@ class Sender(threading.Thread):
         :param t: timestamp
         :param v: value
         """
-        for c in policy.start():
-            ch = self.channels.get(c)
-            if not ch:
-                ch = self.create_channel(*c)
-            logger.debug("sending %s://%s:%s %s %s %s",
-                         c[0], c[1], c[2], metric, t, v)
-            ch.feed(metric, t, v)
+        with self.feed_lock:
+            for c in policy.start():
+                ch = self.channels.get(c)
+                if not ch:
+                    ch = self.create_channel(*c)
+                ch.feed(metric, t, v)
+                self.ready_channels.add(ch)
+
+    def flush(self):
+        """
+        Flush data from sender channels
+        """
+        with self.feed_lock:
+            if self.ready_channels:
+                logger.debug("Flushing channels %d channels",
+                             len(self.ready_channels))
+                for ch in self.ready_channels:
+                    ch.flush()
+                self.ready_channels = set()
 
     def create_line_channel(self, address, port):
         return LineProtocolSocket(self, self.factory, address, port)

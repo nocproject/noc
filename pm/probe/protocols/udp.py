@@ -6,31 +6,31 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-from threading import Lock
+## PYthon modules
+import logging
 ## NOC modules
+from base import SenderSocket
 from noc.lib.nbsocket.udpsocket import UDPSocket
 
+logger = logging.getLogger(__name__)
 
-class UDPProtocolSocket(UDPSocket):
+
+class UDPProtocolSocket(SenderSocket, UDPSocket):
+    name = "udp"
+    PDU_CHUNK_SIZE = 10
+
     def __init__(self, sender, factory, address, port, local_address=None):
-        self.sender = sender
-        self.address = address
-        self.port = port
-        self.local_address = local_address
-        self.ch = ("udp", address, port)
-        self.feed_lock = Lock()
-        super(UDPProtocolSocket, self).__init__(factory)
+        self.addr = (address, port)
+        SenderSocket.__init__(self, sender, logger, address, port)
+        UDPSocket.__init__(self, factory)
 
-    def feed(self, metric, t, v):
+    def flush(self):
         with self.feed_lock:
-            self.sendto(
-                "%s %s %s\n" % (metric, v, t),
-                (self.address, self.port)
-            )
-
-    def on_close(self):
-        self.sender.on_close(self.ch)
-
-    def on_conn_refused(self):
-        self.sender.on_close(self.ch)
+            while self.data:
+                data = self.data[:self.PDU_CHUNK_SIZE]
+                self.logger.debug("Sending %d metrics", len(data))
+                msg = "".join(
+                    "%s %s %s\n" % d for d in data
+                )
+                self.sendto(msg, self.addr)
+                self.data = self.data[self.PDU_CHUNK_SIZE:]
