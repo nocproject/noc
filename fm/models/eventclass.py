@@ -283,6 +283,8 @@ class EventClass(Document):
         r += ["    \"vars\": ["]
         r += [",\n".join(vars)]
         r += ["    ],"]
+        if self.link_event:
+            r += ["    \"link_event\": true,"]
         # Handlers
         if self.handlers:
             hh = ["        \"%s\"" % h for h in self.handlers]

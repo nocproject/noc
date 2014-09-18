@@ -127,18 +127,18 @@ Network | LLDP | Created New Neighbor,bb1db4da-a0d0-4ec1-a6eb-391cccb0beb7,Netwo
 Network | LLDP | LLDP Aged Out,3380c0aa-97cc-4f8e-b350-c50afaa23a45,Network/LLDP/LLDP_Aged_Out.json,3e5582fd309faae842c7df57e44ba981984e201b44f06c7d906505dfd389e895
 Network | LLDP | Native Vlan Not Match,4bd59007-3c2e-4449-b06d-cd1554524afd,Network/LLDP/Native_Vlan_Not_Match.json,58d8b03d041ba61519d4bbfebe135aab4fb04b25cf3af271a880e6f3f429b4eb
 Network | LLDP | Remote Tables Change,c0d11fbc-06e7-426e-8d69-b24f5b1fe249,Network/LLDP/Remote_Tables_Change.json,668533e738b789f14f3064e27bce546acfaeac673fe83b98e4051203a0ed848f
-Network | Link | Connection Problem,215f43d2-9abd-461b-9f8f-4332ce00740b,Network/Link/Connection_Problem.json,eaafcf8465026a9166e8be2ba59e8b2f056adcbd2a650d428433b113474a280e
+Network | Link | Connection Problem,215f43d2-9abd-461b-9f8f-4332ce00740b,Network/Link/Connection_Problem.json,b5042c620b494c67eab1850878eb6df8e43bcd7f1d92041abd17b6b8c5aa7c6d
 Network | Link | DOM | Alarm: Out of Threshold,cc37a2fd-857d-4351-85ef-35caa572875c,Network/Link/DOM/Alarm_Out_of_Threshold.json,af3e9bc0bb4072e6a453dab5a4ba0527fe753ccfe8f54a7621cee3611f36968d
 Network | Link | DOM | Alarm: Out of Threshold Recovered,2d32e8fd-1ebd-4b54-9533-40e035f197db,Network/Link/DOM/Alarm_Out_of_Threshold_Recovered.json,cda529a5c4c69581a714f989b72b3b0e5712c3493c56384ba000d8c0b0bf4100
 Network | Link | DOM | Warning: Out of Threshold,71faba70-4890-455b-af5b-295215979359,Network/Link/DOM/Warning_Out_of_Threshold.json,cc156a0fbbd0824e4335d0d070747d9afa953186555e0ba828cc7b0ae9c47c07
 Network | Link | DOM | Warning: Out of Threshold Recovered,ed2b35df-5a77-42e9-a583-f35a655c8610,Network/Link/DOM/Warning_Out_of_Threshold_Recovered.json,b8cd6c8e3e004a02a406903d81cb962326fd39d48dc10eb161d2720bd4fe3263
-Network | Link | Err-Disable,7b9be94a-143f-45b6-bf02-3aa5620d90cb,Network/Link/Err-Disable.json,242d2c1f52accaedaa7c3d7c229d8fee379c9f0da9778e49a56d504ad70e1f87
-Network | Link | Full-Duplex,cd1b636a-2fb8-48c1-91fa-157b46cbcfdf,Network/Link/Full-Duplex.json,30622cbf855f726ed1639d9fa753b041cfcb4b7e59a8b30f4db547ad814315b7
-Network | Link | Half-Duplex,cccee9a1-4bb3-455c-a473-5d196c0fef1a,Network/Link/Half-Duplex.json,ae161f4f0f45c9efac3b1eb13ed9ad093f6d5d598f347c3bda4e714830eca57f
-Network | Link | Link Down,358bf8ed-81ce-4e92-8d05-adc3817edbda,Network/Link/Link_Down.json,ada3fcfca45d062529c097520d11d720ed5891c6b32f9e5586e7f141663eca32
-Network | Link | Link Flap Error Detected,10747532-86a8-4ed2-8e81-fa92a571b310,Network/Link/Link_Flap_Error_Detected.json,53be735270d56fd465456d6985c8c16b39d8128a282fd9393cafbde6b45c99e2
-Network | Link | Link Flap Error Recovery,9c97e2c1-4a14-458e-a6ad-38ae2b643aa0,Network/Link/Link_Flap_Error_Recovery.json,2857532291f1e8a4f196b716ba31d61da21b38113719be96888da03fe82edbef
-Network | Link | Link Up,82d72502-974a-4c42-8fe4-c4d2aae71d5c,Network/Link/Link_Up.json,d46405a126e9e890cdbd1c636981e6023e692623267fb737369948fed85f32dc
+Network | Link | Err-Disable,7b9be94a-143f-45b6-bf02-3aa5620d90cb,Network/Link/Err-Disable.json,3c74723a3129b0f81939c1230c14cb847d8c855670b51172f320e65bf3b612bc
+Network | Link | Full-Duplex,cd1b636a-2fb8-48c1-91fa-157b46cbcfdf,Network/Link/Full-Duplex.json,b6eefec06fcc1084700193255ad13fb6467f90fced74fd01ec15914ff96f0519
+Network | Link | Half-Duplex,cccee9a1-4bb3-455c-a473-5d196c0fef1a,Network/Link/Half-Duplex.json,6451a526e5462225f5e00d52dd8f034ef4ec93ba6310f3da403a3564118a2c9b
+Network | Link | Link Down,358bf8ed-81ce-4e92-8d05-adc3817edbda,Network/Link/Link_Down.json,f961846a68e44f6851bf5df481a3d4a4627a03a890cc3e992690dcde0081932c
+Network | Link | Link Flap Error Detected,10747532-86a8-4ed2-8e81-fa92a571b310,Network/Link/Link_Flap_Error_Detected.json,ebc95c07e8fcea728a9aeb53c2045b26fa2b2536b2c397f4398d158df498fc20
+Network | Link | Link Flap Error Recovery,9c97e2c1-4a14-458e-a6ad-38ae2b643aa0,Network/Link/Link_Flap_Error_Recovery.json,c6c37578016b0191d2311db799e638c8687b47f9f0ced51c01e6d7d12c72dabe
+Network | Link | Link Up,82d72502-974a-4c42-8fe4-c4d2aae71d5c,Network/Link/Link_Up.json,5dd5dd343f8d1a9d353d8cb8bc68af1dc6af16ced141b0f7f1dde888c5b14a6a
 Network | MAC | Duplicate MAC,81215d7f-71b8-491e-8492-7e5734660eb1,Network/MAC/Duplicate_MAC.json,a4d9d5231e34f3792bde1d6ac9ab188cfd3ae39f57a66371ae32294f3883764b
 Network | MAC | Invalid MAC,66a6a42d-8511-47b5-a738-f28ff359cc6d,Network/MAC/Invalid_MAC.json,0ce9815c28441a70d0b417491047c133a95b293ea8b42ca1d0b87e1d29eaca9b
 Network | MAC | MAC Aged,82203fbf-480b-421a-baa0-fe8070b9ce41,Network/MAC/MAC_Aged.json,a134fd834a51433d1a9faca53dcab52ed5a2811bee9ed497826a04b23acc9cf4

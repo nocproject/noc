@@ -22,6 +22,7 @@
             "required": false
         }
     ],
+    "link_event": true,
     "handlers": [
         "noc.fm.handlers.event.link.oper_up"
     ],
