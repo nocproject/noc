@@ -2,11 +2,11 @@
 ##----------------------------------------------------------------------
 ## Event Collector Interface
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
 ## Pythom modules
-import logging
 import time
 
 
@@ -18,15 +18,6 @@ class EventCollector(object):
         self.activator = activator
         self.invalid_sources = set()
         self.invalid_sources_flush = 0
-
-    def debug(self, msg):
-        logging.debug("[%s] %s" % (self.name, msg))
-
-    def info(self, msg):
-        logging.info("[%s] %s" % (self.name, msg))
-
-    def error(self, msg):
-        logging.error("[%s] %s" % (self.name, msg))
 
     def map_event(self, ip):
         """
@@ -43,9 +34,9 @@ class EventCollector(object):
         # when INVALID_EVENT_SOURCE_DELAY interval is expired
         if (self.invalid_sources and
             t - self.invalid_sources_flush >= self.INVALID_EVENT_SOURCE_DELAY):
-            self.error("Invalid event sources in last %d seconds: %s" % (
+            self.logger.error("Invalid event sources in last %d seconds: %s",
                 self.INVALID_EVENT_SOURCE_DELAY,
-                ", ".join(self.invalid_sources)))
+                ", ".join(self.invalid_sources))
             for s in self.invalid_sources:
                 # Generate "Invalid event source" Event
                 self.process_event(t, "", {
