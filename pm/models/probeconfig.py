@@ -394,6 +394,8 @@ class ProbeConfig(Document):
     def refresh(self):
         logger.debug("Refreshing %s", self.uuid)
         o = self.get_object()
+        if not o:
+            return
         if self.model_id == "pm.MetricConfig":
             self._refresh_config(o)
         else:

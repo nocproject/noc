@@ -43,21 +43,10 @@ class ProbeApplication(ExtDocApplication):
         probe_id = str(probe.id)
         now = datetime.datetime.now()
         # Refresh expired congfigs
-        expired = set(
-            ProbeConfig.objects.filter(
-                probe_id=probe_id,
-                instance_id=instance,
-                expire__lt=now
-            )
-            .only("model_id", "object_id")
-            .values_list("model_id", "object_id")
-        )
-        # Rebuild expired configs
-        for model_id, object_id in expired:
-            object = MetricSettings(
-                model_id=model_id, object_id=object_id).get_object()
-            if object:
-                ProbeConfig._refresh_object(object)
+        for pc in ProbeConfig.objects.filter(probe_id=probe_id,
+                                             instance_id=instance,
+                                             expire__lt=now):
+            pc.refresh()
         # Get configs
         qs = ProbeConfig.objects.filter(probe_id=probe_id,
                                         instance_id=instance)
