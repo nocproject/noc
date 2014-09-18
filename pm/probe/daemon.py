@@ -70,7 +70,8 @@ class ProbeDaemon(AutoConfDaemon):
         self.tasks[uuid].configure(uuid=uuid, **kwargs)
 
     def reschedule(self, t):
-        bisect.insort_right(
-            self.pending_queue,
-            t
-        )
+        with self.pending_lock:
+            bisect.insort_right(
+                self.pending_queue,
+                t
+            )
