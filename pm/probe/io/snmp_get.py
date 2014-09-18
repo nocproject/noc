@@ -41,6 +41,9 @@ class SNMPGetSocket(UDPSocket):
         self.result = None
         super(SNMPGetSocket, self).__init__(io.factory)
 
+    def get_label(self):
+        return "%s %s" % (self.__class__.__name__, self.address)
+
     def create_socket(self):
         super(SNMPGetSocket, self).create_socket()
         self.sendto(self.pdu, (self.address, self.port))

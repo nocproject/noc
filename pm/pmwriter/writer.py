@@ -9,6 +9,10 @@
 ## Python modules
 import logging
 import threading
+## NOC modules
+from noc.lib.log import PrefixLoggerAdapter
+
+logger = logging.getLogger(__name__)
 
 
 class Writer(threading.Thread):
@@ -19,7 +23,7 @@ class Writer(threading.Thread):
         self.daemon = daemon
         self.instance = instance
         self.storage = storage_class()
-        self.logger = logging.getLogger("writer-%s" % instance)
+        self.logger = PrefixLoggerAdapter(logger, "writer-%d" % instance)
 
     def run(self):
         for metric, datapoints in self.daemon.cache.iter_metrics():
