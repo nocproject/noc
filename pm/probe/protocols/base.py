@@ -13,15 +13,11 @@ from noc.lib.log import PrefixLoggerAdapter
 
 
 class SenderSocket(object):
-    name = None
-
     def __init__(self, sender, logger, address, port):
         self.sender = sender
         self.ch = (self.name, address, port)
         self.feed_lock = Lock()
         self.data = []
-        self.logger = PrefixLoggerAdapter(
-            logger, "%s://%s:%s" % (self.name, address, port))
 
     def feed(self, metric, t, v):
         """

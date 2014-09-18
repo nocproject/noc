@@ -14,10 +14,14 @@ import logging
 from noc.pm.probes.base import probe_registry
 from noc.lib.debug import error_report
 from metric import Metric
+from noc.lib.log import PrefixLoggerAdapter
+
+logger = logging.getLogger(__name__)
 
 
 class Task(object):
     def __init__(self, daemon):
+        self.logger = logger
         self.daemon = daemon
         self.uuid = None
         self.handler = None
@@ -45,21 +49,22 @@ class Task(object):
     def run(self):
         self.running = True
         try:
-            self.debug("Running")
+            self.logger.debug("Running")
             result = self.handler(self.probe, **self.config)
-            self.debug("Result %s" % result)
+            self.logger.debug("Result %s", result)
             if result is not None:
                 t = time.time()
                 if not isinstance(result, dict):
                     if self.default_metric_type:
                         result = {self.default_metric_type: result}
                     else:
+                        self.logger.error("Handler must return dict. Returned: %s", result)
                         raise ValueError("Handler must return dict")
                 # Feed result
                 for m in result:
                     if m in self.mdata:
                         self.mdata[m].set_value(t, result[m])
-            self.debug("Done")
+            self.logger.debug("Done")
         except:
             error_report()
         self.last_run = self.next_run
@@ -69,6 +74,8 @@ class Task(object):
 
     def configure(self, uuid, handler, interval, metrics,
                   config, **kwargs):
+        if not self.uuid:
+            self.logger = PrefixLoggerAdapter(logger, uuid)
         self.uuid = uuid
         self.handler_name = handler
         nh = probe_registry.get_handler(handler)
