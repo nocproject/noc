@@ -42,6 +42,12 @@ class Command(BaseCommand):
             dest="cmd",
             const="rebuild",
             help="Rebuild configs"
+        ),
+        make_option(
+            "--uuid", "-U",
+            action="store",
+            dest="uuid",
+            help="Filter by probe's UUID"
         )
     )
 
@@ -55,6 +61,9 @@ class Command(BaseCommand):
 
     def _handle(self, *args, **options):
         self.verbose = bool(options.get("verbosity"))
+        self.query = {}
+        if options["uuid"]:
+            self.query["uuid"] = options["uuid"]
         if options["cmd"] == "list":
             return self.handle_list()
         elif options["cmd"] == "rebuild":
@@ -71,7 +80,7 @@ class Command(BaseCommand):
             return n
 
         p_cache = {}  # Probe id -> name
-        for pc in ProbeConfig.objects.all():
+        for pc in ProbeConfig.objects.filter(**self.query):
             print "CONFIG: %s ID: %s (%s)" % (
                 pc.model_id, pc.object_id, pc.uuid)
             if pc.is_deleted:
@@ -111,7 +120,7 @@ class Command(BaseCommand):
         pass
 
     def handle_touch(self):
-        for pc in ProbeConfig.objects.all():
+        for pc in ProbeConfig.objects.filter(**self.query):
             o = pc.get_object()
             if not o:
                 # Missed object, mark as delete
