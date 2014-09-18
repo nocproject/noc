@@ -23,13 +23,13 @@ class SyslogCollector(ListenUDPSocket, EventCollector):
     name = "SyslogCollector"
 
     def __init__(self, activator, address, port):
-        self.info("Initializing at %s:%s" % (address, port))
         self.collector_signature = "%s:%s" % (address, port)
         ListenUDPSocket.__init__(self, activator.factory, address, port)
         EventCollector.__init__(self, activator)
+        self.logger.info("Initializing")
 
     def on_read(self, msg, address, port):
-        self.debug(msg)
+        self.logger.debug("Incoming message: %s", msg)
         object = self.map_event(address)
         if not object:
             # Ignore events from unknown sources
