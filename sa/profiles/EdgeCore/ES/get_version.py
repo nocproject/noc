@@ -67,6 +67,9 @@ class Script(NOCScript):
     rx_sys_35 = re.compile(
         r"^\s*System description\s*:\s(?P<platform>.+?)\s*$",
         re.MULTILINE | re.IGNORECASE)
+    rx_sys_42 = re.compile(
+        r"^\s*System OID String\s*:\s(?P<platform>.+?)\s*$",
+        re.MULTILINE | re.IGNORECASE)
     rx_ver_35 = re.compile(
         r"^\s*Operation code version\s*:\s*(?P<version>\S+)\s*$",
         re.MULTILINE | re.IGNORECASE)
@@ -122,7 +125,20 @@ class Script(NOCScript):
         elif platform == "Managed 24G+4GSFP Switch":
             platform = "ECS4210-28T"
         else:
-            raise self.NotSupportedError(platform)
+            match = self.rx_sys_42.search(show_system)
+            if not match:
+                raise self.NotSupportedError(platform)
+            platform = match.group("platform")
+            if platform == "1.3.6.1.4.1.259.10.1.42.101":
+                platform = "ECS4210-28T"
+            elif platform == "1.3.6.1.4.1.259.10.1.42.102":
+                platform = "ECS4210-28P"
+            elif platform == "1.3.6.1.4.1.259.10.1.42.103":
+                platform = "ECS4210-12T"
+            elif platform == "1.3.6.1.4.1.259.10.1.42.104":
+                platform = "ECS4210-12P"
+            else:
+                raise self.NotSupportedError(platform)
         r = {
             "vendor": vendor,
             "platform": platform,
