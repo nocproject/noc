@@ -16,6 +16,11 @@ heartbeat= false
 [writer]
 # Number of writer's worker threads
 workers = 4
+# New metrics rate limit (metrics/second)
+# Exceeding new metrics are dropped
+new_metrics_rate = 50
+# Burst value
+new_metrics_burst = 5
 
 [cache]
 drain_strategy = next

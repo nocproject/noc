@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import logging
 import inspect
+import threading
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.lib.nbsocket.socketfactory import SocketFactory
@@ -21,6 +21,7 @@ from cache import MetricsCache
 from writer import Writer
 from noc.pm.storage.base import TimeSeriesDatabase
 from noc.settings import config
+from noc.lib.throttle import SafeTokenBucket
 
 
 class PMWriterDaemon(Daemon):
@@ -42,6 +43,7 @@ class PMWriterDaemon(Daemon):
         self.cache = MetricsCache()
         self.writers = []
         self.storage_class = None
+        self.nm_policer = SafeTokenBucket()
         super(PMWriterDaemon, self).__init__(*args, **kwargs)
 
     def load_config(self):
@@ -55,6 +57,7 @@ class PMWriterDaemon(Daemon):
         self.cache.set_strategy(strategy)
         if not self.storage_class:
             self.setup_storage_class()
+        self.setup_nm_policer()
         self.run_writers()
 
     def run(self):
@@ -128,10 +131,22 @@ class PMWriterDaemon(Daemon):
         if self.writers:
             return
         for i in range(self.config.getint("writer", "workers")):
-            self.logger.info("Running writer instance %d", i)
             w = Writer(self, i, self.storage_class)
             self.writers += [w]
             w.start()
 
+    def setup_nm_policer(self):
+        rate = self.config.getint("writer", "new_metrics_rate")
+        burst = self.config.getint("writer", "new_metrics_burst")
+        self.logger.info("Setting metric creation limit to %s metrics/sec",
+                         rate)
+        self.nm_policer.configure(rate=rate, capacity=burst)
+
     def get_storage_rule(self, metric):
         return self.default_storage_rule
+
+    def can_create_metric(self):
+        """
+        Check new metric can be created
+        """
+        return self.nm_policer.consume()

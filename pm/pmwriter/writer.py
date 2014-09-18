@@ -26,10 +26,17 @@ class Writer(threading.Thread):
         self.logger = PrefixLoggerAdapter(logger, "writer-%d" % instance)
 
     def run(self):
+        self.logger.info("Running writer thread")
         for metric, datapoints in self.daemon.cache.iter_metrics():
             self.logger.debug("Writing %s %s", metric, datapoints)
             sr = self.daemon.get_storage_rule(metric)
             if not self.storage.exists(metric):
+                if not self.daemon.can_create_metric():
+                    self.logger.info(
+                        "Throttling metric '%s' creation. Discarding data",
+                        metric
+                    )
+                    continue
                 self.logger.info("Creating metric %s", metric)
                 try:
                     self.storage.create(metric, **sr)
@@ -38,11 +45,11 @@ class Writer(threading.Thread):
                                       metric, why)
                     self.daemon.cache.release_metric(metric)
                     continue
-                self.logger.info("Done")
+                self.logger.info("Metric created: '%s'", metric)
             try:
                 self.storage.write(metric, datapoints)
             except Exception, why:
                 self.logger.error("Failed to write metric %s: %s",
                                   metric, why)
             self.daemon.cache.release_metric(metric)
-        self.logger.info("Stopping")
+        self.logger.info("Stopping writer thread")
