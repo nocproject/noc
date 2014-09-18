@@ -13,6 +13,7 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.sa.interfaces.base import InterfaceTypeError
 
+
 class Script(NOCScript):
     name = "DLink.DxS.get_inventory"
     implements = [IGetInventory]
@@ -21,14 +22,18 @@ class Script(NOCScript):
 
     rx_dev = re.compile(
         r"Device Type\s+:\s+(?P<part_no>\S+).+"
-        r"Hardware Version\s+:\s+(?P<revision>\S+)", re.MULTILINE | re.DOTALL)
+        r"[Hh]ardware [Vv]ersion\s+:\s+(?P<revision>\S+)",
+        re.MULTILINE | re.DOTALL)
     rx_des = re.compile(r"Device Type\s+:\s+(?P<descr>.+?)\n")
     rx_ser = re.compile(
-        r"(?:Serial Number|Device S/N)\s+:\s+(?P<serial>\S+)\s*\n",
+        r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s+(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
-    rx_mod = re.compile(r"Module Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
-    rx_mod1 = re.compile(r"Module 1 Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
-    rx_mod2 = re.compile(r"Module 2 Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
+    rx_mod = re.compile(
+        r"Module Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
+    rx_mod1 = re.compile(
+        r"Module 1 Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
+    rx_mod2 = re.compile(
+        r"Module 2 Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
     rx_mod3 = re.compile(
         r"\s+(?P<number>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+"
         r"(?P<serial>(\xFF)+)\s+(?P<descr>.+?)\s*$")
@@ -41,9 +46,10 @@ class Script(NOCScript):
         revision = match.group("revision")
         if part_no.startswith("DES-3200-") and revision != "A1":
             part_no = "%s/%s" % (part_no, revision)
-        if (part_no.startswith("DES-1210-10/ME/B") or
-            part_no.startswith("DES-1210-26/ME/B") or
-            part_no.startswith("DES-1210-28/ME/B")):
+        if (part_no.startswith("DES-1210-10/ME") or
+            part_no.startswith("DES-1210-26/ME") or
+            part_no.startswith("DES-1210-28/ME") and
+            revision != "A1"):
             part_no = "%s/%s" % (part_no, revision)
         p = {
             "type": "CHASSIS",

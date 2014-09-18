@@ -4,7 +4,7 @@
 ## ./scripts/check-conf
 ## Check configuration files for errors
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -15,9 +15,12 @@ import ConfigParser
 import sys
 
 # Settings
-CONFIGS = ["noc.conf", "noc-sae.conf", "noc-activator.conf",
-           "noc-classifier.conf", "noc-correlator.conf",
-           "noc-notifier.conf"]
+CONFIGS = ["noc-activator.conf", "noc-classifier.conf", "noc-collector.conf",
+    "noc-correlator.conf", "noc-discovery.conf", "noc-launcher.conf",
+    "noc-notifier.conf", "noc-pmprobe.conf", "noc-pmwriter.conf",
+    "noc-sae.conf", "noc-scheduler.conf", "noc-stomp.conf", "noc-sync.conf",
+    "noc-web.conf", "noc-wf.conf", "noc.conf"]
+
 EXECUTABLES = ["ssh", "pg_dump", "tar", "gzip", "smidump", "smilint",
                "mongodump"]
 
@@ -46,7 +49,7 @@ def check_config():
         if not os.path.isfile(path):
             failed += ["%s: %s is not found" % (f, path)]
         elif os.stat(path)[stat.ST_MODE] & stat.S_IXUSR == 0:
-            failed += ["%s: %s is not executeble" % (f, path)]
+            failed += ["%s: %s is not executable" % (f, path)]
     if failed:
         print "\n\t" + "\n\t".join(failed)
         return 1

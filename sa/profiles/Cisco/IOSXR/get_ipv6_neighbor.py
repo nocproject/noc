@@ -29,7 +29,9 @@ class Script(NOCScript):
         "REACH": "reachable",
         "STALE": "stale",
         "DELAY": "delay",
-        "PROBE": "probe"
+        "PROBE": "probe",
+        "DELETE": "incomplete",
+        "GLEAN": "incomplete"
     }
 
     def execute(self, vrf=None):

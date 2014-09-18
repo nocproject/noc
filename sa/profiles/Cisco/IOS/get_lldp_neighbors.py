@@ -70,7 +70,7 @@ class Script(NOCScript):
             # Get remote port
             match = self.re_search(self.rx_remote_port, v)
             remote_port = match.group("remote_if")
-            remote_port_subtype = 5
+            remote_port_subtype = 128
             if self.rx_mac.match(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
