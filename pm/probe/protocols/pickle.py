@@ -7,30 +7,34 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-from threading import Lock
 from cPickle import dumps
 import struct
+import logging
 ## NOC modules
+from base import SenderSocket
 from noc.lib.nbsocket import ConnectedTCPSocket
 
+logger = logging.getLogger(__name__)
 
-class PickleProtocolSocket(ConnectedTCPSocket):
+
+class PickleProtocolSocket(SenderSocket, ConnectedTCPSocket):
+    name = "pickle"
+    PDU_CHUNK_SIZE = 1000  # Up to 1000 metrics in packet
+
     def __init__(self, sender, factory, address, port, local_address=None):
-        self.sender = sender
-        self.ch = ("pickle", address, port)
-        self.feed_lock = Lock()
-        super(PickleProtocolSocket, self).__init__(factory, address,
-                                                 port, local_address)
+        SenderSocket.__init__(self, sender, logger, address, port)
+        ConnectedTCPSocket.__init__(self, factory, address, port, local_address)
 
-    def feed(self, metric, t, v):
-        p = [(metric, (t, v))]
-        payload = dumps(p, protocol=2)
-        header = struct.pack("!L", len(payload))
+    def flush(self):
         with self.feed_lock:
-            self.write(header + payload)
-
-    def on_close(self):
-        self.sender.on_close(self.ch)
-
-    def on_conn_refused(self):
-        self.sender.on_close(self.ch)
+            while self.data:
+                data = self.data[:self.PDU_CHUNK_SIZE]
+                self.logger.debug("Sending %d metrics", len(data))
+                p = [
+                    (d[0], (d[2], d[1]))
+                     for d in data
+                ]
+                payload = dumps(p, protocol=2)
+                header = struct.pack("!L", len(payload))
+                self.write(header + payload)
+                self.data = self.data[self.PDU_CHUNK_SIZE:]

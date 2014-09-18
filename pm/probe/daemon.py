@@ -75,3 +75,4 @@ class ProbeDaemon(AutoConfDaemon):
                 self.pending_queue,
                 t
             )
+        self.sender.flush()

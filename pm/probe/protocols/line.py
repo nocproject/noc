@@ -7,25 +7,25 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-from threading import Lock
+import logging
 ## NOC modules
-from noc.lib.nbsocket import ConnectedTCPSocket
+from base import SenderSocket
+from noc.lib.nbsocket.connectedtcpsocket import ConnectedTCPSocket
+
+logger = logging.getLogger(__name__)
 
 
-class LineProtocolSocket(ConnectedTCPSocket):
+class LineProtocolSocket(SenderSocket, ConnectedTCPSocket):
+    name = "line"
     def __init__(self, sender, factory, address, port, local_address=None):
-        self.sender = sender
-        self.ch = ("line", address, port)
-        self.feed_lock = Lock()
-        super(LineProtocolSocket, self).__init__(factory, address,
-                                                 port, local_address)
+        SenderSocket.__init__(self, sender, logger, address, port)
+        ConnectedTCPSocket.__init__(self, factory, address, port, local_address)
 
-    def feed(self, metric, t, v):
+    def flush(self):
         with self.feed_lock:
-            self.write("%s %s %s\n" % (metric, v, t))
-
-    def on_close(self):
-        self.sender.on_close(self.ch)
-
-    def on_conn_refused(self):
-        self.sender.on_close(self.ch)
+            self.logger.debug("Sending %d metrics", len(self.data))
+            data = "".join(
+                "%s %s %s\n" % d for d in self.data
+            )
+            self.write(data)
+            self.data = []
