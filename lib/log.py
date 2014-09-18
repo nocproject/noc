@@ -14,9 +14,9 @@ class PrefixLoggerAdapter(logging.LoggerAdapter):
     """
     Add [prefix] to log message
     """
-    def __init__(self, logger, prefix, extra={}):
+    def __init__(self, logger, prefix, extra=None):
         self.pattern = "[%s] %%s" % prefix
-        super(PrefixLoggerAdapter, self).__init__(logger, extra)
+        super(PrefixLoggerAdapter, self).__init__(logger, extra or {})
 
     def process(self, msg, kwargs):
         return self.pattern % msg, kwargs
