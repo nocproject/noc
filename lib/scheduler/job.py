@@ -12,6 +12,9 @@ import datetime
 import random
 ## NOC modules
 from noc.main.models import SystemNotification
+from noc.lib.log import PrefixLoggerAdapter
+
+logger = logging.getLogger(__name__)
 
 
 class JobBase(type):
@@ -69,6 +72,11 @@ class Job(object):
                                # to launch on complete
         self.to_log = scheduler and scheduler.to_log_jobs
         self.job_log = []
+        self.logger = PrefixLoggerAdapter(
+            logger,
+            "%s][%s][%s" % (self.scheduler.name, self.name,
+                            self.get_display_key())
+        )
 
     @classmethod
     def initialize(cls, scheduler):
@@ -88,23 +96,17 @@ class Job(object):
         return self.key
 
     def debug(self, msg):
-        logging.debug("[%s: %s(%s)] %s" % (
-            self.scheduler.name, self.name,
-            self.get_display_key(), msg))
+        self.logger.debug(msg)
         if self.to_log:
             self.job_log += [msg]
 
     def info(self, msg):
-        logging.info("[%s: %s(%s)] %s" % (
-            self.scheduler.name, self.name,
-            self.get_display_key(), msg))
+        self.logger.info(msg)
         if self.to_log:
             self.job_log += [msg]
 
     def error(self, msg):
-        logging.error("[%s: %s(%s)] %s" % (
-            self.scheduler.name, self.name,
-            self.get_display_key(), msg))
+        self.logger.error(msg)
         if self.to_log:
             self.job_log += [msg]
 

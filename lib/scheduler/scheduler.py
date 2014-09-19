@@ -14,12 +14,16 @@ import datetime
 import inspect
 import threading
 from collections import defaultdict
+import warnings
 ## NOC modules
 from error import JobExists
 from job import Job
 from noc.lib.nosql import get_db
 from noc.lib.debug import error_report, get_traceback
 from noc.lib.fileutils import safe_rewrite
+from noc.lib.log import PrefixLoggerAdapter
+
+logger = logging.getLogger(__name__)
 
 
 class Scheduler(object):
@@ -58,6 +62,7 @@ class Scheduler(object):
     def __init__(self, name, cleanup=None, reset_running=False,
                  initial_submit=False, max_threads=None,
                  preserve_order=False, max_faults=None):
+        self.logger = PrefixLoggerAdapter(logger, name)
         self.name = name
         self.job_classes = {}
         self.collection_name = self.COLLECTION_BASE + self.name
@@ -80,26 +85,32 @@ class Scheduler(object):
             k = [("ts", 1), ("_id", 1)]
         else:
             k = [("ts", 1)]
-        self.debug("Checking indexes: %s" % ", ".join(x[0] for x in k))
+        self.logger.debug("Checking indexes: %s", ", ".join(x[0] for x in k))
         self.collection.ensure_index(k)
-        self.debug("Checking indexes: jcls, key")
+        self.logger.debug("Checking indexes: jcls, key")
         self.collection.ensure_index([("jcls", 1), ("key", 1)])
-        self.debug("Indexes are ready")
+        self.logger.debug("Indexes are ready")
 
     def debug(self, msg):
-        logging.debug("[%s] %s" % (self.name, msg))
+        warnings.warn("Using deprecated Scheduler.debug() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.debug(msg)
 
     def info(self, msg):
-        logging.info("[%s] %s" % (self.name, msg))
+        warnings.warn("Using deprecated Scheduler.info() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.info(msg)
 
     def error(self, msg):
-        logging.error("[%s] %s" % (self.name, msg))
+        warnings.warn("Using deprecated Scheduler.error() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.error(msg)
 
     def register_job_class(self, cls):
         if not cls.name:
             return  # Abstract classes
         s = " (ignored)" if cls.ignored else ""
-        self.info("Registering job class: %s%s" % (cls.name, s))
+        self.logger.info("Registering job class: %s%s", cls.name, s)
         self.job_classes[cls.name] = cls
         # Set up ignored jobs
         if cls.ignored:
@@ -164,11 +175,11 @@ class Scheduler(object):
             self.ATTR_DATA: data,
             self.ATTR_SCHEDULE: schedule
         }, manipulate=True, safe=True)
-        self.info("Scheduling job %s(%s) id=%s at %s" % (
-            job_name, key, id, ts))
+        self.logger.info("Scheduling job %s(%s) id=%s at %s",
+            job_name, key, id, ts)
 
     def remove_job(self, job_name, key):
-        self.info("Removing job %s(%s)" % (job_name, key))
+        self.logger.info("Removing job %s(%s)", job_name, key)
         self.collection.remove({
             self.ATTR_CLASS: job_name,
             self.ATTR_KEY: key
@@ -178,8 +189,8 @@ class Scheduler(object):
                        duration=None, last_status=None, tb=None,
                        log=None, update_runs=False,
                        skip_running=False, faults=None):
-        self.info("Rescheduling job %s(%s) to %s%s" % (
-            job_name, key, ts, " status=%s" % status if status else ""))
+        self.logger.info("Rescheduling job %s(%s) to %s%s",
+            job_name, key, ts, " status=%s" % status if status else "")
         q = {
             self.ATTR_CLASS: job_name,
             self.ATTR_KEY: key
@@ -207,8 +218,8 @@ class Scheduler(object):
         self.collection.update(q, op, safe=True)
 
     def set_job_status(self, job_name, key, status):
-        self.info("Changing %s(%s) status to %s" % (
-            job_name, key, status))
+        self.logger.info("Changing %s(%s) status to %s",
+            job_name, key, status)
         self.collection.update({
             self.ATTR_CLASS: job_name,
             self.ATTR_KEY: key
@@ -224,8 +235,8 @@ class Scheduler(object):
         """
         # Dereference job
         if not job.dereference():
-            logging.info("Cannot dereference job %s(%s). Removing" % (
-                job.name, job.key))
+            self.logger.info("Cannot dereference job %s(%s). Removing",
+                job.name, job.key)
             self.remove_job(job.name, job.key)
             return
         # Check threaded jobs limit
@@ -238,7 +249,7 @@ class Scheduler(object):
             return
         # Change status
         s = "threaded " if job.threaded else ""
-        self.info("Running %sjob %s(%s)" % (s, job.name, job.get_display_key()))
+        job.logger.info("Running job")
         job.started = time.time()
         self.collection.update({
             self.ATTR_CLASS: job.name,
@@ -289,17 +300,14 @@ class Scheduler(object):
             s = job.S_EXCEPTION
         else:
             if r:
-                self.info("Job %s(%s) is completed successfully (%fsec)" % (
-                    job.name, job.get_display_key(),
-                    time.time() - t0
-                ))
+                job.logger.info("Job completed successfully (%sec)",
+                                time.time() - t0)
                 job.on_success()
                 s = job.S_SUCCESS
             else:
-                self.info("Job %s(%s) is failed (%fsec)" % (
-                    job.name, job.get_display_key(),
+                job.logger.info("Job failed (%fsec)",
                     time.time() - t0
-                ))
+                )
                 job.on_failure()
                 s = job.S_FAILED
         self._complete_job(job, s, tb)
@@ -334,9 +342,8 @@ class Scheduler(object):
                     fc = self.get_faults(job.name, job.key) + 1
                     if fc >= self.max_faults:  # Disable job
                         next_status = self.S_DISABLED
-                        self.info("Disabling job %s(%s) due to %d sequental faults" % (
-                            job.name, job.key, fc
-                        ))
+                        self.logger.info("Disabling job %s(%s) due to %d sequental faults",
+                            job.name, job.key, fc)
                     else:
                         next_status = self.S_WAIT
             else:
@@ -363,8 +370,8 @@ class Scheduler(object):
                 self._run_job_handler(job, object=m.managed_object,
                     result=m.script_result)
             else:
-                self.info("Job %s(%s) is failed" % (
-                    job.name, job.get_display_key()))
+                self.logger.info("Job %s(%s) is failed",
+                    job.name, job.get_display_key())
                 self._complete_job(job, job.S_FAILED, m.script_result)
         t.delete()
 
@@ -384,7 +391,7 @@ class Scheduler(object):
                             }, [self.ATTR_KEY])]
                     # Run initial submit
                     try:
-                        self.info("Running initial submit for %s" % jcls.name)
+                        self.logger.info("Running initial submit for %s", jcls.name)
                         jcls.initial_submit(self, keys)
                     except Exception:
                         error_report()
@@ -416,7 +423,7 @@ class Scheduler(object):
             jcls = self.job_classes.get(job_data[self.ATTR_CLASS])
             if not jcls:
                 # Invalid job class. Park job to FAIL state
-                self.error("Invalid job class: %s" % jcls)
+                self.logger.error("Invalid job class: %s", jcls)
                 self.set_job_status(job_data[self.ATTR_CLASS],
                     job_data[self.ATTR_KEY], Job.S_FAILED)
                 continue
@@ -427,8 +434,7 @@ class Scheduler(object):
             # Check for late jobs
             if (job.max_delay and
                 job_data[self.ATTR_TS] < datetime.datetime.now() - datetime.timedelta(seconds=job.max_delay)):
-                self.info("Job %s(%s) is scheduled too late" % (
-                    job.name, job.get_display_key()))
+                job.logger.info("Job scheduled too late")
                 job.started = time.time()
                 self._complete_job(job, job.S_LATE, None)
                 continue
@@ -445,14 +451,14 @@ class Scheduler(object):
     def run(self):
         if self.reset_running:
             # Change running to waiting
-            self.debug("Resetting running jobs")
+            self.logger.debug("Resetting running jobs")
             self.collection.update({
                 self.ATTR_STATUS: self.S_RUN
             }, {
                 "$set": {self.ATTR_STATUS: self.S_WAIT}
             }, multi=True, safe=True)
         self.ensure_indexes()
-        self.info("Running scheduler")
+        self.logger.info("Running scheduler")
         while True:
             if not self.run_pending():
                 time.sleep(1)
@@ -504,7 +510,7 @@ class Scheduler(object):
         if self.log_jobs:
             # Check job logs directory exists
             if not os.path.isdir(self.log_jobs):
-                self.error("Jobs log directory does not exists: %s" % self.log_jobs)
+                self.logger.error("Jobs log directory does not exists: %s", self.log_jobs)
                 self.log_jobs = None
 
 ## Avoid circular reference
