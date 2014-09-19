@@ -58,8 +58,8 @@ class JobScheduler(Scheduler):
         :param body:
         :return:
         """
-        self.debug("Receiving STOMP message to destination %s: %r" % (
-            destination, body))
+        self.logger.debug("Receiving STOMP message to destination %s: %r",
+            destination, body)
         # @todo: threaded
         if destination in self.subscribers:
             for job in self.subscribers[destination]:
