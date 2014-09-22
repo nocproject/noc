@@ -27,6 +27,7 @@ class Metric(object):
         self.scale = None
         self.cvt = None
         self.policy = FeedPolicy()
+        self.locked_convert = False  # Convert changed by set_convert
 
     def configure(self, metric, metric_type, thresholds, convert,
                   collectors, scale=1.0, **kwargs):
@@ -35,12 +36,13 @@ class Metric(object):
             self.metric_type = metric_type
         self.metric = metric
         self.thresholds = thresholds
-        self.scale = scale
         self.policy.configure(collectors)
-        if convert != self.convert:
-            self.reset()
-            self.convert = convert
-            self.cvt = getattr(self, "convert_%s" % convert)
+        if not self.locked_convert:
+            self.scale = scale
+            if convert != self.convert:
+                self.reset()
+                self.convert = convert
+                self.cvt = getattr(self, "convert_%s" % convert)
 
     def set_value(self, t, v):
         r = self.cvt(t, v)
@@ -71,3 +73,12 @@ class Metric(object):
         if not self.last_time or not self.last_value:
             return None
         return (v - self.last_value) / (t - self.last_time)
+
+    def set_convert(self, convert=None, scale=None):
+        self.locked_convert = True
+        self.scale = scale if scale is not None else self.scale
+        convert = convert if convert is not None else self.convert
+        if convert != self.convert:
+            self.reset()
+            self.convert = convert
+            self.cvt = getattr(self, "convert_%s" % convert)
