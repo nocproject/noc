@@ -13,6 +13,7 @@ import base64
 import time
 import logging
 import datetime
+import socket
 ## NOC modules
 from noc.lib.serialize import json_decode
 from noc.lib.debug import error_report
@@ -79,8 +80,12 @@ class ConfigurationThread(threading.Thread):
         try:
             resp = urllib2.urlopen(req, timeout=self.timeout)
         except urllib2.URLError, why:
-            logger.error("Cannot get config from %s: %s" % (
-                self.url, why))
+            logger.error("Cannot get config from %s: %s",
+                         self.url, why)
+            return None
+        except socket.timeout:
+            logger.error("Cannot get config from %s: Timed out",
+                         self.url)
             return None
         try:
             data = json_decode(resp.read())
