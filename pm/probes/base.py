@@ -193,8 +193,9 @@ class Probe(object):
 
     INVALID_OID_TTL = 3600
 
-    def __init__(self, daemon):
+    def __init__(self, daemon, task):
         self.daemon = daemon
+        self.task = task
         self.missed_oids = {}  # oid -> expire time
         self.logger = logging.getLogger(self.__module__)
 
@@ -213,6 +214,12 @@ class Probe(object):
     def set_missed_oid(self, oid):
         logger.info("Disabling missed oid %s", oid)
         self.missed_oids[oid] = time.time() + self.INVALID_OID_TTL
+
+    def set_convert(self, metric, convert=None, scale=None):
+        """
+        Change metric conversions
+        """
+        self.task.set_metric_convert(metric, convert, scale)
 
     def snmp_get(self, oids, address, port=161,
                  community="public", version=SNMP_v2c):

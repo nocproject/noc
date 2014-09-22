@@ -81,7 +81,7 @@ class Task(object):
         nh = probe_registry.get_handler(handler)
         if nh != self.handler:
             self.handler = nh
-            self.probe = nh.im_class(self.daemon)
+            self.probe = nh.im_class(self.daemon, self)
         if interval != self.interval:
             # Change offset
             self.offset = interval * random.random()
@@ -115,3 +115,6 @@ class Task(object):
         if nt < now:
             nt += self.interval
         return nt
+
+    def set_metric_convert(self, metric, convert=None, scale=None):
+        self.mdata[metric].set_convert(convert, scale)
