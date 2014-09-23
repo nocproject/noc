@@ -60,6 +60,7 @@ class ProbeConfig(Document):
         "allow_inheritance": False,
         "indexes": [("model_id", "object_id"),
                     ("probe_id", "instance_id"),
+                    ("probe_id", "instance_id", "expire"),
                     "uuid", "expire", "changed"]
     }
 
@@ -87,7 +88,7 @@ class ProbeConfig(Document):
     DELETE_DATE = datetime.datetime(2030, 1, 1)
 
     def __unicode__(self):
-        return self.metric
+        return unicode(self.uuid)
 
     @property
     def is_deleted(self):
