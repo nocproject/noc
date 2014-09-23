@@ -37,7 +37,7 @@ class MongoDBProbe(Probe):
     ], convert=metric.DERIVE, preference=metric.PREF_PLATFORM, scale=8)
     @metric([
         "DB | Connections | Current", "DB | Connections | Available",
-        "Process | Mempry | Resident", "Process | Memory | Virtual",
+        "Process | Memory | Resident", "Process | Memory | Virtual",
         "Process | Memory | Mapped"
     ], convert=metric.NONE, preference=metric.PREF_PLATFORM)
     def get_server_stats(self, host, database, port=27017):
