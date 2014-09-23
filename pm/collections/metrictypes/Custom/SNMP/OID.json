@@ -1,0 +1,5 @@
+{
+    "name": "Custom | SNMP | OID",
+    "uuid": "27459349-8762-4408-a687-a1938ba9c979",
+    "description": "Value from arbitrary SNMP OID"
+}
