@@ -93,7 +93,8 @@ class Script(NOCScript):
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "description": description,
-                "subinterfaces": sub
+                "subinterfaces": sub,
+                "snmp_ifindex": phy[0]
             }]
         # Enet ports info
         enet_ports = self.cli("statistics enet")
@@ -114,18 +115,19 @@ class Script(NOCScript):
             elif parse_table(enet_ports)[y][1] == "link down":
                 oper_status = False
             i += [{
-                "name": "enet%d" % (y+1),
+                "name": "enet%d" % (y + 1),
                 "type": "physical",
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "mac": mac,
+                "snmp_ifindex": y + 49,
                 "subinterfaces": [{
                     "admin_status": admin_status,
                     "enabled_afi": ["BRIDGE"],
                     "oper_status": oper_status,
-                    "name": "enet%d" % (y+1),
+                    "name": "enet%d" % (y + 1),
                     "mac": mac,
-                    "tagged_vlans": tagged[y+1]
+                    "tagged_vlans": tagged[y + 1]
                 }]
             }]
         return [{"interfaces": i}]
