@@ -1,4 +1,7 @@
 name,uuid,path,hash
+Custom,e50a899b-6409-4dd4-b991-2d5c40465884,Custom.json,f3b5a11663278eef69d9c14cf6a6cb3429ac17bedd0b97808f576fc7ffc2765d
+Custom | SNMP,9188d20a-1f5f-4087-80be-d767f797d964,Custom/SNMP.json,4b38fa54966caa98cc2c31ea1c308469cb43e9b665820b82437826ba159f743a
+Custom | SNMP | OID,27459349-8762-4408-a687-a1938ba9c979,Custom/SNMP/OID.json,fc3a20bc12119ae054e87d79108cfa6a5171f496fc8f3cdce5ea178efbe228e7
 DB,2574a02b-832b-4352-ac4f-7953b0be0bda,DB.json,8ed1ec1f94d022c5e1a8bc1a484c2012c49063c7810330400d61b922cb563ef4
 DB | Connections | Available,9de387ed-9bcc-4984-bb26-bc6d2b789a3d,DB/Connections/Available.json,84dcedf8503d668e094dc12748844c4c5a53679de5dfebbfd920dccf07cfb364
 DB | Connections | Current,cca0e4b7-e2b1-4b9a-a033-9c89bd4ff7ee,DB/Connections/Current.json,a9f04e4737f05b966ffbd293fff78b3398f7e401818ad7f90ad9e0e5325daaba
@@ -46,4 +49,5 @@ Process,2b554a0b-99a1-4c0c-9003-4ab8ecf9ab7a,Process.json,349a9e60f070c529b95b83
 Process | Memory,fdd729c3-657b-45f2-af3e-fa4505f395d4,Process/Memory.json,d7aca8d64450f586b198d8ba306642c9c7cc22c4f19c0814d3fc8496ade4d714
 Process | Memory | Mapped,ea9814ee-a9f1-41f4-9d36-606bf8cb77fc,Process/Memory/Mapped.json,8e4a3758fa8afbde6811f89281bce080666240e008121159869fc5cc44bf52dc
 Process | Memory | Page Faults,543516fc-c478-447a-b9aa-9cf42d48c8d0,Process/Memory/Page_Faults.json,a20671f3e2cd3d7f04e8a8e047f383a49b333bda5b928e54af4aecd8cb50c48d
+Process | Memory | Resident,08909707-5b29-4da9-a92b-56e02a766225,Process/Memory/Resident.json,3f2719714c4f70e3f317b1af0d0e82381cb65d92f1bae62924c979a07979a0a2
 Process | Memory | Virtual,1b2975d1-3c7a-4720-b194-50b24f067033,Process/Memory/Virtual.json,6b550605a2f0eee6a3332976ef269fcc088753a316787c27a144414e3e495632

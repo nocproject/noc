@@ -1,0 +1,6 @@
+{
+    "name": "Process | Memory | Resident",
+    "uuid": "08909707-5b29-4da9-a92b-56e02a766225",
+    "description": "Process RSS",
+    "measure": "bytes"
+}
