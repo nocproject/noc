@@ -8,40 +8,62 @@
 
 ## Python modules
 import logging
+import datetime
 ## Django modules
-from django.db import models
-from django.contrib.auth.models import User
 from django.db.models import signals as django_signals
+from django.utils.encoding import smart_unicode
+## Third-party modules
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (StringField, DateTimeField,
+                                ListField, EmbeddedDocumentField)
 ## NOC modules
 from noc.lib.middleware import get_user
 from noc import settings
+from noc.lib.utils import get_model_id
+from noc.lib.text import to_seconds
 
 logger = logging.getLogger(__name__)
 
 
-class AuditTrail(models.Model):
-    """
-    Audit Trail
-    """
-    class Meta:
-        verbose_name = "Audit Trail"
-        verbose_name_plural = "Audit Trail"
-        db_table = "main_audittrail"
-        app_label = "main"
-        ordering = ["-timestamp"]
+class FieldChange(EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    field = StringField()
+    old = StringField(required=False)
+    new = StringField(required=False)
 
-    user = models.ForeignKey(User, verbose_name="User")
-    timestamp = models.DateTimeField("Timestamp", auto_now=True)
-    model = models.CharField("Model", max_length=128)
-    db_table = models.CharField("Table", max_length=128)
-    operation = models.CharField(
-        "Operation", max_length=1,
+    def __unicode__(self):
+        return self.field
+
+
+class AuditTrail(Document):
+    meta = {
+        "collection": "noc.audittrail",
+        "allow_inheritance": False,
+        "indexes": [
+            "timestamp",
+            ("model_id", "object"),
+            {
+                "fields": ["expires"],
+                "expireAfterSeconds": 0
+            }
+        ]
+    }
+
+    timestamp = DateTimeField()
+    user = StringField()
+    model_id = StringField()
+    object = StringField()
+    op = StringField(
         choices=[
             ("C", "Create"),
             ("M", "Modify"),
-            ("D", "Delete")])
-    subject = models.CharField("Subject", max_length=256)
-    body = models.TextField("Body")
+            ("D", "Delete")
+        ]
+    )
+    changes = ListField(EmbeddedDocumentField(FieldChange))
+    expires = DateTimeField()
 
     EXCLUDE = set([
         "admin.logentry",
@@ -52,26 +74,38 @@ class AuditTrail(models.Model):
         "sa.reducetask",
     ])
 
+    DEFAULT_TTL = to_seconds(settings.config.get("audit", "ttl.db"))
+    _model_ttls = {}
+
     @classmethod
-    def log(cls, sender, instance, operation, message):
+    def log(cls, sender, instance, op, changes):
         """
         Log into audit trail
         """
         user = get_user()  # Retrieve user from thread local storage
         if not user or not user.is_authenticated():
             return  # No user initialized, no audit trail
-        subject = unicode(instance)
-        if len(subject) > 127:
-            # Narrow subject
-            subject = subject[:62] + " .. " + subject[-62:]
-        AuditTrail(
-            user=user,
-            model=sender.__name__,
-            db_table=sender._meta.db_table,
-            operation=operation,
-            subject=subject,
-            body=message
-        ).save()
+        if not changes:
+            logger.debug("Nothing to log for %s", instance)
+            return
+        now = datetime.datetime.now()
+        model_id = get_model_id(sender)
+        cls._get_collection().insert({
+            "timestamp": now,
+            "user": user.username,
+            "model_id": model_id,
+            "object": str(instance.pk),
+            "op": op,
+            "changes": changes,
+            "expires": now + cls._model_ttls[model_id]
+        }, w=0)
+
+    @classmethod
+    def get_field(cls, instance, field):
+        if field._get_val_from_obj(instance) is None:
+            return None
+        else:
+            return field.value_to_string(instance)
 
     @classmethod
     def on_update_model(cls, sender, instance, **kwargs):
@@ -80,29 +114,30 @@ class AuditTrail(models.Model):
         """
         #
         logger.debug("Logging change for %s", instance)
+        changes = []
         if instance.pk:
             # Update
-            try:
-                old = sender.objects.get(pk=instance.pk)
-            except sender.DoesNotExist:
-                # Protection for correct test fixtures loading
-                return
-            message = []
-            operation = "M"
+            op = "U"
             for f in sender._meta.fields:
-                od = f.value_to_string(old)
-                nd = f.value_to_string(instance)
-                if f.name == "id":
-                    message += ["id: %s" % nd]
-                elif nd != od:
-                    message += ["%s: '%s' -> '%s'" % (f.name, od, nd)]
-            message = "\n".join(message)
+                od = instance._old_values.get(f.attname)
+                if od is not None:
+                    od = smart_unicode(od)
+                nd = cls.get_field(instance, f)
+                if nd != od:
+                    changes += [{
+                        "field": f.name,
+                        "old": od,
+                        "new": nd
+                    }]
         else:
-            # New record
-            operation = "C"
-            message = "\n".join(["%s = %s" % (f.name, f.value_to_string(instance))
-                                 for f in sender._meta.fields])
-        cls.log(sender, instance, operation, message)
+            # Create
+            op = "C"
+            changes = [{
+                "field": f.name,
+                "old": None,
+                "new": cls.get_field(instance, f)
+            } for f in sender._meta.fields]
+        cls.log(sender, instance, op, changes)
 
     @classmethod
     def on_delete_model(cls, sender, instance, **kwargs):
@@ -111,20 +146,46 @@ class AuditTrail(models.Model):
         """
         #
         logger.debug("Logging deletion of %s", instance)
-        operation = "D"
-        message = "\n".join(["%s = %s" % (f.name, f.value_to_string(instance))
-                             for f in sender._meta.fields])
-        cls.log(sender, instance, operation, message)
+        changes = [{
+            "field": f.name,
+            "old": cls.get_field(instance, f),
+            "new": None
+        } for f in sender._meta.fields]
+        cls.log(sender, instance, "D", changes)
+
+    @classmethod
+    def on_init_model(cls, sender, instance, **kwargs):
+        """
+        Preserve original values
+        """
+        instance._old_values = dict(instance.__dict__)
+
+    @classmethod
+    def get_model_ttl(cls, model_id):
+        m = model_id.split(".")[0]
+        if settings.config.has_option("audit", "ttl.db.%s" % model_id):
+            v = to_seconds(settings.config.get("audit", "ttl.db.%s" % model_id))
+        elif settings.config.has_option("audit", "ttl.db.%s" % m):
+            v = to_seconds(settings.config.get("audit", "ttl.db.%s" % m))
+        else:
+            v = cls.DEFAULT_TTL
+        return datetime.timedelta(seconds=v)
 
     @classmethod
     def on_new_model(cls, sender, **kwargs):
         if str(sender._meta) in cls.EXCLUDE:
             return  # Ignore model
-        # logger.debug("Adding audit trail for %s", sender._meta)
+        model_id = get_model_id(sender)
+        ttl = cls.get_model_ttl(model_id)
+        if not ttl:
+            return  # Disabled
+        cls._model_ttls[model_id] = ttl
         django_signals.post_save.connect(cls.on_update_model,
                                          sender=sender)
         django_signals.post_delete.connect(cls.on_delete_model,
                                            sender=sender)
+        django_signals.post_init.connect(cls.on_init_model,
+                                         sender=sender)
 
     @classmethod
     def install(cls):

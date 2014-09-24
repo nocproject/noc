@@ -330,3 +330,31 @@ rx_safe_path = re.compile("[^a-z0-9\-\+]+", re.IGNORECASE)
 
 def quote_safe_path(d):
     return rx_safe_path.sub("_", d)
+
+
+def to_seconds(v):
+    """
+    Convert string value to seconds.
+    Available acronyms are h, d, w, m, y
+    """
+    m = 1
+    if v.endswith("h"):
+        v = v[:-1]
+        m = 3600
+    elif v.endswith("d"):
+        v = v[:-1]
+        m = 24 * 3600
+    elif v.endswith("w"):
+        v = v[:-1]
+        m = 7 * 24 * 3600
+    elif v.endswith("m"):
+        v = v[:-1]
+        m = 30 * 24 * 3600
+    elif v.endswith("y"):
+        v = v[:-1]
+        m = 365 * 24 * 3600
+    try:
+        v = int(v)
+    except ValueError:
+        raise "Invalid time: %s" % v
+    return v * m
