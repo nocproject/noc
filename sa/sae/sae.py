@@ -444,13 +444,15 @@ class SAE(Daemon):
                 r += [u"%s=%s" % (k, kwargs[k])]
         logging.log(level, u" ".join(r))
         if status == "failed":
+            now = datetime.datetime.now()
             FailedScriptLog(
-                timestamp=datetime.datetime.now(),
+                timestamp=now,
                 managed_object=task.managed_object.name,
                 address=task.managed_object.address,
                 script=task.map_script,
                 error_code=kwargs["code"] if "code" in kwargs else None,
-                error_text=kwargs["error"]
+                error_text=kwargs["error"],
+                expires=now + datetime.timedelta(days=7)
             ).save()
         # Log into mrt log
         # timestamp, map task id, object id, object name, object addres,
