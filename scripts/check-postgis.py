@@ -88,6 +88,10 @@ class PGDriver(object):
         args = [self.psql_path, "-q"]
         if self.db_cred.get("user"):
             args += ["-U", self.db_cred["user"]]
+        if self.db_cred.get("host"):
+            args += ["-h", self.db_cred["host"]]
+        if self.db_cred.get("port"):
+            args += ["-p", self.db_cred["port"]]
         args += ["-w", "-f", path, self.db_cred["database"]]
         env = os.environ.copy()
         env["PGPASSFILE"] = self.pgpass_path
