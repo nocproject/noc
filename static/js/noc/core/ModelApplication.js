@@ -660,7 +660,6 @@ Ext.define("NOC.core.ModelApplication", {
                 me.saveInlines(data[me.idField], me.inlineStores);
             },
             failure: function(response) {
-                console.log("Failure", response);
                 var data = response.responseText ? Ext.decode(response.responseText) : null;
                 if(data && data.status === false) {
                     NOC.error(data["message"]);
