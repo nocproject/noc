@@ -7,16 +7,15 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.main.models.audittrail import AuditTrail
 
 
-class AuditTrailApplication(ExtModelApplication):
+class AuditTrailApplication(ExtDocApplication):
     """
     AuditTrails application
     """
     title = "Audit Trail"
     menu = "Audit Trail"
     model = AuditTrail
-    query_fields = ["subject__icontains", "body__icontains"]
 

@@ -165,9 +165,11 @@ class ExtModelApplication(ExtApplication):
         :return: dict of cleaned parameters of raised InterfaceTypeError
         :rtype: dict
         """
-        # Delete id
-        if "id" in data:
-            del data["id"]
+        # Strip "id" and convert empty strings to None
+        data = dict(
+            (k, data[k] if data[k] != "" else None)
+            for k in data if k != "id"
+        )
         # Clean up fields
         for f in self.clean_fields:
             if f in data:
