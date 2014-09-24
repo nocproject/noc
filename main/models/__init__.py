@@ -42,32 +42,12 @@ from noc.lib.validators import is_int
 ## Register periodics
 periodic_registry.register_all()
 ## Full-text searchable models
-fts_models = {}  # name -> model
 from fts_queue import FTSQueue
 from noc.pm.models.probeconfig import ProbeConfig
 
-
+FTSQueue.install()
 ProbeConfig.install()
 
-
-def update_fts(sender, instance, **kwargs):
-    FTSQueue.schedule_update(instance)
-
-
-def on_new_model(sender, **kwargs):
-    """
-    Register new search handler if model has .search() classmethod
-    """
-    if hasattr(sender, "get_index"):
-        fts_models[str(sender._meta)] = sender
-        if settings.IS_WEB:
-            post_save.connect(update_fts, sender=sender)
-
-##
-## Attach to the 'class_prepared' signal
-## and on_new_model on every new model
-##
-class_prepared.connect(on_new_model)
 ##
 ## Exclude tables from audit
 ##
@@ -129,7 +109,6 @@ def audit_trail_delete(sender, instance, **kwargs):
     message = "\n".join(["%s = %s" % (f.name, f.value_to_string(instance))
                          for f in sender._meta.fields])
     AuditTrail.log(sender, instance, operation, message)
-    FTSQueue.schedule_delete(instance)
 
 ##
 ## Set up audit trail handlers
