@@ -100,7 +100,7 @@ def csv_export(model, queryset=None, first_row_only=False):
     return io.getvalue()
 
 
-def csv_import(model, f, resolution=IR_FAIL):
+def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
     """
     Import from CSV
     :returns: (record_count,error_message).
@@ -110,7 +110,7 @@ def csv_import(model, f, resolution=IR_FAIL):
     if not f.read(3) == "\xef\xbb\xbf":
         # No BOM found, seek to start
         f.seek(0)
-    reader = csv.reader(f)
+    reader = csv.reader(f, delimiter=delimiter)
     # Process model fields
     field_names = set()
     required_fields = set()

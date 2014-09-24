@@ -25,11 +25,13 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option("-r", "--resolve", action="store", dest="resolve",
                     default="fail"),
+        make_option("-d", "--delimiter", action="store",
+                    dest="delimiter", default=",")
     )
 
     def _usage(self):
         print "Usage:"
-        print "%s csv-import [--resolve=action] <model> <file1> .. <fileN>" % (sys.argv[0])
+        print "%s csv-import [--resolve=action] [--delimiter=<char>] <model> <file1> .. <fileN>" % (sys.argv[0])
         print "<action> is one of:"
         print "        fail - fail when record is already exists"
         print "        skip - skip duplicated records"
@@ -75,7 +77,8 @@ class Command(BaseCommand):
         for f in args[1:]:
             print "Importing %s" % f
             with open(f) as f:
-                count, error = csv_import(m, f, resolution=resolve)
+                count, error = csv_import(m, f, resolution=resolve,
+                                          delimiter=options["delimiter"])
                 if count is None:
                     raise CommandError(error)
                 else:
