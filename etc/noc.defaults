@@ -573,6 +573,13 @@ login_ttl = 1m
 reboot_ttl = 0
 # Store config changed log
 config_changed_ttl = 1y
+# Database audit
+# Can be in form of
+#     ttl.db = <time> - default database audit log TTL
+#     ttl.db.<module> = <time> - default audit log TTL for module (sa, inv, etc)
+#     ttl.db.<module>.<model> - default autid log TTL for model (sa.ManagedObject)
+# 0 -- disable audit
+ttl.db = 5y
 
 [pm]
 # Solution processing effective metric settings
