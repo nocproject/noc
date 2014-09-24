@@ -43,7 +43,7 @@ noc-pkg-mxgraph==1.10.4.2
 noc-pkg-openlayers==2.13
 noc-pkg-cubism==1.6.0
 noc-pkg-d3==3.4.11
-noc-pkg-font-awesome==4.1.0
+noc-pkg-font-awesome==4.2.0
 noc-pkg-codemirror==4.5
 noc-pkg-rickshaw==1.5.0
 noc-pkg-stacktrace==1.0.0
