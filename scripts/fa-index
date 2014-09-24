@@ -2,7 +2,7 @@
 #-------------------------------------------------------------
 # Build ExtJS index for Font Awesome glyphs
 #-------------------------------------------------------------
-# Copyright (C) 2007-2013, nocproject.org
+# Copyright (C) 2007-2014, nocproject.org
 #-------------------------------------------------------------
 
 ## Python modules
@@ -10,8 +10,8 @@ import re
 
 CSS = "static/pkg/font-awesome/css/font-awesome.css"
 rx_content = re.compile(
-    r"^(?P<name>\S+:before(?:,\S+:before)*)\s+{\s+"
-    r"content:\s+\"\\(?P<code>[a-f0-9]+)\"",
+    r"(?P<name>\.fa-[a-z0-9_\-]+:before(?:,\.fa-[a-z0-9_\-]+:before)*)\s*{\s*"
+    r"content:\s*\"\\(?P<code>[a-f0-9]+)\"",
     re.MULTILINE | re.DOTALL)
 
 def parse_css(path):
