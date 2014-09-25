@@ -8,7 +8,8 @@
 
 ## Python modules
 import inspect
-import threading
+import hashlib
+import base64
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.lib.nbsocket.socketfactory import SocketFactory
@@ -57,7 +58,8 @@ class PMWriterDaemon(Daemon):
         self.cache.set_strategy(strategy)
         if not self.storage_class:
             self.setup_storage_class()
-        self.setup_nm_policer()
+        if self.storage_class.EXPLICIT_CREATE:
+            self.setup_nm_policer()
         self.run_writers()
 
     def run(self):
@@ -97,6 +99,9 @@ class PMWriterDaemon(Daemon):
             setattr(self, name, s)
 
     def load_storage_rules(self):
+        def get_sr_id(r):
+            return base64.b32encode(hashlib.md5(str(sr.id)).digest())[:6]
+
         self.logger.info("Loading storage rules")
         rules = {}
         self.default_storage_rule = None
@@ -105,7 +110,8 @@ class PMWriterDaemon(Daemon):
                 "retentions": sr.get_retention(),
                 "aggregation_method": sr.aggregation_method,
                 "xfilesfactor": sr.xfilesfactor,
-                "name": sr.name
+                "name": sr.name,
+                "srid": get_sr_id(sr)
             }
             rules[sr.name] = r
             if sr.name == "default":
@@ -125,7 +131,9 @@ class PMWriterDaemon(Daemon):
                 self.storage_class = o
                 break
         if not self.storage_class:
-            raise ValueError("Invalid storage type '%s'", sc)
+            raise ValueError("Invalid storage type '%s'" % sc)
+        if not self.storage_class.ENABLED:
+            raise ValueError("%s storage type is disabled" % sc)
 
     def run_writers(self):
         if self.writers:
