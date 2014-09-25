@@ -63,7 +63,9 @@ class Task(object):
                 # Feed result
                 for m in result:
                     if m in self.mdata:
-                        self.mdata[m].set_value(t, result[m])
+                        v = result[m]
+                        if v is not None:
+                            self.mdata[m].set_value(t, v)
             self.logger.debug("Done")
         except:
             error_report()
