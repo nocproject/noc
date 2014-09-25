@@ -10,6 +10,7 @@
 from collections import defaultdict
 import datetime
 import logging
+import random
 ## Django modules
 import django.db.models.signals
 ## Third-party modules
@@ -19,6 +20,7 @@ from mongoengine.fields import (
     StringField, IntField, DictField, DateTimeField, FloatField,
     ListField, EmbeddedDocumentField)
 ## NOC Modules
+from noc import settings
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +86,11 @@ class ProbeConfig(Document):
 
     PROFILES = defaultdict(list)  # model -> [(model, field), ...]
     MODELS = []
-    EXPIRE = 3600
+    TTL = settings.config.getint("pm", "config_ttl")
+    TTL_JITTER = settings.config.getfloat("pm", "config_ttl_jitter")
+    TJL = int(TTL - TTL_JITTER * TTL)
+    TJH = int(TTL + TTL_JITTER * TTL)
+
     DELETE_DATE = datetime.datetime(2030, 1, 1)
 
     def __unicode__(self):
@@ -166,6 +172,13 @@ class ProbeConfig(Document):
         )
 
     @classmethod
+    def get_ttl(cls):
+        if not cls.TTL_JITTER:
+            return cls.TTL
+        else:
+            return random.randint(cls.TJL, cls.TJH)
+
+    @classmethod
     def _refresh_object(cls, object):
         def get_collector(storage_rule):
             c = collectors.get(storage_rule)
@@ -211,7 +224,7 @@ class ProbeConfig(Document):
                             "model_id": es.model_id,
                             "object_id": str(es.object.id) if es.object else None,
                             "changed": now,
-                            "expire": expire,
+                            "expire": now + datetime.timedelta(seconds=cls.get_ttl()),
                             "handler": es.handler,
                             "interval": es.interval,
                             "probe_id": str(es.probe.id),
@@ -236,7 +249,6 @@ class ProbeConfig(Document):
         collectors = {}  # Storage rule -> collector url
         # @todo: Make configurable
         now = datetime.datetime.now()
-        expire = now + datetime.timedelta(seconds=cls.EXPIRE)
         bulk = cls._get_collection().initialize_ordered_bulk_op()
         get_refresh_ops(bulk, object)
         bulk.execute()
@@ -287,7 +299,7 @@ class ProbeConfig(Document):
                             "model_id": "pm.MetricConfig",
                             "object_id": str(o.id),
                             "changed": now,
-                            "expire": expire,
+                            "expire": now + datetime.timedelta(seconds=cls.get_ttl()),
                             "handler": es.handler,
                             "interval": es.interval,
                             "probe_id": str(es.probe.id),
@@ -309,7 +321,6 @@ class ProbeConfig(Document):
         collectors = {}  # Storage rule -> collector url
         # @todo: Make configurable
         now = datetime.datetime.now()
-        expire = now + datetime.timedelta(seconds=cls.EXPIRE)
         bulk = cls._get_collection().initialize_ordered_bulk_op()
         get_refresh_ops(bulk, object)
         bulk.execute()

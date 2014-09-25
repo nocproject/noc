@@ -585,6 +585,20 @@ ttl.db = 5y
 # Solution processing effective metric settings
 # and setting probes and graphite names
 metric_router = noc.solutions.noc.default.pm.router.DefaultRouter
+# Config expiration time in seconds
+# Each config will be validated and rebuilded each config_ttl seconds
+config_ttl = 3600
+# Random config ttl variation, relative to config_ttl
+# i.e. config_ttl = 3600, config_ttl_jitter = 0.01
+# means for each metrics ttl will be set randomly in [3564 .. 3636] seconds
+config_ttl_jitter = 0.01
+# Timeout to refresh expired configs
+# noc-web will refresh expired config by expired_refresh_chunk
+# portions up to expired_refresh_timeout seconds
+# Untouched expired configs will be left for other time
+expired_refresh_timeout = 10
+# Refresh expired configs batch
+expired_refresh_chunk = 100
 
 [pm_render]
 # Cache metric data and rendered graphs
