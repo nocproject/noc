@@ -8,12 +8,14 @@
 
 ## Python modules
 import datetime
+import time
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.pm.models.probe import Probe
 from noc.pm.models.probeconfig import ProbeConfig
 from noc.pm.models.metricsettings import MetricSettings
 from noc.sa.interfaces.base import DateTimeParameter
+from noc.settings import config
 
 
 class ProbeApplication(ExtDocApplication):
@@ -24,6 +26,9 @@ class ProbeApplication(ExtDocApplication):
     menu = "Setup | Probes"
     model = Probe
     query_fields = ["name"]
+
+    REFRESH_CHUNK = config.getint("pm", "expired_refresh_chunk")
+    REFRESH_TIMEOUT = config.getint("pm", "expired_refresh_timeout")
 
     @view(url="^(?P<name>[^/]+)/(?P<instance>\d+)/config/$", method=["GET"],
           validate={
@@ -43,10 +48,24 @@ class ProbeApplication(ExtDocApplication):
         probe_id = str(probe.id)
         now = datetime.datetime.now()
         # Refresh expired congfigs
+        t0 = time.time()
+        nr = 0
+        dt = 0
         for pc in ProbeConfig.objects.filter(probe_id=probe_id,
                                              instance_id=instance,
                                              expire__lt=now):
             pc.refresh()
+            nr += 1
+            if nr % self.REFRESH_CHUNK:
+                # Check execution time
+                dt = time.time() - t0
+                if dt > self.REFRESH_TIMEOUT:
+                    break
+        if nr:
+            self.logger.info(
+                "%d configs has been refreshed in %s seconds. Giving up",
+                nr, dt
+            )
         # Get configs
         qs = ProbeConfig.objects.filter(probe_id=probe_id,
                                         instance_id=instance)
