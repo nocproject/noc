@@ -524,6 +524,12 @@ Ext.define("NOC.sa.managedobject.Application", {
             ftype: "boolean"
         },
         {
+            title: "By SA Profile",
+            name: "profile_name",
+            ftype: "lookup",
+            lookup: "main.ref.profile"
+        },
+        {
             title: "By Obj. Profile",
             name: "object_profile",
             ftype: "lookup",
