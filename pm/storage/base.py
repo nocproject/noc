@@ -17,7 +17,10 @@ from settings import config
 
 
 class TimeSeriesDatabase(object):
-    name = None
+    name = None  # storage type name
+    ENABLED = True
+    # Storage require explicit metric existance check and create
+    EXPLICIT_CREATE = True
 
     rx_variant = re.compile(r"{([^}]*)}")
 
@@ -45,12 +48,19 @@ class TimeSeriesDatabase(object):
         """
         pass
 
-    def write(self, metric, datapoints):
+    def write(self, metric, datapoints, sr):
         """
         Persist datapoints into the database metric
         Datapoints are [(timestamp, value), ....]
+        sr is storare rule dict
         """
         raise NotImplementedError()
+
+    def flush(self):
+        """
+        Called periodically to flush pending updates
+        """
+        pass
 
     def exists(self, metric):
         """

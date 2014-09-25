@@ -9,6 +9,7 @@
 ## Python modules
 import logging
 import threading
+import time
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 
@@ -28,9 +29,9 @@ class Writer(threading.Thread):
     def run(self):
         self.logger.info("Running writer thread")
         for metric, datapoints in self.daemon.cache.iter_metrics():
-            self.logger.debug("Writing %s %s", metric, datapoints)
+            t0 = time.time()
             sr = self.daemon.get_storage_rule(metric)
-            if not self.storage.exists(metric):
+            if self.storage.EXPLICIT_CREATE and not self.storage.exists(metric):
                 if not self.daemon.can_create_metric():
                     self.logger.info(
                         "Throttling metric '%s' creation. Discarding data",
@@ -47,9 +48,11 @@ class Writer(threading.Thread):
                     continue
                 self.logger.info("Metric created: '%s'", metric)
             try:
-                self.storage.write(metric, datapoints)
+                self.storage.write(metric, datapoints, sr)
             except Exception, why:
                 self.logger.error("Failed to write metric %s: %s",
                                   metric, why)
             self.daemon.cache.release_metric(metric)
+            self.storage.flush()
+            self.logger.debug("Writing %s %s (%.2fms)", metric, datapoints, (time.time() - t0) * 1000)
         self.logger.info("Stopping writer thread")

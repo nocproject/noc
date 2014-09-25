@@ -43,7 +43,7 @@ class WhisperDatabase(TimeSeriesDatabase):
         """
         pass
 
-    def write(self, metric, datapoints):
+    def write(self, metric, datapoints, sr):
         """
         Persist datapoints into the database metric
         Datapoints are [(timestamp, value), ....]
