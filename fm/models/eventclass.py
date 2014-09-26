@@ -268,7 +268,7 @@ class EventClass(Document):
         r += ["    \"name\": \"%s\"," % q(c.name)]
         r += ["    \"uuid\": \"%s\"," % c.uuid]
         if c.description:
-            r += ["    \"desciption\": \"%s\"," % q(c.description)]
+            r += ["    \"description\": \"%s\"," % q(c.description)]
         r += ["    \"action\": \"%s\"," % q(c.action)]
         # vars
         vars = []
