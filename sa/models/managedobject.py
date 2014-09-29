@@ -599,8 +599,8 @@ class ManagedObject(models.Model):
                 user=self.auth_profile.user,
                 password=self.auth_profile.password,
                 super_password=self.auth_profile.super_password,
-                snmp_ro=self.auth_profile.snmp_ro,
-                snmp_rw=self.auth_profile.snmp_rw
+                snmp_ro=self.auth_profile.snmp_ro or self.snmp_ro,
+                snmp_rw=self.auth_profile.snmp_rw or self.snmp_rw
             )
         else:
             return Credentials(
