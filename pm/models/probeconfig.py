@@ -403,6 +403,12 @@ class ProbeConfig(Document):
         for sr in StorageRule.objects.filter(storage=document.id):
             cls.on_change_storage_rule(StorageRule, document=sr)
 
+    @classmethod
+    def on_change_auth_profile(cls, sender, instance, *args, **kwargs):
+        logger.info("Applying changes to AuthProfile '%s'" % instance.name)
+        for mo in instance.managedobject_set.all():
+            cls._refresh_object(mo)
+
     def refresh(self):
         logger.debug("Refreshing %s", self.uuid)
         o = self.get_object()

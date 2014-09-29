@@ -8,6 +8,7 @@
 
 ## Django modules
 from django.db import models
+from django.db.models.signals import post_save
 ## NOC modules
 
 
@@ -40,3 +41,7 @@ class AuthProfile(models.Model):
 
     def __unicode__(self):
         return self.name
+
+##
+from noc.pm.models.probeconfig import ProbeConfig
+post_save.connect(ProbeConfig.on_change_auth_profile, sender=AuthProfile)
