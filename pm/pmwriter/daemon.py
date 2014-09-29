@@ -8,8 +8,6 @@
 
 ## Python modules
 import inspect
-import hashlib
-import base64
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.lib.nbsocket.socketfactory import SocketFactory
@@ -99,9 +97,6 @@ class PMWriterDaemon(Daemon):
             setattr(self, name, s)
 
     def load_storage_rules(self):
-        def get_sr_id(r):
-            return base64.b32encode(hashlib.md5(str(sr.id)).digest())[:6]
-
         self.logger.info("Loading storage rules")
         rules = {}
         self.default_storage_rule = None
@@ -111,7 +106,7 @@ class PMWriterDaemon(Daemon):
                 "aggregation_method": sr.aggregation_method,
                 "xfilesfactor": sr.xfilesfactor,
                 "name": sr.name,
-                "srid": get_sr_id(sr)
+                "srid": sr.sr_id
             }
             rules[sr.name] = r
             if sr.name == "default":
