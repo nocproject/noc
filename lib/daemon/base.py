@@ -85,6 +85,7 @@ class Daemon(object):
         self.pidfile = None
         self.config = None
         self.instance_id = self.options.instance_id
+        self.manhole_status = False
         self.load_config()
         # Register signal handlers if any
         for s in [s for s in dir(self) if s.startswith("SIG")]:
@@ -200,6 +201,20 @@ class Daemon(object):
             handler.setFormatter(formatter)
             logging.root.addHandler(handler)
             logging.root.setLevel(logging.DEBUG)
+        self.setup_manhole()
+
+    def setup_manhole(self):
+        to_start_manhole = (
+            self.config.has_section("debug") and
+            self.config.has_option("debug", "enable_manhole") and
+            self.config.getboolean("debug", "enable_manhole")
+        )
+        if to_start_manhole and not self.manhole_status:
+            import manhole
+            manhole.logger = logging.getLogger(self.daemon_name + ".manhole")
+            self.logger.info("Opening manhole")
+            manhole.install()
+            self.manhole_status = True
 
     def die(self, msg):
         self.logger.error(msg)
