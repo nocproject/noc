@@ -23,7 +23,7 @@ def get_pdu(community, oids, request_id=None):
     """
     e = BEREncoder()
     if not request_id:
-        request_id = random.randint(0, 0xFFFFFFFF)
+        request_id = random.randint(0, 0x7FFFFFFF)
     # Encode variable bindings
     varbinds = e.encode_sequence([
         e.encode_sequence([
