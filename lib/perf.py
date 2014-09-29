@@ -9,6 +9,9 @@
 ## Python modules
 import time
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 ENABLE_STATS = False
 BASE_DIR = None
@@ -21,6 +24,7 @@ class Metric(object):
     Performance metric
     """
     def __init__(self, name):
+        logger.debug("Creating metric %s", name)
         self.name = name
         metrics[name] = self
         self.value = 0
@@ -98,8 +102,28 @@ class Timer(object):
         self.result = self.FAIL
 
 
+class MetricsHub(object):
+    def __init__(self, prefix, *args):
+        self._prefix = prefix
+        if not self._prefix.endswith("."):
+            self._prefix += "."
+        for a in args:
+            self._add_metric(a)
+
+    def _add_metric(self, name):
+        m = Metric(self._prefix + name)
+        setattr(self, name.replace(".", "_").replace("-", "_"), m)
+        return m
+
+
 def enable_stats(enabled=True, base_dir=None):
     global ENABLE_STATS, BASE_DIR
     ENABLE_STATS = enabled
     if base_dir:
         BASE_DIR = base_dir
+
+
+def dump():
+    """Dump all metrics"""
+    for m in sorted(metrics):
+        print "%s: %s" % (m, metrics[m].get())
