@@ -7,13 +7,17 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 from Queue import Queue, Empty
 from threading import Thread, Lock, Event
 import time
 import ctypes
+import logging
 ## NOC modules
 from noc.lib.debug import error_report
+from noc.lib.log import PrefixLoggerAdapter
+from noc.lib.perf import MetricsHub
+
+logger = logging.getLogger(__name__)
 
 
 class CancelledError(Exception):
@@ -25,6 +29,7 @@ class Worker(Thread):
         super(Worker, self).__init__(*args, **kwargs)
         self.pool = pool
         self.queue = queue
+        self.logger = self.pool.logger
         self.title = "Starting"
         self.start_time = 0
         self.cancelled = False
@@ -32,6 +37,7 @@ class Worker(Thread):
         self.is_idle = True
 
     def run(self):
+        self.logger.debug("Stating worker thread")
         while True:
             # Get task from queue
             try:
@@ -60,6 +66,7 @@ class Worker(Thread):
         # Shutdown
         self.queue.task_done()
         self.pool.thread_done(self)
+        self.logger.debug("Stopping worker thread")
 
     def cancel(self):
         """
@@ -84,7 +91,8 @@ class Worker(Thread):
 
 
 class Pool(object):
-    def __init__(self, start_threads=1, max_threads=10,
+    def __init__(self, name="pool", metrics_prefix=None,
+                 start_threads=1, max_threads=10,
                  min_spare=1, max_spare=1, backlog=0):
         if min_spare > max_spare:
             raise ValueError("min_spare (%d) must not be greater"
@@ -94,6 +102,14 @@ class Pool(object):
             raise ValueError("start_threads (%d) must not be greater"
                              " than max_threads (%d)" % (start_threads,
                                                          max_threads))
+        self.logger = PrefixLoggerAdapter(logger, name)
+        self.name = name
+        self.metrics = MetricsHub(
+            metrics_prefix or "noc.pool.%s" % name,
+            "threads.running",
+            "threads.idle",
+            "queue.len"
+        )
         self.start_threads = start_threads
         self.max_threads = max_threads
         self.min_spare = min_spare
@@ -127,6 +143,9 @@ class Pool(object):
                 self.queue.put(None)
                 n_idle -= 1
                 n -= 1
+            self.metrics.threads_idle = n_idle
+            self.metrics.threads_running = n
+            self.metrics.queue_len = self.queue.qsize()
 
     def thread_done(self, t):
         with self.t_lock:
