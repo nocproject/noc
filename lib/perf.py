@@ -115,6 +115,12 @@ class MetricsHub(object):
         setattr(self, name.replace(".", "_").replace("-", "_"), m)
         return m
 
+    def __setattr__(self, key, value):
+        if key.startswith("_") or key not in self.__dict__:
+            self.__dict__[key] = value
+        else:
+            self.__dict__[key].set(value)
+
 
 def enable_stats(enabled=True, base_dir=None):
     global ENABLE_STATS, BASE_DIR
