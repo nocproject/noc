@@ -42,6 +42,8 @@ class ProbeDaemon(AutoConfDaemon):
         self.io.start()
         # Prepare thread pool
         self.thread_pool = Pool(
+            name="probes",
+            metrics_prefix="noc.noc-probe.%s" % self.instance_id,
             start_threads=self.config.getint("thread_pool", "start_threads"),
             min_spare=self.config.getint("thread_pool", "min_spare"),
             max_spare=self.config.getint("thread_pool", "max_spare"),
