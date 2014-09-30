@@ -19,6 +19,7 @@ import logging.handlers
 from noc.lib.debug import error_report, frame_report, set_crashinfo_context
 from noc.lib.validators import is_ipv4, is_int
 from noc.lib.version import get_version
+from noc.lib.log import ColorFormatter
 
 # Load netifaces to resolve interface addresses when possible
 try:
@@ -192,7 +193,7 @@ class Daemon(object):
             # Log to stdout
             handler = logging.StreamHandler(None)
             if self.is_stderr_supports_color():
-                formatter = DaemonLogColorFormatter(
+                formatter = ColorFormatter(
                     "%(color)s" + self.LOG_FORMAT + "%(endcolor)s",
                     None
                 )
@@ -550,58 +551,3 @@ class Daemon(object):
         self.logger.info("SIGTERM received. Exiting")
         self.at_exit()
         os._exit(0)
-
-
-class DaemonLogColorFormatter(logging.Formatter):
-    """
-    Colored terminal formatter
-    """
-    DEFAULT_LOG_COLORS = {
-        logging.DEBUG: 4,  # Blue
-        logging.INFO: 2,  # Green
-        logging.WARNING: 3,  # Yellow
-        logging.ERROR: 1,  # Red
-    }
-
-    def __init__(self, *args, **kwargs):
-        self._colors = {}
-        self._end_color = ""
-        self.setup_colors()
-        super(DaemonLogColorFormatter, self).__init__(*args, **kwargs)
-
-    def format(self, record):
-        def safe_unicode(s):
-            try:
-                return unicode(s)
-            except UnicodeDecodeError:
-                return repr(s)
-
-        try:
-            message = record.getMessage()
-            assert isinstance(message, (str, unicode))
-            record.message = safe_unicode(message)
-        except Exception as e:
-            record.message = "Bad message (%r): %r" % (e, record.__dict__)
-        record.asctime = self.formatTime(record, self.datefmt)
-        record.color = ""
-        if record.levelno in self._colors:
-            record.color = self._colors[record.levelno]
-        record.endcolor = self._end_color
-        formatted = self._fmt % record.__dict__
-        return formatted.replace("\n", "\n    ")
-
-    def setup_colors(self):
-        """
-        Set up terminal colors
-        """
-        import curses
-        self._colors = {}
-        fg_color = (curses.tigetstr("setaf") or
-                    curses.tigetstr("setf") or
-                    "")
-        for level in self.DEFAULT_LOG_COLORS:
-            self._colors[level] = unicode(
-                curses.tparm(fg_color, self.DEFAULT_LOG_COLORS[level]),
-                "ascii"
-            )
-        self._end_color = unicode(curses.tigetstr("sgr0"), "ascii")
