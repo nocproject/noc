@@ -63,6 +63,15 @@ fi
 if [ "$ENABLED" != "yes" ]; then
     error_exit "Upgrade is disabled. Please edit etc/upgrade.conf and run $0 again"
 fi
+##
+## Apply OS-depended settings
+##
+OSNAME=`uname -s`
+OSSETTINGS="./scripts/os/$OSNAME/upgrade"
+if [ -f $OSSETTINGS ]; then
+    . $OSSETTINGS
+fi
+
 ## Run pre-upgrade local script
 if [ -x ./local/bin/pre-upgrade ]; then
     info "Running ./local/bin/pre-upgrade"
