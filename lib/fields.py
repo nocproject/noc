@@ -301,5 +301,29 @@ class ColorField(models.Field):
             return value
 
 
+class DocumentReferenceField(models.Field):
+    __metaclass__ = models.SubfieldBase
+
+    def __init__(self, document, *args, **kwargs):
+        self.document = document
+        super(DocumentReferenceField, self).__init__(*args, **kwargs)
+
+    def db_type(self, connection):
+        return "CHAR(24)"
+
+    def to_python(self, value):
+        if value is None:
+            return None
+        else:
+            return self.document.objects.get(id=value)
+
+    def get_prep_value(self, value):
+        if value is None:
+            return None
+        elif isinstance(value, basestring):
+            return value
+        else:
+            return str(value.id)
+
 ##
 add_introspection_rules([],["^noc\.lib\.fields\."])
