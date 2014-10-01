@@ -686,3 +686,19 @@ map.inv.Interface = object.{{object.managed_object|dirhash:"4.2"}}.{{object.mana
 # metric.<N> = <regular expression>
 # probe.<N> = <probe name>
 # active.<N> = true | false
+
+[sync]
+# Config expiration time in seconds
+# Each config will be validated and rebuilded each config_ttl seconds
+config_ttl = 86400
+# Random config ttl variation, relative to config_ttl
+# i.e. config_ttl = 3600, config_ttl_jitter = 0.01
+# means for each metrics ttl will be set randomly in [3564 .. 3636] seconds
+config_ttl_jitter = 0.01
+# Timeout to refresh expired configs
+# noc-web will refresh expired config by expired_refresh_chunk
+# portions up to expired_refresh_timeout seconds
+# Untouched expired configs will be left for other time
+expired_refresh_timeout = 10
+# Refresh expired configs batch
+expired_refresh_chunk = 100

@@ -13,13 +13,36 @@ syslog_host =
 pidfile  = /var/run/noc/noc-sync.pid
 heartbeat= false
 
-[stomp]
-host = 127.0.0.1
-port = 19705
-client_id = noc-sync
-login = noc
-password = noc
+[autoconf]
+# Sync name (as in Main > Setup > Sync)
+name = default
+# NOC base URL
+url = http://127.0.0.1:8000/
+# Web user credentials used to authenticate sync on web backend
+user = noc
+passwd = noc
+# Config fetch timeout
+timeout = 30
+# Config fetch interval
+interval = 60
+# Retry interval after failure
+failed_interval = 10
 
 [update]
 name = sync
 enabled = false
+
+[debug]
+enable_manhole = false
+
+##
+## BIND Zone file sync
+##
+#[sync:bind]
+#enabled = true
+#handler = noc.main.sync.handlers.bindfile.BINDFileHandler
+#root=/var/named/autozones
+#inc_root=
+#on_new_zone = rndc reload
+#on_deleted_zone = rndc reload
+#on_updated_zone = rndc reload
