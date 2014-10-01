@@ -10,6 +10,7 @@
 import re
 import time
 from collections import defaultdict
+import logging
 # Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -29,9 +30,10 @@ from noc.lib.ip import IPv6
 from noc.lib.validators import is_ipv4, is_ipv6
 from noc.lib.rpsl import rpsl_format
 from noc.dns.utils.zonefile import ZoneFile
-from noc.lib.scheduler.utils import sync_request, sliding_job
-from noc.settings import config
 from noc.lib.gridvcs.manager import GridVCSField
+from noc.main.models.synccache import SyncCache
+
+logger = logging.getLogger(__name__)
 
 
 ##
@@ -181,7 +183,10 @@ class DNSZone(models.Model):
             return self.serial + 1  # May cause future lap
 
     def set_next_serial(self):
+        old_serial = self.serial
         self.serial = self.next_serial
+        logger.info("Zone %s serial change: %s -> %s",
+                    self.name, old_serial, self.serial)
         # self.save()
         # Hack to not send post_save signal
         DNSZone.objects.filter(id=self.id).update(serial=self.serial)
@@ -584,12 +589,12 @@ class DNSZone(models.Model):
             z._touch()
 
     def _touch(self, is_new=False):
-        if self.is_auto_generated:
-            sliding_job("main.jobs", "dns.touch_zone", key=self.id,
-                delta=config.getint("dns", "delay"),
-                cutoff_delta=config.getint("dns", "cutoff"),
-                data={"new": is_new}
-            )
+        logger.debug("Touching zone %s", self.name)
+        SyncCache.expire_object(self)
+
+    def ensure_sync(self):
+        ss = set(s.sync for s in self.profile.authoritative_servers if s.sync)
+        SyncCache.ensure_syncs(self, ss)
 
     @property
     def channels(self):
@@ -653,20 +658,43 @@ class DNSZone(models.Model):
                 g.notify(subject, body)
         return True
 
+    def get_sync_data(self):
+        """
+        Returns sync daemon configuration
+        {
+            records: [5-tuple]
+        }
+        """
+        self.refresh_zone()
+        return {
+            "records": self.get_records()
+        }
+
 
 ##
 ## Signal handlers
 ##
+@receiver(post_save, sender=DNSZoneProfile)
+def on_save_zone_profile(sender, instance, created, **kwargs):
+    if not created:
+        for z in instance.dnszone_set.all():
+            z.ensure_sync()
+
+# @todo: DNSServer change
+# @todo: Sync change
+
+
 @receiver(post_save, sender=DNSZone)
 def on_save(sender, instance, created, **kwargs):
-    if instance.is_auto_generated and not hasattr(instance, "_nosignal"):
+    if created:
+        instance.ensure_sync()
+    else:
         instance._touch(is_new=created)
 
 
 @receiver(pre_delete, sender=DNSZone)
 def on_delete(sender, instance, **kwargs):
-    sync_request(instance.channels, "list", delta=5)
-    # @todo: Delete from repo
+    SyncCache.delete_object(instance)
 
 
 @receiver(post_save, sender=Address)

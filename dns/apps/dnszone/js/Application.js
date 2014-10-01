@@ -98,7 +98,7 @@ Ext.define("NOC.dns.dnszone.Application", {
                 },
                 {
                     name: "serial",
-                    xtype: "numberfield",
+                    xtype: "displayfield",
                     fieldLabel: "Serial",
                     allowBlank: false
                 },
