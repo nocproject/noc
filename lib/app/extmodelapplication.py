@@ -244,6 +244,15 @@ class ExtModelApplication(ExtApplication):
             if f.name == "tags":
                 # Send tags as a list
                 r[f.name] = getattr(o, f.name)
+            elif hasattr(f, "document"):
+                # DocumentReferenceField
+                v = getattr(o, f.name)
+                if v:
+                    r[f.name] = str(v.pk)
+                    r["%s__label" % f.name] = unicode(v)
+                else:
+                    r[f.name] = None
+                    r["%s__label" % f.name] = ""
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
                 if (v is not None and
