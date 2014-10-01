@@ -6,6 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import hashlib
+import base64
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (EmbeddedDocumentField, ListField,
@@ -82,6 +85,11 @@ class StorageRule(Document):
 
     def get_interval(self):
         return self.retentions[0].get_retention()[0]
+
+    @property
+    def sr_id(self):
+        return base64.b32encode(hashlib.md5(str(self.id)).digest())[:6]
+
 
 ##
 from probeconfig import ProbeConfig
