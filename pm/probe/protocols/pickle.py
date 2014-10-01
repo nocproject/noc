@@ -13,6 +13,7 @@ import logging
 ## NOC modules
 from base import SenderSocket
 from noc.lib.nbsocket import ConnectedTCPSocket
+from noc.lib.nbsocket.exceptions import BrokenPipeError
 
 logger = logging.getLogger(__name__)
 
@@ -36,5 +37,9 @@ class PickleProtocolSocket(SenderSocket, ConnectedTCPSocket):
                 ]
                 payload = dumps(p, protocol=2)
                 header = struct.pack("!L", len(payload))
-                self.write(header + payload)
+                try:
+                    self.write(header + payload)
+                except BrokenPipeError:
+                    self.logger.error("Broken pipe. Retrying")
+                    return
                 self.data = self.data[self.PDU_CHUNK_SIZE:]

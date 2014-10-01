@@ -11,6 +11,7 @@ import logging
 ## NOC modules
 from base import SenderSocket
 from noc.lib.nbsocket.connectedtcpsocket import ConnectedTCPSocket
+from noc.lib.nbsocket.exceptions import BrokenPipeError
 
 logger = logging.getLogger(__name__)
 
@@ -27,5 +28,9 @@ class LineProtocolSocket(SenderSocket, ConnectedTCPSocket):
             data = "".join(
                 "%s %s %s\n" % d for d in self.data
             )
-            self.write(data)
+            try:
+                self.write(data)
+            except BrokenPipeError:
+                self.logger.error("Broken pipe. Retrying")
+                return
             self.data = []
