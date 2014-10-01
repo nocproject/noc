@@ -132,6 +132,8 @@ class ConfigurationThread(threading.Thread):
                 logger.debug("Changing object %s: %s" % (u_id, cfg))
                 self.daemon.on_object_change(**cfg)
                 n_changed += 1
+        if n_created or n_changed or n_deleted:
+            self.daemon.on_configuration_done()
         # Update last value
         self.last = config.get("now", datetime.datetime.now().isoformat())
         logger.debug("Configuration has been applied: "
