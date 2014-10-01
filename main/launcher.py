@@ -143,7 +143,7 @@ class Launcher(Daemon):
     daemon_name = "noc-launcher"
     create_piddir = True
 
-    DAEMONS = ["stomp", "scheduler", "wf",
+    DAEMONS = ["scheduler",
                "web", "sae", "activator",
                "classifier", "collector", "correlator",
                "notifier", "pmwriter", "probe",
