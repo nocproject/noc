@@ -18,6 +18,10 @@ class UpdateApplication(ExtApplication):
     """
     title = "Update"
 
+    def get_url(self, request):
+        proto = "https" if request.is_secure() else "http"
+        return "%s://%s/" % (proto, request.META["HTTP_HOST"])
+
     @view(url="^$", access=True, api=True, method=["GET"])
     def api_update(self, request):
         if not hasattr(self, "repo"):
@@ -28,7 +32,7 @@ class UpdateApplication(ExtApplication):
         return [
             {
                 "name": "noc",
-                "repo": "http://%s/hg/noc/" % request.META["HTTP_HOST"],
+                "repo": "%shg/noc/" % self.get_url(request),
                 "branch": self.branch,
                 "tip": self.tip
             }
@@ -38,6 +42,6 @@ class UpdateApplication(ExtApplication):
     def api_make_node(self, request):
         with open("scripts/make-node.py") as f:
             data = f.read()
-        url = "http://%s/" % request.META["HTTP_HOST"]
-        data = data.replace("URL = \"\"", "URL = \"%s\"" % url)
+        data = data.replace("URL = \"\"",
+                            "URL = \"%s\"" % self.get_url(request))
         return self.render_plain_text(data)
