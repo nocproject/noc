@@ -55,11 +55,12 @@ class UpdateClient(object):
                          data["branch"], data["tip"], data["repo"])
             r = commands.pull(ui.ui(), self.repo, source=data["repo"],
                               update=True,
-                              branch=data["branch"], rev=data["tip"])
+                              branch=[data["branch"]], rev=[data["tip"]])
             if r:
                 logger.error("Failed to pull updates")
                 return False
             return self.update_packages()
+        logger.debug("Nothing to update")
         return False
 
     def update_packages(self):
@@ -75,7 +76,7 @@ class UpdateClient(object):
         cmd = "./bin/pip install %s --find-links %s --allow-all-external --upgrade" % (
             r, self.PIP_FIND_LINKS)
         logger.debug("Running: %s", cmd)
-        r = subprocess.call(cmd)
+        r = subprocess.call(cmd, shell=True)
         if r:
             logger.debug("Packages are up-to-date")
             return True
