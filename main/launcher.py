@@ -210,6 +210,7 @@ class Launcher(Daemon):
         """
         Main loop
         """
+        self.logger.info("Running")
         # Check for updates
         if self.update_url:
             self.check_updates()
