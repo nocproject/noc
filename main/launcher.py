@@ -114,15 +114,15 @@ class Launcher(Daemon):
                "discovery", "sync"]
 
     def __init__(self):
-        super(Launcher, self).__init__()
-        self.daemons = []
-        gids = {}
-        uids = {}
         self.next_update_check = 0
         self.next_update_check_interval = 300
         self.is_superuser = os.getuid() == 0  # @todo: rewrite
         self.crashinfo_uid = None
         self.crashinfo_dir = None
+        super(Launcher, self).__init__()
+        self.daemons = []
+        gids = {}
+        uids = {}
         for n in self.DAEMONS:
             dn = "noc-%s" % n
             # Check daemon is enabled
@@ -211,7 +211,8 @@ class Launcher(Daemon):
         Main loop
         """
         # Check for updates
-        self.check_updates()
+        if self.update_url:
+            self.check_updates()
         # Main loop
         last_crashinfo_check = time.time()
         while True:
