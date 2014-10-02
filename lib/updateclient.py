@@ -52,7 +52,7 @@ class UpdateClient(object):
             logger.info("Upgrading from %s to %s",
                         self.tip[:12], data["tip"][:12])
             logger.debug("hg pull -b %s -r %s -u %s",
-                         data["branch"], data["rev"], data["repo"])
+                         data["branch"], data["tip"], data["repo"])
             r = commands.pull(ui.ui(), self.repo, source=data["repo"],
                               update=True,
                               branch=data["branch"], rev=data["tip"])
