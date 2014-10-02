@@ -135,8 +135,6 @@ class Daemon(object):
                 "Invalid loglevel '%s'" % self.config.get("main", "loglevel"))
         for h in logging.root.handlers:
             logging.root.removeHandler(h)  # Dirty hack for baseConfig
-        self.heartbeat_enable = (self.options.daemonize and
-                                 self.config.getboolean("main", "heartbeat"))
         if self.options.daemonize:
             # Set up logging
             logfile = self.config.get("main", "logfile")
@@ -363,19 +361,6 @@ class Daemon(object):
         except IOError, why:
             self.die("Unable to write PIDfile '%s': %s" % (self.pidfile,
                                                            why))
-
-    def heartbeat(self):
-        """
-        Touch pidfile
-        :return:
-        """
-        if self.pidfile and self.heartbeat_enable:
-            self.logger.debug("Touching pidfile: %s" % self.pidfile)
-            try:
-                os.utime(self.pidfile, None)
-            except OSError, why:
-                self.logger.error("Unable to touch pidfile %s: %s" % (self.pidfile,
-                                                                  why))
 
     def setup_opt_parser(self):
         """
