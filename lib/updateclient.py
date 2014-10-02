@@ -34,7 +34,7 @@ class UpdateClient(object):
         # Get required revision
         logger.info("Requesting updates from %s", self.url)
         try:
-            f = urllib2.urlopen(self.url)
+            f = urllib2.urlopen(self.url, timeout=30)
             data = json.loads(f.read())[0]
             f.close()
         except urllib2.URLError, why:
