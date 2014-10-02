@@ -17,6 +17,7 @@ import ConfigParser
 
 usage = "usage: %prog [options] <NOC URL>"
 
+URL = ""
 PIP_FIND_LINKS = "http://cdn.nocproject.org/pkg/simple/"
 
 def die(msg):
@@ -145,7 +146,8 @@ if __name__ == "__main__":
         help="Target directory"
     )
     options, args = parser.parse_args()
-    if len(args) != 1:
+    url = args[0] if args else URL
+    if not url:
         parser.print_help()
         sys.exit(1)
-    install(url=args[0], target=options.target)
+    install(url=url, target=options.target)

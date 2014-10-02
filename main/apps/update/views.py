@@ -33,3 +33,11 @@ class UpdateApplication(ExtApplication):
                 "tip": self.tip
             }
         ]
+
+    @view(url="^make-node\.py$", access=True, api=True, method=["GET"])
+    def api_make_node(self, request):
+        with open("scripts/make-node.py") as f:
+            data = f.read()
+        url = "http://%s/" % request.META["HTTP_HOST"]
+        data = data.replace("URL = \"\"", "URL = \"%s\"" % url)
+        return self.render_plain_text(data)
