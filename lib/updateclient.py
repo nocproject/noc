@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class UpdateClient(object):
-    PIP_FIND_LINKS = ["https://bitbucket.org/nocproject/noc/downloads"]
+    PIP_FIND_LINKS = "https://bitbucket.org/nocproject/noc/downloads"
 
     def __init__(self, url, daemons):
         if not url.endswith("/"):
