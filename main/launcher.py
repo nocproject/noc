@@ -52,8 +52,6 @@ class DaemonData(object):
         self.uid = uid
         self.group = group
         self.gid = gid
-        self.enable_heartbeat = self.config.getboolean("main", "heartbeat")
-        self.next_heartbeat_check = 0
         # Set up update paths
         self.update_name = None
         if (self.config.has_section("update") and
@@ -79,7 +77,6 @@ class DaemonData(object):
             self.pid = pid
             logging.info("Daemon %s started as PID %d" % (self.logname,
                                                           self.pid))
-            self.next_heartbeat_check = time.time() + HEARTBEAT_TIMEOUT
         else:
             # Run child
             try:
@@ -114,26 +111,6 @@ class DaemonData(object):
             os.kill(self.pid, signal.SIGTERM)
         except Exception:
             logging.error("%s: Unable to kill daemon" % self.logname)
-
-    def check_heartbeat(self):
-        """
-        Check daemons heartbeat
-        """
-        if not self.enabled or not self.pid or not self.enable_heartbeat:
-            return
-        t = time.time()
-        if t < self.next_heartbeat_check:
-            return
-        logging.debug("Checking heartbeat from %s" % self.logname)
-        self.next_heartbeat_check = t + HEARTBEAT_TIMEOUT
-        try:
-            mt = os.stat(self.pidfile)[stat.ST_MTIME]
-        except OSError:
-            logging.error("Unable to stat pidfile: %s" % self.pidfile)
-            return
-        if t - mt >= HEARTBEAT_TIMEOUT:
-            logging.info("%s: Heartbeat lost. Restarting" % self.logname)
-            self.kill()
 
 
 class Launcher(Daemon):
@@ -278,8 +255,6 @@ class Launcher(Daemon):
             # Check for updates
             if self.update_names and t > self.next_update_check:
                 self.check_updates()
-            # Check heartbeats
-            [d for d in self.daemons if d.check_heartbeat()]
 
     def check_updates(self):
         if not self.update_names:
