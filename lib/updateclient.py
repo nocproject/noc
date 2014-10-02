@@ -78,8 +78,8 @@ class UpdateClient(object):
         logger.debug("Running: %s", cmd)
         r = subprocess.call(cmd, shell=True)
         if r:
-            logger.debug("Packages are up-to-date")
-            return True
-        else:
             logger.error("Failed to update packages")
             return False
+        else:
+            logger.debug("Packages are up-to-date")
+            return True
