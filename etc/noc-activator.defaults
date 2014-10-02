@@ -11,7 +11,6 @@ logsize  = 0
 logfiles = 0
 syslog_host =
 pidfile  = /var/run/noc/noc-activator.{{instance}}.pid
-heartbeat= true
 log_cli_sessions = false
 log_cli_sessions_path = /var/log/noc/cli-sessions/{{ip}}-{{script}}-{{ts}}.log
 log_cli_sessions_ip_re =
