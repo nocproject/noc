@@ -229,9 +229,9 @@ class Launcher(Daemon):
                         pid = 0
                         status = 0
                     if pid == d.pid:
-                        self.logger.info(
-                            "%s daemon is terminated with status %d",
-                            d.logname, os.WEXITSTATUS(status)
+                        d.logger.info(
+                            "Terminated with status %d",
+                            os.WEXITSTATUS(status)
                         )
                         d.pid = None
             time.sleep(1)
