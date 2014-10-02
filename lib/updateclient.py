@@ -8,148 +8,77 @@
 
 ## Python modules
 import os
-import hashlib
 import urllib2
-import urllib
 import logging
-import tempfile
-## NOC modules
-from noc.lib.serialize import json_encode, json_decode
+import subprocess
+import json
+## Third-party modules
+from mercurial import ui, localrepo, commands
+
+logger = logging.getLogger(__name__)
 
 
 class UpdateClient(object):
-    class ManifestNotFound(Exception):
-        pass
+    PIP_FIND_LINKS = ["https://bitbucket.org/nocproject/noc/downloads"]
 
-    def __init__(self, url, names):
+    def __init__(self, url, daemons):
+        if not url.endswith("/"):
+            url += "/"
         self.url = url + "main/update/"
-        self.manifest = {}
-        # Load manifests
-        self.names = names
-        self.debug("Loading manifests")
-        for name in self.names:
-            self.load_manifest(name)
+        self.repo = localrepo.localrepository(ui.ui(), path=".")
+        self.tip = "".join("%02x" % ord(c) for c in self.repo.changelog.tip())
+        self.branch = self.repo.dirstate.branch()
+        self.daemons = daemons
 
-    def error(self, msg):
-        logging.error("[UpdateClient] %s" % msg)
-
-    def info(self, msg):
-        logging.info("[UpdateClient] %s" % msg)
-
-    def debug(self, msg):
-        logging.debug("[UpdateClient] %s" % msg)
-
-    def load_manifest(self, name):
-        """
-        Load manifest "name" into self.manifests
-        :param name: manifest name
-        :return:
-        """
-        dmfn = "etc/manifests/%s.defaults" % name
-        mfn = "etc/manifests/%s.conf" % name
-
-        # Find manifest
-        if os.path.isfile(mfn):
-            self.info("Loading manifest for %s" % name)
-            fn = mfn
-        elif os.path.isfile(dmfn):
-            self.info("Loading default for %s" % name)
-            fn = dmfn
-        else:
-            self.error("Manifest not found: %s" % name)
-            raise self.ManifestNotFound(
-                "Manifest not found: %s" % name)
-        # Load manifest
-        with open(fn) as f:
-            for l in f:
-                l = l.strip()
-                if not l or l.startswith("#"):
-                    continue
-                if l.endswith("/"):
-                    # Directory
-                    for root, dirs, files in os.walk(l):
-                        for df in files:
-                            if (df.endswith(".pyc") or
-                                    df.endswith(".pyo") or
-                                    df.startswith(".") or
-                                    df.endswith(".orig")):
-                                continue
-                            self.update_manifest(os.path.join(root, df))
-                else:
-                    self.update_manifest(l)
-
-    def get_hash(self, path):
-        """
-        Calculate file hash. Return None if file is not found
-        :param path: File path
-        :return: hash of None
-        """
-        if not os.path.isfile(path):
-            return None
-        with open(path) as f:
-            return hashlib.sha1(f.read()).hexdigest()
-
-    def update_manifest(self, path):
-        """
-        Update manifest for single file
-        :param path: File path
-        :return:
-        """
-        if path in self.manifest:
-            return
-        self.manifest[path] = self.get_hash(path)
-
-    def get_request_data(self):
-        return json_encode(self.manifest.items())
-
-    def write_file(self, path, data):
-        """
-        Create new file filled with "text" safely
-        """
-        d = os.path.dirname(path)
-        if d and not os.path.exists(d):
-            os.makedirs(d)
-        b = os.path.basename(path)
-        h, p = tempfile.mkstemp(suffix=".tmp", prefix=b, dir=d)
-        f = os.fdopen(h, "w")
-        f.write(data.encode("utf8"))
-        f.close()
-        if os.path.exists(path):
-            os.unlink(path)
-        os.link(p, path)
-        os.unlink(p)
-
-    def request_update(self):
-        """
-        Request updates from server
-        :return:
-        """
-        # Request data
-        self.info("Requesting updates")
-        uri = "%s?%s" % (
-            self.url,
-            "&".join("name=%s" % urllib.quote(n) for n in self.names))
-        self.debug("GET %s" % uri)
+    def request_updates(self):
+        # Get required revision
+        logger.info("Requesting updates from %s", self.url)
         try:
-            f = urllib2.urlopen(
-                uri, data=self.get_request_data(), timeout=60)
-            data = json_decode(f.read())
+            f = urllib2.urlopen(self.url)
+            data = json.loads(f.read())[0]
             f.close()
         except urllib2.URLError, why:
-            self.error("Failed to get updates: %s" % why)
+            logger.error("Failed to get updates: %s", why)
             return False
-        for path, hash, value in data:
-            if hash:
-                # Replace file
-                self.debug("Replacing %s [%s]" % (path, hash))
-                self.write_file(path, value)
-            else:
-                # Delete files
-                self.debug("Deleting %s" % path)
-                if os.path.exists(path):
-                    os.unlink(path)
-        if data:
-            self.info("System has been updated")
+        # Compare
+        if self.branch != data["branch"]:
+            logger.info("Switching to branch %s", data["branch"])
+            logger.debug("hg update -r %s", data["branch"])
+            r = commands.update(ui.ui(), self.repo, rev=data["branch"])
+            if r:
+                logger.error("Failed to switch branch")
+                return False
+        if self.tip != data["tip"]:
+            logger.info("Upgrading from %s to %s",
+                        self.tip[:12], data["tip"][:12])
+            logger.debug("hg pull -b %s -r %s -u %s",
+                         data["branch"], data["rev"], data["repo"])
+            r = commands.pull(ui.ui(), self.repo, source=data["repo"],
+                              update=True,
+                              branch=data["branch"], rev=data["tip"])
+            if r:
+                logger.error("Failed to pull updates")
+                return False
+            return self.update_packages()
+        return False
+
+    def update_packages(self):
+        logger.info("Upgrading packages")
+        requirements = ["etc/requirements/common.txt"]
+        for n in self.daemons:
+            if n.startswith("noc-"):
+                n = n[4:]
+            rn = "etc/requirements/%s.txt" % n
+            if os.path.isfile(rn):
+                requirements += [rn]
+        r = " ".join("-r %s" % x for x in requirements)
+        cmd = "./bin/pip install %s --find-links %s --allow-all-external --upgrade" % (
+            r, self.PIP_FIND_LINKS)
+        logger.debug("Running: %s", cmd)
+        r = subprocess.call(cmd)
+        if r:
+            logger.debug("Packages are up-to-date")
+            return True
         else:
-            self.info("System is up to date")
-        return bool(data)
+            logger.error("Failed to update packages")
+            return False

@@ -2,15 +2,14 @@
 ##----------------------------------------------------------------------
 ## main.update application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+from mercurial import ui, localrepo
 ## NOC modules
 from noc.lib.app import ExtApplication, view
-from noc.main.models.manifest import Manifest
-from noc.lib.serialize import json_decode
-from noc.lib.fileutils import read_file
 
 
 class UpdateApplication(ExtApplication):
@@ -19,23 +18,18 @@ class UpdateApplication(ExtApplication):
     """
     title = "Update"
 
-    @view(url="^$", access=True, api=True, method=["POST"])
+    @view(url="^$", access=True, api=True, method=["GET"])
     def api_update(self, request):
-        manifest = {}
-        for name in request.GET.getlist("name"):
-            manifest.update(Manifest.get_manifest(name))
-        r = []
-        left = set(manifest)
-        for path, hash in json_decode(request.raw_post_data):
-            if path in manifest:
-                left.remove(path)
-                if manifest[path] != hash:
-                    # File changed
-                    r += [[path, hash, read_file(path)]]
-            else:
-                # Remove file
-                r += [[path, None, None]]
-        # Process new files
-        for path in left:
-            r += [[path, manifest[path], read_file(path)]]
-        return r
+        if not hasattr(self, "repo"):
+            self.repo = localrepo.localrepository(ui.ui(), path=".")
+            self.tip = "".join("%02x" % ord(c) for c in self.repo.changelog.tip())
+            self.branch = self.repo.dirstate.branch()
+
+        return [
+            {
+                "name": "noc",
+                "repo": "http://%s/hg/noc/" % request.META["HTTP_HOST"],
+                "branch": self.branch,
+                "tip": self.tip
+            }
+        ]

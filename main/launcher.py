@@ -2,14 +2,12 @@
 ##----------------------------------------------------------------------
 ## noc-launcher daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 import time
-import subprocess
 import sys
 import os
 import logging
@@ -22,10 +20,9 @@ import stat
 from noc.lib.daemon import Daemon
 from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
 from noc.lib.updateclient import UpdateClient
+from noc.lib.log import PrefixLoggerAdapter
 
-## Heartbeat check interval
-HEARTBEAT_TIMEOUT = 10
-UPDATE_INTERVAL = 300
+logger = logging.getLogger(__name__)
 
 
 class DaemonData(object):
@@ -34,11 +31,10 @@ class DaemonData(object):
     """
     def __init__(self, name, is_superuser, enabled, user, uid, group, gid,
                  instance_id, config_path):
-        logging.debug("Reading config for %s[#%s]: %s" % (
-            name, instance_id, config_path))
+        self.logger = PrefixLoggerAdapter(logger, "%s#%s" % (name, instance_id))
+        self.logger.info("Reading config")
         self.instance_id = instance_id
         self.name = name
-        self.logname = "%s[#%s]" % (self.name, self.instance_id)
         self.config_path = config_path
         self.config = ConfigParser.SafeConfigParser()
         self.config.read("etc/%s.defaults" % name)
@@ -52,12 +48,6 @@ class DaemonData(object):
         self.uid = uid
         self.group = group
         self.gid = gid
-        # Set up update paths
-        self.update_name = None
-        if (self.config.has_section("update") and
-                self.config.has_option("update", "enabled") and
-                self.config.getboolean("update", "enabled")):
-            self.update_name = self.config.get("update", "name")
 
     def __repr__(self):
         return "<DaemonData %s>" % self.name
@@ -66,17 +56,15 @@ class DaemonData(object):
         """
         Launch daemon
         """
-        logging.info("Launching %s" % self.logname)
+        logger.info("Launching")
         try:
             pid = os.fork()
         except OSError, e:
-            logging.error("%s: Fork failed: %s(%s)" % (self.logname,
-                                                       e.strerror, e.errno))
+            self.loger.error("Fork failed: %s(%s)", e.strerror, e.errno)
             return
         if pid:
             self.pid = pid
-            logging.info("Daemon %s started as PID %d" % (self.logname,
-                                                          self.pid))
+            self.logger.info("Daemon started as PID %d", self.pid)
         else:
             # Run child
             try:
@@ -96,8 +84,7 @@ class DaemonData(object):
                           "launch", "-c", self.config_path,
                           "-i", self.instance_id])
             except OSError, e:
-                logging.error("%s: OS Error: %s(%s)" % (self.logname,
-                                                        e.strerror, e.errno))
+                self.logger.error("OS Error: %s(%s)", e.strerror, e.errno)
                 sys.exit(1)
 
     def kill(self):
@@ -105,12 +92,12 @@ class DaemonData(object):
         Kill daemon
         """
         if not self.pid:
-            logging.info("%s: No PID to kill" % self.logname)
+            self.logger.info("No PID to kill")
         try:
-            logging.info("%s: killing" % self.logname)
+            self.logger.info("Killing")
             os.kill(self.pid, signal.SIGTERM)
-        except Exception:
-            logging.error("%s: Unable to kill daemon" % self.logname)
+        except Exception, why:
+            self.logger.error("Unable to kill daemon: %s", why)
 
 
 class Launcher(Daemon):
@@ -131,12 +118,8 @@ class Launcher(Daemon):
         self.daemons = []
         gids = {}
         uids = {}
-        self.update_url = self.config.get("update", "url")
-        self.update_names = set()
-        if (self.config.getboolean("update", "enabled") and
-                self.config.get("update", "name")):
-            self.update_names.add(self.config.get("update", "name"))
         self.next_update_check = 0
+        self.next_update_check_interval = 300
         self.is_superuser = os.getuid() == 0  # @todo: rewrite
         self.crashinfo_uid = None
         self.crashinfo_dir = None
@@ -144,11 +127,11 @@ class Launcher(Daemon):
             dn = "noc-%s" % n
             # Check daemon is enabled
             if not self.config.getboolean(dn, "enabled"):
-                logging.info("%s daemon is disabled" % dn)
+                self.logger.info("%s daemon is disabled", dn)
                 continue
             # Check daemon has config (for cloned activators)
             if not os.access("etc/%s.defaults" % dn, os.R_OK):
-                logging.info("Missed config for %s. Skipping" % dn)
+                self.logger.info("Missed config for %s. Skipping", dn)
                 continue
             # Resolve group name
             group_name = self.config.get(dn, "group")
@@ -158,7 +141,10 @@ class Launcher(Daemon):
                         gid = grp.getgrnam(group_name)[2]
                         gids[group_name] = gid
                     except KeyError:
-                        logging.error("%s: Group '%s' is not found. Exiting." % (dn, group_name))
+                        self.logger.error(
+                            "%s: Group '%s' is not found. Exiting.",
+                            dn, group_name
+                        )
                         sys.exit(1)
                 gid = gids[group_name]
             else:
@@ -171,17 +157,20 @@ class Launcher(Daemon):
                         uid = pwd.getpwnam(user_name)[2]
                         uids[user_name] = uid
                     except KeyError:
-                        logging.error("%s: User '%s' is not found. Exiting." % (dn, user_name))
+                        self.logger.error(
+                            "%s: User '%s' is not found. Exiting.",
+                            dn, user_name
+                        )
                         sys.exit(1)
                 uid = uids[user_name]
             else:
                 uid = None
             # Superuser required to change uid/gid
             if not self.is_superuser and uids:
-                logging.error("Need to be superuser to change UID")
+                self.logger.error("Need to be superuser to change UID")
                 sys.exit(1)
             if not self.is_superuser and gids:
-                logging.error("Need to be superuser to change GID")
+                self.logger.error("Need to be superuser to change GID")
                 sys.exit(1)
             # Check for configs and daemon instances
             opts = self.config.options(dn)
@@ -204,12 +193,18 @@ class Launcher(Daemon):
                     config_path=config
                 )
                 self.daemons += [dd]
-                if dd.update_name:
-                    self.update_names.add(dd.update_name)
             # Set crashinfo uid
             if self.is_superuser and dn == "noc-sae":
                 self.crashinfo_uid = uid
                 self.crashinfo_dir = os.path.dirname(self.config.get("main", "logfile"))
+
+    def load_config(self):
+        super(Launcher, self).load_config()
+        if self.config.getboolean("update", "enabled"):
+            self.update_url = self.config.get("update", "url") or None
+            self.next_update_check_interval = self.config.getint("update", "check_interval")
+        else:
+            self.update_url = None
 
     def run(self):
         """
@@ -232,7 +227,10 @@ class Launcher(Daemon):
                         pid = 0
                         status = 0
                     if pid == d.pid:
-                        logging.info("%s daemon is terminated with status %d" % (d.logname, os.WEXITSTATUS(status)))
+                        self.logger.info(
+                            "%s daemon is terminated with status %d",
+                            d.logname, os.WEXITSTATUS(status)
+                        )
                         d.pid = None
             time.sleep(1)
             t = time.time()
@@ -248,34 +246,39 @@ class Launcher(Daemon):
                     try:
                         os.chown(path, self.crashinfo_uid, -1)
                         os.chmod(path, stat.S_IRUSR | stat.S_IWUSR)
-                        logging.info("Permissions for %s are fixed" % path)
+                        self.logger.info("Permissions for %s are fixed",
+                                         path
+                        )
                     except:
-                        logging.error("Failed to fix permissions for %s" % path)
+                        self.logger.error(
+                            "Failed to fix permissions for %s",
+                            path
+                        )
                 last_crashinfo_check = t
             # Check for updates
-            if self.update_names and t > self.next_update_check:
+            if self.update_url and t > self.next_update_check:
                 self.check_updates()
 
     def check_updates(self):
-        if not self.update_names:
+        if not self.update_url:
             return
-        update_names = sorted(self.update_names)
         # Update
-        logging.info("Checking for updates: %s" % ", ".join(update_names))
-        uc = UpdateClient(self.update_url, update_names)
-        if uc.request_update():
+        self.logger.info("Checking for updates")
+        daemons = set(d.name for d in self.daemons)
+        uc = UpdateClient(self.update_url, daemons)
+        if uc.request_updates():
             # Updated, restart
-            logging.info("Updates are applied. Restarting")
+            self.logger.info("Updates are applied. Restarting")
             self.stop_all_daemons()
             os.execv(sys.argv[0], sys.argv)
-        self.next_update_check = time.time() + UPDATE_INTERVAL
+        self.next_update_check = time.time() + self.next_update_check_interval
 
     def stop_all_daemons(self):
         for d in self.daemons:
             if d.enabled and d.pid:
                 try:
-                    logging.info("Stopping daemon: %s (PID %d)" % (
-                        d.logname, d.pid))
+                    self.logger.info("Stopping daemon: %s (PID %d)",
+                        d.logname, d.pid)
                     os.kill(d.pid, signal.SIGTERM)
                     d.pid = None
                 except OSError:
