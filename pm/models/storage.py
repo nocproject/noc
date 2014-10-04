@@ -14,9 +14,6 @@ from mongoengine.fields import (ListField, EmbeddedDocumentField,
 
 
 class CollectorProtocol(EmbeddedDocument):
-    meta = {
-        "allow_inheritance": False
-    }
     address = StringField()
     port = IntField()
     protocol = StringField()
@@ -28,9 +25,6 @@ class CollectorProtocol(EmbeddedDocument):
 
 
 class AccessProtocol(EmbeddedDocument):
-    meta = {
-        "allow_inheritance": False
-    }
     protocol = StringField()
     base_url = StringField()
     is_active = BooleanField(default=True)
@@ -41,8 +35,7 @@ class AccessProtocol(EmbeddedDocument):
 
 class Storage(Document):
     meta = {
-        "collection": "noc.pm.storages",
-        "allow_inheritance": False
+        "collection": "noc.pm.storages"
     }
 
     ALL = "all"
