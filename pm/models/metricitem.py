@@ -15,10 +15,6 @@ from metrictype import MetricType
 
 
 class MetricItem(EmbeddedDocument):
-    meta = {
-        "allow_inheritance": False,
-    }
-
     metric_type = ReferenceField(MetricType)
     is_active = BooleanField(default=True)
     # Optional graphite metric name

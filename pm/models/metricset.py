@@ -19,8 +19,7 @@ from metricitem import MetricItem
 
 class MetricSet(Document):
     meta = {
-        "collection": "noc.pm.metricsets",
-        "allow_inheritance": False
+        "collection": "noc.pm.metricsets"
     }
 
     name = StringField(unique=True)
