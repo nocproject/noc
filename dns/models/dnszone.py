@@ -561,6 +561,8 @@ class DNSZone(models.Model):
                 n = ".".join(n.split(".")[1:])
             return None
 
+        if not name:
+            return None
         if is_ipv4(name):
             # IPv4 zone
             n = name.split(".")
@@ -703,11 +705,33 @@ def on_address_save(sender, instance, created, **kwargs):
     Fires after Address.save()
     """
     if created:
-        old = Address.objects.get(id=instance.id)
-        DNSZone.touch(old.address)
-        DNSZone.touch(old.fqdn)
-    DNSZone.touch(instance.address)
-    DNSZone.touch(instance.fqdn)
+        old_address = None
+        old_fqdn = None
+    elif hasattr(instance, "_old_values"):
+        # Set by audit trail
+        old_address = instance._old_values.get("address")
+        old_fqdn = instance._old_values.get("fqdn")
+    else:
+        old = Address.objects.get(pk=instance.pk)
+        old_address = old.address
+        old_fqdn = old.fqdn
+
+    to_update = False
+    if old_address != instance.address:
+        logger.debug("Register address change %s -> %s",
+                     old_address, instance.address)
+        to_update = True
+
+    if old_fqdn != instance.fqdn:
+        logger.debug("Register FQDN change %s -> %s",
+                     old_fqdn, instance.fqdn)
+        to_update = True
+
+    if to_update:
+        DNSZone.touch(old_address)
+        DNSZone.touch(instance.address)
+        DNSZone.touch(old_fqdn)
+        DNSZone.touch(instance.fqdn)
 
 
 @receiver(pre_delete, sender=Address)
