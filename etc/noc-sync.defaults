@@ -53,3 +53,15 @@ enable_manhole = false
 #on_new_zone = rndc reload
 #on_deleted_zone = rndc reload
 #on_updated_zone = rndc reload
+
+##
+## NSD file sync
+##
+#[sync:nsd]
+#enabled = true
+#handler = noc.main.sync.handlers.nsd.NSDHandler
+#root=/var/named/autozones
+#inc_root=
+#on_new_zone = rndc reload
+#on_deleted_zone = rndc reload
+#on_updated_zone = rndc reload
