@@ -23,6 +23,7 @@ class SyncApplication(ExtDocApplication):
     """
     title = "Sync"
     menu = "Setup | Sync"
+    glyph = "refresh"
     model = Sync
     query_fields = ["name"]
 
