@@ -17,7 +17,7 @@ class UnboundHandler(BINDFileHandler):
         zp = self.get_zone_path(zone)
         z = ["local-zone: %s static" % zone]
         for r in records:
-            x = ["local-data:", r.name]
+            x = ["local-data:", r.fqdn]
             if r.ttl:
                 x += [str(r.ttl)]  # Write ttl
             x += ["IN", r.type, r.content]

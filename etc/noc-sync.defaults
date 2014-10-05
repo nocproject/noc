@@ -27,10 +27,6 @@ interval = 60
 # Retry interval after failure
 failed_interval = 10
 
-[update]
-name = sync
-enabled = false
-
 [debug]
 enable_manhole = false
 
@@ -40,6 +36,18 @@ enable_manhole = false
 #[sync:bind]
 #enabled = true
 #handler = noc.main.sync.handlers.bindfile.BINDFileHandler
+#root=/var/named/autozones
+#inc_root=
+#on_new_zone = rndc reload
+#on_deleted_zone = rndc reload
+#on_updated_zone = rndc reload
+
+##
+## Unbound Zone file sync
+##
+#[sync:unbound]
+#enabled = true
+#handler = noc.main.sync.handlers.unbound.UnboundHandler
 #root=/var/named/autozones
 #inc_root=
 #on_new_zone = rndc reload
