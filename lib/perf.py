@@ -31,7 +31,10 @@ class Metric(object):
         self.calls = []
 
     def set(self, value):
-        self.value = value
+        if isinstance(value, Metric):
+            self.value = value.value
+        else:
+            self.value = value
 
     def get(self):
         return self.value
@@ -64,6 +67,12 @@ class Timer(object):
     FAIL = "FAIL"
     EXCEPTION = "EXCEPTION"
 
+    RMAP = {
+        "S": OK,
+        "F": FAIL,
+        "X": EXCEPTION
+    }
+
     def __init__(self, metric, stream=None, *args):
         self.metric = metric
         self.stream = stream
@@ -75,17 +84,26 @@ class Timer(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        dt = time.time() - self.t0
+        t1 = time.time()
+        dt = t1 - self.t0
         self.metric += dt
         if exc_type:
             self.result = self.EXCEPTION
+        self.log(self.t0, t1, self.result)
+
+    def fail(self):
+        self.result = self.FAIL
+
+    def log(self, t0, t1, result):
         if ENABLE_STATS and BASE_DIR and self.stream:
-            T = time.localtime(self.t0)
+            result = self.RMAP.get(result, result)
+            dt = t1 - t0
+            T = time.localtime(t0)
             msg = ",".join(
                 [
                     time.strftime("%Y-%m-%d %H:%M:%S%Z"),
-                    self.result, "%.2f" % (dt * 1000)
-                ] + list(self.args[1:])
+                    result, "%.2f" % (dt * 1000)
+                ] + list(str(x) for x in self.args[1:])
             )
             bd = os.path.join(
                 BASE_DIR, "%4d/%02d/%02d" % (T[0], T[1], T[2]))
@@ -97,9 +115,6 @@ class Timer(object):
                     pass
             with open(os.path.join(bd, fn), "a") as f:
                 f.write(msg + "\n")
-
-    def fail(self):
-        self.result = self.FAIL
 
 
 class MetricsHub(object):
