@@ -2,32 +2,28 @@
 ##----------------------------------------------------------------------
 ## ./noc sync
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## NOC modules
+## Python modules
+import csv
 import sys
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.lib.scheduler.utils import sync_request
+from noc.main.models.synccache import SyncCache
 
 
 class Command(BaseCommand):
-    args = "<channel> <request> [<object1> .. <objectN>]"
-    help = "Issue synchronization request"
-
     def handle(self, *args, **options):
-        if len(args) < 2:
-            raise CommandError("USAGE: %s <channel> <request> [<object1>.. <objectN>]" % sys.argv[0])
-
-        channel = sys.argv[2]
-        request = sys.argv[3].lower()
-        if request not in ("list", "verify"):
-            raise CommandError("Request must be one of: list, verify")
-        if request == "list":
-            sync_request([channel], "list")
-        elif request == "verify":
-            for obj in sys.argv[4:]:
-                sync_request([channel], request, obj)
+        writer = csv.writer(sys.stdout)
+        h = ["UUID", "Model", "Object ID", "Object", "Sync",
+             "instance", "Changed", "Expire"]
+        writer.writerow(h)
+        for sc in SyncCache.objects.all():
+            writer.writerow([
+                sc.uuid, sc.model_id, sc.object_id, unicode(sc.get_object()),
+                sc.sync_id, sc.instance_id, sc.changed.isoformat(),
+                sc.expire.isoformat()
+            ])
