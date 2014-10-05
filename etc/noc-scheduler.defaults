@@ -14,6 +14,11 @@ pidfile  = /var/run/noc/noc-scheduler.pid
 heartbeat= false
 max_threads = 50
 
+[debug]
+enable_manhole = false
+enable_timing = false
+timing_base = local/timing
+
 [stomp]
 host = 127.0.0.1
 port = 19705

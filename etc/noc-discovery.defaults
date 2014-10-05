@@ -15,4 +15,9 @@ heartbeat= false
 log_jobs =
 max_job_faults = 0
 
+[debug]
+enable_manhole = false
+enable_timing = false
+timing_base = local/timing
+
 [beef]

@@ -13,6 +13,11 @@ syslog_host =
 pidfile  = /var/run/noc/noc-classifier.pid
 heartbeat= false
 
+[debug]
+enable_manhole = false
+enable_timing = false
+timing_base = local/timing
+
 [classifier]
 # Interface profile name to use as default, when
 # event interface is not found in inventory

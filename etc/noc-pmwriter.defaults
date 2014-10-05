@@ -16,6 +16,8 @@ heartbeat= false
 [debug]
 # Open debugging manhole
 enable_manhole = false
+enable_timing = false
+timing_base = local/timing
 
 [writer]
 # Number of writer's worker threads
