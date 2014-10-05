@@ -65,3 +65,21 @@ enable_manhole = false
 #on_new_zone = rndc reload
 #on_deleted_zone = rndc reload
 #on_updated_zone = rndc reload
+
+##
+## PowerDNS file sync
+##
+#[sync:powerdns]
+#enabled = true
+#handler = noc.main.sync.handlers.powerdns.sql.PowerDNSSQLHandler
+## PostgreSQL DNS
+#dbtype = postgres
+#dsn = dbname=powerdns user=powernds password=powerdns
+## MySQL DSN
+#dbtype = postgres
+#dsn = dbname=powerdns user=powernds password=powerdns
+## SQLite DSN
+#dbtype = sqlite
+#dsn = /var/powerdns.db
+#domains_table = domains
+#records_table = records
