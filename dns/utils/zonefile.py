@@ -124,7 +124,7 @@ $TTL %(ttl)d
         if not t:
             return "zero"
         T = ["week", "day", "hour", "min", "sec"]
-        W = [345600, 86400, 3600, 60, 1]
+        W = [604800, 86400, 3600, 60, 1]
         r = []
         for w in W:
             rr = t // w
