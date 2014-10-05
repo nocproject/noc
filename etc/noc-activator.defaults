@@ -18,6 +18,11 @@ log_cli_sessions_ip_re =
 log_cli_sessions_script_re =
 log_snmp_traps = false
 
+[debug]
+enable_manhole = false
+enable_timing = false
+timing_base = local/timing
+
 [activator]
 name            = unknown
 # Disable running scripts if listening for traps
@@ -50,7 +55,3 @@ listen_tftp =
 
 [ssh]
 key = etc/ssh/id_rsa
-
-[update]
-name = activator
-enabled = false

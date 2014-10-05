@@ -22,6 +22,7 @@ from noc.lib.nosql import get_db
 from noc.lib.debug import error_report, get_traceback
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.log import PrefixLoggerAdapter
+from noc.lib.perf import MetricsHub
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +80,16 @@ class Scheduler(object):
         self.running_lock = threading.Lock()
         self.running_count = defaultdict(int)  # Group -> Count
         self.log_jobs = None
+        self.metrics = MetricsHub(
+            "noc.scheduler.%s" % name,
+            "jobs.count",
+            "jobs.success",
+            "jobs.failed",
+            "jobs.dereference.count",
+            "jobs.dereference.success",
+            "jobs.dereference.failed",
+            "jobs.time"
+        )
 
     def ensure_indexes(self):
         if self.preserve_order:
@@ -234,11 +245,14 @@ class Scheduler(object):
         :return:
         """
         # Dereference job
+        self.metrics.jobs_dereference_count += 1
         if not job.dereference():
             self.logger.info("Cannot dereference job %s(%s). Removing",
                 job.name, job.key)
             self.remove_job(job.name, job.key)
+            self.metrics.jobs_dereference_failed += 1
             return
+        self.metrics.jobs_dereference_success += 1
         # Check threaded jobs limit
         if job.threaded and self.max_threads:
             if threading.active_count() >= self.max_threads:
@@ -313,6 +327,7 @@ class Scheduler(object):
         self._complete_job(job, s, tb)
 
     def _complete_job(self, job, status, tb):
+        self.metrics.jobs_time.timer(self.name, job.name, job.key).log(job.started, time.time(), status)
         if self.to_log_jobs:
             path = os.path.join(self.log_jobs, job.name, str(job.key))
             safe_rewrite(path, job.get_job_log())

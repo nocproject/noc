@@ -13,6 +13,11 @@ syslog_host =
 pidfile  = /var/run/noc/noc-correlator.pid
 heartbeat= false
 
+[debug]
+enable_manhole = false
+enable_timing = false
+timing_base = local/timing
+
 [correlator]
 ##
 ## Time window (in seconds) to search for active events

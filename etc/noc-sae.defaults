@@ -14,6 +14,11 @@ pidfile  = /var/run/noc/noc-sae.pid
 heartbeat= false
 mrt_log = false
 
+[debug]
+enable_manhole = false
+enable_timing = false
+timing_base = local/timing
+
 [sae]
 shards     = default
 listen     = 127.0.0.1
