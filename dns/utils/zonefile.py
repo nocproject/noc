@@ -107,7 +107,7 @@ $TTL %(ttl)d
         mask = "%%-%ds%%-%ds%%s" % (l1, l2)
         # Add zone NS
         if nses:
-           z += [mask % tuple(r) for r in nses]
+            z += [mask % tuple(r) for r in nses]
         # Add RRs
         if rr:
             # Format according to mask
