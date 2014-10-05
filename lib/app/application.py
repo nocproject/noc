@@ -27,6 +27,7 @@ from django import forms
 from django.utils.datastructures import SortedDict
 from django.utils.timezone import get_current_timezone
 from django.views.static import serve as serve_static
+from django.http import Http404
 ## NOC modules
 from access import HasPerm, Permit, Deny
 from site import site
@@ -237,7 +238,7 @@ class Application(object):
             # Document
             r = args[0].objects.filter(**kwargs).first()
             if not r:
-                raise HttpResponseNotFound()
+                raise Http404("No %s matching given query" % args[0])
             return r
         else:
             # Django model
