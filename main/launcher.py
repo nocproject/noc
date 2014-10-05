@@ -280,7 +280,7 @@ class Launcher(Daemon):
             if d.enabled and d.pid:
                 try:
                     self.logger.info("Stopping daemon: %s (PID %d)",
-                        d.logname, d.pid)
+                        d.name, d.pid)
                     os.kill(d.pid, signal.SIGTERM)
                     d.pid = None
                 except OSError:
