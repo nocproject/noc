@@ -30,6 +30,8 @@ try:
 except ImportError:
     USE_NETIFACES = False
 
+_daemon = None
+
 
 class Daemon(object):
     """
@@ -53,6 +55,8 @@ class Daemon(object):
     }
 
     def __init__(self):
+        global _daemon
+        _daemon = self
         self.logger = logging.getLogger(self.daemon_name)
         # Chdir to the root of project
         os.chdir(os.path.join(os.path.dirname(sys.argv[0]), ".."))
