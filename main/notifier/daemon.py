@@ -49,7 +49,7 @@ class Notifier(Daemon):
             "notifier", "queue_check_interval")
         self.close_all_channels()
         for s in self.config.sections():
-            if s in ["notifier", "main"]:
+            if s in ["notifier", "main", "debug"]:
                 continue
             if not self.config.getboolean(s, "enabled"):
                 continue
