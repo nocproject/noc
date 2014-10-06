@@ -317,7 +317,7 @@ class Command(BaseCommand):
         access_profile.address = o.address
         if o.port:
             access_profile.port = o.port
-        access_profile.user = credentials.user
+        access_profile.user = credentials.user or ""
         access_profile.password = credentials.password
         if credentials.super_password:
             access_profile.super_password = credentials.super_password
