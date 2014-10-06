@@ -258,13 +258,14 @@ class Scheduler(object):
             if threading.active_count() >= self.max_threads:
                 return
         # Check job can be run
+        job.started = time.time()
         if not job.can_run():
+            job.logger.debug("Deferred")
             self._complete_job(job, job.S_DEFERRED, None)
             return
         # Change status
         s = "threaded " if job.threaded else ""
         job.logger.info("Running job")
-        job.started = time.time()
         self.collection.update({
             self.ATTR_CLASS: job.name,
             self.ATTR_KEY: job.key
@@ -327,7 +328,8 @@ class Scheduler(object):
         self._complete_job(job, s, tb)
 
     def _complete_job(self, job, status, tb):
-        self.metrics.jobs_time.timer(self.name, job.name, job.key).log(job.started, time.time(), status)
+        self.metrics.jobs_time.timer(self.name, job.name, job.key).log(
+            job.started, time.time(), status)
         if self.to_log_jobs:
             path = os.path.join(self.log_jobs, job.name, str(job.key))
             safe_rewrite(path, job.get_job_log())
