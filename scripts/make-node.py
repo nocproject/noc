@@ -82,6 +82,12 @@ def make_virtualenv():
         die("Cannot init virtualenv")
 
 
+def upgrade_pip():
+    r = subprocess.call("./bin/pip install pip --upgrade", shell=True)
+    if r:
+        die("Cannot upgrade pip")
+
+
 def install_packages():
     r = subprocess.call(
         "./bin/pip install -r etc/requirements/common.txt --find-links %s --allow-all-external --upgrade" % PIP_FIND_LINKS,
@@ -129,6 +135,7 @@ def install(url, target):
     i = get_info(update_url)
     clone(i["repo"], i["branch"], i["tip"])
     make_virtualenv()
+    upgrade_pip()
     install_packages()
     install_pth()
     create_configs(url)
