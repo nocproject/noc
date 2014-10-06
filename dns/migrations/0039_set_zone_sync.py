@@ -39,7 +39,7 @@ class Migration:
                     "sync_id": str(sync_id),
                     "instance_id": 0,
                     "changed": now,
-                    "expired": now
+                    "expire": now
                 })
 
     def backwards(self):
