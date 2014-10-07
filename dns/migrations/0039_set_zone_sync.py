@@ -29,6 +29,7 @@ class Migration:
             "    AND s.sync IS NOT NULL"
         ):
             if not sc.find({
+                "sync_id": str(sync_id),
                 "model_id": "dns.DNSZone",
                 "object_id": str(zone_id)
             }).count():
