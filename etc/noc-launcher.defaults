@@ -17,7 +17,7 @@ enabled = false
 # NOC's URL to check software updates
 url = http://127.0.0.1:8000/
 # Update check interval
-check_interval = 300
+check_interval = 60
 
 [noc-web]
 enabled = true
