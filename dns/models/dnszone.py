@@ -291,6 +291,14 @@ class DNSZone(models.Model):
                                           for ns in self.ns_list]
         return rpsl_format("\n".join(s))
 
+    def to_idna(self, n):
+        if isinstance(n, unicode):
+            return n.lower().encode("idna")
+        elif isinstance(n, basestring):
+            return unicode(n, "utf-8").lower().encode("idna")
+        else:
+            return n
+
     def get_soa(self):
         """
         SOA record
@@ -302,7 +310,7 @@ class DNSZone(models.Model):
             else:
                 return s
 
-        return [(dotted(self.name),
+        return [(dotted(self.to_idna(self.name)),
                  "SOA", "%s %s %d %d %d %d %d" % (
             dotted(self.profile.zone_soa),
             dotted(self.profile.zone_contact),
@@ -507,12 +515,14 @@ class DNSZone(models.Model):
                     name += ".%s." % self.name
                 else:
                     name = self.name + "."
-            if (type in ("NS", "MX", "CNAME") and
-                not content.endswith(".")):
+            name = self.to_idna(name)
+            if (type in ("NS", "MX", "CNAME")):
                 if content:
-                    content += ".%s." % self.name
+                    if not content.endswith("."):
+                        content += ".%s." % self.name
                 else:
                     content = self.name + "."
+                content = self.to_idna(content)
             return name, type, content, ttl, prio
 
         records = []
@@ -627,11 +637,13 @@ class DNSZone(models.Model):
         Increase serial and store new version on change
         :return: True if zone has been changed
         """
+        logger.debug("Refreshing zone %s", self.name)
         # Stored version
         cz = self.zone.read()
         # Generated version
         nz = self.get_zone_text()
         if cz == nz:
+            logger.debug("Zone not changed: %s", self.name)
             return False  # Not changed
          # Step serial
         self.set_next_serial()
