@@ -357,6 +357,7 @@ Ext.define("NOC.core.RepoPreview", {
     renderText: function(text, syntax) {
         var me = this;
         syntax = syntax || null;
+        text = text || "NO DATA";
         CodeMirror.modeURL = "/static/pkg/codemirror/mode/%N/%N.js";
         me.viewer.setValue(text);
         if(syntax) {
