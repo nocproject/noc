@@ -71,7 +71,9 @@ class SyncApplication(ExtDocApplication):
         # Get configs
         qs = SyncCache.objects.filter(
             sync_id=sync_id,
-            instance_id=instance)
+            instance_id=instance,
+            expire__gt=now
+        )
         if last:
             fmt = "%Y-%m-%dT%H:%M:%S.%f" if "." in last else "%Y-%m-%dT%H:%M:%S"
             last = datetime.datetime.strptime(last, fmt)
