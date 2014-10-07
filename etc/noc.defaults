@@ -699,6 +699,6 @@ config_ttl_jitter = 0.01
 # noc-web will refresh expired config by expired_refresh_chunk
 # portions up to expired_refresh_timeout seconds
 # Untouched expired configs will be left for other time
-expired_refresh_timeout = 10
+expired_refresh_timeout = 25
 # Refresh expired configs batch
 expired_refresh_chunk = 100
