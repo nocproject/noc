@@ -21,7 +21,6 @@ from noc.lib.prettyjson import to_json
 class MetricType(Document):
     meta = {
         "collection": "noc.pm.metrictypes",
-        "allow_inheritance": False,
         "json_collection": "pm.metrictypes"
     }
 

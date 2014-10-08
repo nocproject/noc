@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Various debugging and error logging utilities
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ import time
 import stat
 import hashlib
 import pprint
+import traceback
 ## NOC modules
 from noc.settings import CRASHINFO_LIMIT, TRACEBACK_REVERSE
 from noc.lib.version import get_version
@@ -278,6 +279,18 @@ def error_fingerprint():
         ]
     ])
     return hashlib.sha1(s).hexdigest()
+
+
+def dump_stacks():
+    """
+    Dump all active threads' stacks
+    """
+    for tid, stack in sys._current_frames().items():
+        print "[THREAD #%s]" % tid
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            print "File: '%s', line %d, in %s" % (filename, lineno, name)
+            if line:
+                print "    %s" % line.strip()
 
 
 def BQ(s):

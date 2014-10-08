@@ -20,8 +20,7 @@ class Probe(Document):
     PM Probe daemon
     """
     meta = {
-        "collection": "noc.pm.probe",
-        "allow_inheritance": False
+        "collection": "noc.pm.probe"
     }
 
     name = StringField(unique=True)

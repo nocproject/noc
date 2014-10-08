@@ -32,9 +32,6 @@ unit_choices = [(x, x) for x in UNITS]
 
 
 class RetentionRule(EmbeddedDocument):
-    meta = {
-        "allow_inheritance": False
-    }
     precision = IntField()
     precision_unit = StringField(default="s", choices=unit_choices)
     duration = IntField()
@@ -57,8 +54,7 @@ class RetentionRule(EmbeddedDocument):
 
 class StorageRule(Document):
     meta = {
-        "collection": "noc.storagerules",
-        "allow_inheritance": False
+        "collection": "noc.storagerules"
     }
     name = StringField(unique=True)
     description = StringField(required=False)
