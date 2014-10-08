@@ -12,9 +12,10 @@ logfiles = 0
 syslog_host =
 pidfile  = /var/run/noc/noc-collector.pid
 
-[update]
-name = collector
-enabled = false
+[debug]
+enable_manhole = false
+enable_timing = false
+timing_base = local/timing
 
 [collector]
 # Name of the collector. Must match with managed objects' settings
