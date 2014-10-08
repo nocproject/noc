@@ -24,9 +24,6 @@ from noc.pm.probes.base import probe_registry
 
 
 class MetricSettingsItem(EmbeddedDocument):
-    meta = {
-        "allow_inheritance": False
-    }
     metric_set = PlainReferenceField(MetricSet)
     is_active = BooleanField(default=True)
 
@@ -37,7 +34,6 @@ class MetricSettingsItem(EmbeddedDocument):
 class MetricSettings(Document):
     meta = {
         "collection": "noc.pm.metricsettings",
-        "allow_inheritance": False,
         "indexes": [("model_id", "object_id")]
     }
 

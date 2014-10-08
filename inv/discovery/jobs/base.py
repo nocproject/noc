@@ -50,7 +50,10 @@ class MODiscoveryJob(IntervalJob):
             qs = Q(**qs)
         for mo in ManagedObject.objects.filter(
                 is_managed=True, profile_name__in=profiles)\
-            .filter(qs).exclude(id__in=keys).only("id"):
+                .filter(qs)\
+                .exclude(id__in=keys)\
+                .exclude(profile_name__startswith="NOC.")\
+                .only("id"):
             if scheduler.ensure_job(cls.name, mo):
                 isc -= 1
                 if not isc:

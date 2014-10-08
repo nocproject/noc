@@ -20,6 +20,7 @@ from noc.lib.debug import error_report, frame_report, set_crashinfo_context
 from noc.lib.validators import is_ipv4, is_int
 from noc.lib.version import get_version
 from noc.lib.log import ColorFormatter
+from noc.lib.perf import enable_stats
 
 # Load netifaces to resolve interface addresses when possible
 try:
@@ -28,6 +29,8 @@ try:
     USE_NETIFACES = True
 except ImportError:
     USE_NETIFACES = False
+
+_daemon = None
 
 
 class Daemon(object):
@@ -52,6 +55,8 @@ class Daemon(object):
     }
 
     def __init__(self):
+        global _daemon
+        _daemon = self
         self.logger = logging.getLogger(self.daemon_name)
         # Chdir to the root of project
         os.chdir(os.path.join(os.path.dirname(sys.argv[0]), ".."))
@@ -201,6 +206,7 @@ class Daemon(object):
             logging.root.addHandler(handler)
             logging.root.setLevel(logging.DEBUG)
         self.setup_manhole()
+        self.setup_perf()
 
     def setup_manhole(self):
         to_start_manhole = (
@@ -214,6 +220,17 @@ class Daemon(object):
             self.logger.info("Opening manhole")
             manhole.install()
             self.manhole_status = True
+
+    def setup_perf(self):
+        if (self.config.has_section("debug") and
+                self.config.has_option("debug", "enable_timing") and
+                self.config.getboolean("debug", "enable_timing")):
+            enable_stats(
+                enabled=True,
+                base_dir=self.config.get("debug", "timing_base")
+            )
+        else:
+            enable_stats(enabled=False)
 
     def die(self, msg):
         self.logger.error(msg)

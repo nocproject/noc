@@ -29,8 +29,7 @@ logger = logging.getLogger(__name__)
 
 class MetricConfig(Document):
     meta = {
-        "collection": "noc.pm.metricconfigs",
-        "allow_inheritance": False
+        "collection": "noc.pm.metricconfigs"
     }
 
     name = StringField(unique=True)

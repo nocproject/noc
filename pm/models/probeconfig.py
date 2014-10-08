@@ -26,28 +26,18 @@ logger = logging.getLogger(__name__)
 
 
 class CollectorAddress(EmbeddedDocument):
-    meta = {
-        "allow_inheritance": False
-    }
     proto = StringField()
     address = StringField()
     port = IntField()
 
 
 class MetricCollectors(EmbeddedDocument):
-    meta = {
-        "allow_inheritance": False
-    }
     policy = StringField(default="prio")
     write_concern = IntField(default=1)
     collectors = ListField(EmbeddedDocumentField(CollectorAddress))
 
 
 class ProbeConfigMetric(EmbeddedDocument):
-    meta = {
-        "allow_inheritance": False
-    }
-
     metric = StringField()
     metric_type = StringField()
     thresholds = ListField()
@@ -59,11 +49,10 @@ class ProbeConfigMetric(EmbeddedDocument):
 class ProbeConfig(Document):
     meta = {
         "collection": "noc.pm.probeconfig",
-        "allow_inheritance": False,
         "indexes": [("model_id", "object_id"),
                     ("probe_id", "instance_id"),
                     ("probe_id", "instance_id", "expire"),
-                    "uuid", "expire", "changed"]
+                    "uuid", "expire", "changed", "metrics.metric"]
     }
 
     # Reference to model or document, like sa.ManagedObject
@@ -81,6 +70,7 @@ class ProbeConfig(Document):
     # Configuration section
     handler = StringField()
     interval = IntField()
+    storage_rule_id = StringField()
     config = DictField()
     metrics = ListField(EmbeddedDocumentField(ProbeConfigMetric))
 
@@ -229,6 +219,7 @@ class ProbeConfig(Document):
                             "interval": es.interval,
                             "probe_id": str(es.probe.id),
                             "instance_id": get_instance(es.probe, es.uuid),
+                            "storage_rule_id": str(es.storage_rule.id),
                             "config": es.config,
                             "metrics": [{
                                 "metric": m.metric,
@@ -302,6 +293,7 @@ class ProbeConfig(Document):
                             "expire": now + datetime.timedelta(seconds=cls.get_ttl()),
                             "handler": es.handler,
                             "interval": es.interval,
+                            "storage_rule_id": str(es.storage_rule.id),
                             "probe_id": str(es.probe.id),
                             "instance_id": get_instance(es.probe, es.uuid),
                             "config": es.config,
