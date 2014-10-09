@@ -38,7 +38,7 @@ class OAMLinkDiscoveryJob(LinkDiscoveryJob):
             if len(remote_macs[rmac]) == 1:
                 local_interface = remote_macs[rmac][0]
                 # Try to find interface by mac
-                il = list(Interface.objects.filter(mac=rmac))
+                il = list(Interface.objects.filter(mac=rmac, type="physical"))
                 if len(il) == 1:
                     # Exact match by mac found
                     remote_interface = il[0]
