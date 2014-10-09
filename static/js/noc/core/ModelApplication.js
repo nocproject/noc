@@ -198,16 +198,9 @@ Ext.define("NOC.core.ModelApplication", {
                 c.renderer = eval(c.renderer);
             }
         });
-        var selModel;
+        var selModel = Ext.create("Ext.selection.CheckboxModel");
         if(me.actions) {
-            selModel = Ext.create("Ext.selection.CheckboxModel", {
-                listeners: {
-                    scope: me,
-                    selectionchange: me.onActionSelectionChange
-                }
-            });
-        } else {
-            selModel = Ext.create("Ext.selection.CheckboxModel");
+            selModel.on("selectionchange", me.onActionSelectionChange, me);
         }
 
         var rowItems = [
