@@ -80,8 +80,13 @@ class SyncHandler(object):
             return
         cmd = self.get_command(cmd, **ctx)
         self.logger.info("Running '%s'" % cmd)
-        ret = subprocess.call(cmd, shell=True)
-        if ret == 0:
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+        p.wait()
+        output = p.stdout.read()
+        if output:
+            self.logger.debug("Output:\n%s", output)
+        if p.returncode == 0:
             self.logger.debug("Success")
         else:
-            self.logger.info("Failed (retcode %s)", ret)
+            self.logger.info("Failed (retcode %s)", p.returncode)
