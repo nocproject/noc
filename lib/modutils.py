@@ -53,3 +53,17 @@ def load_subclasses(module, subclasses, exclude_tests=True):
         if os.path.isfile(fp):
             r += _loader(fp, subclasses)
     return r
+
+
+def load_name(base, name, base_cls):
+    """
+    Load a subclass of *base_cls* named *name* from *base* package
+    """
+    try:
+        m = __import__("%s.%s" % (base, name), {}, {}, "*")
+    except ImportError:
+        return False
+    for n, v in inspect.getmembers(m, inspect.isclass):
+        if issubclass(v, base_cls) and v != base_cls:
+            return v
+    return None
