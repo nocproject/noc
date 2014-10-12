@@ -46,6 +46,10 @@ class AppHandler(tornado.web.FallbackHandler):
             # Rewrite /render -> /pm/render/
             self.request.path = "/pm/render/"
             self.request.uri = "/pm/render/" + self.request.uri[7:]
+        elif self.request.path == "/metrics/find/":
+            # Rewrite /metrics/find -> /pm/metric/find/
+            self.request.path = "/pm/metric/find/"
+            self.request.uri = "/pm/metric/find/" + self.request.uri[14:]
         super(AppHandler, self).prepare()
 
 

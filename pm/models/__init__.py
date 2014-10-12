@@ -12,4 +12,4 @@ from metrictype import MetricType
 from metricset import MetricSet
 from metricsettings import MetricSettings
 from metricconfig import MetricConfig
-
+from metric import Metric
