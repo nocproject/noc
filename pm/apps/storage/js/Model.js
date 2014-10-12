@@ -36,10 +36,6 @@ Ext.define("NOC.pm.storage.Model", {
             type: "integer"
         },
         {
-            name: "type",
-            type: "string"
-        },
-        {
             name: "description",
             type: "string"
         }

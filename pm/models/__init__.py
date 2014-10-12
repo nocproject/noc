@@ -7,7 +7,6 @@
 ##----------------------------------------------------------------------
 
 from storage import Storage
-from storagerule import StorageRule
 from probe import Probe
 from metrictype import MetricType
 from metricset import MetricSet

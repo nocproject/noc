@@ -10,9 +10,7 @@
 import mongoengine.signals
 ## NOC Modules
 from noc.lib.nosql import (Document, StringField, BooleanField,
-                           ListField, EmbeddedDocumentField,
-                           PlainReferenceField)
-from storagerule import StorageRule
+                           IntField, ListField, EmbeddedDocumentField)
 from metrictype import MetricType
 from metricitem import MetricItem
 
@@ -25,7 +23,7 @@ class MetricSet(Document):
     name = StringField(unique=True)
     is_active = BooleanField(default=True)
     description = StringField(required=False)
-    storage_rule = PlainReferenceField(StorageRule)
+    interval = IntField(default=60)
     metrics = ListField(EmbeddedDocumentField(MetricItem))
 
     def __unicode__(self):
@@ -56,7 +54,10 @@ class MetricSet(Document):
             if mt.name in mt_tree:
                 continue
             # Find all children
-            nmt = [mt] + sorted(MetricType.objects.filter(name__startswith = mt.name + " | "), key=lambda x: len(x.name))
+            nmt = [mt] + sorted(
+                MetricType.objects.filter(name__startswith=mt.name + " | "),
+                key=lambda x: len(x.name)
+            )
             for m in nmt:
                 if m.name in mt_tree:
                     continue

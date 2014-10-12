@@ -70,7 +70,6 @@ class ProbeConfig(Document):
     # Configuration section
     handler = StringField()
     interval = IntField()
-    storage_rule_id = StringField()
     config = DictField()
     metrics = ListField(EmbeddedDocumentField(ProbeConfigMetric))
 
@@ -170,13 +169,13 @@ class ProbeConfig(Document):
 
     @classmethod
     def _refresh_object(cls, object):
-        def get_collector(storage_rule):
-            c = collectors.get(storage_rule)
+        def get_collectors(es):
+            c = collectors.get(es.probe.id)
             if c:
                 return c
-            dc = storage_rule.storage.default_collector
-            collectors[storage_rule] = dc
-            return dc
+            c = es.probe.storage.default_collector
+            collectors[es.probe.id] = c
+            return c
 
         def get_instance(probe, uuid):
             ni = probe.n_instances
@@ -203,7 +202,6 @@ class ProbeConfig(Document):
                 }
             )
             for es in MetricSettings.get_effective_settings(o):
-                collector = get_collector(es.storage_rule)
                 bulk.find(
                     {
                         "uuid": es.uuid
@@ -219,7 +217,6 @@ class ProbeConfig(Document):
                             "interval": es.interval,
                             "probe_id": str(es.probe.id),
                             "instance_id": get_instance(es.probe, es.uuid),
-                            "storage_rule_id": str(es.storage_rule.id),
                             "config": es.config,
                             "metrics": [{
                                 "metric": m.metric,
@@ -227,7 +224,7 @@ class ProbeConfig(Document):
                                 "thresholds": m.thresholds,
                                 "convert": m.convert,
                                 "scale": m.scale,
-                                "collectors": collector
+                                "collectors": get_collectors(es)
                             } for m in es.metrics]
                         }
                     }
@@ -246,13 +243,13 @@ class ProbeConfig(Document):
 
     @classmethod
     def _refresh_config(cls, object):
-        def get_collector(storage_rule):
-            c = collectors.get(storage_rule)
+        def get_collectors(es):
+            c = collectors.get(es.probe.id)
             if c:
                 return c
-            dc = storage_rule.storage.default_collector
-            collectors[storage_rule] = dc
-            return dc
+            c = es.probe.storage.default_collector
+            collectors[es.probe.id] = c
+            return c
 
         def get_instance(probe, uuid):
             ni = probe.n_instances
@@ -279,7 +276,6 @@ class ProbeConfig(Document):
                 }
             )
             for es in o.get_effective_settings():
-                collector = get_collector(es.storage_rule)
                 bulk.find(
                     {
                         "uuid": es.uuid
@@ -293,7 +289,6 @@ class ProbeConfig(Document):
                             "expire": now + datetime.timedelta(seconds=cls.get_ttl()),
                             "handler": es.handler,
                             "interval": es.interval,
-                            "storage_rule_id": str(es.storage_rule.id),
                             "probe_id": str(es.probe.id),
                             "instance_id": get_instance(es.probe, es.uuid),
                             "config": es.config,
@@ -303,7 +298,7 @@ class ProbeConfig(Document):
                                 "thresholds": m.thresholds,
                                 "convert": m.convert,
                                 "scale": m.scale,
-                                "collectors": collector
+                                "collectors": get_collectors(es)
                             } for m in es.metrics]
                         }
                     }
@@ -372,28 +367,10 @@ class ProbeConfig(Document):
             cls._refresh_object(ms.get_object())
 
     @classmethod
-    def on_change_storage_rule(cls, sender, document=None, *args, **kwargs):
-        logger.info("Applying changes to StorageRule '%s'", document.name)
-        # Apply changes to metric config
-        for mc in MetricConfig.objects.filter(storage_rule=document):
-            cls.on_change_metric_config(MetricConfig, document=mc)
-        # Find all affected metric settings
-        msets = [x.id for x in MetricSet.objects.filter(storage_rule=document.id)]
-        for ms in MetricSettings.objects.filter(
-                metric_sets__metric_set__in=msets):
-            cls.on_change_metric_settings(MetricSettings, document=ms)
-
-    @classmethod
     def on_change_probe(cls, sender, document=None, *args, **kwargs):
         logger.info("Applying changes to Probe '%s'", document.name)
         for pc in ProbeConfig.objects.filter(probe_id=str(document.id)):
             pc.refresh()
-
-    @classmethod
-    def on_change_storage(cls, sender, document=None, *args, **kwargs):
-        logger.info("Applying changes to Storage '%s'", document.name)
-        for sr in StorageRule.objects.filter(storage=document.id):
-            cls.on_change_storage_rule(StorageRule, document=sr)
 
     @classmethod
     def on_change_auth_profile(cls, sender, instance, *args, **kwargs):
@@ -419,4 +396,3 @@ class ProbeConfig(Document):
 from metricset import MetricSet
 from metricsettings import MetricSettings
 from metricconfig import MetricConfig
-from storagerule import StorageRule

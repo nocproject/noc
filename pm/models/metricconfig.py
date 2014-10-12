@@ -14,12 +14,11 @@ import mongoengine.signals
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, ReferenceField,
-                                DictField)
+                                DictField, IntField)
 from mongoengine.queryset.base import DENY
 ## NOC Modules
 from metrictype import MetricType
 from metricitem import MetricItem
-from storagerule import StorageRule
 from probe import Probe
 from effectivesettings import EffectiveSettings, EffectiveSettingsMetric
 from noc.pm.probes.base import probe_registry
@@ -35,7 +34,7 @@ class MetricConfig(Document):
     name = StringField(unique=True)
     is_active = BooleanField(default=True)
     handler = StringField()
-    storage_rule = ReferenceField(StorageRule, reverse_delete_rule=DENY)
+    interval = IntField(default=60)
     description = StringField(required=False)
     probe = ReferenceField(Probe, reverse_delete_rule=DENY, required=False)
     metrics = ListField(EmbeddedDocumentField(MetricItem))
@@ -106,9 +105,8 @@ class MetricConfig(Document):
                 metric=metric,
                 metric_type=mi.metric_type,
                 is_active=True,
-                storage_rule=self.storage_rule,
                 probe=self.probe,
-                interval=self.storage_rule.get_interval(),
+                interval=self.interval,
                 thresholds=[mi.low_error, mi.low_warn,
                             mi.high_warn, mi.high_error]
             )

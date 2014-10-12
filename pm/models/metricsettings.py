@@ -135,14 +135,14 @@ class MetricSettings(Document):
         if not s_seq:
             return []
         mt = {}  # metric type -> metric item
-        sr = {}  # metric type -> storage rule
+        mti = {}  # metric type -> interval
         for s in s_seq:
             for ms in s.metric_sets:
                 if not ms.is_active:
                     continue
                 for mi in ms.metric_set.get_effective_metrics():
                     mt[mi.metric_type] = mi
-                    sr[mi.metric_type] = ms.metric_set.storage_rule
+                    mti[mi.metric_type] = ms.metric_set.interval
         r = []
         cvars = {}
         gc = getattr(object, "get_probe_config", None)
@@ -156,9 +156,8 @@ class MetricSettings(Document):
                 metric=None,
                 metric_type=m,
                 is_active=True,
-                storage_rule=sr[m],
                 probe=None,
-                interval=sr[m].get_interval(),
+                interval=mti[m],
                 thresholds=[mi.low_error, mi.low_warn,
                             mi.high_warn, mi.high_error]
             )

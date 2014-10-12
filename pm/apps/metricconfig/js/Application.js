@@ -10,7 +10,6 @@ Ext.define("NOC.pm.metricconfig.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.pm.metricconfig.Model",
-        "NOC.pm.storagerule.LookupField",
         "NOC.pm.probe.LookupField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.ref.probehandler.LookupField"
@@ -76,9 +75,9 @@ Ext.define("NOC.pm.metricconfig.Application", {
                     allowBlank: false
                 },
                 {
-                    name: "storage_rule",
-                    xtype: "pm.storagerule.LookupField",
-                    fieldLabel: "Storage Rule",
+                    name: "interval",
+                    xtype: "numberfield",
+                    fieldLabel: "Interval",
                     allowBlank: false
                 },
                 {

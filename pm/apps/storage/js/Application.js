@@ -23,11 +23,6 @@ Ext.define("NOC.pm.storage.Application", {
                     width: 150
                 },
                 {
-                    text: "Type",
-                    dataIndex: "type",
-                    width: 75
-                },
-                {
                     text: "Description",
                     dataIndex: "description",
                     flex: 1
@@ -40,16 +35,6 @@ Ext.define("NOC.pm.storage.Application", {
                     xtype: "textfield",
                     fieldLabel: "Name",
                     allowBlank: false
-                },
-                {
-                    name: "type",
-                    xtype: "combobox",
-                    fieldLabel: "Type",
-                    allowBlank: false,
-                    store: [
-                        ["whisper", "Whisper"],
-                        ["ceres", "Ceres"]
-                    ]
                 },
                 {
                     name: "description",

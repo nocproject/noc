@@ -10,7 +10,8 @@ Ext.define("NOC.pm.probe.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.pm.probe.Model",
-        "NOC.main.user.LookupField"
+        "NOC.main.user.LookupField",
+        "NOC.pm.storage.LookupField"
     ],
     model: "NOC.pm.probe.Model",
     search: true,
@@ -33,6 +34,12 @@ Ext.define("NOC.pm.probe.Application", {
             align: "right"
         },
         {
+            text: "Storage",
+            dataIndex: "storage",
+            width: 100,
+            renderer: NOC.render.Lookup("storage")
+        },
+        {
             text: "Credentials",
             dataIndex: "user",
             flex: 1,
@@ -51,6 +58,11 @@ Ext.define("NOC.pm.probe.Application", {
             name: "is_active",
             xtype: "checkboxfield",
             boxLabel: "Active"
+        },
+        {
+            name: "storage",
+            xtype: "pm.storage.LookupField",
+            fieldLabel: "Storage"
         },
         {
             name: "user",

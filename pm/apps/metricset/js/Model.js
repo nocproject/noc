@@ -20,8 +20,8 @@ Ext.define("NOC.pm.metricset.Model", {
             type: "string"
         },
         {
-            name: "storage_rule",
-            type: "string"
+            name: "interval",
+            type: "integer"
         },
         {
             name: "is_active",
