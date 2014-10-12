@@ -65,14 +65,13 @@ class TimeSeriesDatabase(object):
                 v = match.group(0)
                 return "(?:%s)" % "|".join(v[2:-2].split("\\,"))
 
-            mp = fnmatch.translate(p)
-            mp = mp.replace("(?ms)", "").replace("\\Z", "")
+            mp = p.replace("*", "[^.]*")
+            mp = mp.replace("?", "[^.]")
             mp = self.rx_variant.sub(variant, mp)
             mp += "$"
             return mp
 
         def iter_path(parent, p, rest):
-            logger.debug("iter_path(%s, %s, %s)", parent, p, rest)
             mp = get_pattern(p)
             if parent:
                 mp = "\\.%s" % mp
