@@ -16,7 +16,7 @@ EffectiveSettingsMetric = namedtuple("EffectiveSettingsMetric", [
 
 class EffectiveSettings(object):
     def __init__(self, metric=None, metric_type=None, is_active=True,
-                 storage_rule=None, probe=None, interval=None,
+                 probe=None, interval=None,
                  thresholds=None, handler=None, config=None,
                  errors=None, model_id=None, object=None, convert=None,
                  scale=1.0, metrics=None):
@@ -24,7 +24,6 @@ class EffectiveSettings(object):
         :param metric: Graphite metric name
         :param metric_type: MetricType object
         :param is_active: Activity mark
-        :param storage_rule: StorageRule object
         :param probe: Probe object
         :param interval: Polling interval, seconds
         :param thresholds: [low_error, low_warn, high_warn, high_error
@@ -35,7 +34,6 @@ class EffectiveSettings(object):
         self.metric = metric
         self.metric_type = metric_type
         self.is_active = is_active
-        self.storage_rule = storage_rule
         self.probe = probe
         self.interval = interval
         self.thresholds = thresholds
@@ -52,7 +50,7 @@ class EffectiveSettings(object):
     def dump(self):
         r = []
         for n in ["model_id", "object",
-                  "is_active", "storage_rule",
+                  "is_active",
                   "probe", "interval", "handler"]:
             r += ["%20s : %s" % (n, getattr(self, n))]
         if self.metrics:

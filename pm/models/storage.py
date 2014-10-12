@@ -45,7 +45,6 @@ class Storage(Document):
 
     name = StringField(unique=True)
     description = StringField(required=False)
-    type = StringField()
     select_policy = StringField(choices=[
         (ALL, "All"),
         (PRIORITY, "Priority"),
@@ -89,10 +88,3 @@ class Storage(Document):
                 for c in selectable
             ]
         }
-
-##
-from probeconfig import ProbeConfig
-mongoengine.signals.post_save.connect(
-    ProbeConfig.on_change_storage,
-    sender=Storage
-)

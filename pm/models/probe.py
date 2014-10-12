@@ -9,10 +9,12 @@
 ## Third-party modules
 import mongoengine.signals
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, IntField, BooleanField)
+from mongoengine.fields import (StringField, IntField, BooleanField,
+                                ReferenceField)
 ## NOC Modules
 from noc.main.models import User
 from noc.lib.nosql import ForeignKeyField
+from storage import Storage
 
 
 class Probe(Document):
@@ -26,6 +28,7 @@ class Probe(Document):
     name = StringField(unique=True)
     is_active = BooleanField(default=True)
     description = StringField()
+    storage = ReferenceField(Storage)
     user = ForeignKeyField(User)
     n_instances = IntField(default=1)
 

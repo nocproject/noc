@@ -10,7 +10,6 @@ Ext.define("NOC.pm.metricset.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.pm.metricset.Model",
-        "NOC.pm.storagerule.LookupField",
         "NOC.pm.metrictype.LookupField",
         "NOC.pm.metricset.templates.Effective"
     ],
@@ -24,7 +23,8 @@ Ext.define("NOC.pm.metricset.Application", {
                 {
                     text: "Name",
                     dataIndex: "name",
-                    width: 150                },
+                    width: 150
+                },
                 {
                     text: "Active",
                     dataIndex: "is_active",
@@ -32,10 +32,9 @@ Ext.define("NOC.pm.metricset.Application", {
                     width: 35
                 },
                 {
-                    text: "Storage Rule",
-                    dataIndex: "storage_rule",
-                    width: 150,
-                    renderer: NOC.render.Lookup("storage_rule")
+                    text: "Interval",
+                    dataIndex: "interval",
+                    width: 100
                 },
                 {
                     text: "Description",
@@ -57,15 +56,15 @@ Ext.define("NOC.pm.metricset.Application", {
                     boxLabel: "Active"
                 },
                 {
-                    name: "storage_rule",
-                    xtype: "pm.storagerule.LookupField",
-                    fieldLabel: "Storage Rule",
-                    allowBlank: false
-                },
-                {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: "Description"
+                },
+                {
+                    name: "interval",
+                    xtype: "numberfield",
+                    fieldLabel: "Interval",
+                    allowBlank: false
                 },
                 {
                     name: "metrics",

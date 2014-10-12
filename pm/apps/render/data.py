@@ -9,7 +9,7 @@
 ## Python modules
 import time
 ## NOC modules
-from noc.pm.storage.base import TimeSeriesDatabase
+from noc.pm.db.base import tsdb
 
 
 class TimeSeries(list):
@@ -87,14 +87,10 @@ def fetchData(ctx, path):
     series = []
     start = int(time.mktime(ctx["startTime"].timetuple()))
     end = int(time.mktime(ctx["endTime"].timetuple()))
-    for metric in db.find(path):
-        (s, e, step), values = db.fetch(metric, start, end)
-        ts = TimeSeries(metric, s, e, step, values)
+    step = 1
+    for metric in tsdb.find(path):
+        values = tsdb.fetch(metric, start, end)
+        ts = TimeSeries(metric, start, end, step, values)
         ts.pathExpression = metric
         series += [ts]
     return series
-
-##
-## Create database instance
-##
-db = TimeSeriesDatabase.get_database()

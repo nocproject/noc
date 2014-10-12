@@ -20,13 +20,8 @@ Ext.define("NOC.pm.metricconfig.Model", {
             type: "string"
         },
         {
-            name: "storage_rule",
-            type: "string"
-        },
-        {
-            name: "storage_rule__label",
-            type: "string",
-            persist: false
+            name: "interval",
+            type: "integer"
         },
         {
             name: "probe",
