@@ -51,7 +51,7 @@ class PostgresStorage(KVStorage):
         """
         cursor = connection.cursor()
         cursor.execute(
-            "SELECT k, v FROM %s WHERE k BETWEEN %%s AND %%s" % self.table,
+            "SELECT k, v FROM %s WHERE k BETWEEN %%s AND %%s ORDER BY k" % self.table,
             [psycopg2.Binary(start), psycopg2.Binary(end)]
         )
         for k, v in cursor.fetchall():

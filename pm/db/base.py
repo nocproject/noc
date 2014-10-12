@@ -109,7 +109,7 @@ class TimeSeriesDatabase(object):
             for k, v in partition.iterate(k0, k1):
                 t = self.get_time(k)
                 v = self.get_value(v)
-                r += [(t, v)]
+                r += [(v, t)]
         return r
 
     def get_batch(self):

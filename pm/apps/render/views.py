@@ -224,9 +224,7 @@ class RenderApplication(ExtApplication):
     def get_json_response(self, data, opts):
         r = []
         for series in data:
-            timestamps = range(series.start, series.end, series.step)
-            datapoints = zip(series, timestamps)
-            r += [{"target": series.name, "datapoints": datapoints}]
+            r += [{"target": series.name, "datapoints": list(series)}]
         c = json_encode(r)
         if opts.get("jsonp"):
             return HttpResponse(
