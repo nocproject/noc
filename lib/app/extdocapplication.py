@@ -12,7 +12,8 @@ import uuid
 from django.http import HttpResponse
 ## Third-party modules
 from mongoengine.fields import (StringField, BooleanField, ListField,
-                                EmbeddedDocumentField, ReferenceField)
+                                EmbeddedDocumentField, ReferenceField,
+                                BinaryField)
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
@@ -193,6 +194,8 @@ class ExtDocApplication(ExtApplication):
                     if (hasattr(f, "field") and
                             isinstance(f.field, EmbeddedDocumentField)):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
+                elif isinstance(f, BinaryField):
+                    v = repr(v)
                 elif type(v) not in (str, unicode, int, long, bool, dict):
                     if hasattr(v, "id"):
                         v = v.id
