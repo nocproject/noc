@@ -45,7 +45,7 @@ class SQLiteStorage(KVStorage):
         """
         cursor = self.connection.cursor()
         cursor.execute(
-            "SELECT k, v FROM ts WHERE k BETWEEN ? AND ?",
+            "SELECT k, v FROM ts WHERE k BETWEEN ? AND ? ORDER BY k",
             [sqlite3.Binary(start), sqlite3.Binary(end)]
         )
         for k, v in cursor.fetchall():

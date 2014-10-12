@@ -49,7 +49,7 @@ class MongoDBStorage(KVStorage):
                 "_id": 1,
                 "v": 1
             }
-        ):
+        ).sort("_id", 1):
             yield row["_id"], row["v"]
 
     def get_collection(self, partition):
