@@ -69,7 +69,8 @@ class Command(BaseCommand):
         "RawDictField": "auto",
         "ListField": "auto",
         "ObjectIdField": "string",
-        "UUIDField": "string"
+        "UUIDField": "string",
+        "BinaryField": "string"
     }
     # Document -> Ext type widgets
     document_ext_widget = {
