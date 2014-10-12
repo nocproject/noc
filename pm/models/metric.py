@@ -16,7 +16,7 @@ class Metric(Document):
         "indexes": ["parent"]
     }
 
-    metric = StringField(unique=True)
+    name = StringField(unique=True)
     hash = BinaryField(unique=True)
     parent = StringField()
 

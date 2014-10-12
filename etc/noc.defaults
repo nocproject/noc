@@ -654,9 +654,9 @@ hash_width = 8
 #     {{string|qm}} -- directory-safe quoting.
 #
 # object.XXXX.YYYY.<object name>.<metric type>
-map.sa.ManagedObject = object.{{object|dirhash:"4.2"}}.{{object.name|qm}}.{{metric_type|qm}}
+map.sa.ManagedObject = object.{{object.name|qm}}.{{metric_type|qm}}
 # object.XXXX.YYYY.<object name>.interface.<name>.<metric type>
-map.inv.Interface = object.{{object.managed_object|dirhash:"4.2"}}.{{object.managed_object.name|qm}}.interface.{{object.name|qm}}.{{metric_type|qm}}
+map.inv.Interface = object.{{object.managed_object.name|qm}}.interface.{{object.name|qm}}.{{metric_type|qm}}
 # Additional metric control defined in form of rules
 # metric.<N> = <regular expression>
 # probe.<N> = <probe name>
