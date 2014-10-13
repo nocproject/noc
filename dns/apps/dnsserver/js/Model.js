@@ -28,7 +28,7 @@ Ext.define("NOC.dns.dnsserver.Model", {
             type: "string"
         },
         {
-            name: "sync_channel",
+            name: "sync",
             type: "string"
         }
     ]

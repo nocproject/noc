@@ -21,6 +21,8 @@ import tornado.web
 import tornado.wsgi
 import tornado.httpserver
 from tornado.process import cpu_count
+import mercurial.ui
+from mercurial.hgweb.hgwebdir_mod import hgwebdir
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.lib.version import get_version
@@ -53,6 +55,13 @@ class AppHandler(tornado.web.FallbackHandler):
         super(AppHandler, self).prepare()
 
 
+class HGHandler(tornado.web.FallbackHandler):
+    def prepare(self):
+        # Rewrite /hg -> /
+        self.request.path = self.request.path[3:]
+        super(HGHandler, self).prepare()
+
+
 class Web(Daemon):
     """
     noc-web daemon
@@ -78,9 +87,22 @@ class Web(Daemon):
             address, port = "127.0.0.1", listen
         port = int(port)
 
+        # NOC WSGI handler
         noc_wsgi = tornado.wsgi.WSGIContainer(
             django.core.handlers.wsgi.WSGIHandler()
         )
+
+        # Mercurial handler
+        ui = mercurial.ui.ui()
+        ui.setconfig('ui', 'report_untrusted', 'off', 'hgwebdir')
+        ui.setconfig('ui', 'nontty', 'true', 'hgwebdir')
+        ui.setconfig("web", "baseurl", "/hg", "hgwebdir")
+        ui.setconfig("web", "style", "gitweb", "hgwebdir")
+        ui.setconfig("web", "logourl", "http://nocproject.org/", "hgwebdir")
+        hg_paths = [
+            ("noc", ".")
+        ]
+        hg_wsgi = tornado.wsgi.WSGIContainer(hgwebdir(hg_paths, ui))
 
         vi = sys.version_info
 
@@ -98,6 +120,11 @@ class Web(Daemon):
                 "path": self.prefix}),
             # / -> /main/desktop/
             (r"^/$", tornado.web.RedirectHandler, {"url": "/main/desktop/"}),
+            # Serve mercurial repo
+            (r"^/hg/static/(.*)", tornado.web.StaticFileHandler, {
+                "path": "lib/python%d.%d/site-packages/mercurial/templates/static" % (vi[0], vi[1])
+            }),
+            (r"^/hg.*$", HGHandler, {"fallback": hg_wsgi}),
             # Pass to NOC
             (r"^.*$", AppHandler, {"fallback": noc_wsgi})
         ])

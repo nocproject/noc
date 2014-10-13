@@ -9,10 +9,8 @@
 ## Python modules
 import os
 from collections import defaultdict
-## Django modules
-from django.core import exceptions
-from django.utils.importlib import import_module
 ## NOC modules
+from noc.lib.importlib import import_module
 from noc.settings import config
 
 
@@ -30,15 +28,15 @@ def get_solution(path):
     try:
         m, c = path.rsplit(".", 1)
     except ValueError:
-        raise exceptions.ImproperlyConfigured("%s isn't valid solution name" % path)
+        raise ImportError("%s isn't valid solution name" % path)
     try:
         mod = import_module(m)
     except ImportError, e:
-        raise exceptions.ImproperlyConfigured("Error loading solution '%s': %s" % (path, e))
+        raise ImportError("Error loading solution '%s': %s" % (path, e))
     try:
         c = getattr(mod, c)
     except AttributeError:
-        raise exceptions.ImproperlyConfigured("Solution '%s' doesn't define '%s' callable" % (path, c))
+        raise ImportError("Solution '%s' doesn't define '%s' callable" % (path, c))
     _CCACHE[path] = c
     return c
 

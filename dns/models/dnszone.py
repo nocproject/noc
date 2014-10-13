@@ -10,6 +10,7 @@
 import re
 import time
 from collections import defaultdict
+import logging
 # Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -29,9 +30,10 @@ from noc.lib.ip import IPv6
 from noc.lib.validators import is_ipv4, is_ipv6
 from noc.lib.rpsl import rpsl_format
 from noc.dns.utils.zonefile import ZoneFile
-from noc.lib.scheduler.utils import sync_request, sliding_job
-from noc.settings import config
 from noc.lib.gridvcs.manager import GridVCSField
+from noc.main.models.synccache import SyncCache
+
+logger = logging.getLogger(__name__)
 
 
 ##
@@ -181,7 +183,10 @@ class DNSZone(models.Model):
             return self.serial + 1  # May cause future lap
 
     def set_next_serial(self):
+        old_serial = self.serial
         self.serial = self.next_serial
+        logger.info("Zone %s serial change: %s -> %s",
+                    self.name, old_serial, self.serial)
         # self.save()
         # Hack to not send post_save signal
         DNSZone.objects.filter(id=self.id).update(serial=self.serial)
@@ -286,6 +291,14 @@ class DNSZone(models.Model):
                                           for ns in self.ns_list]
         return rpsl_format("\n".join(s))
 
+    def to_idna(self, n):
+        if isinstance(n, unicode):
+            return n.lower().encode("idna")
+        elif isinstance(n, basestring):
+            return unicode(n, "utf-8").lower().encode("idna")
+        else:
+            return n
+
     def get_soa(self):
         """
         SOA record
@@ -297,7 +310,7 @@ class DNSZone(models.Model):
             else:
                 return s
 
-        return [(dotted(self.name),
+        return [(dotted(self.to_idna(self.name)),
                  "SOA", "%s %s %d %d %d %d %d" % (
             dotted(self.profile.zone_soa),
             dotted(self.profile.zone_contact),
@@ -502,12 +515,14 @@ class DNSZone(models.Model):
                     name += ".%s." % self.name
                 else:
                     name = self.name + "."
-            if (type in ("NS", "MX", "CNAME") and
-                not content.endswith(".")):
+            name = self.to_idna(name)
+            if (type in ("NS", "MX", "CNAME")):
                 if content:
-                    content += ".%s." % self.name
+                    if not content.endswith("."):
+                        content += ".%s." % self.name
                 else:
                     content = self.name + "."
+                content = self.to_idna(content)
             return name, type, content, ttl, prio
 
         records = []
@@ -556,6 +571,8 @@ class DNSZone(models.Model):
                 n = ".".join(n.split(".")[1:])
             return None
 
+        if not name:
+            return None
         if is_ipv4(name):
             # IPv4 zone
             n = name.split(".")
@@ -584,12 +601,12 @@ class DNSZone(models.Model):
             z._touch()
 
     def _touch(self, is_new=False):
-        if self.is_auto_generated:
-            sliding_job("main.jobs", "dns.touch_zone", key=self.id,
-                delta=config.getint("dns", "delay"),
-                cutoff_delta=config.getint("dns", "cutoff"),
-                data={"new": is_new}
-            )
+        logger.debug("Touching zone %s", self.name)
+        SyncCache.expire_object(self)
+
+    def ensure_sync(self):
+        ss = set(s.sync for s in self.profile.authoritative_servers if s.sync)
+        SyncCache.ensure_syncs(self, ss)
 
     @property
     def channels(self):
@@ -620,11 +637,13 @@ class DNSZone(models.Model):
         Increase serial and store new version on change
         :return: True if zone has been changed
         """
+        logger.debug("Refreshing zone %s", self.name)
         # Stored version
         cz = self.zone.read()
         # Generated version
         nz = self.get_zone_text()
         if cz == nz:
+            logger.debug("Zone not changed: %s", self.name)
             return False  # Not changed
          # Step serial
         self.set_next_serial()
@@ -653,20 +672,43 @@ class DNSZone(models.Model):
                 g.notify(subject, body)
         return True
 
+    def get_sync_data(self):
+        """
+        Returns sync daemon configuration
+        {
+            records: [5-tuple]
+        }
+        """
+        self.refresh_zone()
+        return {
+            "records": self.get_records()
+        }
+
 
 ##
 ## Signal handlers
 ##
+@receiver(post_save, sender=DNSZoneProfile)
+def on_save_zone_profile(sender, instance, created, **kwargs):
+    if not created:
+        for z in instance.dnszone_set.all():
+            z.ensure_sync()
+
+# @todo: DNSServer change
+# @todo: Sync change
+
+
 @receiver(post_save, sender=DNSZone)
 def on_save(sender, instance, created, **kwargs):
-    if instance.is_auto_generated and not hasattr(instance, "_nosignal"):
+    if created:
+        instance.ensure_sync()
+    else:
         instance._touch(is_new=created)
 
 
 @receiver(pre_delete, sender=DNSZone)
 def on_delete(sender, instance, **kwargs):
-    sync_request(instance.channels, "list", delta=5)
-    # @todo: Delete from repo
+    SyncCache.delete_object(instance)
 
 
 @receiver(post_save, sender=Address)
@@ -675,11 +717,33 @@ def on_address_save(sender, instance, created, **kwargs):
     Fires after Address.save()
     """
     if created:
-        old = Address.objects.get(id=instance.id)
-        DNSZone.touch(old.address)
-        DNSZone.touch(old.fqdn)
-    DNSZone.touch(instance.address)
-    DNSZone.touch(instance.fqdn)
+        old_address = None
+        old_fqdn = None
+    elif hasattr(instance, "_old_values"):
+        # Set by audit trail
+        old_address = instance._old_values.get("address")
+        old_fqdn = instance._old_values.get("fqdn")
+    else:
+        old = Address.objects.get(pk=instance.pk)
+        old_address = old.address
+        old_fqdn = old.fqdn
+
+    to_update = False
+    if old_address != instance.address:
+        logger.debug("Register address change %s -> %s",
+                     old_address, instance.address)
+        to_update = True
+
+    if old_fqdn != instance.fqdn:
+        logger.debug("Register FQDN change %s -> %s",
+                     old_fqdn, instance.fqdn)
+        to_update = True
+
+    if to_update:
+        DNSZone.touch(old_address)
+        DNSZone.touch(instance.address)
+        DNSZone.touch(old_fqdn)
+        DNSZone.touch(instance.fqdn)
 
 
 @receiver(pre_delete, sender=Address)

@@ -45,3 +45,6 @@ class AutoConfDaemon(Daemon):
 
     def on_object_change(self, uuid, **kwargs):
         pass
+
+    def on_configuration_done(self):
+        pass

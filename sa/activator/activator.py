@@ -138,7 +138,6 @@ class Activator(Daemon, FSM):
         FSM.__init__(self)
         self.next_mappings_update = None
         self.next_crashinfo_check = None
-        self.next_heartbeat = None
         self.script_threads = {}
         if ((self.to_listen and self.config.getboolean("activator", "dedicated_collector")) or (
             self.to_ping and self.config.getboolean("activator", "dedicated_ping"))):
@@ -442,11 +441,6 @@ class Activator(Daemon, FSM):
         # Run pending ping probes
         if self.to_ping and self.get_state() == "ESTABLISHED" and bool(self.ping4_socket.socket):
             self.run_ping_checks()
-        # Heartbeat when necessary
-        if (self.heartbeat_enable and
-            (self.next_heartbeat is None or self.next_heartbeat <= t)):
-            self.heartbeat()
-            self.next_heartbeat = t + 3  # @todo: more accurate
         # Run default daemon/fsm machinery
         super(Activator, self).tick()
 

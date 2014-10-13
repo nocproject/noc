@@ -22,6 +22,7 @@ class NotificationGroupApplication(ExtModelApplication):
     title = "Notification Group"
     menu = "Setup | Notification Groups"
     model = NotificationGroup
+    glyph = "envelope-o"
 
     users = ModelInline(NotificationGroupUser)
     other = ModelInline(NotificationGroupOther)
