@@ -1,5 +1,4 @@
 cairocffi==0.5.4
-ceres==0.10.0
 ecdsa==0.11
 psycopg2>=2.5
 pymongo==2.7.2
@@ -25,7 +24,6 @@ tornado==4.0.1
 six>=1.7.2
 sleekxmpp==1.1.11
 vectorformats==0.1
-whisper==0.9.12
 Whoosh==2.5.4
 dbf==0.95.004
 requests==2.2.1
