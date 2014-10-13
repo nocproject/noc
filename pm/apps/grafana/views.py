@@ -18,6 +18,9 @@ class GrafanaApplication(ExtApplication):
     Metric application
     """
     title = "Grafana"
+    menu = "Dashboards"
+    glyph = "dashboard"
+    redirect = "123"
 
     @view("^noc/dashboard/(?P<name>.+)$", method=["POST"],
           access="read", api=True)
