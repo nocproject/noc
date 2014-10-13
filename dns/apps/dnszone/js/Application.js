@@ -98,7 +98,7 @@ Ext.define("NOC.dns.dnszone.Application", {
                 },
                 {
                     name: "serial",
-                    xtype: "numberfield",
+                    xtype: "displayfield",
                     fieldLabel: "Serial",
                     allowBlank: false
                 },
@@ -187,6 +187,16 @@ Ext.define("NOC.dns.dnszone.Application", {
                         }
                     ]
                 }
+            ],
+            formToolbar: [
+                {
+                    text: "Preview",
+                    glyph: NOC.glyph.search,
+                    tooltip: "Preview zone",
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onPreviewZone
+                }
             ]
         });
         me.callParent();
@@ -243,5 +253,9 @@ Ext.define("NOC.dns.dnszone.Application", {
             prioCombo = plugin.editor.items.items[3];
         me.callParent(arguments);
         prioCombo.setDisabled(!me.isPrioVisible(context.record.get("type")));
+    },
+    onPreviewZone: function() {
+        var me = this;
+        me.previewItem(me.ITEM_PREVIEW, me.currentRecord);
     }
 });

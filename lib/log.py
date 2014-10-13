@@ -16,7 +16,7 @@ class PrefixLoggerAdapter(logging.LoggerAdapter):
     """
     def __init__(self, logger, prefix, extra=None):
         self.pattern = "[%s] %%s" % prefix
-        super(PrefixLoggerAdapter, self).__init__(logger, extra or {})
+        logging.LoggerAdapter.__init__(self, logger, extra or {})
 
     def process(self, msg, kwargs):
         return self.pattern % msg, kwargs
@@ -37,7 +37,7 @@ class ColorFormatter(logging.Formatter):
         self._colors = {}
         self._end_color = ""
         self.setup_colors()
-        super(ColorFormatter, self).__init__(*args, **kwargs)
+        logging.Formatter.__init__(self, *args, **kwargs)
 
     def format(self, record):
         def safe_unicode(s):

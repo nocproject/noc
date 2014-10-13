@@ -856,8 +856,8 @@ class Checkpoint(models.Model):
         return cp
 
 from favorites import Favorites
-from stompaccess import StompAccess
 from tag import Tag
+from sync import Sync
 
 ##
 ## Install triggers
