@@ -25,6 +25,7 @@ class SQLiteStorage(KVStorage):
         self.path = os.path.join("local", self.name,
                                  "%s.db" % self.partition)
         self.connection = sqlite3.connect(self.path)
+        self.connection.isolation_level = None
         self.ensure_table()
 
     def write(self, batch):
