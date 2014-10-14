@@ -26,6 +26,6 @@ class UDPProtocolSocket(ListenUDPSocket):
                 value = float(value)
                 timestamp = float(timestamp)
             except ValueError, why:
-                logger.error("Invalid PDU: %s", why)
+                logger.error("Invalid PDU: %s (%r)", why, line)
                 continue  # Invalid PDU
             server.register_metric(metric, value, timestamp)

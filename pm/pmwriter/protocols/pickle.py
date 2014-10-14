@@ -47,7 +47,7 @@ class PickleProtocol(Protocol):
                     value = float(value)
                     timestamp = float(timestamp)
                 except ValueError, why:
-                    logger.error("Invalid PDU: %s", why)
+                    logger.error("Invalid PDU: %s (%r)", why, i)
                     continue
                 yield metric, value, timestamp
             self.in_buffer = self.in_buffer[l + HS:]
