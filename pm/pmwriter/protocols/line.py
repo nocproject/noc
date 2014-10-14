@@ -28,7 +28,7 @@ class LineProtocol(Protocol):
                 value = float(value)
                 timestamp = float(timestamp)
             except ValueError, why:
-                logger.error("Invalid PDU: %s", why)
+                logger.error("Invalid PDU: %s (%r)", why, pdu)
                 continue  # Invalid PDU
             yield metric, value, timestamp
 
