@@ -66,6 +66,5 @@ class PostgresStorage(KVStorage):
         if cursor.fetchall()[0][0]:
             return
         logger.debug("Creating table %s", self.table)
-        cursor.execute("CREATE TABLE %s(k BYTEA, v BYTEA)" % self.table)
-        cursor.execute("CREATE UNIQUE INDEX x_%s ON %s(k)" % (self.table, self.table))
+        cursor.execute("CREATE TABLE %s(k BYTEA NOT NULL PRIMARY KEY, v BYTEA)" % self.table)
         cursor.execute("COMMIT")
