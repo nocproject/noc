@@ -25,7 +25,6 @@ class SQLiteStorage(KVStorage):
         self.path = os.path.join("local", self.name,
                                  "%s.db" % self.partition)
         self.connection = sqlite3.connect(self.path)
-        self.connection.isolation_level = None
         self.ensure_table()
 
     def write(self, batch):
@@ -33,12 +32,11 @@ class SQLiteStorage(KVStorage):
         Batch save the data
         batch is a list of [(key, value), ...]
         """
-        cursor = self.connection.cursor()
-        for k, v in batch:
-            cursor.execute(
-                "INSERT INTO ts(k, v) VALUES(?, ?)",
-                [sqlite3.Binary(k), sqlite3.Binary(v)]
-            )
+        self.connection.executemany(
+            "INSERT INTO ts(k, v) VALUES(?, ?)",
+            ((sqlite3.Binary(k), sqlite3.Binary(v)) for k, v in batch)
+        )
+        self.connection.commit()
 
     def iterate(self, start, end):
         """
@@ -53,12 +51,13 @@ class SQLiteStorage(KVStorage):
             yield k, v
 
     def ensure_table(self):
-        cursor = self.connection.cursor()
-        cursor.execute(
+        for c, in self.connection.execute(
             "SELECT COUNT(*) FROM sqlite_master WHERE name = 'ts'"
-        )
-        if cursor.fetchall()[0][0]:
-            return
+        ):
+            if c:
+                return
+        logger.debug("Enabling WAL")
+        self.connection.execute("PRAGMA journal_mode=WAL")
         logger.debug("Creating table ts")
-        cursor.execute("CREATE TABLE ts(k BLOB, v BLOB)")
-        cursor.execute("CREATE UNIQUE INDEX x_ts ON ts(k)")
+        self.connection.execute("CREATE TABLE ts(k BLOB, v BLOB)")
+        self.connection.execute("CREATE UNIQUE INDEX x_ts ON ts(k)")
