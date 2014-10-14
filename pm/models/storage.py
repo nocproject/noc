@@ -88,3 +88,10 @@ class Storage(Document):
                 for c in selectable
             ]
         }
+
+##
+from probeconfig import ProbeConfig
+mongoengine.signals.post_save.connect(
+    ProbeConfig.on_change_storage,
+    sender=Storage
+)

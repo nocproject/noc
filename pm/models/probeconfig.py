@@ -337,6 +337,14 @@ class ProbeConfig(Document):
                 cls._refresh_object(obj)
 
     @classmethod
+    def on_change_storage(cls, sender, document=None, *args, **kwargs):
+        logger.debug("Apply changed storage '%s'", document.name)
+        for p in  Probe.objects.filter(storage=document):
+            logger.info("Applying changes to Probe '%s'", p.name)
+            for pc in ProbeConfig.objects.filter(probe_id=str(p.id)):
+                pc.refresh()
+
+    @classmethod
     def on_change_metric_settings(cls, sender, document=None, *args, **kwargs):
         object = document.get_object()
         logger.debug("Apply changed MetricSettings for '%s'", object)
@@ -396,3 +404,4 @@ class ProbeConfig(Document):
 from metricset import MetricSet
 from metricsettings import MetricSettings
 from metricconfig import MetricConfig
+from probe import Probe
