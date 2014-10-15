@@ -17,11 +17,3 @@ max_threads = 50
 enable_manhole = false
 enable_timing = false
 timing_base = local/timing
-
-[stomp]
-host = 127.0.0.1
-port = 19705
-client_id = noc-scheduler
-login = noc
-password = noc
-
