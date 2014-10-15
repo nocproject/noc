@@ -11,8 +11,6 @@ import re
 import datetime
 ## NOC modules
 from noc.lib.nosql import *
-from noc.sa.models import ManagedObject, ManagedObjectSelector
-
 
 from vendor import Vendor
 from modelinterface import ModelInterface, ModelInterfaceAttr
@@ -22,6 +20,7 @@ from objectmodel import ObjectModel
 from unknownmodel import UnknownModel
 from modelmapping import ModelMapping
 from technology import Technology
+from discovery import Discovery
 
 
 class SocketAttribute(EmbeddedDocument):
@@ -261,6 +260,7 @@ from link import Link
 from maclog import MACLog
 from macdb import MACDB
 from networkchart import NetworkChart
+from discovery import Discovery
 
 
 class NewPrefixDiscoveryLog(Document):
