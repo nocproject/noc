@@ -633,6 +633,9 @@ partition = daily
 #     * 4 - < 10 000 metrics
 #     * 8 - < 1 000 000 000 metrics
 hash_width = 8
+# Do not fetch data and create partitions before epoch
+# Format: YYYY-MM-DD
+epoch = 2014-09-01
 
 [pm_router]
 # Model to graphite mapping metrics

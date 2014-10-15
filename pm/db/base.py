@@ -10,9 +10,10 @@
 import struct
 import hashlib
 import logging
-import fnmatch
 import re
 import threading
+import time
+import datetime
 ## Third-party modules
 import cachetools
 from bson.binary import Binary
@@ -55,6 +56,11 @@ class TimeSeriesDatabase(object):
         self.metrics_batch = self.metrics.initialize_unordered_bulk_op()
         self.new_metrics = 0
         self.flush_lock = threading.Lock()
+        self.epoch = int(
+            time.mktime(
+                time.strptime(
+                    config.get("pm_storage", "epoch"), "%Y-%m-%d"))
+        )
 
     def find(self, path):
         """
@@ -102,6 +108,12 @@ class TimeSeriesDatabase(object):
         """
         k0 = self.get_key(metric, int(start))
         k1 = self.get_key(metric, int(end))
+        if k1 < k0:
+            k0, k1 = k1, k0
+        k0 = max(k0, self.epoch)
+        k1 = max(k1, self.epoch)
+        if k0 == k1:
+            return []
         r = []
         for pn in self.partition.enumerate(start, end):
             partition = self.get_partition_by_name(pn)
