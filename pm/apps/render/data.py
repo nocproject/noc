@@ -8,13 +8,15 @@
 
 ## Python modules
 import time
+import calendar
+## Third-party modules
+import pytz
 ## NOC modules
 from noc.pm.db.base import tsdb
 
 
 class TimeSeries(list):
-    def __init__(self, name, start, end, step, values,
-                 consolidate="average"):
+    def __init__(self, name, start, end, step, values, consolidate='average'):
         list.__init__(self, values)
         self.name = name
         self.start = start
@@ -57,36 +59,35 @@ class TimeSeries(list):
         usable = [v for v in values if v is not None]
         if not usable:
             return None
-        if self.consolidationFunc == "sum":
+        if self.consolidationFunc == 'sum':
             return sum(usable)
-        if self.consolidationFunc == "average":
+        if self.consolidationFunc == 'average':
             return float(sum(usable)) / len(usable)
-        if self.consolidationFunc == "max":
+        if self.consolidationFunc == 'max':
             return max(usable)
-        if self.consolidationFunc == "min":
+        if self.consolidationFunc == 'min':
             return min(usable)
         raise Exception("Invalid consolidation function!")
 
     def __repr__(self):
-        return "TimeSeries(name=%s, start=%s, end=%s, step=%s)" % (
-        self.name, self.start, self.end, self.step)
-
-    def getInfo(self):
-        """Pickle-friendly representation of the series"""
-        return {
-            "name": self.name,
-            "start": self.start,
-            "end": self.end,
-            "step": self.step,
-            "values": list(self),
-        }
+        return 'TimeSeries(name=%s, start=%s, end=%s, step=%s)' % (
+            self.name, self.start, self.end, self.step)
 
 
-# Graphite data retrieval API
+def epoch(dt):
+    """
+    Returns the epoch timestamp of a timezone-aware datetime object.
+    """
+    return calendar.timegm(dt.astimezone(pytz.utc).timetuple())
+
+
 def fetchData(ctx, path):
+    """
+    Graphite-compatible data-retrieval API
+    """
     series = []
-    start = int(time.mktime(ctx["startTime"].timetuple()))
-    end = int(time.mktime(ctx["endTime"].timetuple()))
+    start = int(epoch(ctx["startTime"]))
+    end = int(epoch(ctx["endTime"]))
     step = 1
     for metric in tsdb.find(path):
         values = tsdb.fetch(metric, start, end)
