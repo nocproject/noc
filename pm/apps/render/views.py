@@ -176,11 +176,13 @@ class RenderApplication(ExtApplication):
                 cached_data = None
             if cached_data is None:
                 for t in request_opts["targets"]:
+                    if not t.strip():
+                        continue
                     data.extend(evaluateTarget(ctx, t))
                 if use_cache:
                     cache.set(
                         data_key,
-                        [d.getInfo() for d in data],
+                        [d.get_info() for d in data],
                         cache_timeout
                     )
             else:
