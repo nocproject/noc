@@ -15,91 +15,85 @@ Ext.define("NOC.main.audittrail.Application", {
     ],
     model: "NOC.main.audittrail.Model",
     search: true,
-    columns: [
-        {
-            text: "User",
-            dataIndex: "user",
-            renderer: NOC.render.Lookup("user"),
-            flex: 1
-        },
-        {
-            text: "Timestamp",
-            dataIndex: "timestamp",
-            width: 160
-        },
-        {
-            text: "Model",
-            dataIndex: "model",
-            flex: 2
-        },
-        {
-            text: "Table",
-            dataIndex: "db_table",
-            flex: 2
-        },
-        {
-            text: "Operation",
-            dataIndex: "operation",
-            width: 60
-        },
-        {
-            text: "Subject",
-            dataIndex: "subject",
-            flex: 2
-        }
-    ],
-    fields: [
-        {
-            name: "user",
-            xtype: "main.user.LookupField",
-            fieldLabel: "User",
-            allowBlank: false
-        },
-        {
-            name: "model",
-            xtype: "textfield",
-            fieldLabel: "Model",
-            allowBlank: false
-        },
-        {
-            name: "db_table",
-            xtype: "textfield",
-            fieldLabel: "DB Table",
-            allowBlank: false
-        },
-        {
-            name: "operation",
-            xtype: "combobox",
-            fieldLabel: "Operation",
-            allowBlank: false,
-            store: [["C", "Create"], ["M", "Modify"], ["D", "Delete"]]
-        },
-        {
-            name: "subject",   
-            xtype: "textfield",
-            fieldLabel: "Subject",   
-            allowBlank: false 
-        },
-        {
-            name: "body", 
-            xtype: "textareafield",
-            fieldLabel: "Body",
-            anchor: "70%",
-            allowBlank: false
-        }
-    ],
-    filters: [
-        {
-            title: "By User",
-            name: "user",
-            ftype: "lookup",
-            lookup: "main.user"
-        },
-        {
-            title: "By DB Table",
-            name: "db_table",
-            ftype: "lookup",
-            lookup: "main.ref.model"
-        }
-    ]
+    initComponent: function() {
+        var me = this;
+
+        Ext.apply(me, {
+            columns: [
+                {
+                    text: "Timestamp",
+                    dataIndex: "timestamp",
+                    width: 160
+                },
+                {
+                    text: "User",
+                    dataIndex: "user",
+                    width: 100
+                },
+                {
+                    text: "Model",
+                    dataIndex: "model_id",
+                    width: 150
+                },
+                {
+                    text: "Operation",
+                    dataIndex: "op",
+                    flex: 1,
+                    renderer: NOC.render.Choices({
+                        "C": "Create",
+                        "M": "Modify",
+                        "D": "Delete"
+                    })
+                }
+            ],
+            fields: [
+                {
+                    name: "timestamp",
+                    xtype: "displayfield",
+                    fieldLabel: "Timestamp"
+                },
+                {
+                    name: "user",
+                    xtype: "displayfield",
+                    fieldLabel: "User"
+                },
+                {
+                    name: "model_id",
+                    xtype: "displayfield",
+                    fieldLabel: "Model"
+                },
+                {
+                    name: "op",
+                    xtype: "displayfield",
+                    fieldLabel: "Operation"
+                },
+                {
+                    name: "changes",
+                    xtype: "displayfield",
+                    fieldLabel: "Changes",
+                    renderer: function(value) {
+                        var r = [
+                            "<div class='noc-tp'>",
+                            "<table>",
+                            "<tr><th>Field</th><th>Old</th><th>New</th></tr>"
+                        ];
+                        for(var i in value) {
+                            var row = value[i];
+                            r.push(
+                                "<tr><td>" + row.field + "</td><td>" +
+                                (row.old !== null ? row.old : "") +
+                                "</td><td>" +
+                                (row.new !== null ? row.new : "") +
+                                "</td></tr>"
+                            );
+                        }
+                        r.push("</div>");
+                        r.push("</table>");
+                        return r.join("");
+                    }
+                }
+            ]
+        });
+        me.callParent();
+    }
 });

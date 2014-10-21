@@ -18,4 +18,5 @@ class AuditTrailApplication(ExtDocApplication):
     title = "Audit Trail"
     menu = "Audit Trail"
     model = AuditTrail
+    query_fields = ["model_id", "user"]
 
