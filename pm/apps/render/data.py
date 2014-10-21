@@ -93,6 +93,36 @@ class TimeSeries(list):
                 v = f(v)
             self[i] = (v, t)
 
+    def max(self):
+        """
+        Maximum value of the series
+        """
+        s = [v[0] for v in self if v[0] is not None]
+        if s:
+            return max(s)
+        else:
+            return None
+
+    def min(self):
+        """
+        Minimum value of the series
+        """
+        s = [v[0] for v in self if v[0] is not None]
+        if s:
+            return min(s)
+        else:
+            return None
+
+    def average(self):
+        """
+        Average of series values
+        """
+        s = [v[0] for v in self if v[0] is not None]
+        if s:
+            return sum(s) / len(s)
+        else:
+            return None
+
     def get_info(self):
         """
         Pickle-friendly representation of the series

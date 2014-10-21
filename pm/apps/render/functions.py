@@ -7,7 +7,6 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-from functools import partial
 from collections import defaultdict
 import math
 import datetime
@@ -123,6 +122,51 @@ def alias(ctx, series_list, new_name):
     return series_list
 
 
+@api("alpha")
+def alpha(ctx, series_list, alpha):
+    """
+    Assigns the given alpha transparency setting to the series. Takes a float
+    value between 0 and 1.
+    """
+    for series in series_list:
+        series.options['alpha'] = alpha
+    return series_list
+
+
+@api("averageAbove")
+def averageAbove(ctx, series_list, n):
+    """
+    Takes one metric or a wildcard series_list followed by an integer N.
+    Out of all metrics passed, draws only the metrics with an average value
+    above N for the time period specified.
+
+    Example::
+
+        &target=averageAbove(server*.instance*.threads.busy,25)
+
+    Draws the servers with average values above 25.
+
+    """
+    return [s for s in series_list if s.average() >= n]
+
+
+@api("averageBelow")
+def averageBelow(ctx, series_list, n):
+    """
+    Takes one metric or a wildcard series_list followed by an integer N.
+    Out of all metrics passed, draws only the metrics with an average value
+    below N for the time period specified.
+
+    Example::
+
+        &target=averageBelow(server*.instance*.threads.busy,25)
+
+    Draws the servers with average values below 25.
+
+    """
+    return [s for s in series_list if s.average() <= n]
+
+
 @api("avg", "averageSeries")
 def averageSeries(ctx, *series_lists):
     """
@@ -146,6 +190,44 @@ def averageSeries(ctx, *series_lists):
         return []
     name, series_lists = normalize("averageSeries", series_lists)
     return [TimeSeries.fit_map(name, series_lists, avg, safe=True)]
+
+
+@api("color")
+def color(ctx, series_list, color):
+    """
+    Assigns the given color to the series_list
+
+    Example::
+
+        &target=color(collectd.hostname.cpu.0.user, 'green')
+        &target=color(collectd.hostname.cpu.0.system, 'ff0000')
+        &target=color(collectd.hostname.cpu.0.idle, 'gray')
+        &target=color(collectd.hostname.cpu.0.idle, '6464ffaa')
+
+    """
+    for series in series_list:
+        series.color = color
+    return series_list
+
+
+@api("countSeries")
+def countSeries(ctx, *series_lists):
+    """
+    Draws a horizontal line representing the number of nodes found in the
+    series_list.
+
+    Example::
+
+        &target=countSeries(carbon.agents.*.*)
+
+    """
+    def count(a):
+        return int(len(a))
+
+    if is_empty(series_lists):
+        return []
+    name, series_lists = normalize("countSeries", series_lists)
+    return [TimeSeries.fit_map(name, series_lists, count, safe=True)]
 
 
 @api("averageSeriesWithWildcards")
@@ -176,6 +258,45 @@ def averageSeriesWithWildcards(ctx, series_list, *positions):
         series.name = name
         result.append(series)
     return result
+
+
+@api("derivative")
+def derivative(ctx, series_list):
+    """
+    This is the opposite of the integral function. This is useful for taking a
+    running total metric and calculating the delta between subsequent data
+    points.
+
+    This function does not normalize for periods of time, as a true derivative
+    would. Instead see the perSecond() function to calculate a rate of change
+    over time.
+
+    Example::
+
+        &target=derivative(company.server.application01.ifconfig.TXPackets)
+
+    Each time you run ifconfig, the RX and TXPackets are higher (assuming there
+    is network traffic.) By applying the derivative function, you can get an
+    idea of the packets per minute sent or received, even though you're only
+    recording the total.
+    """
+    results = []
+    for series in series_list:
+        new_values = []
+        prev = None
+        for val, t in series:
+            if None in (prev, val):
+                new_values += [(None, t)]
+                prev = val
+                continue
+            new_values += [(val - prev, t)]
+            prev = val
+        name = "derivative(%s)" % series.name
+        results += [
+            TimeSeries("derivative(%s)" % series.name,
+                       series.start, series.end, new_values)
+        ]
+    return results
 
 
 @api("diffSeries")
@@ -317,6 +438,38 @@ def logarithm(ctx, series_list, base=10):
     return series_list
 
 
+@api("maximumAbove")
+def maximumAbove(ctx, series_list, n):
+    """
+    Takes one metric or a wildcard series_list followed by a constant n.
+    Draws only the metrics with a maximum value above n.
+
+    Example::
+
+        &target=maximumAbove(system.interface.eth*.packetsSent,1000)
+
+    This would only display interfaces which at one point sent more than
+    1000 packets/min.
+    """
+    return [s for s in series_list if s.max() > n]
+
+
+@api("maximumBelow")
+def maximumBelow(ctx, series_list, n):
+    """
+    Takes one metric or a wildcard series_list followed by a constant n.
+    Draws only the metrics with a maximum value below n.
+
+    Example::
+
+        &target=maximumBelow(system.interface.eth*.packetsSent,1000)
+
+    This would only display interfaces which always sent less than 1000
+    packets/min.
+    """
+    return [s for s in series_list if s.max() <= n]
+
+
 @api("maxSeries")
 def maxSeries(ctx, *series_lists):
     """
@@ -332,6 +485,38 @@ def maxSeries(ctx, *series_lists):
         return []
     name, series_lists = normalize("maxSeries", series_lists)
     return [TimeSeries.fit_map(name, series_lists, max, safe=True)]
+
+
+@api("minumumAbove")
+def minimumAbove(ctx, series_list, n):
+    """
+    Takes one metric or a wildcard series_list followed by a constant n.
+    Draws only the metrics with a minimum value above n.
+
+    Example::
+
+        &target=minimumAbove(system.interface.eth*.packetsSent,1000)
+
+    This would only display interfaces which always sent more than 1000
+    packets/min.
+    """
+    return [s for s in series_list if s.min() > n]
+
+
+@api("minimumBelow")
+def minimumBelow(ctx, series_list, n):
+    """
+    Takes one metric or a wildcard series_list followed by a constant n.
+    Draws only the metrics with a minimum value below n.
+
+    Example::
+
+        &target=minimumBelow(system.interface.eth*.packetsSent,1000)
+
+    This would only display interfaces which sent at one point less than
+    1000 packets/min.
+    """
+    return [s for s in series_list if s.min() <= n]
 
 
 @api("minSeries")
@@ -378,6 +563,45 @@ def multiplySeries(ctx, *series_lists):
         return series_lists
     name, series_lists = normalize("multiplySeries", series_lists)
     return [TimeSeries.fit_map(name, series_lists, mul, safe=True)]
+
+
+@api("nonNegativeDerivative")
+def nonNegativeDerivative(ctx, series_list, max_value=None):
+    """
+    Same as the derivative function above, but ignores datapoints that trend
+    down. Useful for counters that increase for a long time, then wrap or
+    reset. (Such as if a network interface is destroyed and recreated by
+    unloading and re-loading a kernel module, common with USB / WiFi cards.
+
+    Example::
+
+        &target=nonNegativederivative(
+            company.server.application01.ifconfig.TXPackets)
+
+    """
+    results = []
+
+    for series in series_list:
+        new_values = []
+        prev = None
+        for val, t in series:
+            if None in (prev, val):
+                new_values.append(None)
+                prev = val
+                continue
+            diff = val - prev
+            if diff >= 0:
+                new_values.append(diff)
+            elif max_value is not None and max_value >= val:
+                new_values.append((max_value - prev) + val + 1)
+            else:
+                new_values.append(None)
+            prev = val
+        results += [
+            TimeSeries("nonNegativeDerivative(%s)" % series.name,
+                       series.start, series.end, new_values)
+        ]
+    return results
 
 
 @api("offset")
@@ -619,20 +843,44 @@ def sumSeriesWithWildcards(ctx, series_list, *positions):
 
     return [newSeries[name] for name in new_names]
 
+
+@api("transformNull")
+def transformNull(ctx, series_list, default=0):
+    """
+    Takes a metric or wild card series_list and an optional value
+    to transform Nulls to. Default is 0. This method compliments
+    drawNullAsZero flag in graphical mode but also works in text only
+    mode.
+
+    Example::
+
+        &target=transformNull(webapp.pages.*.views,-1)
+
+    This would take any page that didn't have values and supply negative 1 as
+    a default. Any other numeric value may be used as well.
+    """
+    def transform(v):
+        if v is None:
+            return default
+        else:
+            return v
+
+    for series in series_list:
+        series.apply(transform, safe=False)
+        series.set_name("transformNull(%s,%g)" % (series.name, default))
+    return series_list
+
 ## Graphite functions to be ported frim graphite/functions
 ## Remove appropriative lines for ported functions
 # SeriesFunctions = {
 #     # Combine functions
-#     'countSeries': countSeries,
 #     'weightedAverage': weightedAverage,
 #
 #     # Transform functions
 #     'scaleToSeconds': scaleToSeconds,
 #     'offsetToZero': offsetToZero,
-#     'derivative': derivative,
 #     'perSecond': perSecond,
 #     'integral': integral,
-#     'nonNegativeDerivative': nonNegativeDerivative,
 #     'timeStack': timeStack,
 #     'timeShift': timeShift,
 #     'summarize': summarize,
@@ -661,11 +909,6 @@ def sumSeriesWithWildcards(ctx, series_list, *positions):
 #     'currentBelow': currentBelow,
 #     'highestAverage': highestAverage,
 #     'lowestAverage': lowestAverage,
-#     'averageAbove': averageAbove,
-#     'averageBelow': averageBelow,
-#     'maximumAbove': maximumAbove,
-#     'minimumAbove': minimumAbove,
-#     'maximumBelow': maximumBelow,
 #     'nPercentile': nPercentile,
 #     'sortByTotal': sortByTotal,
 #     'sortByName': sortByName,
@@ -688,8 +931,6 @@ def sumSeriesWithWildcards(ctx, series_list, *positions):
 #     'aliasByNode': aliasByNode,
 #     'aliasByMetric': aliasByMetric,
 #     'cactiStyle': cactiStyle,
-#     'color': color,
-#     'alpha': alpha,
 #     'cumulative': cumulative,
 #     'consolidateBy': consolidateBy,
 #     'keepLastValue': keepLastValue,
@@ -707,5 +948,4 @@ def sumSeriesWithWildcards(ctx, series_list, *positions):
 #     'stacked': stacked,
 #     'areaBetween': areaBetween,
 #     'threshold': threshold,
-#     'transformNull': transformNull,
 #     'aggregateLine': aggregateLine
