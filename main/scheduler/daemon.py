@@ -13,7 +13,6 @@ import logging
 from noc.lib.daemon import Daemon
 from periodic import PeriodicScheduler
 from scheduler import JobScheduler
-from noc.lib.stomp.threadclient import ThreadedSTOMPClient
 
 
 class SchedulerDaemon(Daemon):
