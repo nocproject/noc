@@ -187,6 +187,11 @@ Ext.define("NOC.core.MetricSettingsPanel", {
                     text: "Metric Type",
                     dataIndex: "metric_type",
                     width: 200
+                },
+                {
+                    text: "Probe",
+                    dataIndex: "probe",
+                    width: 100
                 }
             ],
             listeners: {
