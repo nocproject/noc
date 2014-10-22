@@ -174,6 +174,55 @@ Ext.apply(NOC.render, {
 
     htmlEncode: function(v) {
         return Ext.util.Format.htmlEncode(v);
+    },
+
+    //
+    // NOC.render.Table accepts table configuration
+    // and values as list of objects
+    //
+    // renderer: NOC.render.Table({
+    //     columns: [
+    //         {
+    //             text: "Column Header 1",
+    //             dataIndex: "field1"
+    //         },
+    //         {
+    //             text: "Column Header 2",
+    //             dataIndex: "field2",
+    //             renderer: NOC.render.Bool
+    //         }
+    //     ]
+    // })
+    //
+    Table: function(config) {
+        var fields = [],
+            renderers = [],
+            columns = config.columns || [],
+            header = ["<div class='noc-tp'>", "<table>", "<tr>"];
+        Ext.each(columns, function(c) {
+            fields.push(c.dataIndex || null);
+            renderers.push(c.renderer || NOC.render.htmlEncode);
+            header.push("<th>");
+            header.push(Ext.util.Format.htmlEncode(c.text || ""));
+            header.push("</th>");
+        });
+        header.push("</tr>");
+        header = header.join("");
+        return function(value) {
+            var r = [header];
+            for(var i = 0; i < value.length; i++) {
+                var row = value[i];
+                r.push("<tr>");
+                for(var j = 0; j < fields.length; j++) {
+                    r.push("<td>");
+                    r.push(renderers[j](row[fields[j]]));
+                    r.push("</td>");
+                }
+                r.push("</tr>");
+            }
+            r.push("</table>");
+            return r.join("");
+        }
     }
 });
 
