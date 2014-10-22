@@ -71,26 +71,22 @@ Ext.define("NOC.main.audittrail.Application", {
                     name: "changes",
                     xtype: "displayfield",
                     fieldLabel: "Changes",
-                    renderer: function(value) {
-                        var r = [
-                            "<div class='noc-tp'>",
-                            "<table>",
-                            "<tr><th>Field</th><th>Old</th><th>New</th></tr>"
-                        ];
-                        for(var i in value) {
-                            var row = value[i];
-                            r.push(
-                                "<tr><td>" + row.field + "</td><td>" +
-                                (row.old !== null ? row.old : "") +
-                                "</td><td>" +
-                                (row.new !== null ? row.new : "") +
-                                "</td></tr>"
-                            );
-                        }
-                        r.push("</div>");
-                        r.push("</table>");
-                        return r.join("");
-                    }
+                    renderer: NOC.render.Table({
+                        columns: [
+                            {
+                                text: "Field",
+                                dataIndex: "field"
+                            },
+                            {
+                                text: "Old",
+                                dataIndex: "old"
+                            },
+                            {
+                                text: "New",
+                                dataIndex: "new"
+                            }
+                        ]
+                    })
                 }
             ]
         });
