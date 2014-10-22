@@ -26,15 +26,13 @@ Ext.define("NOC.core.MetricSettingsPanel", {
                 "metric",
                 "metric_type",
                 "is_active",
-                "storage_rule",
                 "probe",
                 "interval",
                 "thresholds",
                 "handler",
                 "config",
                 "errors",
-                "traces",
-                "retentions"
+                "traces"
             ]
         });
         // Settings panel
@@ -140,16 +138,6 @@ Ext.define("NOC.core.MetricSettingsPanel", {
                                 });
                                 return value.join(" | ");
                             }
-                        },
-                        {
-                            text: "Storage Rule",
-                            dataIndex: "storage_rule",
-                            width: 100
-                        },
-                        {
-                            text: "Retentions",
-                            dataIndex: "retentions",
-                            width: 100
                         },
                         {
                             text: "Probe",
