@@ -11,8 +11,11 @@ from collections import defaultdict
 import math
 import datetime
 import random
+## Third-party modules
+from graphite.attime import parseTimeOffset
 ## NOC modules
 from data import TimeSeries, epoch
+from noc.lib.dateutils import total_seconds
 
 NAN = float('NaN')
 INF = float('inf')
@@ -192,6 +195,36 @@ def averageSeries(ctx, *series_lists):
     return [TimeSeries.fit_map(name, series_lists, avg, safe=True)]
 
 
+@api("averageSeriesWithWildcards")
+def averageSeriesWithWildcards(ctx, series_list, *positions):
+    """
+    Call averageSeries after inserting wildcards at the given position(s).
+
+    Example::
+
+        &target=averageSeriesWithWildcards(
+            host.cpu-[0-7].cpu-{user,system}.value, 1)
+
+    This would be the equivalent of::
+
+        &target=averageSeries(host.*.cpu-user.value)&target=averageSeries(
+            host.*.cpu-system.value)
+
+    """
+    matchedList = defaultdict(list)
+    for series in series_list:
+        newname = '.'.join(map(lambda x: x[1],
+                               filter(lambda i: i[0] not in positions,
+                                      enumerate(series.name.split('.')))))
+        matchedList[newname].append(series)
+    result = []
+    for name in matchedList:
+        [series] = averageSeries(ctx, (matchedList[name]))
+        series.set_name(name)
+        result.append(series)
+    return result
+
+
 @api("color")
 def color(ctx, series_list, color):
     """
@@ -228,36 +261,6 @@ def countSeries(ctx, *series_lists):
         return []
     name, series_lists = normalize("countSeries", series_lists)
     return [TimeSeries.fit_map(name, series_lists, count, safe=True)]
-
-
-@api("averageSeriesWithWildcards")
-def averageSeriesWithWildcards(ctx, series_list, *positions):
-    """
-    Call averageSeries after inserting wildcards at the given position(s).
-
-    Example::
-
-        &target=averageSeriesWithWildcards(
-            host.cpu-[0-7].cpu-{user,system}.value, 1)
-
-    This would be the equivalent of::
-
-        &target=averageSeries(host.*.cpu-user.value)&target=averageSeries(
-            host.*.cpu-system.value)
-
-    """
-    matchedList = defaultdict(list)
-    for series in series_list:
-        newname = '.'.join(map(lambda x: x[1],
-                               filter(lambda i: i[0] not in positions,
-                                      enumerate(series.name.split('.')))))
-        matchedList[newname].append(series)
-    result = []
-    for name in matchedList:
-        [series] = averageSeries(ctx, (matchedList[name]))
-        series.name = name
-        result.append(series)
-    return result
 
 
 @api("derivative")
@@ -323,6 +326,45 @@ def diffSeries(ctx, *series_lists):
     return [TimeSeries.fit_map(name, series_lists, diff)]
 
 
+@api("drawAsInfinite")
+def drawAsInfinite(ctx, series_list):
+    """
+    Takes one metric or a wildcard series_list.
+    If the value is zero, draw the line at 0. If the value is above zero, draw
+    the line at infinity. If the value is null or less than zero, do not draw
+    the line.
+
+    Useful for displaying on/off metrics, such as exit codes. (0 = success,
+    anything else = failure.)
+
+    Example::
+
+        drawAsInfinite(Testing.script.exitCode)
+
+    """
+    for series in series_list:
+        series.options["drawAsInfinite"] = True
+        series.set_name("drawAsInfinite(%s)" % series.name)
+    return series_list
+
+
+@api("highestAverage")
+def highestAverage(ctx, series_list, n=1):
+    """
+    Takes one metric or a wildcard series_list followed by an integer N.
+    Out of all metrics passed, draws only the top N metrics with the highest
+    average value for the time period specified.
+
+    Example::
+
+        &target=highestAverage(server*.instance*.threads.busy,5)
+
+    Draws the top 5 servers with the highest average value.
+
+    """
+    return sorted(series_list, key=lambda s: s.average())[-n:]
+
+
 @api("identity", "time", "timeFunction")
 def identity(ctx, name):
     """
@@ -349,6 +391,32 @@ def identity(ctx, name):
             [(t, t) for t in range(start, end, step)]
         )
     ]
+
+
+@api("integral")
+def integral(ctx, series_list):
+    """
+    This will show the sum over time, sort of like a continuous addition
+    function. Useful for finding totals or trends in metrics that are
+    collected per minute.
+
+    Example::
+
+        &target=integral(company.sales.perMinute)
+
+    This would start at zero on the left side of the graph, adding the sales
+    each minute, and show the total sales for the time period selected at the
+    right side, (time now, or the time specified by '&until=').
+    """
+    def integrate(v):
+        current[0] += v
+        return current[0]
+
+    for series in series_list:
+        current = [0.0]
+        series.apply(integrate)
+        series.set_name("integral(%s)" % series.name)
+    return series_list
 
 
 @api("isNonNull")
@@ -436,6 +504,23 @@ def logarithm(ctx, series_list, base=10):
         series.set_name("log(%s, %s)" % (series.name, base))
         series.apply(l)
     return series_list
+
+
+@api("lowestAverage")
+def lowestAverage(ctx, series_list, n=1):
+    """
+    Takes one metric or a wildcard series_list followed by an integer N.
+    Out of all metrics passed, draws only the bottom N metrics with the lowest
+    average value for the time period specified.
+
+    Example::
+
+        &target=lowestAverage(server*.instance*.threads.busy,5)
+
+    Draws the bottom 5 servers with the lowest average value.
+
+    """
+    return sorted(series_list, key=lambda s: s.average())[:n]
 
 
 @api("maximumAbove")
@@ -622,6 +707,43 @@ def offset(ctx, series_list, factor):
     return series_list
 
 
+@api("offsetToZero")
+def offsetToZero(ctx, series_list):
+    """
+    Offsets a metric or wildcard series_list by subtracting the minimum
+    value in the series from each datapoint.
+
+    Useful to compare different series where the values in each series
+    may be higher or lower on average but you're only interested in the
+    relative difference.
+
+    An example use case is for comparing different round trip time
+    results. When measuring RTT (like pinging a server), different
+    devices may come back with consistently different results due to
+    network latency which will be different depending on how many
+    network hops between the probe and the device. To compare different
+    devices in the same graph, the network latency to each has to be
+    factored out of the results. This is a shortcut that takes the
+    fastest response (lowest number in the series) and sets that to zero
+    and then offsets all of the other datapoints in that series by that
+    amount. This makes the assumption that the lowest response is the
+    fastest the device can respond, of course the more datapoints that
+    are in the series the more accurate this assumption is.
+
+    Example::
+
+        &target=offsetToZero(Server.instance01.responseTime)
+        &target=offsetToZero(Server.instance*.responseTime)
+
+    """
+    for series in series_list:
+        series.set_name("offsetToZero(%s)" % series.name)
+        sm = series.min()
+        for s in series_list:
+            s.apply(lambda v: v - sm)
+    return series_list
+
+
 @api("percentileOfSeries")
 def percentileOfSeries(ctx, series_lists, n, interpolate=False):
     """
@@ -705,6 +827,17 @@ def rangeOfSeries(ctx, *series_lists):
         return []
     name, series_lists = normalize("rangeOfSeries", series_lists)
     return [TimeSeries.fit_map(name, series_lists, rng, safe=True)]
+
+
+@api("secondYAxis")
+def secondYAxis(ctx, series_list):
+    """
+    Graph the series on the secondary Y axis.
+    """
+    for series in series_list:
+        series.options["secondYAxis"] = True
+        series.set_name("secondYAxis(%s)" % series.name)
+    return series_list
 
 
 @api("scale")
@@ -810,6 +943,61 @@ def sumSeries(ctx, *series_lists):
     return [TimeSeries.fit_map(name, series_lists, sum, safe=True)]
 
 
+@api("time_shift")
+def time_shift(ctx, series_list, time_shift, reset_end=True):
+    """
+    Takes one metric or a wildcard series_list, followed by a quoted string
+    with the length of time (See ``from / until`` in the render\_api_ for
+    examples of time formats).
+
+    Draws the selected metrics shifted in time. If no sign is given, a minus
+    sign ( - ) is implied which will shift the metric back in time. If a plus
+    sign ( + ) is given, the metric will be shifted forward in time.
+
+    Will reset the end date range automatically to the end of the base stat
+    unless reset_end is False. Example case is when you timeshift to last week
+    and have the graph date range set to include a time in the future, will
+    limit this timeshift to pretend ending at the current time. If reset_end is
+    False, will instead draw full range including future time.
+
+    Useful for comparing a metric against itself at a past periods or
+    correcting data stored at an offset.
+
+    Example::
+
+        &target=time_shift(Sales.widgets.largeBlue,"7d")
+        &target=time_shift(Sales.widgets.largeBlue,"-7d")
+        &target=time_shift(Sales.widgets.largeBlue,"+1h")
+
+    """
+    from graphite.evaluator import evaluateTarget
+
+    if not series_list:
+        return []
+    # Default to negative. parseTimeOffset defaults to +
+    if time_shift[0].isdigit():
+        time_shift = '-' + time_shift
+    delta = parseTimeOffset(time_shift)
+    new_ctx = ctx.copy()
+    new_ctx['startTime'] = ctx['startTime'] + delta
+    new_ctx['endTime'] = ctx['endTime'] + delta
+    results = []
+    # if len(series_list) > 1, they will all have the same pathExpression,
+    # which is all we care about.
+    series = series_list[0]
+    for shifted_series in evaluateTarget(new_ctx, series.pathExpression):
+        shifted_series.set_name('time_shift(%s, %s)' % (
+            shifted_series.name, time_shift))
+        if reset_end:
+            shifted_series.end = series.end
+        else:
+            shifted_series.end = (
+                shifted_series.end - shifted_series.start + series.start)
+        shifted_series.start = series.start
+        results += [shifted_series]
+    return results
+
+
 @api("sumSeriesWithWildcards")
 def sumSeriesWithWildcards(ctx, series_list, *positions):
     """
@@ -872,21 +1060,15 @@ def transformNull(ctx, series_list, default=0):
 
 ## Graphite functions to be ported frim graphite/functions
 ## Remove appropriative lines for ported functions
-# SeriesFunctions = {
 #     # Combine functions
 #     'weightedAverage': weightedAverage,
-#
 #     # Transform functions
 #     'scaleToSeconds': scaleToSeconds,
-#     'offsetToZero': offsetToZero,
 #     'perSecond': perSecond,
-#     'integral': integral,
 #     'timeStack': timeStack,
-#     'timeShift': timeShift,
 #     'summarize': summarize,
 #     'smartSummarize': smartSummarize,
 #     'hitcount': hitcount,
-#
 #     # Calculate functions
 #     'movingAverage': movingAverage,
 #     'movingMedian': movingMedian,
@@ -899,7 +1081,6 @@ def transformNull(ctx, series_list, default=0):
 #     'pct': asPercent,
 #     'diffSeries': diffSeries,
 #     'divideSeries': divideSeries,
-#
 #     # Series Filter functions
 #     'mostDeviant': mostDeviant,
 #     'highestCurrent': highestCurrent,
@@ -907,8 +1088,6 @@ def transformNull(ctx, series_list, default=0):
 #     'highestMax': highestMax,
 #     'currentAbove': currentAbove,
 #     'currentBelow': currentBelow,
-#     'highestAverage': highestAverage,
-#     'lowestAverage': lowestAverage,
 #     'nPercentile': nPercentile,
 #     'sortByTotal': sortByTotal,
 #     'sortByName': sortByName,
@@ -918,13 +1097,11 @@ def transformNull(ctx, series_list, default=0):
 #     'sortByMinima': sortByMinima,
 #     'useSeriesAbove': useSeriesAbove,
 #     'exclude': exclude,
-#
 #     # Data Filter functions
 #     'removeAbovePercentile': removeAbovePercentile,
 #     'removeAboveValue': removeAboveValue,
 #     'removeBelowPercentile': removeBelowPercentile,
 #     'removeBelowValue': removeBelowValue,
-#
 #     # Special functions
 #     'legendValue': legendValue,
 #     'aliasSub': aliasSub,
@@ -935,7 +1112,6 @@ def transformNull(ctx, series_list, default=0):
 #     'consolidateBy': consolidateBy,
 #     'keepLastValue': keepLastValue,
 #     'changed': changed,
-#     'drawAsInfinite': drawAsInfinite,
 #     'secondYAxis': secondYAxis,
 #     'lineWidth': lineWidth,
 #     'dashed': dashed,
