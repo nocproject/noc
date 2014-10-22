@@ -18,6 +18,7 @@ from noc.lib.solutions import solutions_roots
 from match import MatchExpr, MatchTrue
 import noc.lib.snmp.version
 from noc.lib.snmp.error import SNMPError, NO_SUCH_NAME
+from noc.lib.log import PrefixLoggerAdapter
 
 
 HandlerItem = namedtuple("HandlerItem", [
@@ -197,7 +198,10 @@ class Probe(object):
         self.daemon = daemon
         self.task = task
         self.missed_oids = {}  # oid -> expire time
-        self.logger = logging.getLogger(self.__module__)
+        self.logger = PrefixLoggerAdapter(
+            logging.getLogger(self.__module__),
+            self.task.uuid
+        )
 
     def disable(self):
         raise NotImplementedError()
@@ -212,7 +216,7 @@ class Probe(object):
         return False
 
     def set_missed_oid(self, oid):
-        logger.info("Disabling missed oid %s", oid)
+        self.logger.info("Disabling missed oid %s", oid)
         self.missed_oids[oid] = time.time() + self.INVALID_OID_TTL
 
     def set_convert(self, metric, convert=None, scale=None):
@@ -258,7 +262,7 @@ class Probe(object):
             to_continue = False
             for o in iter_oids(oids):
                 try:
-                    return self.daemon.io.snmp_get(
+                    result = self.daemon.io.snmp_get(
                         o, address, port,
                         community=community,
                         version=version)
@@ -270,8 +274,25 @@ class Probe(object):
                         break  # Restart
                     else:
                         return None
+                if isinstance(result, dict):
+                    missed = [k for k in result if result[k] is None]
+                    if missed:
+                        for k in missed:
+                            self.set_missed_oid(o[k])
+                        break
+                    else:
+                        return result
+                elif result is None:
+                    if isinstance(o, dict):
+                        for k in o.itervalues():
+                            self.set_missed_oid(k)
+                    else:
+                        self.set_missed_oid(o)
+                    break
+                else:
+                    return result
             if not to_continue:
-                logger.info("No valid OIDs to poll")
+                self.logger.info("No valid OIDs to poll")
                 break
 
 
