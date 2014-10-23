@@ -23,6 +23,7 @@ from noc.lib.threadpool import Pool
 class ProbeDaemon(AutoConfDaemon):
     daemon_name = "noc-probe"
     AUTOCONF_PATH = "/pm/probe/"
+    MAX_SLEEP = 0.5
 
     def __init__(self):
         super(ProbeDaemon, self).__init__()
@@ -33,6 +34,30 @@ class ProbeDaemon(AutoConfDaemon):
         self.thread_pool = None
         self.sender = None
         self.io = None
+
+    def iter_tasks(self):
+        """
+        Yield task to run
+        """
+        while True:
+            t = time.time()
+            while True:
+                with self.pending_lock:
+                    if (self.pending_queue and
+                                self.pending_queue[0].next_run <= t):
+                        rt = self.pending_queue.pop(0)
+                        self.running.add(rt.uuid)
+                    else:
+                        # Nothing to run, go sleep
+                        if not self.pending_queue:
+                            st = self.MAX_SLEEP
+                        else:
+                            st = min(self.MAX_SLEEP,
+                                     self.pending_queue[0].next_run - t)
+                        break
+                # Yield outside of lock
+                yield rt
+            time.sleep(st)
 
     def run(self):
         # Run sender thread
@@ -47,22 +72,15 @@ class ProbeDaemon(AutoConfDaemon):
             backlog = 2 * max_threads
         self.thread_pool = Pool(
             name="probes",
-            metrics_prefix="noc.noc-probe.%s" % self.instance_id,
+            metrics_prefix=self.metrics,
             start_threads=self.config.getint("thread_pool", "start_threads"),
             min_spare=self.config.getint("thread_pool", "min_spare"),
             max_spare=self.config.getint("thread_pool", "max_spare"),
             max_threads=max_threads,
             backlog=backlog
         )
-        while True:
-            t = time.time()
-            with self.pending_lock:
-                while self.pending_queue and self.pending_queue[0].next_run < t:
-                    rt = self.pending_queue.pop(0)
-                    self.running.add(rt.uuid)
-                    self.thread_pool.run(repr(rt), rt.run)
-            st = 1 if not self.pending_queue else self.pending_queue[0].next_run - t
-            time.sleep(min(st, 1))
+        for rt in self.iter_tasks():
+            self.thread_pool.run(repr(rt), rt.run)
 
     def on_object_create(self, uuid, **kwargs):
         t = Task(self)
