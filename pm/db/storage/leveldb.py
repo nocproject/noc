@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## BerkeleyDB Key-Value storage
+## LevelDB Key-Value storage
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
