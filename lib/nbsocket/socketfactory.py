@@ -19,6 +19,7 @@ from connectedtcpsocket import ConnectedTCPSocket
 from acceptedtcpsocket import AcceptedTCPSocket
 from pollers.detect import get_poller
 from pipesocket import PipeSocket
+from noc.lib.perf import MetricsHub
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +31,20 @@ class SocketFactory(object):
     """
     def __init__(self, tick_callback=None,
                  polling_method=None, controller=None,
-                 write_delay=True):
+                 write_delay=True, metrics_prefix=None):
+        if not metrics_prefix:
+            metrics_prefix = "noc."
+        metrics_prefix += "socketfactory"
+        self.metrics = MetricsHub(
+            metrics_prefix,
+            "sockets.count",
+            "sockets.register",
+            "sockets.unregister",
+            "loops",
+            "ticks",
+            "handle.reads",
+            "handle.writes"
+        )
         self.sockets = {}      # fileno -> socket
         self.socket_name = {}  # socket -> name
         self.name_socket = {}  # name -> socket
@@ -67,6 +81,7 @@ class SocketFactory(object):
         logger.debug("Register socket %s (%s)", socket.get_label(), name)
         with self.register_lock:
             self.new_sockets += [(socket, name)]
+            self.metrics.sockets_register += 1
 
     def unregister_socket(self, socket):
         """
@@ -82,6 +97,7 @@ class SocketFactory(object):
             self.name_socket.pop(old_name, None)
             if socket in self.new_sockets:
                 self.new_sockets.remove(socket)
+                self.metrics.sockets_unregister -= 1
 
     def guarded_socket_call(self, socket, method):
         """
@@ -199,16 +215,20 @@ class SocketFactory(object):
         """
         Generic event loop
         """
+        self.metrics.loops += 1
         self.create_pending_sockets()
+        self.metrics.sockets_count = len(self.sockets)
         if self.sockets:
             r, w = self.poller.get_active(timeout)
             self.cnt_polls += 1
             # Process write events before read
             # to catch refused connections
             for s in w:
+                self.metrics.handle_writes += 1
                 self.guarded_socket_call(s, s.handle_write)
             # Process read events
             for s in r:
+                self.metrics.handle_reads += 1
                 self.guarded_socket_call(s, s.handle_read)
         else:
             # No socket initialized. Sleep to prevent CPU hogging
@@ -238,6 +258,7 @@ class SocketFactory(object):
             self.loop(1)
             t = time.time()
             if self.tick_callback and t - last_tick >= 1:
+                self.metrics.ticks += 1
                 try:
                     self.tick_callback()
                 except Exception:
