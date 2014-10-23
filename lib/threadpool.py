@@ -34,15 +34,22 @@ class Worker(Thread):
         self.start_time = 0
         self.cancelled = False
         self.can_cancel = False
-        self.is_idle = True
+        self.is_idle = False
+
+    def set_idle(self, status):
+        self.is_idle = status
+        self.pool.set_idle(status)
 
     def run(self):
-        self.logger.debug("Stating worker thread")
+        self.logger.debug("Starting worker thread")
         while True:
             # Get task from queue
             try:
+                self.set_idle(True)
                 task = self.queue.get(block=True, timeout=1)
+                self.set_idle(False)
             except Empty:
+                self.set_idle(False)
                 continue
             if task is None:
                 break  # Shutdown
@@ -52,7 +59,6 @@ class Worker(Thread):
             self.start_time = time.time()
             try:
                 self.can_cancel = True
-                self.is_idle = False
                 f(*args, **kwargs)
                 self.can_cancel = False
             except CancelledError:
@@ -62,7 +68,6 @@ class Worker(Thread):
                 if not self.cancelled:
                     error_report()
             self.queue.task_done()
-            self.is_idle = True
         # Shutdown
         self.queue.task_done()
         self.pool.thread_done(self)
@@ -123,32 +128,27 @@ class Pool(object):
         self.queue = Queue(backlog)
         self.stopping = False
         self.stopped = Event()
-        self.reschedule_threads()
+        self.n_idle = 0
+        self.idle_lock = Lock()
+        self.logger.info("Running thread pool '%s'", self.name)
+        self.set_idle(None)
 
-    def reschedule_threads(self):
-        if self.stopping:
-            return
-        with self.t_lock:
-            # Idle threads
-            n_idle = sum(1 for t in self.threads
-                         if t.is_alive() and t.is_idle)
-            # Total threads
+    def set_idle(self, status):
+        with self.idle_lock:
+            if status is not None:
+                self.n_idle += 1 if status else -1
             n = len(self.threads)
-            # Run spare threads
-            while n_idle < self.min_spare and n < self.max_threads:
-                w = Worker(self, self.queue)
-                self.threads.add(w)
-                n_idle += 1
-                n += 1
-                w.start()
-            # Shutdown spare threads
-            while n_idle > self.max_spare:
-                self.queue.put(None)
-                n_idle -= 1
-                n -= 1
-            self.metrics.threads_idle = n_idle
+            self.metrics.threads_idle = self.n_idle
             self.metrics.threads_running = n
             self.metrics.queue_len = self.queue.qsize()
+            if self.n_idle < self.min_spare and n < self.max_threads:
+                # Run additional thread
+                w = Worker(self, self.queue)
+                self.threads.add(w)
+                w.start()
+            elif self.n_idle > self.max_spare or n > self.max_threads:
+                # Stop one thread
+                self.queue.put(None)
 
     def thread_done(self, t):
         with self.t_lock:
@@ -156,7 +156,6 @@ class Pool(object):
                 self.threads.remove(t)
             if self.stopping and not len(self.threads):
                 self.stopped.set()
-        self.reschedule_threads()
 
     def get_status(self):
         s = []
@@ -200,9 +199,6 @@ class Pool(object):
     def run(self, title, target, args=(), kwargs={}):
         if self.stopping:
             return
-        # @todo: Limit rescheduling
-        self.reschedule_threads()
-        # Block, timeout
         self.queue.put((title, target, args, kwargs))
 
     def configure(self, max_threads=None, min_spare=None,
