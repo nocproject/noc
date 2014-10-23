@@ -49,5 +49,5 @@ min_spare = 5
 # Must be greater than min_spare
 max_spare = 10
 # Task queue backlog
-# max_threads by default
+# 2 * max_threads by default
 backlog = 0
