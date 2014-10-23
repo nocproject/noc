@@ -8,6 +8,7 @@
 
 ## Pyhon modules
 import socket
+import errno
 ## NOC modules
 from basesocket import Socket
 from exceptions import BrokenPipeError
@@ -108,6 +109,17 @@ class TCPSocket(Socket):
         if self.closing:
             self.logger.error("Attempting to write to closing socket")
             raise BrokenPipeError()
+        # Try to send immediately
+        if self.socket and not self.character_mode and not self.out_buffer:
+            try:
+                sent = self.socket.send(msg)
+                msg = msg[sent:]
+            except socket.error, why:
+                if why[0] not in (errno.EAGAIN, errno.EINTR,
+                                  errno.ENOBUFS, errno.ENOTCONN):
+                    self.logger.error("Socket error: %s", repr(why))
+                    self.close()
+                    return
         self.out_buffer += msg
         self.set_status(w=bool(self.out_buffer) and self.is_connected)
 
