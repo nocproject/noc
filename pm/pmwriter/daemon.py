@@ -36,8 +36,6 @@ class PMWriterDaemon(Daemon):
     ]
 
     def __init__(self, *args, **kwargs):
-        self.factory = SocketFactory(controller=self,
-                                     tick_callback=self.flush)
         self.line_listener = None
         self.pickle_listener = None
         self.udp_listener = None
@@ -47,12 +45,19 @@ class PMWriterDaemon(Daemon):
         self.batch_ready = Event()
         self.writer = None
         self.last_data = 0
+        self.factory = None
         super(PMWriterDaemon, self).__init__(*args, **kwargs)
         self.db = tsdb
         self.batch = self.db.get_batch()
 
     def load_config(self):
         super(PMWriterDaemon, self).load_config()
+        if not self.factory:
+            self.factory = SocketFactory(
+                controller=self,
+                tick_callback=self.flush,
+                metrics_prefix=self.metrics
+            )
         self.setup_listener("line_listener")
         self.setup_listener("pickle_listener")
         self.setup_listener("udp_listener")

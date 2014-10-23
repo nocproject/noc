@@ -22,7 +22,9 @@ class Sender(threading.Thread):
     def __init__(self, daemon):
         self._daemon = daemon
         super(Sender, self).__init__(name="sender")
-        self.factory = SocketFactory()
+        self.factory = SocketFactory(
+            metrics_prefix=self._daemon.metrics + "sender."
+        )
         self.channels = {}  # (proto, address, port) -> Socket
         self.create_lock = threading.Lock()
         self.feed_lock = threading.Lock()

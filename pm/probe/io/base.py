@@ -21,7 +21,10 @@ logger = logging.getLogger(__name__)
 class IOThread(threading.Thread):
     def __init__(self, daemon):
         self._daemon = daemon
-        self.factory = SocketFactory(controller=self, write_delay=False)
+        self.factory = SocketFactory(
+            controller=self,
+            metrics_prefix=self._daemon.metrics + "io."
+        )
         self.create_lock = threading.Lock()
         super(IOThread, self).__init__(name="io")
 
