@@ -104,8 +104,11 @@ class Pool(object):
                                                          max_threads))
         self.logger = PrefixLoggerAdapter(logger, name)
         self.name = name
+        if not metrics_prefix:
+            metrics_prefix = "noc"
+        metrics_prefix += "pool.%s" % name
         self.metrics = MetricsHub(
-            metrics_prefix or "noc.pool.%s" % name,
+            metrics_prefix,
             "threads.running",
             "threads.idle",
             "queue.len"

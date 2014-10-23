@@ -17,6 +17,10 @@ pidfile  = /var/run/noc/noc-pmwriter.pid
 enable_manhole = false
 enable_timing = false
 timing_base = local/timing
+## Report performance metrics to UDP collector
+enable_reports = false
+report_collector = 127.0.0.1:2003
+report_interval = 60
 
 [writer]
 # Number of writer's worker threads

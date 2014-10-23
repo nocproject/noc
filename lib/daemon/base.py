@@ -20,7 +20,7 @@ from noc.lib.debug import error_report, frame_report, set_crashinfo_context
 from noc.lib.validators import is_ipv4, is_int
 from noc.lib.version import get_version
 from noc.lib.log import ColorFormatter
-from noc.lib.perf import enable_stats
+from noc.lib.perf import enable_stats, MetricsHub
 
 # Load netifaces to resolve interface addresses when possible
 try:
@@ -53,6 +53,9 @@ class Daemon(object):
         "error": logging.ERROR,
         "critical": logging.CRITICAL
     }
+
+    ## Auto-create additional metrics
+    METRICS = []
 
     def __init__(self):
         global _daemon
@@ -91,6 +94,8 @@ class Daemon(object):
         self.pidfile = None
         self.config = None
         self.instance_id = self.options.instance_id
+        self.metrics = MetricsHub("noc.%s.%s" % (self.daemon_name, self.instance_id),
+                                  *self.METRICS)
         self.manhole_status = False
         self.load_config()
         # Register signal handlers if any

@@ -28,6 +28,13 @@ class PMWriterDaemon(Daemon):
         "udp_listener": UDPProtocolSocket
     }
 
+    METRICS = [
+        "metrics.register",
+        "db.flush.ops",
+        "db.flush.records",
+        "db.flush.time"
+    ]
+
     def __init__(self, *args, **kwargs):
         self.factory = SocketFactory(controller=self,
                                      tick_callback=self.flush)
@@ -59,6 +66,7 @@ class PMWriterDaemon(Daemon):
         self.logger.debug("Register metric %s %s %s",
                           metric, value, timestamp)
         self.batch.write(metric, timestamp, value)
+        self.metrics.metrics_register += 1
         self.nb += 1
         if self.nb >= self.batch_size:
             self.flush()
