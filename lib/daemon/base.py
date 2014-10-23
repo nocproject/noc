@@ -222,15 +222,18 @@ class Daemon(object):
             self.manhole_status = True
 
     def setup_perf(self):
-        if (self.config.has_section("debug") and
-                self.config.has_option("debug", "enable_timing") and
-                self.config.getboolean("debug", "enable_timing")):
-            enable_stats(
-                enabled=True,
-                base_dir=self.config.get("debug", "timing_base")
-            )
-        else:
-            enable_stats(enabled=False)
+        kwargs = {"enabled": False}
+        if self.config.has_section("debug"):
+            if (self.config.has_option("debug", "enable_timing") and
+                    self.config.getboolean("debug", "enable_timing")):
+                kwargs["enabled"] = True
+                kwargs["base_dir"] = self.config.get("debug", "timing_base")
+            if self.config.has_option("debug", "enable_reports"):
+                kwargs["report_collector"] = self.config.get(
+                    "debug", "report_collector")
+                kwargs["report_interval"] = self.config.getint(
+                    "debug", "report_interval")
+        enable_stats(**kwargs)
 
     def die(self, msg):
         self.logger.error(msg)
