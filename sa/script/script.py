@@ -18,6 +18,7 @@ import Queue
 import cPickle
 import ctypes
 import datetime
+import warnings
 ## NOC modules
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.registry import Registry
@@ -374,10 +375,14 @@ class Script(threading.Thread):
         """Debug log message"""
         if self.activator.use_canned_session:
             return
+        warnings.warn("Using deprecated Script.debug() method",
+                      DeprecationWarning, stacklevel=2)
         self.logger.debug(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
 
     def error(self, msg):
         """Error log message"""
+        warnings.warn("Using deprecated Script.error() method",
+                      DeprecationWarning, stacklevel=2)
         self.logger.error(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
 
     @property
@@ -407,16 +412,21 @@ class Script(threading.Thread):
         # Enforce interface type checking
         for i in self.implements:
             self.kwargs = i.script_clean_input(self.profile, **self.kwargs)
-        self.debug("Running script: %s (%r)" % (self.name, self.kwargs))
+        t0 = time.time()
+        self.logger.debug("Running script: %s (%r)",
+                          self.name, self.kwargs)
         # Use cached result when available
         if self.cache and self.parent is not None:
             try:
                 result = self.get_cache(self.name, self.kwargs)
-                self.debug("Script returns with cached result: %r" % result)
+                self.logger.debug(
+                    "Script returns with cached result: %r (%.2fms)",
+                    result, (time.time() - t0) * 1000
+                )
                 return result
             except KeyError:
-                self.debug("Not in call cache: %r, %r" % (self.name,
-                                                          self.kwargs))
+                self.logger.debug("Not in call cache: %r, %r",
+                                  self.name, self.kwargs)
                 pass
             # Calling script body
         self._thread_id = thread.get_ident()
@@ -426,11 +436,15 @@ class Script(threading.Thread):
             result = i.script_clean_result(self.profile, result)
         # Cache result when required
         if self.cache and self.parent is not None:
-            self.debug("Write to call cache: %s, %s, %r" % (self.name,
-                                                            self.kwargs,
-                                                            result))
+            self.logger.debug(
+                "Write to call cache: %s, %s, %r",
+                self.name, self.kwargs, result
+            )
             self.set_cache(self.name, self.kwargs, result)
-        self.debug("Script returns with result: %r" % result)
+        self.logger.debug(
+            "Script returns with result: %r (%.2fms)",
+            result, (time.time() - t0) * 1000
+        )
         return result
 
     def serialize_result(self, result):
