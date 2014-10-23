@@ -48,12 +48,15 @@ class TimeSeries(list):
         if not self.slopes:
             self.tslist = [v[1] for v in self]
             self.vlist = [v[0] for v in self]
-            self.slopes = [
-                (y2 - y1) / (x2 - x1)
-                for x1, x2, y1, y2
-                in zip(self.tslist, self.tslist[1:],
-                       self.vlist, self.vlist[1:])
-            ]
+            if len(self.tslist) < 2:
+                self.slopes = [0] * len(self.tslist)
+            else:
+                self.slopes = [
+                    (y2 - y1) / (x2 - x1)
+                    for x1, x2, y1, y2
+                    in zip(self.tslist, self.tslist[1:],
+                           self.vlist, self.vlist[1:])
+                ]
         i = min(bisect.bisect_left(self.tslist, ts), ls - 2)
         return self.vlist[i] + self.slopes[i] * (ts - self.tslist[i])
 
