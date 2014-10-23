@@ -41,14 +41,18 @@ class ProbeDaemon(AutoConfDaemon):
         self.io = IOThread(self)
         self.io.start()
         # Prepare thread pool
+        max_threads = self.config.getint("thread_pool", "max_threads")
+        backlog = self.config.getint("thread_pool", "backlog")
+        if not backlog:
+            backlog = 2 * max_threads
         self.thread_pool = Pool(
             name="probes",
             metrics_prefix="noc.noc-probe.%s" % self.instance_id,
             start_threads=self.config.getint("thread_pool", "start_threads"),
             min_spare=self.config.getint("thread_pool", "min_spare"),
             max_spare=self.config.getint("thread_pool", "max_spare"),
-            max_threads=self.config.getint("thread_pool", "max_threads"),
-            backlog=self.config.getint("thread_pool", "backlog")
+            max_threads=max_threads,
+            backlog=backlog
         )
         while True:
             t = time.time()
