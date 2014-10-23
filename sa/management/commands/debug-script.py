@@ -34,6 +34,7 @@ from noc.lib.nbsocket import SocketFactory, UDPSocket
 from noc.lib.validators import is_int
 from noc.lib.fileutils import read_file
 from noc.lib.test.beeftestcase import BeefTestCase
+from noc.lib.perf import log_metrics
 
 logger = logging.getLogger(__name__)
 
@@ -180,6 +181,7 @@ class ActivatorStub(object):
                             r = pprint.pformat(r)
                         logger.debug(u"SCRIPT RESULT: %s\n%s" % (s.debug_name, r))
                 self.factory.shutdown()
+                log_metrics()
             logger.debug("%d TICKS TO EXIT" % self.wait_ticks)
         else:
             # Sockets left
