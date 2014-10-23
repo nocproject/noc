@@ -60,7 +60,7 @@ class TCPSocket(Socket):
         :type flush: Bool
         """
         if flush and self.out_buffer:
-            self.debug("Shutting down socket")
+            self.logger.debug("Shutting down socket")
             self.in_shutdown = True
         else:
             self.is_connected = False
@@ -72,11 +72,13 @@ class TCPSocket(Socket):
         """
         try:
             if self.character_mode:
-                self.debug("Character send: %s" % repr(self.out_buffer[0]))
-            sent = self.socket.send(self.out_buffer[0] if self.character_mode
-                                                       else self.out_buffer)
+                self.logger.debug("Character send: %s", self.out_buffer[0])
+            if self.character_mode:
+                sent = self.socket.send(self.out_buffer[0])
+            else:
+                sent = self.socket.send(self.out_buffer)
         except socket.error, why:
-            self.error("Socket error: %s" % repr(why))
+            self.logger.error("Socket error: %s", repr(why))
             self.close()
             return
         self.out_buffer = self.out_buffer[sent:]
@@ -90,7 +92,7 @@ class TCPSocket(Socket):
         """
         Set is_connected flag and call on_connect()
         """
-        self.debug("Connected")
+        self.logger.debug("Connected")
         self.is_connected = True
         self.set_status(r=True, w=bool(self.out_buffer))
         self.on_connect()
@@ -104,7 +106,7 @@ class TCPSocket(Socket):
         :type msg: Str
         """
         if self.closing:
-            self.error("Attempting to write to closing socket")
+            self.logger.error("Attempting to write to closing socket")
             raise BrokenPipeError()
         self.out_buffer += msg
         self.set_status(w=bool(self.out_buffer) and self.is_connected)
@@ -137,7 +139,7 @@ class TCPSocket(Socket):
         """
         if status:
             # Entering character mode
-            self.debug("Entering character mode")
+            self.logger.debug("Entering character mode")
             self.character_mode = True
             # Save SNDBUF size
             self.so_sndbuf = self.socket.getsockopt(socket.SOL_SOCKET,
@@ -147,7 +149,7 @@ class TCPSocket(Socket):
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 1)
         else:
             # Leaving character mode
-            self.debug("Leaving character mode")
+            self.logger.debug("Leaving character mode")
             self.character_mode = False
             # Restore SNDBUF
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
