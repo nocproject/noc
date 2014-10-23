@@ -8,7 +8,7 @@
 
 ## Python modules
 import socket
-from errno import *
+import errno
 ## NOC modules
 from noc.lib.nbsocket.basesocket import Socket
 
@@ -44,7 +44,7 @@ class UDPSocket(Socket):
         try:
             msg, transport_address = self.socket.recvfrom(self.READ_CHUNK)
         except socket.error, why:
-            if why[0] in (EINTR, EAGAIN):
+            if why[0] in (errno.EINTR, errno.EAGAIN):
                 return
             raise socket.error, why
         if not msg:
@@ -55,6 +55,17 @@ class UDPSocket(Socket):
         pass
 
     def sendto(self, msg, addr):
+        # Try to send immediately
+        if self.socket and not self.out_buffer:
+            try:
+                self.socket.sendto(msg, addr)
+                return
+            except socket.error, why:
+                if why[0] not in (errno.EAGAIN, errno.EINTR,
+                                  errno.ENOBUFS, errno.ENOTCONN):
+                    self.logger.debug("Socket error: %s", why)
+                    self.close()
+                    return
         self.out_buffer += [(msg, addr)]
         if self.socket:
             self.set_status(w=bool(self.out_buffer))
