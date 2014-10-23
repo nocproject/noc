@@ -123,22 +123,35 @@ class Timer(object):
 
 class MetricsHub(object):
     def __init__(self, prefix, *args):
-        self._prefix = prefix
+        if isinstance(prefix, MetricsHub):
+            self._prefix = prefix._prefix
+        else:
+            self._prefix = prefix
         if not self._prefix.endswith("."):
             self._prefix += "."
         for a in args:
             self._add_metric(a)
+
+    def __repr__(self):
+        return "<MetricsHub %s>" % self._prefix
 
     def _add_metric(self, name):
         m = Metric(self._prefix + name)
         setattr(self, name.replace(".", "_").replace("-", "_"), m)
         return m
 
+    def add_metrics(self, *metrics):
+        for m in metrics:
+            self._add_metric(m)
+
     def __setattr__(self, key, value):
         if key.startswith("_") or key not in self.__dict__:
             self.__dict__[key] = value
         else:
             self.__dict__[key].set(value)
+
+    def __add__(self, other):
+        return self._prefix + other
 
 
 def enable_stats(enabled=True, base_dir=None,
