@@ -24,10 +24,10 @@ class Writer(threading.Thread):
     def run(self):
         logger.info("Running writer thread")
         while True:
-            self.daemon.metrics.db_flush_ops += 1
+            batch = self.daemon.get_batch()
             with self.daemon.metrics.db_flush_time.timer():
-                batch = self.daemon.get_batch()
                 n = batch.flush()
             logger.info("%d records flushed", n)
+            self.daemon.metrics.db_flush_ops += 1
             self.daemon.metrics.db_flush_records += n
         logger.info("Stopping writer thread")
