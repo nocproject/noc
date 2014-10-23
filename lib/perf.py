@@ -184,6 +184,15 @@ def dump():
         print "%s: %s" % (m, metrics[m].get())
 
 
+def log_metrics():
+    logger.debug(
+        "Metrics:\n%s",
+        "\n".join(
+            "    %s: %s" % (m, metrics[m].get())
+            for m in sorted(metrics))
+    )
+
+
 def reporter():
     """Report thread handler"""
     global REPORT_COLLECTOR, REPORT_INTERVAL
