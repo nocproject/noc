@@ -16,6 +16,7 @@ from graphite.attime import parseTimeOffset
 ## NOC modules
 from data import TimeSeries, epoch
 from noc.lib.dateutils import total_seconds
+from graphite.glyph import format_units
 
 NAN = float('NaN')
 INF = float('inf')
@@ -225,6 +226,55 @@ def averageSeriesWithWildcards(ctx, series_list, *positions):
     return result
 
 
+@api("cactiStyle")
+def cactiStyle(ctx, series_list, system=None):
+    """
+    Takes a series list and modifies the aliases to provide column aligned
+    output with Current, Max, and Min values in the style of cacti. Optonally
+    takes a "system" value to apply unit formatting in the same style as the
+    Y-axis.
+    NOTE: column alignment only works with monospace fonts such as terminus.
+
+    Example::
+
+        &target=cactiStyle(ganglia.*.net.bytes_out,"si")
+
+    """
+    if system:
+        fmt = lambda x: "%.2f%s" % format_units(x, system=system)
+    else:
+        fmt = lambda x: "%.2f" % x
+    l_name = max([0] + [len(series.name) for series in series_list])
+    l_last = max([0] + [len(fmt(int(series.last() or 3)))
+                         for series in series_list]) + 3
+    max_len = max([0] + [len(fmt(int(series.max() or 3)))
+                        for series in series_list]) + 3
+    min_len = max([0] + [len(fmt(int(series.min() or 3)))
+                        for series in series_list]) + 3
+    for series in series_list:
+        last = series.last()
+        maximum = series.max()
+        minimum = series.min()
+        if last is None:
+            last = NAN
+        else:
+            last = fmt(float(last))
+
+        if maximum is None:
+            maximum = NAN
+        else:
+            maximum = fmt(float(maximum))
+        if minimum is None:
+            minimum = NAN
+        else:
+            minimum = fmt(float(minimum))
+
+        series.name = "%*s Current:%*s Max:%*s Min:%*s " % (
+            -l_name, series.name, -l_last, last,
+            -max_len, maximum, -min_len, minimum)
+    return series_list
+
+
 @api("color")
 def color(ctx, series_list, color):
     """
@@ -240,6 +290,25 @@ def color(ctx, series_list, color):
     """
     for series in series_list:
         series.color = color
+    return series_list
+
+
+@api("dashed")
+def dashed(ctx, series_list, dash_length=5):
+    """
+    Takes one metric or a wildcard series_list, followed by a float F.
+
+    Draw the selected metrics with a dotted line with segments of length F
+    If omitted, the default length of the segments is 5.0
+
+    Example::
+
+        &target=dashed(server01.instance01.memory.free,2.5)
+
+    """
+    for series in series_list:
+        series.set_name("dashed(%s, %d)" % (series.name, dash_length))
+        series.options['dashed'] = dash_length
     return series_list
 
 
@@ -461,6 +530,27 @@ def invert(ctx, series_list):
     for series in series_list:
         series.set_name("invert(%s)" % (series.name))
         series.apply(lambda x: 1 / x if x else None)
+    return series_list
+
+
+@api("lineWidth")
+def lineWidth(ctx, series_list, width):
+    """
+    Takes one metric or a wildcard series_list, followed by a float F.
+
+    Draw the selected metrics with a line width of F, overriding the default
+    value of 1, or the &lineWidth=X.X parameter.
+
+    Useful for highlighting a single metric out of many, or having multiple
+    line widths in one graph.
+
+    Example::
+
+        &target=lineWidth(server01.instance01.memory.free,5)
+
+    """
+    for series in series_list:
+        series.options['lineWidth'] = width
     return series_list
 
 
@@ -1107,14 +1197,11 @@ def transformNull(ctx, series_list, default=0):
 #     'aliasSub': aliasSub,
 #     'aliasByNode': aliasByNode,
 #     'aliasByMetric': aliasByMetric,
-#     'cactiStyle': cactiStyle,
 #     'cumulative': cumulative,
 #     'consolidateBy': consolidateBy,
 #     'keepLastValue': keepLastValue,
 #     'changed': changed,
 #     'secondYAxis': secondYAxis,
-#     'lineWidth': lineWidth,
-#     'dashed': dashed,
 #     'substr': substr,
 #     'group': group,
 #     'map': mapSeries,
