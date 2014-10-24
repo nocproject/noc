@@ -67,40 +67,42 @@ class ProbeApplication(ExtDocApplication):
                 nr, dt
             )
         # Get configs
-        qs = ProbeConfig.objects.filter(probe_id=probe_id,
-                                        instance_id=instance)
+        q = {
+            "probe_id": probe_id,
+            "instance_id": instance
+        }
         if last:
             fmt = "%Y-%m-%dT%H:%M:%S.%f" if "." in last else "%Y-%m-%dT%H:%M:%S"
             last = datetime.datetime.strptime(last, fmt)
-            qs = qs.filter(changed__gte=last)
+            q["changed"] = {"$gte": last}
         config = [{
-            "uuid": pc.uuid,
-            "handler": pc.handler,
-            "interval": pc.interval,
+            "uuid": pc["uuid"],
+            "handler": pc["handler"],
+            "interval": pc["interval"],
             "metrics": [
                 {
-                    "metric": m.metric,
-                    "metric_type": m.metric_type,
-                    "thresholds": m.thresholds,
-                    "convert": m.convert,
-                    "scale": m.scale,
+                    "metric": m["metric"],
+                    "metric_type": m["metric_type"],
+                    "thresholds": m["thresholds"],
+                    "convert": m["convert"],
+                    "scale": m["scale"],
                     "collectors": {
-                        "policy": m.collectors.policy,
-                        "write_concern": m.collectors.write_concern,
+                        "policy": m["collectors"]["policy"],
+                        "write_concern": m["collectors"]["write_concern"],
                         "collectors": [
                             {
-                                "proto": c.proto,
-                                "address": c.address,
-                                "port": c.port
-                            } for c in m.collectors.collectors
+                                "proto": c["proto"],
+                                "address": c["address"],
+                                "port": c["port"]
+                            } for c in m["collectors"]["collectors"]
                         ]
                     }
-                } for m in pc.metrics
+                } for m in pc["metrics"]
             ],
-            "config": pc.config,
-            "changed": pc.changed.isoformat(),
-            "expire": pc.expire.isoformat()
-        } for pc in qs]
+            "config": pc["config"],
+            "changed": pc["changed"].isoformat(),
+            "expire": pc["expire"].isoformat()
+        } for pc in ProbeConfig._get_collection().find(q)]
         if config:
             expire = min(c["expire"] for c in config)
             # Wipe out deleted configs
