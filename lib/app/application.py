@@ -35,6 +35,8 @@ from noc.lib.forms import NOCForm
 from noc import settings
 from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces import DictParameter
+from noc.lib.perf import MetricsHub
+from noc.lib.daemon.base import _daemon
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
@@ -126,6 +128,7 @@ class Application(object):
     config = settings.config
 
     TZ = get_current_timezone()
+    METRICS = []
 
     def __init__(self, site):
         self.site = site
@@ -137,6 +140,11 @@ class Application(object):
         self.app_id = "%s.%s" % (self.module, self.app)
         self.menu_url = None   # Set by site.autodiscover()
         self.logger = logging.getLogger(self.app_id)
+        metrics = []
+        self.metrics = MetricsHub(
+            (_daemon.metrics if _daemon else "noc.")+ "apps.%s." % self.app_id,
+            *(metrics + self.METRICS)
+        )
 
     @classmethod
     def add_to_class(cls, name, value):
@@ -154,6 +162,7 @@ class Application(object):
         # Decorate function to clear attributes
         f = functools.partial(func)
         f.im_self = func.im_self
+        f.__name__ = func.__name__
         # Add to class
         cls.add_to_class(name,
             view(url=url, access=access, url_name=url_name, menu=menu,

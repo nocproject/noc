@@ -15,6 +15,7 @@ import os
 import signal
 import optparse
 import logging.handlers
+import time
 ## NOC modules
 from noc.lib.debug import error_report, frame_report, set_crashinfo_context
 from noc.lib.validators import is_ipv4, is_int
@@ -59,6 +60,7 @@ class Daemon(object):
 
     def __init__(self):
         global _daemon
+        self.start_time = time.time()
         _daemon = self
         self.logger = logging.getLogger(self.daemon_name)
         # Chdir to the root of project
