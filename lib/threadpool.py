@@ -141,12 +141,13 @@ class Pool(object):
             self.metrics.threads_idle = self.n_idle
             self.metrics.threads_running = n
             self.metrics.queue_len = self.queue.qsize()
-            if self.n_idle < self.min_spare and n < self.max_threads:
+            if (not status and self.n_idle < self.min_spare and
+                        n < self.max_threads):
                 # Run additional thread
                 w = Worker(self, self.queue)
                 self.threads.add(w)
                 w.start()
-            elif self.n_idle > self.max_spare or n > self.max_threads:
+            elif status and (self.n_idle > self.max_spare or n > self.max_threads):
                 # Stop one thread
                 self.queue.put(None)
 
