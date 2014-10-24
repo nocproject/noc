@@ -13,6 +13,7 @@ import sys
 import errno
 import signal
 import socket
+import time
 ## Django modules
 import django.core.handlers.wsgi
 ## Third-party modules
@@ -26,6 +27,7 @@ from mercurial.hgweb.hgwebdir_mod import hgwebdir
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.lib.version import get_version
+from noc.lib.perf import MetricsHub, run_reporter
 
 
 class AppStaticFileHandler(tornado.web.StaticFileHandler):
@@ -142,18 +144,20 @@ class Web(Daemon):
         nc = self.config.getint("web", "workers")
         if nc == 0:
             nc = cpu_count()
-        self.t_children = set()
+        self.t_children = {}  # pid -> id
+        ids = set(range(nc))
         while True:
             # Run children
             while len(self.t_children) < nc:
+                c_id = ids.pop()
                 pid = os.fork()
                 if pid == 0:
-                    self.children_loop()
+                    self.children_loop(c_id)
                 elif pid < 0:
                     self.logger.error("Unable to fork child")
                 else:
-                    self.logger.info("Running child %d" % pid)
-                    self.t_children.add(pid)
+                    self.logger.info("Running child PID %d (id %s)", pid, c_id)
+                    self.t_children[pid] = c_id
             # Wait for status
             try:
                 pid, status = os.wait()
@@ -163,10 +167,15 @@ class Web(Daemon):
                 raise
             if pid not in self.t_children:
                 continue
-            self.t_children.remove(pid)
+            ids.add(self.t_children[pid])
+            del self.t_children[pid]
             self.logger.info("Exiting child %d" % pid)
 
-    def children_loop(self):
+    def children_loop(self, c_id):
+        # Redefine metrics
+        self.metrics = MetricsHub(
+            "noc.%s.%s.%s." % (self.daemon_name, self.instance_id, c_id),
+            *self.METRICS)
         self.t_children = None
         # Initialize pending sockets
         sockets = self.server._pending_sockets
@@ -179,7 +188,9 @@ class Web(Daemon):
         from noc.lib.app import site
         site.autodiscover()
         # Run children's I/O loop
-        self.logger.info("Starting to serve requests")
+        dt = (time.time() - self.start_time) * 1000
+        self.logger.info("Starting to serve requests (in %.2fms)", dt)
+        run_reporter()
         tornado.ioloop.IOLoop.instance().start()
 
     def at_exit(self):

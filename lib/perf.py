@@ -28,7 +28,7 @@ class Metric(object):
     Performance metric
     """
     def __init__(self, name):
-        logger.debug("Creating metric %s", name)
+        # logger.debug("Creating metric %s", name)
         self.name = name
         metrics[name] = self
         self.value = 0
@@ -130,19 +130,19 @@ class MetricsHub(object):
         if not self._prefix.endswith("."):
             self._prefix += "."
         for a in args:
-            self._add_metric(a)
+            self.add_metric(a)
 
     def __repr__(self):
         return "<MetricsHub %s>" % self._prefix
 
-    def _add_metric(self, name):
+    def add_metric(self, name):
         m = Metric(self._prefix + name)
         setattr(self, name.replace(".", "_").replace("-", "_"), m)
         return m
 
     def add_metrics(self, *metrics):
         for m in metrics:
-            self._add_metric(m)
+            self.add_metric(m)
 
     def __setattr__(self, key, value):
         if key.startswith("_") or key not in self.__dict__:
@@ -170,7 +170,11 @@ def enable_stats(enabled=True, base_dir=None,
         addr, port = report_collector.split(":")
         REPORT_COLLECTOR = (addr, int(port))
         REPORT_INTERVAL = report_interval
-        # Run reporter thread
+        run_reporter()
+
+
+def run_reporter():
+    if REPORT_COLLECTOR:
         import threading
         logger.info("Running reporter thread")
         t = threading.Thread(name="perf", target=reporter)
