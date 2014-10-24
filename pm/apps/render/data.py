@@ -116,6 +116,14 @@ class TimeSeries(list):
         else:
             return None
 
+    def last(self):
+        """
+        Last not-null value
+        """
+        for v, t in reversed(self):
+            if v is not None:
+                return v
+
     def average(self):
         """
         Average of series values
