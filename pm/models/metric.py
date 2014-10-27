@@ -21,4 +21,4 @@ class Metric(Document):
     parent = StringField()
 
     def __unicode__(self):
-        return self.metric
+        return self.name
