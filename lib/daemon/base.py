@@ -235,7 +235,8 @@ class Daemon(object):
                     self.config.getboolean("debug", "enable_timing")):
                 kwargs["enabled"] = True
                 kwargs["base_dir"] = self.config.get("debug", "timing_base")
-            if self.config.has_option("debug", "enable_reports"):
+            if (self.config.has_option("debug", "enable_reports") and
+                    self.config.getboolean("debug", "enable_reports")):
                 kwargs["report_collector"] = self.config.get(
                     "debug", "report_collector")
                 kwargs["report_interval"] = self.config.getint(
