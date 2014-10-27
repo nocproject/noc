@@ -106,14 +106,14 @@ class TimeSeriesDatabase(object):
         Fetch all metric data within interval
         Returns [(time, value)]
         """
-        k0 = self.get_key(metric, int(start))
-        k1 = self.get_key(metric, int(end))
-        if k1 < k0:
-            k0, k1 = k1, k0
-        k0 = max(k0, self.epoch)
-        k1 = max(k1, self.epoch)
-        if k0 == k1:
+        start = max(int(start), self.epoch)
+        end = max(int(end), self.epoch)
+        if start == end:
             return []
+        elif end < start:
+            start, end = end, start
+        k0 = self.get_key(metric, start)
+        k1 = self.get_key(metric, end)
         r = []
         for pn in self.partition.enumerate(start, end):
             partition = self.get_partition_by_name(pn)
