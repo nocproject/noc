@@ -14,8 +14,9 @@ from noc.project.models.project import Project
 from vrf import VRF
 from prefix import Prefix
 from afi import AFI_CHOICES
-from noc.main.models import Style, ResourceState
-from noc.sa.models import ManagedObject
+from noc.main.models.style import Style
+from noc.main.models.resourcestate import ResourceState
+from noc.sa.models.managedobject import ManagedObject
 from noc.lib.fields import TagsField, INETField, MACField
 from noc.lib.app import site
 from noc.lib.validators import (
