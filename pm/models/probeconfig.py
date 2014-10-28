@@ -386,6 +386,11 @@ class ProbeConfig(Document):
         for mo in instance.managedobject_set.all():
             cls._refresh_object(mo)
 
+    @classmethod
+    def on_change_object_caps(cls, sender, document=None, *args, **kwargs):
+        logger.info("Applying changes to object capabilities '%s'", document.object.name)
+        cls.on_change_model(document.object, document.object)
+
     def refresh(self):
         logger.debug("Refreshing %s", self.uuid)
         o = self.get_object()
