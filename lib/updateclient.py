@@ -12,6 +12,7 @@ import urllib2
 import logging
 import subprocess
 import json
+import socket
 ## Third-party modules
 from mercurial import ui, localrepo, commands
 
@@ -39,6 +40,9 @@ class UpdateClient(object):
             f.close()
         except urllib2.URLError, why:
             logger.error("Failed to get updates: %s", why)
+            return False
+        except socket.error, why:
+            logger.error("Socket error: %s", why)
             return False
         # Compare
         if self.branch != data["branch"]:
