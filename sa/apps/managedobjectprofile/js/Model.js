@@ -99,6 +99,21 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 86400
         },
         {
+            name: "enable_caps_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "caps_discovery_min_interval",
+            type: "int",
+            defaultValue: 600
+        },
+        {
+            name: "caps_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
             name: "enable_interface_discovery",
             type: "boolean",
             defaultValue: true

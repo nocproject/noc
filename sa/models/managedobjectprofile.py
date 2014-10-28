@@ -73,6 +73,13 @@ class ManagedObjectProfile(models.Model):
         _("Min. version inventory interval"), default=600)
     version_inventory_max_interval = models.IntegerField(
         _("Max. version inventory interval"), default=86400)
+    # Caps discovery
+    enable_caps_discovery = models.BooleanField(
+        _("Enable caps discovery"), default=True)
+    interface_caps_min_interval = models.IntegerField(
+        _("Min. caps discovery interval"), default=600)
+    interface_caps_max_interval = models.IntegerField(
+        _("Max. caps discovery interval"), default=86400)
     # Interface discovery
     enable_interface_discovery = models.BooleanField(
         _("Enable interface discovery"), default=True)
