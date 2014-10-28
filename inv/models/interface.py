@@ -11,7 +11,7 @@ from noc.lib.nosql import (Document, ForeignKeyField, StringField,
     IntField, BooleanField, PlainReferenceField, ListField)
 from interfaceprofile import InterfaceProfile
 from coverage import Coverage
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
