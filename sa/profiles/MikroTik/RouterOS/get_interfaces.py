@@ -55,6 +55,12 @@ class Script(NOCScript):
     def execute(self):
         ifaces = {}
         misc = {}
+        # Get ifIndex
+        n_ifindex = {}  # number -> ifIndex
+        for n, f, r in self.cli_detail(
+                "/interface print oid without-paging"
+        ):
+            n_ifindex[n] = int(r["name"].rsplit(".", 1)[-1])
         # Fill interfaces
         for n, f, r in self.cli_detail(
             "/interface print detail without-paging"):
@@ -69,6 +75,8 @@ class Script(NOCScript):
                 misc[r["name"]] = {
                     "type": r["type"]
                 }
+                if n in n_ifindex:
+                    ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
         # Refine ethernet parameters
         for n, f, r in self.cli_detail(
             "/interface ethernet print detail without-paging"):
@@ -121,7 +129,7 @@ class Script(NOCScript):
                         t = misc[i]
                         break
             if not self.si:
-                self.debug('Error: Interface name not found!!!')
+                self.logger.debug('Error: Interface name not found!!!')
                 continue
 
             afi = "IPv6" if ":" in r["address"] else "IPv4"
