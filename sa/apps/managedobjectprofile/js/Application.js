@@ -41,6 +41,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             renderer: NOC.render.Bool
         },
         {
+            text: "Caps",
+            dataIndex: "enable_caps_discovery",
+            width: 50,
+            renderer: NOC.render.Bool
+        },
+        {
             text: "Int.",
             dataIndex: "enable_interface_discovery",
             width: 50,
@@ -271,6 +277,26 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 },
                 {
                     name: "version_inventory_max_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                // Caps discovery
+                {
+                    xtype: "label",
+                    text: "Caps Discovery"
+                },
+                {
+                    name: "enable_caps_discovery",
+                    xtype: "checkboxfield",
+                    allowBlank: false
+                },
+                {
+                    name: "caps_discovery_min_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                {
+                    name: "caps_discovery_max_interval",
                     xtype: "numberfield",
                     allowBlank: false
                 },
