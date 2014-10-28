@@ -673,9 +673,11 @@ class ManagedObject(models.Model):
             ccache[name] = c
             return c
 
+        to_save = False
         ocaps = ObjectCapabilities.objects.filter(object=self).first()
         if not ocaps:
             ocaps = ObjectCapabilities(object=self)
+            to_save = True
         # Index existing capabilities
         cn = {}
         ccache = {}
@@ -689,18 +691,23 @@ class ManagedObject(models.Model):
                     capability=c,
                     discovered_value=None, local_value=None
                 )
+                to_save = True
         nc = []
         for c in sorted(cn):
             cc = cn[c]
             if c in caps:
                 if local:
-                    logger.info("[%s] Setting local capability %s = %s",
-                                self.name, c, caps[c])
-                    cc.local_value = caps[c]
+                    if cc.local_value != caps[c]:
+                        logger.info("[%s] Setting local capability %s = %s",
+                                    self.name, c, caps[c])
+                        cc.local_value = caps[c]
+                        to_save = True
                 else:
-                    logger.info("[%s] Setting discovered capability %s = %s",
-                                self.name, c, caps[c])
-                    cc.discovered_value = caps[c]
+                    if cc.discovered_value != caps[c]:
+                        logger.info("[%s] Setting discovered capability %s = %s",
+                                    self.name, c, caps[c])
+                        cc.discovered_value = caps[c]
+                        to_save = True
             nc += [cc]
         # Remove deleted capabilities
         ocaps.caps = [
@@ -708,7 +715,8 @@ class ManagedObject(models.Model):
             if (c.discovered_value is not None or
                 c.local_value is not None)
         ]
-        ocaps.save()
+        if to_save:
+            ocaps.save()  # forces probe rebuild
 
 
 class ManagedObjectAttribute(models.Model):
