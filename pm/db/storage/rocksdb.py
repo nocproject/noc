@@ -23,6 +23,7 @@ class RocksDBStorage(KVStorage):
         self.path = os.path.join("local", self.name,
                                  "%s.db" % self.partition)
         self.db = None
+        self.is_empty = None
 
     def write(self, batch):
         """
@@ -40,7 +41,12 @@ class RocksDBStorage(KVStorage):
         """
         Iterate all keys between k0 and k1
         """
+        if self.is_empty:
+            raise StopIteration
         if not self.db:
+            self.is_empty = not os.path.exists(self.path)
+            if self.is_empty:
+                raise StopIteration
             self.db = self.get_db(read_only=True)
         # @todo: Apply PrefixExtractor
         it = self.db.iteritems()
