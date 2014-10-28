@@ -10,6 +10,7 @@
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (ListField, StringField, ReferenceField,
                                 DynamicField, EmbeddedDocumentField)
+import mongoengine.signals
 ## NOC modules
 from managedobject import ManagedObject
 from noc.inv.models.capability import Capability
@@ -34,3 +35,10 @@ class ObjectCapabilities(Document):
 
     def __unicode__(self):
         return "%s caps" % self.object.name
+
+##
+from noc.pm.models.probeconfig import ProbeConfig
+mongoengine.signals.post_save.connect(
+    ProbeConfig.on_change_object_caps,
+    sender=ObjectCapabilities
+)
