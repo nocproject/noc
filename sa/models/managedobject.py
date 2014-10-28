@@ -11,6 +11,7 @@ import os
 import re
 import difflib
 from collections import namedtuple
+import logging
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -43,6 +44,9 @@ scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
+
+
+logger = logging.getLogger(__name__)
 
 
 class ManagedObject(models.Model):
@@ -636,7 +640,75 @@ class ManagedObject(models.Model):
                 raise ValueError("No SNMP RO community")
             else:
                 return s
+        elif config == "caps":
+            if not hasattr(self, "_caps"):
+                self._caps = self.get_caps()
+            return self._caps
         raise ValueError("Invalid config parameter '%s'" % config)
+
+    def get_caps(self):
+        """
+        Returns a dict of effective object capabilities
+        """
+        caps = ObjectCapabilities.objects.filter(object=self).first()
+        if not caps:
+            return {}
+        r = {}
+        for c in caps.caps:
+            v = c.local_value if c.local_value is not None else c.discovered_value
+            if v is None:
+                continue
+            r[c.capability.name] = v
+        return r
+
+    def update_caps(self, caps, local=False):
+        """
+        Update existing capabilities with a new ones.
+        :param caps: dict of caps name -> caps value
+        """
+        def get_cap(name):
+            if name in ccache:
+                return ccache[name]
+            c = Capability.objects.filter(name=name).first()
+            ccache[name] = c
+            return c
+
+        ocaps = ObjectCapabilities.objects.filter(object=self).first()
+        if not ocaps:
+            ocaps = ObjectCapabilities(object=self)
+        # Index existing capabilities
+        cn = {}
+        ccache = {}
+        for c in ocaps.caps:
+            cn[c.capability.name] = c
+        # Add missed capabilities
+        for mc in set(caps) - set(cn):
+            c = get_cap(mc)
+            if c:
+                cn[mc] = CapsItem(
+                    capability=c,
+                    discovered_value=None, local_value=None
+                )
+        nc = []
+        for c in sorted(cn):
+            cc = cn[c]
+            if c in caps:
+                logger.info("[%s] Setting local capability %s = %s",
+                            self.name, c, caps[c])
+                if local:
+                    cc.local_value = caps[c]
+                else:
+                    logger.info("[%s] Setting discovered capability %s = %s",
+                                self.name, c, caps[c])
+                    cc.discovered_value = caps[c]
+            nc += [cc]
+        # Remove deleted capabilities
+        ocaps.caps = [
+            c for c in nc
+            if (c.discovered_value is not None or
+                c.local_value is not None)
+        ]
+        ocaps.save()
 
 
 class ManagedObjectAttribute(models.Model):
@@ -666,3 +738,5 @@ from noc.lib.scheduler.utils import refresh_schedule
 #from noc.vc.models.vcdomain import VCDomain
 from objectnotification import ObjectNotification
 from selectorcache import SelectorCache
+from objectcapabilities import ObjectCapabilities, CapsItem
+from noc.inv.models.capability import Capability
