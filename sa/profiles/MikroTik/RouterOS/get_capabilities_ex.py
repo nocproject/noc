@@ -25,9 +25,9 @@ class Script(NOCScript):
     def check_license(self, caps):
         v = self.cli("/system license print")
         match = self.re_search(self.rx_lic, v)
-        caps["MikroTik | RouterOS | Software Id"] = match.group("sid")
-        caps["MikroTik | RouterOS | Level"] = int(match.group("nlevel"))
-        caps["MikroTik | RouterOS | Upgradable To"] = match.group("upto")
+        caps["MikroTik | RouterOS | License | SoftwareID"] = match.group("sid")
+        caps["MikroTik | RouterOS | License | Level"] = int(match.group("nlevel"))
+        caps["MikroTik | RouterOS | License | Upgradable To"] = match.group("upto")
 
     def execute(self, caps={}):
         self.check_license(caps)
