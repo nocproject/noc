@@ -213,3 +213,16 @@ class MatchFalse(object):
 
     def compile(self):
         return lambda config: False
+
+
+class MatchCaps(MatchExpr):
+    op = "~"
+    def compile(self):
+        def check_caps(config):
+            caps = config[self.name]
+            for c in self.value:
+                if c not in caps:
+                    return False
+            return True
+
+        return lambda config: self.name in config and check_caps(config)
