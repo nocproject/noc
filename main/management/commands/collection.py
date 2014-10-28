@@ -99,7 +99,7 @@ class Command(BaseCommand):
         ("inv.connectiontypes", ConnectionType),
         ("inv.connectionrules", ConnectionRule),
         ("inv.objectmodels", ObjectModel),
-        ("inv.capability", Capability),
+        ("inv.capabilities", Capability),
         # Fault Management
         ("fm.oidaliases", OIDAlias),
         ("fm.syntaxaliases", SyntaxAlias),
