@@ -64,6 +64,7 @@ class ManagedObjectApplication(ExtModelApplication):
 
     DISCOVERY_METHODS = [
         ("enable_version_inventory", "version_inventory", None),
+        ("enable_caps_discovery", "caps_discovery", None),
         ("enable_id_discovery", "id_discovery", None),
         ("enable_config_polling", "config_discovery", None),
         ("enable_interface_discovery", "interface_discovery", None),

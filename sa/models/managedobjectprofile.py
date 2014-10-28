@@ -76,9 +76,9 @@ class ManagedObjectProfile(models.Model):
     # Caps discovery
     enable_caps_discovery = models.BooleanField(
         _("Enable caps discovery"), default=True)
-    interface_caps_min_interval = models.IntegerField(
+    caps_discovery_min_interval = models.IntegerField(
         _("Min. caps discovery interval"), default=600)
-    interface_caps_max_interval = models.IntegerField(
+    caps_discovery_max_interval = models.IntegerField(
         _("Max. caps discovery interval"), default=86400)
     # Interface discovery
     enable_interface_discovery = models.BooleanField(
