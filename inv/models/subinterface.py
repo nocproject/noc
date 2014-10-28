@@ -12,7 +12,7 @@ from noc.lib.nosql import (Document, PlainReferenceField,
                            ListField, IntField)
 from forwardinginstance import ForwardingInstance
 from interface import Interface
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
 

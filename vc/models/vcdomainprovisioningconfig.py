@@ -11,7 +11,7 @@ from django.db import models
 ## NOC modules
 from vcdomain import VCDomain
 from vcfilter import VCFilter
-from noc.sa.models import ManagedObjectSelector
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models import NotificationGroup
 
 
