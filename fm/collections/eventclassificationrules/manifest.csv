@@ -415,7 +415,7 @@ Cisco | IOSXR | Network | Link | DOM | Warning: Out of Threshold Recovered (SYSL
 Cisco | IOSXR | Network | Link | Link Down (SNMP),49e0013c-ce64-4b68-9ad1-3412215233ef,Cisco/IOSXR/Network/Link/Link_Down_SNMP_.json,2ccc356f9fc930157f50260aa4e8830a45ce155aaae4b1a678a8a522bd2a76eb
 Cisco | IOSXR | Network | Link | Link Down (SYSLOG),4b06593f-16fc-4440-a0ec-a86df4a60769,Cisco/IOSXR/Network/Link/Link_Down_SYSLOG_.json,8093188e44e661921eaaddd8add8ad809140bccd27f6ed5e776a1e4756b69e05
 Cisco | IOSXR | Network | Link | Link Up (SNMP),d1fc484f-d9e0-4df4-a796-9cf65a982f2e,Cisco/IOSXR/Network/Link/Link_Up_SNMP_.json,c75b6f23d4f59d990d60186680570911d19ca46435d91286bfa02d1ff8a24040
-Cisco | IOSXR | Network | Link | Link Up (SYSLOG),b53e0e2e-96ed-493d-9350-eadb25f0dd65,Cisco/IOSXR/Network/Link/Link_Up_SYSLOG_.json,de3d551054a164617f4a4bea9ae6a85c99c711a239f29715a72640177537a71d
+Cisco | IOSXR | Network | Link | Link Up (SYSLOG),b53e0e2e-96ed-493d-9350-eadb25f0dd65,Cisco/IOSXR/Network/Link/Link_Up_SYSLOG_.json,4b965cded73ec0d5f8f8be1c03871b948fdfb5f38fe46a496cf7a7f39e2a07b3
 Cisco | IOSXR | Network | MAC | MAC Moved (SYSLOG),44c33bbb-6ca0-4d26-93d6-aeb791f963b6,Cisco/IOSXR/Network/MAC/MAC_Moved_SYSLOG_.json,734987bf97a3efd15d2d4a7517da244340268cec6f8e5dddcd4f575e70ff59de
 Cisco | IOSXR | Network | MSDP | Peer Down (SYSLOG),6b7d690d-f0f6-46de-968b-9b4689a167c2,Cisco/IOSXR/Network/MSDP/Peer_Down_SYSLOG_.json,54ad84f607938c117d6822841c346ea62767731d51e971616877d7abaa911980
 Cisco | IOSXR | Network | MSDP | Peer Up (SYSLOG),9e5a0d6d-39a6-43a7-b444-187a561fe36b,Cisco/IOSXR/Network/MSDP/Peer_Up_SYSLOG_.json,aefcc26fc1ebfb4d74aa30a072ebcdd4163e048fb0d7a5dcfe2dad07751b7057
