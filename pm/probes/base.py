@@ -15,7 +15,7 @@ from collections import namedtuple
 import logging
 ## NOC modules
 from noc.lib.solutions import solutions_roots
-from match import MatchExpr, MatchTrue
+from match import MatchExpr, MatchTrue, MatchCaps
 import noc.lib.snmp.version
 from noc.lib.snmp.error import SNMPError, NO_SUCH_NAME
 from noc.lib.log import PrefixLoggerAdapter
@@ -234,66 +234,28 @@ class Probe(object):
         When oid is dict of <metric type> : oid, returns
         dict of <metric type>: value
         """
-        def first_valid(oids):
-            if isinstance(oids, basestring):
-                if not self.is_missed_oid(oids):
-                    return oids
-            else:
-                for oid in oids:
-                    if not self.is_missed_oid(oid):
-                        return oid
+        if isinstance(oids, basestring):
+            if self.is_missed_oid(oids):
+                return None  # Missed oid
+        elif isinstance(oids, dict):
+            oids = dict((k, v) for k, v in oids.iteritems() if not self.is_missed_oid(v))
+            if not oids:
+                return None  # All oids are missed
+        try:
+            result = self.daemon.io.snmp_get(
+                oids, address, port,
+                community=community,
+                version=version)
+        except SNMPError, why:
+            if why.code == NO_SUCH_NAME:
+                # Disable invalid oid
+                self.set_missed_oid(why.oid)
             return None
-
-        def iter_oids(oids):
-            if isinstance(oids, basestring):
-                # OID is string
-                if not self.is_missed_oid(oids):
-                    yield oids
-            elif isinstance(oids, dict) and oids:
-                r = {}
-                for k, v in oids.iteritems():
-                    v = first_valid(v)
-                    if v is None:
-                        raise StopIteration()
-                    r[k] = v
-                yield r
-
-        while True:
-            to_continue = False
-            for o in iter_oids(oids):
-                try:
-                    result = self.daemon.io.snmp_get(
-                        o, address, port,
-                        community=community,
-                        version=version)
-                except SNMPError, why:
-                    if why.code == NO_SUCH_NAME:
-                        # Disable invalid oid
-                        self.set_missed_oid(why.oid)
-                        to_continue = True
-                        break  # Restart
-                    else:
-                        return None
-                if isinstance(result, dict):
-                    missed = [k for k in result if result[k] is None]
-                    if missed:
-                        for k in missed:
-                            self.set_missed_oid(o[k])
-                        break
-                    else:
-                        return result
-                elif result is None:
-                    if isinstance(o, dict):
-                        for k in o.itervalues():
-                            self.set_missed_oid(k)
-                    else:
-                        self.set_missed_oid(o)
-                    break
-                else:
-                    return result
-            if not to_continue:
-                self.logger.info("No valid OIDs to poll")
-                break
+        if isinstance(result, dict):
+            for k in result:
+                if result[k] is None:
+                    self.set_missed_oid(result[k])
+        return result
 
 
 class metric(object):
@@ -353,7 +315,13 @@ class metric(object):
         """
         mx = []
         for var in match:
-            mv, op = var.rsplit("__", 1)
+            if var == "caps":
+                mx += [MatchCaps(var, match[var])]
+                continue
+            if "__" in var:
+                mv, op = var.rsplit("__", 1)
+            else:
+                mv, op = var, "eq"
             if op not in self.MATCH_OPS:
                 mv, op = var, "eq"
             mx += [MatchExpr.create(mv, op, match[var])]
