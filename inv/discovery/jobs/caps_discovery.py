@@ -12,7 +12,7 @@ from base import MODiscoveryJob
 
 
 class CapsDiscoveryJob(MODiscoveryJob):
-    name = "caps_disovery"
+    name = "caps_discovery"
     map_task = "get_capabilities"
 
     ignored = not config.getboolean("caps_discovery", "enabled")

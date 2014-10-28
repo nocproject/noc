@@ -693,9 +693,9 @@ class ManagedObject(models.Model):
         for c in sorted(cn):
             cc = cn[c]
             if c in caps:
-                logger.info("[%s] Setting local capability %s = %s",
-                            self.name, c, caps[c])
                 if local:
+                    logger.info("[%s] Setting local capability %s = %s",
+                                self.name, c, caps[c])
                     cc.local_value = caps[c]
                 else:
                     logger.info("[%s] Setting discovered capability %s = %s",
