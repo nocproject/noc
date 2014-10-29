@@ -12,7 +12,7 @@ import datetime
 import random
 ## NOC modules
 from noc.main.models import SystemNotification
-from noc.lib.log import PrefixLoggerAdapter
+from noc.lib.log import PrefixLoggerAdapter, TeeLoggerAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +77,8 @@ class Job(object):
             "%s][%s][%s" % (self.scheduler.name, self.name,
                             self.get_display_key())
         )
+        if scheduler.to_log_jobs:
+            self.logger = TeeLoggerAdapter(self.logger, self.job_log)
 
     @classmethod
     def initialize(cls, scheduler):
@@ -97,18 +99,12 @@ class Job(object):
 
     def debug(self, msg):
         self.logger.debug(msg)
-        if self.to_log:
-            self.job_log += [msg]
 
     def info(self, msg):
         self.logger.info(msg)
-        if self.to_log:
-            self.job_log += [msg]
 
     def error(self, msg):
         self.logger.error(msg)
-        if self.to_log:
-            self.job_log += [msg]
 
     def get_job_log(self):
         return "\n".join(self.job_log)

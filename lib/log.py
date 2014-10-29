@@ -8,6 +8,7 @@
 
 ## Python modules
 import logging
+import datetime
 
 
 class PrefixLoggerAdapter(logging.LoggerAdapter):
@@ -20,6 +21,48 @@ class PrefixLoggerAdapter(logging.LoggerAdapter):
 
     def process(self, msg, kwargs):
         return self.pattern % msg, kwargs
+
+
+class TeeLoggerAdapter(logging.LoggerAdapter):
+    """
+    Duplicate log messages to the list
+    """
+    def __init__(self, logger, out, extra=None):
+        self.out = out
+        logging.LoggerAdapter.__init__(self, logger, extra or {})
+
+    def _append(self, msg, args):
+        if args:
+            msg = msg % args
+        msg = "%s %s" % (
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
+            msg
+        )
+        self.out += [msg]
+
+    def debug(self, msg, *args, **kwargs):
+        self._append(msg, args)
+        super(TeeLoggerAdapter, self).debug(msg, *args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        self._append(msg, args)
+        super(TeeLoggerAdapter, self).info(msg, *args, **kwargs)
+
+    def warning(self, msg, *args, **kwargs):
+        self._append(msg, args)
+        super(TeeLoggerAdapter, self).warning(msg, *args, **kwargs)
+
+    def error(self, msg, *args, **kwargs):
+        self._append(msg, args)
+        super(TeeLoggerAdapter, self).error(msg, *args, **kwargs)
+
+    def critical(self, msg, *args, **kwargs):
+        self._append(msg, args)
+        super(TeeLoggerAdapter, self).critical(msg, *args, **kwargs)
+
+    def log(self, level, msg, *args, **kwargs):
+        self._append(msg, args)
+        super(TeeLoggerAdapter, self).log(msg, *args, **kwargs)
 
 
 class ColorFormatter(logging.Formatter):

@@ -282,6 +282,7 @@ class Scheduler(object):
                     object=job.get_managed_object(),
                     result=job.beef[job.key])
             else:
+                job.logger.info("Running script %s", job.map_task)
                 # Run in MRT mode
                 t = ReduceTask.create_task(
                     job.get_managed_object(),  # Managed object is in key
@@ -305,6 +306,7 @@ class Scheduler(object):
     def _job_wrapper(self, job, **kwargs):
         tb = None
         t0 = time.time()
+        job.logger.info("Running job handler")
         try:
             r = job.handler(**kwargs)
         except Exception:
@@ -315,8 +317,8 @@ class Scheduler(object):
             s = job.S_EXCEPTION
         else:
             if r:
-                job.logger.info("Job completed successfully (%sec)",
-                                time.time() - t0)
+                job.logger.info("Job completed successfully (%.2fms)",
+                                (time.time() - t0) * 1000)
                 job.on_success()
                 s = job.S_SUCCESS
             else:
