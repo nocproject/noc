@@ -1067,6 +1067,53 @@ def sumSeries(ctx, *series_lists):
     return [TimeSeries.fit_map(name, series_lists, sum, safe=True)]
 
 
+@api("sortByMaxima")
+def sortByMaxima(ctx, series_list):
+    """
+    Takes one metric or a wildcard series_list.
+
+    Sorts the list of metrics by the maximum value across the time period
+    specified.    Useful with the &areaMode=all parameter, to keep the
+    lowest value lines visible.
+
+    Example::
+
+        &target=sortByMaxima(server*.instance*.memory.free)
+
+    """
+    return list(sorted(series_list, key=lambda s: s.max()))
+
+
+@api("sortByMinima")
+def sortByMinima(ctx, series_list):
+    """
+    Takes one metric or a wildcard series_list.
+
+    Sorts the list of metrics by the lowest value across the time period
+    specified.
+
+    Example::
+
+        &target=sortByMinima(server*.instance*.memory.free)
+
+    """
+    return list(sorted(series_list, key=lambda s: s.min()))
+
+
+@api("sortByTotal")
+def sortByTotal(ctx, series_list):
+    """
+    Takes one metric or a wildcard series_list.
+
+    Sorts the list of metrics by the sum of values across the time period
+    specified.
+    """
+    def safe_sum(s):
+        return sum(v[0] for v in s if v[0])
+
+    return list(sorted(series_list, key=safe_sum, reverse=True))
+
+
 @api("time_shift")
 def time_shift(ctx, series_list, time_shift, reset_end=True):
     """
