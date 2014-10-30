@@ -11,6 +11,7 @@ from collections import defaultdict
 import math
 import datetime
 import random
+import re
 ## Third-party modules
 from graphite.attime import parseTimeOffset
 ## NOC modules
@@ -123,6 +124,39 @@ def alias(ctx, series_list, new_name):
     except AttributeError:
         for series in series_list:
             series.set_name(new_name)
+    return series_list
+
+
+@api("aliasByNode")
+def aliasByNode(ctx, series_list, *nodes):
+    """
+    Takes a series_list and applies an alias derived from one or more "node"
+    portion/s of the target name. Node indices are 0 indexed.
+
+    Example::
+
+        &target=aliasByNode(ganglia.*.cpu.load5,1)
+
+    """
+    for series in series_list:
+        metric_pieces = re.search("(?:.*\()?(?P<name>[-\w*\.]+)(?:,|\)?.*)?",
+                                  series.name).groups()[0].split('.')
+        series.set_name(".".join(metric_pieces[n] for n in nodes))
+    return series_list
+
+
+@api("aliasByMetric")
+def aliasByMetric(ctx, series_list):
+    """
+    Takes a series_list and applies an alias derived from the base metric name.
+
+    Example::
+
+        &target=aliasByMetric(carbon.agents.graphite.creates)
+
+    """
+    for series in series_list:
+        series.set_name(series.name.split(".")[-1].split(",")[0])
     return series_list
 
 
@@ -1195,8 +1229,6 @@ def transformNull(ctx, series_list, default=0):
 #     # Special functions
 #     'legendValue': legendValue,
 #     'aliasSub': aliasSub,
-#     'aliasByNode': aliasByNode,
-#     'aliasByMetric': aliasByMetric,
 #     'cumulative': cumulative,
 #     'consolidateBy': consolidateBy,
 #     'keepLastValue': keepLastValue,
