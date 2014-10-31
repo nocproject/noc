@@ -22,10 +22,6 @@ class OAMLinkDiscoveryJob(LinkDiscoveryJob):
     map_task = "get_oam_status"
     method = "oam"
     ignored = not config.getboolean("oam_discovery", "enabled")
-    initial_submit_interval = config.getint("oam_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("oam_discovery",
-        "initial_submit_concurrency")
 
     def process_result(self, object, result):
         # Build mac to interfaces map

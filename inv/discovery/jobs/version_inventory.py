@@ -18,10 +18,6 @@ class VersionInventoryJob(MODiscoveryJob):
     system_notification = "sa.version_inventory"
 
     ignored = not config.getboolean("version_inventory", "enabled")
-    initial_submit_interval = config.getint("version_inventory",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("version_inventory",
-        "initial_submit_concurrency")
     to_save = config.getboolean("version_inventory", "save")
 
     def handler(self, object, result):
@@ -38,17 +34,9 @@ class VersionInventoryJob(MODiscoveryJob):
         self.report.send()
         return True
 
-    @classmethod
-    def initial_submit_queryset(cls):
-        return {"object_profile__enable_version_inventory": True}
-
     def can_run(self):
         return (super(VersionInventoryJob, self).can_run()
                 and self.object.object_profile.enable_version_inventory)
-
-    @classmethod
-    def get_submit_interval(cls, object):
-        return object.object_profile.version_inventory_max_interval
 
     def get_failed_interval(self):
         return self.object.object_profile.version_inventory_min_interval

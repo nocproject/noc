@@ -22,10 +22,6 @@ class MACDiscoveryJob(MODiscoveryJob):
     map_task = "get_mac_address_table"
 
     ignored = not config.getboolean("mac_discovery", "enabled")
-    initial_submit_interval = config.getint("mac_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("mac_discovery",
-        "initial_submit_concurrency")
     to_save = config.getboolean("mac_discovery", "save")
 
     def handler(self, object, result):
@@ -77,10 +73,6 @@ class MACDiscoveryJob(MODiscoveryJob):
         return True
 
     @classmethod
-    def initial_submit_queryset(cls):
-        return {"object_profile__enable_mac_discovery": True}
-
-    @classmethod
     def can_submit(cls, object):
         """
         Check object has bridge interfaces
@@ -110,10 +102,6 @@ class MACDiscoveryJob(MODiscoveryJob):
             return True
         # No suitable interfaces
         return False
-
-    @classmethod
-    def get_submit_interval(cls, object):
-        return object.object_profile.mac_discovery_max_interval
 
     def get_failed_interval(self):
         return self.object.object_profile.mac_discovery_min_interval
