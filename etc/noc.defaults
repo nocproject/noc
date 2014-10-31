@@ -50,6 +50,7 @@ server_email = root@localhost
 # * select - use select()
 # * poll   - use poll()
 # * kevent - use kevent/kqueue
+# * epoll  - use epoll
 polling_method = select
 # Comma-separated list of additionally installed applications
 installed_apps =
@@ -402,39 +403,24 @@ vc_vcprefixes = 3600
 enabled = true
 # Save result to database
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [caps_discovery]
 # Enable caps discovery process
 enabled = true
 # Save result to database
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [config_discovery]
 # Enable config discovery process
 enabled = true
 # Save result to database
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [interface_discovery]
 enabled = true
 save = true
 success_retry = 86400
 failed_retry = 900
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 # IInterfaceClassification-interfaced pyRule
 # returning interface class name
 # Used by noc.solutions.noc.default.discovery.interface.get_interface_profile
@@ -493,86 +479,42 @@ get_fqdn = noc.solutions.noc.default.discovery.ip.get_fqdn
 [vlan_discovery]
 enabled = true
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 # change_state = PLANNED -> ALLOCATED; RESERVED -> ALLOCATED
 change_state =
 
 [mac_discovery]
 enabled = true
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [id_discovery]
 enabled = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [asset_discovery]
 enabled = true
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 # Object name generator
 get_name = noc.solutions.noc.default.discovery.asset.get_name
 
 [lldp_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [cdp_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [stp_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [rep_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [bfd_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [udld_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [oam_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [audit]
 # Store commands audit log

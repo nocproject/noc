@@ -23,10 +23,6 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
     map_task = "get_lldp_neighbors"
     method = "lldp"
     ignored = not config.getboolean("lldp_discovery", "enabled")
-    initial_submit_interval = config.getint("lldp_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("lldp_discovery",
-        "initial_submit_concurrency")
 
     def process_result(self, object, result):
         self.n_cache = {}  # (chassis_id, chassis_subtype) -> object

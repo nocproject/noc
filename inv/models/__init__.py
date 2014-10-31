@@ -32,6 +32,7 @@ from link import Link
 from maclog import MACLog
 from macdb import MACDB
 from networkchart import NetworkChart
+from discoveryjob import DiscoveryJob
 
 
 class NewPrefixDiscoveryLog(Document):

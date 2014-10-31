@@ -38,6 +38,7 @@ from noc.lib.gridvcs.manager import GridVCSField
 from noc.main.models.fts_queue import FTSQueue
 from noc.settings import config
 from noc.lib.solutions import get_probe_config
+from noc.inv.discovery.utils import get_active_discovery_methods
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
@@ -478,27 +479,12 @@ class ManagedObject(models.Model):
 
     def run_discovery(self, delta=0):
         op = self.object_profile
-        for attr, job, duration in [
-            ("enable_version_inventory", "version_inventory", 1),
-            ("enable_id_discovery", "id_discovery", 1),
-            ("enable_config_polling", "config_discovery", 1),
-            ("enable_interface_discovery", "interface_discovery", 1),
-            ("enable_asset_discovery", "asset_discovery", 1),
-            ("enable_vlan_discovery", "vlan_discovery", 1),
-            ("enable_lldp_discovery", "lldp_discovery", 1),
-            ("enable_udld_discovery", "udld_discovery", 1),
-            ("enable_bfd_discovery", "bfd_discovery", 1),
-            ("enable_stp_discovery", "stp_discovery", 1),
-            ("enable_cdp_discovery", "cdp_discovery", 1),
-            ("enable_oam_discovery", "oam_discovery", 1),
-            ("enable_rep_discovery", "rep_discovery", 1),
-            ("enable_ip_discovery", "ip_discovery", 1),
-            ("enable_mac_discovery", "mac_discovery", 1)
-        ]:
-            if getattr(op, attr):
+        for name in get_active_discovery_methods():
+            cfg = "enable_%s" % name
+            if getattr(op, cfg):
                 refresh_schedule(
                     "inv.discovery", job, self.id, delta=delta)
-                delta += duration
+                delta += 1
 
     def event(self, event_id, data=None, delay=None, tag=None):
         """
@@ -717,6 +703,22 @@ class ManagedObject(models.Model):
         ]
         if to_save:
             ocaps.save()  # forces probe rebuild
+
+    def disable_discovery(self):
+        """
+        Disable all discovery methods related with managed object
+        """
+
+    def apply_discovery(self):
+        """
+        Apply effective discovery settings
+        """
+        methods = []
+        for name in get_active_discovery_methods():
+            cfg = "enable_%s" % name
+            if getattr(self.object_profile, cfg):
+                methods += [cfg]
+        # @todo: Create tasks
 
 
 class ManagedObjectAttribute(models.Model):

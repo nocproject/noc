@@ -20,10 +20,6 @@ class STPLinkDiscoveryJob(LinkDiscoveryJob):
     map_task = "get_spanning_tree"
     method = "stp"
     ignored = not config.getboolean("stp_discovery", "enabled")
-    initial_submit_interval = config.getint("stp_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("stp_discovery",
-        "initial_submit_concurrency")
     strict_pending_candidates_check = False
 
     def convert_port_id(self, port_id):

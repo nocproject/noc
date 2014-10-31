@@ -37,6 +37,7 @@ from noc.lib.scheduler.utils import (get_job, refresh_schedule,
                                      start_schedule)
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter
+from noc.inv.discovery.utils import get_active_discovery_methods
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -61,25 +62,6 @@ class ManagedObjectApplication(ExtModelApplication):
             "timeout": 60
         }
     }
-
-    DISCOVERY_METHODS = [
-        ("enable_version_inventory", "version_inventory", None),
-        ("enable_caps_discovery", "caps_discovery", None),
-        ("enable_id_discovery", "id_discovery", None),
-        ("enable_config_polling", "config_discovery", None),
-        ("enable_interface_discovery", "interface_discovery", None),
-        ("enable_asset_discovery", "asset_discovery", 1),
-        ("enable_vlan_discovery", "vlan_discovery", None),
-        ("enable_lldp_discovery", "lldp_discovery", "lldp"),
-        ("enable_udld_discovery", "udld_discovery", "udld"),
-        ("enable_bfd_discovery", "bfd_discovery", "bfd"),
-        ("enable_stp_discovery", "stp_discovery", "stp"),
-        ("enable_cdp_discovery", "cdp_discovery", "cdp"),
-        ("enable_oam_discovery", "oam_discovery", "oam"),
-        ("enable_rep_discovery", "rep_discovery", "rep"),
-        ("enable_ip_discovery", "ip_discovery", None),
-        ("enable_mac_discovery", "mac_discovery", "mac")
-    ]
 
     def field_platform(self, o):
         return o.platform
@@ -234,16 +216,21 @@ class ManagedObjectApplication(ExtModelApplication):
             "next_run": None,
             "link_count": None
         }]
-        for cfg, name, method in self.DISCOVERY_METHODS:
+        for name in get_active_discovery_methods():
             job = get_job("inv.discovery", name, o.id) or {}
+            if name.endswith("_discovery"):
+                lcmethod = name[:-10]
+            else:
+                lcmethod = None
             d = {
                 "name": name,
-                "enable_profile": getattr(o.object_profile, cfg),
+                "enable_profile": getattr(o.object_profile,
+                                          "enable_%s" % name),
                 "status": job.get("s"),
                 "last_run": iso(job.get("last")),
                 "last_status": job.get("ls"),
                 "next_run": iso(job.get("ts")),
-                "link_count": link_count[method]
+                "link_count": link_count.get(lcmethod, "")
             }
             r += [d]
         return r
@@ -283,14 +270,14 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         r = json_decode(request.raw_post_data).get("names", [])
         d = 0
-        for cfg, name, method in self.DISCOVERY_METHODS:
-            if getattr(o.object_profile, cfg):
-                if name in r:
-                    self.ensure_discovery_job(name, o)
-                    start_schedule("inv.discovery", name, o.id)
-                    refresh_schedule("inv.discovery",
-                                     name, o.id, delta=d)
-                    d += 1
+        for name in get_active_discovery_methods():
+            cfg = "enable_%s" % name
+            if getattr(o.object_profile, cfg) and name in r:
+                self.ensure_discovery_job(name, o)
+                start_schedule("inv.discovery", name, o.id)
+                refresh_schedule("inv.discovery",
+                                 name, o.id, delta=d)
+                d += 1
         return {
             "success": True
         }
@@ -303,12 +290,12 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         r = json_decode(request.raw_post_data).get("names", [])
         d = 0
-        for cfg, name, method in self.DISCOVERY_METHODS:
-            if getattr(o.object_profile, cfg):
-                if name in r:
-                    self.ensure_discovery_job(name, o)
-                    stop_schedule("inv.discovery", name, o.id)
-                    d += 1
+        for name in get_active_discovery_methods():
+            cfg = "enable_%s" % name
+            if getattr(o.object_profile, cfg) and name in r:
+                self.ensure_discovery_job(name, o)
+                stop_schedule("inv.discovery", name, o.id)
+                d += 1
         return {
             "success": True
         }
@@ -514,7 +501,8 @@ class ManagedObjectApplication(ExtModelApplication):
             if not o.has_access(request.user):
                 continue
             d = 0
-            for cfg, name, method in self.DISCOVERY_METHODS:
+            for name in get_active_discovery_methods():
+                cfg = "enable_%s" % name
                 if getattr(o.object_profile, cfg):
                     self.ensure_discovery_job(name, o)
                     refresh_schedule(
