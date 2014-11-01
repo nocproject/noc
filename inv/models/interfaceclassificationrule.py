@@ -82,7 +82,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
 
     def compile_description_regexp(self, f_name):
         return "\n".join([
-            "rx_%s = re.compile(%s, re.IGNORECASE)" % (f_name, repr(self.value1)),
+            "rx_%s = re.compile(%s, re.IGNORECASE)" % (f_name, repr(self.value)),
             "def %s(iface):" % f_name,
             "    return iface.description and bool(rx_%s.search(iface.description))" % f_name
         ])
