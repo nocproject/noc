@@ -483,7 +483,7 @@ class ManagedObject(models.Model):
             cfg = "enable_%s" % name
             if getattr(op, cfg):
                 refresh_schedule(
-                    "inv.discovery", job, self.id, delta=delta)
+                    "inv.discovery", name, self.id, delta=delta)
                 delta += 1
 
     def event(self, event_id, data=None, delay=None, tag=None):
