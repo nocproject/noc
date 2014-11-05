@@ -59,11 +59,11 @@ class ManagedObjectProfile(models.Model):
         default=",60"
     )
     ## Config polling
-    enable_config_discovery  = models.BooleanField(
+    enable_config_polling  = models.BooleanField(
         _("Enable config polling"), default=True)
-    config_discovery_min_interval = models.IntegerField(
+    config_polling_min_interval = models.IntegerField(
         _("Min. config polling interval"), default=600)
-    config_discovery_max_interval = models.IntegerField(
+    config_polling_max_interval = models.IntegerField(
         _("Max. config polling interval"), default=86400)
     ## Discovery settings
     # Version inventory
