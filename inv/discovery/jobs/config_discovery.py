@@ -31,8 +31,8 @@ class ConfigDiscoveryJob(MODiscoveryJob):
     def can_run(self):
         return (
             super(ConfigDiscoveryJob, self).can_run()
-            and self.object.object_profile.enable_config_polling
+            and self.object.object_profile.enable_config_discovery
         )
 
     def get_failed_interval(self):
-        return self.object.object_profile.config_polling_min_interval
+        return self.object.object_profile.config_discovery_min_interval
