@@ -14,7 +14,7 @@ DISCOVERY_METHODS = [
     "version_inventory",
     "caps_discovery",
     "id_discovery",
-    "config_polling",
+    "config_discovery",
     "interface_discovery",
     "asset_discovery",
     "vlan_discovery",
@@ -30,6 +30,7 @@ DISCOVERY_METHODS = [
 ]
 
 ACTIVE_DISCOVERY_METHODS = None
+
 
 def get_active_discovery_methods():
     """
