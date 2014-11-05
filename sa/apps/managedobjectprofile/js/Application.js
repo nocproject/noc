@@ -30,7 +30,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         },
         {
             text: "Config",
-            dataIndex: "enable_config_discovery",
+            dataIndex: "enable_config_polling",
             width: 50,
             renderer: NOC.render.Bool
         },
@@ -246,17 +246,17 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     text: "Config"
                 },
                 {
-                    name: "enable_config_discovery",
+                    name: "enable_config_polling",
                     xtype: "checkboxfield",
                     allowBlank: false
                 },
                 {
-                    name: "config_discovery_min_interval",
+                    name: "config_polling_min_interval",
                     xtype: "numberfield",
                     allowBlank: false
                 },
                 {
-                    name: "config_discovery_max_interval",
+                    name: "config_polling_max_interval",
                     xtype: "numberfield",
                     allowBlank: false
                 },
