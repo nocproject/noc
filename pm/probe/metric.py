@@ -11,6 +11,7 @@ import logging
 ## NOC modules
 from policy import FeedPolicy
 
+MAX31 = 0xFFFFFFFFL
 MAX32 = 0xFFFFFFFFL
 MAX64 = 0xFFFFFFFFFFFFFFFFL
 
@@ -72,7 +73,12 @@ class Metric(object):
         if v < self.last_value:
             # Counter decreased, either wrap or stepback
             if self.max_counter is None:
-                self.max_counter = MAX64 if self.last_value >= MAX32 else MAX32
+                if self.last_value <= MAX31:
+                    self.max_counter = MAX31
+                elif self.last_value <= MAX32:
+                    self.max_counter = MAX32
+                else:
+                    self.max_counter = MAX64
             # Direct distance
             d_direct = self.last_value - v
             # Counter wrap distance
