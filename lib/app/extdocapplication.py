@@ -253,6 +253,23 @@ class ExtDocApplication(ExtApplication):
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
+        def _create_object(attrs):
+            o = self.model()
+            for k, v in attrs.items():
+                if k != self.pk and "__" not in k:
+                    setattr(o, k, v)
+            o.save()
+            # Reread result
+            o = self.model.objects.get(**{self.pk: o.pk})
+            if request.is_extjs:
+                r = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                r = self.instance_to_dict(o)
+            return self.response(r, status=self.CREATED)
+
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError, why:
@@ -268,21 +285,7 @@ class ExtDocApplication(ExtApplication):
             if q:
                 if self.queryset(request).filter(**q).first():
                     return self.response(status=self.CONFLICT)
-        o = self.model()
-        for k, v in attrs.items():
-            if k != self.pk and "__" not in k:
-                setattr(o, k, v)
-        o.save()
-        # Reread result
-        o = self.model.objects.get(**{self.pk: o.pk})
-        if request.is_extjs:
-            r = {
-                "success": True,
-                "data": self.instance_to_dict(o)
-            }
-        else:
-            r = self.instance_to_dict(o)
-        return self.response(r, status=self.CREATED)
+        return self.submit_slow_op(request, _create_object, attrs)
 
     @view(method=["GET"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
           access="read", api=True)
@@ -303,6 +306,22 @@ class ExtDocApplication(ExtApplication):
     @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
           access="update", api=True)
     def api_update(self, request, id):
+        def _update_object(o, attrs):
+            for k in attrs:
+                if k != self.pk and "__" not in k:
+                    setattr(o, k, attrs[k])
+            o.save()
+            # Reread result
+            o = self.model.objects.get(**{self.pk: id})
+            if request.is_extjs:
+                r = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                r = self.instance_to_dict(o)
+            return self.response(r, status=self.OK)
+
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError, why:
@@ -314,30 +333,20 @@ class ExtDocApplication(ExtApplication):
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()
         # @todo: Check for duplicates
-        for k in attrs:
-            if k != self.pk and "__" not in k:
-                setattr(o, k, attrs[k])
-        o.save()
-        # Reread result
-        o = self.model.objects.get(**{self.pk: id})
-        if request.is_extjs:
-            r = {
-                "success": True,
-                "data": self.instance_to_dict(o)
-            }
-        else:
-            r = self.instance_to_dict(o)
-        return self.response(r, status=self.OK)
+        return self.submit_slow_op(request, _update_object, o, attrs)
 
     @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
           access="delete", api=True)
     def api_delete(self, request, id):
+        def _delete_object(o):
+            o.delete()
+            return HttpResponse(status=self.DELETED)
+
         try:
             o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
-        o.delete()
-        return HttpResponse(status=self.DELETED)
+        return self.submit_slow_op(request, _delete_object, o)
 
     def _api_to_json(self, request, id):
         """

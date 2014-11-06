@@ -622,7 +622,46 @@ Ext.define("NOC.core.ModelApplication", {
             Model = me.store.getModel(),
             record = new Model(data),
             mv = record.validate(),
-            result = {};
+            result = {},
+            pollProgress = function(url) {
+                Ext.Ajax.request({
+                    url: url,
+                    method: "GET",
+                    scope: me,
+                    success: onSuccess,
+                    failure: onFailure
+                });
+            },
+            onSuccess = function(response) {
+                if(response.status === 202) {
+                    // Future in progress
+                    Ext.Function.defer(
+                        pollProgress, 1000, me,
+                        [response.getResponseHeader("Location")]
+                    );
+                } else {
+                    // Process result
+                    var data = Ext.decode(response.responseText);
+                    // @todo: Update current record with data
+                    if(me.currentQuery[me.idField]) {
+                        delete me.currentQuery[me.idField];
+                    }
+                    me.showGrid();
+                    me.reloadStore();
+                    me.saveInlines(data[me.idField], me.inlineStores);
+                    me.unmask();
+                }
+            },
+            onFailure = function(response) {
+                var data = response.responseText ? Ext.decode(response.responseText) : null;
+                if(data && data.success === false) {
+                    NOC.error(data.message);
+                } else {
+                    NOC.error("Error saving record!");
+                    console.log(response.responseText);
+                }
+                me.unmask();
+            };
 
         if(!mv.isValid()) {
             // @todo: Error report
@@ -636,31 +675,15 @@ Ext.define("NOC.core.ModelApplication", {
                 result[name] = data[name];
             }
         }
+        me.mask("Saving ...");
         // Save data
         Ext.Ajax.request({
             url: me.base_url + (me.currentRecord ? result[me.idField] + "/" : ""),
             method: me.currentRecord ? "PUT" : "POST",
             scope: me,
             jsonData: result,
-            success: function(response) {
-                var data = Ext.decode(response.responseText);
-                // @todo: Update current record with data
-                if(me.currentQuery[me.idField]) {
-                    delete me.currentQuery[me.idField];
-                }
-                me.showGrid();
-                me.reloadStore();
-                me.saveInlines(data[me.idField], me.inlineStores);
-            },
-            failure: function(response) {
-                var data = response.responseText ? Ext.decode(response.responseText) : null;
-                if(data && data.status === false) {
-                    NOC.error(data["message"]);
-                } else {
-                    NOC.error("Error saving record!");
-                    console.log(response.responseText);
-                }
-            }
+            success: onSuccess,
+            failure: onFailure
         });
     },
     //
@@ -756,19 +779,43 @@ Ext.define("NOC.core.ModelApplication", {
     // Delete record
     deleteRecord: function() {
         var me = this;
+        pollProgress = function(url) {
+            Ext.Ajax.request({
+                url: url,
+                method: "GET",
+                scope: me,
+                success: onSuccess,
+                failure: onFailure
+            });
+        },
+        onSuccess = function(response) {
+            if(response.status === 202) {
+                // Future in progress
+                Ext.Function.defer(
+                    pollProgress, 1000, me,
+                    [response.getResponseHeader("Location")]
+                );
+            } else {
+                // Process result
+                me.currentRecord = null;
+                me.reloadStore();
+                me.showGrid();
+                me.unmask();
+            }
+        },
+        onFailure = function(response) {
+            var data = Ext.decode(response.responseText);
+            NOC.error(data.message);
+            me.unmask();
+        };
+
+        me.mask("Deleting ...");
         Ext.Ajax.request({
             url: me.base_url + me.currentRecord.get(me.idField) + "/",
             method: "DELETE",
             scope: me,
-            success: function() {
-                me.currentRecord = null;
-                me.reloadStore();
-                me.showGrid();
-            },
-            failure: function(response) {
-                var data = Ext.decode(response.responseText);
-                NOC.error(data.message);
-            }
+            success: onSuccess,
+            failure: onFailure
         });
     },
     // Reload store with current query
