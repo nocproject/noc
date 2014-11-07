@@ -11,11 +11,13 @@ import random
 from collections import namedtuple
 ## NOC modules
 from ber import BEREncoder, BERDecoder
+from consts import (SNMP_v2c, PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
+                    PDU_RESPONSE)
 
 
-def get_pdu(community, oids, request_id=None):
+def _build_pdu(community, pdu_type, oids, request_id):
     """
-    Generate SNMP v2c GET PDU
+    Generate SNMP v2c GET/GETNEXT
     :param version:
     :param community:
     :param oids:
@@ -32,7 +34,7 @@ def get_pdu(community, oids, request_id=None):
         ]) for oid in oids
     ])
     # Encode RFC-1905 SNMP GET PDU
-    pdu = e.encode_implicit_constructed([
+    pdu = e.encode_choice(pdu_type, [
         e.encode_int(request_id),
         e.encode_int(0),  # Error status
         e.encode_int(0),  # Error index
@@ -40,10 +42,33 @@ def get_pdu(community, oids, request_id=None):
     ])
     # SNMP v2c PDU
     return e.encode_sequence([
-        e.encode_int(1),
+        e.encode_int(SNMP_v2c),
         e.encode_octet_string(community),
         pdu
     ])
+
+
+def get_pdu(community, oids, request_id=None):
+    """
+    Generate SNMP v2c GET PDU
+    :param version:
+    :param community:
+    :param oids:
+    :return:
+    """
+    return _build_pdu(community, PDU_GET_REQUEST, oids, request_id)
+
+
+def getnext_pdu(community, oids, request_id=None):
+    """
+    Generate SNMP v2c GETNEXt PDU
+    :param version:
+    :param community:
+    :param oids:
+    :return:
+    """
+    return _build_pdu(community, PDU_GETNEXT_REQUEST, oids, request_id)
+
 
 GetResponse = namedtuple("GetResponse", ["community", "request_id",
                                          "error_status", "error_index",
@@ -54,10 +79,12 @@ def parse_get_response(pdu):
     d = BERDecoder()
     data = d.parse_sequence(pdu)[0]
     pdu = data[2]
+    if pdu[0] != PDU_RESPONSE:
+        raise ValueError("Invalid response PDU type: %s" % pdu[0])
     return GetResponse(
         community=data[1],
-        request_id=pdu[0],
-        error_status=pdu[1],
-        error_index=pdu[2],
-        varbinds=pdu[3]
+        request_id=pdu[1],
+        error_status=pdu[2],
+        error_index=pdu[3],
+        varbinds=pdu[4]
     )

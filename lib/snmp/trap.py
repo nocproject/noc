@@ -38,8 +38,10 @@ def decode_trap_pdu_v1(pdu):
     r.update(varbinds)
     return r
 
+
 def decode_trap_pdu_v2c(pdu):
     return dict(pdu[-1])
+
 
 PDU_PARSERS = {
     0: decode_trap_pdu_v1,
