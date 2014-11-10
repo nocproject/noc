@@ -16,7 +16,7 @@ import logging
 ## NOC modules
 from noc.lib.solutions import solutions_roots
 from match import MatchExpr, MatchTrue, MatchCaps
-import noc.lib.snmp.version
+import noc.lib.snmp.consts
 from noc.lib.snmp.error import SNMPError, NO_SUCH_NAME
 from noc.lib.log import PrefixLoggerAdapter
 
@@ -190,7 +190,7 @@ class Probe(object):
     # Means only for human-configurable probes
     CONFIG_FORM = None
 
-    SNMP_v2c = noc.lib.snmp.version.SNMP_v2c
+    SNMP_v2c = noc.lib.snmp.consts.SNMP_v2c
 
     INVALID_OID_TTL = 3600
 
@@ -255,6 +255,35 @@ class Probe(object):
             for k in result:
                 if result[k] is None:
                     self.set_missed_oid(result[k])
+        return result
+
+    def snmp_getnext(self, oid, address, port=161,
+                     community="public", version=SNMP_v2c):
+        """
+        Iterator performing SNMP getnext
+        requests and yielding oid, value
+        """
+        for o, v in self.daemon.io.snmp_getnext(
+                oid, address, port,
+                community=community, version=version
+        ):
+            yield o, v
+
+    def snmp_count(self, oid, address, port=161,
+                   community="public", version=SNMP_v2c,
+                   filter=None):
+        """
+        Perform SNMP request to one or more OIDs.
+        oids can be string or dict.
+        When oid is string returns value
+        When oid is dict of <metric type> : oid, returns
+        dict of <metric type>: value
+        """
+        result = self.daemon.io.snmp_count(
+            oid, address, port,
+            community=community,
+            version=version,
+            filter=filter)
         return result
 
 
