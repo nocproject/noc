@@ -59,7 +59,7 @@ def get_pdu(community, oids, request_id=None):
     return _build_pdu(community, PDU_GET_REQUEST, oids, request_id)
 
 
-def getnext_pdu(community, oids, request_id=None):
+def getnext_pdu(community, oid, request_id=None):
     """
     Generate SNMP v2c GETNEXt PDU
     :param version:
@@ -67,7 +67,7 @@ def getnext_pdu(community, oids, request_id=None):
     :param oids:
     :return:
     """
-    return _build_pdu(community, PDU_GETNEXT_REQUEST, oids, request_id)
+    return _build_pdu(community, PDU_GETNEXT_REQUEST, [oid], request_id)
 
 
 GetResponse = namedtuple("GetResponse", ["community", "request_id",
