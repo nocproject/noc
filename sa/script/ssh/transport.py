@@ -220,7 +220,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
                     self.send_uniplemented()
                     continue
                 if msg_type not in quiet_message_types:
-                    self.debug("Receiving message type %s (%d)" % (
+                    self.logger.debug("Receiving message type %s (%d)" % (
                         msg_names[msg_type], msg_type))
                 h(self, p[1:])
 
@@ -270,15 +270,6 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             self.async_check_fsm()
         return ConnectedTCPSocket.is_stale(self)
 
-    def log_label(self):
-        return self._log_label
-
-    def debug(self, msg):
-        logging.debug("[%s] %s" % (self.log_label(), msg))
-
-    def error(self, msg):
-        logging.error("[%s] %s" % (self.log_label(), msg))
-
     def on_close(self):
         state = self.get_state()
         if state == "SSH_START":
@@ -288,7 +279,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             self.queue.put(None)  # Signal stale socket timeout
 
     def on_conn_refused(self):
-        self.debug("Connection refused")
+        self.logger.debug("Connection refused")
         self.motd = "Connection refused"
         self.set_state("FAILURE")
 
@@ -312,7 +303,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         :param payload:
         :return:
         """
-        self.debug("Sending message type %s (%d)" % (
+        self.logger.debug("Sending message type %s (%d)" % (
         msg_names[message_type], message_type))
         payload = chr(message_type) + payload
         if self.out_compression:
@@ -415,7 +406,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
 
     def request_service(self, name):
         self.requested_service_name = name
-        self.debug("Requesting service %s" % name)
+        self.logger.debug("Requesting service %s" % name)
         self.send_packet(MSG_SERVICE_REQUEST, NS(name))
 
     def open_channel(self, name, extra=""):
@@ -448,7 +439,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         m = self.get_next_auth_method(preferred_methods)
         if m:
             # Request authentication method
-            self.debug("Authenticating with '%s' method" % m)
+            self.logger.debug("Authenticating with '%s' method" % m)
             getattr(self, "request_auth_%s" % m.replace("-", "_"))()
         else:
             self.send_disconnect(DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE,
@@ -548,7 +539,11 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             return self.ssh_failure(
                 "Unsupported SSH protocol version: %s" % s_version)
         remote_soft = match.group("soft")
-        self.debug("Remote protocol version %s, remote software version %s" % (s_version, remote_soft))
+        self.logger.debug(
+            "Remote protocol version %s, remote software version %s",
+            s_version, remote_soft
+        )
+        has_next_packet = bool(self.buffer)
         # Send our version
         if remote_soft.startswith("FreSSH") or remote_soft.startswith("OpenSSH_3.4"):
             # FreSSH.0.8 requires version negotiation
@@ -576,6 +571,9 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
 
         self.send_packet(MSG_KEXINIT, self.our_kex_init_payload[1:])
         self.event("SSH_KEY_EXCHANGE")
+        if has_next_packet:
+            self.logger.debug("Early start detected")
+            self.on_read("")
 
     def on_SSH_AUTH_enter(self):
         self.request_service("ssh-userauth")
@@ -587,7 +585,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.open_channel("session")
 
     def on_SSH_PTY_enter(self):
-        self.debug("Requesting PTY")
+        self.logger.debug("Requesting PTY")
         self.send_packet(MSG_CHANNEL_REQUEST, (
             struct.pack(">L", self.current_remote_channel) +
             NS("pty-req") +
@@ -598,7 +596,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             ))
 
     def on_SSH_SHELL_enter(self):
-        self.debug("Requesting shell")
+        self.logger.debug("Requesting shell")
         self.send_packet(MSG_CHANNEL_REQUEST, (
             struct.pack(">L", self.current_remote_channel) +
             NS("shell") +
@@ -646,7 +644,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         """
         # always_display = bool(packet[0])
         message, lang, rest = get_NS(packet[1:], 2)
-        self.debug("Remote debug message received: %s" % message)
+        self.logger.debug("Remote debug message received: %s" % message)
 
     def ssh_UNIMPLEMENTED(self, packet):
         """
@@ -657,7 +655,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         :return:
         """
         seq_num, = struct.unpack(">L", packet)
-        self.debug("Received unimplemented for packet no %d" % seq_num)
+        self.logger.debug("Received unimplemented for packet no %d" % seq_num)
 
     def ssh_KEXINIT(self, packet):
         """
@@ -689,7 +687,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
          comp_sc, lang_cs, lang_sc, rest) = [s.split(",") for s in
                                              get_NS(packet[16:], 10)]
 
-        self.debug(
+        self.logger.debug(
             "Receiving server proposals: kex=%s key=%s enc_cs=%s enc_sc=%s mac_cs=%s mac_sc=%s comp_cs=%s comp_sc%s" % (
             kex_algs,
             key_algs, enc_cs, enc_sc, mac_cs, mac_sc, comp_cs, comp_sc))
@@ -710,7 +708,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             self.send_disconnect(DISCONNECT_KEY_EXCHANGE_FAILED,
                                  "Couldn't match proposals")
             return
-        self.debug("Selecting %s %s, in=(%s %s %s) out=(%s %s %s)" % (
+        self.logger.debug("Selecting %s %s, in=(%s %s %s) out=(%s %s %s)" % (
             self.kex_alg, self.key_alg,
             self.next_transform.in_cipher_type,
             self.next_transform.in_mac_type,
@@ -752,7 +750,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             pub_key, packet = get_NS(packet, 1)
             f, packet = get_MP(packet)
             signature, packet = get_NS(packet, 1)
-            self.debug("Server PK fingerprint: %s" % ":".join(
+            self.logger.debug("Server PK fingerprint: %s" % ":".join(
                 [ch.encode("hex") for ch in md5(pub_key).digest()]))
             # Generate keys
             server_key = Key.from_string(pub_key)
@@ -792,7 +790,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             return
         if not self.next_transform.enc_block_size:
             return
-        self.debug("Using new keys")
+        self.logger.debug("Using new keys")
         self.transform = self.next_transform
         self.next_transform = None
         if self.out_compression_type == "zlib":
@@ -818,7 +816,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         if name != self.requested_service_name:
             self.send_disconnect(DISCONNECT_PROTOCOL_ERROR,
                                  "received accept for service we did not request")
-        self.debug("Starting service %s" % name)
+        self.logger.debug("Starting service %s" % name)
         if self.get_state() == "SSH_AUTH":
             self.event("SSH_AUTH_PASSWORD")
 
@@ -834,7 +832,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         pub_key, packet = get_NS(packet)
         f, packet = get_MP(packet)
         signature, packet = get_NS(packet)
-        self.debug("Server PK fingerprint: %s" % ":".join(
+        self.logger.debug("Server PK fingerprint: %s" % ":".join(
             [ch.encode("hex") for ch in md5(pub_key).digest()]))
         server_key = Key.from_string(pub_key)
         shared_secret = MPpow(f, self.x, self.p)
@@ -869,15 +867,15 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         methods, partial = get_NS(packet)
         partial = bool(ord(partial))
         if partial:
-            self.debug(
+            self.logger.debug(
                 "Authetication method '%s' has partial success. Trying next method (%s)" % (
                 self.last_auth, methods))
         else:
-            self.debug(
+            self.logger.debug(
                 "Authentication method '%s' has been failed. Trying next method (%s)" % (
                 self.last_auth, methods))
 
-        self.debug(
+        self.logger.debug(
             "Partially authenticated with '%s'. Trying next method" % self.last_auth)
         self.authenticated_with.add(self.last_auth)
         methods_left = [x for x in [x.strip() for x in methods.split(",")] if
@@ -895,11 +893,11 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         :return:
         """
         if self.delayed_out_compression:
-            self.debug("Enabling delayed out compression %s" % self.out_compression_type)
+            self.logger.debug("Enabling delayed out compression %s" % self.out_compression_type)
             self.out_compression = self.delayed_out_compression
             self.delayed_out_compression = None
         if self.delayed_in_compression:
-            self.debug("Enabling delayed in compression %s" % self.in_compression_type)
+            self.logger.debug("Enabling delayed in compression %s" % self.in_compression_type)
             self.in_compression = self.delayed_in_compression
             self.delayed_in_compression = None
         self.event("SSH_CHANNEL")
@@ -965,8 +963,8 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             s, data = get_NS(data, 1)
             prompts += [(s, bool(ord(data[0])))]
             data = data[1:]
-        self.debug("keyboard-interactive instruction: %s" % instruction)
-        self.debug("keyboard-interactive prompts: %s" % str(prompts))
+        self.logger.debug("keyboard-interactive instruction: %s" % instruction)
+        self.logger.debug("keyboard-interactive prompts: %s" % str(prompts))
         if prompts:
             responses = [self.access_profile.password]
         else:
@@ -995,7 +993,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.remote_window_left = remote_window
         self.remote_max_packet = remote_max_packet
         self.current_remote_channel = remote_channel
-        self.debug("Opening channel. local=%d remote=%d" % (
+        self.logger.debug("Opening channel. local=%d remote=%d" % (
         local_channel, remote_channel))
         self.event("SSH_PTY")
 
@@ -1111,7 +1109,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         channel_id, data_type = struct.unpack(">2L", packet[
                                                      :4])
         packet, rest = get_NS(packet[8:])
-        self.debug("Read extended: %r" % packet)
+        self.logger.debug("Read extended: %r" % packet)
         self.feed(packet, cleanup=self.profile.cleaned_input)
         #self.__flush_submitted_data()
 
