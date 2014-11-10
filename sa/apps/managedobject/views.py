@@ -30,6 +30,7 @@ from noc.lib.app.repoinline import RepoInline
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
+from sa.models.objectcapabilities import ObjectCapabilities
 from mongoengine.queryset import Q as MQ
 from noc.lib.serialize import json_decode
 from noc.lib.scheduler.utils import (get_job, refresh_schedule,
@@ -672,3 +673,21 @@ class ManagedObjectApplication(ExtModelApplication):
             "max_timeout": 0,
             "result": r[0]
         }
+
+    @view(url="(?P<id>\d+)/caps/$", method=["GET"],
+          access="read", api=True)
+    def api_get_caps(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        r = []
+        oc = ObjectCapabilities.objects.filter(object=o).first()
+        if oc:
+            for c in oc.caps:
+                r += [{
+                    "capability": c.capability.name,
+                    "description": c.capability.description,
+                    "type": c.capability.type,
+                    "discovered_value": c.discovered_value,
+                    "local_value": c.local_value,
+                    "value": c.local_value if c.local_value is not None else c.discovered_value
+                }]
+        return sorted(r, key=lambda x: x["capability"])
