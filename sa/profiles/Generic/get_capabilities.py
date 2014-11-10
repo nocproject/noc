@@ -40,6 +40,14 @@ class Script(NOCScript):
         except self.snmp.TimeOutError:
             return
 
+    def check_snmp_bulk(self, caps):
+        try:
+            for k, v in self.snmp.getnext(mib["SNMPv2-MIB::sysDescr"], bulk=True):
+                caps["SNMP | Bulk"] = True
+                return
+        except self.snmp.TimeOutError:
+            return
+
     def check_snmp(self, caps):
         """
         Check basic SNMP support
@@ -51,6 +59,7 @@ class Script(NOCScript):
         except self.snmp.TimeOutError:
             return
         caps["SNMP"] = True
+        self.check_snmp_bulk(caps)
         self.check_ifmib(caps)
 
     def execute(self):
