@@ -258,20 +258,22 @@ class Probe(object):
         return result
 
     def snmp_getnext(self, oid, address, port=161,
-                     community="public", version=SNMP_v2c):
+                     community="public", version=SNMP_v2c,
+                     bulk=False
+                     ):
         """
         Iterator performing SNMP getnext
         requests and yielding oid, value
         """
         for o, v in self.daemon.io.snmp_getnext(
                 oid, address, port,
-                community=community, version=version
+                community=community, version=version, bulk=bulk
         ):
             yield o, v
 
     def snmp_count(self, oid, address, port=161,
                    community="public", version=SNMP_v2c,
-                   filter=None):
+                   filter=None, bulk=False):
         """
         Perform SNMP request to one or more OIDs.
         oids can be string or dict.
@@ -283,7 +285,9 @@ class Probe(object):
             oid, address, port,
             community=community,
             version=version,
-            filter=filter)
+            filter=filter,
+            bulk=bulk
+        )
         return result
 
 

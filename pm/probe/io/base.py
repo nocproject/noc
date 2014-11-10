@@ -49,23 +49,24 @@ class IOThread(threading.Thread):
         return r
 
     def snmp_getnext(self, oid, address, port=161, community="public",
-                 version=SNMP_v2c):
+                 version=SNMP_v2c, bulk=False):
         logger.debug("SNMP GETNEXT [%s] %s" % (address, oid))
         with self.create_lock:
             s = SNMPGetNextSocket(self, oid, address, port,
-                                  community=community, version=version)
+                                  community=community, version=version,
+                                  bulk=False)
         for k, v in s.iter_result():
             logger.debug("SNMP GETNEXT RESULT [%s]: %s = %s",
                          address, k, v)
             yield k, v
 
     def snmp_count(self, oid, address, port=161, community="public",
-                 version=SNMP_v2c, filter=None):
+                 version=SNMP_v2c, filter=None, bulk=False):
         logger.debug("SNMP GETNEXT COUNT [%s] %s" % (address, oid))
         with self.create_lock:
             s = SNMPCountSocket(self, oid, address, port,
                               community=community, version=version,
-                              filter=filter)
+                              filter=filter, bulk=False)
         r = s.get_result()
         if isinstance(r, SNMPError):
             logger.info("SNMP GETNEXT COUNT ERROR [%s] %s: code %s",
