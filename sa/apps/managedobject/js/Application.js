@@ -112,6 +112,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onInteractions
         });
 
+        me.metricsButton = Ext.create("Ext.button.Button", {
+            text: "Metrics",
+            glyph: NOC.glyph.bar_chart_o,
+            scope: me,
+            handler: me.onMetrics
+        });
+
         me.ITEM_CONFIG = me.registerItem(
             Ext.create("NOC.core.RepoPreview", {
                 app: me,
@@ -141,6 +148,14 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.ITEM_ALARM = me.registerItem("NOC.sa.managedobject.AlarmPanel");
         me.ITEM_INTERACTIONS = me.registerItem("NOC.sa.managedobject.InteractionsPanel");
+
+        me.ITEM_METRICS = me.registerItem(
+            Ext.create("NOC.core.MetricSettingsPanel", {
+                app: me,
+                metricModelId: "sa.ManagedObject"
+            })
+        );
+
 
         Ext.apply(me, {
             columns: [
@@ -511,7 +526,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.linksButton,
                 me.discoveryButton,
                 me.alarmsButton,
-                me.interactionsButton
+                me.interactionsButton,
+                me.metricsButton
             ]
         });
         me.callParent();
@@ -647,6 +663,11 @@ Ext.define("NOC.sa.managedobject.Application", {
     onAlarm: function() {
         var me = this;
         me.previewItem(me.ITEM_ALARM, me.currentRecord);
+    },
+    //
+    onMetrics: function() {
+        var me = this;
+        me.showItem(me.ITEM_METRICS).preview(me.currentRecord);
     },
     //
     onInterfaceClick: function(record) {
