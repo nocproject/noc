@@ -3,5 +3,6 @@ MikroTik | RouterOS | License | Level,e954d09a-d04b-4c41-b971-7387fb91c693,Mikro
 MikroTik | RouterOS | License | SoftwareID,254db3ab-f94d-42ef-b991-16610412ff24,MikroTik/RouterOS/License/SoftwareID.json,cc9bbeca872edcf7242708cb609a5c0d31dbf03463db22055c6ebfca53a7d3c1
 MikroTik | RouterOS | License | Upgradable To,427e1cc7-1936-4f03-bceb-aa3402ffb0f5,MikroTik/RouterOS/License/Upgradable_To.json,6efc2ae9e806994882ce9da6c525f3a2e7abde69c17509a7c7ee20fcb1b110d5
 SNMP,24ce2f73-c23b-4f7b-b3d9-fc02d2d9a3d0,SNMP.json,c6590df5fd3eeda8c7ed39573e1b4a736e2a9bc38c9b79cca123c67135f96e5c
+SNMP | BULK,01c0cbe7-12c6-4ca6-9d38-b09c6e5e5b63,SNMP/BULK.json,d53752133a37c024ca12c57893a6251776c6f47ec93a810cb839a64cb9e43271
 SNMP | IF-MIB,a9ae93c7-39d8-4e57-a439-41929a02d38a,SNMP/IF-MIB.json,3739a5f1c6ed4d2a9e4168e431158e2545e2ed478a3d84f2fa5b1403d00b0e7e
 SNMP | IF-MIB | HC,1b523e76-7341-4d27-913b-1125a136e9e4,SNMP/IF-MIB/HC.json,3a17d1f7a8964bc96f33ffe99a30dde0330660c40b439e058e511e9a2cf522ae
