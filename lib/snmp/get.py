@@ -12,7 +12,7 @@ from collections import namedtuple
 ## NOC modules
 from ber import BEREncoder, BERDecoder
 from consts import (SNMP_v2c, PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
-                    PDU_RESPONSE)
+                    PDU_RESPONSE, PDU_GETBULK_REQUEST)
 
 
 def _build_pdu(community, pdu_type, oids, request_id):
@@ -61,13 +61,44 @@ def get_pdu(community, oids, request_id=None):
 
 def getnext_pdu(community, oid, request_id=None):
     """
-    Generate SNMP v2c GETNEXt PDU
+    Generate SNMP v2c GETNEXT PDU
     :param version:
     :param community:
     :param oids:
     :return:
     """
     return _build_pdu(community, PDU_GETNEXT_REQUEST, [oid], request_id)
+
+
+def getbulk_pdu(community, oid, request_id=None,
+                non_repeaters=0, max_repetitions=10):
+    """
+    Generate SNMP v2c GETBULK PDU
+    """
+    e = BEREncoder()
+    if not request_id:
+        request_id = random.randint(0, 0x7FFFFFFF)
+    oids = [oid]
+    # Encode variable bindings
+    varbinds = e.encode_sequence([
+        e.encode_sequence([
+            e.encode_oid(oid),
+            e.encode_null()
+        ]) for oid in oids
+    ])
+    # Encode RFC-1905 SNMP GET PDU
+    pdu = e.encode_choice(PDU_GETBULK_REQUEST, [
+        e.encode_int(request_id),
+        e.encode_int(non_repeaters),
+        e.encode_int(max_repetitions),
+        varbinds
+    ])
+    # SNMP v2c PDU
+    return e.encode_sequence([
+        e.encode_int(SNMP_v2c),
+        e.encode_octet_string(community),
+        pdu
+    ])
 
 
 GetResponse = namedtuple("GetResponse", ["community", "request_id",
