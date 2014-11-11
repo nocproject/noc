@@ -453,6 +453,10 @@ NoName | Transceiver | 1G | SFP TX,fd39e350-47dd-482f-9b7f-31615e6795a6,NoName/T
 NoName | Transceiver | 1G | SFP ZX,f486bb38-71a8-4688-bac4-62fc9c3dd183,NoName/Transceiver/1G/SFP_ZX.json,963db2c242cb4afc1c3de6fefe6c0266d6c186c50461c1d076db984c21df77f2
 NoName | Transceiver | Unknown SFP,2ba9fd2c-1a6e-44f9-b59b-0305f9f893ff,NoName/Transceiver/Unknown_SFP.json,353899993df47d0229910c7fac49522247b8c1b4c530363484d85c360796464d
 NoName | Transceiver | Unknown SFP | Cisco,f52610b5-718c-4e8d-a4c1-7585588cd8c0,NoName/Transceiver/Unknown_SFP/Cisco.json,0b497a0cba96ae8b01edcc10c69a6e61e13305c587c3c982fae951b0a67db445
+Opticin | Transceiver | 1G | SFP-BiDi3.03,0aca59d2-8e6a-4007-848b-d704174c9d65,Opticin/Transceiver/1G/SFP-BiDi3_03.json,61bf0b4f8c80a4c3dff6c47f5d0b32c648aa052b8c26192e0d9ef64fe73cfbc6
+Opticin | Transceiver | 1G | SFP-BiDi3.20,bba3f257-e75a-4138-9ac4-157a0eed8610,Opticin/Transceiver/1G/SFP-BiDi3_20.json,0888f88d4dfea6cba59d3af6a3547f1033815a71d208c54a41e5f346562f4a96
+Opticin | Transceiver | 1G | SFP-BiDi5.03,8f52814a-b13e-4f14-9229-adc2feebb421,Opticin/Transceiver/1G/SFP-BiDi5_03.json,d5de0f596055e145b4fd3ced737ec9e730e7861b72b184836257a33318a34d68
+Opticin | Transceiver | 1G | SFP-BiDi5.20,93752fae-5cf2-431d-9f62-6aa31683c94c,Opticin/Transceiver/1G/SFP-BiDi5_20.json,9dd6475f8545c5e390f28c360168710683b1c713c3ff3549501592d47eb84c4f
 Opticin | Transceiver | 1G | SFP-CWDM31.60,1627b715-055a-42cf-be8f-33e5c7cb4725,Opticin/Transceiver/1G/SFP-CWDM31_60.json,7930b8b9e116f56292a0510d406aeb2e6392e8fdaa1f5bd28b202294697c9962
 Opticin | Transceiver | 1G | SFP-CWDM33.60,959b91a0-1de7-4279-90f5-ffabf664f761,Opticin/Transceiver/1G/SFP-CWDM33_60.json,89f0f62152169ceb637ff6022f4c4101609ddac458554a134fcd4c835dc3c065
 Opticin | Transceiver | 1G | SFP-CWDM35.60,069da56e-6075-43eb-bf4c-dbd39acb449d,Opticin/Transceiver/1G/SFP-CWDM35_60.json,9b4ecc6f06455c13e31c0daab1ecb2633eb96ccfaab8b4d4a05267e56a70c5c8
@@ -469,7 +473,18 @@ Opticin | Transceiver | 1G | SFP-CWDM55.60,646778a8-0ffb-483c-992a-520828ec767d,
 Opticin | Transceiver | 1G | SFP-CWDM57.60,593b291e-0116-4167-a94f-40e1ded05018,Opticin/Transceiver/1G/SFP-CWDM57_60.json,a5979ce4be854c69fab2f71efdfe572e70ea2f99d166e20c97304b74de546b23
 Opticin | Transceiver | 1G | SFP-CWDM59.60,1f038ce1-117c-4d66-afa4-2c9e57b562a1,Opticin/Transceiver/1G/SFP-CWDM59_60.json,1a360ce24d93a381b84215d36f7c76d391c0a6ac43fbc9cbd33a19ebdee1ac6b
 Opticin | Transceiver | 1G | SFP-CWDM61.60,d475ea97-267f-42b5-83fc-3ae00e8431d9,Opticin/Transceiver/1G/SFP-CWDM61_60.json,57d97b057e0d7187e15b0adad0b6711c729b84a8e0f99dc50d919730dd4cb03b
+Opticin | Transceiver | 1G | SFP-LX.LC.20,b42e5ade-06c8-4729-8c86-d4eb348679fd,Opticin/Transceiver/1G/SFP-LX_LC_20.json,8dce7c5c1a5ef185bbcf5f72790643d5f3228d59cdc57638ba3c0741299c3753
 Opticin | Transceiver | 1G | SFP-SX.LC.05,e7234cc2-78e8-449a-803f-baaea5d6920d,Opticin/Transceiver/1G/SFP-SX_LC_05.json,1904d9eb1a125edb82f1f027170af4fcb9252ed161652852ba847739db7b96f6
+Opticin | Transceiver | 1G | SFP-WDM3.03,12c12a67-a209-46c0-b6b7-cd9fe01122b6,Opticin/Transceiver/1G/SFP-WDM3_03.json,003351663fbd2b331b0fcff162f06471b525a3a16276ad23326e122e5c1066e6
+Opticin | Transceiver | 1G | SFP-WDM3.10,1832ee42-e6dd-4deb-8374-b944f3ef6f3d,Opticin/Transceiver/1G/SFP-WDM3_10.json,5d31f42695a003e9558a8c77345492a0dbf62aa5e2b01322cfe2c47542287cdd
+Opticin | Transceiver | 1G | SFP-WDM3.20,716300d8-3aa3-47ce-a829-9463add462e1,Opticin/Transceiver/1G/SFP-WDM3_20.json,19f0a560649b727f8e36d6ebe96d7961dee2fdb4a4fc635573d9a38be4e1ce42
+Opticin | Transceiver | 1G | SFP-WDM4.40,0caf30c9-8c3b-4ba1-98ac-70ecf74f90a2,Opticin/Transceiver/1G/SFP-WDM4_40.json,4c8259881a309ac4a0c5e28394a90a7002a92e3f4237536950e0849e6e4c4a5a
+Opticin | Transceiver | 1G | SFP-WDM4.80,b741474e-38f8-4ac3-97a7-b62147904ec2,Opticin/Transceiver/1G/SFP-WDM4_80.json,2847ecd090e95ef0b874ae11062c0b861e3812b9fb7142888144c9a3c61cadf5
+Opticin | Transceiver | 1G | SFP-WDM5.03,2649d401-39c6-427c-bace-fb4eedd2787a,Opticin/Transceiver/1G/SFP-WDM5_03.json,9f936006b1b06a05ef12be41c1223fe210bd10f355e9f16201897d8cf8c65dae
+Opticin | Transceiver | 1G | SFP-WDM5.10,d0b6ccb0-3ff8-4860-8f86-af99bda89a64,Opticin/Transceiver/1G/SFP-WDM5_10.json,de6d659aaa2839a34feb6cf764471ad55fbab4666cb54ba2109aaad04d52aa2b
+Opticin | Transceiver | 1G | SFP-WDM5.20,85fc3993-cd50-4cd0-befe-74c7e4cbb36b,Opticin/Transceiver/1G/SFP-WDM5_20.json,cc7776edc6e322bac5b12ba272075f2c2d818448f349af121c68b70ab62bcae1
+Opticin | Transceiver | 1G | SFP-WDM5.40,e587a0c8-c43c-4c77-9f37-52d7eedbf76e,Opticin/Transceiver/1G/SFP-WDM5_40.json,da8d8996a8f159c9ba2ec144f136d3194d3b8a9448cbb2fc2ed8058da4d97aa6
+Opticin | Transceiver | 1G | SFP-WDM5.80,346da475-3d72-400f-98b0-dc443e5927d6,Opticin/Transceiver/1G/SFP-WDM5_80.json,611fc15b19569d60e2b62ad7459acb25f4d439ae46ee01b4550585957109acd0
 Optostar | Transceiver | 1G | OP-MP413L1SN-10,57d4d724-619f-43a5-a82e-ad6fbaee468b,Optostar/Transceiver/1G/OP-MP413L1SN-10.json,282fb15501b670807c67df9e3078e7a37dcf4d68e743eb8b8241b280cbc7415f
 PoP | Access,fa4c228d-b99c-48ae-b241-0ef7a2cc6ec6,PoP/Access.json,52c8e79033f39c9b89ca2b1d4a99f0b6d53e164c93544ce862fdb5f67b496ed7
 PoP | Aggregation,178f5f78-2d47-475d-9085-01a8194b3c4b,PoP/Aggregation.json,782d471a61295a8a6897fa9335e59ca5b1cd3d858703a7910b4c3f7b5affab79
