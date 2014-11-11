@@ -1,5 +1,5 @@
 {
-    "name": "SNMP | BULK",
+    "name": "SNMP | Bulk",
     "uuid": "01c0cbe7-12c6-4ca6-9d38-b09c6e5e5b63",
     "description": "SNMP GETBULKREQUEST support",
     "type": "bool"
