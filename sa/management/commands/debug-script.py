@@ -330,11 +330,26 @@ class Command(BaseCommand):
                 access_profile.snmp_ro = credentials.snmp_ro
         if o.remote_path:
             access_profile.path = o.remote_path
+        # Attributes
         attrs = [(a.key, a.value) for a in o.managedobjectattribute_set.all()]
         for k, v in attrs:
             a = access_profile.attrs.add()
             a.key = str(k)
             a.value = v
+        # Capabilities
+        caps = o.get_caps()
+        for c in sorted(caps):
+            a = access_profile.caps.add()
+            a.capability = c
+            v = caps[c]
+            if isinstance(v, float):
+                a.float_value = v
+            elif isinstance(v, bool):
+                a.bool_value = v
+            elif isinstance(v, (int, long)):
+                a.int_value = v
+            else:
+                a.str_value = str(v)
 
     def get_request(self, script, obj, snmp_ro_community, values):
         """Prepare script request"""

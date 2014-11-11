@@ -49,13 +49,15 @@ class SNMPProvider(object):
             raise self.TimeOutError()
         return r
 
-    def getnext(self, oid, community_suffix=None, bulk=False, min_index=None,
+    def getnext(self, oid, community_suffix=None, bulk=None, min_index=None,
                 max_index=None, cached=False, only_first=False):
         """
         SNMP GETNEXT generator. Usage:
         for oid, v in self.getnext("<oid>"):
             ....
         """
+        if bulk is None:
+            bulk = self.script.caps.get("SNMP | Bulk", False)
         if self.script.activator.use_canned_session:
             r = self.script.activator.snmp_getnext(oid)
             if r is None:

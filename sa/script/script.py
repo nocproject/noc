@@ -200,9 +200,22 @@ class Script(threading.Thread):
                 try:
                     u"test".encode(v)
                     self.encoding = v
-                    self.debug("Using '%s' encoding" % v)
+                    self.logger.debug("Using '%s' encoding", v)
                 except LookupError:
-                    self.error("Unknown encoding: '%s'" % v)
+                    self.logger.error("Unknown encoding: '%s'", v)
+        # Capabilities
+        self.caps = {}
+        for cap in access_profile.caps:
+            if cap.str_value:
+                self.caps[cap.capability] = cap.str_value
+            elif cap.int_value:
+                self.caps[cap.capability] = cap.int_value
+            elif cap.float_value:
+                self.caps[cap.capability] = cap.float_value
+            elif cap.bool_value:
+                self.caps[cap.capability] = cap.bool_value
+        self.logger.debug("Capabilities: %s", self.caps)
+        #
         super(Script, self).__init__(kwargs=kwargs)
         self.activator = _activator
         self.servers = _activator.servers
