@@ -222,6 +222,7 @@ Cisco | SCE | SCE8000-SCM-E,8500e380-1c13-4b15-af8e-e17a3f690b33,Cisco/SCE/SCE80
 Cisco | SCE | SCE8000-SIP,ab4fa392-608d-4267-abfa-86b660e8dee8,Cisco/SCE/SCE8000-SIP.json,8c3e015e9a4578f1570cd2591971fcc02bcb07a015cd712fb8fbe490288ab9d1
 Cisco | SPA | SPA-1X10GE-L-V2,d845961d-d249-4449-a436-be52ace4594d,Cisco/SPA/SPA-1X10GE-L-V2.json,4c5a4e1e38b667a817b02e762fbefbf467878dcf1bb8eeeb35b58fff6fe5bb4b
 Cisco | Transceiver | 100M | GLC-FE-100LX,18472601-fd06-48d9-8d98-5da8a821bac8,Cisco/Transceiver/100M/GLC-FE-100LX.json,314b4ac4981b3af409a0e3f124ef522d103f5f262ff51324afc7ee05121bc6bc
+Cisco | Transceiver | 10G | SFP-10G-LR,868f6895-a088-4f9b-b61a-32039d1b7540,Cisco/Transceiver/10G/SFP-10G-LR.json,f0bdfbc2be8b12cd2e1f141cbc583a6f6147ffe06c0e3aebf513571b8c19061d
 Cisco | Transceiver | 10G | X2-10GB-ER,09219722-0638-45fc-bc0c-a2fac16a833d,Cisco/Transceiver/10G/X2-10GB-ER.json,6faac645c5c9ea7781c4bdcd8783767aaba517f7873ef04927b3fff326972ca1
 Cisco | Transceiver | 10G | X2-10GB-LR,4de3ed09-4221-4fc5-a3e6-ee6f03e151e3,Cisco/Transceiver/10G/X2-10GB-LR.json,bee8696cbee2ae760184c1bc66067c6c415281e69bbcc6ea68f80c578fafe269
 Cisco | Transceiver | 10G | X2-10GB-SR,af476fcb-795c-4168-afb9-8a1fad15eda4,Cisco/Transceiver/10G/X2-10GB-SR.json,fca513d4743592c6c924155f9d2575454b8007f31d6ccca59d4e3d6286fa10fe
@@ -239,6 +240,8 @@ Cisco | Transceiver | 1G | GLC-BX-U,b3d9223c-28da-4696-a01e-624f843fcc19,Cisco/T
 Cisco | Transceiver | 1G | GLC-LH-SM,e848a84b-0e8a-4184-930f-baf93ebfd4f7,Cisco/Transceiver/1G/GLC-LH-SM.json,5329e8044fdd988b92774dc3adf4f1f6a801634044225c7eb541fccbdd0ce08d
 Cisco | Transceiver | 1G | GLC-LH-SMD,1724b01e-e07c-47ad-a4e7-5dce23000251,Cisco/Transceiver/1G/GLC-LH-SMD.json,58572a3453430df031dae35e4c342395cd43b760b8d1376dd87288bc5be3b648
 Cisco | Transceiver | 1G | GLC-T,37b32d6b-90b5-4f69-ba1d-efecf3525565,Cisco/Transceiver/1G/GLC-T.json,2326bf18fad3af93dd38dd8c9eb306314340d20ab4ee79ccbec1c2a6f99410e2
+Cisco | Transceiver | 1G | GLC-ZX-SM,7d32c63a-b351-4c03-8b76-8151f212925c,Cisco/Transceiver/1G/GLC-ZX-SM.json,d3312e997ce7f46b4886705e762849a4f84184cded6e5a5b61df712c49331c5d
+Cisco | Transceiver | 1G | GLC-ZX-SMD,98a134d5-3996-4433-850d-28e8a9f91a78,Cisco/Transceiver/1G/GLC-ZX-SMD.json,fe02dfd81d5fd754834633ae226f111a3357560303d673299f58de4160f0c052
 Cisco | Transceiver | 1G | SFP-GE-L,aa50f7d4-fb20-42d8-bdc6-e5c036d98e40,Cisco/Transceiver/1G/SFP-GE-L.json,1298871fde7c478abf81a119a68fca433297c2b46a8073307fd16eeb8caf2e36
 Cisco | Transceiver | 1G | WS-G5483,4c7d3dc0-b897-42f8-8dd9-6957b998802e,Cisco/Transceiver/1G/WS-G5483.json,3f6941c95c0904414d24a19e8b322980d664476737ae06df50d5583b1f7df5bd
 City,f75b9b29-702e-4525-b748-498aca1c8739,City.json,93c9f92d0d04e940c6921cc7cb52b911ea2ac782483f47845ef962c18b01a7f1
