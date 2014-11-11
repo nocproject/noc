@@ -228,16 +228,16 @@
             "gender": "f",
             "group": "25",
             "name": "25",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Combo Port 25",
+            "description": "Combo Port 26",
             "direction": "s",
             "gender": "f",
             "group": "26",
             "name": "26",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -262,7 +262,7 @@
             "description": "Fiber port 25",
             "direction": "i",
             "gender": "f",
-            "group": "0",
+            "group": "25",
             "name": "sfp25",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
@@ -271,7 +271,7 @@
             "description": "Fiber port 26",
             "direction": "i",
             "gender": "f",
-            "group": "0",
+            "group": "26",
             "name": "sfp26",
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
