@@ -676,12 +676,12 @@ Ext.define("NOC.sa.managedobject.Application", {
     //
     onMetrics: function() {
         var me = this;
-        me.showItem(me.ITEM_METRICS).preview(me.currentRecord);
+        me.previewItem(me.ITEM_METRICS, me.currentRecord);
     },
     //
     onCaps: function() {
         var me = this;
-        me.showItem(me.ITEM_CAPS).preview(me.currentRecord);
+        me.previewItem(me.ITEM_CAPS, me.currentRecord);
     },
     //
     onInterfaceClick: function(record) {

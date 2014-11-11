@@ -65,7 +65,7 @@ Ext.define("NOC.sa.managedobject.CapsPanel", {
             items: [
                 me.grid
             ]
-        })
+        });
         me.callParent();
     },
     //
