@@ -11,7 +11,7 @@ import logging
 ## NOC modules
 from policy import FeedPolicy
 
-MAX31 = 0xFFFFFFFFL
+MAX31 = 0x7FFFFFFFL
 MAX32 = 0xFFFFFFFFL
 MAX64 = 0xFFFFFFFFFFFFFFFFL
 
