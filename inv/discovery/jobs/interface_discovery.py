@@ -114,6 +114,7 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
         # Delete hanging forwarding instances
         self.report.submit_forwarding_instances(
             fi["forwarding_instance"] for fi in result)
+        self.report.refine_ifindexes()
         self.report.send()
         return True
 

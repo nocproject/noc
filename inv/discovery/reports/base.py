@@ -26,6 +26,7 @@ class Report(object):
         self.enabled = enabled
         self.to_save = to_save
         self.set_object_context()
+        self.logger = self.job.logger
 
     def die(self, msg):
         self.job.scheduler.daemon.die(msg)
