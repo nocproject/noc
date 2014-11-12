@@ -265,14 +265,13 @@ class InterfaceReport(Report):
                 updates[n] = r[n]
         if not updates:
             return
-        batch = Interface._get_collection().initialize_unordered_bulk_op()
         for n, i in updates.iteritems():
-            self.logger.info("Set infindex for %s: %s", n, i)
-            batch.find({
-                "managed_object": self.object.id,
-                "name": n
-            }).update({"$set": {"ifindex": i}})
-        batch.execute()
+            iface = Interface.objects.filter(
+                managed_object=self.object.id, name=n).first()
+            if iface:
+                self.logger.info("Set infindex for %s: %s", n, i)
+                iface.ifindex = i
+                iface.save()  # Signals will be sent
 
     def send(self):
         self.prefix_report.send()
