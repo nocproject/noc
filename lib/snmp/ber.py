@@ -40,7 +40,10 @@ class BERDecoder(object):
             return tag_class, tag_id, is_primitive, False, msg[i:]
         elif v & 0x80:
             # Implicit types
-            return 0, tag_id, is_primitive, True, msg[1:]
+            if is_primitive and msg[1:] == "\x00":
+                return 0, 5, is_primitive, False, msg[1:]
+            else:
+                return 0, tag_id, is_primitive, True, msg[1:]
         else:
             # low tag number form
             return tag_class, tag_id, is_primitive, False, msg[1:]
