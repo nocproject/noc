@@ -6,6 +6,7 @@
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.Graph");
+console.debug("Using Flot " + $.plot.version);
 
 Ext.define("NOC.core.Graph", {
     extend: "Ext.container.Container",
@@ -13,9 +14,6 @@ Ext.define("NOC.core.Graph", {
     // Refresh inverval in ms
     // null - fetch data and disable refresh
     refreshInterval: null,
-    defaultInterpolation: "step-before",
-    colorScheme: "classic9",
-    defaultHoverRenderer: Ext.identityFn,
     defaultNullAs: null,
     // Graphite data URL root
     dataURL: "/pm/render/",
@@ -27,36 +25,18 @@ Ext.define("NOC.core.Graph", {
     // * bar
     // * scatterplot
     renderer: "line",
-    // Graph interpolation
-    // * cardinal
-    // * line
-    // * step-before
-    interpolation: "cardinal",
-    //
     // List of time series
     // Available series options
     //    * name - target name
     //    * title - legend title
-    //    * color - graph color (auto-assigned from pallete by default)
-    //    * min
-    //    * max
     //    * nullAs
-    //    * interpolation
-    //    * hoverRenderer ???
     series: [],
     width: 900,
     height: 500,
-    legendWidth: 150,
-    yAxisWidth: 40,
-
     tpl: [
         '<div id="{cmpId}_g_container" class="noc-graph-container">',
-        '    <div id="{cmpId}_g_y_axis" class="noc-graph-y-axis" style="width: {yAxisWidth}px"></div>',
-        '    <div id="{cmpId}_g_graph" class="noc-graph-graph" style="margin-left: {yAxisWidth}px"></div>',
-        '    <div id="{cmpId}_g_legend" class="noc-graph-legend" style="width: {legendWidth}px"></div>',
         '</div>'
     ],
-
     // Graph time range
     timeRange: 24 * 3600,
     // Last point. null for now
@@ -67,22 +47,21 @@ Ext.define("NOC.core.Graph", {
         //
         me.graph = null;
         me.refreshTask = null;
+        me.maxDataPoints = null;
         //
-        me.parseGraphiteData = {
-            "json": me.parseGraphiteJSONData,
-            "raw": me.parseGraphiteRawData
+        me.parseData = {
+            json: me.parseGraphiteJSONData,
+            raw: me.parseGraphiteRawData
         }[me.format];
-        // Color palette for unassigned target colors
-        me.palette = new Rickshaw.Color.Palette(me.colorScheme);
         // Prepare targets
         me._targets = {};
         me._series = [];
         Ext.each(me.series, function (item) {
             var t = {
                 name: item.name,
-                title: item.title || item.name,
-                color: item.color || me.palette.color(),
-                nullAs: item.nullAs || me.defaultNullAs
+                label: item.title || item.name,
+                nullAs: item.nullAs || me.defaultNullAs,
+                data: []
             };
             me._targets[item.name] = t;
             me._series.push(t);
@@ -123,11 +102,15 @@ Ext.define("NOC.core.Graph", {
                     return item.name;
                 })
             };
-        r.until = me.untilTime !== null ? me.untilTime : Math.floor(new Date().getTime() / 1000);
-        r.from = r.until - me.timeRange;
+        r.until = Math.round(me.untilTime !== null ? me.untilTime : Math.floor(new Date().getTime() / 1000));
+        r.from = Math.round(r.until - me.timeRange);
+        if(me.maxDataPoints) {
+            r.maxDataPoints = me.maxDataPoints;
+        } else {
+            r.maxDataPoints = me.getPlotSize().width;
+        }
         return r;
     },
-
     // Apply data to series
     applyData: function(data) {
         var me = this;
@@ -136,63 +119,74 @@ Ext.define("NOC.core.Graph", {
             t.data = item.datapoints;
         });
     },
-
     // Get named div
     getNamedDiv: function(name) {
         var me = this;
         return me.el.getById(me.id + "_g_" + name, true)
     },
     //
+    applyGraphSize: function() {
+        var me = this,
+            el, size;
+        el = me.el.getById(me.id + "_g_container", false);
+        size = me.getPlotSize();
+        el.setSize(size.width, size.height);
+        me.maxDataPoints = size.width;
+        return el;
+    },
+    //
     createGraph: function (data) {
-        var me = this;
+        var me = this,
+            el, size, q;
         //
         me.applyData(data);
         // Create graph
-        me.graph = new Rickshaw.Graph({
-            element: me.getNamedDiv("graph"),
-            width: me.width - me.legendWidth - me.yAxisWidth - 25,  // Legend padding 10 + 4
-            height: me.height,
-            stroke: true,
-            interpolation: me.interpolation,
-            renderer: me.renderer,
-            series: me._series
-        });
-        // Create X-axis
-        var xAxis = new Rickshaw.Graph.Axis.Time({
-            graph: me.graph,
-            ticksTreatment: "glow",
-            timeFixture: new Rickshaw.Fixtures.Time.Local()
-        });
-
-        xAxis.render();
-        // Create Y-axis
-        var yAxis = new Rickshaw.Graph.Axis.Y({
-            element: me.getNamedDiv("y_axis"),
-            graph: me.graph,
-            orientation: "left",
-            tickFormat: Rickshaw.Fixtures.Number.formatKMBT
-        });
-
-        // Hover detail
-        new Rickshaw.Graph.HoverDetail({
-            graph: me.graph,
-            xFormatter: function (x) {
-                return new Date(x * 1000).toString();
+        el = me.applyGraphSize();
+        q = $(el.dom);
+        q.bind("plotselected", Ext.bind(me.onPlotSelected, me));
+        me.graph = $.plot(
+            q,
+            me._series,
+            {
+                xaxis: {
+                    mode: "time",
+                    timezone: "browser"
+                },
+                yaxis: {
+                    tickFormatter: me.tickFormatter.suffixFormatter
+                },
+                selection: {
+                    mode: "x"
+                }
             }
-        });
-        // Create legend
-        new Rickshaw.Graph.Legend({
-            graph: me.graph,
-            element: me.getNamedDiv("legend")
-        });
+        );
         //
         return me.graph;
+    },
+    //
+    onResize: function() {
+        var me = this;
+        me.callParent();
+        me.applyGraphSize();
+    },
+
+    getPlotSize: function() {
+        var me = this;
+        return me.getSize();
+    },
+
+    getAsImage: function(mimeType) {
+        var me = this;
+        mimeType = mimeType || "image/png";
+        return me.graph.getCanvas().toDataURL(mimeType);
     },
     //
     updateGraph: function(data) {
         var me = this;
         me.applyData(data);
-        me.graph.render();
+        me.graph.setData(me._series);
+        me.graph.setupGrid();
+        me.graph.draw();
     },
     //
     startRefresh: function() {
@@ -219,12 +213,11 @@ Ext.define("NOC.core.Graph", {
     onSuccess: function (response) {
         var me = this,
             data;
-        data = me.parseGraphiteData(response.responseText);
+        data = me.parseData(response.responseText);
         data = me.formatData(data);
         // Rickshaw.Series.zeroFill(data);
         if(!me.graph) {
             me.createGraph(data);
-            me.graph.render();
             if(me.refreshInterval) {
                 var task = new Ext.util.DelayedTask(me.startRefresh, me);
                 task.delay(me.refreshInterval);
@@ -255,10 +248,10 @@ Ext.define("NOC.core.Graph", {
         Ext.each(data, function (item) {
             var t = me.getTarget(item.target);
             item.datapoints = item.datapoints.map(function (v) {
-                return {
-                    x: v[1],
-                    y: v[0] !== null && v[0] !== undefined ? v[0] : t.nullAs
-                };
+                return [
+                    v[1] * 1000,
+                    v[0] !== null && v[0] !== undefined ? v[0] : t.nullAs
+                ];
             });
         });
         return data;
@@ -287,7 +280,7 @@ Ext.define("NOC.core.Graph", {
                         if (v === "None") {
                             return null;
                         } else {
-                            return +v;
+                            return +v * 1000;
                         }
                     })
                 });
@@ -295,5 +288,33 @@ Ext.define("NOC.core.Graph", {
             si = nli + 1;
         }
         return r;
+    },
+    //
+    onPlotSelected: function(event, ranges) {
+        var me = this;
+        $.each(me.graph.getXAxes(), function(_, axis) {
+            me.untilTime = Math.round(ranges.xaxis.to / 1000);
+            me.timeRange = Math.round((ranges.xaxis.to - ranges.xaxis.from) / 1000);
+        });
+        me.graph.clearSelection();
+        me.refreshGraph();
+    },
+    // Formatters
+    tickFormatter: {
+        suffixFormatter: function(val, axis) {
+            if(val > 1000000000000) {
+                return (val / 1000000000000).toFixed(axis.tickDecimals) + "T"
+            }
+            if(val > 1000000000) {
+                return (val / 1000000000).toFixed(axis.tickDecimals) + "G"
+            }
+            if(val > 1000000) {
+                return (val / 1000000).toFixed(axis.tickDecimals) + "M"
+            }
+            if(val > 1000) {
+                return (val / 1000).toFixed(axis.tickDecimals) + "K"
+            }
+            return val.toFixed(axis.tickDecimals) + "";
+        }
     }
 });
