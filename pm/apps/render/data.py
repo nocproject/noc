@@ -160,9 +160,32 @@ def fetchData(ctx, path):
     series = []
     start = int(epoch(ctx["startTime"]))
     end = int(epoch(ctx["endTime"]))
+    max_points = ctx["maxDataPoints"]
     for metric in tsdb.find(path):
         values = tsdb.fetch(metric, start, end)
+        if max_points and len(values) > max_points:
+            values = list(consolidate(start, end, max_points, values))
         ts = TimeSeries(metric, start, end, values)
         ts.pathExpression = metric
         series += [ts]
     return series
+
+
+def consolidate(start, end, max_points, values):
+    """
+    Consolidating generator
+    """
+    ws = (end - start) / max_points
+    s = start
+    e = s + ws
+    points = []
+    for v, t in values:
+        while t >= e:
+            if points:
+                yield max(points), s
+                points = []
+            s += ws
+            e += ws
+        points += [v]
+    if points:
+        yield max(points), s

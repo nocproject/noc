@@ -68,6 +68,7 @@ class RenderApplication(ExtApplication):
               "jsonp": StringParameter(required=False),
               "format": StringParameter(required=False),
               "noCache": StringParameter(required=False),
+              "maxDataPoints": IntParameter(required=False)
           },
           api=True)
     def api_render(self, request,
@@ -75,6 +76,7 @@ class RenderApplication(ExtApplication):
                    target=None, localOnly=None, tz=None, pickle=None,
                    rawData=None, jsonp=None,
                    noCache=None, format=None,
+                   maxDataPoints=None,
                    **kwargs):
         # Get timezone info
         try:
@@ -141,6 +143,7 @@ class RenderApplication(ExtApplication):
             "startTime": request_opts["startTime"],
             "endTime": request_opts["endTime"],
             "localOnly": request_opts["localOnly"],
+            "maxDataPoints": maxDataPoints,
             "data": []
         }
         data = ctx["data"]
