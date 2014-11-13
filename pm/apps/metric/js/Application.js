@@ -16,6 +16,11 @@ Ext.define("NOC.pm.metric.Application", {
 
     initComponent: function() {
         var me = this;
+
+        me.graph = Ext.create("NOC.core.Graph", {
+            timeRange: 3600,
+            refreshInterval: 60
+        });
         Ext.apply(me, {
             columns: [
                 {
@@ -30,9 +35,24 @@ Ext.define("NOC.pm.metric.Application", {
                     name: "name",
                     xtype: "displayfield",
                     fieldLabel: "Name"
-                }
+                },
+                me.graph
             ]
         });
         me.callParent();
+    },
+    //
+    showForm: function() {
+        var me = this;
+        me.callParent();
+        if(me.currentRecord) {
+            me.graph.setSeries([
+                {
+                    name: me.currentRecord.get("name")
+                }
+            ]);
+        } else {
+            me.graph.setSeries([]);
+        }
     }
 });

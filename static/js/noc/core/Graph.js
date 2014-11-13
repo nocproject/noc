@@ -53,6 +53,19 @@ Ext.define("NOC.core.Graph", {
             json: me.parseGraphiteJSONData,
             raw: me.parseGraphiteRawData
         }[me.format];
+        me.prepareSeries();
+        Ext.apply(me, {
+            data: {
+                cmpId: me.id,
+                yAxisWidth: me.yAxisWidth,
+                legendWidth: me.legendWidth
+            }
+        });
+        me.callParent();
+    },
+    //
+    prepareSeries: function() {
+        var me = this;
         // Prepare targets
         me._targets = {};
         me._series = [];
@@ -66,15 +79,6 @@ Ext.define("NOC.core.Graph", {
             me._targets[item.name] = t;
             me._series.push(t);
         });
-
-        Ext.apply(me, {
-            data: {
-                cmpId: me.id,
-                yAxisWidth: me.yAxisWidth,
-                legendWidth: me.legendWidth
-            }
-        });
-        me.callParent();
     },
     //
     afterRender: function() {
@@ -194,7 +198,7 @@ Ext.define("NOC.core.Graph", {
         me.refreshTask = Ext.TaskManager.start({
             scope: me,
             run: me.refreshGraph,
-            interval: me.refreshInterval
+            interval: me.refreshInterval * 1000
         });
     },
     // Request graphite data and update chart
@@ -220,7 +224,7 @@ Ext.define("NOC.core.Graph", {
             me.createGraph(data);
             if(me.refreshInterval) {
                 var task = new Ext.util.DelayedTask(me.startRefresh, me);
-                task.delay(me.refreshInterval);
+                task.delay(me.refreshInterval * 1000);
             }
         } else {
             me.updateGraph(data);
@@ -297,6 +301,17 @@ Ext.define("NOC.core.Graph", {
             me.timeRange = Math.round((ranges.xaxis.to - ranges.xaxis.from) / 1000);
         });
         me.graph.clearSelection();
+        me.refreshGraph();
+    },
+    //
+    setSeries: function(series) {
+        var me = this;
+        console.log("setSeries", series);
+        me.series = series;
+        me.prepareSeries();
+        if(me.graph) {
+            me.graph = null;
+        }
         me.refreshGraph();
     },
     // Formatters
