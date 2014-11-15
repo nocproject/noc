@@ -8,6 +8,7 @@
 
 ## Python modules
 import math
+import struct
 
 
 class DecodeError(Exception):
@@ -289,9 +290,9 @@ class BEREncoder(object):
             # Short form
             r += [chr(l)]
         else:
-            # Long form
-            # @todo: Implement
-            raise NotImplementedError()
+            # Prepare length's representation
+            ll = struct.pack("!Q", l).lstrip("\x00")
+            r += [0x80 | len(ll), ll]
         # Put rest of data
         r += [data]
         return "".join(r)
