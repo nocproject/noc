@@ -172,11 +172,72 @@ Ext.define("NOC.core.Graph", {
                 },
                 grid: {
                     hoverable: true
+                },
+                zoom: {
+                    interactive: true
                 }
             }
         );
         //
         me.tooltip = $(me.el.getById(me.id + "_g_tooltip", false).dom);
+        //
+        me.backButton = $("<i class='fa fa-backward noc-graph-control' title='Backward'></i>");
+        me.backButton
+            .css({
+                position: "absolute",
+                left: "30px",
+                top: "20px"
+            })
+            .appendTo(q)
+            .mousemove(function(e) {
+                e.stopPropagation();
+                me.hideTooltip();
+            })
+            .click(Ext.bind(me.onBack, me));
+
+        //
+        me.forwardButton = $("<i class='fa fa-forward noc-graph-control' title='Forward'></i>");
+        me.forwardButton
+            .css({
+                position: "absolute",
+                left: "42px",
+                top: "20px"
+            })
+            .appendTo(q)
+            .mousemove(function(e) {
+                e.stopPropagation();
+                me.hideTooltip();
+            })
+            .click(Ext.bind(me.onForward, me));
+
+        //
+        me.refreshButton = $("<i class='fa fa-refresh fa-2x noc-graph-control' title='Reload'></i>");
+        me.refreshButton
+            .css({
+                position: "absolute",
+                left: "30px",
+                top: "36px"
+            })
+            .appendTo(q)
+            .mousemove(function(e) {
+                e.stopPropagation();
+                me.hideTooltip();
+            })
+            .click(Ext.bind(me.refreshGraph, me));
+        //
+        me.zoomOutButton = $("<i class='fa fa-search-minus fa-2x noc-graph-control' title='Zoom out'></i>");
+        me.zoomOutButton
+            .css({
+                position: "absolute",
+                left: "30px",
+                top: "60px"
+            })
+            .appendTo(q)
+            .mousemove(function(e) {
+                e.stopPropagation();
+                me.hideTooltip();
+            })
+            .click(Ext.bind(me.onZoomOut, me));
         //
         return me.graph;
     },
@@ -375,7 +436,7 @@ Ext.define("NOC.core.Graph", {
                 p1 = data[nx + 1];
                 y = p0[1] + (p1[1] - p0[1]) * (x - p0[0]) / (p1[0] - p0[0]);
             }
-            v.push("<span style='color: " + series.color + "'>" + series.label + ": " + y + "</span>");
+            v.push("<span style='color: " + series.color + "'>" + series.label + ": " + me.tickFormatter.suffixFormatter(y, {tickDecimals: true}) + "</span>");
         }
         // Update tooltip
         var o = me.graph.pointOffset({
@@ -391,6 +452,13 @@ Ext.define("NOC.core.Graph", {
             display: "block",
             top: y,
             left: x + 4
+        });
+    },
+    //
+    hideTooltip: function() {
+        var me = this;
+        me.tooltip.css({
+            display: "none"
         });
     },
     //
@@ -420,5 +488,32 @@ Ext.define("NOC.core.Graph", {
             }
             return val.toFixed(axis.tickDecimals) + "";
         }
+    },
+    //
+    onZoomOut: function() {
+        var me = this;
+        me.timeRange *= 1.62;
+        me.hideTooltip();
+        me.refreshGraph();
+    },
+    //
+    onBack: function() {
+        var me = this,
+            axis = me.graph.getAxes().xaxis;
+        me.untilTime = me.untilTime || (axis.max / 1000);
+        me.untilTime -= me.timeRange / 1.62;
+        me.untilTime = me.untilTime.toFixed();
+        me.hideTooltip();
+        me.refreshGraph();
+    },
+    //
+    onForward: function() {
+        var me = this,
+            axis = me.graph.getAxes().xaxis;
+        me.untilTime = me.untilTime || (axis.max / 1000);
+        me.untilTime += me.timeRange / 1.62;
+        me.untilTime = me.untilTime.toFixed();
+        me.hideTooltip();
+        me.refreshGraph();
     }
 });
