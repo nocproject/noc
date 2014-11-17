@@ -19,7 +19,7 @@ class MetricApplication(ExtDocApplication):
     title = "Metric"
     menu = "Setup | Metrics"
     model = Metric
-    query_fields = ["name"]
+    query_fields = ["name__icontains"]
     glyph = "line-chart"
 
     @view("^find/$", method=["GET"], access="read", api=True)
