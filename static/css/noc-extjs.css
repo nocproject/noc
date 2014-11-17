@@ -109,20 +109,23 @@ TABLE {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.noc-graph-container .noc-graph-graph {
-    display: inline-block;
-}
-
-.noc-graph-container .noc-graph-y-axis {
+.noc-graph-tooltip {
     position: absolute;
-    top: 0px;
-    bottom: 0px;
-}
-
-.noc-graph-container .noc-graph-legend {
-    display: inline-block;
-    vertical-align: top;
-    margin: 0 0 0 10px;
+    display: none;
+    border: 1px solid #000;
+    padding: 7px;
+    opacity: 0.80;
+    color: #c8c8c8;
+    background-color: #3a3939;
+    z-index: 9999;
+    overflow: hidden;
+    border-radius: 5px;
+    pointer-events: none;
+    font-size: 11pt;
+    font-weight : 200;
+    max-width: 800px;
+    max-height: 600px;
+    line-height: 14px;
 }
 
 .x-boundlist-item .item-description {
