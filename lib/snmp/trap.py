@@ -32,7 +32,7 @@ def decode_trap(packet):
 
 
 def decode_trap_pdu_v1(pdu):
-    enterprise, agent_address, generic_type,\
+    _, enterprise, agent_address, generic_type,\
         specific_code, ts, varbinds = pdu
     r = {"1.3.6.1.6.3.1.1.4.1.0": enterprise}
     r.update(varbinds)
