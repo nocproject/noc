@@ -357,7 +357,7 @@ Ext.define("NOC.core.Graph", {
             dataset = me.graph.getData(),
             x = pos.x,
             p0, p1, i,
-            v = [NOC.render.Timestamp(x / 1000)];
+            v = ["<span class='time'>" + NOC.render.Timestamp(x / 1000) + "</span>"];
         me.updateTooltipTimeout = null;
         for (i = 0; i < dataset.length; i++) {
             var series = dataset[i],
@@ -375,7 +375,7 @@ Ext.define("NOC.core.Graph", {
                 p1 = data[nx + 1];
                 y = p0[1] + (p1[1] - p0[1]) * (x - p0[0]) / (p1[0] - p0[0]);
             }
-            v.push(series.label + ": " + y);
+            v.push("<span style='color: " + series.color + "'>" + series.label + ": " + y + "</span>");
         }
         // Update tooltip
         var o = me.graph.pointOffset({
