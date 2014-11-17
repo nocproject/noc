@@ -131,6 +131,15 @@ TABLE {
 .noc-graph-tooltip .time {
 }
 
+.noc-graph-control {
+    color: #e0e0e0;
+    opacity: 0.80;
+}
+
+.noc-graph-control:hover {
+    color: #b0b0b0;
+}
+
 .x-boundlist-item .item-description {
     color: #404040 !important;
     font-style: italic !important;
