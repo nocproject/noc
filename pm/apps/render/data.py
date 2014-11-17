@@ -164,17 +164,21 @@ def fetchData(ctx, path):
     for metric in tsdb.find(path):
         values = tsdb.fetch(metric, start, end)
         if max_points and len(values) > max_points:
-            values = list(consolidate(start, end, max_points, values))
+            print "Consolidate", len(values), "->",
+            values = list(consolidate(values, max_points))
+            print len(values)
         ts = TimeSeries(metric, start, end, values)
         ts.pathExpression = metric
         series += [ts]
     return series
 
 
-def consolidate(start, end, max_points, values):
+def consolidate(values, max_points):
     """
     Consolidating generator
     """
+    start = values[0][1]
+    end = values[0][1]
     ws = (end - start) / max_points
     s = start
     e = s + ws
