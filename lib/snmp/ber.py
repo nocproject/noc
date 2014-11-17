@@ -123,6 +123,41 @@ class BERDecoder(object):
             v -= m
         return v
 
+    def parse_real(self, msg):
+        """
+        """
+        if not msg:
+            return 0.0
+        f = ord(msg[0])
+        if f & 0x80:  # Binary encoding, 8.5.6
+            # @todo: Снести в конец
+            base = {
+                0x00: 2,
+                0x10: 4,
+                0x20: 16
+            }[f & 0x30]  # 8.5.6.2
+            factor = (f & 0x0c) >> 2
+            n = (f & 0x03) + 1
+            e = self.parse_int(msg[1:n + 1])  # 8.5.6.4
+            p = self.parse_int(msg[n + 1:])  # 8.5.6.5
+            if f & 0x40:
+                p = -p  # 8.5.6.1
+            return p * pow(base, e)
+        elif f & 0xc0 == 0:  # Decimal encoding, 8.5.7
+            try:
+                if f & 0x3f == 0x01:  # ISO 6093 NR1 form
+                    return float(msg[1:])  # 456
+                elif f & 0x3f == 0x02:  # ISO 6093 NR2 form
+                    return float(msg[1:])  # 4.56
+                elif f & 0x3f == 0x03:  # ISO 6093 NR3 form
+                    return float(msg[1:])  # 0123e456
+            except ValueError:
+                raise DecodeError("Invalid REAL representation: %s" % msg[1:])
+        elif f & 0x40:  # infinitive, 8.5.8
+            return float("-inf" if f & 0x01 else "inf")
+        else:
+            raise DecodeError("Unknown REAL encoding: %s" % f)
+
     def parse_p_bitstring(self, msg):
         unused = ord(msg[0])
         r = "".join(BITSTING[ord(c)] for c in msg)
@@ -209,7 +244,7 @@ class BERDecoder(object):
                 6: parse_p_oid,  # 6, 0x6, OBJECT IDENTIFIER
                 # Object Descriptor	P/C	7	7
                 # EXTERNAL	C	8	8
-                # REAL (float)	P	9	9
+                9: parse_real,  # REAL (float)	P	9	9
                 10: parse_int,  # 10, 0xA, ENUMERATED
                 # UTF8String	P/C	12	C
                 # RELATIVE-OID	P	13	D
@@ -292,7 +327,7 @@ class BEREncoder(object):
         else:
             # Prepare length's representation
             ll = struct.pack("!Q", l).lstrip("\x00")
-            r += [0x80 | len(ll), ll]
+            r += [chr(0x80 | len(ll)), ll]
         # Put rest of data
         r += [data]
         return "".join(r)
