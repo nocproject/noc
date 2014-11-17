@@ -35,7 +35,8 @@ Ext.define("NOC.core.Graph", {
     height: 500,
     tpl: [
         '<div id="{cmpId}_g_container" class="noc-graph-container">',
-        '</div>'
+        '</div>',
+        '<div id="{cmpId}_g_tooltip" class="noc-graph-tooltip"></div>'
     ],
     // Graph time range
     timeRange: 24 * 3600,
@@ -46,8 +47,11 @@ Ext.define("NOC.core.Graph", {
         var me = this;
         //
         me.graph = null;
+        me.tooltip = null;
         me.refreshTask = null;
         me.maxDataPoints = null;
+        //
+        me.updateTooltipTimeout = null;
         //
         me.parseData = {
             json: me.parseGraphiteJSONData,
@@ -72,7 +76,7 @@ Ext.define("NOC.core.Graph", {
         Ext.each(me.series, function (item) {
             var t = {
                 name: item.name,
-                label: item.title || item.name,
+                label: item.label || item.title || item.name,
                 nullAs: item.nullAs || me.defaultNullAs,
                 data: []
             };
@@ -148,6 +152,7 @@ Ext.define("NOC.core.Graph", {
         el = me.applyGraphSize();
         q = $(el.dom);
         q.bind("plotselected", Ext.bind(me.onPlotSelected, me));
+        q.bind("plothover", Ext.bind(me.onPlotHover, me));
         me.graph = $.plot(
             q,
             me._series,
@@ -161,9 +166,17 @@ Ext.define("NOC.core.Graph", {
                 },
                 selection: {
                     mode: "x"
+                },
+                crosshair: {
+                    mode: "x"
+                },
+                grid: {
+                    hoverable: true
                 }
             }
         );
+        //
+        me.tooltip = $(me.el.getById(me.id + "_g_tooltip", false).dom);
         //
         return me.graph;
     },
@@ -304,9 +317,85 @@ Ext.define("NOC.core.Graph", {
         me.refreshGraph();
     },
     //
+    onPlotHover: function(event, pos, item) {
+        var me = this;
+        me.latestPosition = pos;
+        if(!me.updateTooltipTimeout) {
+            // @todo: Use extjs timeouts
+            me.updateTooltipTimeout = setTimeout(
+                Ext.bind(me.updateTooltip, me),
+                50
+            );
+        }
+    },
+    // Find leftmost nearest x
+    nearestX: function(data, x) {
+        var mi = 0,
+            ml = data.length - 1,
+            ma = ml,
+            ci, cx;
+        while(mi <= ma) {
+            ci = (mi + ma) / 2 | 0;
+            cx = data[ci][0];
+            if(cx < x) {
+                if((ci < ml) && (data[ci + 1][0] > x)) {
+                    return ci;
+                }
+                mi = ci + 1;
+            } else if (cx > x) {
+                ma = ci - 1;
+            } else {
+                return ci;
+            }
+        }
+        return -1;
+    },
+    //
+    updateTooltip: function() {
+        var me = this,
+            pos = me.latestPosition,
+            dataset = me.graph.getData(),
+            x = pos.x,
+            p0, p1, i,
+            v = [NOC.render.Timestamp(x / 1000)];
+        me.updateTooltipTimeout = null;
+        for (i = 0; i < dataset.length; i++) {
+            var series = dataset[i],
+                data=series.data,
+                nx = me.nearestX(data, x),
+                y;
+            if (nx === -1) {
+                continue;
+            }
+            // Interpolate value
+            if (data[nx][0] == x || nx == data.length - 1) {
+                y = data[nx][1];
+            } else {
+                p0 = data[nx];
+                p1 = data[nx + 1];
+                y = p0[1] + (p1[1] - p0[1]) * (x - p0[0]) / (p1[0] - p0[0]);
+            }
+            v.push(series.label + ": " + y);
+        }
+        // Update tooltip
+        var o = me.graph.pointOffset({
+            x: x,
+            y: pos.y
+        });
+        me.setTooltip(o.left, o.top - 14 * (v.length / 2), v.join("<br>"));
+    },
+    //
+    setTooltip: function(x, y, contents) {
+        var me = this;
+        me.tooltip.html(contents).css({
+            display: "block",
+            top: y,
+            left: x + 4
+        });
+    },
+    //
     setSeries: function(series) {
         var me = this;
-        console.log("setSeries", series);
         me.series = series;
         me.prepareSeries();
         if(me.graph) {
