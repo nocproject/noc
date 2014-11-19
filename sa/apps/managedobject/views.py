@@ -193,12 +193,6 @@ class ManagedObjectApplication(ExtModelApplication):
     @view(url="^(?P<id>\d+)/discovery/$", method=["GET"],
           access="read", api=True)
     def api_discovery(self, request, id):
-        def iso(t):
-            if t:
-                return t.replace(tzinfo=self.TZ).isoformat()
-            else:
-                return None
-
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
@@ -228,9 +222,9 @@ class ManagedObjectApplication(ExtModelApplication):
                 "enable_profile": getattr(o.object_profile,
                                           "enable_%s" % name),
                 "status": job.get("s"),
-                "last_run": iso(job.get("last")),
+                "last_run": self.to_json(job.get("last")),
                 "last_status": job.get("ls"),
-                "next_run": iso(job.get("ts")),
+                "next_run": self.to_json(job.get("ts")),
                 "link_count": link_count.get(lcmethod, "")
             }
             r += [d]
