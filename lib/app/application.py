@@ -575,7 +575,7 @@ class Application(object):
         if v is None:
             return None
         elif isinstance(v, datetime.datetime):
-            return v.replace(tzinfo=self.TZ).isoformat()
+            return self.TZ.localize(v).isoformat()
         else:
             raise Exception("Invalid to_json type")
 
