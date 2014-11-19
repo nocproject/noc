@@ -65,7 +65,8 @@ Ext.define("NOC.core.Graph", {
         me.tooltip = null;
         me.refreshTask = null;
         me.maxDataPoints = null;
-        me.lastRequest = null;
+        me.lastMin = null;
+        me.lastMax = null;
         me.controls = {};
         //
         me.updateTooltipTimeout = null;
@@ -135,6 +136,7 @@ Ext.define("NOC.core.Graph", {
     // Get data request parameters
     getDataParams: function() {
         var me = this,
+            ofactor = 1.2,
             w = me.getPlotSize().width,
             r = {
                 format: me.format,
@@ -142,19 +144,21 @@ Ext.define("NOC.core.Graph", {
                     return item.name;
                 })
             };
-        r.until = me.getUntilTime();
-        r.from = Math.round(r.until - me.getTimeRange());
+        me.lastMax = me.getUntilTime();
+        me.lastMin = Math.round(me.lastMax - me.getTimeRange());
+        r.until = me.lastMax;
+        r.from = Math.round(me.lastMax - me.getTimeRange() * ofactor);
         if(me.maxDataPoints) {
             r.maxDataPoints = me.maxDataPoints;
         } else {
             r.maxDataPoints = w;
         }
+        r.maxDataPoints = Math.round(r.maxDataPoints * ofactor);
         console.log(
             "Requesting from=", r.from, " until=", r.until, " delta=",
             r.until - r.from, " max_points=", r.maxDataPoints,
             "scale_factor=", me.scales[me.scale]
         );
-        me.lastRequest = r;
         return r;
     },
     // Apply data to series
@@ -198,8 +202,8 @@ Ext.define("NOC.core.Graph", {
                 xaxis: {
                     mode: "time",
                     timezone: "browser",
-                    min: me.lastRequest.from * 1000,
-                    max: me.lastRequest.until * 1000
+                    min: me.lastMin * 1000,
+                    max: me.lastMax * 1000
                 },
                 yaxis: {
                     // tickFormatter: me.tickFormatter.suffixFormatter
@@ -242,8 +246,8 @@ Ext.define("NOC.core.Graph", {
         var me = this,
             x0,
             opts = me.graph.getOptions();
-        opts.xaxes[0].min = me.lastRequest.from * 1000;
-        opts.xaxes[0].max = me.lastRequest.until * 1000;
+        opts.xaxes[0].min = me.lastMin * 1000;
+        opts.xaxes[0].max = me.lastMax * 1000;
         me.applyData(data);
         me.graph.setData(me._series);
         me.graph.setupGrid();
