@@ -510,12 +510,22 @@ Ext.define("NOC.core.Graph", {
     },
     //
     setTooltip: function(x, y, contents) {
-        var me = this;
+        var me = this,
+            tw;
         me.tooltip.html(contents).css({
             display: "block",
-            top: y,
-            left: x + 4
+            top: y
         });
+        tw = me.tooltip.width();
+        if(tw + x > me.graph.getPlaceholder().width()) {
+            me.tooltip.css({
+                left: x - 4 - tw
+            });
+        } else {
+            me.tooltip.css({
+                left: x + 4
+            });
+        }
     },
     //
     hideTooltip: function() {
