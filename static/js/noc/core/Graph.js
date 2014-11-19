@@ -59,6 +59,7 @@ Ext.define("NOC.core.Graph", {
         me.refreshTask = null;
         me.maxDataPoints = null;
         me.lastRequest = null;
+        me.controls = {};
         //
         me.updateTooltipTimeout = null;
         //
@@ -195,7 +196,7 @@ Ext.define("NOC.core.Graph", {
                     max: me.lastRequest.until * 1000
                 },
                 yaxis: {
-                    tickFormatter: me.tickFormatter.suffixFormatter
+                    // tickFormatter: me.tickFormatter.suffixFormatter
                 },
                 selection: {
                     mode: "x"
@@ -210,64 +211,6 @@ Ext.define("NOC.core.Graph", {
         );
         //
         me.tooltip = $(me.el.getById(me.id + "_g_tooltip", false).dom);
-        //
-        me.backButton = $("<i class='fa fa-backward noc-graph-control' title='Backward'></i>");
-        me.backButton
-            .css({
-                position: "absolute",
-                left: "30px",
-                top: "20px"
-            })
-            .appendTo(q)
-            .mousemove(function(e) {
-                e.stopPropagation();
-                me.hideTooltip();
-            })
-            .click(Ext.bind(me.onBack, me));
-
-        //
-        me.forwardButton = $("<i class='fa fa-forward noc-graph-control' title='Forward'></i>");
-        me.forwardButton
-            .css({
-                position: "absolute",
-                left: "42px",
-                top: "20px"
-            })
-            .appendTo(q)
-            .mousemove(function(e) {
-                e.stopPropagation();
-                me.hideTooltip();
-            })
-            .click(Ext.bind(me.onForward, me));
-
-        //
-        me.refreshButton = $("<i class='fa fa-refresh fa-2x noc-graph-control' title='Reload'></i>");
-        me.refreshButton
-            .css({
-                position: "absolute",
-                left: "30px",
-                top: "36px"
-            })
-            .appendTo(q)
-            .mousemove(function(e) {
-                e.stopPropagation();
-                me.hideTooltip();
-            })
-            .click(Ext.bind(me.refreshGraph, me));
-        //
-        me.zoomOutButton = $("<i class='fa fa-search-minus fa-2x noc-graph-control' title='Zoom out'></i>");
-        me.zoomOutButton
-            .css({
-                position: "absolute",
-                left: "30px",
-                top: "60px"
-            })
-            .appendTo(q)
-            .mousemove(function(e) {
-                e.stopPropagation();
-                me.hideTooltip();
-            })
-            .click(Ext.bind(me.onZoomOut, me));
         //
         return me.graph;
     },
@@ -300,18 +243,7 @@ Ext.define("NOC.core.Graph", {
         me.graph.setupGrid();
         me.graph.draw();
         x0 = Math.max(40, me.graph.getPlotOffset().left + 4);
-        me.backButton.css({
-            left: x0 + "px"
-        });
-        me.forwardButton.css({
-            left: (x0 + 12) + "px"
-        });
-        me.refreshButton.css({
-            left: x0 + "px"
-        });
-        me.zoomOutButton.css({
-            left: x0 + "px"
-        });
+        me.applyControls(x0);
     },
     //
     startRefresh: function() {
@@ -354,6 +286,75 @@ Ext.define("NOC.core.Graph", {
     //
     onFailure: function(response) {
         throw "onFailure is not implemented yet";
+    },
+    //
+    applyControls: function(left) {
+        var me = this,
+            gs = 24,
+            gss = 12,
+            y = 12,
+            x = left,
+            disableMouseMove = function(e) {
+                e.stopPropagation();
+                me.hideTooltip();
+            },
+            i, ctl, cls, t,
+            applyControl = function(name, style, left, title, handler) {
+                ctl = me.controls[name];
+                if(ctl) {
+                    ctl.css({
+                        left: left + "px"
+                    });
+                } else {
+                    ctl = $("<i class=\"fa " + style + " fa-2x fa-fw noc-graph-control\" title=\"" + title + "\"></i>");
+                    ctl
+                        .css({
+                            position: "absolute",
+                            left: left + "px",
+                            top: y + "px"
+                        })
+                        .appendTo(me.graph.getPlaceholder())
+                        .mousemove(disableMouseMove)
+                        .click(Ext.bind(handler, me));
+                    me.controls[name] = ctl;
+                }
+            };
+        // Update controls
+        applyControl("back", "fa-caret-square-o-left", x, "Move backward", me.onBack);
+        x += gs;
+        applyControl("forward", "fa-caret-square-o-right", x, "Move forward", me.onForward);
+        x += gs;
+        applyControl("now", "fa-clock-o", x, "Move to current time", me.onNow);
+        x += gs;
+        y += gs;
+        // Update zoom bar
+        if(!me.controls.zoom) {
+            me.controls.zoom = [];
+            for(i = me.scales.length - 1; i >= 0; i--) {
+                cls = i === me.scale ? "fa-square" : "fa-square-o";
+                t = me.scales[i] + "sec";
+                ctl = $("<i class=\"fa " + cls + " fa-1x fa-fw noc-graph-control\" title=\"" + t + "\"></i>");
+                ctl
+                    .css({
+                        position: "absolute",
+                        left: left + "px",
+                        top: y + "px"
+                    })
+                    .appendTo(me.graph.getPlaceholder())
+                    .mousemove(disableMouseMove)
+                    .click(Ext.bind(me.zoomTo, me, [i]));
+                y += gss;
+                me.controls.zoom.push(ctl);
+            }
+        } else {
+            for(i = 0; i < me.scales.length; i ++) {
+                if(me.scales.length - 1 - i === me.scale) {
+                    me.controls.zoom[i].removeClass("fa-square-o").addClass("fa-square");
+                } else {
+                    me.controls.zoom[i].removeClass("fa-square").addClass("fa-square-o");
+                }
+            }
+        }
     },
     // format received data
     formatData: function (data) {
@@ -552,9 +553,12 @@ Ext.define("NOC.core.Graph", {
         }
     },
     //
-    onZoomOut: function() {
+    zoomTo: function(level) {
         var me = this;
-        me.scale = Math.min(me.scale + 1, me.scales.length - 1);
+        me.scale = Math.max(
+            Math.min(level, me.scales.length - 1),
+            0
+        );
         me.hideTooltip();
         me.refreshGraph();
     },
@@ -571,8 +575,14 @@ Ext.define("NOC.core.Graph", {
             now = Math.round(new Date().getTime() / 1000);
         me.untilTime = Math.round(me.getUntilTime() + me.getTimeRange() / 1.62);
         if(me.untilTime > now) {
-            me.untilTime = now;
+            me.untilTime = null;
         }
+        me.hideTooltip();
+        me.refreshGraph();
+    },
+    onNow: function() {
+        var me = this;
+        me.untilTime = null;
         me.hideTooltip();
         me.refreshGraph();
     }
