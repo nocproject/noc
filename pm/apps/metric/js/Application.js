@@ -13,6 +13,7 @@ Ext.define("NOC.pm.metric.Application", {
     ],
     model: "NOC.pm.metric.Model",
     search: true,
+    changeTitle: null,
 
     initComponent: function() {
         var me = this;
