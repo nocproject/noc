@@ -42,15 +42,22 @@ Ext.define("NOC.core.Graph", {
     untilTime: null,
     // Available scales
     scales: [
-        1, 5, 10, 60, 300, 900,
-        3600, 4 * 3600, 12 * 3600,
-        24 * 3600, 7 * 24 * 3600, 30 * 24 * 3600
+        5 * 60, 15 * 60,
+        3600, 6 * 3600, 12 * 3600,
+        86400, 2 * 86400, 7 * 86400, 30 * 86400,
+        365 * 86400
     ],
-    // Current scale index
-    scale: 1,
-    //
-    STEP: 4,
 
+    scaleTitles: [
+        "5 min", "15 min",
+        "1h", "6h", "12h",
+        "1 day", "2 days", "Week", "Month",
+        "Year"
+    ],
+
+    // Current scale index
+    scale: 0,
+    //
     initComponent: function() {
         var me = this;
         //
@@ -123,12 +130,11 @@ Ext.define("NOC.core.Graph", {
     // Returns effective time range in seconds
     getTimeRange: function() {
         var me = this;
-        return Math.round(me.getPlotSize().width * me.scales[me.scale] / me.STEP);
+        return me.scales[me.scale];
     },
     // Get data request parameters
     getDataParams: function() {
         var me = this,
-            sf = me.scales[me.scale],
             w = me.getPlotSize().width,
             r = {
                 format: me.format,
@@ -146,7 +152,7 @@ Ext.define("NOC.core.Graph", {
         console.log(
             "Requesting from=", r.from, " until=", r.until, " delta=",
             r.until - r.from, " max_points=", r.maxDataPoints,
-            "scale_factor=", sf
+            "scale_factor=", me.scales[me.scale]
         );
         me.lastRequest = r;
         return r;
@@ -332,7 +338,7 @@ Ext.define("NOC.core.Graph", {
             me.controls.zoom = [];
             for(i = me.scales.length - 1; i >= 0; i--) {
                 cls = i === me.scale ? "fa-square" : "fa-square-o";
-                t = me.scales[i] + "sec";
+                t = me.scaleTitles[i];
                 ctl = $("<i class=\"fa " + cls + " fa-1x fa-fw noc-graph-control\" title=\"" + t + "\"></i>");
                 ctl
                     .css({
@@ -425,7 +431,7 @@ Ext.define("NOC.core.Graph", {
             // Snap to scale
             delta = Math.round((ranges.xaxis.to - ranges.xaxis.from) / 1000);
             for(s=0; s < me.scales.length - 1; s++) {
-                if(me.scales[s] * w / me.STEP >= delta) {
+                if(me.scales[s] >= delta) {
                     break;
                 }
             }
