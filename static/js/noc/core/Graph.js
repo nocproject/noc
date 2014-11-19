@@ -38,18 +38,27 @@ Ext.define("NOC.core.Graph", {
         '</div>',
         '<div id="{cmpId}_g_tooltip" class="noc-graph-tooltip"></div>'
     ],
-    // Graph time range
-    timeRange: 24 * 3600,
     // Last point. null for now
     untilTime: null,
+    // Available scales
+    scales: [
+        1, 5, 10, 60, 300, 900,
+        3600, 4 * 3600, 12 * 3600,
+        24 * 3600, 7 * 24 * 3600, 30 * 24 * 3600
+    ],
+    // Current scale index
+    scale: 1,
+    //
+    STEP: 4,
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
         //
         me.graph = null;
         me.tooltip = null;
         me.refreshTask = null;
         me.maxDataPoints = null;
+        me.lastRequest = null;
         //
         me.updateTooltipTimeout = null;
         //
@@ -101,22 +110,44 @@ Ext.define("NOC.core.Graph", {
         var me = this;
         return me.dataURL
     },
+    // Returns effective until time
+    getUntilTime: function() {
+        var me = this;
+        if(me.untilTime === null) {
+            return Math.floor(new Date().getTime() / 1000);
+        } else {
+            return me.untilTime;
+        }
+    },
+    // Returns effective time range in seconds
+    getTimeRange: function() {
+        var me = this;
+        return Math.round(me.getPlotSize().width * me.scales[me.scale] / me.STEP);
+    },
     // Get data request parameters
     getDataParams: function() {
         var me = this,
+            sf = me.scales[me.scale],
+            w = me.getPlotSize().width,
             r = {
                 format: me.format,
                 target: me._series.map(function(item) {
                     return item.name;
                 })
             };
-        r.until = Math.round(me.untilTime !== null ? me.untilTime : Math.floor(new Date().getTime() / 1000));
-        r.from = Math.round(r.until - me.timeRange);
+        r.until = me.getUntilTime();
+        r.from = Math.round(r.until - me.getTimeRange());
         if(me.maxDataPoints) {
             r.maxDataPoints = me.maxDataPoints;
         } else {
-            r.maxDataPoints = me.getPlotSize().width;
+            r.maxDataPoints = w;
         }
+        console.log(
+            "Requesting from=", r.from, " until=", r.until, " delta=",
+            r.until - r.from, " max_points=", r.maxDataPoints,
+            "scale_factor=", sf
+        );
+        me.lastRequest = r;
         return r;
     },
     // Apply data to series
@@ -159,7 +190,9 @@ Ext.define("NOC.core.Graph", {
             {
                 xaxis: {
                     mode: "time",
-                    timezone: "browser"
+                    timezone: "browser",
+                    min: me.lastRequest.from * 1000,
+                    max: me.lastRequest.until * 1000
                 },
                 yaxis: {
                     tickFormatter: me.tickFormatter.suffixFormatter
@@ -172,9 +205,6 @@ Ext.define("NOC.core.Graph", {
                 },
                 grid: {
                     hoverable: true
-                },
-                zoom: {
-                    interactive: true
                 }
             }
         );
@@ -260,11 +290,28 @@ Ext.define("NOC.core.Graph", {
     },
     //
     updateGraph: function(data) {
-        var me = this;
+        var me = this,
+            x0,
+            opts = me.graph.getOptions();
+        opts.xaxes[0].min = me.lastRequest.from * 1000;
+        opts.xaxes[0].max = me.lastRequest.until * 1000;
         me.applyData(data);
         me.graph.setData(me._series);
         me.graph.setupGrid();
         me.graph.draw();
+        x0 = Math.max(40, me.graph.getPlotOffset().left + 4);
+        me.backButton.css({
+            left: x0 + "px"
+        });
+        me.forwardButton.css({
+            left: (x0 + 12) + "px"
+        });
+        me.refreshButton.css({
+            left: x0 + "px"
+        });
+        me.zoomOutButton.css({
+            left: x0 + "px"
+        });
     },
     //
     startRefresh: function() {
@@ -369,10 +416,25 @@ Ext.define("NOC.core.Graph", {
     },
     //
     onPlotSelected: function(event, ranges) {
-        var me = this;
+        var me = this,
+            w = me.getPlotSize().width,
+            now = Math.floor(new Date().getTime() / 1000),
+            u, s, delta;
         $.each(me.graph.getXAxes(), function(_, axis) {
-            me.untilTime = Math.round(ranges.xaxis.to / 1000);
-            me.timeRange = Math.round((ranges.xaxis.to - ranges.xaxis.from) / 1000);
+            // Snap to scale
+            delta = Math.round((ranges.xaxis.to - ranges.xaxis.from) / 1000);
+            for(s=0; s < me.scales.length - 1; s++) {
+                if(me.scales[s] * w / me.STEP >= delta) {
+                    break;
+                }
+            }
+            me.scale = s;
+            u = Math.round(ranges.xaxis.to / 1000);
+            if((u > now) && (u - delta) < now) {
+                // Align to current timestamp
+                u = now;
+            }
+            me.untilTime = u;
         });
         me.graph.clearSelection();
         me.refreshGraph();
@@ -436,7 +498,7 @@ Ext.define("NOC.core.Graph", {
                 p1 = data[nx + 1];
                 y = p0[1] + (p1[1] - p0[1]) * (x - p0[0]) / (p1[0] - p0[0]);
             }
-            v.push("<span style='color: " + series.color + "'>" + series.label + ": " + me.tickFormatter.suffixFormatter(y, {tickDecimals: true}) + "</span>");
+            v.push("<i class='fa fa-square' style='color: " + series.color + "'></i> " + series.label + ": " + me.tickFormatter.suffixFormatter(y, {tickDecimals: true}));
         }
         // Update tooltip
         var o = me.graph.pointOffset({
@@ -492,27 +554,25 @@ Ext.define("NOC.core.Graph", {
     //
     onZoomOut: function() {
         var me = this;
-        me.timeRange *= 1.62;
+        me.scale = Math.min(me.scale + 1, me.scales.length - 1);
         me.hideTooltip();
         me.refreshGraph();
     },
     //
     onBack: function() {
-        var me = this,
-            axis = me.graph.getAxes().xaxis;
-        me.untilTime = me.untilTime || (axis.max / 1000);
-        me.untilTime -= me.timeRange / 1.62;
-        me.untilTime = me.untilTime.toFixed();
+        var me = this;
+        me.untilTime = Math.round(me.getUntilTime() - me.getTimeRange() / 1.62);
         me.hideTooltip();
         me.refreshGraph();
     },
     //
     onForward: function() {
         var me = this,
-            axis = me.graph.getAxes().xaxis;
-        me.untilTime = me.untilTime || (axis.max / 1000);
-        me.untilTime += me.timeRange / 1.62;
-        me.untilTime = me.untilTime.toFixed();
+            now = Math.round(new Date().getTime() / 1000);
+        me.untilTime = Math.round(me.getUntilTime() + me.getTimeRange() / 1.62);
+        if(me.untilTime > now) {
+            me.untilTime = now;
+        }
         me.hideTooltip();
         me.refreshGraph();
     }
