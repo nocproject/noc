@@ -129,6 +129,8 @@ TABLE {
 }
 
 .noc-graph-tooltip .time {
+    font-weight: bold;
+    line-height: 20px;
 }
 
 .noc-graph-control {
