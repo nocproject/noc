@@ -630,6 +630,10 @@ class ManagedObject(models.Model):
             if not hasattr(self, "_caps"):
                 self._caps = self.get_caps()
             return self._caps
+        elif config == "managed_object":
+            return self
+        elif config == "profile":
+            return self.profile_name
         raise ValueError("Invalid config parameter '%s'" % config)
 
     def get_caps(self):
