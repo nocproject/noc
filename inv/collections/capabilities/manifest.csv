@@ -1,4 +1,7 @@
 name,uuid,path,hash
+BRAS | L2TP,83bb51cd-750e-4064-ae63-4e22149f7eaa,BRAS/L2TP.json,a4cdadea1e57975ffdd9a9f9706e1e1e164f241f36a06e25f70d34f86657f736
+BRAS | PPPoE,fe0aa70a-1bec-4b9a-b124-24ba76ae2b91,BRAS/PPPoE.json,b0613b90dc1eb200cf2b27175a43970541227300c94aa951bab0ac8b73fcfe0d
+BRAS | PPTP,ccd687f9-6529-463a-99c9-e565f2988caa,BRAS/PPTP.json,490fd5d013459d0b682952ffbbbb4431df45597966ced92cbd3c769143415cdc
 MikroTik | RouterOS | License | Level,e954d09a-d04b-4c41-b971-7387fb91c693,MikroTik/RouterOS/License/Level.json,7fe502924d89cc301183afb5029ec5f23ac7351a0fd38c7254649a9f9998c810
 MikroTik | RouterOS | License | SoftwareID,254db3ab-f94d-42ef-b991-16610412ff24,MikroTik/RouterOS/License/SoftwareID.json,cc9bbeca872edcf7242708cb609a5c0d31dbf03463db22055c6ebfca53a7d3c1
 MikroTik | RouterOS | License | Upgradable To,427e1cc7-1936-4f03-bceb-aa3402ffb0f5,MikroTik/RouterOS/License/Upgradable_To.json,6efc2ae9e806994882ce9da6c525f3a2e7abde69c17509a7c7ee20fcb1b110d5
