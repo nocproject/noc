@@ -87,6 +87,10 @@ class ConfigurationThread(threading.Thread):
             logger.error("Cannot get config from %s: Timed out",
                          self.url)
             return None
+        except socket.error, why:
+            logger.error("Cannot get config from %s: Socket error: %s",
+                         self.url, why)
+            return None
         try:
             data = json_decode(resp.read())
         except:
