@@ -1079,3 +1079,13 @@ class Script(threading.Thread):
 
     def pop_prompt_pattern(self):
         self.cli_provider.pop_prompt_pattern()
+
+    def has_oid(self, oid):
+        """
+        Check object responses to oid
+        """
+        try:
+            n = self.snmp.get(oid)
+        except self.snmp.TimeOutError:
+            return
+        return n is not None and n != ""
