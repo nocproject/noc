@@ -73,8 +73,6 @@ aptinstall python-dev
 aptinstall python-virtualenv
 aptinstall libgmp10
 aptinstall libgmp-dev
-aptinstall libffi
-aptinstall libffi-dev
 aptinstall nginx
 aptinstall postgresql
 aptinstall libpq-dev

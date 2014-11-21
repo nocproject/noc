@@ -1,4 +1,3 @@
-cairocffi==0.5.4
 ecdsa==0.11
 psycopg2>=2.5
 pymongo==2.7.2
