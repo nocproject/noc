@@ -63,6 +63,8 @@ class ProbeConfig(Document):
     probe_id = StringField()
     instance_id = IntField()
     #
+    managed_object = IntField(required=False)
+    #
     uuid = StringField()
     #
     changed = DateTimeField(default=datetime.datetime.now)
@@ -202,6 +204,10 @@ class ProbeConfig(Document):
                 }
             )
             for es in MetricSettings.get_effective_settings(o):
+                if es.managed_object:
+                    mo = es.managed_object.id
+                else:
+                    mo = None
                 bulk.find(
                     {
                         "uuid": es.uuid
@@ -218,6 +224,7 @@ class ProbeConfig(Document):
                             "probe_id": str(es.probe.id),
                             "instance_id": get_instance(es.probe, es.uuid),
                             "config": es.config,
+                            "managed_object": mo,
                             "metrics": [{
                                 "metric": m.metric,
                                 "metric_type": m.metric_type.name,

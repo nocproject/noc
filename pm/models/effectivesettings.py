@@ -19,7 +19,7 @@ class EffectiveSettings(object):
                  probe=None, interval=None,
                  thresholds=None, handler=None, config=None,
                  errors=None, model_id=None, object=None, convert=None,
-                 scale=1.0, metrics=None):
+                 scale=1.0, metrics=None, managed_object=None):
         """
         :param metric: Graphite metric name
         :param metric_type: MetricType object
@@ -46,6 +46,7 @@ class EffectiveSettings(object):
         self.convert = convert
         self.scale = scale
         self.metrics = metrics
+        self.managed_object = managed_object
 
     def dump(self):
         r = []
