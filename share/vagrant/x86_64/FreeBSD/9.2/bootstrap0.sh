@@ -58,8 +58,6 @@ install_pkg py27-virtualenv
 install_pkg mercurial
 install_pkg gmp
 install_pkg libsmi
-install_pkg libffi
-install_pkg cairo
 install_pkg nginx
 ##
 ## Set up daemon autostart
