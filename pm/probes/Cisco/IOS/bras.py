@@ -16,7 +16,7 @@ class CiscoIOSBRAS(Probe):
             profile="Cisco.IOS",
             caps=["SNMP", "BRAS | PPPoE"],
             preference=metric.PREF_VENDOR)
-    def get_snmp_pppoe_sessions(self, address, snmp__ro, caps):
+    def get_snmp_pppoe_sessions(self, address, snmp__ro, *args, **kwargs):
         return self.snmp_get(
             mib["CISCO-PPPOE-MIB::cPppoeSystemCurrSessions", 0],
             address, community=snmp__ro
@@ -26,7 +26,7 @@ class CiscoIOSBRAS(Probe):
             profile="Cisco.IOS",
             caps=["SNMP", "BRAS | L2TP"],
             preference=metric.PREF_VENDOR)
-    def get_snmp_pptp_sessions(self, address, snmp__ro, caps):
+    def get_snmp_pptp_sessions(self, address, snmp__ro, *args, **kwargs):
         return self.snmp_get(
             mib["CISCO-VPDN-MGMT-MIB::cvpdnSystemTunnelTotal", 2],
             address, community=snmp__ro
@@ -36,7 +36,7 @@ class CiscoIOSBRAS(Probe):
             profile="Cisco.IOS",
             caps=["SNMP", "BRAS | PPTP"],
             preference=metric.PREF_VENDOR)
-    def get_snmp_pptp_sessions(self, address, snmp__ro, caps):
+    def get_snmp_pptp_sessions(self, address, snmp__ro, *args, **kwargs):
         return self.snmp_get(
             mib["CISCO-VPDN-MGMT-MIB::cvpdnSystemTunnelTotal", 3],
             address, community=snmp__ro
