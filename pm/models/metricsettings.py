@@ -150,6 +150,10 @@ class MetricSettings(Document):
         for m, mi in mt.iteritems():
             if not mi.is_active:
                 continue
+            try:
+                mo = get_config("managed_object")
+            except ValueError:
+                mo = None
             es = EffectiveSettings(
                 object=object,
                 model_id=model_id,
@@ -157,6 +161,7 @@ class MetricSettings(Document):
                 metric_type=m,
                 is_active=True,
                 probe=None,
+                managed_object=mo,
                 interval=mti[m],
                 thresholds=[mi.low_error, mi.low_warn,
                             mi.high_warn, mi.high_error]

@@ -51,6 +51,7 @@ class ProbeApplication(ExtDocApplication):
         t0 = time.time()
         nr = 0
         dt = 0
+        stopped = False
         for pc in ProbeConfig.objects.filter(probe_id=probe_id,
                                              instance_id=instance,
                                              expire__lt=now):
@@ -60,10 +61,15 @@ class ProbeApplication(ExtDocApplication):
                 # Check execution time
                 dt = time.time() - t0
                 if dt > self.REFRESH_TIMEOUT:
+                    self.logger.info(
+                        "%d configs has been refreshed in %s seconds. Giving up",
+                        nr, dt
+                    )
+                    stopped = True
                     break
-        if nr:
+        if nr and not stopped:
             self.logger.info(
-                "%d configs has been refreshed in %s seconds. Giving up",
+                "%d configs has been refreshed in %s seconds.",
                 nr, dt
             )
         # Get configs
@@ -100,6 +106,7 @@ class ProbeApplication(ExtDocApplication):
                 } for m in pc["metrics"]
             ],
             "config": pc["config"],
+            "managed_object": pc.get("managed_object", None),
             "changed": pc["changed"].isoformat(),
             "expire": pc["expire"].isoformat()
         } for pc in ProbeConfig._get_collection().find(q)]
