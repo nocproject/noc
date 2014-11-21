@@ -104,7 +104,7 @@ class TCPSocket(Socket):
         in handle_write() method
 
         :param msg: Raw data
-        :type msg: Str
+        :type msg: str
         """
         if self.closing:
             self.logger.error("Attempting to write to closing socket")
