@@ -26,7 +26,7 @@ class CiscoIOSBRAS(Probe):
             profile="Cisco.IOS",
             caps=["SNMP", "BRAS | L2TP"],
             preference=metric.PREF_VENDOR)
-    def get_snmp_pptp_sessions(self, address, snmp__ro, *args, **kwargs):
+    def get_snmp_l2tp_sessions(self, address, snmp__ro, *args, **kwargs):
         return self.snmp_get(
             mib["CISCO-VPDN-MGMT-MIB::cvpdnSystemTunnelTotal", 2],
             address, community=snmp__ro
