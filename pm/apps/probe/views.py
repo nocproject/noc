@@ -9,13 +9,19 @@
 ## Python modules
 import datetime
 import time
+import itertools
+import struct
+## Third-party modules
+from bson.binary import Binary
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.pm.models.probe import Probe
 from noc.pm.models.probeconfig import ProbeConfig
-from noc.pm.models.metricsettings import MetricSettings
-from noc.sa.interfaces.base import DateTimeParameter
+from noc.sa.interfaces.base import (
+    DictListParameter, StringParameter,
+    FloatParameter, DateTimeParameter, IntParameter)
 from noc.settings import config
+from noc.fm.models.newevent import NewEvent
 
 
 class ProbeApplication(ExtDocApplication):
@@ -124,3 +130,42 @@ class ProbeApplication(ExtDocApplication):
             "expire": expire,
             "config": config
         }
+
+    @view(url="^(?P<name>[^/]+)/(?P<instance>\d+)/feed/$",
+          method=["POST"],
+          validate={
+              "thresholds": DictListParameter(attrs={
+                "managed_object": IntParameter(),
+                "metric": StringParameter(),
+                "metric_type": StringParameter(),
+                "ts": IntParameter(),
+                "value": FloatParameter(),
+                "old_state": StringParameter(),
+                "new_state": StringParameter()
+              })
+          },
+          access="config", api=True)
+    def api_fmfeed(self, request, name, instance, thresholds):
+        if thresholds:
+            cnt = itertools.count()
+            batch = NewEvent._get_collection().initialize_unordered_bulk_op()
+            for t in thresholds:
+                seq = struct.pack(
+                    "!II",
+                    int(time.time()),
+                    cnt.next() & 0xFFFFFFFFL
+                )
+                batch.insert({
+                    "timestamp": datetime.datetime.fromtimestamp(t["ts"]),
+                    "managed_object": t["managed_object"],
+                    "raw_vars": {
+                        "source": "system",
+                        "metric": t["metric"],
+                        "metric_type": t["metric_type"],
+                        "value": t["value"],
+                        "old_state": t["old_state"],
+                        "new_state": t["new_state"]
+                    },
+                    "seq": Binary(seq)
+                })
+            batch.execute(0)

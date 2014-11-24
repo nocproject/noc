@@ -49,7 +49,6 @@ class Sender(threading.Thread):
     def feed(self, policy, metric, t, v):
         """
         Feed result to sender.
-        :param collector: FeedPolicy instance
         :param metric: metric name
         :param t: timestamp
         :param v: value
