@@ -75,7 +75,7 @@ class Task(object):
         self.daemon.reschedule(self)
 
     def configure(self, uuid, handler, interval, metrics,
-                  config, **kwargs):
+                  config, managed_object, **kwargs):
         if not self.uuid:
             self.logger = PrefixLoggerAdapter(logger, uuid)
         self.uuid = uuid
@@ -105,6 +105,7 @@ class Task(object):
                 self.mdata[m] = Metric(self.daemon)
             # Configure metrics
             for m in metrics:
+                m["managed_object"] = managed_object
                 self.mdata[m["metric_type"]].configure(**m)
             if len(metrics) == 1:
                 self.default_metric_type = metrics[0]["metric_type"]

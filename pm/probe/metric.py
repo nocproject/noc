@@ -19,8 +19,24 @@ logger = logging.getLogger(__name__)
 
 
 class Metric(object):
+    # Threshold states
+    ST_NORMAL = 0
+    ST_LOW_WARN = -1
+    ST_LOW_ERROR = -2
+    ST_HIGH_WARN = 1
+    ST_HIGH_ERROR = 2
+
+    STATES = {
+        ST_NORMAL: "NORMAL",
+        ST_LOW_WARN: "LOW_WARNING",
+        ST_LOW_ERROR: "LOW_ERROR",
+        ST_HIGH_WARN: "HIGH_WARNING",
+        ST_HIGH_ERROR: "HIGH_ERROR"
+    }
+
     def __init__(self, daemon):
         self.daemon = daemon
+        self.managed_object= None
         self.metric_type = None
         self.metric = None
         self.thresholds = None
@@ -34,12 +50,14 @@ class Metric(object):
         self.policy = FeedPolicy()
         self.max_counter = None
         self.locked_convert = False  # Convert changed by set_convert
+        self.state = self.ST_NORMAL
 
     def configure(self, metric, metric_type, thresholds, convert,
-                  collectors, scale=1.0, **kwargs):
+                  collectors, scale=1.0, managed_object=None, **kwargs):
         if metric_type != self.metric_type:
             self.reset()
             self.metric_type = metric_type
+        self.managed_object = managed_object
         self.metric = metric
         self.thresholds = thresholds
         self.policy.configure(collectors)
@@ -58,7 +76,7 @@ class Metric(object):
         if r is not None:
             r *= self.scale
             self.daemon.sender.feed(self.policy, self.metric, int(t), r)
-            # @todo: Check thresholds
+            self.check_thresholds(t, r)
 
     def reset(self):
         self.last_value = None
@@ -111,3 +129,31 @@ class Metric(object):
             self.reset()
             self.convert = convert
             self.cvt = getattr(self, "convert_%s" % convert)
+
+    def check_thresholds(self, t, v):
+        """
+        Check value against defined thresholds
+        """
+        if self.thresholds[0] is not None and v <= self.thresholds[0]:
+            self.set_state(t, v, self.ST_LOW_ERROR)
+        elif self.thresholds[1] is not None and v <= self.thresholds[1]:
+            self.set_state(t, v, self.ST_LOW_WARN)
+        elif self.thresholds[3] is not None and v >= self.thresholds[3]:
+            self.set_state(t, v, self.ST_HIGH_ERROR)
+        elif self.thresholds[2] is not None and v >= self.thresholds[2]:
+            self.set_state(t, v, self.ST_HIGH_WARN)
+        else:
+            self.set_state(t, v, self.ST_NORMAL)
+
+    def set_state(self, t, v, state):
+        if state != self.state:
+            old_state = self.STATES[self.state]
+            new_state = self.STATES[state]
+            logger.info("[%s] state transition: %s -> %s",
+                        self.metric, old_state, new_state)
+            self.daemon.fmsender.feed_threshold(
+                self.managed_object, self.metric, self.metric_type,
+                t, v,
+                old_state, new_state
+            )
+            self.state = state

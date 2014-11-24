@@ -16,6 +16,7 @@ import Queue
 from noc.lib.daemon.autoconf import AutoConfDaemon
 from task import Task
 from sender import Sender
+from fmsender import FMSender
 from io.base import IOThread
 from noc.lib.threadpool import Pool
 
@@ -33,6 +34,7 @@ class ProbeDaemon(AutoConfDaemon):
         self.pending_lock = Lock()
         self.thread_pool = None
         self.sender = None
+        self.fmsender = None
         self.io = None
 
     def iter_tasks(self):
@@ -63,6 +65,8 @@ class ProbeDaemon(AutoConfDaemon):
         # Run sender thread
         self.sender = Sender(self)
         self.sender.start()
+        self.fmsender = FMSender(self)
+        self.fmsender.start()
         self.io = IOThread(self)
         self.io.start()
         # Prepare thread pool
