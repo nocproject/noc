@@ -211,8 +211,8 @@ def reporter():
         while data:
             msg = "".join(data[:METRICS_PER_PACKET])
             data = data[METRICS_PER_PACKET:]
-            logger.debug("Sending to udp://%s:\n%s",
-                         REPORT_COLLECTOR, msg)
+            logger.debug("Sending to udp://%s:%s:\n%s",
+                         REPORT_COLLECTOR[0], REPORT_COLLECTOR[1], msg)
             try:
                 sock.sendto(msg, REPORT_COLLECTOR)
             except socket.error, why:
