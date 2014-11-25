@@ -816,6 +816,8 @@ MikroTik | RouterOS | Security | Authentication | Logout (SYSLOG),4b379ed6-bee7-
 MikroTik | RouterOS | System | Reboot (SYSLOG),79311f14-7420-44c7-83da-c28fbc62446c,MikroTik/RouterOS/System/Reboot_SYSLOG_.json,e8fbfa5ca148768e74f2fe0344446fd1f0782b7e36ffcae784527e0b0fa82feb
 NOC | Managed Object | Ping Failed,203ac1f6-4485-4153-8645-013e209f1286,NOC/Managed_Object/Ping_Failed.json,e60be5788bc0eab10f8b14d95abd7b13184927dcd48e70345858dd9467a2f37b
 NOC | Managed Object | Ping OK,5b9c4d81-b82b-47cc-9a32-8a1537baf25a,NOC/Managed_Object/Ping_OK.json,3d9e17939e3913e090483c2b8485aadeb796a7362438e6dfb22cbb0ac0dab5dd
+NOC | PM | Out of Thresholds,e6fe6914-45dd-45af-870c-cd67dd31793b,NOC/PM/Out_of_Thresholds.json,e11af43a84682e943ad3fd46beeec03fd407f14a32db5b062817fb266f646918
+NOC | PM | Returned to Normal Range,7db85eb7-613e-4dd9-bf7d-7b2247af49bb,NOC/PM/Returned_to_Normal_Range.json,3b87e4bc4b235b75b9d2550b7540be14da0202bb4724063ca78fe8ccbfe3dd3e
 NOC | Periodic | Periodic Failed,50546a84-f3ef-4ce1-b1fd-7596dc19a978,NOC/Periodic/Periodic_Failed.json,9e680c64e01d99855b5ddc57f93dcdce2293762fe9bbe9ec46702679375dc9fa
 NOC | Periodic | Periodic Failed | PM Failed,727ed27f-c44d-4c22-a431-7f7fab05601f,NOC/Periodic/Periodic_Failed/PM_Failed.json,6f48ef7a1e9be09a4cf0fda7bad3eeaab3c8685c8f6a283c67aa0e639e1e20e5
 NOC | Periodic | Periodic OK,4abf6f8c-7ec6-4272-9ff1-16c793b993a7,NOC/Periodic/Periodic_OK.json,7467df75d92abcff8378694ca2f96896770bdd2f1934b1eb12cc2f8e981f91db
