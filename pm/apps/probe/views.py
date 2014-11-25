@@ -162,7 +162,7 @@ class ProbeApplication(ExtDocApplication):
                         "source": "system",
                         "metric": t["metric"],
                         "metric_type": t["metric_type"],
-                        "value": t["value"],
+                        "value": str(t["value"]),
                         "old_state": t["old_state"],
                         "new_state": t["new_state"]
                     },

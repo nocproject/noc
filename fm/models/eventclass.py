@@ -29,7 +29,7 @@ class EventClassVar(EmbeddedDocument):
         required=True,
         choices=[
             (x, x) for x in (
-                "str", "int",
+                "str", "int", "float",
                 "ipv4_address", "ipv6_address", "ip_address",
                 "ipv4_prefix", "ipv6_prefix", "ip_prefix",
                 "mac", "interface_name", "oid"

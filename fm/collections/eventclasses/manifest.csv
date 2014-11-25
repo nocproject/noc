@@ -207,6 +207,8 @@ Network | UDLD | UDLD Protocol Error Detected,887d87fd-903d-43b7-8067-99cab2ae8a
 Network | UDLD | UDLD Protocol Recovery,2928373c-8de8-46f5-8eec-aebfe3e5a7e4,Network/UDLD/UDLD_Protocol_Recovery.json,2dbcced19700da0ebe76d20e1cca98d91f8419f89a1f3e654020970977f9b8d2
 Network | VLAN | VLAN Created,6ae5607e-6320-42fa-970b-f734b99b9baa,Network/VLAN/VLAN_Created.json,93b0151857bcf19bfc972213e7710f0c30235c58ce228bf47b97466aec4a60bc
 Network | VLAN | VLAN Deleted,3cb7e546-aa5a-4b47-a62c-5e0503ea4ede,Network/VLAN/VLAN_Deleted.json,5d7f8dbbbbfb3e01fd2473a1f107bdf677ac690aab8de55f74682fbb7fd19c46
+PM | Out of Thresholds,3d7aa62a-4464-457f-b7fc-c308bd332698,PM/Out_of_Thresholds.json,13c9bb9b6cebae39be36c051618a9e4d65dff37d4cdaa1b68900069860508d33
+PM | Returned to Normal Range,fd3e8b36-161b-41bf-a57c-4ad5d6207987,PM/Returned_to_Normal_Range.json,7dd7809dcd2cd03ab830718997cb9011234747c58322c5189183ddefff11fcfb
 Phone | SCCP | Register,8cd40d89-6a71-421c-a28b-b7110f4d22ea,Phone/SCCP/Register.json,f9db3f91553f29d9a1b38eb270b832d842c8fb6f3145911ca6233187ef841f2f
 Phone | SCCP | Register Alarm,0739ec2b-ac9d-4bd4-9565-0bdae96b062c,Phone/SCCP/Register_Alarm.json,fc978d5cc2fda1e294a8c8c60a885215d6557f1acfac5e779f0b4e0533288c3d
 Phone | SCCP | Register New,fc9a4f06-5d8d-412b-b182-cbc060a14138,Phone/SCCP/Register_New.json,a4d419b6baf784165c4c25399a7e836cee7ac15468d5d4a49915e76f47032863
