@@ -268,7 +268,6 @@ class ManagedObjectApplication(ExtModelApplication):
         for name in get_active_discovery_methods():
             cfg = "enable_%s" % name
             if getattr(o.object_profile, cfg) and name in r:
-                self.ensure_discovery_job(name, o)
                 start_schedule("inv.discovery", name, o.id)
                 refresh_schedule("inv.discovery",
                                  name, o.id, delta=d)
@@ -288,7 +287,6 @@ class ManagedObjectApplication(ExtModelApplication):
         for name in get_active_discovery_methods():
             cfg = "enable_%s" % name
             if getattr(o.object_profile, cfg) and name in r:
-                self.ensure_discovery_job(name, o)
                 stop_schedule("inv.discovery", name, o.id)
                 d += 1
         return {
@@ -505,12 +503,6 @@ class ManagedObjectApplication(ExtModelApplication):
                         name, o.id, delta=d)
                     d += 1
         return "Discovery processes has been scheduled"
-
-    def ensure_discovery_job(self, job_name, managed_object):
-        if not hasattr(self, "discovery_scheduler"):
-            from noc.inv.discovery.scheduler import DiscoveryScheduler
-            self.discovery_scheduler = DiscoveryScheduler()
-        self.discovery_scheduler.ensure_job(job_name, managed_object)
 
     def get_nested_inventory(self, o):
         rev = o.get_data("asset", "revision")
