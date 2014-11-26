@@ -123,7 +123,7 @@ class DiscoveryJob(Document):
                     "schedule": {
                         "interval": interval[0],
                         "failed_interval": interval[1],
-                        "offset": int(random.random() * interval[0])
+                        "offset": random.random()
                     }
                 })
                 n += 1
@@ -210,7 +210,7 @@ class DiscoveryJob(Document):
                         "schedule": {
                             "interval": interval[0],
                             "failed_interval": interval[1],
-                            "offset": int(random.random() * interval[0])
+                            "offset": random.random()
                         }
                     })
                     n += 1
