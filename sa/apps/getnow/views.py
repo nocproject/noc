@@ -1,12 +1,17 @@
-# !/usr/bin/env python
 # -*- coding: utf-8 -*-
-__author__ = 'boris'
-# # NOC modules
+##----------------------------------------------------------------------
+## sa.groupaccess application
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+#  # NOC modules
 from noc.lib.app import view, ExtApplication
 from noc.sa.models import ManagedObject
 from noc.lib.dateutils import humanize_distance
 from noc.sa.interfaces.base import ModelParameter
-from noc.inv.models import Discovery
+from noc.inv.models.discoveryjob import DiscoveryJob
 
 
 class GetNowApplication(ExtApplication):
@@ -32,16 +37,16 @@ class GetNowApplication(ExtApplication):
         Filter records for lookup
         """
         get_request_data = request.GET
-        qs = Discovery.objects.filter(job_class='config_discovery').order_by('status')
+        qs = DiscoveryJob.objects.filter(jcls='config_discovery').order_by('status')
         if 'managed_object' in get_request_data:
-            qs = qs.filter(managed_object=int(get_request_data['managed_object']))
+            qs = qs.filter(object=int(get_request_data['managed_object']))
         if 'profile_name' in get_request_data:
             ids = ManagedObject.objects.filter(
                 profile_name=get_request_data['profile_name']).values_list('id', flat=True)
-            qs = qs.filter(managed_object__in=ids)
+            qs = qs.filter(object__in=ids)
         if 'administrative_domain' in get_request_data:
             ids = ManagedObject.objects.filter(administrative_domain=get_request_data['administrative_domain'])
-            qs = qs.filter(managed_object__in=ids)
+            qs = qs.filter(object__in=ids)
         return qs
 
     def cleaned_query(self, q):
