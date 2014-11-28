@@ -497,7 +497,6 @@ class ManagedObjectApplication(ExtModelApplication):
             for name in get_active_discovery_methods():
                 cfg = "enable_%s" % name
                 if getattr(o.object_profile, cfg):
-                    self.ensure_discovery_job(name, o)
                     refresh_schedule(
                         "inv.discovery",
                         name, o.id, delta=d)
