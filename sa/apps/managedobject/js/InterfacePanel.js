@@ -23,6 +23,15 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
             handler: me.onRefresh
         });
 
+        me.metricsCurrentRecord = null;
+        me.metricsButton = Ext.create("Ext.button.Button", {
+            text: "Metrics",
+            glyph: NOC.glyph.bar_chart_o,
+            disabled: true,
+            scope: me,
+            handler: me.onMetrics
+        });
+
         // Create stores
         me.l1Store = Ext.create("NOC.sa.managedobject.L1Store");
         me.l3Store = Ext.create("NOC.sa.managedobject.L3Store");
@@ -65,7 +74,13 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
                 me.lagPanel,
                 me.l2Panel,
                 me.l3Panel
-            ]
+            ],
+            listeners: {
+                scope: me,
+                tabchange: function(panel, oldCard, newCard, eOpts) {
+                    me.metricsButton.setDisabled(true);
+                }
+            }
         });
         //
         Ext.apply(me, {
@@ -78,7 +93,8 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
                     dock: "top",
                     items: [
                         me.getCloseButton(),
-                        me.refreshButton
+                        me.refreshButton,
+                        me.metricsButton
                     ]
                 }
             ]
@@ -88,6 +104,7 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
     //
     preview: function(record, backItem) {
         var me = this;
+        me.metricsButton.setDisabled(true);
         me.callParent(arguments);
         me.setTitle(record.get("name") + " interfaces");
         Ext.Ajax.request({
@@ -122,5 +139,10 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
     onRefresh: function() {
         var me = this;
         me.preview(me.currentRecord);
+    },
+    //
+    onMetrics: function() {
+        var me = this;
+        me.app.showItem(me.app.ITEM_INTERFACE_METRICS).preview(me.metricsCurrentRecord);
     }
 });

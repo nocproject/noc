@@ -12,7 +12,7 @@ from noc.lib.nosql import (Document, PlainReferenceField,
                            ListField, IntField)
 from forwardinginstance import ForwardingInstance
 from interface import Interface
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
 
@@ -44,6 +44,7 @@ class SubInterface(Document):
         "allow_inheritance": False,
         "indexes": [
             ("managed_object", "ifindex"),
+            ("managed_object", "vlan_ids"),
             "interface", "managed_object",
             "untagged_vlan", "tagged_vlans",
             "enabled_afi"

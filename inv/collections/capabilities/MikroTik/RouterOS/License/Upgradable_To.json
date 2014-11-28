@@ -1,0 +1,6 @@
+{
+    "name": "MikroTik | RouterOS | License | Upgradable To",
+    "uuid": "427e1cc7-1936-4f03-bceb-aa3402ffb0f5",
+    "description": "Upgrade permited up to appropriative RouterOS version",
+    "type": "str"
+}

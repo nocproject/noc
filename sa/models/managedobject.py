@@ -11,6 +11,7 @@ import os
 import re
 import difflib
 from collections import namedtuple
+import logging
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -36,12 +37,18 @@ from noc.lib.stencil import stencil_registry
 from noc.lib.gridvcs.manager import GridVCSField
 from noc.main.models.fts_queue import FTSQueue
 from noc.settings import config
+from noc.lib.solutions import get_probe_config
+from noc.inv.discovery.utils import get_active_discovery_methods
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
 CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
+
+
+logger = logging.getLogger(__name__)
+
 
 class ManagedObject(models.Model):
     """
@@ -156,6 +163,8 @@ class ManagedObject(models.Model):
     EV_INTERFACE_CHANGED = "interface_changed"  # Interface configuration changed
     EV_SCRIPT_FAILED = "script_failed"  # Script error
     EV_CONFIG_POLICY_VIOLATION = "config_policy_violation"  # Policy violations found
+
+    PROFILE_LINK = "object_profile"
 
     ## object.scripts. ...
     class ScriptsProxy(object):
@@ -470,27 +479,12 @@ class ManagedObject(models.Model):
 
     def run_discovery(self, delta=0):
         op = self.object_profile
-        for attr, job, duration in [
-            ("enable_version_inventory", "version_inventory", 1),
-            ("enable_id_discovery", "id_discovery", 1),
-            ("enable_config_polling", "config_discovery", 1),
-            ("enable_interface_discovery", "interface_discovery", 1),
-            ("enable_asset_discovery", "asset_discovery", 1),
-            ("enable_vlan_discovery", "vlan_discovery", 1),
-            ("enable_lldp_discovery", "lldp_discovery", 1),
-            ("enable_udld_discovery", "udld_discovery", 1),
-            ("enable_bfd_discovery", "bfd_discovery", 1),
-            ("enable_stp_discovery", "stp_discovery", 1),
-            ("enable_cdp_discovery", "cdp_discovery", 1),
-            ("enable_oam_discovery", "oam_discovery", 1),
-            ("enable_rep_discovery", "rep_discovery", 1),
-            ("enable_ip_discovery", "ip_discovery", 1),
-            ("enable_mac_discovery", "mac_discovery", 1)
-        ]:
-            if getattr(op, attr):
+        for name in get_active_discovery_methods():
+            cfg = "enable_%s" % name
+            if getattr(op, cfg):
                 refresh_schedule(
-                    "inv.discovery", job, self.id, delta=delta)
-                delta += duration
+                    "inv.discovery", name, self.id, delta=delta)
+                delta += 1
 
     def event(self, event_id, data=None, delay=None, tag=None):
         """
@@ -595,8 +589,8 @@ class ManagedObject(models.Model):
                 user=self.auth_profile.user,
                 password=self.auth_profile.password,
                 super_password=self.auth_profile.super_password,
-                snmp_ro=self.auth_profile.snmp_ro,
-                snmp_rw=self.auth_profile.snmp_rw
+                snmp_ro=self.auth_profile.snmp_ro or self.snmp_ro,
+                snmp_rw=self.auth_profile.snmp_rw or self.snmp_rw
             )
         else:
             return Credentials(
@@ -617,6 +611,118 @@ class ManagedObject(models.Model):
             return min(ol, pl)
         else:
             return ol
+
+    def get_probe_config(self, config):
+        # Get via solutions
+        try:
+            return get_probe_config(self, config)
+        except ValueError:
+            pass
+        if config == "address":
+            return self.address
+        elif config == "snmp__ro":
+            s = self.credentials.snmp_ro
+            if not s:
+                raise ValueError("No SNMP RO community")
+            else:
+                return s
+        elif config == "caps":
+            if not hasattr(self, "_caps"):
+                self._caps = self.get_caps()
+            return self._caps
+        elif config == "managed_object":
+            return self
+        elif config == "profile":
+            return self.profile_name
+        raise ValueError("Invalid config parameter '%s'" % config)
+
+    def get_caps(self):
+        """
+        Returns a dict of effective object capabilities
+        """
+        caps = ObjectCapabilities.objects.filter(object=self).first()
+        if not caps:
+            return {}
+        r = {}
+        for c in caps.caps:
+            v = c.local_value if c.local_value is not None else c.discovered_value
+            if v is None:
+                continue
+            r[c.capability.name] = v
+        return r
+
+    def update_caps(self, caps, local=False):
+        """
+        Update existing capabilities with a new ones.
+        :param caps: dict of caps name -> caps value
+        """
+        def get_cap(name):
+            if name in ccache:
+                return ccache[name]
+            c = Capability.objects.filter(name=name).first()
+            ccache[name] = c
+            return c
+
+        to_save = False
+        ocaps = ObjectCapabilities.objects.filter(object=self).first()
+        if not ocaps:
+            ocaps = ObjectCapabilities(object=self)
+            to_save = True
+        # Index existing capabilities
+        cn = {}
+        ccache = {}
+        for c in ocaps.caps:
+            cn[c.capability.name] = c
+        # Add missed capabilities
+        for mc in set(caps) - set(cn):
+            c = get_cap(mc)
+            if c:
+                cn[mc] = CapsItem(
+                    capability=c,
+                    discovered_value=None, local_value=None
+                )
+                to_save = True
+        nc = []
+        for c in sorted(cn):
+            cc = cn[c]
+            if c in caps:
+                if local:
+                    if cc.local_value != caps[c]:
+                        logger.info("[%s] Setting local capability %s = %s",
+                                    self.name, c, caps[c])
+                        cc.local_value = caps[c]
+                        to_save = True
+                else:
+                    if cc.discovered_value != caps[c]:
+                        logger.info("[%s] Setting discovered capability %s = %s",
+                                    self.name, c, caps[c])
+                        cc.discovered_value = caps[c]
+                        to_save = True
+            nc += [cc]
+        # Remove deleted capabilities
+        ocaps.caps = [
+            c for c in nc
+            if (c.discovered_value is not None or
+                c.local_value is not None)
+        ]
+        if to_save:
+            ocaps.save()  # forces probe rebuild
+
+    def disable_discovery(self):
+        """
+        Disable all discovery methods related with managed object
+        """
+
+    def apply_discovery(self):
+        """
+        Apply effective discovery settings
+        """
+        methods = []
+        for name in get_active_discovery_methods():
+            cfg = "enable_%s" % name
+            if getattr(self.object_profile, cfg):
+                methods += [cfg]
+        # @todo: Create tasks
 
 
 class ManagedObjectAttribute(models.Model):
@@ -646,3 +752,5 @@ from noc.lib.scheduler.utils import refresh_schedule
 #from noc.vc.models.vcdomain import VCDomain
 from objectnotification import ObjectNotification
 from selectorcache import SelectorCache
+from objectcapabilities import ObjectCapabilities, CapsItem
+from noc.inv.models.capability import Capability

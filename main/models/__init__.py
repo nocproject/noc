@@ -41,105 +41,20 @@ from noc.lib import nosql
 from noc.lib.validators import is_int
 ## Register periodics
 periodic_registry.register_all()
-## Full-text searchable models
-fts_models = {}  # name -> model
+from audittrail import AuditTrail
 from fts_queue import FTSQueue
+from noc.pm.models.probeconfig import ProbeConfig
 
+AuditTrail.install()
+FTSQueue.install()
+ProbeConfig.install()
 
-def update_fts(sender, instance, **kwargs):
-    FTSQueue.schedule_update(instance)
-
-
-def on_new_model(sender, **kwargs):
-    """
-    Register new search handler if model has .search() classmethod
-    """
-    if hasattr(sender, "get_index"):
-        fts_models[str(sender._meta)] = sender
-        if settings.IS_WEB:
-            post_save.connect(update_fts, sender=sender)
-
-##
-## Attach to the 'class_prepared' signal
-## and on_new_model on every new model
-##
-class_prepared.connect(on_new_model)
-##
-## Exclude tables from audit
-##
-AUDIT_TRAIL_EXCLUDE = set([
-    "django_admin_log",
-    "django_session",
-    "auth_message",
-    "main_audittrail",
-    "kb_kbentryhistory",
-    "kb_kbentrypreviewlog",
-    "fm_eventlog",
-    "sa_maptask",
-    "sa_reducetask",
-])
-
-
-def audit_trail_save(sender, instance, **kwargs):
-    """
-    Audit trail for INSERT and UPDATE operations
-    """
-    # Exclude tables
-    if sender._meta.db_table in AUDIT_TRAIL_EXCLUDE:
-        return
-    #
-    if instance.pk:
-        # Update
-        try:
-            old = sender.objects.get(pk=instance.pk)
-        except sender.DoesNotExist:
-            # Protection for correct test fixtures loading
-            return
-        message = []
-        operation = "M"
-        for f in sender._meta.fields:
-            od = f.value_to_string(old)
-            nd = f.value_to_string(instance)
-            if f.name == "id":
-                message += ["id: %s" % nd]
-            elif nd != od:
-                message += ["%s: '%s' -> '%s'" % (f.name, od, nd)]
-        message = "\n".join(message)
-    else:
-        # New record
-        operation = "C"
-        message = "\n".join(["%s = %s" % (f.name, f.value_to_string(instance))
-                             for f in sender._meta.fields])
-    AuditTrail.log(sender, instance, operation, message)
-
-
-def audit_trail_delete(sender, instance, **kwargs):
-    """
-    Audit trail for DELETE operation
-    """
-    # Exclude tables
-    if sender._meta.db_table in AUDIT_TRAIL_EXCLUDE:
-        return
-    #
-    operation = "D"
-    message = "\n".join(["%s = %s" % (f.name, f.value_to_string(instance))
-                         for f in sender._meta.fields])
-    AuditTrail.log(sender, instance, operation, message)
-    FTSQueue.schedule_delete(instance)
-
-##
-## Set up audit trail handlers
-##
-if settings.IS_WEB:
-    pre_save.connect(audit_trail_save)
-    pre_delete.connect(audit_trail_delete)
 ##
 ## Initialize download registry
 ##
 downloader_registry.register_all()
 
 
-from audittrail import AuditTrail
 from customfieldenumgroup import CustomFieldEnumGroup
 from customfieldenumvalue import CustomFieldEnumValue
 from customfield import CustomField
@@ -941,8 +856,8 @@ class Checkpoint(models.Model):
         return cp
 
 from favorites import Favorites
-from stompaccess import StompAccess
 from tag import Tag
+from sync import Sync
 
 ##
 ## Install triggers

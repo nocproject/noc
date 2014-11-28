@@ -44,7 +44,7 @@ def get_mongo_version():
     if settings.NOSQL_DATABASE_HOST:
         connection_args["host"] = settings.NOSQL_DATABASE_HOST
     if settings.NOSQL_DATABASE_PORT:
-        connection_args["port"] = settings.NOSQL_DATABASE_PORT
+        connection_args["port"] = int(settings.NOSQL_DATABASE_PORT)
     c = pymongo.Connection(**connection_args)
     i = c.server_info()
     return "%s (%dbit)" % (i["version"], i["bits"])

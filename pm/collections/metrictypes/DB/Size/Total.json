@@ -1,0 +1,6 @@
+{
+    "name": "DB | Size | Total",
+    "uuid": "3e32f2dd-eca6-468c-b0d2-6454ee1d2098",
+    "description": "Database total size",
+    "measure": "bytes"
+}

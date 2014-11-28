@@ -8,16 +8,17 @@
 
 ## Python modules
 import re
-import logging
 import time
 import datetime
 import sys
 import os
 from collections import defaultdict
+import operator
 ## Django modules
 from django.db import reset_queries
 ## Third-party modules
 import mongoengine.connection
+from cachetools import TTLCache, cachedmethod
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.fm.models.newevent import NewEvent
@@ -80,6 +81,8 @@ class Classifier(Daemon):
     # SNMP OID pattern
     rx_oid = re.compile(r"^(\d+\.){6,}")
 
+    interface_cache = TTLCache(maxsize=10000, ttl=60)
+
     def __init__(self):
         self.version = get_version()
         self.rules = {}  # profile -> [rule, ..., rule]
@@ -99,7 +102,7 @@ class Classifier(Daemon):
         self.is_distributed = False
         self.collector_id = None
         Daemon.__init__(self)
-        logging.info("Running Classifier version %s" % self.version)
+        self.logger.info("Running Classifier version %s", self.version)
         self.correlator_scheduler = CorrelatorScheduler()
 
     def setup_opt_parser(self):
@@ -129,7 +132,7 @@ class Classifier(Daemon):
         """
         Load rules from database
         """
-        logging.info("Loading rules")
+        self.logger.info("Loading rules")
         n = 0
         cn = 0
         profiles = list(profile_registry.classes)
@@ -143,15 +146,15 @@ class Classifier(Daemon):
             try:
                 cloning_rules += [CloningRule(cr)]
             except InvalidPatternException, why:
-                logging.error("Failed to load cloning rule '%s': Invalid pattern: %s" % (cr.name, why))
+                self.logger.error("Failed to load cloning rule '%s': Invalid pattern: %s", cr.name, why)
                 continue
-        logging.info("%d cloning rules found" % len(cloning_rules))
+        self.logger.info("%d cloning rules found", len(cloning_rules))
         # Initialize rules
         for r in EventClassificationRule.objects.order_by("preference"):
             try:
                 rule = Rule(self, r)
             except InvalidPatternException, why:
-                logging.error("Failed to load rule '%s': Invalid patterns: %s" % (r.name, why))
+                self.logger.error("Failed to load rule '%s': Invalid patterns: %s", r.name, why)
                 continue
             # Apply cloning rules
             rs = [rule]
@@ -161,7 +164,7 @@ class Classifier(Daemon):
                         rs += [Rule(self, r, cr)]
                         cn += 1
                     except InvalidPatternException, why:
-                        logging.error("Failed to clone rule '%s': Invalid patterns: %s" % (r.name, why))
+                        self.logger.error("Failed to clone rule '%s': Invalid patterns: %s", r.name, why)
                         continue
             for rule in rs:
                 # Find profile restriction
@@ -177,22 +180,22 @@ class Classifier(Daemon):
                         self.rules[p][rule.chain] += [rule]
                 n += 1
         if cn:
-            logging.info("%d rules are cloned" % cn)
+            self.logger.info("%d rules are cloned", cn)
         self.default_rule = Rule(
             self,
             EventClassificationRule.objects.filter(name=self.DEFAULT_RULE).first()
         )
-        logging.info("%d rules are loaded in the %d profiles" % (
-            n, len(self.rules)))
+        self.logger.info("%d rules are loaded in the %d profiles",
+            n, len(self.rules))
 
     def load_triggers(self):
-        logging.info("Loading triggers")
+        self.logger.info("Loading triggers")
         self.triggers = {}
         n = 0
         cn = 0
         ec = [(c.name, c.id) for c in EventClass.objects.all()]
         for t in EventTrigger.objects.filter(is_enabled=True):
-            logging.debug("Trigger '%s' for classes:" % t.name)
+            self.logger.debug("Trigger '%s' for classes:", t.name)
             for c_name, c_id in ec:
                 if re.search(t.event_class_re, c_name, re.IGNORECASE):
                     try:
@@ -200,12 +203,12 @@ class Classifier(Daemon):
                     except KeyError:
                         self.triggers[c_id] = [Trigger(t)]
                     cn += 1
-                    logging.debug("    %s" % c_name)
+                    self.logger.debug("    %s", c_name)
             n += 1
-        logging.info("%d triggers has been loaded to %d classes" % (n, cn))
+        self.logger.info("%d triggers has been loaded to %d classes", n, cn)
 
     def load_enumerations(self):
-        logging.info("Loading enumerations")
+        self.logger.info("Loading enumerations")
         n = 0
         self.enumerations = {}
         for e in Enumeration.objects.all():
@@ -215,7 +218,7 @@ class Classifier(Daemon):
                     r[vv.lower()] = k
             self.enumerations[e.name] = r
             n += 1
-        logging.info("%d enumerations loaded" % n)
+        self.logger.info("%d enumerations loaded" % n)
 
     def load_suppression(self):
         """
@@ -237,7 +240,7 @@ class Classifier(Daemon):
                 x += ["'%s': %s" % (k, v)]
             return compile("{%s}" % ", ".join(x), "<string>", "eval")
 
-        logging.info("Loading suppression rules")
+        self.logger.info("Loading suppression rules")
         self.suppression = {}
         for c in EventClass.objects.filter(repeat_suppression__exists=True):
             # Read event class rules
@@ -269,7 +272,7 @@ class Classifier(Daemon):
                                        "%s::%s" % (c.name, s["name"]),
                                        s["suppress"])
                 for s in suppression]
-        logging.info("Suppression rules are loaded")
+        self.logger.info("Suppression rules are loaded")
 
     def load_link_action(self):
         self.default_link_action = None
@@ -278,17 +281,17 @@ class Classifier(Daemon):
         if profile_name:
             p = InterfaceProfile.objects.filter(name=profile_name).first()
             if p:
-                logging.info("Setting default link event action to %r" % p.link_events)
+                self.logger.info("Setting default link event action to %s", p.link_events)
                 self.default_link_action = p.link_events
 
     def load_handlers(self):
-        logging.info("Loading handlers")
+        self.logger.info("Loading handlers")
         self.handlers = {}
         for ec in EventClass.objects.filter():
             handlers = get_event_class_handlers(ec)
             if not handlers:
                 continue
-            logging.debug("    <%s>: %s", ec.name, ", ".join(handlers))
+            self.logger.debug("    <%s>: %s", ec.name, ", ".join(handlers))
             hl = []
             for h in ec.handlers:
                 # Resolve handler
@@ -297,21 +300,21 @@ class Classifier(Daemon):
                     hl += [hh]
             if hl:
                 self.handlers[ec.id] = hl
-        logging.info("Handlers are loaded")
+        self.logger.info("Handlers are loaded")
 
     def setup_distributed_mode(self):
         if "collector" in mongoengine.connection._connection_settings:
             return
-        logging.info("Entering distributed mode")
+        self.logger.info("Entering distributed mode")
         # Get collector id
         collector_name = self.config.get("collector", "name")
         if not collector_name:
-            logging.error("Collector name missed. Exiting", collector_name)
+            self.logger.error("Collector name missed. Exiting")
             os._exit(1)
         try:
             self.collector_id = Collector.objects.get(name=collector_name).id
         except Collector.DoesNotExist:
-            logging.error("Invalid collector name: '%s'. Exiting", collector_name)
+            self.logger.error("Invalid collector name: '%s'. Exiting", collector_name)
             os._exit(1)
         # Connect to collector's database
         mongoengine.connection.register_connection(
@@ -332,16 +335,16 @@ class Classifier(Daemon):
         try:
             m = __import__(mn, {}, {}, s)
         except ImportError:
-            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            self.logger.error("Failed to load handler '%s'. Ignoring", h)
             return None
         try:
             return getattr(m, s)
         except AttributeError:
-            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            self.logger.error("Failed to load handler '%s'. Ignoring", h)
             return None
 
     def update_object_map(self):
-        logging.debug("Updating object maps")
+        self.logger.debug("Updating object maps")
         d = ObjectMap.get_map(self.collector_id)
         cdb = mongoengine.connection.get_db("collector")
         n = self.config.get("collector_database", "object_map")
@@ -352,7 +355,7 @@ class Classifier(Daemon):
             tmp.insert(d, safe=True)
             tmp.rename(n, dropTarget=True)
         cdb[n].ensure_index("sources")
-        logging.debug("Updating ignore rules")
+        self.logger.debug("Updating ignore rules")
         im = cdb[self.config.get("collector_database", "ignore_map")]
         i_patterns = defaultdict(list)
         for p in IgnorePattern.objects.filter(is_active=True):
@@ -360,9 +363,8 @@ class Classifier(Daemon):
                 re.compile(p.pattern)
                 i_patterns[p.source] += [p.pattern]
             except re.error, why:
-                logging.error("Invalid ignore pattern '%s' (%s)" % (
-                    p.pattern, why
-                ))
+                self.logger.error("Invalid ignore pattern '%s' (%s)",
+                    p.pattern, why)
         # Update patterns
         for src in i_patterns:
             im.update(
@@ -419,15 +421,15 @@ class Classifier(Daemon):
         """
         if FailedEvent.objects.count() == 0:
             return
-        logging.info("Recovering failed events")
+        self.logger.info("Recovering failed events")
         wm = datetime.datetime.now() - datetime.timedelta(seconds=86400)  # @todo: use config
         dc = FailedEvent.objects.filter(timestamp__lt=wm).count()
         if dc > 0:
-            logging.info("%d failed events are deprecated and removed" % dc)
+            self.logger.info("%d failed events are deprecated and removed", dc)
             FailedEvent.objects.filter(timestamp__lt=wm).delete()
         for e in FailedEvent.objects.filter(version__ne=self.version):
             e.mark_as_new("Reclassification has been requested by noc-classifer")
-            logging.debug("Failed event %s has been recovered" % e.id)
+            self.logger.debug("Failed event %s has been recovered", e.id)
 
     def iter_new_events(self, max_chunk=1000):
         """
@@ -444,14 +446,14 @@ class Classifier(Daemon):
         try:
             event.managed_object
         except ManagedObject.DoesNotExist:
-            logging.error("Deleting orphaned event %s" % str(event.id))
+            self.logger.error("Deleting orphaned event %s", str(event.id))
             event.delete()
             return
         if traceback:
-            logging.error("Failed to process event %s: %s" % (str(event.id),
-                                                              traceback))
+            self.logger.error("Failed to process event %s: %s",
+                              str(event.id), traceback)
         else:
-            logging.error("Failed to process event %s" % str(event.id))
+            self.logger.error("Failed to process event %s", str(event.id))
             # Prepare traceback
             t, v, tb = sys.exc_info()
             now = datetime.datetime.now()
@@ -489,8 +491,8 @@ class Classifier(Daemon):
             # Try to match rule
             v = r.match(event, vars)
             if v is not None:
-                logging.debug("Matching class for event %s found: %s (Rule: %s)" % (
-                    event.id, r.event_class_name, r.name))
+                self.logger.debug("Matching class for event %s found: %s (Rule: %s)",
+                    event.id, r.event_class_name, r.name)
                 return r, v
         if self.default_rule:
             return self.default_rule, {}
@@ -515,7 +517,7 @@ class Classifier(Daemon):
                 try:
                     v = decoder(event, v)
                 except InterfaceTypeError, why:
-                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
+                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s", ecv.name, ecv.type, repr(v))
             r[ecv.name] = v
         return r
 
@@ -546,6 +548,16 @@ class Classifier(Daemon):
                     n_name = name
                     n_suppress = suppress
         return n_suppress, n_name, nearest
+
+    @cachedmethod(operator.attrgetter("interface_cache"))
+    def get_interface(self, managed_object_id, name):
+        """
+        Get interface instance
+        """
+        return noc.inv.models.Interface.objects.filter(
+            managed_object=managed_object_id,
+            name=name
+        ).first()
 
     def classify_event(self, event):
         """
@@ -584,7 +596,7 @@ class Classifier(Daemon):
         if rule is None:
             # Something goes wrong.
             # No default rule found. Exit immediately
-            logging.error("No default rule found. Exiting")
+            self.logger.error("No default rule found. Exiting")
             os._exit(1)
         if rule.to_drop:
             # Silently drop event if declared by action
@@ -606,36 +618,36 @@ class Classifier(Daemon):
         # Additionally check link events
         disposable = True
         if event_class.link_event and "interface" in vars:
-            iface = noc.inv.models.Interface.objects.filter(
-                managed_object=event.managed_object.id,
-                name=event.managed_object.profile.convert_interface_name(vars["interface"])
-            ).first()
+            if_name = event.managed_object.profile.convert_interface_name(vars["interface"])
+            iface = self.get_interface(event.managed_object.id, if_name)
             if iface:
+                self.logger.debug("Found interface %s:%s",
+                                  event.managed_object.name, iface.name)
                 action = iface.profile.link_events
             else:
+                self.logger.debug("Interface not found %s:%s",
+                                  event.managed_object.name, if_name)
                 action = self.default_link_action
             if action == "I":
                 # Ignore
                 if iface:
-                    msg = "Event %s has been marked as ignored by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name)
+                    self.logger.info("Event %s has been marked as ignored by interface profile '%s' (%s)", event.id, iface.profile.name, iface.name)
                 else:
-                    msg = "Event %s has been marked as ignored by default interface profile" % event.id
-                logging.info(msg)
+                    self.logger.info("Event %s has been marked as ignored by default interface profile", event.id)
                 event.delete()
                 return CR_DELETED
             elif action == "L":
                 # Do not dispose
                 if iface:
-                    msg = "Event %s has been marked as not disposable by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name)
+                    self.logger.info("Event %s has been marked as not disposable by interface profile '%s' (%s)", event.id, iface.profile.name, iface.name)
                 else:
-                    msg = "Event %s has been marked as not disposable by default interface" % event.id
-                logging.info(msg)
+                    self.logger.info("Event %s has been marked as not disposable by default interface", event.id)
                 disposable = False
         # Deduplication
         if self.deduplication_window:
             de = self.find_duplicated_event(event, event_class, vars)
             if de:
-                logging.debug(
+                self.logger.debug(
                     "Event %s duplicates event %s. Discarding",
                     event.id, de.id)
                 de.log_message(
@@ -648,8 +660,8 @@ class Classifier(Daemon):
             suppress, name, nearest = self.to_suppress(event, event_class,
                                                        vars)
             if suppress:
-                logging.debug("Event %s was suppressed by rule %s" % (
-                    event.id, name))
+                self.logger.debug("Event %s was suppressed by rule %s",
+                    event.id, name)
                 # Update suppressing event
                 nearest.log_suppression(event.timestamp)
                 # Delete suppressed event
@@ -685,7 +697,7 @@ class Classifier(Daemon):
                 except:
                     error_report()
                 if event.to_drop:
-                    logging.debug("Event dropped by handler")
+                    self.logger.debug("Event dropped by handler")
                     event.id = event_id  # Restore event id
                     event.delete()
                     return CR_DELETED
@@ -699,8 +711,8 @@ class Classifier(Daemon):
                     error_report()
                 if event.to_drop:
                     # Delete event and stop processing
-                    logging.debug("Drop event %s (Requested by trigger %s)" % (
-                        event_id, t.name))
+                    self.logger.debug("Drop event %s (Requested by trigger %s)",
+                                      event_id, t.name)
                     event.id = event_id  # Restore event id
                     event.delete()
                     return CR_DELETED
@@ -757,7 +769,7 @@ class Classifier(Daemon):
         if self.is_distributed:
             self.update_object_map()
         nu = time.time() + OM_UPDATE_INTERVAL
-        logging.info("Ready to process events")
+        self.logger.info("Ready to process events")
         st = {
             CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
             CR_UNKNOWN: 0, CR_CLASSIFIED: 0, CR_DISPOSED: 0,
@@ -791,7 +803,7 @@ class Classifier(Daemon):
                 ]
                 s += ["%s: %d" % (CR[i], sn[i]) for i in range(len(CR))]
                 s = ", ".join(s)
-                logging.info("REPORT: %s" % s)
+                self.logger.info("REPORT: %s", s)
             else:
                 # No events classified this pass. Sleep
                 time.sleep(CHECK_EVERY)

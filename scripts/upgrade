@@ -63,6 +63,15 @@ fi
 if [ "$ENABLED" != "yes" ]; then
     error_exit "Upgrade is disabled. Please edit etc/upgrade.conf and run $0 again"
 fi
+##
+## Apply OS-depended settings
+##
+OSNAME=`uname -s`
+OSSETTINGS="./scripts/os/$OSNAME/upgrade"
+if [ -f $OSSETTINGS ]; then
+    . $OSSETTINGS
+fi
+
 ## Run pre-upgrade local script
 if [ -x ./local/bin/pre-upgrade ]; then
     info "Running ./local/bin/pre-upgrade"
@@ -190,9 +199,10 @@ fi
 info "Upgrading PIP"
 ./bin/pip install pip --upgrade || error_exit "$LINENO: Failed to update PIP"
 info "Updating python libraries"
-PIP_REQUIREMENTS=etc/requirements/noc.txt
+PIP_REQUIREMENTS_COMMON=etc/requirements/common.txt
+PIP_REQUIREMENTS_NOC=etc/requirements/noc.txt
 PIP_FLAG=local/.pip
-PIP_ARGS="-r etc/requirements/noc.txt"
+PIP_ARGS="-r $PIP_REQUIREMENTS_COMMON -r $PIP_REQUIREMENTS_NOC"
 if [ "$INSTALL_DEBUG" = "yes" ]; then
     PIP_ARGS="$PIP_ARGS -r etc/requirements/debug.txt"
 fi
@@ -205,7 +215,7 @@ if [ ! -z "$PIP_FIND_LINKS" ]; then
     fi
     PIP_ARGS="$PIP_ARGS --find-links $PIP_FIND_LINKS --allow-all-external"
 fi
-if [ $PIP_REQUIREMENTS -nt $PIP_FLAG ]; then
+if [ $PIP_REQUIREMENTS_NOC -nt $PIP_FLAG -o $PIP_REQUIREMENTS_COMMON -nt $PIP_FLAG ]; then
     PIP_ARGS="$PIP_ARGS --upgrade"
 fi
 

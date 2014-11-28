@@ -29,7 +29,7 @@ class EventClassVar(EmbeddedDocument):
         required=True,
         choices=[
             (x, x) for x in (
-                "str", "int",
+                "str", "int", "float",
                 "ipv4_address", "ipv6_address", "ip_address",
                 "ipv4_prefix", "ipv6_prefix", "ip_prefix",
                 "mac", "interface_name", "oid"
@@ -268,7 +268,7 @@ class EventClass(Document):
         r += ["    \"name\": \"%s\"," % q(c.name)]
         r += ["    \"uuid\": \"%s\"," % c.uuid]
         if c.description:
-            r += ["    \"desciption\": \"%s\"," % q(c.description)]
+            r += ["    \"description\": \"%s\"," % q(c.description)]
         r += ["    \"action\": \"%s\"," % q(c.action)]
         # vars
         vars = []
@@ -283,6 +283,8 @@ class EventClass(Document):
         r += ["    \"vars\": ["]
         r += [",\n".join(vars)]
         r += ["    ],"]
+        if self.link_event:
+            r += ["    \"link_event\": true,"]
         # Handlers
         if self.handlers:
             hh = ["        \"%s\"" % h for h in self.handlers]

@@ -1,0 +1,6 @@
+{
+    "name": "DB | Connections | Rate",
+    "uuid": "0561273d-7230-46e3-a532-028bf4d3b0db",
+    "description": "Database connection rate",
+    "measure": "conns/sec"
+}

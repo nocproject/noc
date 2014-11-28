@@ -62,7 +62,7 @@ class GroupApplication(ModelApplication):
     model = Group
     model_admin = GroupAdmin
     menu = "Setup | Groups"
-    icon = "icon_group"
+    glyph = "users"
     title = "Groups"
 
     @view(url=r"^add/legacy/$", url_name="admin:auth_group_add",

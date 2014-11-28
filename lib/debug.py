@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Various debugging and error logging utilities
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -17,10 +17,14 @@ import time
 import stat
 import hashlib
 import pprint
+import traceback
 ## NOC modules
 from noc.settings import CRASHINFO_LIMIT, TRACEBACK_REVERSE
 from noc.lib.version import get_version
 from noc.lib.fileutils import safe_rewrite
+
+logger = logging.getLogger(__name__)
+
 
 #
 # Error reporting context
@@ -220,9 +224,9 @@ def excepthook(t, v, tb):
     sys.stderr.flush()
 
 
-def error_report(reverse=TRACEBACK_REVERSE):
+def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
     r = get_traceback(reverse=reverse)
-    logging.error(r)
+    logger.error(r)
     if DEBUG_CTX_COMPONENT and DEBUG_CTX_CRASH_DIR:
         # Build crashinfo file
         c = {
@@ -244,10 +248,10 @@ def error_report(reverse=TRACEBACK_REVERSE):
             if DEBUG_CTX_SET_UID:  # Change crashinfo userid to directory"s owner
                 os.chown(path, DEBUG_CTX_SET_UID, -1)
         except OSError, why:
-            logging.error("Unable to write crashinfo: %s" % why)
+            logger.error("Unable to write crashinfo: %s", why)
 
 
-def frame_report(frame, caption=None):
+def frame_report(frame, caption=None, logger=logger):
     now = datetime.datetime.now()
     r = []
     if caption:
@@ -255,7 +259,7 @@ def frame_report(frame, caption=None):
     r += ["EXECUTION FRAME REPORT (%s)" % str(now)]
     r += ["Working directory: %s" % os.getcwd()]
     r += [format_frames(get_execution_frames(frame))]
-    logging.error("\n".join(r))
+    logger.error("\n".join(r))
 
 
 def error_fingerprint():
@@ -275,6 +279,18 @@ def error_fingerprint():
         ]
     ])
     return hashlib.sha1(s).hexdigest()
+
+
+def dump_stacks():
+    """
+    Dump all active threads' stacks
+    """
+    for tid, stack in sys._current_frames().items():
+        print "[THREAD #%s]" % tid
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            print "File: '%s', line %d, in %s" % (filename, lineno, name)
+            if line:
+                print "    %s" % line.strip()
 
 
 def BQ(s):

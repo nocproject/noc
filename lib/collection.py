@@ -12,15 +12,18 @@ import csv
 from collections import namedtuple
 from cStringIO import StringIO
 import hashlib
-import uuid
+from uuid import UUID, uuid4
 from operator import attrgetter
+import logging
 ## Third-party modules
 from mongoengine.fields import ListField, EmbeddedDocumentField
-from mongoengine.queryset import Q
 ## NOC modules
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.serialize import json_decode
 from noc.main.models.collectioncache import CollectionCache
+from noc.lib.log import PrefixLoggerAdapter
+
+logger = logging.getLogger(__name__)
 
 
 CollectionItem = namedtuple("CollectionItem", [
@@ -33,6 +36,7 @@ class DereferenceError(Exception):
 
 class Collection(object):
     def __init__(self, name, doc, local=False):
+        self.logger = PrefixLoggerAdapter(logger, name)
         m, c = name.split(".", 1)
         self.module = m
         self.name = c
@@ -47,10 +51,14 @@ class Collection(object):
             self.get_name = attrgetter("name")
         else:
             # Or first unique field otherwise
-            self.get_name = attrgetter(self.doc._meta["unique_indexes"][0][0][0])
-
-    def log(self, msg):
-        print msg
+            uname = None
+            for spec in self.doc._meta["index_specs"]:
+                if spec["unique"] and len(spec["fields"]) == 1:
+                    uname = spec["fields"][0][0]
+            if not uname:
+                self.logger.error("Cannot find unique index")
+                raise ValueError("No unique index")
+            self.get_name = attrgetter(uname)
 
     def die(self, msg):
         raise ValueError(msg)
@@ -78,12 +86,14 @@ class Collection(object):
             reader = csv.reader(f)
             header = reader.next()
             for name, uuid, path, hash in reader:
+                uuid = UUID(uuid)
                 mi = CollectionItem(
-                    name=name, uuid=uuid, path=path, hash=hash)
+                    name=name, uuid=uuid,
+                    path=path, hash=hash)
                 self.items[uuid] = mi
 
     def save(self):
-        self.log("Updating manifest")
+        self.logger.info("Updating manifest")
         rows = sorted(
             ([r.name, r.uuid, r.path, r.hash]
              for r in self.items.values()),
@@ -96,7 +106,7 @@ class Collection(object):
         safe_rewrite(self.get_collection_path(), out.getvalue(),
                      mode=0644)
         # Update collection cache
-        self.log("Updating CollectionCache")
+        self.logger.info("Updating CollectionCache")
         CollectionCache.merge(
             "%s.%s" % (self.module, self.name), set(self.items)
         )
@@ -140,7 +150,7 @@ class Collection(object):
         if not self.items:
             # Empty local file, needs to upgrade collection first
             self.upgrade_collection(collection)
-        self.log("Syncing %s.%s" % (self.module, self.name))
+        self.logger.debug("Syncing %s.%s" % (self.module, self.name))
         sl = set(self.items)
         sr = set(collection.items)
         # Delete revoked items
@@ -164,7 +174,7 @@ class Collection(object):
         o = self.doc.get(uuid=u).first()
         if not o:
             return
-        self.log(u"    ... deleting %s" % unicode(o))
+        self.logger.info("Deleting %s", unicode(o))
         o.delete()
         del self.items[u]
         self.changed = True
@@ -173,28 +183,35 @@ class Collection(object):
         """
         Returns object instance or None
         """
-        return self.doc.objects.filter(
-            Q(uuid=u) | Q(uuid=uuid.UUID(u))
-        ).first()
+        d = self.doc.objects.filter(uuid=u).first()
+        if d:
+            return d
+        else:
+            # Try to fix UUID
+            c = self.doc._get_collection()
+            d = c.find_one({"uuid": str(u)})
+            if d and isinstance(d["uuid"], basestring):
+                self.logger.debug("Fixing UUID %s", u)
+                c.update({"uuid": str(u)}, {"$set": {"uuid": u}})
+                return self.doc.objects.filter(uuid=u).first()
 
     def update_item(self, mi):
         o = self.get_by_uuid(mi.uuid)
         if o:
-            self.log(u"    ... updating %s" % unicode(o))
+            self.logger.info("Updating %s", unicode(o))
         else:
-            self.log(u"    ... creating %s" % mi.name)
+            self.logger.info("Creating %s", mi.name)
         data = self.load_item(mi)
         try:
             d = self.dereference(self.doc, data)
         except DereferenceError:
-            self.log(u"    ... processing delayed due to possible circular reference")
+            self.logger.debug("Processing delayed due to possible circular reference")
             self.partial.add(mi.uuid)
             return
         if o:
             # Update fields
             for k in d:
                 setattr(o, k, d[k])
-            o.save()
         else:
             # Create item
             o = self.doc(**d)
@@ -226,6 +243,9 @@ class Collection(object):
         partial = False
         for k in d:
             v = d[k]
+            if k == "uuid":
+                r["uuid"] = UUID(v)
+                continue
             # Dereference ref__name lookups
             if "__" in k:
                 # Lookup
@@ -273,7 +293,7 @@ class Collection(object):
                 hash=self.get_hash(data)
             )
             self.items[mi.uuid] = mi
-            self.log("    ... importing %s" % doc.name)
+            self.logger.info("Importing %s", doc.name)
             safe_rewrite(os.path.join(
                 self.module, "collections",
                 self.name, doc.get_json_path()),
@@ -286,7 +306,7 @@ class Collection(object):
     def import_objects(self, objects):
         for o in objects:
             if not o.uuid:
-                o.uuid = uuid.uuid4()
+                o.uuid = uuid4()
                 o.save()
             data = o.to_json()
             mi = CollectionItem(
@@ -296,7 +316,7 @@ class Collection(object):
                 hash=self.get_hash(data)
             )
             self.items[mi.uuid] = mi
-            self.log("    ... importing %s" % mi.name)
+            self.logger.info("Importing %s", mi.name)
             safe_rewrite(os.path.join(
                 self.module, "collections", self.name,
                 o.get_json_path()),
@@ -321,17 +341,18 @@ class Collection(object):
             for un in unique:
                 o = self.doc.objects.filter(**{un: d[un]}).first()
                 if o:
-                    self.log("    ... upgrading %s" % unicode(o))
+                    self.logger.info("Upgrading %s", unicode(o))
                     o.uuid = d["uuid"]
                     o.save()
                     break
 
-        self.log("Upgrading %s.%s" % (self.module, self.name))
+        self.logger.info("Upgrading %s.%s", self.module, self.name)
         # Define set of unique fields
         unique = set()
-        for index in self.doc._meta["unique_indexes"]:
-            for f, flag in index:
-                unique.add(f)
+        for spec in self.doc._meta["index_specs"]:
+            for f, flag in spec["fields"]:
+                if spec.get("unique") and len(spec["fields"]) == 2:
+                    unique.add(f)
         for u in collection.items:
             try:
                 upgrade_item(u)
@@ -340,9 +361,9 @@ class Collection(object):
 
     def install_item(self, data, load=False):
         o = self.doc(**self.dereference(self.doc, data))
-        self.log("    ... installing %s" % unicode(o))
+        self.logger.info("Installing %s", unicode(o))
         if not o.uuid:
-            o.uuid = str(uuid.uuid4())
+            o.uuid = str(uuid4())
             load = False  # Cannot load due to uuid collision
         dd = o.to_json()
         mi = CollectionItem(

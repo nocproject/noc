@@ -11,12 +11,13 @@ from noc.lib.nosql import (Document, ForeignKeyField, StringField,
     IntField, BooleanField, PlainReferenceField, ListField)
 from interfaceprofile import InterfaceProfile
 from coverage import Coverage
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
+from noc.lib.solutions import get_probe_config
 
 
 INTERFACE_TYPES = (IGetInterfaces.returns
@@ -63,6 +64,8 @@ class Interface(Document):
     # Coverage
     coverage = PlainReferenceField(Coverage)
     technologies = ListField(StringField())
+
+    PROFILE_LINK = "profile"
 
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)
@@ -200,6 +203,28 @@ class Interface(Document):
         if self.type != "aggregated":
             raise ValueError("Cannot net LAG members for not-aggregated interface")
         return Interface.objects.filter(aggregated_interface=self.id)
+
+    def get_probe_config(self, config):
+        # Get via solutions
+        try:
+            return get_probe_config(self, config)
+        except ValueError:
+            pass
+        # Fallback
+        if config == "interface__name":
+            return self.name
+        elif config == "interface__ifindex":
+            if self.ifindex is None:
+                raise ValueError("No ifindex for %s" % self)
+            else:
+                return self.ifindex
+        try:
+            return self.managed_object.get_probe_config(config)
+        except ValueError:
+            pass
+        # Fallback to interface profile
+        return self.profile.get_probe_config(config)
+
 
 ## Avoid circular references
 from subinterface import SubInterface

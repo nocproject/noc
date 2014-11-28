@@ -7,13 +7,17 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 from Queue import Queue, Empty
 from threading import Thread, Lock, Event
 import time
 import ctypes
+import logging
 ## NOC modules
 from noc.lib.debug import error_report
+from noc.lib.log import PrefixLoggerAdapter
+from noc.lib.perf import MetricsHub
+
+logger = logging.getLogger(__name__)
 
 
 class CancelledError(Exception):
@@ -25,18 +29,27 @@ class Worker(Thread):
         super(Worker, self).__init__(*args, **kwargs)
         self.pool = pool
         self.queue = queue
+        self.logger = self.pool.logger
         self.title = "Starting"
         self.start_time = 0
         self.cancelled = False
         self.can_cancel = False
-        self.is_idle = True
+        self.is_idle = False
+
+    def set_idle(self, status):
+        self.is_idle = status
+        self.pool.set_idle(status)
 
     def run(self):
+        self.logger.debug("Starting worker thread")
         while True:
             # Get task from queue
             try:
+                self.set_idle(True)
                 task = self.queue.get(block=True, timeout=1)
+                self.set_idle(False)
             except Empty:
+                self.set_idle(False)
                 continue
             if task is None:
                 break  # Shutdown
@@ -46,7 +59,6 @@ class Worker(Thread):
             self.start_time = time.time()
             try:
                 self.can_cancel = True
-                self.is_idle = False
                 f(*args, **kwargs)
                 self.can_cancel = False
             except CancelledError:
@@ -56,10 +68,10 @@ class Worker(Thread):
                 if not self.cancelled:
                     error_report()
             self.queue.task_done()
-            self.is_idle = True
         # Shutdown
         self.queue.task_done()
         self.pool.thread_done(self)
+        self.logger.debug("Stopping worker thread")
 
     def cancel(self):
         """
@@ -84,7 +96,8 @@ class Worker(Thread):
 
 
 class Pool(object):
-    def __init__(self, start_threads=1, max_threads=10,
+    def __init__(self, name="pool", metrics_prefix=None,
+                 start_threads=1, max_threads=10,
                  min_spare=1, max_spare=1, backlog=0):
         if min_spare > max_spare:
             raise ValueError("min_spare (%d) must not be greater"
@@ -94,6 +107,17 @@ class Pool(object):
             raise ValueError("start_threads (%d) must not be greater"
                              " than max_threads (%d)" % (start_threads,
                                                          max_threads))
+        self.logger = PrefixLoggerAdapter(logger, name)
+        self.name = name
+        if not metrics_prefix:
+            metrics_prefix = "noc"
+        metrics_prefix += "pool.%s" % name
+        self.metrics = MetricsHub(
+            metrics_prefix,
+            "threads.running",
+            "threads.idle",
+            "queue.len"
+        )
         self.start_threads = start_threads
         self.max_threads = max_threads
         self.min_spare = min_spare
@@ -104,29 +128,28 @@ class Pool(object):
         self.queue = Queue(backlog)
         self.stopping = False
         self.stopped = Event()
-        self.reschedule_threads()
+        self.n_idle = 0
+        self.idle_lock = Lock()
+        self.logger.info("Running thread pool '%s'", self.name)
+        self.set_idle(None)
 
-    def reschedule_threads(self):
-        if self.stopping:
-            return
-        with self.t_lock:
-            # Idle threads
-            n_idle = sum(1 for t in self.threads
-                         if t.is_alive() and t.is_idle)
-            # Total threads
+    def set_idle(self, status):
+        with self.idle_lock:
+            if status is not None:
+                self.n_idle += 1 if status else -1
             n = len(self.threads)
-            # Run spare threads
-            while n_idle < self.min_spare and n < self.max_threads:
+            self.metrics.threads_idle = self.n_idle
+            self.metrics.threads_running = n
+            self.metrics.queue_len = self.queue.qsize()
+            if (not status and self.n_idle < self.min_spare and
+                        n < self.max_threads):
+                # Run additional thread
                 w = Worker(self, self.queue)
                 self.threads.add(w)
-                n_idle += 1
-                n += 1
                 w.start()
-            # Shutdown spare threads
-            while n_idle > self.max_spare:
+            elif status and (self.n_idle > self.max_spare or n > self.max_threads):
+                # Stop one thread
                 self.queue.put(None)
-                n_idle -= 1
-                n -= 1
 
     def thread_done(self, t):
         with self.t_lock:
@@ -134,7 +157,6 @@ class Pool(object):
                 self.threads.remove(t)
             if self.stopping and not len(self.threads):
                 self.stopped.set()
-        self.reschedule_threads()
 
     def get_status(self):
         s = []
@@ -178,10 +200,18 @@ class Pool(object):
     def run(self, title, target, args=(), kwargs={}):
         if self.stopping:
             return
-        # @todo: Limit rescheduling
-        self.reschedule_threads()
-        # Block, timeout
         self.queue.put((title, target, args, kwargs))
+
+    def configure(self, max_threads=None, min_spare=None,
+                  max_spare=None, backlog=None):
+        if max_threads is not None:
+            self.max_threads = max_threads
+        if min_spare is not None:
+            self.min_spare = min_spare
+        if max_spare is not None:
+            self.max_spare = max_spare
+        if backlog is not None:
+            self.backlog = backlog
 
 
 class LabeledPool(object):

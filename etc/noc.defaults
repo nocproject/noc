@@ -50,6 +50,7 @@ server_email = root@localhost
 # * select - use select()
 # * poll   - use poll()
 # * kevent - use kevent/kqueue
+# * epoll  - use epoll
 polling_method = select
 # Comma-separated list of additionally installed applications
 installed_apps =
@@ -402,29 +403,24 @@ vc_vcprefixes = 3600
 enabled = true
 # Save result to database
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
+
+[caps_discovery]
+# Enable caps discovery process
+enabled = true
+# Save result to database
+save = true
 
 [config_discovery]
 # Enable config discovery process
 enabled = true
 # Save result to database
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [interface_discovery]
 enabled = true
 save = true
 success_retry = 86400
 failed_retry = 900
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 # IInterfaceClassification-interfaced pyRule
 # returning interface class name
 # Used by noc.solutions.noc.default.discovery.interface.get_interface_profile
@@ -483,86 +479,42 @@ get_fqdn = noc.solutions.noc.default.discovery.ip.get_fqdn
 [vlan_discovery]
 enabled = true
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 # change_state = PLANNED -> ALLOCATED; RESERVED -> ALLOCATED
 change_state =
 
 [mac_discovery]
 enabled = true
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [id_discovery]
 enabled = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [asset_discovery]
 enabled = true
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 # Object name generator
 get_name = noc.solutions.noc.default.discovery.asset.get_name
 
 [lldp_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [cdp_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [stp_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [rep_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [bfd_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [udld_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [oam_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [audit]
 # Store commands audit log
@@ -573,3 +525,110 @@ login_ttl = 1m
 reboot_ttl = 0
 # Store config changed log
 config_changed_ttl = 1y
+# Database audit
+# Can be in form of
+#     ttl.db = <time> - default database audit log TTL
+#     ttl.db.<module> = <time> - default audit log TTL for module (sa, inv, etc)
+#     ttl.db.<module>.<model> - default autid log TTL for model (sa.ManagedObject)
+# 0 -- disable audit
+ttl.db = 5y
+
+[pm]
+# Solution processing effective metric settings
+# and setting probes and graphite names
+metric_router = noc.solutions.noc.default.pm.router.DefaultRouter
+# Config expiration time in seconds
+# Each config will be validated and rebuilded each config_ttl seconds
+config_ttl = 3600
+# Random config ttl variation, relative to config_ttl
+# i.e. config_ttl = 3600, config_ttl_jitter = 0.01
+# means for each metrics ttl will be set randomly in [3564 .. 3636] seconds
+config_ttl_jitter = 0.01
+# Timeout to refresh expired configs
+# noc-web will refresh expired config by expired_refresh_chunk
+# portions up to expired_refresh_timeout seconds
+# Untouched expired configs will be left for other time
+expired_refresh_timeout = 10
+# Refresh expired configs batch
+expired_refresh_chunk = 100
+
+[pm_render]
+# Cache metric data and rendered graphs
+# Time in seconds
+cache_duration = 60
+# CarbonLinks for carbon cache access
+# ip:port, comma-separated
+carbonlink_hosts = 127.0.0.1:7002
+# CarbonLink connection timeout
+carbonlink_timeout = 1.0
+
+[pm_storage]
+# PM storage type
+# Available types are:
+#     * mongodb
+#     * bsddb
+#     * leveldb (experimental)
+#     * postgres
+#     * sqlite
+type = mongodb
+# Partitioning scheme
+# Available schemes are
+#     * daily - YYYY.MM.DD
+#     * weekly - YYYY.WWw
+#     * monthly - YYYY.MM
+#     * yearly - YYYY
+#     * none -- no partitioning
+partition = daily
+# Metric hash size (in octets).
+# Once selected cannot be changed without full database rebuild.
+# Recommended values:
+#     * 4 - < 10 000 metrics
+#     * 8 - < 1 000 000 000 metrics
+hash_width = 8
+# Do not fetch data and create partitions before epoch
+# Format: YYYY-MM-DD
+epoch = 2014-09-01
+
+[pm_router]
+# Model to graphite mapping metrics
+# Used by noc.default solution
+# Graphite metric mappings defines as
+# map.<model_id> = <django template>
+# Following variables are exposed to django template
+#     * object -- object instance
+#     * model_id -- model_id
+#     * metric_type -- name of the metric type
+# Additional filters are available
+#     {{object|dirhash:"<width>:<levels>"}} -- hashed directory tree up to
+#           <levels> depts. Each level consists of <width>-letter directory
+#           Examples:
+#               {{object|dirhash:"4.2"}}  -> 23F3.EE18
+#               {{object|dirhash:"4.4"}}  -> 23F3.EE18.AB23.2156
+#               {{object|dirhash:"2.2"}}  -> 23.F3
+#               {{object|dirhash:"2.4"}}  -> 23.F3.EE.18
+#     {{string|qm}} -- directory-safe quoting.
+#
+# object.XXXX.YYYY.<object name>.<metric type>
+map.sa.ManagedObject = object.{{object.name|qm}}.{{metric_type|qm}}
+# object.XXXX.YYYY.<object name>.interface.<name>.<metric type>
+map.inv.Interface = object.{{object.managed_object.name|qm}}.interface.{{object.name|qm}}.{{metric_type|qm}}
+# Additional metric control defined in form of rules
+# metric.<N> = <regular expression>
+# probe.<N> = <probe name>
+# active.<N> = true | false
+
+[sync]
+# Config expiration time in seconds
+# Each config will be validated and rebuilded each config_ttl seconds
+config_ttl = 86400
+# Random config ttl variation, relative to config_ttl
+# i.e. config_ttl = 3600, config_ttl_jitter = 0.01
+# means for each metrics ttl will be set randomly in [3564 .. 3636] seconds
+config_ttl_jitter = 0.01
+# Timeout to refresh expired configs
+# noc-web will refresh expired config by expired_refresh_chunk
+# portions up to expired_refresh_timeout seconds
+# Untouched expired configs will be left for other time
+expired_refresh_timeout = 25
+# Refresh expired configs batch
+expired_refresh_chunk = 100

@@ -11,7 +11,6 @@ from whoosh.index import open_dir
 ## NOC modules
 from noc.lib.scheduler.autointervaljob import AutoIntervalJob
 from noc.main.models.fts_queue import FTSQueue
-from noc.main.models import fts_models
 
 
 class UpdateIndexJob(AutoIntervalJob):
@@ -21,8 +20,7 @@ class UpdateIndexJob(AutoIntervalJob):
     INDEX = "local/index"
 
     def handler(self, *args, **kwargs):
-        objects = list(FTSQueue.objects.all())
-        if not objects:
+        if not FTSQueue.objects.count():
             return True
         index = open_dir(self.INDEX)
         writer = index.writer()
@@ -39,7 +37,7 @@ class UpdateIndexJob(AutoIntervalJob):
         return True
 
     def process_update(self, writer, oid):
-        o = self.get_object(oid)
+        o = FTSQueue.get_object(oid)
         if not o:
             return
         i = o.get_index()
@@ -55,13 +53,3 @@ class UpdateIndexJob(AutoIntervalJob):
         if i.get("tags"):
             fields["tags"] = u",".join(i["tags"])
         writer.update_document(**fields)
-
-    def get_object(self, oid):
-        m, object_id = oid.split(":")
-        if m not in fts_models:
-            return None
-        model = fts_models[m]
-        try:
-            return model.objects.get(id=int(object_id))
-        except model.DoesNotExist:
-            return None

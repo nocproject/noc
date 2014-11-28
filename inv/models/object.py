@@ -67,7 +67,7 @@ class Object(Document):
         attr = self.get_interface_attr(interface, key)
         if attr.is_const:
             raise ModelDataError("Cannot set read-only value")
-        value = attr.clean(value)
+        value = attr._clean(value)
         # @todo: Check interface restrictions
         if interface not in self.data:
             self.data[interface] = {}

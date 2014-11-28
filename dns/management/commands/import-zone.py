@@ -38,6 +38,9 @@ class Command(BaseCommand):
             action="store", dest="profile",
             help="Set Zone Profile"),
 
+        make_option("-f", "--force",
+            action="store_true", dest="force",
+            help="Forcefully update FQDN for A records")
     )
 
     RR_TYPES = [
@@ -77,6 +80,7 @@ class Command(BaseCommand):
     ]
 
     def handle(self, *args, **options):
+        self.force = options["force"]
         # Sync
         try:
             for path in args:
@@ -189,7 +193,13 @@ class Command(BaseCommand):
                 afi=afi,
                 address=address
             )
-            self.info("Address %s (%s) is already exists in IPAM, ignoring" % (a.address, a.fqdn))
+            if self.force:
+                if a.fqdn != fqdn:
+                    self.info("Updating FQDN %s (%s)" % (a.address, a.fqdn))
+                    a.fqdn = fqdn
+                    a.save()
+            else:
+                self.info("Address %s (%s) is already exists in IPAM, ignoring" % (a.address, a.fqdn))
         except Address.DoesNotExist:
             a = Address(
                 vrf=vrf,

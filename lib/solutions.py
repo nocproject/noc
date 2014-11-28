@@ -9,33 +9,34 @@
 ## Python modules
 import os
 from collections import defaultdict
-## Django modules
-from django.core import exceptions
-from django.utils.importlib import import_module
 ## NOC modules
+from noc.lib.importlib import import_module
 from noc.settings import config
 
 
 _CCACHE = {}  # path -> callable
 
+
 def get_solution(path):
     """
     Returns callable referenced by path
     """
+    if callable(path):
+        return path
     if path in _CCACHE:
         return _CCACHE[path]
     try:
         m, c = path.rsplit(".", 1)
     except ValueError:
-        raise exceptions.ImproperlyConfigured("%s isn't valid solution name" % path)
+        raise ImportError("%s isn't valid solution name" % path)
     try:
         mod = import_module(m)
     except ImportError, e:
-        raise exceptions.ImproperlyConfigured("Error loading solution '%s': %s" % (path, e))
+        raise ImportError("Error loading solution '%s': %s" % (path, e))
     try:
         c = getattr(mod, c)
     except AttributeError:
-        raise exceptions.ImproperlyConfigured("Solution '%s' doesn't define '%s' callable" % (path, c))
+        raise ImportError("Solution '%s' doesn't define '%s' callable" % (path, c))
     _CCACHE[path] = c
     return c
 
@@ -260,9 +261,46 @@ def get_alarm_jobs(alarm_class):
     return jobs
 
 
+def get_model_id(object):
+    if isinstance(object._meta, dict):
+        # Document
+        return u"%s.%s" % (object.__module__.split(".")[1],
+                           object.__class__.__name__)
+    else:
+        # Model
+        return u"%s.%s" % (object._meta.app_label,
+                           object._meta.object_name)
+
+
+def register_probe_config(model, handlers):
+    """
+    Register .get_probe_config() extensions
+    """
+    if not isinstance(model, basestring):
+        model = get_model_id(model)
+    if not isinstance(handlers, (list, tuple)):
+        handlers = [handlers]
+    _probe_config_handlers[model] += [get_solution(h) for h in handlers]
+
+
+def get_probe_config(object, config):
+    """
+    Get effective probe config extensions
+    """
+    model = get_model_id(object)
+    for h in _probe_config_handlers[model]:
+        try:
+            return h(object, config)
+        except ValueError:
+            pass
+    raise ValueError()
+
+
 # event class key -> [(handler, status, None)]
 _event_class_handlers = defaultdict(list)
 # alarm class key -> [(handler, status, None)]
 _alarm_class_handlers = defaultdict(list)
 # alarm job key -> [(handler, status, config)]
 _alarm_job_handlers = defaultdict(list)
+# model -> []
+_probe_config_handlers = defaultdict(list)

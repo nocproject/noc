@@ -64,11 +64,13 @@ class Command(BaseCommand):
         "GeoPointField": "auto",
         "URLField": "string",
         "PlainReferenceField": "string",
+        "ReferenceField": "string",
         "DictField": "auto",
         "RawDictField": "auto",
         "ListField": "auto",
         "ObjectIdField": "string",
-        "UUIDField": "string"
+        "UUIDField": "string",
+        "BinaryField": "string"
     }
     # Document -> Ext type widgets
     document_ext_widget = {
@@ -80,6 +82,7 @@ class Command(BaseCommand):
         "GeoPointField": "geofield",
         "URLField": "textfield",
         "PlainReferenceField": "textfield",
+        "ReferenceField": "textfield",
         "DictField": "textfield",
         "RawDictField": "textfield",
         "ListField": "textfield",

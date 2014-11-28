@@ -25,10 +25,6 @@ class LinkDiscoveryJob(MODiscoveryJob):
     map_task = None
     method = None
 #    ignored = not config.getboolean("interface_discovery", "enabled")
-#    initial_submit_interval = config.getint("interface_discovery",
-#        "initial_submit_interval")
-#    initial_submit_concurrency = config.getint("interface_discovery",
-#        "initial_submit_concurrency")
     strict_pending_candidates_check = True
 
     def is_submitted(self, local_interface, remote_object,
@@ -239,19 +235,10 @@ class LinkDiscoveryJob(MODiscoveryJob):
         self.reschedule_pending_jobs(object)
         return True
 
-    @classmethod
-    def initial_submit_queryset(cls):
-        return {"object_profile__enable_%s_discovery" % cls.method: True}
-
     def can_run(self):
         return (super(LinkDiscoveryJob, self).can_run()
                 and getattr(self.object.object_profile,
                     "enable_%s_discovery" % self.method))
-
-    @classmethod
-    def get_submit_interval(cls, object):
-        return getattr(object.object_profile,
-            "%s_discovery_max_interval" % cls.method)
 
     def get_failed_interval(self):
         return getattr(self.object.object_profile,

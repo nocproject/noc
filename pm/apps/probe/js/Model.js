@@ -23,6 +23,32 @@ Ext.define("NOC.pm.probe.Model", {
         {
             name: "name",
             type: "string"
+        },
+        {
+            name: "description",
+            type: "string"
+        },
+        {
+            name: "user",
+            type: "integer"
+        },
+        {
+            name: "user__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "n_instances",
+            type: "integer"
+        },
+        {
+            name: "storage",
+            type: "string"
+        },
+        {
+            name: "storage__label",
+            type: "string",
+            persist: false
         }
     ]
 });

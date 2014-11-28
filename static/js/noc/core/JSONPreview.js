@@ -39,22 +39,83 @@ Ext.define("NOC.core.JSONPreview", {
             tb.push(me.installButton);
         }
 
+        me.cmContainer = Ext.create({
+            xtype: "container",
+            layout: "fit",
+            tpl: [
+                '<div id="{cmpId}-cmEl" class="{cmpCls}" style="{size}"></div>'
+            ],
+            data: {
+                cmpId: me.id,
+                cmpCls: Ext.baseCSSPrefix + "codemirror " + Ext.baseCSSPrefix + 'html-editor-wrap ' + Ext.baseCSSPrefix + 'html-editor-input',
+                size: "width:100%;height:100%"
+            }
+        });
+
         Ext.apply(me, {
             dockedItems: [{
                 xtype: "toolbar",
                 dock: "top",
                 items: tb
             }],
-            items: [{
-                xtype: "container",
-                autoScroll: true,
-                bodyPadding: 4
-            }]
+            items: [me.cmContainer]
         });
         me.callParent();
         //
         me.urlTemplate = Handlebars.compile(me.restUrl);
         me.titleTemplate = Handlebars.compile(me.previewName);
+    },
+    //
+    afterRender: function() {
+        var me = this;
+        me.callParent(arguments);
+        me.initViewer();
+    },
+    //
+    initViewer: function() {
+        var me = this,
+            el = me.cmContainer.el.getById(me.id + "-cmEl", true);
+        // Create CodeMirror
+        me.viewer = new CodeMirror(el, {
+            readOnly: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true
+        });
+        // change the codemirror css
+        var css = Ext.util.CSS.getRule(".CodeMirror");
+        if(css){
+            css.style.height = "100%";
+            css.style.position = "relative";
+            css.style.overflow = "hidden";
+        }
+        css = Ext.util.CSS.getRule('.CodeMirror-Scroll');
+        if(css){
+            css.style.height = '100%';
+        }
+        me.setTheme(NOC.settings.preview_theme);
+    },
+    // Set CodeMirror theme
+    setTheme: function(name) {
+        var me = this;
+        if(name !== "default") {
+            Ext.util.CSS.swapStyleSheet(
+                "cmcss-" + me.id,  // Fake one
+                "/static/pkg/codemirror/theme/" + name + ".css"
+            );
+        }
+        me.viewer.setOption("theme", name);
+    },
+    //
+    renderText: function(text, syntax) {
+        var me = this;
+        syntax = syntax || null;
+        CodeMirror.modeURL = "/static/pkg/codemirror/mode/%N/%N.js";
+        me.viewer.setValue(text);
+        if(syntax) {
+            me.viewer.setOption("mode", syntax);
+            CodeMirror.autoLoadMode(me.viewer, syntax);
+        }
     },
     //
     preview: function(record) {
@@ -73,7 +134,7 @@ Ext.define("NOC.core.JSONPreview", {
             scope: me,
             success: function(response) {
                 var json = Ext.decode(response.responseText);
-                me.items.first().update("<pre>" + Ext.util.Format.htmlEncode(json) + "</pre>");
+                me.renderText(json, "javascript");
                 me.installButton.setDisabled(!record.get("uuid"));
             },
             failure: function() {

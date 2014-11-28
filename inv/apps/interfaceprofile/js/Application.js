@@ -16,6 +16,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
     model: "NOC.inv.interfaceprofile.Model",
     search: true,
     rowClassField: "row_class",
+    metricModelId: "inv.InterfaceProfile",
     columns: [
         {
             text: "Name",

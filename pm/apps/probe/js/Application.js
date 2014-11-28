@@ -8,8 +8,10 @@ console.debug("Defining NOC.pm.probe.Application");
 
 Ext.define("NOC.pm.probe.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
-        "NOC.pm.pmprobe.Model"
+    requires: [
+        "NOC.pm.probe.Model",
+        "NOC.main.user.LookupField",
+        "NOC.pm.storage.LookupField"
     ],
     model: "NOC.pm.probe.Model",
     search: true,
@@ -23,7 +25,25 @@ Ext.define("NOC.pm.probe.Application", {
             text: "Active",
             dataIndex: "is_active",
             renderer: NOC.render.Bool,
-            flex: 1
+            width: 50
+        },
+        {
+            text: "Instances",
+            dataIndex: "n_instances",
+            width: 70,
+            align: "right"
+        },
+        {
+            text: "Storage",
+            dataIndex: "storage",
+            width: 100,
+            renderer: NOC.render.Lookup("storage")
+        },
+        {
+            text: "Credentials",
+            dataIndex: "user",
+            flex: 1,
+            renderer: NOC.render.Lookup("user")
         }
     ],
     fields: [
@@ -31,12 +51,35 @@ Ext.define("NOC.pm.probe.Application", {
             name: "name",
             xtype: "textfield",
             allowBlank: false,
-            fieldLabel: "Name"
+            fieldLabel: "Name",
+            regex: /^[0-9a-zA-Z\-_\.]+$/
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
             boxLabel: "Active"
+        },
+        {
+            name: "storage",
+            xtype: "pm.storage.LookupField",
+            fieldLabel: "Storage"
+        },
+        {
+            name: "user",
+            xtype: "main.user.LookupField",
+            fieldLabel: "Credentials"
+        },
+        {
+            name: "n_instances",
+            xtype: "numberfield",
+            fieldLabel: "Instances",
+            minValue: 1
+        },
+        {
+            name: "description",
+            xtype: "textarea",
+            fieldLabel: "Description",
+            allowBlank: true
         }
     ],
     filters: [

@@ -15,7 +15,13 @@ class FailedScriptLog(Document):
     meta = {
         "collection": "noc.log.sa.failed_scripts",
         "allow_inheritance": False,
-        "indexes": ["-timestamp"]
+        "indexes": [
+            "-timestamp",
+            {
+                "fields": ["expires"],
+                "expireAfterSeconds": 0
+            }
+        ]
     }
 
     timestamp = DateTimeField()
@@ -24,6 +30,7 @@ class FailedScriptLog(Document):
     script = StringField()
     error_code = IntField()
     error_text = StringField()
+    expires = DateTimeField()
 
     def __unicode__(self):
         return str(self.id)
