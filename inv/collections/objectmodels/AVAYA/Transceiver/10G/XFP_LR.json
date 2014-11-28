@@ -1,0 +1,38 @@
+{
+    "name": "Avaya | Transceiver | 10G | XFP LR",
+    "uuid": "8022f15a-7a78-4819-b039-740b781e2d85",
+    "vendor__code": "AVAYA",
+    "description": "10GBASE-LR, XFP, SFM, 1310nm, 10km",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASE-LR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASE-LR"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "AA1403001-E5"
+        }
+    }
+}
