@@ -12,9 +12,11 @@ import re
 ## Django modules
 from django import forms
 ## NOC modules
-from noc.lib.app.simplereport import SimpleReport, SectionRow,\
-                                     SafeString
-from noc.main.models import AuditTrail
+from noc.lib.app.simplereport import (SimpleReport, SectionRow,
+                                      SafeString)
+from noc.main.models.audittrail import AuditTrail
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.address import Address
 
 
 class ReportHistoryApplication(SimpleReport):
@@ -34,6 +36,11 @@ class ReportHistoryApplication(SimpleReport):
     rx_detail = re.compile(r"^(.+?): (.+?) -> (.+?)$",
         re.MULTILINE | re.UNICODE)
 
+    MODELS = {
+        "ip.Prefix": Prefix,
+        "ip.Address": Address
+    }
+
     def format_detail(self, o):
         r = [m.groups() for m in self.rx_detail.finditer(o)]
         s = "<br/>".join(
@@ -48,29 +55,42 @@ class ReportHistoryApplication(SimpleReport):
         dt = datetime.date.today() - datetime.timedelta(days=days)
         scope = []
         if include_prefixes:
-            scope += ["ip_prefix"]
+            scope += ["ip.Prefix"]
         if include_addresses:
-            scope += ["ip_address"]
+            scope += ["ip.Address"]
         last = None
         r = []
         for l in AuditTrail.objects.filter(timestamp__gte=dt,
-                                           db_table__in=scope)\
-                                   .order_by("-timestamp")\
-                                   .select_related():
+                                           model_id__in=scope)\
+                                   .order_by("-timestamp"):
             d = l.timestamp.date()
             if d != last:
                 last = d
                 r += [SectionRow(d.isoformat())]
+            model = self.MODELS[l.model_id]
+            if l.object:
+                try:
+                    obj = unicode(model.objects.get(id=int(l.object)))
+                except model.DoesNotExist:
+                    obj = "UNKNOWN?"
+            else:
+                obj = "?"
+            chg = []
+            for c in l.changes:
+                if c.old is None and c.new is None:
+                    continue
+                chg += ["%s: %s -> %s" % (c.field, c.old, c.new)]
             r += [(
-                l.timestamp.time().strftime("%H:%M:%S"),
-                l.user.username,
+                self.to_json(l.timestamp),
+                l.user,
                 {
                     "C": "Create",
+                    "U": "Modify",
                     "M": "Modify",
                     "D": "Delete"
-                }[l.operation],
-                l.subject,
-                self.format_detail(l.body)
+                }[l.op],
+                obj,
+                self.format_detail("\n".join(chg))
             )]
 
         return self.from_dataset(

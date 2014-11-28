@@ -415,7 +415,7 @@ Cisco | IOSXR | Network | Link | DOM | Warning: Out of Threshold Recovered (SYSL
 Cisco | IOSXR | Network | Link | Link Down (SNMP),49e0013c-ce64-4b68-9ad1-3412215233ef,Cisco/IOSXR/Network/Link/Link_Down_SNMP_.json,2ccc356f9fc930157f50260aa4e8830a45ce155aaae4b1a678a8a522bd2a76eb
 Cisco | IOSXR | Network | Link | Link Down (SYSLOG),4b06593f-16fc-4440-a0ec-a86df4a60769,Cisco/IOSXR/Network/Link/Link_Down_SYSLOG_.json,8093188e44e661921eaaddd8add8ad809140bccd27f6ed5e776a1e4756b69e05
 Cisco | IOSXR | Network | Link | Link Up (SNMP),d1fc484f-d9e0-4df4-a796-9cf65a982f2e,Cisco/IOSXR/Network/Link/Link_Up_SNMP_.json,c75b6f23d4f59d990d60186680570911d19ca46435d91286bfa02d1ff8a24040
-Cisco | IOSXR | Network | Link | Link Up (SYSLOG),b53e0e2e-96ed-493d-9350-eadb25f0dd65,Cisco/IOSXR/Network/Link/Link_Up_SYSLOG_.json,de3d551054a164617f4a4bea9ae6a85c99c711a239f29715a72640177537a71d
+Cisco | IOSXR | Network | Link | Link Up (SYSLOG),b53e0e2e-96ed-493d-9350-eadb25f0dd65,Cisco/IOSXR/Network/Link/Link_Up_SYSLOG_.json,4b965cded73ec0d5f8f8be1c03871b948fdfb5f38fe46a496cf7a7f39e2a07b3
 Cisco | IOSXR | Network | MAC | MAC Moved (SYSLOG),44c33bbb-6ca0-4d26-93d6-aeb791f963b6,Cisco/IOSXR/Network/MAC/MAC_Moved_SYSLOG_.json,734987bf97a3efd15d2d4a7517da244340268cec6f8e5dddcd4f575e70ff59de
 Cisco | IOSXR | Network | MSDP | Peer Down (SYSLOG),6b7d690d-f0f6-46de-968b-9b4689a167c2,Cisco/IOSXR/Network/MSDP/Peer_Down_SYSLOG_.json,54ad84f607938c117d6822841c346ea62767731d51e971616877d7abaa911980
 Cisco | IOSXR | Network | MSDP | Peer Up (SYSLOG),9e5a0d6d-39a6-43a7-b444-187a561fe36b,Cisco/IOSXR/Network/MSDP/Peer_Up_SYSLOG_.json,aefcc26fc1ebfb4d74aa30a072ebcdd4163e048fb0d7a5dcfe2dad07751b7057
@@ -816,6 +816,8 @@ MikroTik | RouterOS | Security | Authentication | Logout (SYSLOG),4b379ed6-bee7-
 MikroTik | RouterOS | System | Reboot (SYSLOG),79311f14-7420-44c7-83da-c28fbc62446c,MikroTik/RouterOS/System/Reboot_SYSLOG_.json,e8fbfa5ca148768e74f2fe0344446fd1f0782b7e36ffcae784527e0b0fa82feb
 NOC | Managed Object | Ping Failed,203ac1f6-4485-4153-8645-013e209f1286,NOC/Managed_Object/Ping_Failed.json,e60be5788bc0eab10f8b14d95abd7b13184927dcd48e70345858dd9467a2f37b
 NOC | Managed Object | Ping OK,5b9c4d81-b82b-47cc-9a32-8a1537baf25a,NOC/Managed_Object/Ping_OK.json,3d9e17939e3913e090483c2b8485aadeb796a7362438e6dfb22cbb0ac0dab5dd
+NOC | PM | Out of Thresholds,e6fe6914-45dd-45af-870c-cd67dd31793b,NOC/PM/Out_of_Thresholds.json,e11af43a84682e943ad3fd46beeec03fd407f14a32db5b062817fb266f646918
+NOC | PM | Returned to Normal Range,7db85eb7-613e-4dd9-bf7d-7b2247af49bb,NOC/PM/Returned_to_Normal_Range.json,3b87e4bc4b235b75b9d2550b7540be14da0202bb4724063ca78fe8ccbfe3dd3e
 NOC | Periodic | Periodic Failed,50546a84-f3ef-4ce1-b1fd-7596dc19a978,NOC/Periodic/Periodic_Failed.json,9e680c64e01d99855b5ddc57f93dcdce2293762fe9bbe9ec46702679375dc9fa
 NOC | Periodic | Periodic Failed | PM Failed,727ed27f-c44d-4c22-a431-7f7fab05601f,NOC/Periodic/Periodic_Failed/PM_Failed.json,6f48ef7a1e9be09a4cf0fda7bad3eeaab3c8685c8f6a283c67aa0e639e1e20e5
 NOC | Periodic | Periodic OK,4abf6f8c-7ec6-4272-9ff1-16c793b993a7,NOC/Periodic/Periodic_OK.json,7467df75d92abcff8378694ca2f96896770bdd2f1934b1eb12cc2f8e981f91db

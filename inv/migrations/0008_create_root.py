@@ -11,6 +11,9 @@ from noc.lib.nosql import get_db
 
 
 class Migration(object):
+    ROOT_UUID = "0f1b7c90-c611-4046-9a83-b120377eb6e0"
+    LOST_N_FOUND_UUID = "b0fae773-b214-4edf-be35-3468b53b03f2"
+
     def forwards(self):
         db = get_db()
         # Initialize container models
@@ -20,6 +23,7 @@ class Migration(object):
             print "    Create Root model stub"
             root = om.insert({
                 "name": "Root",
+                "uuid": self.ROOT_UUID,
                 "data": {
                     "container": {
                         "container": True
@@ -33,6 +37,7 @@ class Migration(object):
             print "    Create Lost&Found model stub"
             lost_and_found = om.insert({
                 "name": "Lost&Found",
+                "uuid": self.LOST_N_FOUND_UUID,
                 "data": {
                     "container": {
                         "container": True

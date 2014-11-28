@@ -9,6 +9,7 @@
 ## NOC modules
 from noc.lib.nosql import Document, StringField, ForeignKeyField, BooleanField
 from noc.main.models import Style
+from noc.lib.solutions import get_probe_config
 
 
 class InterfaceProfile(Document):
@@ -50,3 +51,10 @@ class InterfaceProfile(Document):
             cls._default_profile = cls.objects.filter(
                 name="default").first()
             return cls._default_profile
+
+    def get_probe_config(self, config):
+        try:
+            return get_probe_config(self, config)
+        except ValueError:
+            pass
+        raise ValueError("Invalid config '%s'" % config)

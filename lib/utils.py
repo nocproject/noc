@@ -37,3 +37,17 @@ def deep_merge(t, d):
     r = deep_copy(t)
     _merge(r, d)
     return r
+
+
+def get_model_id(object):
+    """
+    Returns object's model id
+    """
+    if isinstance(object._meta, dict):
+        # Document
+        return u"%s.%s" % (object.__module__.split(".")[1],
+                           object.__class__.__name__)
+    else:
+        # Model
+        return u"%s.%s" % (object._meta.app_label,
+                           object._meta.object_name)

@@ -120,11 +120,9 @@ class PeriodicScheduler(threading.Thread):
         logging.info("Waiting for 15 seconds")
         for i in range(15):
             time.sleep(1)
-            self.s_daemon.heartbeat()
         transaction.enter_transaction_management()
         self.update_schedules()
         while True:
-            self.s_daemon.heartbeat()
             last_check = time.time()
             # Get tasks to run
             new_tasks = Schedule.get_tasks()

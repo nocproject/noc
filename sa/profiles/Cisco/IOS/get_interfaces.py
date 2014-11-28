@@ -309,6 +309,12 @@ class Script(NOCScript):
                 sub["snmp_ifindex"] = ifindex[full_ifname]
 
             if "." not in ifname and ":" not in ifname:
+                iftype = self.types.get(ifname[:2])
+                if not iftype:
+                    self.logger.info(
+                        "Ignoring unknown interface type: '%s", iftype
+                    )
+                    continue
                 iface = {
                     "name": ifname,
                     "admin_status": a_stat,

@@ -22,9 +22,3 @@ class MIBPreferenceApplication(ExtDocApplication):
 
     def field_is_builtin(self, o):
         return bool(CollectionCache.objects.filter(uuid=o.uuid))
-
-    @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"],
-          access="read", api=True)
-    def api_json(self, request, id):
-        p = self.get_object_or_404(MIBPreference, id=id)
-        return p.to_json()

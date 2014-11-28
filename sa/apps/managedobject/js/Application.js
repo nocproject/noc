@@ -112,6 +112,20 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onInteractions
         });
 
+        me.metricsButton = Ext.create("Ext.button.Button", {
+            text: "Metrics",
+            glyph: NOC.glyph.bar_chart_o,
+            scope: me,
+            handler: me.onMetrics
+        });
+
+        me.capsButton = Ext.create("Ext.button.Button", {
+            text: "Capabilities",
+            glyph: NOC.glyph.file,
+            scope: me,
+            handler: me.onCaps
+        });
+
         me.ITEM_CONFIG = me.registerItem(
             Ext.create("NOC.core.RepoPreview", {
                 app: me,
@@ -126,6 +140,12 @@ Ext.define("NOC.sa.managedobject.Application", {
         );
         me.ITEM_INVENTORY = me.registerItem("NOC.sa.managedobject.InventoryPanel");
         me.ITEM_INTERFACE = me.registerItem("NOC.sa.managedobject.InterfacePanel");
+        me.ITEM_INTERFACE_METRICS = me.registerItem(
+            Ext.create("NOC.core.MetricSettingsPanel", {
+                app: me,
+                metricModelId: "inv.Interface"
+            })
+        );
         me.ITEM_SCRIPTS = me.registerItem("NOC.sa.managedobject.ScriptPanel");
         me.ITEM_LINKS = me.registerItem("NOC.sa.managedobject.LinksPanel");
 
@@ -135,6 +155,15 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.ITEM_ALARM = me.registerItem("NOC.sa.managedobject.AlarmPanel");
         me.ITEM_INTERACTIONS = me.registerItem("NOC.sa.managedobject.InteractionsPanel");
+
+        me.ITEM_METRICS = me.registerItem(
+            Ext.create("NOC.core.MetricSettingsPanel", {
+                app: me,
+                metricModelId: "sa.ManagedObject"
+            })
+        );
+
+        me.ITEM_CAPS = me.registerItem("NOC.sa.managedobject.CapsPanel");
 
         Ext.apply(me, {
             columns: [
@@ -505,7 +534,9 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.linksButton,
                 me.discoveryButton,
                 me.alarmsButton,
-                me.interactionsButton
+                me.interactionsButton,
+                me.metricsButton,
+                me.capsButton
             ]
         });
         me.callParent();
@@ -516,6 +547,12 @@ Ext.define("NOC.sa.managedobject.Application", {
             title: "By Managed",
             name: "is_managed",
             ftype: "boolean"
+        },
+        {
+            title: "By SA Profile",
+            name: "profile_name",
+            ftype: "lookup",
+            lookup: "main.ref.profile"
         },
         {
             title: "By Obj. Profile",
@@ -635,6 +672,16 @@ Ext.define("NOC.sa.managedobject.Application", {
     onAlarm: function() {
         var me = this;
         me.previewItem(me.ITEM_ALARM, me.currentRecord);
+    },
+    //
+    onMetrics: function() {
+        var me = this;
+        me.previewItem(me.ITEM_METRICS, me.currentRecord);
+    },
+    //
+    onCaps: function() {
+        var me = this;
+        me.previewItem(me.ITEM_CAPS, me.currentRecord);
     },
     //
     onInterfaceClick: function(record) {

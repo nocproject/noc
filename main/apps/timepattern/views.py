@@ -23,6 +23,7 @@ class TimePatternApplication(ExtModelApplication):
     title = "Time Pattern"
     menu = "Setup | Time Patterns"
     model = TimePattern
+    glyph = "clock-o"
 
     terms = ModelInline(TimePatternTerm)
 

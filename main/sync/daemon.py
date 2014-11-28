@@ -2,76 +2,119 @@
 ##----------------------------------------------------------------------
 ## noc-sync daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-import logging
-import threading
+import time
 ## NOC modules
-from noc.lib.daemon import Daemon
-from noc.lib.stomp.threadclient import ThreadedSTOMPClient
-from noc.lib.modutils import load_subclasses
-from channel import Channel
+from noc.lib.solutions import get_solution
+from noc.lib.daemon.autoconf import AutoConfDaemon
+from noc.sa.interfaces.base import DictParameter, InterfaceTypeError
 
 
-class SyncDaemon(Daemon):
+class SyncDaemon(AutoConfDaemon):
     daemon_name = "noc-sync"
+    AUTOCONF_PATH = "/main/sync/"
 
     def __init__(self):
-        self.channels = {}  # name -> Channel instance
+        self.handlers = {}  # name -> handler
+        self.tmap = {}  # type -> handler
+        self.configured = set()  # set of handlers
         super(SyncDaemon, self).__init__()
-        logging.info("Running noc-sync")
 
     def load_config(self):
         super(SyncDaemon, self).load_config()
-        # STOMP settings
-        self.stomp_host = self.config.get("stomp", "host")
-        self.stomp_port = self.config.getint("stomp", "port")
-        self.stomp_client_id = self.config.get("stomp", "client_id")
-        self.stomp_login = self.config.get("stomp", "login")
-        self.stomp_password = self.config.get("stomp", "password")
-        # Load channels
-        for ch in self.config.sections():
-            if "/" not in ch:
-                continue
-            self.load_channel(ch)
+        left = set(self.handlers)
+        for c in self.config.sections():
+            if (c.startswith("sync:") and
+                    self.config.has_option(c, "enabled") and
+                    self.config.getboolean(c, "enabled")
+            ):
+                if c in self.handlers:
+                    left.remove(c)
+                    self.configure_handler(c)
+                else:
+                    self.add_handler(c)
+        for c in left:
+            self.close_handler(c)
 
-    def load_channel(self, channel):
-        if not self.config.getboolean(channel, "enabled"):
-            logging.info("Skipping disabled channel %s" % channel)
+    def close_handler(self, name):
+        self.logger.info("Closing handler %s", name)
+        self.handlers[name].close()
+        del self.tmap[self.handlers[name].type]
+        del self.handlers[name]
+
+    def add_handler(self, name):
+        self.logger.info("Initializing handler %s", name)
+        h = self.config.get(name, "handler")
+        hcls = get_solution(h)
+        handler = hcls(self, name)
+        self.handlers[name] = handler
+        self.tmap[handler.type] = handler
+        try:
+            cfg = self.clean_config(handler)
+        except InterfaceTypeError, why:
+            self.logger.error("Cannot configure handler %s: %s",
+                              name, why)
+            self.close_handler(name)
             return
-        parts = channel.split("/")
-        ch_name = parts.pop(-1)
-        c_type = self.config.get(channel, "type", None)
-        if c_type:
-            parts += c_type.split("/")
-        mn = "noc.main.sync.channels.%s" % ".".join(parts)
-        c = load_subclasses(mn, Channel)
-        if not c or len(c) != 1:
-            self.die("Unable to load channel %s" % channel)
-        config = {}
-        for opt in self.config.options(channel):
-            config[opt] = self.config.get(channel, opt)
-        self.channels[channel] = c[0](self, channel, ch_name, config)
+        self.logger.info("Configuring handler %s (%s): %s",
+                         name, handler.type, cfg)
+        try:
+            handler.configure(**cfg)
+        except ValueError, why:
+            self.logger.error("Cannot configure handler %s: %s",
+                              name, why)
+            self.close_handler(name)
+
+    def clean_config(self, handler):
+        v = {}
+        if isinstance(handler.config, dict):
+            ci = DictParameter(attrs=handler.config)
+        else:
+            ci = handler.config
+        # Read config
+        for opt in self.config.options(handler.name):
+            if opt not in ("enabled", "handler"):
+                v[opt] = self.config.get(handler.name, opt)
+        # Clean config
+        return ci.clean(v)
 
     def run(self):
-        self.stomp_client = ThreadedSTOMPClient(
-            self.stomp_host, self.stomp_port,
-            login=self.stomp_login,
-            passcode=self.stomp_password,
-            client_id=self.stomp_client_id)
-        self.stomp_client.start()
-        for c in self.channels:
-            self.channels[c].init()
-        while self.stomp_client.factory_thread.is_alive():
-            self.stomp_client.factory_thread.join(1)
+        while True:
+            time.sleep(3)
 
-    def send(self, message, destination,
-             receipt=False, persistent=False, expires=None):
-        self.stomp_client.send(message, destination,
-            receipt=receipt, persistent=persistent, expires=expires)
+    def on_object_create(self, uuid, **kwargs):
+        type = kwargs.get("type")
+        if not type:
+            return
+        handler = self.tmap.get(type)
+        if not handler:
+            self.logger.info("No handler for type %s, skipping", type)
+            return
+        handler.on_create(uuid, kwargs.get("data", {}))
+        self.configured.add(handler)
 
-    def subscribe(self, destination, callback):
-        self.stomp_client.subscribe(destination, callback)
+    def on_object_delete(self, uuid):
+        pass
+
+    def on_object_change(self, uuid, **kwargs):
+        type = kwargs.get("type")
+        if not type:
+            return
+        handler = self.tmap.get(type)
+        if not handler:
+            self.logger.info("No handler for type %s, skipping", type)
+            return
+        handler.on_change(uuid, kwargs.get("data", {}))
+        self.configured.add(handler)
+
+    def on_configuration_done(self):
+        """
+        End of configuration round
+        """
+        for h in self.configured:
+            h.on_configuration_done()
+        self.configured = set()

@@ -10,6 +10,8 @@
 import select
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 def has_select():
     """
@@ -49,25 +51,25 @@ def has_epoll():
 
 def get_select_poller():
     from selectpoller import SelectPoller
-    logging.info("Activating 'select' poller")
+    logger.info("Activating 'select' poller")
     return SelectPoller()
 
 
 def get_poll_poller():
     from pollpoller import PollPoller
-    logging.info("Activating 'poll' poller")
+    logger.info("Activating 'poll' poller")
     return PollPoller()
 
 
 def get_epoll_poller():
     from epollpoller import EpollPoller
-    logging.info("Activating 'epoll' poller")
+    logger.info("Activating 'epoll' poller")
     return EpollPoller()
 
 
 def get_kevent_poller():
     from keventpoller import KEventPoller
-    logging.info("Activating 'kevent' poller")
+    logger.info("Activating 'kevent' poller")
     return KEventPoller()
 
 
@@ -89,7 +91,7 @@ def get_methods():
 
 
 def get_poller(method):
-    logging.info("Setting up '%s' polling method" % method)
+    logger.info("Setting up '%s' polling method" % method)
     if method == "optimal":
         # Detect possibilities
         if has_kevent():  # kevent

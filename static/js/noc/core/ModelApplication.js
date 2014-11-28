@@ -28,6 +28,7 @@ Ext.define("NOC.core.ModelApplication", {
     previewIcon: "icon_magnifier",
     preview: null,
     treeFilter: null,
+    metricModelId: null,  // Add MetricSettings button
     //
     initComponent: function() {
         var me = this;
@@ -64,6 +65,15 @@ Ext.define("NOC.core.ModelApplication", {
         me.hasGroupEdit = me.checkGroupEdit();
         // Create GRID card
         me.ITEM_GRID = me.registerItem(me.createGrid());
+        // Create metrics editor card
+        if(me.metricModelId) {
+            me.ITEM_METRIC_SETTINGS = me.registerItem(
+                Ext.create("NOC.core.MetricSettingsPanel", {
+                    app: me,
+                    metricModelId: me.metricModelId
+                })
+            );
+        }
         // Create FORM card
         me.ITEM_FORM = me.registerItem(me.createForm());
         // Create Group Edit form when necessary
@@ -81,9 +91,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Process commands
         switch(me.getCmd()) {
             case "open":
-                var fp = {};
-                fp[me.idField] = me.noc.cmd.id;
-                me.store.setFilterParams(fp);
+                me.loadById(me.noc.cmd.id);
                 break;
             case "history":
                 me.restoreHistory(me.noc.cmd.args);
@@ -190,16 +198,9 @@ Ext.define("NOC.core.ModelApplication", {
                 c.renderer = eval(c.renderer);
             }
         });
-        var selModel;
+        var selModel = Ext.create("Ext.selection.CheckboxModel");
         if(me.actions) {
-            selModel = Ext.create("Ext.selection.CheckboxModel", {
-                listeners: {
-                    scope: me,
-                    selectionchange: me.onActionSelectionChange
-                }
-            });
-        } else {
-            selModel = Ext.create("Ext.selection.CheckboxModel");
+            selModel.on("selectionchange", me.onActionSelectionChange, me);
         }
 
         var rowItems = [
@@ -428,6 +429,18 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             });
         }
+        if(me.metricModelId) {
+            // Create *Show metrics* button
+            formToolbar.push({
+                text: "Metrics",
+                glyph: NOC.glyph.bar_chart_o,
+                scope: me,
+                handler: function() {
+                    var me = this;
+                    me.onMetrics(me.currentRecord);
+                }
+            });
+        }
         if(me.formToolbar && me.formToolbar.length) {
             formToolbar.push("-");
         }
@@ -558,7 +571,7 @@ Ext.define("NOC.core.ModelApplication", {
         }
         formFields = formFields.concat(formInlines);
 
-        var formPanel = Ext.create("Ext.container.Container", {
+        me.formPanel = Ext.create("Ext.container.Container", {
             itemId: "form",
             layout: "fit",
             items: {
@@ -581,8 +594,8 @@ Ext.define("NOC.core.ModelApplication", {
                 tbar: me.applyPermissions(formToolbar)
             }
         });
-        me.form = formPanel.items.first().getForm();
-        return formPanel;
+        me.form = me.formPanel.items.first().getForm();
+        return me.formPanel;
     },
     // Show grid
     showGrid: function() {
@@ -609,7 +622,46 @@ Ext.define("NOC.core.ModelApplication", {
             Model = me.store.getModel(),
             record = new Model(data),
             mv = record.validate(),
-            result = {};
+            result = {},
+            pollProgress = function(url) {
+                Ext.Ajax.request({
+                    url: url,
+                    method: "GET",
+                    scope: me,
+                    success: onSuccess,
+                    failure: onFailure
+                });
+            },
+            onSuccess = function(response) {
+                if(response.status === 202) {
+                    // Future in progress
+                    Ext.Function.defer(
+                        pollProgress, 1000, me,
+                        [response.getResponseHeader("Location")]
+                    );
+                } else {
+                    // Process result
+                    var data = Ext.decode(response.responseText);
+                    // @todo: Update current record with data
+                    if(me.currentQuery[me.idField]) {
+                        delete me.currentQuery[me.idField];
+                    }
+                    me.showGrid();
+                    me.reloadStore();
+                    me.saveInlines(data[me.idField], me.inlineStores);
+                    me.unmask();
+                }
+            },
+            onFailure = function(response) {
+                var data = response.responseText ? Ext.decode(response.responseText) : null;
+                if(data && data.success === false) {
+                    NOC.error(data.message);
+                } else {
+                    NOC.error("Error saving record!");
+                    console.log(response.responseText);
+                }
+                me.unmask();
+            };
 
         if(!mv.isValid()) {
             // @todo: Error report
@@ -623,28 +675,15 @@ Ext.define("NOC.core.ModelApplication", {
                 result[name] = data[name];
             }
         }
+        me.mask("Saving ...");
         // Save data
         Ext.Ajax.request({
             url: me.base_url + (me.currentRecord ? result[me.idField] + "/" : ""),
             method: me.currentRecord ? "PUT" : "POST",
             scope: me,
             jsonData: result,
-            success: function(response) {
-                var data = Ext.decode(response.responseText);
-                // @todo: Update current record with data
-                me.showGrid();
-                me.reloadStore();
-                me.saveInlines(data[me.idField], me.inlineStores);
-            },
-            failure: function(response) {
-                var data = Ext.decode(response.responseText);
-                if(data && data.status === false) {
-                    NOC.error(data["message"]);
-                } else {
-                    NOC.error("Error saving record!");
-                    console.log(response.responseText);
-                }
-            }
+            success: onSuccess,
+            failure: onFailure
         });
     },
     //
@@ -740,19 +779,43 @@ Ext.define("NOC.core.ModelApplication", {
     // Delete record
     deleteRecord: function() {
         var me = this;
+        pollProgress = function(url) {
+            Ext.Ajax.request({
+                url: url,
+                method: "GET",
+                scope: me,
+                success: onSuccess,
+                failure: onFailure
+            });
+        },
+        onSuccess = function(response) {
+            if(response.status === 202) {
+                // Future in progress
+                Ext.Function.defer(
+                    pollProgress, 1000, me,
+                    [response.getResponseHeader("Location")]
+                );
+            } else {
+                // Process result
+                me.currentRecord = null;
+                me.reloadStore();
+                me.showGrid();
+                me.unmask();
+            }
+        },
+        onFailure = function(response) {
+            var data = Ext.decode(response.responseText);
+            NOC.error(data.message);
+            me.unmask();
+        };
+
+        me.mask("Deleting ...");
         Ext.Ajax.request({
             url: me.base_url + me.currentRecord.get(me.idField) + "/",
             method: "DELETE",
             scope: me,
-            success: function() {
-                me.currentRecord = null;
-                me.reloadStore();
-                me.showGrid();
-            },
-            failure: function(response) {
-                var data = Ext.decode(response.responseText);
-                NOC.error(data.message);
-            }
+            success: onSuccess,
+            failure: onFailure
         });
     },
     // Reload store with current query
@@ -1177,6 +1240,9 @@ Ext.define("NOC.core.ModelApplication", {
     checkGroupEdit: function() {
         var me = this,
             check = function(seq) {
+                if(!seq) {
+                    return false;
+                }
                 for(var i = 0; i < seq.length; i++) {
                     var v = seq[i];
                     if(v.groupEdit === true) {
@@ -1381,5 +1447,10 @@ Ext.define("NOC.core.ModelApplication", {
                 NOC.error("Failed");
             }
         });
+    },
+    //
+    onMetrics: function(record) {
+        var me = this;
+        me.showItem(me.ITEM_METRIC_SETTINGS).preview(record);
     }
 });

@@ -8,6 +8,7 @@
 
 ## Python modules
 import math
+import struct
 
 
 class DecodeError(Exception):
@@ -18,11 +19,14 @@ class BERDecoder(object):
     def parse_type(self, msg):
         """
         :param msg:
-        :return:  tag number, primitive flag, rest
+        :return:  tag number, primitive flag, implicit flag, rest
         """
         v = ord(msg[0])
+        # 0xc0 == 11000000
         tag_class = v & 0xc0
+        # 0x20 == 00100000
         is_primitive = not bool(v & 0x20)
+        # 0x1f == 00011111
         tag_id = v & 0x1f
         if tag_id == 0x1f:
             # high-tag number form
@@ -34,13 +38,16 @@ class BERDecoder(object):
                 tag_id = tag_id * 128 + c & 0x7f
                 if not (c & 0x80):
                     break
-            return tag_class, tag_id, is_primitive, msg[i:]
+            return tag_class, tag_id, is_primitive, False, msg[i:]
         elif v & 0x80:
             # Implicit types
-            return 0, 0x80, is_primitive, msg[1:]
+            if is_primitive and msg[1:] == "\x00":
+                return 0, 5, is_primitive, False, msg[1:]
+            else:
+                return 0, tag_id, is_primitive, True, msg[1:]
         else:
             # low tag number form
-            return tag_class, tag_id, is_primitive, msg[1:]
+            return tag_class, tag_id, is_primitive, False, msg[1:]
 
     def parse_length(self, msg):
         v = ord(msg[0])
@@ -56,12 +63,17 @@ class BERDecoder(object):
             return v, msg[1:]
 
     def parse_tlv(self, msg):
-        tag_class, tag, is_primitive, msg = self.parse_type(msg)
-        decoder = self.DECODERS[tag_class][is_primitive].get(tag)
+        tag_class, tag, is_primitive, is_implicit, msg = self.parse_type(msg)
+        if is_implicit:
+            decoder = lambda s, msg: s.parse_implicit(msg, tag)
+        else:
+            decoder = self.DECODERS[tag_class][is_primitive].get(tag)
         length, msg = self.parse_length(msg)
         value = msg[:length]
         if decoder is None:
             pt = "primitive" if is_primitive else "constructed"
+            if is_implicit:
+                pt = "implicit " + pt
             if tag_class:
                 pt += " application"
             raise DecodeError(
@@ -110,6 +122,41 @@ class BERDecoder(object):
             m = 1 << (8 * len(msg))
             v -= m
         return v
+
+    def parse_real(self, msg):
+        """
+        """
+        if not msg:
+            return 0.0
+        f = ord(msg[0])
+        if f & 0x80:  # Binary encoding, 8.5.6
+            # @todo: Снести в конец
+            base = {
+                0x00: 2,
+                0x10: 4,
+                0x20: 16
+            }[f & 0x30]  # 8.5.6.2
+            factor = (f & 0x0c) >> 2
+            n = (f & 0x03) + 1
+            e = self.parse_int(msg[1:n + 1])  # 8.5.6.4
+            p = self.parse_int(msg[n + 1:])  # 8.5.6.5
+            if f & 0x40:
+                p = -p  # 8.5.6.1
+            return p * pow(base, e)
+        elif f & 0xc0 == 0:  # Decimal encoding, 8.5.7
+            try:
+                if f & 0x3f == 0x01:  # ISO 6093 NR1 form
+                    return float(msg[1:])  # 456
+                elif f & 0x3f == 0x02:  # ISO 6093 NR2 form
+                    return float(msg[1:])  # 4.56
+                elif f & 0x3f == 0x03:  # ISO 6093 NR3 form
+                    return float(msg[1:])  # 0123e456
+            except ValueError:
+                raise DecodeError("Invalid REAL representation: %s" % msg[1:])
+        elif f & 0x40:  # infinitive, 8.5.8
+            return float("-inf" if f & 0x01 else "inf")
+        else:
+            raise DecodeError("Unknown REAL encoding: %s" % f)
 
     def parse_p_bitstring(self, msg):
         unused = ord(msg[0])
@@ -165,6 +212,13 @@ class BERDecoder(object):
             r += [v]
         return r
 
+    def parse_implicit(self, msg, tag):
+        r = [tag]
+        while msg:
+            v, msg = self.parse_tlv(msg)
+            r += [v]
+        return r
+
     def parse_set(self, msg):
         r = []
         while msg:
@@ -190,7 +244,7 @@ class BERDecoder(object):
                 6: parse_p_oid,  # 6, 0x6, OBJECT IDENTIFIER
                 # Object Descriptor	P/C	7	7
                 # EXTERNAL	C	8	8
-                # REAL (float)	P	9	9
+                9: parse_real,  # REAL (float)	P	9	9
                 10: parse_int,  # 10, 0xA, ENUMERATED
                 # UTF8String	P/C	12	C
                 # RELATIVE-OID	P	13	D
@@ -236,7 +290,6 @@ class BERDecoder(object):
                 # CHARACTER STRING	P/C	29	1D
                 # BMPString	P/C	30	1E
                 # (use long-form)	-	31	1F
-                0x80: parse_sequence  # implicit constructed
             }
         },
         # SNMP application types
@@ -272,9 +325,9 @@ class BEREncoder(object):
             # Short form
             r += [chr(l)]
         else:
-            # Long form
-            # @todo: Implement
-            raise NotImplementedError()
+            # Prepare length's representation
+            ll = struct.pack("!Q", l).lstrip("\x00")
+            r += [chr(0x80 | len(ll)), ll]
         # Put rest of data
         r += [data]
         return "".join(r)
@@ -298,7 +351,7 @@ class BEREncoder(object):
             data = "".join(data)
         return self.encode_tlv(16, False, data)
 
-    def encode_implicit_constructed(self, data, tag=0):
+    def encode_choice(self, tag, data):
         if isinstance(data, (list, tuple)):
             data = "".join(data)
         return self.encode_tlv(0x80 + tag, False, data)

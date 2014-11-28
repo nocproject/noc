@@ -1,0 +1,6 @@
+{
+    "name": "DB | Ops | Query",
+    "uuid": "4ceb2fc1-6aa4-4d7a-8660-93e37722267b",
+    "description": "Database query operations",
+    "measure": "ops/sec"
+}

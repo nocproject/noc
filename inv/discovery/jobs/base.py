@@ -20,8 +20,6 @@ from noc.sa.script import script_registry
 
 class MODiscoveryJob(IntervalJob):
     ignored = True
-    initial_submit_interval = None
-    initial_submit_concurrency = None
 
     def get_display_key(self):
         if self.object:
@@ -39,32 +37,6 @@ class MODiscoveryJob(IntervalJob):
         """
         return True
 
-    @classmethod
-    def initial_submit(cls, scheduler, keys):
-        profiles = [s.rsplit(".", 1)[0]
-                    for s in script_registry.classes
-                    if s.endswith(".%s" % cls.map_task)]
-        isc = cls.initial_submit_concurrency
-        qs = cls.initial_submit_queryset()
-        if type(qs) == dict:
-            qs = Q(**qs)
-        for mo in ManagedObject.objects.filter(
-                is_managed=True, profile_name__in=profiles)\
-            .filter(qs).exclude(id__in=keys).only("id"):
-            if scheduler.ensure_job(cls.name, mo):
-                isc -= 1
-                if not isc:
-                    break
-
-    @classmethod
-    def initial_submit_queryset(cls):
-        """
-        Return dict or Q object to restrict intial submit queryset
-        :param cls:
-        :return:
-        """
-        return Q()
-
     def get_defererence_query(self):
         """
         Restrict job to objects having *is_managed* set
@@ -75,13 +47,6 @@ class MODiscoveryJob(IntervalJob):
     def can_run(self):
         return self.object.get_status() and (
             not self.map_task or self.object.is_managed)
-
-    @classmethod
-    def get_submit_interval(cls, object):
-        raise NotImplementedError
-
-    def get_interval(self):
-        return self.get_submit_interval(self.object)
 
     def get_group(self):
         return "discovery-%s" % self.key

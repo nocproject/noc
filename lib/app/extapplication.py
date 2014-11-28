@@ -10,13 +10,13 @@
 from __future__ import with_statement
 import os
 ## Django modules
-from django.views.static import serve as serve_static
 from django.http import HttpResponse
 ## NOC modules
 from application import Application, view
 from access import HasPerm, PermitLogged
 from noc.lib.serialize import json_decode, json_encode
 from noc.main.models.favorites import Favorites
+from noc.main.models.slowop import SlowOp
 
 
 class ExtApplication(Application):
@@ -184,7 +184,7 @@ class ExtApplication(Application):
         """
         Static file server
         """
-        return serve_static(request, path, document_root=self.document_root)
+        return self.render_static(request, path)
 
     @view(url="^favorites/app/(?P<action>set|reset)/$",
         method=["POST"],
@@ -230,6 +230,39 @@ class ExtApplication(Application):
             Favorites(user=request.user, app=self.app_id,
                 favorites=[item]).save()
         return True
+
+    @view(url="^futures/(?P<f_id>[0-9a-f]{24})/$", method=["GET"],
+          access="launch", api=True)
+    def api_future_status(self, request, f_id):
+        op = self.get_object_or_404(SlowOp, id=f_id,
+                                    app_id=self.get_app_id(),
+                                    user=request.user.username)
+        if op.is_ready():
+            # Note: the slow operation will be purged by TTL index
+            result = op.result()
+            if isinstance(result, Exception):
+                return self.render_json({
+                    "success": False,
+                    "message": "Error",
+                    "traceback": str(result)
+                }, status=self.INTERNAL_ERROR)
+            else:
+                return result
+        else:
+            return self.response_accepted(request.path)
+
+    def submit_slow_op(self, request, fn, *args, **kwargs):
+        f = SlowOp.submit(
+            fn,
+            self.get_app_id(), request.user.username,
+            *args, **kwargs
+        )
+        if f.done():
+            return f.result()
+        else:
+            return self.response_accepted(
+                location="%sfutures/%s/" % (self.base_url, f.slow_op.id)
+            )
 
     @view(url="^templates/(?P<name>[0-9a-zA-Z_/]+)\.js$", access=True)
     def view_template(self, request, name):

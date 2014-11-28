@@ -20,10 +20,6 @@ class BFDLinkDiscoveryJob(LinkDiscoveryJob):
     map_task = "get_bfd_sessions"
     method = "bfd"
     ignored = not config.getboolean("bfd_discovery", "enabled")
-    initial_submit_interval = config.getint("bfd_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("bfd_discovery",
-        "initial_submit_concurrency")
     strict_pending_candidates_check = False
 
     def process_result(self, object, result):

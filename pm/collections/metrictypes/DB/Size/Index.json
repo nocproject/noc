@@ -1,0 +1,6 @@
+{
+    "name": "DB | Size | Index",
+    "uuid": "e939070a-cb5c-4896-a86e-ca66f77754c2",
+    "description": "Database total indexes size",
+    "measure": "bytes"
+}

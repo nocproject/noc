@@ -20,33 +20,20 @@ Ext.define("NOC.main.audittrail.Model", {
             type: "string"
         },
         {
-            name: "user__label",
-            type: "string",
-            persist:false
-        },
-        {
             name: "timestamp",
             type: "string"
         },
         {
-            name: "model",
+            name: "model_id",
             type: "string"
         },
         {
-            name: "db_table",
+            name: "op",
             type: "string"
         },
         {
-            name: "operation",
-            type: "string"
-        },
-        {
-            name: "subject",
-            type: "string"
-        },
-        {
-            name: "body", 
-            type: "string"
+            name: "changes",
+            type: "auto"
         }
     ]
 });

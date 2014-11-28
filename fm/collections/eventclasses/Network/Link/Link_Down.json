@@ -10,6 +10,7 @@
             "required": true
         }
     ],
+    "link_event": true,
     "handlers": [
         "noc.fm.handlers.event.link.oper_down"
     ],

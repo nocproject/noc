@@ -52,7 +52,7 @@ Ext.define("Ext.ux.form.DictField", {
                     dataIndex: "value",
                     flex: 1,
                     editor: "textfield",
-                    renderer: NOC.renderer.htmlEncode
+                    renderer: NOC.render.htmlEncode
                 }
             ],
             plugins: [

@@ -69,17 +69,17 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
-            name: "enable_config_polling",
+            name: "enable_config_discovery",
             type: "boolean",
             defaultValue: true
         },
         {
-            name: "config_polling_min_interval",
+            name: "config_discovery_min_interval",
             type: "int",
             defaultValue: 600
         },
         {
-            name: "config_polling_max_interval",
+            name: "config_discovery_max_interval",
             type: "int",
             defaultValue: 86400
         },
@@ -95,6 +95,21 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "version_inventory_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
+            name: "enable_caps_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "caps_discovery_min_interval",
+            type: "int",
+            defaultValue: 600
+        },
+        {
+            name: "caps_discovery_max_interval",
             type: "int",
             defaultValue: 86400
         },
