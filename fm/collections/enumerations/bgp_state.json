@@ -5,6 +5,7 @@
         "ACTIVE": ["active"],
         "CONNECT": ["connect"],
         "ESTABLISHED": ["established"],
+        "ESTABSYNC": ["estabsync"],
         "IDLE": ["idle"],
         "OPENCONFIRM": ["openconfirm"],
         "OPENSENT": ["opensent"]
