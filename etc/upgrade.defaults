@@ -87,7 +87,7 @@ MONGO_PORT=
 #
 # Additional index to search noc-pkg-* packages
 #
-PIP_FIND_LINKS=https://bitbucket.org/nocproject/noc/downloads
+PIP_FIND_LINKS=https://cdn.nocproject.org/pkg/simple/
 #
 # Install debugging versions of JS packages
 #

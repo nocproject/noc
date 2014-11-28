@@ -210,9 +210,6 @@ if [ -f "etc/requirements/local.txt" ]; then
     PIP_ARGS="$PIP_ARGS -r etc/requirements/local.txt"
 fi
 if [ ! -z "$PIP_FIND_LINKS" ]; then
-    if [ "$PIP_FIND_LINKS" = "https://cdn.nocproject.org/pkg/simple/" ]; then
-        PIP_FIND_LINKS=https://bitbucket.org/nocproject/noc/downloads
-    fi
     PIP_ARGS="$PIP_ARGS --find-links $PIP_FIND_LINKS --allow-all-external"
 fi
 if [ $PIP_REQUIREMENTS_NOC -nt $PIP_FLAG -o $PIP_REQUIREMENTS_COMMON -nt $PIP_FLAG ]; then
