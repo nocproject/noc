@@ -1,0 +1,38 @@
+{
+    "name": "Avaya | Transceiver | 1G | LX",
+    "uuid": "ced14ecb-9556-45c3-8e38-3fbd7d01c92e",
+    "vendor__code": "AVAYA",
+    "description": "1000BASE-LX, SFP, SFM, 1310, 10km",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "AA1419049-E6"
+        }
+    }
+}

@@ -1,0 +1,449 @@
+{
+    "name": "AVAYA | ERS | 5650TD-PWR",
+    "uuid": "a7865e00-d17a-4aa7-9914-70b9a61f1bbd",
+    "vendor__code": "AVAYA",
+    "description": "ERS 5650TD-PWR with 48 x 10/100/1000Base-T IEEE 802.3af PoE ports, plus 2 x 10GBase-XFP Uplink ports, and 600W AC Integrated Power Supply",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Management console",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Port 01",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 02",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 03",
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 04",
+            "direction": "s",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 05",
+            "direction": "s",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 06",
+            "direction": "s",
+            "gender": "f",
+            "name": "6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 07",
+            "direction": "s",
+            "gender": "f",
+            "name": "7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 08",
+            "direction": "s",
+            "gender": "f",
+            "name": "8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 09",
+            "direction": "s",
+            "gender": "f",
+            "name": "9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 10",
+            "direction": "s",
+            "gender": "f",
+            "name": "10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 11",
+            "direction": "s",
+            "gender": "f",
+            "name": "11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 12",
+            "direction": "s",
+            "gender": "f",
+            "name": "12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 13",
+            "direction": "s",
+            "gender": "f",
+            "name": "13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 14",
+            "direction": "s",
+            "gender": "f",
+            "name": "14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 15",
+            "direction": "s",
+            "gender": "f",
+            "name": "15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 16",
+            "direction": "s",
+            "gender": "f",
+            "name": "16",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 17",
+            "direction": "s",
+            "gender": "f",
+            "name": "17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 18",
+            "direction": "s",
+            "gender": "f",
+            "name": "18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 19",
+            "direction": "s",
+            "gender": "f",
+            "name": "19",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 20",
+            "direction": "s",
+            "gender": "f",
+            "name": "20",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 21",
+            "direction": "s",
+            "gender": "f",
+            "name": "21",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 22",
+            "direction": "s",
+            "gender": "f",
+            "name": "22",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 23",
+            "direction": "s",
+            "gender": "f",
+            "name": "23",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 24",
+            "direction": "s",
+            "gender": "f",
+            "name": "24",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 25",
+            "direction": "s",
+            "gender": "f",
+            "name": "25",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 26",
+            "direction": "s",
+            "gender": "f",
+            "name": "26",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 27",
+            "direction": "s",
+            "gender": "f",
+            "name": "27",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 28",
+            "direction": "s",
+            "gender": "f",
+            "name": "28",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 29",
+            "direction": "s",
+            "gender": "f",
+            "name": "29",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 30",
+            "direction": "s",
+            "gender": "f",
+            "name": "30",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 31",
+            "direction": "s",
+            "gender": "f",
+            "name": "31",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 32",
+            "direction": "s",
+            "gender": "f",
+            "name": "32",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 33",
+            "direction": "s",
+            "gender": "f",
+            "name": "33",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 34",
+            "direction": "s",
+            "gender": "f",
+            "name": "34",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 35",
+            "direction": "s",
+            "gender": "f",
+            "name": "35",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 36",
+            "direction": "s",
+            "gender": "f",
+            "name": "36",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 37",
+            "direction": "s",
+            "gender": "f",
+            "name": "37",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 38",
+            "direction": "s",
+            "gender": "f",
+            "name": "38",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 39",
+            "direction": "s",
+            "gender": "f",
+            "name": "39",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 40",
+            "direction": "s",
+            "gender": "f",
+            "name": "40",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 41",
+            "direction": "s",
+            "gender": "f",
+            "name": "41",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 42",
+            "direction": "s",
+            "gender": "f",
+            "name": "42",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 43",
+            "direction": "s",
+            "gender": "f",
+            "name": "43",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 44",
+            "direction": "s",
+            "gender": "f",
+            "name": "44",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 45",
+            "direction": "s",
+            "gender": "f",
+            "name": "45",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 46",
+            "direction": "s",
+            "gender": "f",
+            "name": "46",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 47",
+            "direction": "s",
+            "gender": "f",
+            "name": "47",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 48",
+            "direction": "s",
+            "gender": "f",
+            "name": "48",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Port 49 (XFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "xfp49",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "Port 50 (XFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "xfp50",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "Power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "5650TD-PWR"
+        },
+        "dimensions": {
+            "depth": 430,
+            "height": 44,
+            "width": 440
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 12.0
+        }
+    }
+}
