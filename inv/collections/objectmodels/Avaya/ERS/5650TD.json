@@ -1,8 +1,8 @@
 {
-    "name": "AVAYA | ERS | 4850GTS-PWR+",
-    "uuid": "6abe8831-e7b5-4887-aa8d-daa81cc17e03",
+    "name": "Avaya | ERS | 5650TD",
+    "uuid": "7fc7d781-6b79-4bf9-be0c-1890f6f88e7e",
     "vendor__code": "AVAYA",
-    "description": "48 10/100/1000BASE-T ports supporting 802.3at PoE+, including 2 shared SFP Uplink ports, plus 2 additional SFP+ Uplink ports",
+    "description": "ERS 5650TD with 48 x 10/100/1000Base-T ports, plus 2 x 10GBase-XFP Uplink ports, and 600W AC Integrated Power Supply",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -399,36 +399,20 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Port 47 (SFP)",
+            "description": "Port 49 (XFP)",
             "direction": "i",
             "gender": "f",
-            "name": "sfp47",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "name": "xfp49",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
         },
         {
-            "description": "Port 48 (SFP)",
+            "description": "Port 50 (XFP)",
             "direction": "i",
             "gender": "f",
-            "name": "sfp48",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Port 49 (SFP+)",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp+49",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "description": "Port 50 (SFP+)",
-            "direction": "i",
-            "gender": "f",
-            "name": "sfp+50",
-            "protocols": ["TransEth1G", "TransEth10G"],
-            "type__name": "Transceiver | SFP+"
+            "name": "xfp50",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
         },
         {
             "description": "Power input",
@@ -441,7 +425,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "4850GTS-PWR+"
+            "part_no0": "5650TD"
         },
         "dimensions": {
             "depth": 430,
