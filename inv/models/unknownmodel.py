@@ -23,6 +23,7 @@ class UnknownModel(Document):
 
     vendor = StringField()  # Vendor.code
     managed_object = StringField()  # ManagedObject.name
+    platform = StringField()  # ManagedObject.platform
     part_no = StringField()
     description = StringField()
 
@@ -35,7 +36,8 @@ class UnknownModel(Document):
                      description=""):
         cls._get_collection().find_and_modify({
             "vendor": vendor,
-            "managed_object": managed_object,
+            "managed_object": managed_object.name,
+            "platform": managed_object.platform,
             "part_no": part_no
         }, update={
             # "$setOnInsert": {
