@@ -6,9 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import re
-## NOC modiles
+## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces.igetcapabilitiesex import IGetCapabilitiesEx
 
@@ -17,17 +15,21 @@ class Script(NOCScript):
     name = "MikroTik.RouterOS.get_capabilities_ex"
     cache = True
     implements = [IGetCapabilitiesEx]
-    rx_lic = re.compile(
-        r"^\s*software-id: (?P<sid>\S+).+upgradable-to: (?P<upto>\S+).+nlevel:"
-        r" (?P<nlevel>\d+).+features:.*(?P<features>\.*)$",
-        re.MULTILINE | re.DOTALL)
 
     def check_license(self, caps):
         v = self.cli("/system license print")
-        match = self.re_search(self.rx_lic, v)
-        caps["MikroTik | RouterOS | License | SoftwareID"] = match.group("sid")
-        caps["MikroTik | RouterOS | License | Level"] = int(match.group("nlevel"))
-        caps["MikroTik | RouterOS | License | Upgradable To"] = match.group("upto")
+        c = {}
+        for l in v.splitlines():
+            l = l.strip()
+            if ":" in l:
+                cn, cv = l.split(":", 1)
+                c[cn.strip()] = cv.strip()
+
+        caps["MikroTik | RouterOS | License | SoftwareID"] = c["software-id"]
+        caps["MikroTik | RouterOS | License | Level"] = int(c["nlevel"])
+        upto = c.get("upgradable-to")
+        if upto:
+            caps["MikroTik | RouterOS | License | Upgradable To"] = upto
 
     def execute(self, caps={}):
         self.check_license(caps)
