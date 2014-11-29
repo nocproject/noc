@@ -445,6 +445,7 @@ NoName | Transceiver | 10G | SFP+ ER,385fb8e6-ccdf-4795-8608-af18354513ad,NoName
 NoName | Transceiver | 10G | SFP+ LR,625eaea0-5323-46ac-bd6b-0a9c8d736e91,NoName/Transceiver/10G/SFP+_LR.json,fd3badeac50c366c8f2ff778491316ef19351673361b03913f2fa99bef29211c
 NoName | Transceiver | 10G | SFP+ SR,dd291a8b-2533-4972-b8a5-f0e67cac0762,NoName/Transceiver/10G/SFP+_SR.json,6c3b9273df134455357033747d4430d2d0e0aff04dbb77e0763c2fbff9167d62
 NoName | Transceiver | 10G | SFP+ Twinax,aa002c66-bd6e-497b-b15b-03ef8366e678,NoName/Transceiver/10G/SFP+_Twinax.json,22101cab8bb1df1e6d218275880df47e3a582e2583465204b12d70494c8d9ff6
+NoName | Transceiver | 10G | SFP+ USR,70bfe3a1-2cb0-4a57-9cd9-127e11dbeaa9,NoName/Transceiver/10G/SFP+_USR.json,9a531d2ebab4b0d5eec245b29178dbf0effc2973696c74de56d4a43c39a2671e
 NoName | Transceiver | 10G | SFP+ ZR,996cc11c-aee5-4997-a4a5-d9b005a4a05b,NoName/Transceiver/10G/SFP+_ZR.json,1008f98d0692cdb5b0ac4339c710179fe6e9a8913bce5b948b64e87c3f1f82bc
 NoName | Transceiver | 10G | XFP ER,1ede79eb-43a5-4d20-9452-d208402286d9,NoName/Transceiver/10G/XFP_ER.json,4af269f91c6511499f79788e4e1ac1f56c8bbe163535921cfd542c9343dd15b0
 NoName | Transceiver | 10G | XFP LR,6d43fc9c-1c0d-4fd6-be82-13044dff9f85,NoName/Transceiver/10G/XFP_LR.json,57ed1675ecb877561350f5ca11a2744af26e40cc8354b08896d80a6e7ca7f9ab
