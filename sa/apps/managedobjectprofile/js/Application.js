@@ -158,7 +158,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     text: "Objects",
                     dataIndex: "mo_count",
                     width: 50,
-                    align: "right"
+                    align: "right",
+                    sortable: false
                 }
             ],
             fields: [
