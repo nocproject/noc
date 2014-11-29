@@ -420,7 +420,8 @@ Juniper | MX | SCBE-MX-S,2c2b8b59-e5e6-4613-a10c-9ea31b4bd24a,Juniper/MX/SCBE-MX
 Juniper | SRX | SRX210B,e71f6e4c-c1f3-467f-b1af-5e2f6b700873,Juniper/SRX/SRX210B.json,6c5921deb01a156f6d62ae050de774312c272c34fa572f1f2c353a63a701777a
 Juniper | SRX | SRX210HE,b476f76e-3ee3-4faa-8627-e9b877be6fbd,Juniper/SRX/SRX210HE.json,c3f84125ede7420628542d04b4c0ef1221bb922d03cff20d52fbcf0a5e6fcb6c
 Juniper | SRX | SRX240H,eab18269-21e4-40fc-b6d1-e5b28cd0672a,Juniper/SRX/SRX240H.json,541a3b13a9d2b316dcba1d9d63ea2a3177f2976b0397c963cdb8b9155b465d4b
-Juniper | Transceiver | 10G | SFP+-10G-LR,824e7625-1b08-47cd-804f-95f913076890,Juniper/Transceiver/10G/SFP+-10G-LR.json,3fcb07bee7c742a4c99e35f09e6b9de71709c7b0efbb265e290d8a69f76549d3
+Juniper | Transceiver | 10G | SFP+-10G-ER,a6677547-39d8-4203-aab8-c57eb9de2f33,Juniper/Transceiver/10G/SFP+-10G-ER.json,23a98594d81a728610ea3323b2a5290894104f06b7695255b150bddedb35e0d7
+Juniper | Transceiver | 10G | SFP+-10G-LR,824e7625-1b08-47cd-804f-95f913076890,Juniper/Transceiver/10G/SFP+-10G-LR.json,c87ee21d3cdcd5d80adbb9c1cdaac0bf3332be7bad6579c644c6cff791ef3669
 Juniper | Transceiver | 10G | SFP+-10G-SR,1372bce3-e3f1-4086-8db7-ffee47795d22,Juniper/Transceiver/10G/SFP+-10G-SR.json,8b6deba1e55e8764aefd2a9e250b932b2047365621cb562ca81a51505fef8c16
 Juniper | Transceiver | 10G | XFP-10G-ER,7c47eda4-98a1-4400-a04c-7df28aa2cd12,Juniper/Transceiver/10G/XFP-10G-ER.json,9a462bf2b74794d1466288a86449a70171b76131a4cd5d9b3e38c2c915343914
 Juniper | Transceiver | 10G | XFP-10G-LR,e337f204-f791-47c1-b027-e9fd6d02f738,Juniper/Transceiver/10G/XFP-10G-LR.json,485258f63c802ba850801529023f8f64740dbcd36b9736873e0b95a32f6aa98c
