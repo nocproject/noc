@@ -1,8 +1,8 @@
 {
-    "name": "AVAYA | ERS | 5650TD-PWR",
-    "uuid": "a7865e00-d17a-4aa7-9914-70b9a61f1bbd",
+    "name": "Avaya | ERS | 4850GTS-PWR+",
+    "uuid": "6abe8831-e7b5-4887-aa8d-daa81cc17e03",
     "vendor__code": "AVAYA",
-    "description": "ERS 5650TD-PWR with 48 x 10/100/1000Base-T IEEE 802.3af PoE ports, plus 2 x 10GBase-XFP Uplink ports, and 600W AC Integrated Power Supply",
+    "description": "48 10/100/1000BASE-T ports supporting 802.3at PoE+, including 2 shared SFP Uplink ports, plus 2 additional SFP+ Uplink ports",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -399,20 +399,36 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Port 49 (XFP)",
+            "description": "Port 47 (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "xfp49",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
+            "name": "sfp47",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Port 50 (XFP)",
+            "description": "Port 48 (SFP)",
             "direction": "i",
             "gender": "f",
-            "name": "xfp50",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
+            "name": "sfp48",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 49 (SFP+)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp+49",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 50 (SFP+)",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp+50",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "Power input",
@@ -425,7 +441,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "5650TD-PWR"
+            "part_no0": "4850GTS-PWR+"
         },
         "dimensions": {
             "depth": 430,
