@@ -1,0 +1,58 @@
+{
+    "name": "Juniper | MX | DPCE-R-4XGE-XFP",
+    "uuid": "72c83ff8-1039-4d26-a142-a7bdee0230cf",
+    "vendor__code": "JUNIPER",
+    "description": "4x10GE Enhanced DPC for MX",
+    "cr_context": "FPC",
+    "connections": [
+        {
+            "description": "xe-X/0/0 interface",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "xe-X/1/0 interface",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "1/0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "xe-X/2/0 interface",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "2/0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "xe-X/3/0 interface",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "3/0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "Inner connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | FPC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "DPCE-R-4XGE-XFP",
+            "part_no0": "750-021566"
+        }
+    }
+}
