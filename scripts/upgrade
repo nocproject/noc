@@ -10,7 +10,7 @@
 ## Helper functions definitions
 ##
 error_exit ( ) {
-    echo -e "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m" 1>&2
+    echo "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m" 1>&2
     echo "Terminating" 1>&2
     exit 1
 }
