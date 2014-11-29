@@ -219,6 +219,7 @@ class Command(BaseCommand):
         dc = Collection(name, d)
         dc.load()
         for f in files:
+            self.log("    ... %s" % f)
             try:
                 data = json_decode(read_file(f))
             except ValueError:
