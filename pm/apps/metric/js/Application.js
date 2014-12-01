@@ -49,7 +49,8 @@ Ext.define("NOC.pm.metric.Application", {
         if(me.currentRecord) {
             me.graph.setSeries([
                 {
-                    name: me.currentRecord.get("name")
+                    name: me.currentRecord.get("name"),
+                    fill: true
                 }
             ]);
         } else {

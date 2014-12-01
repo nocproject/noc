@@ -30,6 +30,8 @@ Ext.define("NOC.core.Graph", {
     //    * name - target name
     //    * title - legend title
     //    * nullAs
+    //    * fill - filled area
+    //    * steps - staircase
     series: [],
     width: 900,
     height: 500,
@@ -96,7 +98,11 @@ Ext.define("NOC.core.Graph", {
                 name: item.name,
                 label: item.label || item.title || item.name,
                 nullAs: item.nullAs || me.defaultNullAs,
-                data: []
+                data: [],
+                lines: {
+                    fill: item.fill || false,
+                    steps: item.steps || false
+                }
             };
             me._targets[item.name] = t;
             me._series.push(t);
