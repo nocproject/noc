@@ -17,7 +17,7 @@
             "description": "Fan Slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "fan0",
+            "name": "fan1",
             "type__name": "Juniper | MX | MX960 Fan"
         },
         {
