@@ -35,7 +35,7 @@ class GrafanaApplication(ExtApplication):
             r = "^" + q[6:].replace("*", ".*")
             qs = {"title": re.compile(r, re.IGNORECASE)}
         elif q.startswith("tags:"):
-            qs = {"tags", q[5:]}
+            qs = {"tags": q[5:]}
         result = []
         for d in GrafanaDashboard.objects.filter(**qs)[:limit]:
             result += [{
