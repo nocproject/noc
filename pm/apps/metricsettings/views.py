@@ -47,6 +47,10 @@ class MetricSettingsApplication(ExtDocApplication):
           }
     )
     def api_save_settings(self, request, model_id, object_id, metric_sets):
+        def save_settings(o):
+            o.save()
+            return self.response({"status": True}, self.OK)
+
         o = MetricSettings.objects.filter(
             model_id=model_id, object_id=object_id).first()
         seen = set()
@@ -67,11 +71,7 @@ class MetricSettingsApplication(ExtDocApplication):
                 object_id=object_id,
                 metric_sets=mset
             )
-        o.save()
-        return {
-            "status": True
-        }
-
+        self.submit_slow_op(request, save_settings, o)
 
     @view("^(?P<model_id>[^/]+)/(?P<object_id>[^/]+)/effective/trace/$",
           method=["GET"], access="read", api=True)
