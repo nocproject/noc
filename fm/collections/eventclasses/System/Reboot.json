@@ -11,7 +11,9 @@
         }
     ],
     "handlers": [
-        "noc.fm.handlers.event.audit.log_reboot"
+        "noc.fm.handlers.event.audit.log_reboot",
+
+        "noc.fm.handlers.event.discovery.schedule_discovery"
     ],
     "text": {
         "en": {
