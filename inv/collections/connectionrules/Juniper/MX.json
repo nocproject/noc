@@ -27,6 +27,14 @@
     "rules": [
         {
             "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
             "match_type": "PEM",
             "scope": "chassis",
             "target_connection": "pem{N}",
