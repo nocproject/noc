@@ -310,7 +310,41 @@ Ext.define("NOC.core.MetricSettingsPanel", {
     },
     //
     onSaveSettings: function() {
-        var me = this;
+        var me = this,
+            pollProgress = function(url) {
+                Ext.Ajax.request({
+                    url: url,
+                    method: "GET",
+                    scope: me,
+                    success: onSuccess,
+                    failure: onFailure
+                });
+            },
+            onSuccess = function(response) {
+                if(response.status === 202) {
+                    // Future in progress
+                    Ext.Function.defer(
+                        pollProgress, 1000, me,
+                        [response.getResponseHeader("Location")]
+                    );
+                } else {
+                    // Process result
+                    me.unmask();
+                    me.loadSettings();
+                }
+            },
+            onFailure = function(response) {
+                var data = response.responseText ? Ext.decode(response.responseText) : null;
+                if(data && data.success === false) {
+                    NOC.error(data.message);
+                } else {
+                    NOC.error("Error saving record!");
+                    console.log(response.responseText);
+                }
+                me.unmask();
+            };
+
+        me.mask();
         Ext.Ajax.request({
             url: "/pm/metricsettings/" + me.metricModelId + "/" + me.currentRecord.get("id") + "/settings/",
             method: "POST",
@@ -318,13 +352,8 @@ Ext.define("NOC.core.MetricSettingsPanel", {
                 metric_sets: me.metricSetsField.getValue()
             },
             scope: me,
-            success: function() {
-                NOC.info("Saved");
-                me.loadSettings();
-            },
-            failure: function() {
-                NOC.error("Failed to save");
-            }
+            success: onSuccess,
+            failure: onFailure
         });
     },
     //
