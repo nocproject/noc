@@ -205,6 +205,7 @@ class AssetReport(Report):
         """
         Replace values in context
         """
+        s = s or ""
         for c in ctx:
             s = s.replace("{%s}" % c, str(ctx[c]))
         return s
