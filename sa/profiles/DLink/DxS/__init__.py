@@ -49,6 +49,25 @@ class Profile(NOCProfile):
     def root_interface(self, name):
         return name
 
+    def convert_interface_name(self, s):
+        """
+        "D-Link DES-3200-10 R4.37.B008 Port 1 " -> "1"
+        "PORT 7 ON UNIT 1" -> "7"
+        """
+        su = s.upper().strip()
+        if " PORT " in su:
+            su = su.rsplit(" PORT ", 1)[-1].strip()
+            if " ON UNIT " in su:
+                l, r = [x.strip() for x in su.split(" ON UNIT ")]
+                if r == "1":
+                    return l
+                else:
+                    return "%s:%s" % (r, l)
+            else:
+                return su
+        else:
+            return s
+
     cluster_member = None
     dlink_pager = False
     rx_pager = re.compile(r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$",
