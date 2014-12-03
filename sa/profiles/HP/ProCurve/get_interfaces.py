@@ -87,13 +87,14 @@ class Script(NOCScript):
             sub = iface.copy()
             ifindex = str.split("=")[0].split(".")[1].rstrip()
             sub["snmp_ifindex"] = int(ifindex)
+            sub["enabled_afi"] = []
             del sub["type"]
 
             for l in sh_ip.split("\n"):
                 match = self.rx_ip.search(l)
                 if match:
                     if match.group("name") == sub["name"]:
-                        sub["is_ipv4"] = True
+                        sub["enabled_afi"] += ["IPv4"]
                         sub["ipv4_addresses"] = [IPv4(match.group("ip"),
                                                  netmask=match.group("mask"))
                                                  .prefix]
@@ -103,7 +104,7 @@ class Script(NOCScript):
                                     if o.split()[0] == match.group("ip"):
                                         sub["is_ospf"] = True
             if ifname in switchports and not ifname in portchannel_members:
-                sub["is_bridge"] = True
+                sub["enabled_afi"] += ["BRIDGE"]
                 u, t = switchports[ifname]
                 if u:
                     sub["untagged_vlan"] = u
