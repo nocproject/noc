@@ -67,7 +67,8 @@ Ext.define("NOC.pm.probe.Application", {
         {
             name: "user",
             xtype: "main.user.LookupField",
-            fieldLabel: "Credentials"
+            fieldLabel: "Credentials",
+            allowBlank: false
         },
         {
             name: "n_instances",
