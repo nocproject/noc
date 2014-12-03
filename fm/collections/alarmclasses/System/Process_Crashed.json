@@ -4,9 +4,20 @@
     "is_unique": true,
     "discriminator": ["name"],
     "user_clearable": true,
-    "default_severity__name": "INFO",
+    "default_severity__name": "MINOR",
     "vars": [
-
+        {
+            "name": "name",
+            "description": "Process name"
+        },
+        {
+            "name": "pid",
+            "description": "Process PID"
+        },
+        {
+            "name": "status",
+            "description": "Exit status"
+        }
     ],
     "text": {
         "en": {
