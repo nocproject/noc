@@ -591,7 +591,12 @@ Ext.define("NOC.core.ModelApplication", {
                     }
                 },
                 items: formFields,
-                tbar: me.applyPermissions(formToolbar)
+                tbar: {
+                    layout: {
+                        overflowHandler: "Menu"
+                    },
+                    items: me.applyPermissions(formToolbar)
+                }
             }
         });
         me.form = me.formPanel.items.first().getForm();
