@@ -67,7 +67,7 @@ Environment | UPS | Self-Test Failed,5cab11d8-df89-483b-9fab-6477ccdf93c1,Enviro
 Environment | UPS | Self-Test Passed,edc2dfa1-b51a-4a65-a061-a6f88d8b665e,Environment/UPS/Self-Test_Passed.json,aad1069e47d348c909f1f19f0ca64f3cb5d095b23e3ae98e430b8d82184602f9
 Environment | UPS | Self-Test Started,55fdfa39-53ed-4cf0-ab85-f3fbe4e2d759,Environment/UPS/Self-Test_Started.json,be682210b8788c356cb359c452c8a235469e6a36aa7f203c92edfc2a4852c9a9
 NOC | IPAM | VRF Group Address Collision,913a40f4-b51a-42c5-b490-ad03f4b7edd7,NOC/IPAM/VRF_Group_Address_Collision.json,9ca4a06c070094e03df5f387e0c41946d4f4af7590345ed859d3445d60a51eb5
-NOC | Managed Object | Ping Failed,3cd44497-6f0e-4a27-b6fe-3ab001681236,NOC/Managed_Object/Ping_Failed.json,324e772a8a530c883a90edbf04f3eac982d4727aaa0b933379e39e16cc53839d
+NOC | Managed Object | Ping Failed,3cd44497-6f0e-4a27-b6fe-3ab001681236,NOC/Managed_Object/Ping_Failed.json,5752d4a833367cde2b418563d8de40a7cdf9e462db4811d28a3f79850a98d922
 NOC | Managed Object | Ping OK,121098a0-ac8c-44e4-a856-2f4ed096f454,NOC/Managed_Object/Ping_OK.json,8ff997814e85a472fca7f08649adfe397eacc3d70ee4135f6857ed80a0886a44
 NOC | Periodic | Periodic Failed,919bf2f9-bc5e-43a1-8df8-f462ab4ea025,NOC/Periodic/Periodic_Failed.json,9037ef7638a0cb44eaeb4ac898a5c5e4a31a935959f9fb2e82279e3b38a1d22c
 NOC | Periodic | Periodic OK,d0b731d7-e9f1-4fdb-9c21-32ecf5ce0137,NOC/Periodic/Periodic_OK.json,fe5288f4c48e325daa8c4c76e14c86a9eae918340561ac72a4f6516d1792b6d7
