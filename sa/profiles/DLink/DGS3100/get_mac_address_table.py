@@ -48,7 +48,7 @@ class Script(NOCScript):
                                 continue
                     else:
                         continue
-                    if int(v[2]) > 3 or int(v[2]) < 1:
+                    if not v[2] or int(v[2]) > 3 or int(v[2]) < 1:
                         continue
                     iface = self.snmp.get(
                         "1.3.6.1.2.1.31.1.1.1.1." + v[1],
