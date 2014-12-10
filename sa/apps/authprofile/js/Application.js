@@ -74,12 +74,14 @@ Ext.define("NOC.sa.authprofile.Application", {
         {
             name: "password",
             xtype: "textfield",
+            inputType: "password",
             fieldLabel: "Password",
             allowBlank: true
         },
         {
             name: "super_password",
             xtype: "textfield",
+            inputType: "password",
             fieldLabel: "Super Password",
             allowBlank: true
         },
