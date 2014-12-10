@@ -21,6 +21,18 @@ class PostgresProbe(Probe):
     TAGS = ["db", "postgres"]
     CONFIG_FORM = "PostgresConfig"
 
+    DB_STATS_FIELDS = {
+        "numbackends":  "DB | Connections | Current",
+        "xact_commit": "DB | Transaction | Commit",
+        "xact_rollback": "DB | Transaction | Rollback",
+        "tup_returned": "Postgres | Tuples | Returned",
+        "tup_fetched":  "Postgres | Tuples | Fetched",
+        "tup_inserted": "Postgres | Tuples | Inserted",
+        "tup_updated": "Postgres | Tuples | Updated",
+        "tup_deleted": "Postgres | Tuples | Deleted",
+        "deadlocks": "DB | Deadlocks"
+    }
+
     @metric([
         "DB | Transaction | Commit", "DB | Transaction | Rollback",
         "DB | Deadlocks",
@@ -42,28 +54,28 @@ class PostgresProbe(Probe):
             user=user, password=password
         )
         cursor = connect.cursor()
-        cursor.execute(
-            """
-            SELECT numbackends, xact_commit, xact_rollback,
-                tup_returned, tup_fetched, tup_inserted,
-                tup_updated, tup_deleted, deadlocks,
-                pg_database_size(%s) as dbsize
-            FROM pg_stat_database WHERE datname = %s
-            """,
-            [database, database]
-        )
-        (numbackends, xact_commit, xact_rollback,
-         tup_returned, tup_fetched, tup_inserted,
-         tup_updated, tup_deleted, deadlocks, dbsize) = cursor.fetchone()
-        return {
-            "DB | Transaction | Commit": xact_commit,
-            "DB | Transaction | Rollback": xact_rollback,
-            "DB | Connections | Current": numbackends,
-            "DB | Deadlocks": deadlocks,
-            "DB | Size | Total": dbsize,
-            "Postgres | Tuples | Returned": tup_returned,
-            "Postgres | Tuples | Fetched": tup_fetched,
-            "Postgres | Tuples | Inserted": tup_inserted,
-            "Postgres | Tuples | Updated": tup_updated,
-            "Postgres | Tuples | Deleted": tup_deleted
-        }
+        if not hasattr(self, "stats_sql"):
+            # Auto-detect available fields
+            cursor.execute("""
+                SELECT a.attname
+                FROM pg_attribute a
+                    JOIN pg_class c ON (a.attrelid = c.oid)
+                WHERE c.relname = 'pg_stat_database'
+            """)
+            fields = []
+            self.stats_metrics = []
+            for a, in cursor.fetchall():
+                if a in self.DB_STATS_FIELDS:
+                    fields += [a]
+                    self.stats_metrics += [self.DB_STATS_FIELDS[a]]
+            # Add database size
+            fields += ["pg_database_size(%s) as dbsize"]
+            self.stats_metrics += ["DB | Size | Total"]
+            #
+            self.stats_sql = "SELECT %s FROM pg_stat_database WHERE datname = %%s" % ", ".join(fields)
+            self.stats_args = [database, database]
+            # self.reset_timer()
+        cursor.execute(self.stats_sql, self.stats_args)
+        result = cursor.fetchone()
+        return dict((k, v) for k, v in zip(self.stats_metrics, result))
+
