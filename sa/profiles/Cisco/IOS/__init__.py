@@ -48,6 +48,8 @@ class Profile(NOCProfile):
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
+        if interface.startswith("NDE_"):
+            return interface
         il = interface.lower()
         if il.startswith("dot11radio"):
             return "Dot11Radio" + interface[10:]
