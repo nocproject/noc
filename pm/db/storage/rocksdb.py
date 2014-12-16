@@ -59,6 +59,9 @@ class RocksDBStorage(KVStorage):
     def get_db(self, read_only=False):
         return rocksdb.DB(
             self.path,
-            rocksdb.Options(create_if_missing=True),
+            rocksdb.Options(
+                create_if_missing=True,
+                keep_log_file_num=10
+            ),
             read_only=read_only
         )
