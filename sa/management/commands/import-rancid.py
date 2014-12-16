@@ -169,6 +169,7 @@ class Command(BaseCommand):
 
     def parse_cloginrc(self, cloginrc):
         login = {}
+        defaults = {}
         for path in cloginrc:
             logger.info("Reading cloginrc from %s", path)
             with open(path) as f:
@@ -183,6 +184,10 @@ class Command(BaseCommand):
                     if len(r) > 4:
                         op, v, host = r[:3]
                         value = " ".join(r[3:])
+                    elif len(r) == 3:
+                        op, v, value = r
+                        defaults[v] = value
+                        continue
                     else:
                         op, v, host, value = r
                     if op != "add":
@@ -190,7 +195,7 @@ class Command(BaseCommand):
                     if host not in login:
                         login[host] = {}
                     login[host][v] = value
-        return login
+        return login, defaults
 
     def index_cvs(self, repo):
         r = {}  # path -> (revision, date)
@@ -268,7 +273,7 @@ class Command(BaseCommand):
         # Read configs
         hosts = self.parse_hosts(options["hosts"])
         rdb = self.parse_routerdb(options["routerdb"])
-        login = self.parse_cloginrc(options["cloginrc"])
+        login, ldefaults = self.parse_cloginrc(options["cloginrc"])
         # Process data
         n = 1
         count = len(rdb)
@@ -281,7 +286,7 @@ class Command(BaseCommand):
                 # @todo: Resolve
                 logging.info("Cannot resolve address for %s. Skipping", name)
                 continue
-            ld = login.get(name)
+            ld = login.get(name, ldefaults)
             if not ld:
                 logging.info("No credentials for %s. Skipping", name)
                 continue
@@ -300,6 +305,7 @@ class Command(BaseCommand):
                     )
                     logger.info("Already in the database")
                 except ManagedObject.DoesNotExist:
+                    logger.info("Creating managed object %s", name)
                     mo = ManagedObject(
                         name=name,
                         object_profile=object_profile,
@@ -317,7 +323,8 @@ class Command(BaseCommand):
             if name not in revisions:
                 logger.error("Cannot find config for %s", name)
                 continue
-            self.import_revisions(options["repo"], mo, name, revisions[name])
+            if not self.dry_run:
+                self.import_revisions(options["repo"], mo, name, revisions[name])
 
     def get_diff(self, repo, name, r0, r1):
         p = subprocess.Popen(
