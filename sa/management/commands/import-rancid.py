@@ -284,11 +284,11 @@ class Command(BaseCommand):
             address = hosts.get(name)
             if not address:
                 # @todo: Resolve
-                logging.info("Cannot resolve address for %s. Skipping", name)
+                logger.info("Cannot resolve address for %s. Skipping", name)
                 continue
             ld = login.get(name, ldefaults)
             if not ld:
-                logging.info("No credentials for %s. Skipping", name)
+                logger.info("No credentials for %s. Skipping", name)
                 continue
             user = ld.get("user")
             password = ld.get("password")
