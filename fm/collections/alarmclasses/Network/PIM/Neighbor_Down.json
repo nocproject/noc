@@ -57,6 +57,16 @@
                 "vars__interface": "alarm.managed_object.profile.root_interface(alarm.vars['interface'])",
                 "managed_object": "alarm.managed_object.id"
             }
+        },
+        {
+            "name": "Link Down",
+            "root__name": "Network | BFD | Session Down",
+            "window": 10,
+            "condition": "True",
+            "match_condition": {
+                "vars__interface": "alarm.managed_object.profile.root_interface(alarm.vars['interface'])",
+                "managed_object": "alarm.managed_object.id"
+            }
         }
     ]
 }
