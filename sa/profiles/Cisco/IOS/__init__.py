@@ -42,6 +42,12 @@ class Profile(NOCProfile):
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
+        if "+Efp" in interface:
+            l, r = interface.split("+Efp", 1)
+            return "%s.SI.%d" % (
+                self.convert_interface_name_cisco(l.strip()),
+                int(r.strip())
+            )
         if ".SI." in interface:
             l, r = interface.split(".SI.", 1)
             return "%s.SI.%d" % (
