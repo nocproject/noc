@@ -45,5 +45,5 @@ class WhoisOriginRoute(nosql.Document):
         c.drop()
         c.insert(data, manipulate=False, check_keys=False)
         # Reindex
-        c.ensure_index("origin")
+        c.ensure_index("origin", unique=True)
         return c.count()
