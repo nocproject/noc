@@ -28,6 +28,7 @@ Environment | DC Voltage Out of Range,721168eb-a95b-48cd-9b9a-4a7d2ce9491a,Envir
 Environment | Humidity Out of Range,331594a3-7e20-40b2-bac4-7cbcad13b9e6,Environment/Humidity_Out_of_Range.json,ff8908fd4fcc9dd8f718befc1adc8c4727796ad7e0c3d0d92dfc55e67c069920
 Environment | Module Voltage Out of Range,5c83ad07-4a96-4322-a945-af801ff95207,Environment/Module_Voltage_Out_of_Range.json,49d9b1ef7a0408db2576153e99ecb06119f7ad801ed14332d9d7560b4fc3b52b
 Environment | Temperature Out of Range,752d85ca-4fdf-4aae-8d07-8967cb3d9ac1,Environment/Temperature_Out_of_Range.json,1534f08b2b69036f1842d4939632173bb2a8e8263031f58e5c793b71a7fef825
+Environment | Total Power Loss,c818e3e4-24e4-43ce-b85f-10b89b41642b,Environment/Total_Power_Loss.json,5aa0d59e64615733a8340a9cbcd5ab65742aa56d05f5824902b9e2403d09a147
 Environment | UPS | Battery Power Low,1cc92f54-813d-4038-a8cc-8303538f026b,Environment/UPS/Battery_Power_Low.json,86dae9cd127233f37dda499be7936955943a09c3afb91151a17dac780c8edd34
 Environment | UPS | Input Power Failed,c3afd86c-dee6-4cdf-9daa-8b78222e7d12,Environment/UPS/Input_Power_Failed.json,dd98ecb2677a4361925d0df0c45695c7908e94625a4089e8a3676b2b9074ba93
 Environment | UPS | Input Power Low,0b7db31a-06fe-47fc-895e-92b14158dcb8,Environment/UPS/Input_Power_Low.json,fd46495dee6d4ddb0ec9ad4b38d5e0339b535ccaaca60327ede780ffb756688e
