@@ -112,21 +112,22 @@ class ActiveAlarm(nosql.Document):
             self.save()
 
     def contribute_event(self, e, open=False, close=False):
+        # Set opening event when necessary
+        if open:
+            self.opening_event = e.id
+        # Set closing event when necessary
+        if close:
+            self.closing_event = e.id
         # Update timestamp
         if e.timestamp < self.timestamp:
             self.timestamp = e.timestamp
         else:
             self.last_update = max(self.last_update, e.timestamp)
         self.save()
+        # Update event's list of alarms
         if self.id not in e.alarms:
-            e.alarms += [self.id]
+            e.alarms.append(self.id)
             e.save()
-        if open:
-            self.opening_event = e.id
-        if close:
-            self.closing_event = e.id
-        if open or close:
-            self.save()
 
     def clear_alarm(self, message):
         ts = datetime.datetime.now()
