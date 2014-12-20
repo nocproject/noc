@@ -31,6 +31,7 @@ from noc.main.models import PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.solutions import get_alarm_class_handlers, get_alarm_jobs
+import utils
 
 
 class Correlator(Daemon):
@@ -222,17 +223,24 @@ class Correlator(Daemon):
         return False
 
     def raise_alarm(self, r, e):
+        managed_object = self.eval_expression(r.managed_object, event=e)
+        if not managed_object:
+            logging.debug("Empty managed object, ignoring")
+            return
+        if e.managed_object.id != managed_object.id:
+            logging.debug("Changing managed object to %s",
+                          managed_object.name)
         discriminator, vars = r.get_vars(e)
         if r.unique:
             assert discriminator is not None
             # @todo: unneeded SQL lookup here
             a = ActiveAlarm.objects.filter(
-                managed_object=e.managed_object_id,
+                managed_object=managed_object.id,
                 discriminator=discriminator).first()
             if not a:
                 # Try to reopen alarm
                 a = ArchivedAlarm.objects.filter(
-                    managed_object=e.managed_object_id,
+                    managed_object=managed_object.id,
                     discriminator=discriminator,
                     control_time__gte=e.timestamp
                 ).first()
@@ -251,13 +259,13 @@ class Correlator(Daemon):
                 return
         # Create new alarm
         a = ActiveAlarm(
-            timestamp=e.timestamp, last_update=e.timestamp,
-            managed_object=e.managed_object,
+            timestamp=e.timestamp,
+            last_update=e.timestamp,
+            managed_object=managed_object.id,
             alarm_class=r.alarm_class,
             severity=r.severity,
             vars=vars,
             discriminator=discriminator,
-            events=[e],
             log=[
                 AlarmLog(
                     timestamp=datetime.datetime.now(),
@@ -270,9 +278,9 @@ class Correlator(Daemon):
         )
         a.save()
         a.contribute_event(e, open=True)
-        logging.debug("%s: Event %s(%s) raises alarm %s (%s): %r" % (
-            r.u_name, str(e.id), e.event_class.name,
-            str(a.id), r.alarm_class.name, a.vars))
+        logging.debug("%s: Event %s (%s) raises alarm %s (%s): %r",
+                      r.u_name, str(e.id), e.event_class.name,
+                      str(a.id), r.alarm_class.name, a.vars)
         # RCA
         if a.alarm_class.id in self.rca_forward:
             # Check alarm is a consequence of existing one
@@ -320,11 +328,15 @@ class Correlator(Daemon):
             }, delay=a.alarm_class.get_notification_delay())
 
     def clear_alarm(self, r, e):
+        managed_object = self.eval_expression(r.managed_object, event=e)
+        if not managed_object:
+            logging.debug("Empty managed object, ignoring")
+            return
         if r.unique:
             discriminator, vars = r.get_vars(e)
             assert discriminator is not None
             a = ActiveAlarm.objects.filter(
-                managed_object=e.managed_object_id,
+                managed_object=managed_object.id,
                 discriminator=discriminator).first()
             if a:
                 logging.debug("%s: Event %s(%s) clears alarm %s(%s)" % (
@@ -374,6 +386,18 @@ class Correlator(Daemon):
                 return de
         return None
 
+    def eval_expression(self, expression, **kwargs):
+        """
+        Evaluate expression in given context
+        """
+        env = {
+            "NOC_ACTIVATORS": self.NOC_ACTIVATORS,
+            "re": re,
+            "utils": utils
+        }
+        env.update(kwargs)
+        return eval(expression, {}, env)
+
     def dispose_event(self, e):
         """
         Dispose event according to disposition rule
@@ -382,16 +406,11 @@ class Correlator(Daemon):
         if not drc:
             return
         # Apply disposition rules
-        env = {
-            "event": e,
-            "NOC_ACTIVATORS": self.NOC_ACTIVATORS,
-            "re": re
-        }
         for r in drc:
             if r.conditional_pyrule:
                 cond = r.conditional_pyrule(rule_name=r.name, event=e)
             else:
-                cond = eval(r.condition, {}, env)
+                cond = self.eval_expression(r.condition, event=e)
             if cond:
                 # Process action
                 if r.action == "drop":

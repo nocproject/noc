@@ -56,6 +56,8 @@ class EventDispositionRule(EmbeddedDocument):
     # Python logical expression to check do the rules
     # applicable or not.
     condition = fields.StringField(required=True, default="True")
+    # Python logical expression to evaluate managed object
+    managed_object = fields.StringField(required=False)
     # What to do with disposed event:
     #    drop - delete and stop disposition
     #    ignore - stop disposition
@@ -115,7 +117,7 @@ class EventDispositionRule(EmbeddedDocument):
 
     def __eq__(self, other):
         for a in ["name", "condition", "action", "pyrule", "window",
-                  "var_mapping", "stop_disposition"]:
+                  "var_mapping", "stop_disposition", "managed_object"]:
             if hasattr(self, a) != hasattr(other, a):
                 return False
             if hasattr(self, a) and getattr(self, a) != getattr(other, a):
@@ -317,6 +319,8 @@ class EventClass(Document):
                 lll += ["            \"action\": \"%s\"" % q(d.action)]
                 if d.alarm_class:
                     lll += ["            \"alarm_class__name\": \"%s\"" % q(d.alarm_class.name)]
+                if d.managed_object:
+                    lll += ["            \"managed_object\": \"%s\"" % q(d.managed_object)]
                 ll += [",\n".join(lll)]
                 ll += ["        }"]
                 l += ["\n".join(ll)]
