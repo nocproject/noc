@@ -11,12 +11,16 @@ logsize  = 0
 logfiles = 0
 syslog_host =
 pidfile  = /var/run/noc/noc-activator.{{instance}}.pid
-heartbeat= true
 log_cli_sessions = false
 log_cli_sessions_path = /var/log/noc/cli-sessions/{{ip}}-{{script}}-{{ts}}.log
 log_cli_sessions_ip_re =
 log_cli_sessions_script_re =
 log_snmp_traps = false
+
+[debug]
+enable_manhole = false
+enable_timing = false
+timing_base = local/timing
 
 [activator]
 name            = unknown
@@ -33,7 +37,6 @@ listen_traps    =
 listen_syslog   =
 listen_pm_data  = 127.0.0.1
 secret          = thesecretkey
-software_update = true
 max_scripts     = 10
 pm_data_secret  = secret
 enable_internal_trap_parser = false
@@ -50,7 +53,3 @@ listen_tftp =
 
 [ssh]
 key = etc/ssh/id_rsa
-
-[update]
-name = activator
-enabled = false
