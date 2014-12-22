@@ -39,6 +39,10 @@ class ConnectedTCPSocket(TCPSocket):
             self.__class__.__name__, id(self),
             self.address, self.port, ", ".join(self.get_flags()))
 
+    def get_label(self):
+        return "%s %s:%s" % (self.__class__.__name__,
+                             self.address, self.port)
+
     def create_socket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         super(ConnectedTCPSocket, self).create_socket()

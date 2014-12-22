@@ -12,6 +12,7 @@ Ext.define("NOC.fm.ignorepattern.Application", {
         "NOC.fm.ignorepattern.Model"
     ],
     model: "NOC.fm.ignorepattern.Model",
+    search: true,
 
     initComponent: function() {
         var me = this;
@@ -65,5 +66,22 @@ Ext.define("NOC.fm.ignorepattern.Application", {
             ]
         });
         me.callParent();
-    }
+    },
+    onCmd_from_event: function(data) {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/fm/ignorepattern/from_event/" + data.id + "/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var me = this,
+                    data = Ext.decode(response.responseText);
+                me.newRecord(data);
+            },
+            failure: function() {
+                NOC.error("Failed to create ignore pattern from event");
+            }
+        });
+    },
+
 });

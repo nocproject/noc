@@ -107,7 +107,8 @@ class Command(BaseCommand):
         from noc.fm.models import NewEvent, FailedEvent,\
                                   ActiveEvent, ArchivedEvent,\
                                   ActiveAlarm, ArchivedAlarm
-        from noc.ip.models import Address
+        from noc.ip.models.address import Address
+        from noc.sa.models.objectcapabilities import ObjectCapabilities
 
         if o.profile_name.startswith("NOC."):
             raise CommandError("Cannot wipe internal object '%s'" % unicode(o))
@@ -164,6 +165,9 @@ class Command(BaseCommand):
         # Delete Managed Object's attributes
         with self.log("Deleting object's attributes"):
             ManagedObjectAttribute.objects.filter(managed_object=o).delete()
+        # Delete object's capabilities
+        with self.log("Deletion object's capabilities"):
+            ObjectCapabilities.objects.filter(object=o).delete()
         # Finally delete object and config
         with self.log("Deleting managed object and config"):
             o.delete()

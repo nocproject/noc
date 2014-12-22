@@ -18,6 +18,7 @@ import Queue
 import cPickle
 import ctypes
 import datetime
+import warnings
 ## NOC modules
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.registry import Registry
@@ -172,6 +173,7 @@ class Script(threading.Thread):
     UnexpectedResultError = UnexpectedResultError
     #
     _execute_chain = []
+    logger = logging.getLogger(name or "script")
 
     def __init__(self, profile, _activator, object_name, access_profile,
                  timeout=0, parent=None, **kwargs):
@@ -198,9 +200,22 @@ class Script(threading.Thread):
                 try:
                     u"test".encode(v)
                     self.encoding = v
-                    self.debug("Using '%s' encoding" % v)
+                    self.logger.debug("Using '%s' encoding", v)
                 except LookupError:
-                    self.error("Unknown encoding: '%s'" % v)
+                    self.logger.error("Unknown encoding: '%s'", v)
+        # Capabilities
+        self.caps = {}
+        for cap in access_profile.caps:
+            if cap.str_value:
+                self.caps[cap.capability] = cap.str_value
+            elif cap.int_value:
+                self.caps[cap.capability] = cap.int_value
+            elif cap.float_value:
+                self.caps[cap.capability] = cap.float_value
+            elif cap.bool_value:
+                self.caps[cap.capability] = cap.bool_value
+        self.logger.debug("Capabilities: %s", self.caps)
+        #
         super(Script, self).__init__(kwargs=kwargs)
         self.activator = _activator
         self.servers = _activator.servers
@@ -373,11 +388,15 @@ class Script(threading.Thread):
         """Debug log message"""
         if self.activator.use_canned_session:
             return
-        logging.debug(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
+        warnings.warn("Using deprecated Script.debug() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.debug(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
 
     def error(self, msg):
         """Error log message"""
-        logging.error(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
+        warnings.warn("Using deprecated Script.error() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.error(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
 
     @property
     def root(self):
@@ -406,16 +425,21 @@ class Script(threading.Thread):
         # Enforce interface type checking
         for i in self.implements:
             self.kwargs = i.script_clean_input(self.profile, **self.kwargs)
-        self.debug("Running script: %s (%r)" % (self.name, self.kwargs))
+        t0 = time.time()
+        self.logger.debug("Running script: %s (%r)",
+                          self.name, self.kwargs)
         # Use cached result when available
         if self.cache and self.parent is not None:
             try:
                 result = self.get_cache(self.name, self.kwargs)
-                self.debug("Script returns with cached result: %r" % result)
+                self.logger.debug(
+                    "Script returns with cached result: %r (%.2fms)",
+                    result, (time.time() - t0) * 1000
+                )
                 return result
             except KeyError:
-                self.debug("Not in call cache: %r, %r" % (self.name,
-                                                          self.kwargs))
+                self.logger.debug("Not in call cache: %r, %r",
+                                  self.name, self.kwargs)
                 pass
             # Calling script body
         self._thread_id = thread.get_ident()
@@ -425,11 +449,15 @@ class Script(threading.Thread):
             result = i.script_clean_result(self.profile, result)
         # Cache result when required
         if self.cache and self.parent is not None:
-            self.debug("Write to call cache: %s, %s, %r" % (self.name,
-                                                            self.kwargs,
-                                                            result))
+            self.logger.debug(
+                "Write to call cache: %s, %s, %r",
+                self.name, self.kwargs, result
+            )
             self.set_cache(self.name, self.kwargs, result)
-        self.debug("Script returns with result: %r" % result)
+        self.logger.debug(
+            "Script returns with result: %r (%.2fms)",
+            result, (time.time() - t0) * 1000
+        )
         return result
 
     def serialize_result(self, result):
@@ -1051,3 +1079,13 @@ class Script(threading.Thread):
 
     def pop_prompt_pattern(self):
         self.cli_provider.pop_prompt_pattern()
+
+    def has_oid(self, oid):
+        """
+        Check object responses to oid
+        """
+        try:
+            n = self.snmp.get(oid)
+        except self.snmp.TimeOutError:
+            return
+        return n is not None and n != ""

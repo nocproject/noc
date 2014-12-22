@@ -13,6 +13,7 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.sa.interfaces.base import InterfaceTypeError
 
+
 class Script(NOCScript):
     name = "DLink.DxS.get_inventory"
     implements = [IGetInventory]
@@ -21,23 +22,21 @@ class Script(NOCScript):
 
     rx_dev = re.compile(
         r"Device Type\s+:\s+(?P<part_no>\S+).+"
-        r"Hardware Version\s+:\s+(?P<revision>\S+)", re.MULTILINE | re.DOTALL)
+        r"[Hh]ardware [Vv]ersion\s+:\s+(?P<revision>\S+)",
+        re.MULTILINE | re.DOTALL)
     rx_des = re.compile(r"Device Type\s+:\s+(?P<descr>.+?)\n")
     rx_ser = re.compile(
-        r"(?:Serial Number|Device S/N)\s+:\s+(?P<serial>\S+)\s*\n",
+        r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s+(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
-    rx_mod = re.compile(r"Module Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
-    rx_mod1 = re.compile(r"Module 1 Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
-    rx_mod2 = re.compile(r"Module 2 Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
+    rx_mod = re.compile(
+        r"Module Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
+    rx_mod1 = re.compile(
+        r"Module 1 Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
+    rx_mod2 = re.compile(
+        r"Module 2 Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
     rx_mod3 = re.compile(
         r"\s+(?P<number>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+"
         r"(?P<serial>(\xFF)+)\s+(?P<descr>.+?)\s*$")
-    rx_ip = re.compile(r"Internal Power\s*: (OK|Active)")
-    rx_ep = re.compile(r"External Power\s*: (OK|Active)")
-    rx_lf = re.compile(r"Left Fan\s*: OK")
-    rx_rf = re.compile(r"Right Fan\s*: OK")
-    rx_bf = re.compile(r"Back Fan\s*: OK")
-    rx_cf = re.compile(r"CPU Fan\s*: OK")
 
     def execute(self):
         r = []
@@ -46,6 +45,11 @@ class Script(NOCScript):
         part_no = match.group("part_no")
         revision = match.group("revision")
         if part_no.startswith("DES-3200-") and revision != "A1":
+            part_no = "%s/%s" % (part_no, revision)
+        if (part_no.startswith("DES-1210-10/ME") or
+            part_no.startswith("DES-1210-26/ME") or
+            part_no.startswith("DES-1210-28/ME") and
+            revision != "A1"):
             part_no = "%s/%s" % (part_no, revision)
         p = {
             "type": "CHASSIS",
@@ -105,72 +109,6 @@ class Script(NOCScript):
                         "description": [match.group("descr")],
                     }
                     r += [p]
-        except self.CLISyntaxError:
-            pass
-        try:
-            """
-            l = self.cli("show device_status\nq\n")
-            match = self.rx_ip.search(l)
-            if match:
-                p = {
-                    "type": "PWR",
-                    "number": "",
-                    "vendor": "DLINK",
-                    "part_no": ["Int-PWR"],
-                    "description": ["Internal Power"],
-                }
-                r += [p]
-            match = self.rx_ep.search(l)
-            if match:
-                p = {
-                    "type": "PWR",
-                    "number": "",
-                    "vendor": "DLINK",
-                    "part_no": ["Ext-PWR"],
-                    "description": ["External Power"],
-                }
-                r += [p]
-            match = self.rx_lf.search(l)
-            if match:
-                p = {
-                    "type": "FAN",
-                    "number": "",
-                    "vendor": "DLINK",
-                    "part_no": ["L-Fan"],
-                    "description": ["Left Fan"],
-                }
-                r += [p]
-            match = self.rx_rf.search(l)
-            if match:
-                p = {
-                    "type": "FAN",
-                    "number": "",
-                    "vendor": "DLINK",
-                    "part_no": ["R-Fan"],
-                    "description": ["Right Fan"],
-                }
-                r += [p]
-            match = self.rx_bf.search(l)
-            if match:
-                p = {
-                    "type": "FAN",
-                    "number": "",
-                    "vendor": "DLINK",
-                    "part_no": ["B-Fan"],
-                    "description": ["Back Fan"],
-                }
-                r += [p]
-            match = self.rx_cf.search(l)
-            if match:
-                p = {
-                    "type": "FAN",
-                    "number": "",
-                    "vendor": "DLINK",
-                    "part_no": ["C-Fan"],
-                    "description": ["CPU Fan"],
-                }
-                r += [p]
-            """
         except self.CLISyntaxError:
             pass
 

@@ -19,10 +19,6 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
     map_task = "get_interfaces"
 
     ignored = not config.getboolean("interface_discovery", "enabled")
-    initial_submit_interval = config.getint("interface_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("interface_discovery",
-        "initial_submit_concurrency")
     to_save = config.getboolean("interface_discovery", "save")  # @todo: Ignored
     # Related reports
     ip_discovery_enable = config.getboolean("ip_discovery", "enabled")
@@ -118,6 +114,7 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
         # Delete hanging forwarding instances
         self.report.submit_forwarding_instances(
             fi["forwarding_instance"] for fi in result)
+        self.report.refine_ifindexes()
         self.report.send()
         return True
 
@@ -148,17 +145,9 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                 iface.profile = p
                 iface.save()
 
-    @classmethod
-    def initial_submit_queryset(cls):
-        return {"object_profile__enable_interface_discovery": True}
-
     def can_run(self):
         return (super(InterfaceDiscoveryJob, self).can_run()
                 and self.object.object_profile.enable_interface_discovery)
-
-    @classmethod
-    def get_submit_interval(cls, object):
-        return object.object_profile.interface_discovery_max_interval
 
     def get_failed_interval(self):
         return self.object.object_profile.interface_discovery_min_interval

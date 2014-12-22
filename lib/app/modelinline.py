@@ -112,6 +112,7 @@ class ModelInline(object):
 
     def set_app(self, app):
         self.app = app
+        self.logger = app.logger
         self.parent_model = self.app.model
         self.parent_rel = None
         for f in self.model._meta.fields:

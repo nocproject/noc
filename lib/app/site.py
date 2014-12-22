@@ -28,10 +28,13 @@ from noc.settings import INSTALLED_APPS, config
 from noc.lib.debug import get_traceback, error_report
 from noc.lib.serialize import json_decode
 
+logger = logging.getLogger(__name__)
+
 
 class DynamicMenu(object):
     title = "DYNAMIC MENU"
     icon = "icon_folder"
+    glyph = "folder"
 
     @property
     def items(self):
@@ -81,9 +84,9 @@ class Site(object):
     Application site. Registers applications, builds menu and
     handling views
     """
-    folder_icons = {
-        "Setup": "icon_wrench_orange",
-        "Reports": "icon_report"
+    folder_glyps = {
+        "Setup": "wrench noc-edit",
+        "Reports": "file-text noc-preview"
     }
 
     def __init__(self):
@@ -159,14 +162,25 @@ class Site(object):
         """
         # Render view
         def inner(request, *args, **kwargs):
+            def nq(s):
+                """
+                Convert var[]=xxxx to var=xxxx
+                """
+                if s.endswith("[]"):
+                    return s[:-2]
+                else:
+                    return s
+
             try:
                 v = view_map[request.method]
             except KeyError:
+                logger.info("No handler for '%s' method", request.method)
                 return HttpResponseNotFound("No handler for '%s' method" % request.method)
             if not request.user or not v.access.check(app, request.user):
                 return HttpResponseForbidden()
             to_log_api_call = (self.log_api_calls and
                                hasattr(v, "api") and v.api)
+            app_logger = v.im_self.logger
             try:
                 # Validate requests
                 if (hasattr(v, "validate") and v.validate):
@@ -175,7 +189,7 @@ class Site(object):
                     if isinstance(v.validate, DictParameter):
                         # Validate via NOC interfaces
                         if request.method == "GET":
-                            g = dict((k, v[0] if len(v) == 1 else v)
+                            g = dict((nq(k), v[0] if len(v) == 1 else v)
                                      for k, v in request.GET.lists()
                                      if k != "_dc")
                         else:
@@ -201,7 +215,7 @@ class Site(object):
                     if errors:
                         #
                         if to_log_api_call:
-                            logging.debug("ERROR: %s" % errors)
+                            app_logger.error("ERROR: %s", errors)
                         # Return error response
                         ext_format = ("__format=ext"
                                     in request.META["QUERY_STRING"].split("&"))
@@ -222,14 +236,16 @@ class Site(object):
                             a = json_decode(request.raw_post_data)
                         else:
                             a = dict((k, v[0] if len(v) == 1 else v)
-                                       for k, v in request.POST.lists())
+                                     for k, v in request.POST.lists())
                     elif request.method == "GET":
                         a = dict((k, v[0] if len(v) == 1 else v)
                                  for k, v in request.GET.lists())
-                    logging.debug("API %s %s %s" % (request.method,
-                                                    request.path, a))
+                    app_logger.debug("API %s %s %s",
+                                     request.method, request.path, a)
                 # Call handler
-                r = v(request, *args, **kwargs)
+                v.__dict__["hits_metric"] += 1
+                with v.__dict__["time_metric"].timer():
+                    r = v(request, *args, **kwargs)
                 # Dump SQL statements
                 if self.log_sql_statements:
                     from django.db import connections
@@ -240,12 +256,12 @@ class Site(object):
                             stmt = q["sql"].strip().split(" ", 1)[0].upper()
                             sc[stmt] += 1
                             tsc += 1
-                            logging.debug("SQL %(sql)s %(time)ss" % q)
+                            app_logger.debug("SQL %(sql)s %(time)ss" % q)
                     x = ", ".join(["%s: %d" % (k, v)
                                    for k, v in sc.iteritems()])
                     if x:
                         x = " (%s)" % x
-                    logging.debug("SQL statements: %d%s" % (tsc, x))
+                    app_logger.debug("SQL statements: %d%s" % (tsc, x))
             except PermissionDenied, why:
                 return HttpResponseForbidden(why)
             except Http404, why:
@@ -253,16 +269,19 @@ class Site(object):
             except:
                 tb = get_traceback()
                 if to_log_api_call:
-                    error_report()
+                    error_report(logger=app_logger)
                 # Generate 500
                 r = HttpResponse(content=tb, status=500,
                                  mimetype="text/plain; charset=utf-8")
             # Serialize response when necessary
             if not isinstance(r, HttpResponse):
                 try:
-                    r = HttpResponse(JSONEncoder(ensure_ascii=False).encode(r),
-                        mimetype="text/json; charset=utf-8")
+                    r = HttpResponse(
+                        JSONEncoder(ensure_ascii=False).encode(r),
+                        mimetype="text/json; charset=utf-8"
+                    )
                 except:
+                    error_report(logger=app_logger)
                     r = HttpResponse(get_traceback(), status=500)
             r["Pragma"] = "no-cache"
             r["Cache-Control"] = "no-cache"
@@ -296,8 +315,8 @@ class Site(object):
                 root = n
             else:
                 r = {"title": p, "children": []}
-                if p in self.folder_icons:
-                    r["iconCls"] = self.folder_icons[p]
+                if p in self.folder_glyps:
+                    r["iconCls"] = "fa fa-%s" % self.folder_glyps[p]
                 self.set_menu_id(r, path)
                 root["children"] += [r]
                 root = r
@@ -308,7 +327,7 @@ class Site(object):
             "title": parts[0],
             "app": app,
             "access": self.site_access(app, v),
-            "iconCls": app.icon
+            "iconCls": "fa fa-%s noc-edit" % app.glyph
         }
         self.set_menu_id(r, path)
         root["children"] += [r]
@@ -333,8 +352,8 @@ class Site(object):
                 root = n
             else:
                 r = {"title": p, "children": []}
-                if p == "Setup":
-                    r["iconCls"] = "icon_wrench_orange"
+                if p in self.folder_glyps:
+                    r["iconCls"] = "fa fa-%s" % self.folder_glyps[p]
                 self.set_menu_id(r, path)
                 root["children"] += [r]
                 root = r
@@ -343,7 +362,7 @@ class Site(object):
             "title": parts[0],
             "app": app,
             "access": lambda user: app.launch_access.check(app, user),
-            "iconCls": app.icon
+            "iconCls": "fa fa-%s noc-edit" % app.glyph
         }
         self.set_menu_id(r, path)
         root["children"] += [r]
@@ -384,6 +403,13 @@ class Site(object):
                     m = umap.get(u.url, [])
                     m += [(u, view)]
                     umap[u.url] = m
+            vn = view.__name__
+            if vn.startswith("api_"):
+                vn = vn[4:]
+            elif vn.startswith("view_"):
+                vn = vn[5:]
+            view.__dict__["hits_metric"] = app.metrics.add_metric("%s.hits" % vn)
+            view.__dict__["time_metric"] = app.metrics.add_metric("%s.time" % vn)
         for url in umap:
             mm = {}
             names = set()

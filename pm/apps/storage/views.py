@@ -2,19 +2,20 @@
 ##----------------------------------------------------------------------
 ## pm.storage application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.pm.models.storage import PMStorage
+from noc.pm.models.storage import Storage
 
 
-class PMStorageApplication(ExtDocApplication):
+class StorageApplication(ExtDocApplication):
     """
-    PMStorage application
+    Storage application
     """
     title = "Storage"
-    menu = "Setup | PM Storages"
-    model = PMStorage
+    menu = "Setup | Storages"
+    model = Storage
+    query_fields = ["name", "description"]

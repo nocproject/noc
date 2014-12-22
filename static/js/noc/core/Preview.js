@@ -7,7 +7,7 @@
 console.debug("Defining NOC.core.Preview");
 
 Ext.define("NOC.core.Preview", {
-    extend: "Ext.panel.Panel",
+    extend: "NOC.core.ApplicationPanel",
     msg: "",
     layout: "fit",
     syntax: null,
@@ -16,6 +16,20 @@ Ext.define("NOC.core.Preview", {
 
     initComponent: function() {
         var me = this;
+
+
+        me.cmContainer = Ext.create({
+            xtype: "container",
+            layout: "fit",
+            tpl: [
+                '<div id="{cmpId}-cmEl" class="{cmpCls}" style="{size}"></div>'
+            ],
+            data: {
+                cmpId: me.id,
+                cmpCls: Ext.baseCSSPrefix + "codemirror " + Ext.baseCSSPrefix + 'html-editor-wrap ' + Ext.baseCSSPrefix + 'html-editor-input',
+                size: "width:100%;height:100%"
+            }
+        });
 
         Ext.apply(me, {
             dockedItems: [{
@@ -28,21 +42,57 @@ Ext.define("NOC.core.Preview", {
                         glyph: NOC.glyph.arrow_left,
                         scope: me,
                         handler: me.onClose
-                    },
-                    me.revCombo,
-                    me.diffCombo
+                    }
                 ]
             }],
-            items: [{
-                xtype: "container",
-                autoScroll: true,
-                padding: 4
-            }]
+            items: [me.cmContainer],
+            listeners: {
+                scope: me,
+                resize: me.onResize
+            }
         });
         me.callParent();
         //
         me.urlTemplate = Handlebars.compile(me.restUrl);
         me.titleTemplate = Handlebars.compile(me.previewName);
+    },
+    afterRender: function() {
+        var me = this;
+        me.callParent(arguments);
+        me.initViewer();
+    },
+    //
+    initViewer: function() {
+        var me = this,
+            el = me.cmContainer.el.getById(me.id + "-cmEl", true);
+        // Create CodeMirror
+        me.viewer = new CodeMirror(el, {
+            readOnly: true,
+            lineNumbers: true
+        });
+        // change the codemirror css
+        var css = Ext.util.CSS.getRule(".CodeMirror");
+        if(css){
+            css.style.height = "100%";
+            css.style.position = "relative";
+            css.style.overflow = "hidden";
+        }
+        css = Ext.util.CSS.getRule('.CodeMirror-Scroll');
+        if(css){
+            css.style.height = '100%';
+        }
+        me.setTheme(NOC.settings.preview_theme);
+    },
+    // Set CodeMirror theme
+    setTheme: function(name) {
+        var me = this;
+        if(name !== "default") {
+            Ext.util.CSS.swapStyleSheet(
+                "cmcss-" + me.id,  // Fake one
+                "/static/pkg/codemirror/theme/" + name + ".css"
+            );
+        }
+        me.viewer.setOption("theme", name);
     },
     //
     preview: function(record) {
@@ -71,11 +121,18 @@ Ext.define("NOC.core.Preview", {
     //
     renderText: function(text) {
         var me = this;
-        me.items.first().update("<pre>" + text + "<pre>");
+        me.viewer.setValue(text);
     },
     //
     onClose: function() {
         var me = this;
         me.app.showGrid();
+    },
+    //
+    onResize: function() {
+        var me = this;
+        if(me.viewer) {
+            me.viewer.refresh();
+        }
     }
 });

@@ -17,6 +17,7 @@
             "description": "Gi 0/1 port",
             "direction": "s",
             "gender": "f",
+            "group": "1",
             "name": "Gi0/1",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
@@ -25,13 +26,16 @@
             "description": "Gi 0/1 port (GBIC)",
             "direction": "s",
             "gender": "f",
+            "group": "1",
             "name": "Gi0/1_gbic",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | GBIC"
         },
         {
             "description": "Gi 0/2 port",
             "direction": "s",
             "gender": "f",
+            "group": "2",
             "name": "Gi0/2",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
@@ -40,13 +44,16 @@
             "description": "Gi 0/2 port (GBIC)",
             "direction": "s",
             "gender": "f",
+            "group": "2",
             "name": "Gi0/2_gbic",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | GBIC"
         },
         {
             "description": "Gi 0/3 port",
             "direction": "s",
             "gender": "f",
+            "group": "3",
             "name": "Gi0/3",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
@@ -55,7 +62,9 @@
             "description": "Gi 0/3 port (GBIC)",
             "direction": "s",
             "gender": "f",
+            "group": "3",
             "name": "Gi0/3_gbic",
+            "protocols": ["TransEth1G"],
             "type__name": "Transceiver | GBIC"
         },
         {

@@ -28,16 +28,17 @@ Environment | DC Voltage Out of Range,721168eb-a95b-48cd-9b9a-4a7d2ce9491a,Envir
 Environment | Humidity Out of Range,331594a3-7e20-40b2-bac4-7cbcad13b9e6,Environment/Humidity_Out_of_Range.json,ff8908fd4fcc9dd8f718befc1adc8c4727796ad7e0c3d0d92dfc55e67c069920
 Environment | Module Voltage Out of Range,5c83ad07-4a96-4322-a945-af801ff95207,Environment/Module_Voltage_Out_of_Range.json,49d9b1ef7a0408db2576153e99ecb06119f7ad801ed14332d9d7560b4fc3b52b
 Environment | Temperature Out of Range,752d85ca-4fdf-4aae-8d07-8967cb3d9ac1,Environment/Temperature_Out_of_Range.json,1534f08b2b69036f1842d4939632173bb2a8e8263031f58e5c793b71a7fef825
+Environment | Total Power Loss,c818e3e4-24e4-43ce-b85f-10b89b41642b,Environment/Total_Power_Loss.json,5aa0d59e64615733a8340a9cbcd5ab65742aa56d05f5824902b9e2403d09a147
 Environment | UPS | Battery Power Low,1cc92f54-813d-4038-a8cc-8303538f026b,Environment/UPS/Battery_Power_Low.json,86dae9cd127233f37dda499be7936955943a09c3afb91151a17dac780c8edd34
 Environment | UPS | Input Power Failed,c3afd86c-dee6-4cdf-9daa-8b78222e7d12,Environment/UPS/Input_Power_Failed.json,dd98ecb2677a4361925d0df0c45695c7908e94625a4089e8a3676b2b9074ba93
 Environment | UPS | Input Power Low,0b7db31a-06fe-47fc-895e-92b14158dcb8,Environment/UPS/Input_Power_Low.json,fd46495dee6d4ddb0ec9ad4b38d5e0339b535ccaaca60327ede780ffb756688e
 Environment | UPS | Self-Test Failed,cd8a2c67-969e-472a-a32e-624edda8e29a,Environment/UPS/Self-Test_Failed.json,185fdce3e41e7fcb77eb4fc5353ab7113deacd3fb854812f2dbd98d6f8e00a32
 NOC | IPAM | VRF Group Address Collision,099d5271-1581-4059-9872-b8b98621e529,NOC/IPAM/VRF_Group_Address_Collision.json,5e20ab2f5a3e58fc0587e57369b2731cc58c94e0674916cc0706eb6e05bf1fa7
 NOC | Managed Object | Configuration Errors | Misconfigured SNMP,fad2b0ca-b717-404c-af00-7489baf6b15b,NOC/Managed_Object/Configuration_Errors/Misconfigured_SNMP.json,c0da48922d9e2684595eea05e62253fda1930584abde84394b578edab90a7d69
-NOC | Managed Object | Ping Failed,ec26e28d-0b64-4738-8c07-5ee3daca16f4,NOC/Managed_Object/Ping_Failed.json,2fc8f9d8d721776fcbf9b10c6dd36bd36f167fae050a625022281c60d0a554e3
+NOC | Managed Object | Ping Failed,ec26e28d-0b64-4738-8c07-5ee3daca16f4,NOC/Managed_Object/Ping_Failed.json,0d807bd1f11fff7da530661cc8d5115692071472523f3efa531aac6234c41f60
 NOC | Periodic | Periodic Failed,19331749-daac-435d-829c-b9fedf85603f,NOC/Periodic/Periodic_Failed.json,af998074fa6f882bb2cd0658ff98561b983a060f36518c60538e5f5df71fe387
 NOC | SA | Activator Pool Degraded,70c6f606-e6eb-423a-86fb-87f0d6821f19,NOC/SA/Activator_Pool_Degraded.json,fef7671aeb8542c1aeac5e022fc9dd30420c3e2c0704005ddcb5a23e4ac30f06
-Network | BFD | Session Down,6b3a8cff-44fa-461a-8cb2-454ea2d7b2c6,Network/BFD/Session_Down.json,b4bab554fb9d6547328b950fb130e579bf339400577a0f4a28d377d7da97ae48
+Network | BFD | Session Down,6b3a8cff-44fa-461a-8cb2-454ea2d7b2c6,Network/BFD/Session_Down.json,2299b1a0d592a9bfea64b52ff7047418a03774ee909eef172e2eaabadbd65be0
 Network | BGP | Peer Down,1b01710e-b3e7-4ff5-b718-2b6925bc6537,Network/BGP/Peer_Down.json,372a7fc05eb00c127c964c4d58d0a843bccf7800137ebe265528b2ed244a7458
 Network | BGP | Prefix Limit Exceeded,8a0ffe77-c3c0-4327-b52b-7b482e710aec,Network/BGP/Prefix_Limit_Exceeded.json,10e2fd2757694c99015a407610793780e4802ba2fe5dac5d90ad86dd5c698298
 Network | DHCP | Untrusted Server,86a5bbc4-803e-4eb9-906a-fb358e27d7ac,Network/DHCP/Untrusted_Server.json,c510ddc9358c294ce4dea79eb13703f0b5b3dc1925c8de1ac1e6c5322db5c6df
@@ -56,7 +57,7 @@ Network | IMPB | Unauthenticated IP-MAC,951053ed-a46f-41aa-ae4b-05931c63d425,Net
 Network | IP | ARP Moved,1fa45f6c-385c-421e-97fc-6b5310056418,Network/IP/ARP_Moved.json,c308bd10921326129d222803543c02186d47ffc5930966b19453176954862f5c
 Network | IP | Address Conflict,ef2b8f0a-3959-4bce-99b8-5eb5298409b9,Network/IP/Address_Conflict.json,6536aff426de8b26aed0c30c0b833e10dff9bd32f1f0b857eddda9e59d8640db
 Network | IP | IP Flap,7a98aeaf-a2d3-473f-80f5-44040d4f0e1e,Network/IP/IP_Flap.json,ec5b9e0722f8583721d8965caec1dda94258481edc490b6b68136fe86f84e5c2
-Network | IS-IS | Adjacency Down,52ea3beb-fa6d-40f9-97f0-f3958d0c8089,Network/IS-IS/Adjacency_Down.json,79ff75ac561e364b4963282b12ccb3fbbeb568f8ae19ed9e7d101aa4fc75521e
+Network | IS-IS | Adjacency Down,52ea3beb-fa6d-40f9-97f0-f3958d0c8089,Network/IS-IS/Adjacency_Down.json,71ff204d3cc86f1ef093a3dc76f8aa3262c6bb25681c5c9a830430dbaea44d82
 Network | LBD | Loop Detected,aadd3309-c0d4-4f52-9a93-b6231eb25111,Network/LBD/Loop_Detected.json,b617500d9bb3ccd9f69c649b0fd693abbc030b1aa9e2d20257ffc32b8d776906
 Network | LBD | Vlan Loop Detected,c3a089e3-16b8-42aa-a4d2-801049177a22,Network/LBD/Vlan_Loop_Detected.json,1d7f9bf4011dee2e9deabd8912724cfe78c1487b6923feca6e84e680e194f053
 Network | Link | DOM | Alarm: Out of Threshold,e36bece7-964c-4267-8b5a-ef60faa46e24,Network/Link/DOM/Alarm_Out_of_Threshold.json,db5af089c31acc74e2014f50a7732e93979a0e3c07dce3b0ed35cb685608bef1
@@ -77,7 +78,7 @@ Network | OSPF | Neighbor Down,7bd05776-7d5e-4eae-9401-2e45e290756f,Network/OSPF
 Network | PIM | DR Change,bd8fa1b4-9bd9-4bef-a557-756255ccad1e,Network/PIM/DR_Change.json,1740eec11a2f2ab931df1527fab561a652b9f8f739865ad30f1ee701b90077cf
 Network | PIM | Invalid RP,c2b490f2-a0e2-4d44-8e1b-080eb7137835,Network/PIM/Invalid_RP.json,224f070433ebe6b6d260e1545a840b33d97eff0ffccd1fdb402f34b0b48500a0
 Network | PIM | MSDP Peer Down,4b308283-0654-4568-99ff-07f4c4ef37e8,Network/PIM/MSDP_Peer_Down.json,5d1f0cc45a810147e55f4f0c460bef0d49149f47c4805d8d4f05178d8f40ba96
-Network | PIM | Neighbor Down,3fe312b7-a381-455d-9d8e-50bd2cd1d173,Network/PIM/Neighbor_Down.json,b8d5a50d0efd831689262c76398ceaf8d898b1c63417fae784ea043aa3372f7f
+Network | PIM | Neighbor Down,3fe312b7-a381-455d-9d8e-50bd2cd1d173,Network/PIM/Neighbor_Down.json,3a24baf9ec1a7cfcae4cfb0602c0a0bd3353c0873dc89b768d281fbf2fabaa3f
 Network | Port Security | Port Security Violation,ba10cc93-f17e-4bca-b1e4-53294b614f6d,Network/Port_Security/Port_Security_Violation.json,88b37b914350ee7fa1106b10397224db23c5dc524cfe78d2a4b7fde45e3cb579
 Network | RSVP | Neighbor Down,a1086b80-e78b-4efe-b462-2ee0f2808a85,Network/RSVP/Neighbor_Down.json,b27541fd001cc03c09e60b14bab4597603599577fd69ef32ba401ba123518f2a
 Network | STP | BPDU Guard Violation,20d3c3e7-1c33-458d-9e12-837670bbd080,Network/STP/BPDU_Guard_Violation.json,70e426a8bf6f13d546a6faa6d796469fc9d43f67d254bf49dcfc8329f50edf93
@@ -102,6 +103,8 @@ Security | Attack | Teardrop Attack,a0f6d92d-9988-434d-8e3e-f07d6622a5f7,Securit
 Security | Authentication | RADIUS server failed,fa641bed-9f72-49b6-b95d-b33936dc3690,Security/Authentication/RADIUS_server_failed.json,41b8815e3a34484510cb1343c4e1cdbb750bea60fb5f501550ca08a8de232c3d
 Security | Authentication | TACACS+ server failed,2e5a0caf-d984-498e-9cdf-974fa74997c5,Security/Authentication/TACACS+_server_failed.json,f17281d98788e65974974a1fb852b911a594fdee95cd9763937aeec0353163da
 System | Insufficient Memory,077cdef4-fd9b-4eda-85f4-c43ae6f541b7,System/Insufficient_Memory.json,37194eb1c514fa5480548509613d8882c744dcf6daba8df402696b3e9a8ac5b4
+System | Process Crashed,a4ecaee2-e7cb-4f80-928e-ccf92e374e85,System/Process_Crashed.json,91926b50b35aa41d8bfccb217772c9c8ff44a44516561edc1723a282f94bbe39
+System | Reboot,16f51199-4c36-477c-b311-2110a87666a0,System/Reboot.json,771468a9312f13808d5f40997d21b4f2ae4f95615f58de68faf20415e1c05318
 Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter,9c73f93b-9249-4296-b386-4ee1f1cb7e83,Vendor/Arista/EOS/VMTracer/Failed_to_connect_to_vCenter.json,1b167852a34c48279c3dbd492ebc3e4128a6260cd02984379695f6ada850a19d
 Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded,0c6d4a8f-2122-40a7-83c1-00dfa3e74991,Vendor/Cisco/IOS/Network/Load_Balance/Server_Farm_Degraded.json,243fb8f690426540670720eac9701d2f2ba6b91133c279de1e6f03fb7c810de6
 Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service,c4ebe882-c66b-42ec-9c33-47bb6caa25c3,Vendor/Cisco/IOS/Network/Load_Balance/vserver_Out_of_Service.json,80510284baaa4cec2065dc353837fc83f7eb50b598a947c55041de3be16002e3

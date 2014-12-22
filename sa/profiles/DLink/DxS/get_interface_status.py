@@ -42,7 +42,7 @@ class Script(NOCScript):
                 pass
 
         # Fallback to CLI
-        ports = self.profile.get_ports(self)
+        ports = self.profile.get_ports(self, interface)
         for p in ports:
             if interface is not None:
                 if interface == p['port']:

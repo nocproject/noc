@@ -138,7 +138,7 @@ class EventClassificationRule(Document):
             vars = []
             for v in self.vars:
                 vd = ["        {"]
-                vd += ["            \"name\": \"%s\"" % jq(v.name)]
+                vd += ["            \"name\": \"%s\"," % jq(v.name)]
                 vd += ["            \"value\": \"%s\"" % jq(v.value)]
                 vd += ["        }"]
                 vars += ["\n".join(vd)]

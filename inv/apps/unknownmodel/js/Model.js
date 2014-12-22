@@ -30,6 +30,10 @@ Ext.define("NOC.inv.unknownmodel.Model", {
         {
             name: "managed_object",
             type: "string"
+        },
+        {
+            name: "platform",
+            type: "string"
         }
     ]
 });

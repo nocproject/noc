@@ -35,7 +35,7 @@ Ext.define("NOC.fm.classificationrule.TestForm", {
                         },
                         {
                             text: "Test",
-                            glyph: NOC.glyph.question_sign,
+                            glyph: NOC.glyph.question_circle,
                             scope: me,
                             handler: me.onTest
                         }

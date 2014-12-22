@@ -4,7 +4,7 @@
 ##----------------------------------------------------------------------
 
 error_exit ( ) {
-    echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
+    echo -e "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m" 1>&2
     echo "Terminating" 1>&2
     exit 1
 }
@@ -25,7 +25,7 @@ fi
 info "Setting up virtualenv"
 virtualenv $PWD --no-site-packages
 if [ $? -ne 0 ]; then
-    error_exit "$LINENO: Cannot setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
+    error_exit "$LINENO: Can not setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
 fi
 
 info "Installing noc.pth"

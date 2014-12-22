@@ -3,7 +3,7 @@
 ## Vendor: Huawei
 ## OS:     VRP
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -13,12 +13,14 @@ from noc.sa.profiles import Profile as NOCProfile
 import re
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(NOCProfile):
     name = "Huawei.VRP"
     supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_more = [
         (r"^  ---- More ----", " "),
-        (r"[Cc]ontinue?\S+", "y\n\r")
+        (r"[Cc]ontinue?\S+", "y\n\r"),
+        (r"[Cc]onfirm?\S+", "y\n\r"),
+        (r" [Aa]re you sure?\S+", "y\n\r")
     ]
     pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
     pattern_syntax_error = r"^Error: "

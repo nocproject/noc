@@ -16,6 +16,15 @@
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "GigabitEthernet 0/1 RJ45 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "description": "GigabitEthernet 0/1 SFP port",
             "direction": "i",
             "gender": "f",

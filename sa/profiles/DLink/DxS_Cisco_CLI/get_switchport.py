@@ -18,7 +18,7 @@ class Script(NOCScript):
     rx_line = re.compile(
         r"^(?P<interface>\S*\s*\d+(\/\d+)?)\s+(?P<status>\S+)\s+"
         r"(?P<mode>ACCESS|TRUNK)\s+(?P<access_vlan>\d+)\s+"
-        r"(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\S+)", re.MULTILINE)
+        r"(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\d+\S+)?\n", re.MULTILINE)
 
     def execute(self):
         r = []
@@ -29,10 +29,13 @@ class Script(NOCScript):
             if trunk:
                 pvid = int(match.group("untagged"))
                 vlans = match.group("vlans")
-                if vlans == "ALL":
-                    tagged = range(1, 4095)
+                if vlans is not None and vlans != '':
+                    if vlans == "ALL":
+                        tagged = range(1, 4095)
+                    else:
+                        tagged = self.expand_rangelist(vlans)
                 else:
-                    tagged = self.expand_rangelist(vlans)
+                    tagged = []
             else:
                 pvid = int(match.group("access_vlan"))
                 tagged = []

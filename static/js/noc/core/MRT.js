@@ -22,12 +22,6 @@ Ext.define("NOC.core.MRT", {
     constructor: function(config) {
         config = config || {};
         Ext.apply(this, config);
-        this.addEvents(
-            "beforetask",
-            "taskcomplete",
-            "taskexception",
-            "check"
-        );
         this.mixins.observable.constructor.call(this);
     },
     // Run new MRT

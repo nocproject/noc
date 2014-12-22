@@ -53,7 +53,7 @@ class ModelInterfaceAttr(EmbeddedDocument):
             self.is_const == v.is_const
         )
 
-    def clean(self, value):
+    def _clean(self, value):
         return getattr(self, "clean_%s" % self.type)(value)
 
     def clean_str(self, value):

@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.nosql import Document, ForeignKeyField, StringField
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
 
 
 class ForwardingInstance(Document):

@@ -1,0 +1,6 @@
+{
+    "name": "MikroTik | RouterOS | License | Level",
+    "uuid": "e954d09a-d04b-4c41-b971-7387fb91c693",
+    "description": "RouterOS license level",
+    "type": "int"
+}

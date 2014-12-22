@@ -10,14 +10,18 @@
 import uuid
 ## Django modules
 from django.http import HttpResponse
+## Third-party modules
+from mongoengine.fields import (StringField, BooleanField, ListField,
+                                EmbeddedDocumentField, ReferenceField,
+                                BinaryField)
 ## NOC modules
 from extapplication import ExtApplication, view
-from noc.lib.nosql import (StringField, BooleanField, GeoPointField,
-                           ForeignKeyField, PlainReferenceField,
-                           ListField, Q, EmbeddedDocumentField)
+from noc.lib.nosql import (GeoPointField, ForeignKeyField,
+                           PlainReferenceField, Q)
 from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
                                ModelParameter, ListOfParameter,
-                               EmbeddedDocumentParameter)
+                               EmbeddedDocumentParameter, DictParameter,
+                               InterfaceTypeError, DocumentParameter)
 from noc.lib.validators import is_int
 from noc.lib.serialize import json_decode
 from noc.main.models.collectioncache import CollectionCache
@@ -52,6 +56,8 @@ class ExtDocApplication(ExtApplication):
                 if isinstance(f.field, EmbeddedDocumentField):
                     self.clean_fields[f.name] = ListOfParameter(
                         element=EmbeddedDocumentParameter(f.field.document_type))
+            elif isinstance(f, ReferenceField):
+                self.clean_fields[f.name] = DocumentParameter(f.document_type_obj)
             if f.primary_key:
                 self.pk = name
             if name == "uuid":
@@ -178,10 +184,18 @@ class ExtDocApplication(ExtApplication):
                         v = str(v.id)
                     else:
                         v = str(v)
+                elif isinstance(f, ReferenceField):
+                    r["%s__label" % f.name] = unicode(v)
+                    if hasattr(v, "id"):
+                        v = str(v.id)
+                    else:
+                        v = str(v)
                 elif isinstance(f, ListField):
                     if (hasattr(f, "field") and
                             isinstance(f.field, EmbeddedDocumentField)):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
+                elif isinstance(f, BinaryField):
+                    v = repr(v)
                 elif type(v) not in (str, unicode, int, long, bool, dict):
                     if hasattr(v, "id"):
                         v = v.id
@@ -239,6 +253,23 @@ class ExtDocApplication(ExtApplication):
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
+        def _create_object(attrs):
+            o = self.model()
+            for k, v in attrs.items():
+                if k != self.pk and "__" not in k:
+                    setattr(o, k, v)
+            o.save()
+            # Reread result
+            o = self.model.objects.get(**{self.pk: o.pk})
+            if request.is_extjs:
+                r = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                r = self.instance_to_dict(o)
+            return self.response(r, status=self.CREATED)
+
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError, why:
@@ -254,20 +285,7 @@ class ExtDocApplication(ExtApplication):
             if q:
                 if self.queryset(request).filter(**q).first():
                     return self.response(status=self.CONFLICT)
-        o = self.model()
-        for k, v in attrs.items():
-            if k != self.pk and "__" not in k:
-                setattr(o, k, v)
-        o.save()
-        format = request.GET.get(self.format_param)
-        if format == "ext":
-            r = {
-                "success": True,
-                "data": self.instance_to_dict(o)
-            }
-        else:
-            r = self.instance_to_dict(o)
-        return self.response(r, status=self.CREATED)
+        return self.submit_slow_op(request, _create_object, attrs)
 
     @view(method=["GET"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
           access="read", api=True)
@@ -288,6 +306,22 @@ class ExtDocApplication(ExtApplication):
     @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
           access="update", api=True)
     def api_update(self, request, id):
+        def _update_object(o, attrs):
+            for k in attrs:
+                if k != self.pk and "__" not in k:
+                    setattr(o, k, attrs[k])
+            o.save()
+            # Reread result
+            o = self.model.objects.get(**{self.pk: id})
+            if request.is_extjs:
+                r = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                r = self.instance_to_dict(o)
+            return self.response(r, status=self.OK)
+
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError, why:
@@ -299,21 +333,20 @@ class ExtDocApplication(ExtApplication):
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()
         # @todo: Check for duplicates
-        for k in attrs:
-            if k != self.pk and "__" not in k:
-                setattr(o, k, attrs[k])
-        o.save()
-        return self.response(status=self.OK)
+        return self.submit_slow_op(request, _update_object, o, attrs)
 
     @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
           access="delete", api=True)
     def api_delete(self, request, id):
+        def _delete_object(o):
+            o.delete()
+            return HttpResponse(status=self.DELETED)
+
         try:
             o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
-        o.delete()
-        return HttpResponse(status=self.DELETED)
+        return self.submit_slow_op(request, _delete_object, o)
 
     def _api_to_json(self, request, id):
         """
@@ -340,3 +373,37 @@ class ExtDocApplication(ExtApplication):
         Expose is_builtin field for JSON collections
         """
         return bool(CollectionCache.objects.filter(uuid=o.uuid))
+
+    @view(url="^actions/group_edit/$", method=["POST"],
+          access="update", api=True)
+    def api_action_group_edit(self, request):
+        validator = DictParameter(attrs={
+            "ids": ListOfParameter(
+                element=DocumentParameter(self.model),
+                convert=True)
+            }
+        )
+        rv = self.deserialize(request.raw_post_data)
+        try:
+            v = validator.clean(rv)
+        except InterfaceTypeError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+            }, status=self.BAD_REQUEST)
+        objects = v["ids"]
+        del v["ids"]
+        try:
+            v = self.clean(v)
+        except ValueError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+            }, status=self.BAD_REQUEST)
+        for o in objects:
+            for p in v:
+                setattr(o, p, v[p])
+            o.save()
+        return "%d records has been updated" % len(objects)

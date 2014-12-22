@@ -12,7 +12,7 @@ from whoosh.index import open_dir
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces.base import UnicodeParameter
-from noc.main.models import fts_models
+from noc.main.models.fts_queue import FTSQueue
 
 
 class SearchApplication(ExtApplication):
@@ -23,6 +23,7 @@ class SearchApplication(ExtApplication):
     menu = "Search"
     INDEX = "local/index"
     LIMIT = 1000
+    glyph = "search noc-preview"
 
     @view(url="^$", method=["POST"], access="launch", api=True,
           validate={
@@ -36,7 +37,7 @@ class SearchApplication(ExtApplication):
         q = parser.parse(query)
         with index.searcher() as searcher:
             for hit in searcher.search(q, limit=self.LIMIT):
-                o = self.get_object(hit["id"])
+                o = FTSQueue.get_object(hit["id"])
                 if not o:
                     continue  # Not found in database
                 li = o.get_search_info(user)
@@ -50,13 +51,3 @@ class SearchApplication(ExtApplication):
                     "info": li
                 }]
         return r
-
-    def get_object(self, id):
-        m, i = id.split(":")
-        if not m in fts_models:
-            return None
-        model = fts_models[m]
-        try:
-            return model.objects.get(id=int(i))
-        except model.DoesNotExist:
-            return None

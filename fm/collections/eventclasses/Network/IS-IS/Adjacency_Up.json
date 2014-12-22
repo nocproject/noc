@@ -4,8 +4,8 @@
     "action": "A",
     "vars": [
         {
-            "name": "level",
-            "description": "Level",
+            "name": "neighbor",
+            "description": "Neighbor's NSAP or name",
             "type": "str",
             "required": true
         },
@@ -16,16 +16,16 @@
             "required": true
         },
         {
-            "name": "neighbor",
-            "description": "Neighbor's NSAP or name",
+            "name": "level",
+            "description": "Level",
             "type": "str",
-            "required": true
+            "required": false
         }
     ],
     "text": {
         "en": {
-            "subject_template": "New {{level}} IS-IS adjacency to {{neighbor}} on {{interface}}",
-            "body_template": "{{level}} IS-IS adjancency to {{neighbor}} established on {{interface}}",
+            "subject_template": "New{% if level %} {{level}}{% endif %} IS-IS adjacency to {{neighbor}} on {{interface}}",
+            "body_template": "{% if level %}{{level}}{% endif %} IS-IS adjancency to {{neighbor}} established on {{interface}}",
             "symptoms": "Routing table changes",
             "probable_causes": "IS-IS successfully established adjacency with neighbor",
             "recommended_actions": "No reaction needed"

@@ -6,7 +6,7 @@
     "preference": 1000,
     "vars": [
         {
-            "name": "interface"
+            "name": "interface",
             "value": "='Eth 1/%s' % port"
         }
     ],

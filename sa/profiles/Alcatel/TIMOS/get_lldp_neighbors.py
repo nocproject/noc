@@ -17,7 +17,7 @@ import re
 class Script(NOCScript):
     name = "Alcatel.TIMOS.get_lldp_neighbors"
     implements = [IGetLLDPNeighbors]
-    rx_some = re.compile(r"^(?P<port>\w/\w/\w)\s+")
+    rx_some = re.compile(r"^(?P<port>\w/\w/\w+)\s+")
 
     def fixcaps(self, caps):
         fixedcaps = 0

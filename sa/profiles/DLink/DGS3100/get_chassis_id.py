@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DGS3100.get_chassis_id
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -16,12 +16,13 @@ class Script(NOCScript):
     name = "DLink.DGS3100.get_chassis_id"
     cache = True
     implements = [IGetChassisID]
-    rx_ver = re.compile(r"^MAC Address\s+:\s*(?P<id>\S+)\n",
+    rx_mac = re.compile(r"^MAC Address\s+\:\s+(?P<mac>\S+)\s*$",
         re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
-        match = self.re_search(self.rx_ver, self.cli("show switch", cached=True))
-        mac = match.group("id")
+        v = self.cli("show switch", cached=True)
+        match = self.re_search(self.rx_mac, v)
+        mac = match.group("mac")
         return {
             "first_chassis_mac": mac,
             "last_chassis_mac": mac

@@ -14,14 +14,19 @@ Ext.define("NOC.{{module}}.{{app}}.Application", {
     ],
     
     model: "NOC.{{module}}.{{app}}.Model",
-    
-    columns: [
-        /*
-        {
-            text: "Name",
-            dataIndex: "name"
-        }*/
-    ],
-    
-    fields: {{js_form_fields|safe}}
+    initComponent: function() {
+        var me = this;
+        Ext.apply(me, {
+            columns: [
+                /*
+                {
+                    text: "Name",
+                    dataIndex: "name"
+                }*/
+            ],
+
+            fields: {{js_form_fields|safe}}
+        });
+        me.callParent();
+    }
 });

@@ -16,7 +16,7 @@ Ext.define("NOC.sa.managedobject.scripts.ResultPreview", {
     initComponent: function() {
         var me = this;
 
-        Ext.applyIf(me, {
+        Ext.apply(me, {
             dockedItems: [
                 {
                     xtype: "toolbar",

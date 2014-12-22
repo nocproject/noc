@@ -1246,6 +1246,11 @@ class ModelParameter(Parameter):
             self.raise_error("Not found: %d" % value)
 
 
+DocFieldMap = {
+    "FloatField": FloatParameter()
+}
+
+
 class DocumentParameter(Parameter):
     """
     Document reference parameter
@@ -1280,6 +1285,11 @@ class EmbeddedDocumentParameter(Parameter):
                 return None
         if not isinstance(value, dict):
             self.raise_error(value, "Value must be list dict")
+        for k, v in self.document._fields.iteritems():
+            if k in value and value[k] is not None:
+                p = DocFieldMap.get(v.__class__.__name__)
+                if p:
+                    value[k] = p.clean(value[k])
         return self.document(**value)
 
 

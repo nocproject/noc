@@ -42,12 +42,20 @@ class Profile(NOCProfile):
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
+        if "+Efp" in interface:
+            l, r = interface.split("+Efp", 1)
+            return "%s.SI.%d" % (
+                self.convert_interface_name_cisco(l.strip()),
+                int(r.strip())
+            )
         if ".SI." in interface:
             l, r = interface.split(".SI.", 1)
             return "%s.SI.%d" % (
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
+        if interface.startswith("NDE_"):
+            return interface
         il = interface.lower()
         if il.startswith("dot11radio"):
             return "Dot11Radio" + interface[10:]
@@ -73,6 +81,9 @@ class Profile(NOCProfile):
             match = self.rx_cable_if.search(interface)
             if match:
                 return "Ca %s/%s" % (match.group('pr_if'), match.group('sub_if'))
+        # Fake name. Used only with FM
+        if il == "all":
+            return "all"
         return self.convert_interface_name_cisco(interface)
 
     def generate_prefix_list(self, name, pl):

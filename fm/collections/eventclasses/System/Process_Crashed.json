@@ -1,0 +1,42 @@
+{
+    "name": "System | Process Crashed",
+    "uuid": "60740366-04b9-41e0-b9b9-33f083276c89",
+    "action": "L",
+    "vars": [
+        {
+            "name": "name",
+            "description": "Process name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "pid",
+            "description": "Process PID",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "status",
+            "description": "Exit status",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "Process crashed: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
+            "body_template": "Process crashed: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "System | Process Crashed"
+        }
+    ]
+}

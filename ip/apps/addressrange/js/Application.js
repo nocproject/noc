@@ -10,8 +10,7 @@ Ext.define("NOC.ip.addressrange.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.ip.addressrange.Model",
-        "NOC.ip.vrf.LookupField",
-        "NOC.core.TagsField"
+        "NOC.ip.vrf.LookupField"
     ],
     model: "NOC.ip.addressrange.Model",
     search: true,

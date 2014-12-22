@@ -10,15 +10,26 @@
 ## Python modules
 import py_compile
 import subprocess
+import sys
 
 
 def compile():
+    errors = []
     f = subprocess.Popen(["./bin/hg", "locate"], stdout=subprocess.PIPE)
     for l in f.stdout:
         l = l.strip()
         if l.endswith(".py") and "/templates/" not in l:
-            py_compile.compile(l)
+            try:
+                py_compile.compile(l)
+            except IOError, why:
+                errors += [str(why)]
+    return errors
 
 if __name__ == "__main__":
     print "Updating bytecode"
-    compile()
+    errors = compile()
+    if errors:
+        print "Following errors has been found:"
+        for e in errors:
+            print "* %s" % e
+        sys.exit(1)

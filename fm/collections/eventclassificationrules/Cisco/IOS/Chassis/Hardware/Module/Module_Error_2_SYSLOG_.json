@@ -6,12 +6,12 @@
     "preference": 1000,
     "vars": [
         {
-            "name": "module"
+            "name": "module",
             "value": "GBIC"
         },
 
         {
-            "name": "reason"
+            "name": "reason",
             "value": "Bad eeprom"
         }
     ],

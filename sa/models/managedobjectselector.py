@@ -10,6 +10,8 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
+## Third-party modules
+import six
 ## NOC modules
 from administrativedomain import AdministrativeDomain
 from managedobject import ManagedObject, ManagedObjectAttribute
@@ -39,6 +41,9 @@ class ManagedObjectSelector(models.Model):
     filter_id = models.IntegerField(_("Filter by ID"), null=True, blank=True)
     filter_name = models.CharField(_("Filter by Name (REGEXP)"),
             max_length=256, null=True, blank=True, validators=[check_re])
+    filter_managed = models.NullBooleanField(
+        _("Filter by Is Managed"),
+        null=True, blank=True, default=True)
     filter_profile = models.CharField(_("Filter by Profile"),
             max_length=64, null=True, blank=True,
             choices=profile_registry.choices)
@@ -86,13 +91,19 @@ class ManagedObjectSelector(models.Model):
     def __unicode__(self):
         return self.name
 
-    ##
-    ## Returns a Q object
-    ##
     @property
     def Q(self):
-        # Apply restrictions
-        q = Q(is_managed=True) & ~Q(profile_name__startswith="NOC.")
+        """
+        Returns Q object which can be applied to
+        ManagedObject.objects.filter
+        """
+        # Exclude NOC internal objects
+        q = ~Q(profile_name__startswith="NOC.")
+        # Exclude objects being wiped
+        q &= ~Q(name__startswith="wiping-")
+        # Filter by is_managed
+        if self.filter_managed is not None:
+            q &= Q(is_managed=self.filter_managed)
         # Filter by ID
         if self.filter_id:
             q &= Q(id=self.filter_id)
@@ -175,6 +186,66 @@ class ManagedObjectSelector(models.Model):
                 for qo in ql:
                     q |= qo.Q
         return q
+
+    EXPR_MAP = [
+        # Field, var, op
+        ["filter_id", "id", "=="],
+        ["filter_name", "name", "~"],
+        ["filter_profile", "profile", "=="],
+        ["filter_object_profile", "object_profile", "=="],
+        ["filter_address", "address", "~"],
+        ["filter_prefix", "address", "IN"],
+        ["filter_shard", "shard", "=="],
+        ["filter_administrative_domain", "administrative_domain", "=="],
+        ["filter_activator", "activator", "=="],
+        ["filter_vrf", "vrf", "=="],
+        ["filter_vc_domain", "vc_domain", "=="],
+        ["filter_termination_group", "termination_group", "=="],
+        ["filter_service_terminator", "serivce_terminator", "=="],
+        ["filter_user", "user", "=="],
+        ["filter_remote_path", "remote_path", "~"],
+        ["filter_description", "description", "~"],
+        ["filter_tags", "tags", "CONTAINS"]
+    ]
+
+    @property
+    def expr(self):
+        """
+        Return selector as text expression
+        """
+        def q(s):
+            if isinstance(s, six.integer_types):
+                return str(s)
+            elif isinstance(s, (list, tuple)):
+                s = [q(x) for x in s]
+                return u"[%s]" % ", ".join(s)
+            else:
+                return u"\"%s\"" % unicode(s).replace("\\", "\\\\").replace("'", "\\'")
+
+        expr = []
+        # Filter by is_managed
+        if self.filter_managed is not None:
+            if self.filter_managed:
+                expr += [u"IS MANAGED"]
+            else:
+                expr += [u"IS NOT MANAGED"]
+        # Apply filters
+        for f, n, op in self.EXPR_MAP:
+            v = getattr(self, f)
+            if v:
+                expr += [u"%s %s %s" % (n, op, q(v))]
+        # Apply attributes filters
+        for s in self.managedobjectselectorbyattribute_set.all():
+            expr += [u"attr(%s) ~ %s" % (q(s.key_re), q(s.value_re))]
+
+        expr = [u" AND ".join(expr)]
+        # Restrict to sources
+        if self.sources.count():
+            for s in self.sources.all():
+                expr += [s.expr]
+            op = u" AND " if self.source_combine_method == "A" else u" OR "
+            expr = [op.join(u"(%s)" % x for x in expr)]
+        return expr[0]
 
     ##
     ## Returns queryset containing managed objects

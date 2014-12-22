@@ -51,6 +51,8 @@ class MapTask(models.Model):
             ("F", _("Failed"))],
         default="W")
     script_result = PickledField(_("Result"), null=True, blank=True)
+    # Override script's default timeout
+    script_timeout = models.IntegerField(_("Script timeout"), null=True, blank=True)
 
     def __unicode__(self):
         if self.id:

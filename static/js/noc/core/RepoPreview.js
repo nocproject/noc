@@ -17,10 +17,13 @@ Ext.define("NOC.core.RepoPreview", {
     initComponent: function() {
         var me = this;
 
+        me.currentTheme = "default";
+
         me.revCombo = Ext.create("Ext.form.ComboBox", {
             fieldLabel: "Version",
             labelWidth: 45,
-            width: 200,
+            labelAlign: "right",
+            width: 210,
             queryMode: "local",
             displayField: "ts_label",
             valueField: "id",
@@ -55,7 +58,8 @@ Ext.define("NOC.core.RepoPreview", {
             fieldLabel: "Compare",
             disabled: true,
             labelWidth: 45,
-            width: 200,
+            labelAlign: "right",
+            width: 210,
             queryMode: "local",
             displayField: "ts_label",
             valueField: "id",
@@ -111,7 +115,7 @@ Ext.define("NOC.core.RepoPreview", {
         });
 
         me.swapRevButton = Ext.create("Ext.button.Button", {
-            glyph: NOC.glyph.retweet,
+            glyph: NOC.glyph.exchange,
             tooltip: "Swap revisions",
             disabled: true,
             scope: me,
@@ -145,6 +149,19 @@ Ext.define("NOC.core.RepoPreview", {
             diffRange: 30
         });
 
+        me.cmContainer = Ext.create({
+            xtype: "container",
+            layout: "fit",
+            tpl: [
+                '<div id="{cmpId}-cmEl" class="{cmpCls}" style="{size}"></div>'
+            ],
+            data: {
+                cmpId: me.id,
+                cmpCls: Ext.baseCSSPrefix + "codemirror " + Ext.baseCSSPrefix + 'html-editor-wrap ' + Ext.baseCSSPrefix + 'html-editor-input',
+                size: "width:100%;height:100%"
+            }
+        });
+
         Ext.apply(me, {
             dockedItems: [{
                 xtype: "toolbar",
@@ -170,16 +187,56 @@ Ext.define("NOC.core.RepoPreview", {
                     me.lastMonthButton
                 ]
             }],
-            items: [{
-                xtype: "container",
-                autoScroll: true,
-                padding: 4
-            }]
+            items: [me.cmContainer],
+            listeners: {
+                scope: me,
+                resize: me.onResize
+            }
         });
         me.callParent();
         //
         me.urlTemplate = Handlebars.compile(me.restUrl);
         me.titleTemplate = Handlebars.compile(me.previewName);
+    },
+    //
+    afterRender: function() {
+        var me = this;
+        me.callParent(arguments);
+        me.initViewer();
+    },
+    //
+    initViewer: function() {
+        var me = this,
+            el = me.cmContainer.el.getById(me.id + "-cmEl", true);
+        // Create CodeMirror
+        me.viewer = new CodeMirror(el, {
+            readOnly: true,
+            lineNumbers: true,
+            styleActiveLine: true
+        });
+        // change the codemirror css
+        var css = Ext.util.CSS.getRule(".CodeMirror");
+        if(css){
+            css.style.height = "100%";
+            css.style.position = "relative";
+            css.style.overflow = "hidden";
+        }
+        css = Ext.util.CSS.getRule('.CodeMirror-Scroll');
+        if(css){
+            css.style.height = '100%';
+        }
+        me.setTheme(NOC.settings.preview_theme);
+    },
+    // Set CodeMirror theme
+    setTheme: function(name) {
+        var me = this;
+        if(name !== "default") {
+            Ext.util.CSS.swapStyleSheet(
+                "cmcss-" + me.id,  // Fake one
+                "/static/pkg/codemirror/theme/" + name + ".css"
+            );
+        }
+        me.viewer.setOption("theme", name);
     },
     //
     startPreview: function(record, backItem) {
@@ -299,8 +356,14 @@ Ext.define("NOC.core.RepoPreview", {
     //
     renderText: function(text, syntax) {
         var me = this;
-        syntax = syntax || me.syntax;
-        NOC.SyntaxHighlight.highlight(me.items.first(), text, syntax);
+        syntax = syntax || null;
+        text = text || "NO DATA";
+        CodeMirror.modeURL = "/static/pkg/codemirror/mode/%N/%N.js";
+        me.viewer.setValue(text);
+        if(syntax) {
+            me.viewer.setOption("mode", syntax);
+            CodeMirror.autoLoadMode(me.viewer, syntax);
+        }
     },
     //
     onSelectRev: function(combo, records, eOpts) {
@@ -450,5 +513,12 @@ Ext.define("NOC.core.RepoPreview", {
             );
         });
         me.requestDiff(rev1, rev2);
+    },
+    //
+    onResize: function() {
+        var me = this;
+        if(me.viewer) {
+            me.viewer.refresh();
+        }
     }
 });

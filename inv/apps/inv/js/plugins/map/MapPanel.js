@@ -86,7 +86,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
         me.zoomInButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom in",
-            glyph: NOC.glyph.zoom_in,
+            glyph: NOC.glyph.search_plus,
             disabled: true,
             scope: me,
             handler: me.onZoomIn
@@ -94,7 +94,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
         me.zoomOutButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom out",
-            glyph: NOC.glyph.zoom_out,
+            glyph: NOC.glyph.search_minus,
             disabled: true,
             scope: me,
             handler: me.onZoomOut

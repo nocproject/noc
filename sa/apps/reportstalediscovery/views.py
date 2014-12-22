@@ -30,7 +30,7 @@ class ReportStaleDiscoveryJob(SimpleReport):
         for r in s.find(
                 {"runs": {"$gt": 1},
                  "jcls": {'$regex': '_discovery$'},
-                 "st": {"$gte": old}}
+                 "st": {"$lte": old}}
         ).sort("jcls"):
             mo = ManagedObject.objects.get(id=r['key'])
             msg = ""

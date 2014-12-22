@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Initialize and upgrade NOC
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 ## Helper functions definitions
 ##
 error_exit ( ) {
-    echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
+    echo "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m" 1>&2
     echo "Terminating" 1>&2
     exit 1
 }
@@ -42,11 +42,12 @@ ensure_prog ( ) {
 ##
 cd `dirname $0`/../
 PROGNAME=`basename $0`
+PREFIX=$PWD
 ##
 ## Check, if NOC is already running
 ##
 if [ -f "./etc/noc-launcher.conf" ]; then
-    PIDFILE=`cat ./etc/noc-launcher.conf | grep pidfile | cut -d ' ' -f3`
+    PIDFILE=`grep pidfile ./etc/noc-launcher.conf | cut -d '=' -f2 | sed 's/[ \t]*//'`
     if [ -f "$PIDFILE" ]; then
         error_exit "NOC is running now. Shutdown it first."
     fi
@@ -62,6 +63,15 @@ fi
 if [ "$ENABLED" != "yes" ]; then
     error_exit "Upgrade is disabled. Please edit etc/upgrade.conf and run $0 again"
 fi
+##
+## Apply OS-depended settings
+##
+OSNAME=`uname -s`
+OSSETTINGS="./scripts/os/$OSNAME/upgrade"
+if [ -f $OSSETTINGS ]; then
+    . $OSSETTINGS
+fi
+
 ## Run pre-upgrade local script
 if [ -x ./local/bin/pre-upgrade ]; then
     info "Running ./local/bin/pre-upgrade"
@@ -167,6 +177,8 @@ if [ ! -z "$NOC_BRANCH" ]; then
     BRANCH=$NOC_BRANCH
 fi
 if [ $BRANCH != "none" ]; then
+    UPGRADETS=./local/upgrade-time
+    touch $UPGRADETS
     $HG pull -u $REPO || error_exit "$LINENO: Failed to pull repo $REPO"
     if [ `$HG branch` = "$BRANCH" ]; then
         $HG update || error_exit "$LINENO: Failed to update repo"
@@ -174,16 +186,23 @@ if [ $BRANCH != "none" ]; then
         info "Switching to branch $BRANCH"
         $HG update -c $BRANCH || error_exit "$LINENO: Failed to update to branch $BRANCH"
     fi
+    if [ ./scripts/upgrade -nt $UPGRADETS ]; then
+        info "./scripts/upgrade has been upgraded. Restarting"
+        rm -f $UPGRADETS
+        exec ./scripts/upgrade "$@"
+    fi
+    rm -f $UPGRADETS
 fi
 ##
 ## Update required python modules
 ##
 info "Upgrading PIP"
-./bin/pip install pip --upgrade
+./bin/pip install pip --upgrade || error_exit "$LINENO: Failed to update PIP"
 info "Updating python libraries"
-PIP_REQUIREMENTS=etc/requirements/noc.txt
+PIP_REQUIREMENTS_COMMON=etc/requirements/common.txt
+PIP_REQUIREMENTS_NOC=etc/requirements/noc.txt
 PIP_FLAG=local/.pip
-PIP_ARGS="-r etc/requirements/noc.txt"
+PIP_ARGS="-r $PIP_REQUIREMENTS_COMMON -r $PIP_REQUIREMENTS_NOC"
 if [ "$INSTALL_DEBUG" = "yes" ]; then
     PIP_ARGS="$PIP_ARGS -r etc/requirements/debug.txt"
 fi
@@ -191,13 +210,17 @@ if [ -f "etc/requirements/local.txt" ]; then
     PIP_ARGS="$PIP_ARGS -r etc/requirements/local.txt"
 fi
 if [ ! -z "$PIP_FIND_LINKS" ]; then
-    if [ "$PIP_FIND_LINKS" = "http://cdn.nocproject.org/pkg/simple/" ]; then
-        PIP_FIND_LINKS=https://bitbucket.org/nocproject/noc/downloads
-    fi
     PIP_ARGS="$PIP_ARGS --find-links $PIP_FIND_LINKS --allow-all-external"
 fi
-if [ $PIP_REQUIREMENTS -nt $PIP_FLAG ]; then
+if [ $PIP_REQUIREMENTS_NOC -nt $PIP_FLAG -o $PIP_REQUIREMENTS_COMMON -nt $PIP_FLAG ]; then
     PIP_ARGS="$PIP_ARGS --upgrade"
+fi
+if [ ! -z "$PIP_DOWNLOAD_CACHE" ]; then
+    if [ ! -d "$PIP_DOWNLOAD_CACHE" ]; then
+        info "Creating PIP download cache at $PIP_DOWNLOAD_CACHE"
+        mkdir "$PIP_DOWNLOAD_CACHE"
+    fi
+    PIP_ARGS="$PIP_ARGS --download-cache $PIP_DOWNLOAD_CACHE"
 fi
 
 ./bin/pip install $PIP_ARGS || error_exit "$LINENO: Cannot update python libraries"

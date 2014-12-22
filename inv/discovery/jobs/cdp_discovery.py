@@ -20,10 +20,6 @@ class CDPLinkDiscoveryJob(LinkDiscoveryJob):
     map_task = "get_cdp_neighbors"
     method = "cdp"
     ignored = not config.getboolean("cdp_discovery", "enabled")
-    initial_submit_interval = config.getint("cdp_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("cdp_discovery",
-        "initial_submit_concurrency")
 
     def process_result(self, object, result):
         self.n_cache = {}  # device_id -> object

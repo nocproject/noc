@@ -21,11 +21,14 @@ from extapplication import ExtApplication, view
 from noc.sa.interfaces import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
-                               NoneParameter, StringListParameter)
+                               NoneParameter, StringListParameter,
+                               DictParameter, ListOfParameter,
+                               ModelParameter)
 from interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
 from noc.lib.db import QTags
+from noc.main.models.slowop import SlowOp
 
 
 class ExtModelApplication(ExtApplication):
@@ -163,9 +166,11 @@ class ExtModelApplication(ExtApplication):
         :return: dict of cleaned parameters of raised InterfaceTypeError
         :rtype: dict
         """
-        # Delete id
-        if "id" in data:
-            del data["id"]
+        # Strip "id" and convert empty strings to None
+        data = dict(
+            (k, data[k] if data[k] != "" else None)
+            for k in data if k != "id"
+        )
         # Clean up fields
         for f in self.clean_fields:
             if f in data:
@@ -240,6 +245,15 @@ class ExtModelApplication(ExtApplication):
             if f.name == "tags":
                 # Send tags as a list
                 r[f.name] = getattr(o, f.name)
+            elif hasattr(f, "document"):
+                # DocumentReferenceField
+                v = getattr(o, f.name)
+                if v:
+                    r[f.name] = str(v.pk)
+                    r["%s__label" % f.name] = unicode(v)
+                else:
+                    r[f.name] = None
+                    r["%s__label" % f.name] = ""
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
                 if (v is not None and
@@ -333,24 +347,46 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
+        def _create_object(attrs, m2m_attrs):
+            o = self.model(**attrs)
+            try:
+                o.save()
+                if m2m_attrs:
+                    self.update_m2ms(o, m2m_attrs)
+            except IntegrityError:
+                return self.render_json(
+                    {
+                        "status": False,
+                        "message": "Integrity error"
+                    }, status=self.CONFLICT)
+            # Check format
+            if request.is_extjs:
+                rs = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                rs = self.instance_to_dict(o)
+            return self.response(rs, status=self.CREATED)
+
         attrs, m2m_attrs = self.split_mtm(
             self.deserialize(request.raw_post_data))
         try:
             attrs = self.clean(attrs)
         except ValueError, why:
             return self.render_json(
-                    {
-                        "status": False,
-                        "message": "Bad request",
-                        "traceback": str(why)
-                    }, status=self.BAD_REQUEST)
+                {
+                    "success": False,
+                    "message": "Bad request",
+                    "traceback": str(why)
+                }, status=self.BAD_REQUEST)
         except InterfaceTypeError, why:
             return self.render_json(
-                    {
-                        "status": False,
-                        "message": "Bad request",
-                        "traceback": str(why)
-                    }, status=self.BAD_REQUEST)
+                {
+                    "success": False,
+                    "message": "Bad request",
+                    "traceback": str(why)
+                }, status=self.BAD_REQUEST)
         try:
             # Exclude callable values from query
             # (Django raises exception on pyRules)
@@ -360,8 +396,8 @@ class ExtModelApplication(ExtApplication):
             # Check for duplicates
             self.queryset(request).get(**qattrs)
             return self.render_json(
-                    {
-                    "status": False,
+                {
+                    "success": False,
                     "message": "Duplicated record"
                 },
                 status=self.CONFLICT)
@@ -372,27 +408,10 @@ class ExtModelApplication(ExtApplication):
                     "message": "Duplicated record"
                 }, status=self.CONFLICT)
         except self.model.DoesNotExist:
-            o = self.model(**attrs)
-            try:
-                o.save()
-                if m2m_attrs:
-                    self.update_m2ms(o, m2m_attrs)
-            except IntegrityError:
-                return self.render_json(
-                        {
-                        "status": False,
-                        "message": "Integrity error"
-                    }, status=self.CONFLICT)
-            # Check format
-            format = request.GET.get(self.format_param)
-            if format == "ext":
-                r = {
-                    "success": True,
-                    "data": self.instance_to_dict(o)
-                }
-            else:
-                r = self.instance_to_dict(o)
-            return self.response(r, status=self.CREATED)
+            return self.submit_slow_op(
+                request, _create_object,
+                attrs, m2m_attrs
+            )
 
     @view(method=["GET"], url="^(?P<id>\d+)/?$", access="read", api=True)
     def api_read(self, request, id):
@@ -400,7 +419,7 @@ class ExtModelApplication(ExtApplication):
         Returns dict with object's fields and values
         """
         try:
-            o = self.queryset(request).get(id=int(id))
+            o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
         only = request.GET.get(self.only_param)
@@ -411,50 +430,96 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
+        def _update_object(o, attrs, m2m_attrs):
+            for k, v in attrs.items():
+                setattr(o, k, v)
+            try:
+                o.save()
+                if m2m_attrs:
+                    self.update_m2ms(o, m2m_attrs)
+            except IntegrityError:
+                return self.render_json(
+                    {
+                        "success": False,
+                        "message": "Integrity error"
+                    }, status=self.CONFLICT)
+            if request.is_extjs:
+                r = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                r = self.instance_to_dict(o)
+            return self.response(r, status=self.OK)
+
         attrs, m2m_attrs = self.split_mtm(
             self.deserialize(request.raw_post_data))
         try:
             attrs = self.clean(attrs)
         except ValueError, why:
             return self.render_json(
-                    {
-                    "status": False,
+                {
+                    "success": False,
                     "message": "Bad request",
                     "traceback": str(why)
                 }, status=self.BAD_REQUEST)
         except InterfaceTypeError, why:
             return self.render_json(
-                    {
-                    "status": False,
+                {
+                    "success": False,
                     "message": "Bad request",
                     "traceback": str(why)
                 }, status=self.BAD_REQUEST)
         try:
-            o = self.queryset(request).get(id=int(id))
+            o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
-        for k, v in attrs.items():
-            setattr(o, k, v)
-        try:
-            o.save()
-            if m2m_attrs:
-                self.update_m2ms(o, m2m_attrs)
-        except IntegrityError:
-            return self.render_json(
-                    {
-                    "status": False,
-                    "message": "Integrity error"
-                }, status=self.CONFLICT)
-        return self.response(status=self.OK)
+        return self.submit_slow_op(request, _update_object,
+                                   o, attrs, m2m_attrs)
 
     @view(method=["DELETE"], url="^(?P<id>\d+)/?$", access="delete", api=True)
     def api_delete(self, request, id):
+        def _delete_object(o):
+            o.delete()  # @todo: Detect errors
+            return HttpResponse(status=self.DELETED)
+
         try:
-            o = self.queryset(request).get(id=int(id))
+            o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return self.render_json({
                 "status": False,
                 "message": "Not found"
             }, status=self.NOT_FOUND)
-        o.delete()  # @todo: Detect errors
-        return HttpResponse(status=self.DELETED)
+        return self.submit_slow_op(request, _delete_object, o)
+
+    @view(url="^actions/group_edit/$", method=["POST"],
+          access="update", api=True)
+    def api_action_group_edit(self, request):
+        validator = DictParameter(attrs={
+            "ids": ListOfParameter(element=ModelParameter(self.model),
+                                   convert=True)
+        })
+        rv = self.deserialize(request.raw_post_data)
+        try:
+            v = validator.clean(rv)
+        except InterfaceTypeError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+            }, status=self.BAD_REQUEST)
+        objects = v["ids"]
+        del v["ids"]
+        try:
+            v = self.clean(v)
+        except ValueError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+            }, status=self.BAD_REQUEST)
+        for o in objects:
+            for p in v:
+                setattr(o, p, v[p])
+            o.save()
+        return "%d records has been updated" % len(objects)

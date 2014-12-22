@@ -1,0 +1,6 @@
+{
+    "name": "DB | Network | Out",
+    "uuid": "f5921f85-2b66-43e3-8589-8110cf2f724d",
+    "description": "Database network output",
+    "measure": "bit/s"
+}

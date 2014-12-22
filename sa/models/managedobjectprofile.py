@@ -50,12 +50,20 @@ class ManagedObjectProfile(models.Model):
     # Default impact is MAJOR/4000
     down_severity = models.IntegerField(
         _("Down severity"), default=4000)
+    # check_link alarm job interval settings
+    # Either None or T0,I0,T1,I1,...,Tn-1,In-1,,In
+    # See MultiIntervalJob settings for details
+    check_link_interval = models.CharField(
+        _("check_link interval"),
+        max_length=256, blank=True, null=True,
+        default=",60"
+    )
     ## Config polling
-    enable_config_polling  = models.BooleanField(
+    enable_config_discovery  = models.BooleanField(
         _("Enable config polling"), default=True)
-    config_polling_min_interval = models.IntegerField(
+    config_discovery_min_interval = models.IntegerField(
         _("Min. config polling interval"), default=600)
-    config_polling_max_interval = models.IntegerField(
+    config_discovery_max_interval = models.IntegerField(
         _("Max. config polling interval"), default=86400)
     ## Discovery settings
     # Version inventory
@@ -65,6 +73,13 @@ class ManagedObjectProfile(models.Model):
         _("Min. version inventory interval"), default=600)
     version_inventory_max_interval = models.IntegerField(
         _("Max. version inventory interval"), default=86400)
+    # Caps discovery
+    enable_caps_discovery = models.BooleanField(
+        _("Enable caps discovery"), default=True)
+    caps_discovery_min_interval = models.IntegerField(
+        _("Min. caps discovery interval"), default=600)
+    caps_discovery_max_interval = models.IntegerField(
+        _("Max. caps discovery interval"), default=86400)
     # Interface discovery
     enable_interface_discovery = models.BooleanField(
         _("Enable interface discovery"), default=True)

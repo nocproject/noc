@@ -42,22 +42,21 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                             dataIndex: "name",
                             width: 200,
                             editor: "textfield",
-                            renderer: "htmlEncode"
+                            renderer: NOC.render.htmlEncode
                         },
                         {
                             header: "Description",
                             dataIndex: "description",
                             flex: 1,
                             editor: "textfield",
-                            renderer: "htmlEncode"
+                            renderer: NOC.render.htmlEncode
                         },
                         {
-                            xtype: "actioncolumn",
+                            xtype: "glyphactioncolumn",
                             width: 25,
                             items: [
                                 {
-                                    // glyph is not applicable
-                                    icon: "/static/pkg/famfamfam-silk/delete.png",
+                                    glyph: NOC.glyph.times_circle_o,
                                     tooltip: "Delete",
                                     handler: function(grid, rowIndex, colIndex) {
                                         grid.getStore().removeAt(rowIndex);

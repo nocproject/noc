@@ -1,0 +1,19 @@
+#!./bin/python
+##----------------------------------------------------------------------
+## Fetch URL and feed to stdout
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##---------------------------------------------------------------------
+
+## Python modules
+import urllib2
+import sys
+
+
+def fetch(url):
+    r = urllib2.urlopen(url)
+    print r.read()
+
+if __name__ == "__main__":
+    fetch(sys.argv[1])

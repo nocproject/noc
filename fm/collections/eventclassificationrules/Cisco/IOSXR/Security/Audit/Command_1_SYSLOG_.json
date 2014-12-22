@@ -6,7 +6,7 @@
     "preference": 1000,
     "vars": [
         {
-            "name": "command"
+            "name": "command",
             "value": "process restart msdp"
         }
     ],

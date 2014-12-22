@@ -47,6 +47,7 @@ class Script(NOCScript):
         re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$", re.IGNORECASE)
+    rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
 
     types = {
            "As": "physical",    # Async
@@ -79,6 +80,7 @@ class Script(NOCScript):
            "SR": "physical",    # Spatial Reuse Protocol
            "Sr": "physical",    # Spatial Reuse Protocol
            "Se": "physical",    # Serial
+           "Sp": "physical",    # Special-Services-Engine
            "Te": "physical",    # TenGigabitEthernet
            "To": "physical",    # TokenRing
            "Tu": "tunnel",      # Tunnel
@@ -304,9 +306,15 @@ class Script(NOCScript):
                 sub["enabled_protocols"] += ["OSPF"]
 
             if full_ifname in ifindex:
-                sub["ifindex"] = ifindex[full_ifname]
+                sub["snmp_ifindex"] = ifindex[full_ifname]
 
             if "." not in ifname and ":" not in ifname:
+                iftype = self.types.get(ifname[:2])
+                if not iftype:
+                    self.logger.info(
+                        "Ignoring unknown interface type: '%s", iftype
+                    )
+                    continue
                 iface = {
                     "name": ifname,
                     "admin_status": a_stat,
@@ -317,6 +325,9 @@ class Script(NOCScript):
                 }
                 if ifname in lldp:
                     iface["enabled_protocols"] += ["LLDP"]
+                match1 = self.rx_ctp.search(v)
+                if match1:
+                    iface["enabled_protocols"] += ["CTP"]
                 if match.group("desc"):
                     iface["description"] = match.group("desc")
                 if "mac" in sub:
@@ -333,7 +344,7 @@ class Script(NOCScript):
                     iface["enabled_protocols"] += ["LACP"]
                 # Ifindex
                 if full_ifname in ifindex:
-                    iface["ifindex"] = ifindex[full_ifname]
+                    iface["snmp_ifindex"] = ifindex[full_ifname]
                 interfaces += [iface]
             else:
                 # Append additional subinterface
