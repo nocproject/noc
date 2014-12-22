@@ -369,16 +369,22 @@ class Command(BaseCommand):
         for r0, r1 in itertools.izip(a, b):
             path = os.path.join(TMP, "%s@%s" % (name, r1[0]))
             logger.debug("writing %s", path)
-            subprocess.check_call(
-                "(cvs diff -r%s -r%s %s | patch %s) && cp %s %s" % (
-                    r0[0], r1[0], name,
-                    os.path.join(TMP, name),
-                    os.path.join(TMP, name),
-                    os.path.join(TMP, "%s@%s" % (name, r1[0]))
-                ),
-                cwd=repo,
-                shell=True
-            )
+            try:
+                subprocess.check_call(
+                    "(cvs diff -r%s -r%s %s | patch %s) && cp %s %s" % (
+                        r0[0], r1[0], name,
+                        os.path.join(TMP, name),
+                        os.path.join(TMP, name),
+                        os.path.join(TMP, "%s@%s" % (name, r1[0]))
+                    ),
+                    cwd=repo,
+                    shell=True
+                )
+            except subprocess.CalledProcessError, why:
+                logger.error("Failed to import %s@%s. Giving up",
+                             name, r1[0])
+                logger.error("CVS reported: %s", why)
+                return
         # Import all config revisions
         gridvcs = GridVCS("config")
         for rev, date in reversed(revisions):
