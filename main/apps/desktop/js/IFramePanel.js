@@ -19,5 +19,9 @@ Ext.define("NOC.main.desktop.IFramePanel", {
             }
         });
         me.callParent();
+    },
+    getHistoryHash: function() {
+        var me = this;
+        return me.noc.app_id;
     }
 });

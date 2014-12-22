@@ -57,6 +57,7 @@ enum ErrorCode {
     ERR_OBJ_OVERLOAD        =25; // Too many scripts on object
     ERR_PROTO_MISMATCH      =26; // Protocol version mismatch
     ERR_SETUP_FAILED        =27; // Cannot negotiate crypto session
+    ERR_OBJECT_NOT_MANAGED  =28; // Object is not managed
 }
 
 //
@@ -73,6 +74,13 @@ message AccessProfile {
         required string key = 1;
         required string value = 2;
     }
+    message Caps {
+        required string   capability = 1;
+        optional string   str_value = 2;
+        optional sfixed64 int_value = 3;
+        optional bool     bool_value = 4;
+        optional float    float_value = 5;
+    }
     required string       profile        = 1;
     required AccessScheme scheme         = 2;
     required string       address        = 3;
@@ -84,6 +92,7 @@ message AccessProfile {
     optional string       snmp_ro        = 9;
     optional string       snmp_rw        =10;
     repeated KWArg        attrs          =11;
+    repeated Caps         caps           =12;
 }
 //
 // Protocol negotiation

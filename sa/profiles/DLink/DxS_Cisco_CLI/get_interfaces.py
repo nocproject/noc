@@ -25,7 +25,7 @@ class Script(NOCScript):
     rx_line_vlan = re.compile(r"\w*==========================\s+VLAN",
                               re.MULTILINE)
     rx_ifindex = re.compile(r"Index\(dec\):(?P<ifindex>\d+) \(hex\):\d+")
-    rx_name = re.compile(r"(?P<name>.+) is (?P<status>.\S+)(|\s+),",
+    rx_name = re.compile(r"^(?P<name>\S+.+) is (?P<status>.\S+)(|\s+),",
                          re.MULTILINE)
     rx_descr = re.compile(
         r"\s+interface's description:(\"\"|\"(?P<description>.+)\")",

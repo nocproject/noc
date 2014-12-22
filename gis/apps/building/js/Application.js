@@ -12,9 +12,7 @@ Ext.define("NOC.gis.building.Application", {
         "NOC.gis.building.Model",
         "NOC.gis.building.AddressesModel",
         "NOC.gis.division.LookupField",
-        "NOC.gis.street.LookupField",
-        "Ext.ux.form.DictField",
-        "Ext.ux.form.GridField"
+        "NOC.gis.street.LookupField"
     ],
     model: "NOC.gis.building.Model",
     search: true,
@@ -157,7 +155,7 @@ Ext.define("NOC.gis.building.Application", {
                     toolbar: [
                         {
                             text: "Fill Entrances",
-                            glyph: NOC.glyph.plus_sign_alt,
+                            glyph: NOC.glyph.plus_square,
                             scope: me,
                             handler: me.onFillEntrances
                         }

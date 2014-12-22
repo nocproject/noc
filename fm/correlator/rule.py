@@ -17,6 +17,8 @@ class Rule(object):
         self.event_class = ec
         self.u_name = "%s: %s" % (self.event_class.name, self.name)
         self.condition = compile(dr.condition, "<string>", "eval")
+        mo_exp = dr.managed_object or "event.managed_object"
+        self.managed_object = compile(mo_exp, "<string>", "eval")
         try:
             self.conditional_pyrule = PyRule.objects.get(
                 name=ec.conditional_pyrule_name,
@@ -64,7 +66,6 @@ class Rule(object):
                         ", ".join(["%s=vars['%s']" % (k, v)
                                    for k, v in ds.search.items()])),
                     {"datasource_registry": datasource_registry}, {})
-
 
     def get_vars(self, e):
         """

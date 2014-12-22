@@ -20,6 +20,8 @@ from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.mib import MIB
 from noc.fm.models import get_alarm, get_event
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models import AdministrativeDomain
+from noc.sa.models.selectorcache import SelectorCache
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter)
 from noc.lib.escape import json_escape
@@ -81,6 +83,17 @@ class EventApplication(ExtApplication):
             qp = p.split("__")[0]
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].form_clean(q[p])
+        if "administrative_domain" in q:
+            a = AdministrativeDomain.objects.get(id = q["administrative_domain"])
+            q["managed_object__in"] = a.managedobject_set.values_list("id", flat = True)
+            q.pop("administrative_domain")
+        if "managedobjectselector" in q:
+            s = SelectorCache.objects.filter(selector = q["managedobjectselector"]).values_list("object")
+            if "managed_object__in" in q:
+                q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
+            else:
+                q["managed_object__in"] = s
+            q.pop("managedobjectselector")
         return q
 
     def instance_to_dict(self, o, fields=None):
@@ -108,6 +121,8 @@ class EventApplication(ExtApplication):
             "status": o.status,
             "managed_object": o.managed_object.id,
             "managed_object__label": o.managed_object.name,
+            "administrative_domain": o.managed_object.administrative_domain_id,
+            "administrative_domain__label": o.managed_object.administrative_domain.name,
             "event_class": str(o.event_class.id) if o.status in ("A", "S") else None,
             "event_class__label": o.event_class.name if o.status in ("A", "S") else None,
             "timestamp": self.to_json(o.timestamp),

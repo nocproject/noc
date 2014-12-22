@@ -34,7 +34,7 @@ class Command(BaseCommand):
     rx_version = re.compile(r"\"version\":\s*(\d+)", re.MULTILINE)
 
     def handle(self, *args, **options):
-        print "Synchnonizing MIBs"
+        print "Synchronizing MIBs"
         self.sync_mibs(force=options["force"])
 
     def get_bundled_mibs(self):

@@ -22,7 +22,7 @@ function load_scripts(urls, scope, callback) {
 
                 var head = document.getElementsByTagName("head")[0];
                 head.appendChild(script_node);
-                window._noc_load_callback = function() {load(u, cb);}
+                window._noc_load_callback = function() {load(u, cb);};
                 if(next_on_load) {
                     script_node.onreadystatechange = function() {
                         if(this.readyState == "complete")
@@ -33,7 +33,7 @@ function load_scripts(urls, scope, callback) {
                 _noc_loaded_scripts[url] = true;
             }
         }
-    }
+    };
     // Begin loading
     load(urls.reverse(), callback);
 }

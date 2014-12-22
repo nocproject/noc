@@ -29,7 +29,7 @@ class EventClassVar(EmbeddedDocument):
         required=True,
         choices=[
             (x, x) for x in (
-                "str", "int",
+                "str", "int", "float",
                 "ipv4_address", "ipv6_address", "ip_address",
                 "ipv4_prefix", "ipv6_prefix", "ip_prefix",
                 "mac", "interface_name", "oid"
@@ -56,6 +56,8 @@ class EventDispositionRule(EmbeddedDocument):
     # Python logical expression to check do the rules
     # applicable or not.
     condition = fields.StringField(required=True, default="True")
+    # Python logical expression to evaluate managed object
+    managed_object = fields.StringField(required=False)
     # What to do with disposed event:
     #    drop - delete and stop disposition
     #    ignore - stop disposition
@@ -115,7 +117,7 @@ class EventDispositionRule(EmbeddedDocument):
 
     def __eq__(self, other):
         for a in ["name", "condition", "action", "pyrule", "window",
-                  "var_mapping", "stop_disposition"]:
+                  "var_mapping", "stop_disposition", "managed_object"]:
             if hasattr(self, a) != hasattr(other, a):
                 return False
             if hasattr(self, a) and getattr(self, a) != getattr(other, a):
@@ -268,7 +270,7 @@ class EventClass(Document):
         r += ["    \"name\": \"%s\"," % q(c.name)]
         r += ["    \"uuid\": \"%s\"," % c.uuid]
         if c.description:
-            r += ["    \"desciption\": \"%s\"," % q(c.description)]
+            r += ["    \"description\": \"%s\"," % q(c.description)]
         r += ["    \"action\": \"%s\"," % q(c.action)]
         # vars
         vars = []
@@ -283,6 +285,8 @@ class EventClass(Document):
         r += ["    \"vars\": ["]
         r += [",\n".join(vars)]
         r += ["    ],"]
+        if self.link_event:
+            r += ["    \"link_event\": true,"]
         # Handlers
         if self.handlers:
             hh = ["        \"%s\"" % h for h in self.handlers]
@@ -315,6 +319,8 @@ class EventClass(Document):
                 lll += ["            \"action\": \"%s\"" % q(d.action)]
                 if d.alarm_class:
                     lll += ["            \"alarm_class__name\": \"%s\"" % q(d.alarm_class.name)]
+                if d.managed_object:
+                    lll += ["            \"managed_object\": \"%s\"" % q(d.managed_object)]
                 ll += [",\n".join(lll)]
                 ll += ["        }"]
                 l += ["\n".join(ll)]
@@ -322,6 +328,28 @@ class EventClass(Document):
             r += ["    ]"]
         else:
             r += ["    }"]
+        #
+        if c.repeat_suppression:
+            r[-1] += ","
+            r += ["    \"repeat_suppression\": ["]
+            l = []
+            for rs in c.repeat_suppression:
+                ll = ["        {"]
+                lll = ["            \"name\": \"%s\"," % q(rs.name)]
+                lll += ["            \"condition\": \"%s\"," % q(rs.condition)]
+                lll += ["            \"event_class__name\": \"%s\"," % q(rs.event_class.name)]
+                lll += ["            \"match_condition\": {"]
+                llll = []
+                for rsc in rs.match_condition:
+                    llll += ["                \"%s\": \"%s\"" % (q(rsc), q(rs.match_condition[rsc]))]
+                lll += [",\n".join(llll) + "\n            },"]
+                lll += ["            \"window\": %d," % rs.window]
+                lll += ["            \"suppress\": %s" % ("true" if rs.suppress else "false")]
+                ll += ["\n".join(lll)]
+                ll += ["        }"]
+                l += ["\n".join(ll)]
+            r += [",\n".join(l)]
+            r += ["    ]"]
         # Plugins
         if self.plugins:
             r[-1] += ","

@@ -17,7 +17,7 @@ import os
 ## Command handler
 ##
 class Command(BaseCommand):
-    help="Syncronize built-in Reference Books"
+    help="Synchronize built-in Reference Books"
     def handle(self, *args, **options):
         transaction.enter_transaction_management()
         self.sync_refbooks()

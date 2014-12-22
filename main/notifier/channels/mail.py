@@ -11,6 +11,7 @@ import smtplib
 import socket
 import subprocess
 import shlex
+import datetime
 from email.mime.text import MIMEText
 from email.header import Header
 import email.utils
@@ -31,11 +32,13 @@ class MailNotificationChannel(NotificationChannel):
         # Prepare message
         if link:
             body += "\n\nSee details: %s\n" % link
+        md = datetime.datetime.now(self.TZ)\
+            .strftime("%a, %d %b %Y %H:%M:%S %z")
         from_address = self.config.get(self.name, "from_address")
         message = MIMEText(body, _charset="utf-8")
         message["From"] = from_address
         message["To"] = to
-        message["Date"] = email.utils.formatdate(localtime=True)
+        message["Date"] = md
         message["Subject"] = Header(subject, "utf-8")
         msg = message.as_string()
         self.debug(msg)

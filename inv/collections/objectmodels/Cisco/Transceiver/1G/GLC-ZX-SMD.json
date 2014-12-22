@@ -1,0 +1,38 @@
+{
+    "name": "Cisco | Transceiver | 1G | GLC-ZX-SMD",
+    "uuid": "98a134d5-3996-4433-850d-28e8a9f91a78",
+    "vendor__code": "CISCO",
+    "description": "Cisco SFP ZX transceiver with DOM support",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASEZX-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASEZX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "GLC-ZX-SMD"
+        }
+    }
+}

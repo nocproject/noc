@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Continuous integration run script
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ PEP8_VIOLATIONS_REPORT=pep8-violations.xml
 TEST_DB=test_noc
 
 error_exit ( ) {
-    echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
+    echo -e "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m" 1>&2
     echo "Terminating" 1>&2
     exit 1
 }
@@ -30,11 +30,8 @@ if [ $? -ne 0 ]; then
     dropdb $TEST_DB
 fi
 
-echo "Installing .conf files"
-./scripts/install-conf || error_exit "$LINENO: Failed to install .conf"
-
-echo "Synchronizing contrib/"
-./scripts/sync-contrib || error_exit "$LINENO: contrib/ synch failed"
+echo "Installing .conf files and synchronizing contrib"
+./scripts/upgrade || error_exit "Failed"
 
 echo "Running tests"
 ./noc test --no-interactive --junit-xml-out=$JUNIT_REPORT\

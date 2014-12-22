@@ -16,6 +16,7 @@
             "direction": "s",
             "gender": "f",
             "name": "port0",
+            "protocols": ["10GBASECX4"],
             "type__name": "Electrical | SFF-8470"
         },
         {
@@ -23,6 +24,7 @@
             "direction": "s",
             "gender": "f",
             "name": "port1",
+            "protocols": ["10GBASECX4"],
             "type__name": "Electrical | SFF-8470"
         }
     ],

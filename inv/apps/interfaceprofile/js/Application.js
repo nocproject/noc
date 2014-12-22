@@ -10,11 +10,13 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.inv.interfaceprofile.Model",
-        "NOC.main.style.LookupField"
+        "NOC.main.style.LookupField",
+        "Ext.ux.form.MultiIntervalField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
     search: true,
     rowClassField: "row_class",
+    metricModelId: "inv.InterfaceProfile",
     columns: [
         {
             text: "Name",
@@ -83,6 +85,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                     {id: "A", label: "Raise alarms"}
                 ]
             }
+        },
+        {
+            name: "check_link_interval",
+            xtype: "multiintervalfield",
+            fieldLabel: "check_link interval",
+            allowBlank: true
         },
         {
             name: "mac_discovery",

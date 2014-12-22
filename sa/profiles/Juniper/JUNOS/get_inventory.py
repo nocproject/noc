@@ -44,7 +44,8 @@ class Script(NOCScript):
         "MIC": "MIC",
         "PIC": "PIC",
         "XCVR": "XCVR",
-        "FTC": "FAN"
+        "FTC": "FAN",
+        "FAN TRAY": "FAN"
     }
 
     IGNORED = {
@@ -91,8 +92,9 @@ class Script(NOCScript):
             # Detect type
             t, number = self.get_type(name)
             if not t:
-                print "!!! Unknown %s %s %s %s %s" % (
-                    name, revision, part_no, serial, description)
+                self.logger.error("Unknown module: %s %s %s %s %s",
+                                  name, revision, part_no,
+                                  serial, description)
                 continue
             # Discard virtual chassis and ignored part numbers
             if description == "Virtual Chassis":

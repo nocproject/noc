@@ -236,7 +236,7 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi13",
+            "name": "Gi13_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -245,7 +245,7 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi14",
+            "name": "Gi14_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -254,7 +254,7 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi15",
+            "name": "Gi15_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -263,7 +263,7 @@
             "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "Gi16",
+            "name": "Gi16_sfp",
             "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
@@ -294,8 +294,11 @@
         "asset": {
             "part_no0": "ME-3400G-12CS-A"
         },
+        "management": {
+            "managed": true
+        },
         "rackmount": {
-            "units": 1
+            "units": 1.0
         }
     }
 }

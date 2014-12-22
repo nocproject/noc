@@ -39,7 +39,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
 
         me.stopSelectedButton = Ext.create("Ext.button.Button", {
              text: "Disable",
-             glyph: NOC.glyph.minus_sign,
+             glyph: NOC.glyph.minus_circle,
              scope: me,
              disabled: true,
              handler: me.onStopSelected

@@ -245,6 +245,34 @@ class InterfaceReport(Report):
                         self.prefix_report.submit_dual_stack(vrf, ipv4, ipv6)
         return si
 
+    def refine_ifindexes(self):
+        missed_ifindexes = [
+            x["name"] for x in
+            Interface._get_collection().find({
+                "managed_object": self.object.id,
+                "ifindex": None
+            }, {"name": 1})
+        ]
+        if not missed_ifindexes:
+            return
+        self.logger.info("Missed ifindexes for: %s", ", ".join(missed_ifindexes))
+        r = self.object.scripts.get_ifindexes()
+        if not r:
+            return
+        updates = {}
+        for n in missed_ifindexes:
+            if n in r:
+                updates[n] = r[n]
+        if not updates:
+            return
+        for n, i in updates.iteritems():
+            iface = Interface.objects.filter(
+                managed_object=self.object.id, name=n).first()
+            if iface:
+                self.logger.info("Set infindex for %s: %s", n, i)
+                iface.ifindex = i
+                iface.save()  # Signals will be sent
+
     def send(self):
         self.prefix_report.send()
         self.ip_report.send()

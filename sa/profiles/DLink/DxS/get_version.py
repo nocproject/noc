@@ -18,15 +18,17 @@ class Script(NOCScript):
     cache = True
     implements = [IGetVersion]
     rx_ver = re.compile(
-        r"Device Type\s+:\s+(?P<platform>\S+).+(?:Boot PROM|System Boot)\s+"
-        r"Version\s+:\s+(?:Build\s+)?(?P<bootprom>\S+).+Firmware Version\s+:"
-        r"\s+(?:Build\s+)?(?P<version>\S+).+Hardware Version\s+:\s+"
-        r"(?P<hardware>\S+)", re.MULTILINE | re.DOTALL)
-    rx_fwt = re.compile(
-        r"(?:Firmware Type|System Firmware Version)\s+:\s+(?P<fwt>\S+)\s*\n",
+        r"Device Type\s+:\s+(?P<platform>\S+).+"
+        r"(?:Boot PROM|System [Bb]oot)\s+"
+        r"[Vv]ersion\s+:\s+(?:Build\s+)?(?P<bootprom>\S+).+"
+        r"[Ff]irmware [Vv]ersion\s+:\s+(?:Build\s+)?(?P<version>\S+).+"
+        r"[Hh]ardware [Vv]ersion\s+:\s+(?P<hardware>\S+)",
         re.MULTILINE | re.DOTALL)
+    rx_fwt = re.compile(
+        r"(?:Firmware Type|System [Ff]irmware [Vv]ersion)\s+:\s+"
+        r"(?P<fwt>\S+)\s*\n", re.MULTILINE | re.DOTALL)
     rx_ser = re.compile(
-        r"(?:Serial Number|Device S/N)\s+:\s+(?P<serial>\S+)\s*\n",
+        r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s+(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
 
     def execute(self):

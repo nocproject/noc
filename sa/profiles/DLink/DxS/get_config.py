@@ -36,6 +36,15 @@ class Script(NOCScript):
         return self.cleaned_config(config)
 
     ##
+    ## DES-1210-28/ME/B2
+    ##
+    @NOCScript.match(platform__regex=r"DES-1210-28\/ME")
+    def execute_config_current(self):
+        config = self.cli("show config current_config")
+        config = self.strip_first_lines(config, 31)
+        return self.cleaned_config(config)
+
+    ##
     ## DES-1210-28, DES-1210-52
     ##
     @NOCScript.match(platform__regex=r"DES-1210")

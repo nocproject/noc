@@ -5,14 +5,15 @@
 {% if setup.favicon_mime %}
     <link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />
 {% endif %}
-<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" /><link rel="stylesheet" type="text/css" href="/static/css/main.css" />
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
+<link rel="stylesheet" type="text/css" href="/static/css/main.css" />
+<link rel="stylesheet" type="text/css" href="/static/pkg/font-awesome/css/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/noc/colors.css" />
 <META NAME="Copyright" CONTENT="2007-2011, nocproject.org" />
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache" />
 <META HTTP-EQUIV="Expires" CONTENT="0" />
 <SCRIPT TYPE="text/javascript" SRC="{% static "admin/js/jquery.js" %}"></SCRIPT>
-<SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.corner.js"></SCRIPT>
-<SCRIPT TYPE="text/javascript" SRC="/static/js/popup.js"></SCRIPT>
 {% block extrastyle %}{% endblock %}
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}/media/admin/css/ie.css{% endblock %}" /><![endif]-->
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}/media/admin/css/rtl.css{% endblock %}" />{% endif %}

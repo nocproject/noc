@@ -2,7 +2,7 @@
 #-------------------------------------------------------------
 # Build ExtJS index for Font Awesome glyphs
 #-------------------------------------------------------------
-# Copyright (C) 2007-2013, nocproject.org
+# Copyright (C) 2007-2014, nocproject.org
 #-------------------------------------------------------------
 
 ## Python modules
@@ -10,20 +10,29 @@ import re
 
 CSS = "static/pkg/font-awesome/css/font-awesome.css"
 rx_content = re.compile(
-    r"^\.icon-(?P<name>\S+):before\s+{\s+"
-    r"content:\s+\"\\(?P<code>[a-f0-9]+)\"",
+    r"(?P<name>\.fa-[a-z0-9_\-]+:before(?:,\.fa-[a-z0-9_\-]+:before)*)\s*{\s*"
+    r"content:\s*\"\\(?P<code>[a-f0-9]+)\"",
     re.MULTILINE | re.DOTALL)
 
 def parse_css(path):
     with open(path) as f:
         data = f.read()
+        data = data.replace(",\n", ",")
     code = {}
     for match in rx_content.finditer(data):
-        code[match.group(1)] = "0x%s" % match.group(2)
-        code[match.group(1).replace("-", "_")] = "0x%s" % match.group(2)
+        names = match.group(1)
+        v = "0x%s" % match.group(2)
+        for name in names.split(","):
+            if not name.startswith(".fa-"):
+                continue
+            name = name[4:-7]  # Strip .fa- and :before
+            code[name] = v
+            code[name.replace("-", "_")] = v
     r = [
         "//",
         "// Font Awesome glyph index",
+        "// Built by ./scripts/fa-index",
+        "// Do not change manually",
         "//",
         "Ext.namespace(\"NOC\");",
         "NOC.glyph = {"

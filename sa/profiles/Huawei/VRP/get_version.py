@@ -8,7 +8,7 @@
 import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(NOCScript):
@@ -20,6 +20,10 @@ class Script(NOCScript):
     rx_ver_snmp = re.compile(r"Versatile Routing Platform Software.*?Version (?P<version>[^ ,]+),? .*?\n\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+)?[^ \t\n\r\f\v\-]+)[^\n]+", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_ver_snmp2 = re.compile(r"(?P<platform>(?:\S+\s+)?S\d+(?:[A-Z]+-[A-Z]+)?(?:\d+\S+)?)\s+Huawei\sVersatile\sRouting\sPlatform\sSoftware.*Version\s(?P<version>\d+\.\d+)\s\(S\d+\s(?P<image>\S+)+\).*", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_ver_snmp3 = re.compile(r"^\s*VRP.+Software, Version (?P<version>\S+) \((?P<platform>S\S+|CX\d+) (?P<image>[^)]+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ver_snmp4 = re.compile(
+        r"Huawei Versatile Routing Platform Software.*?"
+        r"Version (?P<version>\S+) .*?"
+        r"(?P<platform>MultiserviceEngine \S+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self):
         v = ""
@@ -37,13 +41,17 @@ class Script(NOCScript):
             except self.CLISyntaxError:
                 raise self.NotSupportedError()
         rx = self.find_re([self.rx_ver, self.rx_ver_snmp,
-                           self.rx_ver_snmp2, self.rx_ver_snmp3], v)
+                           self.rx_ver_snmp2, self.rx_ver_snmp3,
+                           self.rx_ver_snmp4], v)
         match = rx.search(v)
         platform = match.group("platform")
         # Convert NetEngine to NE
         if platform.lower().startswith("netengine "):
             n, p = platform.split(" ", 1)
             platform = "NE%s" % p.strip().upper()
+        elif platform.lower().startswith("multiserviceengine"):
+            n, p = platform.split(" ", 1)
+            platform = "ME%s" % p.strip().upper()
         r = {
             "vendor": "Huawei",
             "platform": platform,

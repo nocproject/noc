@@ -10,8 +10,7 @@ Ext.define("NOC.gis.division.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.gis.division.Model",
-        "NOC.gis.division.LookupField",
-        "Ext.ux.form.DictField"
+        "NOC.gis.division.LookupField"
     ],
     model: "NOC.gis.division.Model",
     search: true,

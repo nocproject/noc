@@ -35,6 +35,13 @@ class Link(Document):
     def __unicode__(self):
         return u"(%s)" % ", ".join([unicode(i) for i in self.interfaces])
 
+    def contains(self, iface):
+        """
+        Check link contains interface
+        :return: boolean
+        """
+        return iface in self.interfaces
+
     @property
     def is_ptp(self):
         """

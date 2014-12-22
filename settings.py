@@ -57,6 +57,7 @@ NOSQL_DATABASE_USER = config.get("nosql_database", "user")
 NOSQL_DATABASE_PASSWORD = config.get("nosql_database", "password")
 NOSQL_DATABASE_HOST = config.get("nosql_database", "host")
 NOSQL_DATABASE_PORT = config.get("nosql_database", "port")
+NOSQL_DATABASE_REPLICA_SET = config.get("nosql_database", "replica_set")
 
 TIME_ZONE = config.get("main", "timezone")
 LANGUAGE_CODE = config.get("main", "language_code")
@@ -114,6 +115,7 @@ MIDDLEWARE_CLASSES = [
     "django.middleware.doc.XViewMiddleware",
     "django.middleware.transaction.TransactionMiddleware",
     "noc.lib.middleware.TLSMiddleware", # Thread local storage
+    "noc.lib.middleware.ExtFormatMiddleware"
 ]
 
 if config.get("authentication", "method") == "http":
@@ -132,7 +134,7 @@ TEMPLATE_DIRS = (
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache"
+        "BACKEND": "noc.lib.cache.MongoDBCache"
     }
 }
 
@@ -208,6 +210,12 @@ TRACEBACK_REVERSE = config.get("main", "traceback_order") == "reverse"
 ## Fixed beefs directory
 ## Set up by test runner
 TEST_FIXED_BEEF_BASE = None
+
+##
+## Graphite settings
+##
+GRAPHTEMPLATES_CONF = ""
+LEGEND_MAX_ITEMS = 10
 ## Set up logging
 ## Disable SQL statement logging
 import logging

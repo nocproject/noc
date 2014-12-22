@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS.get_copper_tdr_diag
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -18,10 +18,26 @@ from noc.sa.profiles.DLink.DGS3100 import DGS3100
 class Script(NOCScript):
     name = "DLink.DGS3100.get_copper_tdr_diag"
     implements = [IGetCopperTDRDiag]
-    rx_link_ok = re.compile(r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link Up\s+OK\s+(?P<length>\d+)", re.IGNORECASE)
-    rx_link_nc = re.compile(r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link Down\s+(?:No Cable)(\s+\-)?", re.IGNORECASE)
-    rx_link_pr = re.compile(r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link (?:Up|Down)\s+Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short)\s+at\s+(?P<length>\d+)\s*M\s+-", re.IGNORECASE)
-    rx_pair = re.compile(r"^\s+Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short|Not Support)(\s+at\s+(?P<length>\d+)\s*M)?", re.IGNORECASE)
+    rx_link_ok = re.compile(
+        r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+"
+        r"(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link Up\s+"
+        r"OK\s+(?P<length>\d+)", re.IGNORECASE
+    )
+    rx_link_nc = re.compile(
+        r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+"
+        r"(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link Down\s+"
+        r"(?:No Cable)(\s+\-)?", re.IGNORECASE
+    )
+    rx_link_pr = re.compile(
+        r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+"
+        r"(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link (?:Up|Down)\s+"
+        r"Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short)\s+at\s+"
+        r"(?P<length>\d+)\s*M\s+-", re.IGNORECASE
+    )
+    rx_pair = re.compile(
+        r"^\s+Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short|Not Support)"
+        r"(\s+at\s+(?P<length>\d+)\s*M)?", re.IGNORECASE
+    )
     variance = 0
 
     def parce_pair(self, pair, status, distance=None):
@@ -38,7 +54,7 @@ class Script(NOCScript):
             raise self.NotSupportedError()
         if distance is not None:
             return {"pair": pair, "status": st, "distance_cm": int(distance),
-            "variance_cm": self.variance}
+                    "variance_cm": self.variance}
         else:
             return {"pair": pair, "status": st, "distance_cm": 0}
 
@@ -62,23 +78,27 @@ class Script(NOCScript):
             if match:
                 length = int(match.group("length")) * 100
                 r += [{
-                    "interface":match.group("interface"),
+                    "interface": match.group("interface"),
                     "pairs": [
                         {"pair": 1, "status": "T",
-                        "distance_cm": length, "variance_cm": self.variance},
+                            "distance_cm": length,
+                            "variance_cm": self.variance},
                         {"pair": 2, "status": "T",
-                        "distance_cm": length, "variance_cm": self.variance},
+                            "distance_cm": length,
+                            "variance_cm": self.variance},
                         {"pair": 3, "status": "T",
-                        "distance_cm": length, "variance_cm": self.variance},
+                            "distance_cm": length,
+                            "variance_cm": self.variance},
                         {"pair": 4, "status": "T",
-                        "distance_cm": length, "variance_cm": self.variance}
+                            "distance_cm": length,
+                            "variance_cm": self.variance}
                     ]
                 }]
 
             match = self.rx_link_nc.search(l)
             if match:
                 r += [{
-                    "interface":match.group("interface"),
+                    "interface": match.group("interface"),
                     "pairs": [
                         {"pair": 1, "status": "N", "distance_cm": 0},
                         {"pair": 2, "status": "N", "distance_cm": 0},

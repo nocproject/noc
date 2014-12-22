@@ -21,19 +21,11 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
 
         me.scriptStore = Ext.create("NOC.sa.managedobject.ScriptStore");
 
-        me.searchField = Ext.create("Ext.form.field.Text", {
+        me.searchField = Ext.create({
+            xtype: "searchfield",
             name: "search_field",
-            emptyText: "Search...",
-            inputType: "search",
-            hideLabel: true,
-            width: 200,
-            listeners: {
-                change: {
-                    fn: me.onSearch,
-                    scope: me,
-                    buffer: 200
-                }
-            }
+            scope: me,
+            handler: me.onSearch
         });
 
         me.scriptPanel = Ext.create("Ext.grid.Panel", {
@@ -225,11 +217,11 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
         me.runScript(name, params);
     },
     //
-    onSearch: function() {
-        var me = this,
-            text = me.searchField.getValue();
+    onSearch: function(value) {
+        var me = this;
+        me.scriptStore.clearFilter(true);
         me.scriptStore.filterBy(function(record) {
-            return record.get("name").indexOf(text) !== -1;
-        });
+            return record.get("name").indexOf(value) !== -1;
+        }, me);
     }
 });

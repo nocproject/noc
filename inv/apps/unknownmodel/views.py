@@ -20,4 +20,5 @@ class UnknownModelApplication(ExtDocApplication):
     model = UnknownModel
 
     query_condition = "icontains"
-    query_fields = ["vendor", "managed_object", "part_no", "description"]
+    query_fields = ["vendor", "managed_object", "platform",
+                    "part_no", "description"]

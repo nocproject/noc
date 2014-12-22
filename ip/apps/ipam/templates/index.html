@@ -40,7 +40,7 @@ function on_mynetworks(n)
     <div id="toolbar">
         <form id="changelist-search" action="" method="get">{% csrf_token %}
             <div><!-- DIV needed for valid HTML -->
-                <label for="searchbar"><img src="/media/admin/img/icon_searchbox.png" alt="Search" /></label>
+                <label for="searchbar"><i class="fa fa-search"></i></label>
                 <input type="text" size="40" name="q" value="{{query}}" id="searchbar" />
                 <input type="submit" value="Search" />
             </div>

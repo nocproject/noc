@@ -25,6 +25,12 @@ class InvApplication(ExtApplication):
     title = "Inventory"
     menu = "Inventory"
 
+    # Undeletable nodes
+    UNDELETABLE = set([
+        # Global Lost&Found
+        "b0fae773-b214-4edf-be35-3468b53b03f2"
+    ])
+
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
         # Load plugins
@@ -100,7 +106,8 @@ class InvApplication(ExtApplication):
                 "id": str(o.id),
                 "name": name,
                 "plugins": [],
-                "can_add": bool(o.get_data("container", "container"))
+                "can_add": bool(o.get_data("container", "container")),
+                "can_delete": str(o.model.uuid) not in self.UNDELETABLE
             }
             if (o.get_data("container", "container") or
                     o.has_inner_connections()):

@@ -49,13 +49,15 @@ class SNMPProvider(object):
             raise self.TimeOutError()
         return r
 
-    def getnext(self, oid, community_suffix=None, bulk=False, min_index=None,
-                max_index=None, cached=False):
+    def getnext(self, oid, community_suffix=None, bulk=None, min_index=None,
+                max_index=None, cached=False, only_first=False):
         """
         SNMP GETNEXT generator. Usage:
         for oid, v in self.getnext("<oid>"):
             ....
         """
+        if bulk is None:
+            bulk = self.script.caps.get("SNMP | Bulk", False)
         if self.script.activator.use_canned_session:
             r = self.script.activator.snmp_getnext(oid)
             if r is None:
@@ -71,7 +73,7 @@ class SNMPProvider(object):
                 yield r
         out = []
         self.community_suffix = community_suffix
-        sock = SNMPGetNextSocket(self, oid, bulk=bulk, min_index=min_index, max_index=max_index)
+        sock = SNMPGetNextSocket(self, oid, bulk=bulk, min_index=min_index, max_index=max_index, only_first=only_first)
         for r in sock.get_result():
             if cached:
                 try:
@@ -252,10 +254,11 @@ class SNMPGetSocket(UDPSocket):
 class SNMPGetNextSocket(SNMPGetSocket):
     TTL = 5
 
-    def __init__(self, provider, oid, bulk=False, min_index=None, max_index=None):
+    def __init__(self, provider, oid, bulk=False, min_index=None, max_index=None, only_first=False):
         self.bulk = bulk
         self.min_index = min_index
         self.max_index = max_index
+        self.only_first = only_first
         super(SNMPGetNextSocket, self).__init__(provider, oid)
 
     def get_snmp_request(self):
@@ -318,6 +321,10 @@ class SNMPGetNextSocket(SNMPGetSocket):
                             self.provider.script.debug(
                                 '%s SNMP GETNEXT REPLY: %s %s' % (self.address, oid, BQ(val.prettyPrint())))
                         self.feed_result((oid, str(val)))
+                if self.only_first:
+                    self.provider.script.debug("Closing socket after first PDU")
+                    self.close()
+                    return
                 # Stop on EOM
                 for oid, val in var_bind_table[-1]:
                     if val is not None:

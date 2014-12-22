@@ -54,21 +54,16 @@ class AssetReport(Report):
                            part_no[0].startswith("Unknown | Transceiver | "))
         if not type and is_unknown_xcvr:
             type = "XCVR"
-        # Set contexts
-        self.set_context("N", number)
-        if type and type in self.rule_context:
-            scope, reset_scopes = self.rule_context[type]
-            if scope:
-                self.set_context(scope, number)
-            if reset_scopes:
-                self.reset_context(reset_scopes)
         # Skip builtin modules
         if builtin:
+            # Adjust context anyway
+            self.prepare_context(type, number)
             return  # Builtin must aways have type set
         #
         if is_unknown_xcvr:
             self.debug("%s S/N %s should be resolved later" % (
                 part_no[0], serial))
+            self.prepare_context(type, number)
             self.objects += [("XCVR", part_no[0], self.ctx.copy(), serial)]
             return
         # Cache description
@@ -96,20 +91,15 @@ class AssetReport(Report):
                         vnd.name, description, part_no))
                     self.register_unknown_part_no(vnd, part_no, description)
                     return
-        #
-        if type is None:
+        if m.cr_context and type != m.cr_context:
+            # Override type with object mode's one
+            self.debug("Model changes type to '%s'" % m.cr_context)
             type = m.cr_context
-            if not type:
-                self.debug("Cannot resolve type for: vendor=%s, part_no=%s (%s). Skipping" % (
-                    vnd.name, description, part_no))
-                return
-            # Set up context
-            if type in self.rule_context:
-                scope, reset_scopes = self.rule_context[type]
-                if scope:
-                    self.set_context(scope, number)
-                if reset_scopes:
-                    self.reset_context(reset_scopes)
+        if not type:
+            self.debug("Cannot resolve type for: vendor=%s, part_no=%s (%s). Skipping" % (
+                vnd.name, description, part_no))
+            return
+        self.prepare_context(type, number)
         # Get connection rule
         if not self.rule and m.connection_rule:
             self.set_rule(m.connection_rule)
@@ -172,6 +162,15 @@ class AssetReport(Report):
         if number and o.get_data("stack", "stackable"):
             self.stack_member[o] = number
 
+    def prepare_context(self, type, number):
+        self.set_context("N", number)
+        if type and type in self.rule_context:
+            scope, reset_scopes = self.rule_context[type]
+            if scope:
+                self.set_context(scope, number)
+            if reset_scopes:
+                self.reset_context(reset_scopes)
+
     def update_name(self, object):
         n = self.get_name(object, self.object)
         if n and n != object.name:
@@ -206,6 +205,7 @@ class AssetReport(Report):
         """
         Replace values in context
         """
+        s = s or ""
         for c in ctx:
             s = s.replace("{%s}" % c, str(ctx[c]))
         return s
@@ -411,7 +411,7 @@ class AssetReport(Report):
             for pp in part_no:
                 self.unknown_part_no[p].add(pp)
             UnknownModel.mark_unknown(
-                vendor.code, self.object.name,
+                vendor.code, self.object,
                 p, descripton)
 
     def get_unknown_part_no(self):

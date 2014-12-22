@@ -71,14 +71,14 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         me.zoomInButton = Ext.create("Ext.button.Button", {
             text: "Zoom In",
             tooltip: "Zoom In",
-            glyph: NOC.glyph.zoom_in,
+            glyph: NOC.glyph.search_plus,
             scope: me,
             handler: me.onZoomIn,
         });
         me.zoomOutButton = Ext.create("Ext.button.Button", {
             text: "Zoom Out",
             tooltip: "Zoom Out",
-            glyph: NOC.glyph.zoom_out,
+            glyph: NOC.glyph.search_minus,
             scope: me,
             handler: me.onZoomOut,
         });

@@ -16,7 +16,8 @@ Ext.define("NOC.core.modelfilter.Favorites", {
             items: [
                 {
                     xtype: "button",
-                    iconCls: "icon_star",
+                    glyph: NOC.glyph.star,
+                    cls: "noc-starred",
                     toggleGroup: "favgroup",
                     scope: me,
                     handler: function(button, e) {
@@ -26,7 +27,8 @@ Ext.define("NOC.core.modelfilter.Favorites", {
                 },
                 {
                     xtype: "button",
-                    iconCls: "icon_star_grey",
+                    glyph: NOC.glyph.star,
+                    cls: "noc-unstarred",
                     toggleGroup: "favgroup",
                     scope: me,
                     handler: function(button, e) {

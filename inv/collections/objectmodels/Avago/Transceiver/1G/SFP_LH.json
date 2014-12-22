@@ -32,7 +32,9 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFCT-5798PZ-CS3"
+            "part_no0": "SFCT-5798PZ-CS3",
+            "part_no1": "QFCT-5798LP",
+            "part_no2": "SFCT-5798PZ-CS2"
         }
     }
 }

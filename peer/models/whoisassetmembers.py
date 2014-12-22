@@ -45,5 +45,5 @@ class WhoisASSetMembers(nosql.Document):
         c.drop()
         c.insert(data, manipulate=False, check_keys=False)
         # Reindex
-        c.ensure_index("as_set")
+        c.ensure_index("as_set", unique=True)
         return c.count()

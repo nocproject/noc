@@ -40,7 +40,7 @@ Ext.define("NOC.fm.alarm.EventsStore", {
         },
         {
             name: "subject",
-            type: "str"
+            type: "string"
         }
     ],
     data: []

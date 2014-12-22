@@ -13,7 +13,7 @@ import stat
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.lib.collection import Collection
+from noc.lib.collection import Collection, DereferenceError
 from noc.main.models.doccategory import DocCategory
 from noc.gis.models.layer import Layer
 from noc.inv.models.technology import Technology
@@ -22,6 +22,7 @@ from noc.inv.models.modelinterface import ModelInterface
 from noc.inv.models.connectiontype import ConnectionType
 from noc.inv.models.connectionrule import ConnectionRule
 from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.capability import Capability
 from noc.fm.models.oidalias import OIDAlias
 from noc.fm.models.syntaxalias import SyntaxAlias
 from noc.fm.models.mibalias import MIBAlias
@@ -32,6 +33,7 @@ from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.fm.models.cloneclassificationrule import CloneClassificationRule
+from noc.pm.models.metrictype import MetricType
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
 from noc.lib.debug import error_report
@@ -97,6 +99,7 @@ class Command(BaseCommand):
         ("inv.connectiontypes", ConnectionType),
         ("inv.connectionrules", ConnectionRule),
         ("inv.objectmodels", ObjectModel),
+        ("inv.capabilities", Capability),
         # Fault Management
         ("fm.oidaliases", OIDAlias),
         ("fm.syntaxaliases", SyntaxAlias),
@@ -107,7 +110,9 @@ class Command(BaseCommand):
         ("fm.alarmclasses", AlarmClass),
         ("fm.eventclasses", EventClass),
         ("fm.eventclassificationrules", EventClassificationRule),
-        ("fm.cloneclassificationrules", CloneClassificationRule)
+        ("fm.cloneclassificationrules", CloneClassificationRule),
+        # Performance Management
+        ("pm.metrictypes", MetricType)
     ]
 
     def log(self, msg):
@@ -172,6 +177,8 @@ class Command(BaseCommand):
                 lc.apply(dc)
         except ValueError, why:
             raise CommandError(why)
+        except DereferenceError, why:
+            raise CommandError(why)
 
     def handle_upgrade(self, collections):
         for c in collections:
@@ -212,6 +219,7 @@ class Command(BaseCommand):
         dc = Collection(name, d)
         dc.load()
         for f in files:
+            self.log("    ... %s" % f)
             try:
                 data = json_decode(read_file(f))
             except ValueError:

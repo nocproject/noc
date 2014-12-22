@@ -46,7 +46,7 @@ class NOCAuthBackend(object):
             Update instance attr with value, if value is not None.
             Returns True if instance has been updated
             """
-            if value and getattr(instance, attr) != value:
+            if value is not None and getattr(instance, attr) != value:
                 setattr(instance, attr, value)
                 return True
             return False

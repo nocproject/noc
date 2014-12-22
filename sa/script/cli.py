@@ -281,11 +281,14 @@ class CLI(StreamFSM):
             self.pattern_prompt = self.profile.pattern_prompt
             # Refine adaprive pattern prompt
             for k, v in self.match.groupdict().items():
-                v = re.escape(v)
-                self.pattern_prompt = replace_re_group(self.pattern_prompt,
-                                                       "(?P<%s>" % k, v)
-                self.pattern_prompt = replace_re_group(self.pattern_prompt,
-                                                       "(?P=%s" % k, v)
+                if v:
+                    v = re.escape(v)
+                    self.pattern_prompt = replace_re_group(self.pattern_prompt,
+                        "(?P<%s>" % k, v)
+                    self.pattern_prompt = replace_re_group(self.pattern_prompt,
+                        "(?P=%s" % k, v)
+                else:
+                    self.debug("Invalid prompt pattern")
             self.debug("Using prompt pattern: %s" % self.pattern_prompt)
             self.queue.put(None)  # Signal provider passing into PROMPT state
             self.is_ready = True

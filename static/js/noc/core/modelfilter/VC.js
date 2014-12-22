@@ -18,6 +18,8 @@ Ext.define("NOC.core.modelfilter.VC", {
                 {
                     xtype: "numberfield",
                     name: me.name,
+                    fieldLabel: me.title,
+                    labelAlign: "top",
                     itemId: me.name,
                     width: 180,
                     listeners: {

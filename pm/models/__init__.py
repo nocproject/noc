@@ -2,12 +2,14 @@
 ##----------------------------------------------------------------------
 ## Performance management models
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from db import PMDatabase
-from storage import PMStorage
-from probe import PMProbe
-from check import PMCheck
-from ts import PMTS
+from storage import Storage
+from probe import Probe
+from metrictype import MetricType
+from metricset import MetricSet
+from metricsettings import MetricSettings
+from metricconfig import MetricConfig
+from metric import Metric

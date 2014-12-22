@@ -40,7 +40,7 @@ Ext.define("NOC.core.InlineModelStore", {
             },
             reader: {
                 type: "json",
-                root: "data",
+                rootProperty: "data",
                 totalProperty: "total",
                 successProperty: "success"
             },
@@ -126,5 +126,10 @@ Ext.define("NOC.core.InlineModelStore", {
     setParent: function(parentId) {
         var me = this;
         me._proxy.url = me.restUrl.replace("{{parent}}", parentId);
+    },
+    // clone all content
+    cloneData: function() {
+        var me = this;
+        // @todo: Clone existing data
     }
 });

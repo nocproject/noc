@@ -38,5 +38,18 @@
             "action": "raise",
             "alarm_class__name": "Network | IP | Address Conflict"
         }
+    ],
+    "repeat_suppression": [
+        {
+            "name": "Workaround for console flood on some Cisco routers",
+            "condition": "True",
+            "event_class__name": "Network | IP | Address Conflict",
+            "match_condition": {
+                "managed_object": "event.managed_object.id",
+                "vars__ip": "vars['ip']"
+            },
+            "window": 45,
+            "suppress": true
+        }
     ]
 }

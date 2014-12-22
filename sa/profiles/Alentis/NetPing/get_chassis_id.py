@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Alentis.NetPing.get_chassis_id
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -29,9 +29,8 @@ class Script(NOCScript):
                 pass
 
         # Fallback to HTTP
-        mac = self.http.get("/setup_get.cgi")
-        mac = mac.split(",mac:'")[1]
-        mac = mac.split("',ip:'")[0]
+        data = self.profile.var_data(self, "/setup_get.cgi")
+        mac = data["mac"]
         return {
             "first_chassis_mac": mac,
             "last_chassis_mac": mac

@@ -34,12 +34,12 @@ class Script(NOCScript):
         r"Port\s*ID\s*:\s*(?P<ipif>\S+)\s*\n\s*\-+\s*\nAdmin\s*Status\s*:\s*"
         r"(?:Tx_and_Rx|Tx_only|Rx_only)")
     rx_ports = re.compile(
-        r"^\s*(?P<port>\d+:\d+)\s*(?P<admin_state>Enabled|Disabled)\s+"
+        r"^\s*(?P<port>(?:ch|\d+:)\d+)\s*(?P<admin_state>Enabled|Disabled)\s+"
         r"(?P<admin_speed>Auto|10M|100M|1000M)/"
         r"((?P<admin_duplex>Half|Full|Auto)/)?"
         r"(?P<admin_flowctrl>Enabled|Disabled|Auto)\s+(?P<status>Link Down)?"
         r"((?P<speed>10M|100M|1000M)/(?P<duplex>Half|Full)/"
-        r"(?P<flowctrl>None|802.3x|Disabled))?\s+"
+        r"(?P<flowctrl>None|802.3x|Disabled|Enabled))?\s+"
         r"(?P<addr_learning>Enabled|Disabled)\s*$", re.MULTILINE)
     rx_descrs = re.compile(
         r"^\s*(?P<port>\d+(/|:)?\d*)\s*(?P<description>[a-zA-Z0-9_ \-]+)?$",
@@ -52,6 +52,17 @@ class Script(NOCScript):
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def execute(self):
+
+        # Get portchannels
+        portchannel_members = {}
+        portchannel_interface = []
+        for pc in self.scripts.get_portchannel():
+            i = pc["interface"]
+            t = pc["type"] == "L"
+            portchannel_interface += [i]
+            for m in pc["members"]:
+                portchannel_members[m] = (i, t)
+
         lldp = []
         try:
             c = self.cli("show lldp")
@@ -110,12 +121,10 @@ class Script(NOCScript):
         if c:
             for match in self.rx_vlan.finditer(c):
                 members = self.expand_interface_range(
-                    match.group("member_ports").replace("(",
-                    "").replace(")", ""))
+                    self.profile.open_brackets(match.group("member_ports")))
                 tagged_ports = []
                 untagged_ports = self.expand_interface_range(
-                    match.group("untagged_ports").replace("(",
-                    "").replace(")", ""))
+                    self.profile.open_brackets(match.group("untagged_ports")))
                 for p in members:
                     if not(p in untagged_ports):
                         tagged_ports += [p]
@@ -158,6 +167,15 @@ class Script(NOCScript):
                 i['subinterfaces'][0]['tagged_vlans'] = tagged_vlans
             if lldp_enable and ifname in lldp:
                 i["enabled_protocols"] += ["LLDP"]
+            # Portchannel member
+            if ifname in portchannel_members:
+                ai, is_lacp = portchannel_members[ifname]
+                i["aggregated_interface"] = ai
+                i["enabled_protocols"] += ["LACP"]
+                i['subinterfaces'][0].update({"enabled_afi": []})
+            # Portchannel interface
+            if ifname in portchannel_interface:
+                i["type"] = "aggregated"
             interfaces += [i]
 
         mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]

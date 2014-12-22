@@ -7,11 +7,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.scheduler.intervaljob import IntervalJob
+from noc.lib.scheduler.multiintervaljob import MultiIntervalJob
 from noc.fm.models import ActiveAlarm
 
 
-class AlarmJob(IntervalJob):
+class AlarmJob(MultiIntervalJob):
     model = ActiveAlarm  # self.object is an ActiveAlarm instance
 
     def __init__(self, *args, **kwargs):
@@ -31,3 +31,14 @@ class AlarmJob(IntervalJob):
             return None  # Remove schedule
         else:
             return super(AlarmJob, self).get_schedule(status)
+
+    @classmethod
+    def get_job_config(cls, alarm, cfg):
+        """
+        Returns Job's *submit* arguments.
+        :param alarm: ActiveAlarm instance
+        :param cfg: dict of config
+        """
+        return {
+            "interval": [(None, cfg["interval"])]
+        }

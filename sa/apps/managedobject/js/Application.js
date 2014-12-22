@@ -9,7 +9,6 @@ console.debug("Defining NOC.sa.managedobject.Application");
 Ext.define("NOC.sa.managedobject.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
         "NOC.sa.managedobject.Model",
         "NOC.sa.managedobject.AttributesModel",
         "NOC.sa.managedobject.SchemeLookupField",
@@ -33,6 +32,16 @@ Ext.define("NOC.sa.managedobject.Application", {
             title: "Run discovery now",
             action: "run_discovery",
             glyph: NOC.glyph.play
+        },
+        {
+            title: "Set managed",
+            action: "set_managed",
+            glyph: NOC.glyph.check
+        },
+        {
+            title: "Set unmanaged",
+            action: "set_unmanaged",
+            glyph: NOC.glyph.times
         }
     ],
     //
@@ -84,7 +93,7 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.alarmsButton = Ext.create("Ext.button.Button", {
             text: "Alarms",
-            glyph: NOC.glyph.warning_sign,
+            glyph: NOC.glyph.exclamation_triangle,
             scope: me,
             handler: me.onAlarm
         });
@@ -103,6 +112,20 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onInteractions
         });
 
+        me.metricsButton = Ext.create("Ext.button.Button", {
+            text: "Metrics",
+            glyph: NOC.glyph.bar_chart_o,
+            scope: me,
+            handler: me.onMetrics
+        });
+
+        me.capsButton = Ext.create("Ext.button.Button", {
+            text: "Capabilities",
+            glyph: NOC.glyph.file,
+            scope: me,
+            handler: me.onCaps
+        });
+
         me.ITEM_CONFIG = me.registerItem(
             Ext.create("NOC.core.RepoPreview", {
                 app: me,
@@ -117,6 +140,12 @@ Ext.define("NOC.sa.managedobject.Application", {
         );
         me.ITEM_INVENTORY = me.registerItem("NOC.sa.managedobject.InventoryPanel");
         me.ITEM_INTERFACE = me.registerItem("NOC.sa.managedobject.InterfacePanel");
+        me.ITEM_INTERFACE_METRICS = me.registerItem(
+            Ext.create("NOC.core.MetricSettingsPanel", {
+                app: me,
+                metricModelId: "inv.Interface"
+            })
+        );
         me.ITEM_SCRIPTS = me.registerItem("NOC.sa.managedobject.ScriptPanel");
         me.ITEM_LINKS = me.registerItem("NOC.sa.managedobject.LinksPanel");
 
@@ -126,6 +155,15 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.ITEM_ALARM = me.registerItem("NOC.sa.managedobject.AlarmPanel");
         me.ITEM_INTERACTIONS = me.registerItem("NOC.sa.managedobject.InteractionsPanel");
+
+        me.ITEM_METRICS = me.registerItem(
+            Ext.create("NOC.core.MetricSettingsPanel", {
+                app: me,
+                metricModelId: "sa.ManagedObject"
+            })
+        );
+
+        me.ITEM_CAPS = me.registerItem("NOC.sa.managedobject.CapsPanel");
 
         Ext.apply(me, {
             columns: [
@@ -221,7 +259,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                     name: "is_managed",
                     xtype: "checkboxfield",
                     boxLabel: "Is Managed?",
-                    allowBlank: false
+                    allowBlank: false,
+                    groupEdit: true
                 },
                 {
                     name: "description",
@@ -233,13 +272,15 @@ Ext.define("NOC.sa.managedobject.Application", {
                     name: "object_profile",
                     xtype: "sa.managedobjectprofile.LookupField",
                     fieldLabel: "Object Profile",
-                    allowBlank: false
+                    allowBlank: false,
+                    groupEdit: true
                 },
                 {
                     name: "shape",
                     xtype: "main.ref.stencil.LookupField",
                     fieldLabel: "Shape",
-                    allowBlank: true
+                    allowBlank: true,
+                    groupEdit: true
                 },
                 {
                     xtype: "fieldset",
@@ -255,33 +296,38 @@ Ext.define("NOC.sa.managedobject.Application", {
                             xtype: "sa.administrativedomain.LookupField",
                             fieldLabel: "Administrative Domain",
                             width: 200,
-                            allowBlank: false
+                            allowBlank: false,
+                            groupEdit: true
                         },
                         {
                             name: "activator",
                             xtype: "sa.activator.LookupField",
                             fieldLabel: "Activator",
                             width: 100,
-                            allowBlank: false
+                            allowBlank: false,
+                            groupEdit: true
                         },
                         {
                             name: "collector",
                             xtype: "sa.collector.LookupField",
                             fieldLabel: "Collector",
                             width: 100,
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "vrf",
                             xtype: "ip.vrf.LookupField",
                             fieldLabel: "VRF",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "vc_domain",
                             xtype: "vc.vcdomain.LookupField",
                             fieldLabel: "VC Domain",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         }
                     ]
                 },
@@ -335,27 +381,31 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "auth_profile",
                                     xtype: "sa.authprofile.LookupField",
                                     fieldLabel: "Auth Profile",
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "user",
                                     xtype: "textfield",
                                     fieldLabel: "User",
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "password",
                                     xtype: "textfield",
                                     fieldLabel: "Password",
                                     allowBlank: true,
-                                    inputType: "password"
+                                    inputType: "password",
+                                    groupEdit: true
                                 },
                                 {
                                     name: "super_password",
                                     xtype: "textfield",
                                     fieldLabel: "Super Password",
                                     allowBlank: true,
-                                    inputType: "password"
+                                    inputType: "password",
+                                    groupEdit: true
                                 }
                             ]
                         },
@@ -380,13 +430,15 @@ Ext.define("NOC.sa.managedobject.Application", {
                             name: "termination_group",
                             xtype: "sa.terminationgroup.LookupField",
                             fieldLabel: "Termination Group",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "service_terminator",
                             xtype: "sa.terminationgroup.LookupField",
                             fieldLabel: "Service Terminator",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         }
                     ]
                 },
@@ -409,19 +461,22 @@ Ext.define("NOC.sa.managedobject.Application", {
                             name: "trap_community",
                             xtype: "textfield",
                             fieldLabel: "Trap Community",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "snmp_ro",
                             xtype: "textfield",
                             fieldLabel: "RO Community",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "snmp_rw",
                             xtype: "textfield",
                             fieldLabel: "RW Community",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         }
                     ]
                 },
@@ -438,19 +493,22 @@ Ext.define("NOC.sa.managedobject.Application", {
                             name: "config_filter_rule",
                             xtype: "main.pyrule.LookupField",
                             fieldLabel: "Config Filter pyRule",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "config_diff_filter_rule",
                             xtype: "main.pyrule.LookupField",
                             fieldLabel: "Config Diff Filter Rule",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         },
                         {
                             name: "config_validation_rule",
                             xtype: "main.pyrule.LookupField",
                             fieldLabel: "Config Validation pyRule",
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true
                         }
                     ]
                 },
@@ -476,7 +534,9 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.linksButton,
                 me.discoveryButton,
                 me.alarmsButton,
-                me.interactionsButton
+                me.interactionsButton,
+                me.metricsButton,
+                me.capsButton
             ]
         });
         me.callParent();
@@ -487,6 +547,12 @@ Ext.define("NOC.sa.managedobject.Application", {
             title: "By Managed",
             name: "is_managed",
             ftype: "boolean"
+        },
+        {
+            title: "By SA Profile",
+            name: "profile_name",
+            ftype: "lookup",
+            lookup: "main.ref.profile"
         },
         {
             title: "By Obj. Profile",
@@ -606,6 +672,16 @@ Ext.define("NOC.sa.managedobject.Application", {
     onAlarm: function() {
         var me = this;
         me.previewItem(me.ITEM_ALARM, me.currentRecord);
+    },
+    //
+    onMetrics: function() {
+        var me = this;
+        me.previewItem(me.ITEM_METRICS, me.currentRecord);
+    },
+    //
+    onCaps: function() {
+        var me = this;
+        me.previewItem(me.ITEM_CAPS, me.currentRecord);
     },
     //
     onInterfaceClick: function(record) {

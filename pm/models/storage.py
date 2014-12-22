@@ -1,169 +1,97 @@
 ## -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## PMStrorage model
+## Storage
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## NOC Modules
-from noc.lib.nosql import (Document, StringField,
-                           IntField, PlainReferenceField)
-from db import PMDatabase
+## Third-party modules
+import mongoengine.signals
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (ListField, EmbeddedDocumentField,
+                                StringField, BooleanField, IntField)
 
 
-class PMStorage(Document):
-    """
-    Storage for PM data. Data are stored in collections
-    `collection`.raw
-    `collection`.l0
-    ...
-    `collection`.lN
-    """
+class CollectorProtocol(EmbeddedDocument):
+    address = StringField()
+    port = IntField()
+    protocol = StringField()
+    is_active = BooleanField(default=True)
+    is_selectable = BooleanField(default=True)
+
+    def __unicode__(self):
+        return "%s:%s %s" % (self.address, self.port, self.protocol)
+
+
+class AccessProtocol(EmbeddedDocument):
+    protocol = StringField()
+    base_url = StringField()
+    is_active = BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.base_url
+
+
+class Storage(Document):
     meta = {
-        "collection": "noc.pm.storage",
-        "allow_inheritance": False
+        "collection": "noc.pm.storages"
     }
 
-    # Storate name
+    ALL = "all"
+    PRIORITY = "pri"
+    ROUNDROBIN = "rr"
+    RANDOM = "rnd"
+
     name = StringField(unique=True)
-    # Database
-    db = PlainReferenceField(PMDatabase)
-    # Collection prefix
-    collection = StringField()
-    # Store unaggregated data `raw_retention` seconds
-    raw_retention = IntField(default=86400)
-
-    TIME_SERIES_ID = "s"
-    VALUE = "v"
-    TIMESTAMP = "ts_id"
-
-    CHUNK = 1000
+    description = StringField(required=False)
+    select_policy = StringField(choices=[
+        (ALL, "All"),
+        (PRIORITY, "Priority"),
+        (ROUNDROBIN, "Round-Robin"),
+        (RANDOM, "Random")
+    ], default=PRIORITY)
+    write_concern = IntField(default=1)
+    collectors = ListField(EmbeddedDocumentField(CollectorProtocol))
+    access = ListField(EmbeddedDocumentField(AccessProtocol))
 
     def __unicode__(self):
         return self.name
 
-    def prepare(self):
-        """
-        Initialize collection and prepare indexes
-        :return:
-        """
-        c = self.get_raw_collection()
-        c.ensure_index(self.TIME_SERIES_ID)
-
-    def get_raw_collection(self):
-        """
-        Get collection for raw data
-        :return:
-        """
-        c = getattr(self, "_pmcraw", None)
-        if c:
-            return c
-        cn = self.collection + ".raw"
-        db = self.db.get_database()
-        c = db[cn]
-        self._pmcraw = c
-        return c
-
-    def get_object_id(self, timestamp, ts=0):
-        return (long(timestamp) << 32) | long(ts)
-
-    def object_id_to_timestamp(self, o):
-        return o >> 32
-
-    def register(self, data):
-        """
-        Bulk register series of data
-        :param data: List of ts_id, timestamp, value
-        :return:
-        """
-        c = self.get_raw_collection()
-        for chunk in [data[i:i + self.CHUNK]
-                      for i in range(0, len(data), self.CHUNK)]:
-            c.insert(
-                [
-                    {
-                        "_id": self.get_object_id(timestamp, ts),
-                        self.TIME_SERIES_ID: int(ts),
-                        self.VALUE: value
-                    } for ts, timestamp, value in chunk
-                ], w=0, j=False)
-
     @property
-    def stats(self):
-        return self.get_raw_collection().stats()
-
-    def iwindow(self, t0, t1, tses):
+    def default_collector(self):
         """
-        :param t0: Start timestamp
-        :param t1: End timestamp
-        :param tses: List of timeseries ids
-        :return: yields ts id, timestamp, value
+        Returns URL of first active
+        collector. Returns None if no default collector set
         """
-        q = {
-            "_id": {
-                "$gt": self.get_object_id(t0, 0),
-                "$lt": self.get_object_id(t1, 0xFFFFFFFF)
-            }
+        selectable = [
+            c for c in self.collectors
+            if c.is_active and c.is_selectable
+        ]
+        if not selectable:
+            return None
+        if len(selectable) <= self.write_concern:
+            policy = self.ALL
+            wc = len(selectable)
+        else:
+            policy = self.select_policy
+            wc = self.write_concern
+        return {
+            "policy": policy,
+            "write_concern": wc,
+            "collectors": [
+                {
+                    "proto": c.protocol,
+                    "address": c.address,
+                    "port": c.port
+                }
+                for c in selectable
+            ]
         }
-        if isinstance(tses, (int, long)):
-            q[self.TIME_SERIES_ID] = tses
-        else:
-            q[self.TIME_SERIES_ID] = {"$in": tses}
-        for doc in self.get_raw_collection().find(q):
-            yield (
-                doc[self.TIME_SERIES_ID],
-                self.object_id_to_timestamp(doc["_id"]),
-                doc[self.VALUE]
-            )
 
-    def get_last_measure(self, ts_id):
-        """
-        Returns last timeseries measure
-        :param ts_id:
-        :return:
-        """
-        c = self.get_raw_collection()
-        d = list(c.find({self.TIME_SERIES_ID: ts_id}).sort([("_id", -1)]).limit(1))
-        if d:
-            return self.object_id_to_timestamp(d[0]["_id"]), d[0][self.VALUE]
-        else:
-            return None, None
-
-    def get_last_before(self, ts_id, timestamp):
-        """
-        Returns last measure before timestamp
-        :param ts_id:
-        :param timestamp:
-        :return: timestamp, value
-        """
-        c = self.get_raw_collection()
-        d = list(c.find({
-            self.TIME_SERIES_ID: ts_id,
-            self.TIMESTAMP: {
-                "$lt": self.get_object_id(timestamp, 0xFFFFFFFF)
-            }
-        }).sort([("_id", -1)]).limit(1))
-        if d:
-            return self.object_id_to_timestamp(d[0]["_id"]), d[0][self.VALUE]
-        else:
-            return None, None
-
-    def get_first_after(self, ts_id, timestamp):
-        """
-        Returns first measure after timestamp
-        :param ts_id:
-        :param timestamp:
-        :return: timestamp, value
-        """
-        c = self.get_raw_collection()
-        d = list(c.find({
-            self.TIME_SERIES_ID: ts_id,
-            self.TIMESTAMP: {
-                "$gt": self.get_object_id(timestamp, 0)
-            }
-        }).sort([("_id", 1)]).limit(1))
-        if d:
-            return self.object_id_to_timestamp(d[0]["_id"]), d[0][self.VALUE]
-        else:
-            return None, None
+##
+from probeconfig import ProbeConfig
+mongoengine.signals.post_save.connect(
+    ProbeConfig.on_change_storage,
+    sender=Storage
+)

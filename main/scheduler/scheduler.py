@@ -11,7 +11,6 @@ import os
 from collections import defaultdict
 ## NOC modules
 from noc.lib.scheduler.scheduler import Scheduler
-from jobs.subscriber import SubscriberJob
 from noc.settings import INSTALLED_APPS
 from noc.lib.solutions import solutions_roots
 
@@ -40,17 +39,6 @@ class JobScheduler(Scheduler):
             if os.path.isdir(jd):
                 self.register_all(jd)
 
-    def register_job_class(self, cls):
-        if issubclass(cls, SubscriberJob):
-            job = cls(self)
-            dst = job.get_destination()
-            self.info("Subscribing job class %s to %s" % (
-                job.name, dst))
-            self.subscribers[dst] += [job]
-            self.daemon.stomp_client.subscribe(dst, self.on_msg)
-        else:
-            return super(JobScheduler, self).register_job_class(cls)
-
     def on_msg(self, destination, body):
         """
         Respond to STOMP messages
@@ -58,8 +46,8 @@ class JobScheduler(Scheduler):
         :param body:
         :return:
         """
-        self.debug("Receiving STOMP message to destination %s: %r" % (
-            destination, body))
+        self.logger.debug("Receiving STOMP message to destination %s: %r",
+            destination, body)
         # @todo: threaded
         if destination in self.subscribers:
             for job in self.subscribers[destination]:

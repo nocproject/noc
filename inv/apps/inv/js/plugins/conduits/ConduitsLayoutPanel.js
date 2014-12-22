@@ -24,7 +24,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsLayoutPanel", {
         //
         me.createBlockButton = Ext.create("Ext.button.Button", {
             text: "Create Block",
-            glyph: NOC.glyph.plus_sign,
+            glyph: NOC.glyph.plus_circle,
             scope: me,
             handler: me.onCreateBlock,
             disabled: true

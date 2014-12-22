@@ -15,7 +15,8 @@ from htmlentitydefs import name2codepoint
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.fm.models import ActiveEvent, EventClass, MIB
 from noc.lib.nosql import ObjectId
 from noc.lib.validators import is_oid

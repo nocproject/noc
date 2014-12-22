@@ -1,0 +1,32 @@
+{
+    "name": "NOC | PM | Out of Thresholds",
+    "uuid": "e6fe6914-45dd-45af-870c-cd67dd31793b",
+    "event_class__name": "PM | Out of Thresholds",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^new_state$",
+            "value_re": "^(?P<new_state>.+)$"
+        },
+        {
+            "key_re": "^metric$",
+            "value_re": "^(?P<metric>.+)$"
+        },
+        {
+            "key_re": "^value$",
+            "value_re": "^(?P<value>.+)$"
+        },
+        {
+            "key_re": "^old_state$",
+            "value_re": "^(?P<old_state>.+)$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^system$"
+        },
+        {
+            "key_re": "^metric_type$",
+            "value_re": "^(?P<metric_type>.+)$"
+        }
+    ]
+}

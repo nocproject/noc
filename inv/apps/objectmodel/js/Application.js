@@ -9,7 +9,6 @@ console.debug("Defining NOC.inv.objectmodel.Application");
 Ext.define("NOC.inv.objectmodel.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "Ext.ux.form.GridField",
         "Ext.ux.form.ModelDataField",
         "NOC.inv.objectmodel.Model",
         "NOC.inv.vendor.LookupField",
@@ -208,7 +207,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             dataIndex: "protocols",
                             width: 150,
                             editor: "textfield",
-                            renderer: "htmlEncode"
+                            renderer: NOC.render.htmlEncode
                         },
                         {
                             text: "Internal name",
@@ -280,7 +279,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
             c = v.connections[i];
             if(!Ext.isArray(c.protocols)) {
                 x = c.protocols.trim();
-                if(x==="") {
+                if(x === "" || x === undefined || x === null) {
                     c.protocols = [];
                 } else {
                     c.protocols = c.protocols.split(",").map(function(v) {

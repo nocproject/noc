@@ -22,10 +22,6 @@ class MACDiscoveryJob(MODiscoveryJob):
     map_task = "get_mac_address_table"
 
     ignored = not config.getboolean("mac_discovery", "enabled")
-    initial_submit_interval = config.getint("mac_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("mac_discovery",
-        "initial_submit_concurrency")
     to_save = config.getboolean("mac_discovery", "save")
 
     def handler(self, object, result):
@@ -77,10 +73,6 @@ class MACDiscoveryJob(MODiscoveryJob):
         return True
 
     @classmethod
-    def initial_submit_queryset(cls):
-        return {"object_profile__enable_mac_discovery": True}
-
-    @classmethod
     def can_submit(cls, object):
         """
         Check object has bridge interfaces
@@ -111,12 +103,14 @@ class MACDiscoveryJob(MODiscoveryJob):
         # No suitable interfaces
         return False
 
-    @classmethod
-    def get_submit_interval(cls, object):
-        return object.object_profile.mac_discovery_max_interval
-
     def get_failed_interval(self):
         return self.object.object_profile.mac_discovery_min_interval
+
+    def can_link(self, iface):
+        """
+        Check interface is suitable for linking
+        """
+        return iface.type in ("physical", "management", "aggregated")
 
     def check_port(self, port, macs):
         """
@@ -126,10 +120,12 @@ class MACDiscoveryJob(MODiscoveryJob):
         :return:
         """
         # Local interface
-        iface = Interface.objects.filter(
-            managed_object=self.object.id, name=port).first()
+        iface = self.get_interface_by_name(self.object, port)
         if not iface:
             return  # Not found
+        # Check interface can be linked at all
+        if not self.can_link(iface):
+            return  # Not suitable type
         # Check interface is still unlinked
         if iface.is_linked:
             return  # Already linked
@@ -141,8 +137,8 @@ class MACDiscoveryJob(MODiscoveryJob):
         if not local_sub.tagged_vlans:
             # Untagged port
             mac = macs[0][1]
-            subs = list(SubInterface.objects.filter(
-                enabled_afi__in=["IPv4", "IPv6"], mac=mac))
+            subs = [sub for sub in SubInterface.objects.filter(
+                enabled_afi__in=["IPv4", "IPv6"], mac=mac) if self.can_link(sub.interface)]
             if len(subs) == 1:
                 r_iface = subs[0].interface
                 if not r_iface.is_linked:
@@ -160,6 +156,8 @@ class MACDiscoveryJob(MODiscoveryJob):
                     enabled_afi__in=["IPv4", "IPv6"], mac=mac)):
                     if not sub.vlan_ids:
                         break
+                    if not self.can_link(sub.interface):
+                        break
                     vlan = sub.vlan_ids[0]
                     if vlan in left:
                         if r_iface is None:
@@ -173,6 +171,8 @@ class MACDiscoveryJob(MODiscoveryJob):
                 self.submit_link(iface, r_iface)
 
     def submit_link(self, local_iface, remote_iface):
+        if local_iface.id == remote_iface.id:
+            return
         self.debug("Linking %s and %s" % (local_iface, remote_iface))
         try:
             local_iface.link_ptp(remote_iface, method="mac")

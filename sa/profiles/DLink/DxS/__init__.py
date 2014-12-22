@@ -46,6 +46,28 @@ class Profile(NOCProfile):
             r += [name[2:]]
         return r
 
+    def root_interface(self, name):
+        return name
+
+    def convert_interface_name(self, s):
+        """
+        "D-Link DES-3200-10 R4.37.B008 Port 1 " -> "1"
+        "PORT 7 ON UNIT 1" -> "7"
+        """
+        su = s.upper().strip()
+        if " PORT " in su:
+            su = su.rsplit(" PORT ", 1)[-1].strip()
+            if " ON UNIT " in su:
+                l, r = [x.strip() for x in su.split(" ON UNIT ")]
+                if r == "1":
+                    return l
+                else:
+                    return "%s:%s" % (r, l)
+            else:
+                return su
+        else:
+            return s
+
     cluster_member = None
     dlink_pager = False
     rx_pager = re.compile(r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$",
@@ -120,7 +142,7 @@ class Profile(NOCProfile):
         else:
             return None
 
-    def get_ports(self, script):
+    def get_ports(self, script, interface=None):
         if ((script.match_version(DES3200, version__gte="1.70.B007") \
         and script.match_version(DES3200, version__lte="3.00.B000"))
         or script.match_version(DES3200, version__gte="4.20.B000") \
@@ -129,7 +151,10 @@ class Profile(NOCProfile):
         or script.match_version(DGS3620, version__gte="2.50.017")) \
         and not script.match_version(DES3200, platform="DES-3200-28F"):
             objects = []
-            c = script.cli("show ports description")
+            if interface is not None:
+                c = script.cli(("show ports %s description" % interface))
+            else:
+                c = script.cli("show ports description")
             for match in self.rx_port.finditer(c):
                 objects += [{
                     "port": match.group("port"),
@@ -149,9 +174,15 @@ class Profile(NOCProfile):
                 }]
         else:
             try:
-                objects = script.cli_object_stream(
-                    "show ports description", parser=self.parse_interface,
-                    cmd_next="n", cmd_stop="q")
+                if interface is not None:
+                    objects = script.cli_object_stream(
+                        ("show ports %s description" % interface),
+                        parser=self.parse_interface,
+                        cmd_next="n", cmd_stop="q")
+                else:
+                    objects = script.cli_object_stream(
+                        "show ports description", parser=self.parse_interface,
+                        cmd_next="n", cmd_stop="q")
             except:
                 objects = []
             # DES-3226S does not support `show ports description` command
@@ -160,18 +191,20 @@ class Profile(NOCProfile):
                 objects = script.cli_object_stream(
                     "show ports", parser=self.parse_interface,
                     cmd_next="n", cmd_stop="q")
-        prev_i = None
+        prev_port = None
         ports = []
         for i in objects:
-            if prev_i and (prev_i['port'] == i['port']):
+            if prev_port and (prev_port == i['port']):
                 if i['status'] == True:
+                    k = 0
                     for j in ports:
                         if j['port'] == i['port']:
-                            j = i
+                            ports[k] = i
                             break
+                        k = k + 1
             else:
                 ports += [i]
-            prev_i = i
+            prev_port = i['port']
         return ports
 
     rx_vlan = re.compile(r"VID\s+:\s+(?P<vlan_id>\d+)\s+"

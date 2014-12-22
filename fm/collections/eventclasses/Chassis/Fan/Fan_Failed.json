@@ -26,5 +26,18 @@
             "action": "raise",
             "alarm_class__name": "Chassis | Fan | Fan Failed"
         }
+    ],
+    "repeat_suppression": [
+        {
+            "name": "Suppress repeated events",
+            "condition": "True",
+            "event_class__name": "Chassis | Fan | Fan Failed",
+            "match_condition": {
+                "managed_object": "event.managed_object.id",
+                "vars__name": "vars['name']"
+            },
+            "window": 120,
+            "suppress": true
+        }
     ]
 }

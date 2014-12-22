@@ -14,7 +14,6 @@ from base import MODiscoveryJob
 from noc.inv.models.pendinglinkcheck import PendingLinkCheck
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
 
 
@@ -26,32 +25,18 @@ class LinkDiscoveryJob(MODiscoveryJob):
     map_task = None
     method = None
 #    ignored = not config.getboolean("interface_discovery", "enabled")
-#    initial_submit_interval = config.getint("interface_discovery",
-#        "initial_submit_interval")
-#    initial_submit_concurrency = config.getint("interface_discovery",
-#        "initial_submit_concurrency")
     strict_pending_candidates_check = True
 
     def is_submitted(self, local_interface, remote_object,
                      remote_interface):
         return (local_interface, remote_object, remote_interface) in self.submited
 
-    def get_interface_by_name(self, object, name):
+    def can_link(self, iface):
         """
-        Find interface by name
-        :param object: Managed Object
-        :param name: interface name
-        :return: Interface instance or None
+        Check interface can be linked
         """
-        i = Interface.objects.filter(
-            managed_object=object.id, name=name).first()
-        if not i:
-            # JUNOS names fixup
-            si = list(SubInterface.objects.filter(
-                managed_object=object.id, name=name))
-            if len(si) == 1:
-                i = si[0].interface
-        return i
+        #return not iface.is_linked
+        return True
 
     def submit_candidate(self, local_interface,
                          remote_object, remote_interface=None):
@@ -70,11 +55,11 @@ class LinkDiscoveryJob(MODiscoveryJob):
             (local_interface, remote_interface) in self.candidates[remote_object]):
             return  # Already submitted as candidate
         i = self.get_interface_by_name(self.object, local_interface)
-        if i:
-            if i.is_linked:
-                return  # Already linked
-        else:
+        if not i:
+            self.debug("Cannot submit link candidate for interface %s: interface not found" % local_interface)
             return  # Interface not found
+        if not self.can_link(i):
+            return
         self.debug("Link candidate found: %s -> %s:%s" % (
             local_interface, remote_object.name, remote_interface))
         self.candidates[remote_object] += [
@@ -83,16 +68,34 @@ class LinkDiscoveryJob(MODiscoveryJob):
 
     def submit_link(self, local_object, local_interface,
                     remote_object, remote_interface):
+        # Get local interface
         l_iface = self.get_interface_by_name(local_object, local_interface)
         if not l_iface:
             self.error("Interface is not found: %s:%s" % (
                 local_object.name, local_interface))
             return
+        # Get remote interface
         r_iface = self.get_interface_by_name(remote_object, remote_interface)
         if not r_iface:
             self.error("Interface is not found: %s:%s" % (
                 remote_object.name, remote_interface))
             return
+        # Check interfaces can be linked
+        if not self.can_link(l_iface) or not self.can_link(r_iface):
+            return
+        # Check link does not exists
+        ll = l_iface.link
+        rl = r_iface.link
+        if ll and rl and rl.contains(l_iface) and ll.contains(r_iface):
+            return  # Already linked
+        # Unlinking existing links
+        if ll:
+            self.info("Unlinking %s" % ll)
+            ll.delete()
+        if rl:
+            self.info("Unlinking %s" % rl)
+            rl.delete()
+        # Link objects
         self.info("Linking %s and %s" % (l_iface, r_iface))
         try:
             l_iface.link_ptp(r_iface, method=self.method)
@@ -163,7 +166,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
             for l, r in self.candidates[o]:
                 if not self.is_submitted(l, o, r):
                     i = self.get_interface_by_name(object, l)
-                    if i and not i.is_linked:
+                    if i and self.can_link(i):
                         self.debug("Scheduling check for %s:%s -> %s:%s" % (
                             object.name, l, o, r))
                         PendingLinkCheck.submit(self.method, o, r, object, l)
@@ -232,19 +235,10 @@ class LinkDiscoveryJob(MODiscoveryJob):
         self.reschedule_pending_jobs(object)
         return True
 
-    @classmethod
-    def initial_submit_queryset(cls):
-        return {"object_profile__enable_%s_discovery" % cls.method: True}
-
     def can_run(self):
         return (super(LinkDiscoveryJob, self).can_run()
                 and getattr(self.object.object_profile,
                     "enable_%s_discovery" % self.method))
-
-    @classmethod
-    def get_submit_interval(cls, object):
-        return getattr(object.object_profile,
-            "%s_discovery_max_interval" % cls.method)
 
     def get_failed_interval(self):
         return getattr(self.object.object_profile,

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -5,6 +6,7 @@
         <meta name="Copyright" content="2007-2014, nocproject.org" />
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title id="title">NOC|{{ setup.installation_name }}</title>
         <!-- favicon -->
         {% if setup.favicon_mime %}<link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />{% endif %}
@@ -12,31 +14,51 @@
         <link rel="stylesheet" type="text/css" id="theme" href="{{theme_css}}" />
         <link rel="stylesheet" type="text/css" href="/static/pkg/famfamfam-silk/icons.css" />
         <link rel="stylesheet" type="text/css" href="/static/pkg/silk-companion1/icons.css" />
-        <link rel="stylesheet" type="text/css" href="/static/pkg/shjs/sh_style{% if setup.debug_js %}-debug{% endif %}.css" />
         <link rel="stylesheet" type="text/css" href="/static/css/noc-extjs.css" />
         <link rel="stylesheet" type="text/css" href="/static/css/noc/ux.css" />
+        <link rel="stylesheet" type="text/css" href="/static/css/noc/colors.css" />
         <link rel="stylesheet" type="text/css" href="/static/pkg/font-awesome/css/font-awesome.css" />
         <link rel="stylesheet" type="text/css" href="/main/style/css/" />
         <link rel="stylesheet" type="text/css" href="/static/pkg/mxgraph/css/common.css" />
-        <link rel="stylesheet" type="text/css" href="/static/css/cubism.css" />
+        <link rel="stylesheet" type="text/css" href="/static/pkg/codemirror/lib/codemirror.css" />
+        <link rel="stylesheet" type="text/css" href="/static/pkg/codemirror/addon/dialog/dialog.css" />
         <!-- JS -->
         <script type="text/javascript" src="/static/pkg/handlebars/handlebars{% if setup.debug_js %}-debug{% endif %}.js"></script>
+        <script type="text/javascript" src="/static/pkg/stacktrace/stacktrace.js"></script>
         <script type="text/javascript" src="/static/js/logging.js"></script>
         <script type="text/javascript" src="/static/js/noc/jsloader.js"></script>
         <script type="text/javascript" src="/static/pkg/extjs/ext-all{% if setup.debug_js %}-debug{% endif %}.js"></script>
-        <script type="text/javascript" src="/static/pkg/shjs/sh_main{% if setup.debug_js %}-debug{% endif %}.js"></script>
-        <script type="text/javascript" src="/static/pkg/d3/d3{% if setup.debug_js %}-debug{% endif %}.js"></script>
-        <script type="text/javascript" src="/static/pkg/cubism/cubism{% if setup.debug_js %}-debug{% endif %}.js"></script>
+        <script type="text/javascript" src="/static/pkg/extjs/packages/ext-charts/build/ext-charts.js"></script>
+        <script type="text/javascript" src="{{theme_js}}"></script>
+        <script type="text/javascript" src="/static/pkg/jquery/jquery.js"></script>
+        <script type="text/javascript" src="/static/pkg/flot/jquery.flot.js"></script>
+        <script type="text/javascript" src="/static/pkg/flot/jquery.flot.time.js"></script>
+        <script type="text/javascript" src="/static/pkg/flot/jquery.flot.selection.js"></script>
+        <script type="text/javascript" src="/static/pkg/flot/jquery.flot.crosshair.js"></script>
+        <script type="text/javascript" src="/static/pkg/codemirror/lib/codemirror.js"></script>
+        <script type="text/javascript" src="/static/pkg/codemirror/addon/dialog/dialog.js"></script>
+        <script type="text/javascript" src="/static/pkg/codemirror/addon/search/search.js"></script>
+        <script type="text/javascript" src="/static/pkg/codemirror/addon/search/searchcursor.js"></script>
+        <script type="text/javascript" src="/static/pkg/codemirror/addon/selection/active-line.js"></script>
+        <script type="text/javascript" src="/static/pkg/codemirror/addon/mode/loadmode.js"></script>
+        <script type="text/javascript" src="/static/pkg/codemirror/addon/edit/matchbrackets.js"></script>
+        <script type="text/javascript" src="/static/js/noc/colors.js"></script>
         <script type="text/javascript" src="/static/js/noc/glyph.js"></script>
         <script type="text/javascript" src="/static/js/noc/util.js"></script>
         <script type="text/javascript" src="/static/js/noc/jira.js"></script>
         <!-- page specific -->
         <script type="text/javascript">
+            //
+            console.log("!!!");
+            console.log("!!! Running NOC desktop");
+            console.log("!!!");
             // Initialize loader
             Ext.BLANK_IMAGE_URL = "/static/img/s.gif";
             Ext.namespace("NOC");
             NOC.settings = {
                 installation_name: "{{setup.installation_name}}",
+                theme: "{{theme}}",
+                preview_theme: "{{setup.preview_theme}}",
                 logo_url: "{{setup.logo_url}}",
                 logo_width: {{setup.logo_width}},
                 logo_height: {{setup.logo_height}},
@@ -49,7 +71,8 @@
                         "enable_google_sat": {% if setup.enable_gis_base_google_sat %}true{% else %}false{% endif %},
                         "enable_google_roadmap": {% if setup.enable_gis_base_google_roadmap %}true{% else %}false{% endif %}
                     }
-                }
+                },
+                traceExtJSEvents: {% if setup.trace_extjs_events %}true{% else %}false{% endif %}
             };
             NOC.templates = {};
             Ext.Loader.setConfig({
@@ -57,6 +80,7 @@
                 paths: {
                     {% for m, a in apps %}"NOC.{{m}}.{{a}}.templates": "/{{m}}/{{a}}/templates",{% endfor %}
                     {% for m, a in apps %}"NOC.{{m}}.{{a}}": "/{{m}}/{{a}}/js",{% endfor %}
+                    "NOC.metricconfig": "/pm/metricconfig/config",
                     "NOC.models": "/static/js/noc/models",
                     "NOC.widgets": "/static/js/noc/widgets",
                     "NOC.core": "/static/js/noc/core",
@@ -64,12 +88,16 @@
                 }});
             Ext.setGlyphFontFamily("FontAwesome");
         </script>
+        <script type="text/javascript" src="/static/js/noc/override.js"></script>
         <script type="text/javascript" src="/main/desktop/js/app.js"></script>
     </head>
     <body>
+    <!-- "Loading" Splash Screen -->
+    <div id="noc-loading-mask"></div>
+    <div id="noc-loading">Loading NOC. Please wait ...</div>
     <form id="history-form" class="x-hide-display">
         <input type="hidden" id="x-history-field" />
-        <iframe id="x-history-frame"></iframe>
+        <iframe id="x-history-frame" style="display:none"></iframe>
     </form>
     </body>
 </html>
