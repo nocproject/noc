@@ -28,14 +28,36 @@ Ext.define("NOC.main.desktop.Application", {
         me.launchedTabs = {};
         me.idleTimeout = 0;
         me.idleTimerId = -1;
+        //
+        me.navStore = Ext.create("Ext.data.TreeStore", {
+            root: {
+                id: "root",
+                text: "All",
+                expanded: true,
+                children: []
+            },
+            listeners: {
+                rootchange: function() {
+                    console.log("ROOT CHANGE");
+                }
+            }
+        });
         // Create panels
         me.headerPanel = Ext.create("NOC.main.desktop.HeaderPanel", {app: me});
-        me.navPanel = Ext.create("NOC.main.desktop.NavPanel", {app: me});
+        me.navPanel = Ext.create("NOC.main.desktop.NavPanel", {
+            app: me,
+            store: me.navStore
+        });
+        me.breadcrumbs = Ext.create("NOC.main.desktop.Breadcrumbs", {
+            app: me,
+            store: me.navStore
+        });
         me.workplacePanel = Ext.create("NOC.main.desktop.WorkplacePanel", {app: me});
         //
         Ext.apply(me, {
             items: [
                 me.headerPanel,
+                me.breadcrumbs,
                 me.navPanel,
                 me.workplacePanel
             ]
@@ -88,6 +110,18 @@ Ext.define("NOC.main.desktop.Application", {
                 NOC.error("Failed to get data");
             }
         });
+    },
+    // Launch application from navigation record
+    launchRecord: function(record, reuse) {
+        var me = this,
+            li;
+        if(!record.isLeaf()) {
+            return;
+        }
+        li = record.get("launch_info");
+        me.launchTab(
+            li.class, li.title, li.params, record.get("id"), reuse
+        );
     },
     // Launch application in tab
     launchTab: function(panel_class, title, params, node, reuse) {
@@ -290,8 +324,9 @@ Ext.define("NOC.main.desktop.Application", {
                 me.headerPanel.showUserMenu(settings.can_change_credentials);
                 // Reset opened tabs
                 me.launchedTabs = {};
-                // Load menu
-                me.updateMenu();
+                // Set menu
+                me.navStore.setRoot(settings.navigation);
+                me.breadcrumbs.updateSelection("root");
                 // Setup idle timer
                 me.setIdleTimeout(settings.idle_timeout);
             }
@@ -317,11 +352,6 @@ Ext.define("NOC.main.desktop.Application", {
                 Ext.Msg.alert("Failed", "Logout failed");
             }
         });
-    },
-    // Update navigation menu
-    updateMenu: function() {
-        var me = this;
-        me.navPanel.updateMenu();
     },
     //
     // Process autologout
@@ -417,5 +447,16 @@ Ext.define("NOC.main.desktop.Application", {
             parent = Ext.get("noc-loading");
         mask.fadeOut({callback: function(){mask.destroy();}});
         parent.fadeOut({callback: function(){parent.destroy();}});
+    },
+    //
+    toggleNav: function() {
+        var me = this;
+        if(me.breadcrumbs.isVisible()) {
+            me.breadcrumbs.hide();
+            me.navPanel.show();
+        } else {
+            me.breadcrumbs.show();
+            me.navPanel.hide();
+        }
     }
 });
