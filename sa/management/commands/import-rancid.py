@@ -115,7 +115,7 @@ class Command(BaseCommand):
     rx_rev = re.compile(
         r"^-----+\n"
         r"revision (?P<rev>\S+)\n"
-        r"date: (?P<date>\S+ \S+);",
+        r"date: (?P<date>\S+ \S+(?: \S+)?);.+? state: (?P<state>\S+)",
         re.MULTILINE | re.DOTALL
     )
 
@@ -213,13 +213,25 @@ class Command(BaseCommand):
             fn = match.group("fn")
             r[fn] = []
             for match in self.rx_rev.finditer(data):
+                if match.group("state").lower() == "dead":
+                    continue  # Ignore object replacement
+                rev = match.group("rev")
+                date = match.group("date")
+                ds = date.split()
+                if "/" in ds[0]:
+                    fmt = "%Y/%m/%d %H:%M:%S"
+                else:
+                    fmt = "%Y-%m-%d %H:%M:%S"
+                if len(ds) == 3:
+                    # Date with TZ
+                    date = "%s %s" % (ds[0], ds[1])
                 r[fn] += [(
-                    match.group("rev"),
+                    rev,
                     TZ.normalize(
                         pytz.utc.localize(
                             datetime.datetime.strptime(
-                                match.group("date"),
-                                "%Y/%m/%d %H:%M:%S"
+                                date,
+                                fmt
                             )
                         )
                     )
