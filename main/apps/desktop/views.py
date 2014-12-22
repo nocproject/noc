@@ -270,11 +270,18 @@ class DesktopApplication(ExtApplication):
             "last_name": user.last_name,
             "theme": self.get_theme(request),
             "can_change_credentials": auth_backend.can_change_credentials,
-            "idle_timeout": self.idle_timeout
+            "idle_timeout": self.idle_timeout,
+            "navigation": {
+                "id": "root",
+                "iconCls": "fa fa-globe",
+                "text": "All",
+                "leaf": False,
+                "expanded": True,
+                "children": self.get_navigation(request)
+            }
         }
 
-    @view(method=["GET"], url="^navigation/$", access=True, api=True)
-    def api_navigation(self, request):
+    def get_navigation(self, request):
         """
         Return user's navigation menu tree
 
@@ -299,6 +306,7 @@ class DesktopApplication(ExtApplication):
                     c += [n]
                 elif r["access"](user):
                     n["leaf"] = True
+                    n["launch_info"] = r["app"].get_launch_info(request)
                     c += [n]
             return c
 
