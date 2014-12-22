@@ -22,6 +22,7 @@ Chassis | Hardware | Module | Module Removed,9f9381ee-28e1-41ee-a9ad-6fd33fc0f14
 Chassis | Hardware | Module | Module not Present,e4d717fc-b951-4651-8288-72a31cc9a678,Chassis/Hardware/Module/Module_not_Present.json,81a70bc89b9d18af9029776d51d5f87c2ed98c658f6436e24899b4849eca0973
 Chassis | Linecard | LC Down,cea6abfb-7327-49b3-8525-de42e5e6809a,Chassis/Linecard/LC_Down.json,03a9aa252a5f85e185e9606b029a065e1f72c9f4c125369f7dd4c56dfddf6d66
 Chassis | Linecard | LC Up,e9fbf27a-4153-45e6-86e9-aa006b069419,Chassis/Linecard/LC_Up.json,513a7d4e607a12bac2802f504743d9e918ea3194b485e79f290867470184f51e
+Chassis | PSU | Internal Voltage Out of Range,231540ae-bf6f-4587-9be2-1041eda26303,Chassis/PSU/Internal_Voltage_Out_of_Range.json,63bf887fdfabfaec6c2cc0d08bcc5fd1ad1ba3d2bb83939efd6a3155efa2aee2
 Chassis | PSU | PSU Changed,29f335f4-e9f5-4315-94aa-4b8ba604e50a,Chassis/PSU/PSU_Changed.json,caedb352dcfd789963d9249ef9d57258276107a82ae7163352218cf00f72f69f
 Chassis | PSU | PSU Failed,1f118a19-3fd3-4de2-9092-284c102ba051,Chassis/PSU/PSU_Failed.json,886a0bd95fe890506185e57075fdd15a5a2da1f811b74ed527dfdccd75b705aa
 Chassis | PSU | PSU Recovered,0f338208-7629-4b2b-9406-05142ad764f9,Chassis/PSU/PSU_Recovered.json,8b6879ae32ec99e5b92f16dd66bd493662ad29570ef4d33d1e9f057de071c74d
