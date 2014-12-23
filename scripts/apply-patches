@@ -15,8 +15,10 @@ import hashlib
 import shutil
 import py_compile
 ## Third-party packages
-from pip.util import get_installed_distributions
-
+try:
+    from pip.util import get_installed_distributions  # Pip 1.5
+except ImportError:
+    from pip.utils import get_installed_distributions  # Pip 6
 
 PATCHES_ROOT = "patches"
 SITE_PACKAGES = get_python_lib()
