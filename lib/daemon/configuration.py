@@ -91,6 +91,9 @@ class ConfigurationThread(threading.Thread):
             logger.error("Cannot get config from %s: Socket error: %s",
                          self.url, why)
             return None
+        except Exception, why:
+            logger.error("Cannot get config from %s: %s", self.url, why)
+            return None
         try:
             data = json_decode(resp.read())
         except:
