@@ -97,7 +97,7 @@ class Command(BaseCommand):
         ),
         make_option(
             "--shard",
-            action="shard",
+            action="store",
             dest="shard",
             help="Shard import to separate processes"
         )
