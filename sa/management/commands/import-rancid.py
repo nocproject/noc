@@ -95,6 +95,12 @@ class Command(BaseCommand):
             help="Set activator for created objects",
             default="default"
         ),
+        make_option(
+            "--shard",
+            action="shard",
+            dest="shard",
+            help="Shard import to separate processes"
+        )
     )
 
     PROFILE_MAP = {
@@ -272,6 +278,13 @@ class Command(BaseCommand):
                 name=options["domain"].strip())
         except Activator.DoesNotExist:
             raise CommandError("Invalid activator: %s" % options["activator"])
+        shard_member = 0
+        shard_members = 0
+        if options.get("shard"):
+            shard = options["shard"]
+            if "/" not in shard:
+                raise CommandError("Shard must be <member>/<members>")
+            shard_member, shard_members = [int(x) for x in shard.split("/")]
         tags = []
         if options["tags"]:
             for t in options["tags"]:
@@ -287,9 +300,12 @@ class Command(BaseCommand):
         rdb = self.parse_routerdb(options["routerdb"])
         login, ldefaults = self.parse_cloginrc(options["cloginrc"])
         # Process data
-        n = 1
+        n = 0
         count = len(rdb)
         for name in sorted(rdb):
+            if shard_members:
+                if n % shard_members != shard_member:
+                    continue  # Processed by other shard
             logger.debug("[%s/%s] Processing host %s", n, count, name)
             n += 1
             profile = rdb[name]
@@ -371,7 +387,7 @@ class Command(BaseCommand):
             logger.debug("writing %s", path)
             try:
                 subprocess.check_call(
-                    "(cvs diff -r%s -r%s %s | patch %s) && cp %s %s" % (
+                    "(cvs diff -r%s -r%s %s | patch -f -s %s) && cp %s %s" % (
                         r0[0], r1[0], name,
                         os.path.join(TMP, name),
                         os.path.join(TMP, name),
