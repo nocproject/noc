@@ -215,13 +215,6 @@ fi
 if [ $PIP_REQUIREMENTS_NOC -nt $PIP_FLAG -o $PIP_REQUIREMENTS_COMMON -nt $PIP_FLAG ]; then
     PIP_ARGS="$PIP_ARGS --upgrade"
 fi
-if [ ! -z "$PIP_DOWNLOAD_CACHE" ]; then
-    if [ ! -d "$PIP_DOWNLOAD_CACHE" ]; then
-        info "Creating PIP download cache at $PIP_DOWNLOAD_CACHE"
-        mkdir "$PIP_DOWNLOAD_CACHE"
-    fi
-    PIP_ARGS="$PIP_ARGS --download-cache $PIP_DOWNLOAD_CACHE"
-fi
 
 ./bin/pip install $PIP_ARGS || error_exit "$LINENO: Cannot update python libraries"
 touch $PIP_FLAG
