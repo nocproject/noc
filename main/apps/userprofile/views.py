@@ -54,9 +54,9 @@ class UserProfileApplication(ExtApplication):
                 [x for x in (user.first_name, user.last_name) if x]
             )).strip(),
             "email": user.email,
-            "preferred_language": language,
-            "theme": theme,
-            "preview_theme": preview_theme,
+            "preferred_language": language or "en",
+            "theme": theme or "gray",
+            "preview_theme": preview_theme or "midnight",
             "contacts": contacts
         }
 

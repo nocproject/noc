@@ -31,15 +31,18 @@ Ext.define("NOC.main.userprofile.Application", {
         });
         me.languageField = Ext.create("NOC.main.ref.ulanguage.LookupField", {
             fieldLabel: "Language",
-            labelWidth: lw
+            labelWidth: lw,
+            allowBlank: false
         });
         me.themeField = Ext.create("NOC.main.ref.theme.LookupField", {
             fieldLabel: "Theme",
-            labelWidth: lw
+            labelWidth: lw,
+            allowBlank: false
         });
         me.previewThemeField = Ext.create("NOC.main.ref.cmtheme.LookupField", {
             fieldLabel: "Preview Theme",
-            labelWidth: lw
+            labelWidth: lw,
+            allowBlank: false
         });
         // Contacts grid
         me.contactsStore = Ext.create("Ext.data.Store", {
