@@ -57,6 +57,9 @@ class Task(PeriodicTask):
         keep_day_of_month = config.getint("backup", "keep_day_of_month")
 
         now = datetime.datetime.now()
+        if not os.path.isdir(backup_dir):
+            self.error("No backup directory: %s" % backup_dir)
+            return
         for f in os.listdir(backup_dir):
             match = self.rx_backup.match(f)
             if not match:
@@ -73,7 +76,7 @@ class Task(PeriodicTask):
                 continue
             elif delta.days < keep_days + keep_weeks * 7:
                 if (bdate.weekday() == keep_day_of_week or
-                    bdate.day == keep_day_of_month):
+                            bdate.day == keep_day_of_month):
                     continue
             elif (delta.days < keep_days + keep_weeks * 7 + keep_months * 31):
                 if bdate.day == keep_day_of_month:
@@ -168,7 +171,11 @@ class Task(PeriodicTask):
                                                         now.day, now.hour,
                                                         now.minute)
         out = os.path.join(config.get("path", "backup_dir"), f_out)
-        os.mkdir(out)
+        try:
+            os.mkdir(out)
+        except OSError, why:
+            self.error("Cannot create directory %s: %s" % (out, why))
+            return False
         cmd = [config.get("path", "mongodump"),
                "-d", settings.NOSQL_DATABASE_NAME,
                "-o", out]
