@@ -29,6 +29,10 @@ logger = logging.getLogger(__name__)
 CollectionItem = namedtuple("CollectionItem", [
     "name", "uuid", "path", "hash"])
 
+LEGACY_COLLECTIONS = set([
+    "vendors"
+])
+
 
 class DereferenceError(Exception):
     pass
@@ -59,6 +63,9 @@ class Collection(object):
                 self.logger.error("Cannot find unique index")
                 raise ValueError("No unique index")
             self.get_name = attrgetter(uname)
+
+    def __unicode__(self):
+        return self.name
 
     def die(self, msg):
         raise ValueError(msg)
@@ -147,6 +154,12 @@ class Collection(object):
         return set(i for i in self.items if not self.items[i].name)
 
     def apply(self, collection):
+        if self.name in LEGACY_COLLECTIONS:
+            doc_count = self.doc.objects.count()
+            if doc_count:
+                u_count = self.doc.objects.filter(**{"uuid": {"$exists": True}}).count()
+                if not u_count:
+                    self.upgrade_collection()
         if not self.items:
             # Empty local file, needs to upgrade collection first
             self.upgrade_collection(collection)
