@@ -25,13 +25,15 @@ from noc.lib.log import PrefixLoggerAdapter
 
 logger = logging.getLogger(__name__)
 
-
 CollectionItem = namedtuple("CollectionItem", [
     "name", "uuid", "path", "hash"])
 
-LEGACY_COLLECTIONS = set([
-    "vendors"
-])
+# Instructions to migrate former UUIDless collections
+LEGACY_COLLECTIONS = {
+    "vendors": [
+        ({"name": "Cisco Networks"}, {"$set": {"name": "Cisco Systems"}})
+    ]
+}
 
 
 class DereferenceError(Exception):
@@ -157,8 +159,12 @@ class Collection(object):
         if self.name in LEGACY_COLLECTIONS:
             doc_count = self.doc.objects.count()
             if doc_count:
-                u_count = self.doc.objects.filter(**{"uuid": {"$exists": True}}).count()
-                if not u_count:
+                u_count = self.doc.objects.filter(uuid__exists=False).count()
+                if u_count:
+                    ## Apply migration sequences
+                    for f, u in LEGACY_COLLECTIONS[self.name]:
+                        self.doc._get_collection().update(f, u)
+                    ##
                     self.upgrade_collection(collection)
         if not self.items:
             # Empty local file, needs to upgrade collection first
@@ -363,9 +369,14 @@ class Collection(object):
         # Define set of unique fields
         unique = set()
         for spec in self.doc._meta["index_specs"]:
-            for f, flag in spec["fields"]:
+            for f, _ in spec["fields"]:
                 if spec.get("unique") and len(spec["fields"]) == 2:
                     unique.add(f)
+        if not unique:
+            for spec in self.doc._meta["index_specs"]:
+                if spec.get("unique") and len(spec["fields"]) == 1:
+                    unique.add(spec["fields"][0][0])
+                    break
         for u in collection.items:
             try:
                 upgrade_item(u)
