@@ -15,8 +15,10 @@ import hashlib
 import shutil
 import py_compile
 ## Third-party packages
-from pip.util import get_installed_distributions
-
+try:
+    from pip.util import get_installed_distributions  # Pip 1.5
+except ImportError:
+    from pip.utils import get_installed_distributions  # Pip 6
 
 PATCHES_ROOT = "patches"
 SITE_PACKAGES = get_python_lib()
@@ -36,6 +38,8 @@ def apply_patches(project, version):
     patch_root = os.path.join(PATCHES_ROOT, project, version)
     for root, dirnames, files in os.walk(patch_root):
         for f in files:
+            if f.endswith(".pyc"):
+                continue
             rpath = root.split(os.sep)[3:]
             patch = os.path.join(root, f)
             t_root = os.sep.join([SITE_PACKAGES] + rpath)
