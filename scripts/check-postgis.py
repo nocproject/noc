@@ -46,6 +46,10 @@ class PGDriver(object):
         # Check for postgis
         self.info("Checking PostGIS installation")
         self.setup_credentials()
+        if not self.check_gdal():
+            self.info("   ... GDAL check failed")
+            self.info("Please install libgdal or setup it properly and run upgrade again")
+            sys.exit(1)
         if self.check_postgis():
             if self.is_broken():
                 self.info("   ... broken installation. Removing")
@@ -130,6 +134,15 @@ class PGDriver(object):
         update(self.db_cred, "password")
         update(self.db_cred, "host")
         update(self.db_cred, "port")
+
+    def check_gdal(self):
+        from django.contrib.gis.gdal.error import OGRException
+        try:
+            from django.contrib.gis.gdal.libgdal import lgdal, std_call
+            return True
+        except OGRException, why:
+            self.info("GDAL check falied: %s" % why)
+            return False
 
     def check_postgis(self):
         cn = psycopg2.connect(**self.db_cred)
