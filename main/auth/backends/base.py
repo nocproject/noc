@@ -75,7 +75,8 @@ class NOCAuthBackend(object):
                 "name": "username",
                 "fieldLabel": "Name",
                 "allowBlank": False,
-                "emptyText": "Enter username"
+                "emptyText": "Enter username",
+                "tabIndex": 1
             },
     
             {
@@ -83,7 +84,8 @@ class NOCAuthBackend(object):
                 "name": "password",
                 "fieldLabel": "Password",
                 "allowBlank": False,
-                "inputType": "password"
+                "inputType": "password",
+                "tabIndex": 2
             }
         ]
 
