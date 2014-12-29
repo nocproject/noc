@@ -244,5 +244,17 @@ class DiscoveryJob(Document):
             })
         bulk.execute({"w": 0})
 
+    @classmethod
+    def reset_deferred(cls, object):
+        logger.debug("Resetting deferred discovery status for %s",
+                     object)
+        cls._get_collection().update({
+            "key": object.id,
+            "state": "D"
+        }, {
+            "$set": {
+                "state": "W"
+            }
+        }, multi=True)
 
 DiscoveryJob.install()
