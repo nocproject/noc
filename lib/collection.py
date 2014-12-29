@@ -159,7 +159,7 @@ class Collection(object):
             if doc_count:
                 u_count = self.doc.objects.filter(**{"uuid": {"$exists": True}}).count()
                 if not u_count:
-                    self.upgrade_collection()
+                    self.upgrade_collection(collection)
         if not self.items:
             # Empty local file, needs to upgrade collection first
             self.upgrade_collection(collection)
