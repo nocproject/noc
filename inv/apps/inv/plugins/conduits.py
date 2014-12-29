@@ -58,7 +58,7 @@ class ConduitsPlugin(InvPlugin):
              }
         )
         #
-        self.conduits_model = ObjectModel.objects.get(name=self.CONDUITS_MODEL)
+        self.conduits_model = ObjectModel.objects.filter(name=self.CONDUITS_MODEL).first()
 
     def get_data(self, request, object):
         ducts = []
