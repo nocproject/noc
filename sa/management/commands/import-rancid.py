@@ -12,7 +12,6 @@ from optparse import make_option
 import subprocess
 import re
 import datetime
-import itertools
 import os
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
@@ -61,6 +60,12 @@ class Command(BaseCommand):
             action="store",
             dest="repo",
             help="CVS repository"
+        ),
+        make_option(
+            "--repo-prefix",
+            action="store",
+            dest="repoprefix",
+            help="File path prefix to checkout from repo"
         ),
         make_option(
             "--dry-run",
@@ -124,6 +129,14 @@ class Command(BaseCommand):
         r"date: (?P<date>\S+ \S+(?: \S+)?);.+? state: (?P<state>\S+)",
         re.MULTILINE | re.DOTALL
     )
+
+    # Regular expresion to split config
+    # Config is a final part
+    SPLIT_MAP = {
+        "Cisco.IOS": re.compile(r"^\n", re.MULTILINE),
+        "Juniper.JUNOS": re.compile(r"^#[^#>\n]+> show configuration\s*\n",
+                                    re.MULTILINE)
+    }
 
     def parse_hosts(self, hosts):
         """
@@ -219,8 +232,8 @@ class Command(BaseCommand):
             fn = match.group("fn")
             r[fn] = []
             for match in self.rx_rev.finditer(data):
-                if match.group("state").lower() == "dead":
-                    continue  # Ignore object replacement
+                # if match.group("state").lower() == "dead":
+                #    continue  # Ignore object replacement
                 rev = match.group("rev")
                 date = match.group("date")
                 ds = date.split()
@@ -249,6 +262,10 @@ class Command(BaseCommand):
             logger.setLevel(logging.DEBUG)
         else:
             logger.setLevel(logging.INFO)
+        for h in logger.handlers:
+            h.setFormatter(logging.Formatter(
+                "%(asctime)s [%(levelname)s] %(message)s"
+            ))
         if not options["routerdb"]:
             raise CommandError("No routerdb given")
         if not options["cloginrc"]:
@@ -257,6 +274,7 @@ class Command(BaseCommand):
             options["hosts"] = ["/etc/hosts"]
         if not options["repo"]:
             raise CommandError("No CVS repository")
+        repo_prefix = options.get("repoprefix") or ""
         if not options["object_profile"]:
             raise CommandError("No object profile set")
         try:
@@ -305,6 +323,7 @@ class Command(BaseCommand):
         for name in sorted(rdb):
             if shard_members:
                 if n % shard_members != shard_member:
+                    n += 1
                     continue  # Processed by other shard
             logger.debug("[%s/%s] Processing host %s", n, count, name)
             n += 1
@@ -352,7 +371,9 @@ class Command(BaseCommand):
                 logger.error("Cannot find config for %s", name)
                 continue
             if not self.dry_run:
-                self.import_revisions(options["repo"], mo, name, revisions[name])
+                self.import_revisions(
+                    options["repo"], repo_prefix,
+                    mo, name, revisions[name])
 
     def get_diff(self, repo, name, r0, r1):
         p = subprocess.Popen(
@@ -362,7 +383,7 @@ class Command(BaseCommand):
         )
         return p.stdout.read()
 
-    def import_revisions(self, repo, mo, name, revisions):
+    def import_revisions(self, repo, repo_prefix, mo, name, revisions):
         """
         Import CVS file revisions
         """
@@ -370,49 +391,36 @@ class Command(BaseCommand):
             with open(path, "w") as f:
                 f.write(data)
 
-        # Prepare all config revisions
-        with open(os.path.join(repo, name)) as f:
-            path = os.path.join(TMP, "%s@%s" % (name, revisions[0][0]))
-            logger.debug("writing %s", path)
-            data = f.read()
-            write_file(path, data)
-            write_file(
-                os.path.join(TMP, name),
-                data
-            )
-        a, b = itertools.tee(revisions)
-        next(b, None)
-        for r0, r1 in itertools.izip(a, b):
-            path = os.path.join(TMP, "%s@%s" % (name, r1[0]))
-            logger.debug("writing %s", path)
+        path = os.path.join(TMP, name)
+        lr = len(revisions)
+        n = 1
+        gridvcs = GridVCS("config")
+        split_re = self.SPLIT_MAP[mo.profile_name]
+        for rev, ts in reversed(revisions):
+            logger.debug("%s: importing rev %s [%s/%s]",
+                         name, rev, n, lr)
+            n += 1
             try:
                 subprocess.check_call(
-                    "(cvs diff -r%s -r%s %s | patch -f -s %s) && cp %s %s" % (
-                        r0[0], r1[0], name,
-                        os.path.join(TMP, name),
-                        os.path.join(TMP, name),
-                        os.path.join(TMP, "%s@%s" % (name, r1[0]))
+                    "cvs co -p -r%s -f %s > %s" % (
+                        rev,
+                        os.path.join(repo_prefix, name),
+                        path
                     ),
                     cwd=repo,
                     shell=True
                 )
             except subprocess.CalledProcessError, why:
-                logger.error("Failed to import %s@%s. Giving up",
-                             name, r1[0])
+                logger.error("Failed to import %s@%s. Skipping",
+                             name, rev)
                 logger.error("CVS reported: %s", why)
-                return
-        # Import all config revisions
-        gridvcs = GridVCS("config")
-        for rev, date in reversed(revisions):
-            logger.debug("   ... Importing %s@%s" % (name, rev))
-            path = os.path.join(TMP, "%s@%s" % (name, rev))
-            with open(path, "r") as f:
-                data = f.read()
+                continue
             if not self.dry_run:
-                gridvcs.put(mo.id, data, ts=date)
-        # Cleanup
-        subprocess.check_call(
-            "rm -f %s*" % name,
-            cwd=TMP,
-            shell=True
-        )
+                with open(path, "r") as f:
+                    data = f.read()
+                # Strip config
+                data = split_re.split(data, 1)[-1]
+                # Save to GridVCS
+                gridvcs.put(mo.id, data, ts=ts)
+        if os.path.exists(path):
+            os.unlink(path)
