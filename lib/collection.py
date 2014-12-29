@@ -185,7 +185,7 @@ class Collection(object):
                 self.update_item(collection.items[i])
         # Update partial items
         for i in self.partial:
-            self.update_item(collection.items[i])
+            self.update_item(collection.items[UUID(i)])
         if self.changed:
             self.save()
 
