@@ -10,6 +10,7 @@
 from optparse import make_option
 import os
 import stat
+import sys
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
@@ -134,6 +135,7 @@ class Command(BaseCommand):
             raise
         except:
             error_report()
+            sys.exit(1)
 
     def _handle(self, *args, **options):
         self.verbose = bool(options.get("verbosity"))
