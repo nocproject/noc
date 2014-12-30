@@ -26,11 +26,12 @@ Ext.define("NOC.core.LookupField", {
     listConfig: {
         minWidth: 240
     },
+    isLookupField: true,
 
     initComponent: function() {
         var me = this,
             // Get store class name
-            sclass = me.$className.replace("LookupField", "Lookup");
+            sclass = me.$className.replace(".LookupField", ".Lookup");
         Ext.apply(me, {
             store: Ext.create(sclass)
         });
@@ -39,56 +40,6 @@ Ext.define("NOC.core.LookupField", {
         }
         me.callParent();
         me.on("specialkey", me.onSpecialKey, me, {delay: 100});
-    },
-
-    // setValue
-    // Value can be
-    //    * id (int or string), when loaded from form
-    //    * record object, when store loaded
-    //    * [record]
-    setValue: function(value) {
-        var me = this;
-
-        if(me.store.isLoading()) {
-            // Value will actually be set
-            // by store.load callback.
-            // Ignore it now
-            return me;
-        }
-        if(!value || value.length == 0) {
-            // Empty value
-            return me.callParent([]);
-        }
-        if(typeof(value) == "object") {
-            // Called when item selected from drop-down list
-            // can be either
-            // * record
-            // * [record]
-            if(value.length == undefined) {
-                return me.callParent([value]);
-            } else {
-                return me.callParent([value[0]]);
-            }
-        } else {
-            // number or string
-            // Start store lookup
-            // @todo: do not refresh current value
-            var v = me.getValue();
-
-            if(!v || v != value) {
-                me.store.load({
-                    params: {id: value},
-                    scope: me,
-                    callback: function(records, operation, success) {
-                        if(success && records.length > 0) {
-                            me.setValue(records[0]);
-                            me.fireEvent("select", me, [records[0]]);
-                        }
-                    }
-                });
-            }
-        }
-        return me;
     },
 
     getLookupData: function() {
