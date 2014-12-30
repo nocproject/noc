@@ -760,14 +760,40 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // Edit record. Hide grid and open form
     editRecord: function(record) {
-        var me = this;
+        var me = this,
+            r = {},
+            mv,
+            field,
+            data,
+            isLookupValue = function(name) {
+                return name.indexOf("__label", name.length - 7) !== -1;
+            };
         me.currentRecord = record;
         me.setFormTitle(me.changeTitle);
         me.setFormId(me.currentRecord.get(me.idField));
+        // Process lookup fields
+        data = record.getData();
+        Ext.iterate(data, function(v) {
+            if(isLookupValue(v)) {
+                return;
+            }
+            field = me.form.findField(v);
+            if(!field) {
+                return;
+            }
+            if(field.isLookupField && data[v]) {
+                mv = {};
+                mv[field.valueField] = data[v];
+                mv[field.displayField] = data[v + "__label"] || data[v];
+                r[v] = field.store.getModel().create(mv);
+            } else {
+                r[v] = data[v];
+            }
+        });
         // Show edit form
         me.showForm();
         // Load records
-        me.form.loadRecord(record);
+        me.form.setValues(r);
         me.loadInlines();
         // Focus on first field
         me.focusOnFirstField();
