@@ -211,7 +211,7 @@ class Command(BaseCommand):
             UserState.objects.filter(user_id=o.id).delete()
         # Clean NotificationGroupUser
         with self.log("Cleaning audit trail"):
-            AuditTrail.objects.filter(user=o).delete()
+            AuditTrail.objects.filter(user=o.username).delete()
         # Clean NotificationGroupUser
         with self.log("Cleaning notification groups"):
             NotificationGroupUser.objects.filter(user=o).delete()
