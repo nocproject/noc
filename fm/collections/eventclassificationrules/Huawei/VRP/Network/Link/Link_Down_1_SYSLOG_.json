@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "Interface (?P<interface>\\S+)( has)? turned into DOWN state\\."
+            "value_re": "Interface (?P<interface>\\S+)( has)? turned into DOWN state\\.$"
         }
     ]
 }
