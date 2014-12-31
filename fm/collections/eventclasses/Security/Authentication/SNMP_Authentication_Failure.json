@@ -8,12 +8,18 @@
             "description": "Request source address",
             "type": "ip_address",
             "required": true
+        },
+        {
+            "name": "community",
+            "description": "Request SNMP community",
+            "type": "str",
+            "required": false
         }
     ],
     "text": {
         "en": {
-            "subject_template": "SNMP Authentication Failure for {{ip}}",
-            "body_template": "SNMP request from {{ip}} has been denied by security policy",
+            "subject_template": "SNMP Authentication Failure for {{ip}} {% if community %}(community: {{community}}){% endif %}",
+            "body_template": "NMP request from {{ip}} {% if community %}with community '{{community}}'{% endif %} has been denied by security policy",
             "symptoms": "NOC, NMS and monitoring systems cannot interact with the box over SNMP protocol",
             "probable_causes": "SNMP server is misconfigured, community mismatch, misconfigured ACL or brute-force attack in progress",
             "recommended_actions": "Check SNMP configuration"
