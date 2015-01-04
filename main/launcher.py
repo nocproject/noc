@@ -15,10 +15,8 @@ import ConfigParser
 import pwd
 import grp
 import signal
-import stat
 ## NOC modules
 from noc.lib.daemon import Daemon
-from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
 from noc.lib.updateclient import UpdateClient
 from noc.lib.log import PrefixLoggerAdapter
 
@@ -60,7 +58,7 @@ class DaemonData(object):
         try:
             pid = os.fork()
         except OSError, e:
-            self.loger.error("Fork failed: %s(%s)", e.strerror, e.errno)
+            self.logger.error("Fork failed: %s(%s)", e.strerror, e.errno)
             return
         if pid:
             self.pid = pid
@@ -215,7 +213,6 @@ class Launcher(Daemon):
         if self.update_url:
             self.check_updates()
         # Main loop
-        last_crashinfo_check = time.time()
         while True:
             for d in self.daemons:
                 if not d.enabled:  # Skip disabled daemons
@@ -236,27 +233,6 @@ class Launcher(Daemon):
                         d.pid = None
             time.sleep(1)
             t = time.time()
-            if self.crashinfo_uid is not None and t - last_crashinfo_check > 10:
-                # Fix crashinfo's permissions
-                for fn in [fn for fn in os.listdir(self.crashinfo_dir) if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]:
-                    path = os.path.join(self.crashinfo_dir, fn)
-                    try:
-                        if os.stat(path)[stat.ST_UID] == self.crashinfo_uid:
-                            continue  # No need to fix
-                    except OSError:
-                        continue  # stat() failed
-                    try:
-                        os.chown(path, self.crashinfo_uid, -1)
-                        os.chmod(path, stat.S_IRUSR | stat.S_IWUSR)
-                        self.logger.info("Permissions for %s are fixed",
-                                         path
-                        )
-                    except:
-                        self.logger.error(
-                            "Failed to fix permissions for %s",
-                            path
-                        )
-                last_crashinfo_check = t
             # Check for updates
             if self.update_url and t > self.next_update_check:
                 self.check_updates()

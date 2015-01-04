@@ -12,35 +12,45 @@ import re
 import logging
 import datetime
 import os
-import cPickle
-import time
 import stat
 import hashlib
 import pprint
 import traceback
+import uuid
 ## NOC modules
-from noc.settings import CRASHINFO_LIMIT, TRACEBACK_REVERSE
+from noc.settings import TRACEBACK_REVERSE
 from noc.lib.version import get_version
 from noc.lib.fileutils import safe_rewrite
+from noc.lib.serialize import json_encode
 
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logging.basicConfig()
 
 
-#
-# Error reporting context
-#
-DEBUG_CTX_COMPONENT = None
-DEBUG_CTX_CRASH_DIR = None
-DEBUG_CTX_CRASH_PREFIX = "crashinfo-"
-DEBUG_CTX_SET_UID = None
+BRANCH = None
+TIP = None
 
+# CP error reporting
+ENABLE_CP = True
+CP_NEW = "local/cp/crashinfo/new"
+CP_SET_UID = None
 
-def set_crashinfo_context(component, crash_dir):
-    global DEBUG_CTX_COMPONENT, DEBUG_CTX_CRASH_DIR, DEBUG_CTX_SET_UID
-    DEBUG_CTX_COMPONENT = component
-    DEBUG_CTX_CRASH_DIR = crash_dir
-    if os.getuid() == 0:  # Daemon launched as a root
-        DEBUG_CTX_SET_UID = os.stat(crash_dir)[stat.ST_UID]
+if os.getuid() == 0:
+    CP_SET_UID = os.stat("local")[stat.ST_UID]
+
+if not os.path.isdir(CP_NEW):
+    try:
+        os.makedirs(CP_NEW, 0700)
+    except OSError, why:
+        logger.error("Cannot initialize CP reporting: %s", why)
+        ENABLE_CP = False
+    if CP_SET_UID:
+        try:
+            os.chown(CP_NEW, CP_SET_UID, -1)
+        except OSError, why:
+            logger.error("Cannot initialize CP reporting: %s", why)
+            ENABLE_CP = False
 
 
 def get_lines_from_file(filename, lineno, context_lines,
@@ -179,7 +189,7 @@ def format_frames(frames, reverse=TRACEBACK_REVERSE):
     if reverse:
         fr.reverse()
     for f in fr:
-        r += [u"File: %s (Line: %s)" % (f["filename"], f["lineno"])]
+        r += [u"File: %s (Line: %s)" % (os.path.relpath(f["filename"]), f["lineno"])]
         r += [u"Function: %s" % (f["function"])]
         r += [format_source(f["pre_context_lineno"], f["pre_context"])]
         r += [u"%5d ==> %s" % (f["lineno"], f["context_line"])]
@@ -198,12 +208,16 @@ def format_frames(frames, reverse=TRACEBACK_REVERSE):
     return u"\n".join(r)
 
 
-def get_traceback(reverse=TRACEBACK_REVERSE):
+def get_traceback(reverse=TRACEBACK_REVERSE, fp=None):
     t, v, tb = sys.exc_info()
     now = datetime.datetime.now()
     r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
-    r += ["Working directory: %s" % os.getcwd()]
-    r += [str(t), str(v)]
+    r += ["BRANCH: %s TIP: %s" % (get_branch(), get_tip())]
+    r += ["PROCESS: %s" % sys.argv[0]]
+    if fp:
+        r += ["ERROR FINGERPRINT: %s" % fp]
+    r += ["WORKING DIRECTORY: %s" % os.getcwd()]
+    r += ["EXCEPTION: %s %s" % (t, v)]
     r += [format_frames(get_traceback_frames(tb), reverse=reverse)]
     if not reverse:
         r += ["UNHANDLED EXCEPTION (%s)" % str(now)]
@@ -225,30 +239,30 @@ def excepthook(t, v, tb):
 
 
 def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
-    r = get_traceback(reverse=reverse)
+    fp = error_fingerprint()
+    r = get_traceback(reverse=reverse, fp=fp)
     logger.error(r)
-    if DEBUG_CTX_COMPONENT and DEBUG_CTX_CRASH_DIR:
-        # Build crashinfo file
-        c = {
-            "source": "system",
-            "type": "Unhandled Exception",
-            "ts": int(time.time()),
-            "component": DEBUG_CTX_COMPONENT,
-            "traceback": r,
-        }
-        crashinfo = cPickle.dumps(c)
-        # Check crashinfo is inside limits
-        if len(crashinfo) > CRASHINFO_LIMIT:
-            return
-        # Write crashinfo
+    if ENABLE_CP:
         fp = error_fingerprint()
-        path = os.path.join(DEBUG_CTX_CRASH_DIR, DEBUG_CTX_CRASH_PREFIX + fp)
-        try:
-            safe_rewrite(path, crashinfo)
-            if DEBUG_CTX_SET_UID:  # Change crashinfo userid to directory"s owner
-                os.chown(path, DEBUG_CTX_SET_UID, -1)
-        except OSError, why:
-            logger.error("Unable to write crashinfo: %s", why)
+        path = os.path.join(CP_NEW, fp + ".json")
+        if not os.path.exists(path):
+            # @todo: TZ
+            # @todo: Installation ID
+            c = {
+                "ts": datetime.datetime.now().isoformat(),
+                "uuid": fp,
+                "installation": None,
+                "process": sys.argv[0],
+                "traceback": r
+            }
+            try:
+                safe_rewrite(path, json_encode(c))
+                if CP_SET_UID:
+                    os.chown(path, CP_SET_UID, -1)
+                logger.error("Writing CP report to %s", path)
+            except OSError, why:
+                logger.error("Unable to write CP report: %s", why)
+
 
 
 def frame_report(frame, caption=None, logger=logger):
@@ -263,22 +277,40 @@ def frame_report(frame, caption=None, logger=logger):
 
 
 def error_fingerprint():
-    """
-    Generate error fingerprint.
-    :return:
-    """
-    tb = sys.exc_info()[2]
-    # Generate fingerprint seed
-    s = ":".join([str(x) for x in [
-            DEBUG_CTX_COMPONENT,  # Component
-            get_version(),  # NOC version
-            tb.tb_frame.f_code.co_filename,  # Filename
-            tb.tb_frame.f_globals.get("__name__"),  # Module
-            tb.tb_frame.f_code.co_name,  # Function
-            tb.tb_lineno - 1  # Line
-        ]
-    ])
-    return hashlib.sha1(s).hexdigest()
+    t, v, tb = sys.exc_info()
+    noc_file = None
+    noc_function = None
+    noc_lineno = None
+    tb_file = None
+    tb_function = None
+    tb_lineno = None
+    while tb is not None:
+        # support for __traceback_hide__ which is used by a few libraries
+        # to hide internal frames.
+        if tb.tb_frame.f_locals.get("__traceback_hide__"):
+            tb = tb.tb_next
+            continue
+        tb_file = os.path.relpath(tb.tb_frame.f_code.co_filename)
+        for p in ("python2.6", "python2.7"):
+            tb_file = tb_file.replace(p, "python2.X")
+        tb_function = tb.tb_frame.f_code.co_name
+        tb_lineno = tb.tb_lineno - 1
+        if not (tb_file.startswith("..") or
+                    tb_file.startswith("lib/python")):
+            noc_file = tb_file
+            noc_function = tb_function
+            noc_lineno = tb_lineno
+        tb = tb.tb_next
+    parts = [
+        str(get_branch()),
+        str(get_tip()),
+        sys.argv[0],
+        str(t),
+        noc_file, noc_function, str(noc_lineno),
+        tb_file, tb_function, str(tb_lineno)
+    ]
+    hash = hashlib.sha1("|".join(parts)).digest()
+    return str(uuid.UUID(bytes=hash[:16], version=5))
 
 
 def dump_stacks():
@@ -308,3 +340,29 @@ def BQ(s):
         return unicode(s)
     except UnicodeDecodeError:
         return "(%s)" % " ".join(["%02X" % ord(c) for c in s])
+
+
+def get_branch():
+    global BRANCH
+
+    if BRANCH:
+        return BRANCH
+    if os.path.exists(".hg/branch"):
+        with open(".hg/branch") as f:
+            BRANCH = f.read().strip()
+    return BRANCH
+
+
+def get_tip():
+    global TIP
+
+    if TIP:
+        return TIP
+
+    try:
+        from mercurial import ui, localrepo
+    except ImportError:
+        return None
+    repo = localrepo.localrepository(ui.ui(), path=".")
+    TIP = repo.changelog.tip()[:6].encode("hex")
+    return TIP

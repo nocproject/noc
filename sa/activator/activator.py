@@ -32,7 +32,6 @@ from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM, check_state
 from noc.lib.nbsocket.socketfactory import SocketFactory
 from noc.lib.nbsocket.pingsocket import Ping4Socket, Ping6Socket
-from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
 from noc.sa.activator.service import Service
 from noc.sa.activator.activator_socket import ActivatorSocket
 from noc.sa.activator.pm_collector_socket import PMCollectorSocket
@@ -137,7 +136,6 @@ class Activator(Daemon, FSM):
         self.nonce = None
         FSM.__init__(self)
         self.next_mappings_update = None
-        self.next_crashinfo_check = None
         self.script_threads = {}
         if ((self.to_listen and self.config.getboolean("activator", "dedicated_collector")) or (
             self.to_ping and self.config.getboolean("activator", "dedicated_ping"))):
@@ -604,30 +602,6 @@ class Activator(Daemon, FSM):
         # Request object mappings
         r = ObjectMappingsRequest()
         self.sae_stream.proxy.object_mappings(r, object_mappings_callback)
-
-    @check_state("ESTABLISHED")
-    def check_crashinfo(self):
-        """
-        When running in stand-alone mode, collect crashinfo files
-        and send them as system events to SAE
-        """
-        if not self.config.get("main", "logfile"):
-            return
-        c_d = os.path.dirname(self.config.get("main", "logfile"))
-        if not os.path.isdir(c_d):
-            return
-        for fn in [fn for fn in os.listdir(c_d) if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]:
-            # Load and unpickle crashinfo
-            path = os.path.join(c_d, fn)
-            with open(path) as f:
-                data = cPickle.loads(f.read())  # @todo: Handle exception
-            ts = data["ts"]
-            del data["ts"]
-            # Send event. "" is an virtual address of ROOT object
-            self.on_event(ts, "", data)
-            os.unlink(path)
-        # Next check - after 60 seconds timeout
-        self.next_crashinfo_check = time.time() + 60
 
     def on_event(self, timestamp, object, body):
         """
