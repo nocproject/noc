@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ConnectedTCPSocket implementation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ class ConnectedTCPSocket(TCPSocket):
         super(ConnectedTCPSocket, self).create_socket()
         if self.local_address:
             self.socket.bind((self.local_address, 0))
-        self.debug("Connecting %s:%s" % (self.address, self.port))
+        self.logger.debug("Connecting %s:%s", self.address, self.port)
         e = self.socket.connect_ex((self.address, self.port))
         if e in (ETIMEDOUT, ECONNREFUSED, ENETUNREACH,
                  EHOSTUNREACH, ENETDOWN):
@@ -68,12 +68,12 @@ class ConnectedTCPSocket(TCPSocket):
             data = self.socket.recv(self.READ_CHUNK)
         except socket.error, why:
             if why[0] in (ECONNREFUSED, EHOSTUNREACH):
-                self.error("Connection refused (%s)" % why[0])
+                self.logger.error("Connection refused (%s)", why[0])
                 self.on_conn_refused()
                 self.close()
                 return
             if why[0] in (ECONNRESET, ENOTCONN, ESHUTDOWN, ETIMEDOUT):
-                self.error("Connection lost (%s)" % why[0])
+                self.logger.error("Connection lost (%s)", why[0])
                 self.close()
                 return
             if why[0] in (EINTR, EAGAIN):
@@ -96,6 +96,7 @@ class ConnectedTCPSocket(TCPSocket):
                 err_code = why[0]
                 if err_code in (EPIPE, ECONNREFUSED, ETIMEDOUT,
                                 EHOSTUNREACH, ENETUNREACH):
+                    self.logger.error("Connection refused")
                     self.on_conn_refused()
                     self.close()
                     return
