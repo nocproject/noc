@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## nbsocket factory
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -43,6 +43,7 @@ class SocketFactory(object):
             "loops",
             "ticks",
             "handle.reads",
+            "handle.closed_reads",
             "handle.writes"
         )
         self.sockets = {}      # fileno -> socket
@@ -228,8 +229,12 @@ class SocketFactory(object):
                 self.guarded_socket_call(s, s.handle_write)
             # Process read events
             for s in r:
-                self.metrics.handle_reads += 1
-                self.guarded_socket_call(s, s.handle_read)
+                if s.closing:
+                    logger.info("Trying to read from closed socked")
+                    self.metrics.handle_closed_reads += 1
+                else:
+                    self.metrics.handle_reads += 1
+                    self.guarded_socket_call(s, s.handle_read)
         else:
             # No socket initialized. Sleep to prevent CPU hogging
             time.sleep(timeout)

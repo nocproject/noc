@@ -99,7 +99,7 @@ class Socket(object):
         :return: file id or None
         :rtype: int or None
         """
-        return self.socket.fileno()
+        return self.socket.fileno() if self.socket else None
 
     def handle_read(self):
         """
