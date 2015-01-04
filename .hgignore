@@ -30,3 +30,4 @@ etc/requirements/local.txt
 static/pkg/
 share/
 static/test/
+pip-selfcheck.json
