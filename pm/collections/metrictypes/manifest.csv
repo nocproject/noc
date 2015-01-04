@@ -59,3 +59,4 @@ Process | Memory | Mapped,ea9814ee-a9f1-41f4-9d36-606bf8cb77fc,Process/Memory/Ma
 Process | Memory | Page Faults,543516fc-c478-447a-b9aa-9cf42d48c8d0,Process/Memory/Page_Faults.json,a20671f3e2cd3d7f04e8a8e047f383a49b333bda5b928e54af4aecd8cb50c48d
 Process | Memory | Resident,08909707-5b29-4da9-a92b-56e02a766225,Process/Memory/Resident.json,3f2719714c4f70e3f317b1af0d0e82381cb65d92f1bae62924c979a07979a0a2
 Process | Memory | Virtual,1b2975d1-3c7a-4720-b194-50b24f067033,Process/Memory/Virtual.json,6b550605a2f0eee6a3332976ef269fcc088753a316787c27a144414e3e495632
+Test | Sin,cdcd2dc2-878b-43f3-9fc8-338434881947,Test/Sin.json,1a91b540c3e468aacfe03b96355fceb4f3abda6f4d2d9f5734ebb9688a0f8e2b
