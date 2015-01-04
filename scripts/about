@@ -17,6 +17,7 @@ import pymongo
 ## NOC modules
 import settings
 from noc.lib.version import get_version
+from noc.lib.debug import error_report
 
 if hasattr(subprocess, "check_output"):
     check_output = subprocess.check_output
@@ -114,4 +115,7 @@ def about():
         print "|%s|%s|" % (c, v.replace("\n", " "))
 
 if __name__ == "__main__":
-    about()
+    try:
+        about()
+    except:
+        error_report(reverse=True)
