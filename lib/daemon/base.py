@@ -17,7 +17,7 @@ import optparse
 import logging.handlers
 import time
 ## NOC modules
-from noc.lib.debug import error_report, frame_report, set_crashinfo_context
+from noc.lib.debug import error_report, frame_report
 from noc.lib.validators import is_ipv4, is_int
 from noc.lib.version import get_version
 from noc.lib.log import ColorFormatter
@@ -135,12 +135,6 @@ class Daemon(object):
                 self.config_path % {"daemon_name": self.daemon_name})
         if not first_run:
             self.on_load_config()
-        if self.config.get("main", "logfile"):
-            set_crashinfo_context(self.daemon_name, os.path.dirname(
-                self.config.get("main", "logfile").replace("{{instance}}",
-                                                           self.instance_id)))
-        else:
-            set_crashinfo_context(None, None)
             # Set up logging
         if self.config.get("main", "loglevel") not in self.LOG_LEVELS:
             raise Exception(
