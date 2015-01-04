@@ -8,8 +8,6 @@
 
 ## Python modules
 from threading import Lock
-## NOC modules
-from noc.lib.log import PrefixLoggerAdapter
 
 
 class SenderSocket(object):
