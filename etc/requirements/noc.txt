@@ -20,7 +20,7 @@ pytz>=2014.4
 docutils==0.7
 Pygments==1.2.2
 mongoengine==0.8.7
-tornado==4.0.1
+tornado==4.0.2
 sleekxmpp==1.1.11
 vectorformats==0.1
 Whoosh==2.5.4
