@@ -67,7 +67,7 @@ class Sender(threading.Thread):
         """
         with self.feed_lock:
             if self.ready_channels:
-                logger.debug("Flushing channels %d channels",
+                logger.debug("Flushing %d channel(s)",
                              len(self.ready_channels))
                 for ch in self.ready_channels:
                     ch.flush()
