@@ -252,7 +252,9 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
                 "ts": datetime.datetime.now().isoformat(),
                 "uuid": fp,
                 "installation": None,
-                "process": sys.argv[0],
+                "process": os.path.relpath(sys.argv[0]),
+                "branch": get_branch(),
+                "tip": get_tip(),
                 "traceback": r
             }
             try:
@@ -304,7 +306,7 @@ def error_fingerprint():
     parts = [
         str(get_branch()),
         str(get_tip()),
-        sys.argv[0],
+        os.path.relpath(sys.argv[0]),
         str(t),
         noc_file, noc_function, str(noc_lineno),
         tb_file, tb_function, str(tb_lineno)
