@@ -262,7 +262,7 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
                 logger.error("Writing CP report to %s", path)
             except OSError, why:
                 logger.error("Unable to write CP report: %s", why)
-
+    return r
 
 
 def frame_report(frame, caption=None, logger=logger):

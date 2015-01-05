@@ -25,7 +25,7 @@ from django.utils.simplejson.encoder import JSONEncoder
 from django.utils.encoding import smart_str
 ## NOC modules
 from noc.settings import INSTALLED_APPS, config
-from noc.lib.debug import get_traceback, error_report
+from noc.lib.debug import error_report
 from noc.lib.serialize import json_decode
 
 logger = logging.getLogger(__name__)
@@ -267,12 +267,12 @@ class Site(object):
             except Http404, why:
                 return HttpResponseNotFound(why)
             except:
-                tb = get_traceback()
-                if to_log_api_call:
-                    error_report(logger=app_logger)
                 # Generate 500
-                r = HttpResponse(content=tb, status=500,
-                                 mimetype="text/plain; charset=utf-8")
+                r = HttpResponse(
+                    content=error_report(logger=app_logger),
+                    status=500,
+                    mimetype="text/plain; charset=utf-8"
+                )
             # Serialize response when necessary
             if not isinstance(r, HttpResponse):
                 try:
@@ -282,7 +282,7 @@ class Site(object):
                     )
                 except:
                     error_report(logger=app_logger)
-                    r = HttpResponse(get_traceback(), status=500)
+                    r = HttpResponse(error_report(), status=500)
             r["Pragma"] = "no-cache"
             r["Cache-Control"] = "no-cache"
             r["Expires"] = "0"
