@@ -160,7 +160,8 @@ INSTALLED_APPS = [
     "noc.vc",
     "noc.dns",
     "noc.peer",
-    "noc.kb"
+    "noc.kb",
+    "noc.support"
 ]
 # Populate list of locally-installed apps
 apps = config.get("main", "installed_apps").strip()
