@@ -30,13 +30,11 @@ Ext.define("NOC.core.ModelStore", {
             }
         }
         // Additional fields
-        fields = fields.concat([
-            {
-                name: "fav_status",
-                type: "boolean",
-                persist: false
-            }
-        ]);
+        fields.push({
+            name: "fav_status",
+            type: "boolean",
+            persist: false
+        });
         var proxy = Ext.create("Ext.data.RestProxy", {
                 url: model.rest_url,
                 pageParam: "__page",
