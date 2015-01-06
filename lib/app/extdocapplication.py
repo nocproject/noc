@@ -287,7 +287,7 @@ class ExtDocApplication(ExtApplication):
                     return self.response(status=self.CONFLICT)
         return self.submit_slow_op(request, _create_object, attrs)
 
-    @view(method=["GET"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
+    @view(method=["GET"], url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
           access="read", api=True)
     def api_read(self, request, id):
         """
@@ -303,7 +303,7 @@ class ExtDocApplication(ExtApplication):
         return self.response(self.instance_to_dict(o, fields=only),
             status=self.OK)
 
-    @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
+    @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
           access="update", api=True)
     def api_update(self, request, id):
         def _update_object(o, attrs):
@@ -335,7 +335,7 @@ class ExtDocApplication(ExtApplication):
         # @todo: Check for duplicates
         return self.submit_slow_op(request, _update_object, o, attrs)
 
-    @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24}|\d+)/?$",
+    @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
           access="delete", api=True)
     def api_delete(self, request, id):
         def _delete_object(o):
