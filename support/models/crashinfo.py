@@ -119,7 +119,7 @@ class Crashinfo(Document):
             logger.debug("Removing file %s", path)
             try:
                 os.unlink(path)
-            except OSError. why:
+            except OSError, why:
                 logger.error("Cannot remove file %s: %s", path, why)
 
 ##
