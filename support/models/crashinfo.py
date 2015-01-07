@@ -87,8 +87,8 @@ class Crashinfo(Document):
                 uuid=u,
                 timestamp=dateutil.parser.parse(ci["ts"]),
                 process=ci["process"],
-                branch=ci["branch"],
-                tip=ci["tip"],
+                branch=ci.get("branch"),
+                tip=ci.get("tip"),
                 status="N"
             )
             c.save()
