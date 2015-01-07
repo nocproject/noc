@@ -1,11 +1,12 @@
 #!./bin/python
 import threading
 import sys
+import logging
 import readline
 # NOC modules
 from noc.lib.nbsocket.socketfactory import SocketFactory
-from noc.lib.nbsocket.pingsocket import Ping4Socket
-from noc.lib.validators import is_ipv4
+from noc.lib.nbsocket.pingsocket import Ping4Socket, Ping6Socket
+from noc.lib.validators import is_ipv4, is_ipv6
 
 
 def cb(*args):
@@ -14,7 +15,8 @@ def cb(*args):
 
 def loop():
     sf = SocketFactory()
-    ps = Ping4Socket(sf)
+    ps4 = Ping4Socket(sf)
+    ps6 = Ping6Socket(sf)
     print "Running socket factory"
     t = threading.Thread(target=sf.run)
     t.setDaemon(True)
@@ -38,11 +40,12 @@ def loop():
                 print "%% ERROR: Invald count"
         else:
             count = 1
-        if not is_ipv4(ip):
-            print "%% ERROR: Invalid IPv4"
+        if not is_ipv4(ip) and not is_ipv6(ip):
+            print "%% ERROR: Invalid IP address"
             continue
+        sock = ps6 if ":" in ip else ps4
         for i in range(count):
-            ps.ping(ip, count=3, callback=cb)
+            sock.ping(ip, count=3, callback=cb)
 
 if __name__ == "__main__":
     loop()
