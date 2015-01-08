@@ -440,7 +440,17 @@ Ext.apply(Ext.form.field.VTypes, {
         return me.colorMask.test(val);
     },
     colorMask: /^[0-9a-f]{6}$/i,
-    colorText: "Invalid color, must be 6 hexadecimals"
+    colorText: "Invalid color, must be 6 hexadecimals",
+
+    password: function(val, field) {
+        if(field.peerField) {
+            var form = field.up("form"),
+                peer = form.getForm().findField(field.peerField);
+            return (val == peer.getValue());
+        }
+        return true;
+    },
+    passwordText: "Passwords do not match"
 });
 
 //
