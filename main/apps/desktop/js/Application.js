@@ -15,11 +15,13 @@ Ext.define("NOC.main.desktop.Application", {
         "Ext.ux.form.GridField",
         "Ext.ux.form.DictField",
         "Ext.ux.form.ColorField",
-        "Ext.ux.grid.column.GlyphAction"
+        "Ext.ux.grid.column.GlyphAction",
+        "NOC.main.desktop.templates.About"
     ],
 
     initComponent: function() {
         var me = this;
+        me.templates = NOC.templates["main.desktop"];
         me.restartReason = null;
         // Setup helpers
         NOC.run = Ext.bind(me.launchTab, me);
@@ -102,8 +104,8 @@ Ext.define("NOC.main.desktop.Application", {
             success: function(response) {
                 var data = Ext.decode(response.responseText);
                 Ext.create("NOC.main.desktop.About", {
-                    version: data.version,
-                    installation: data.installation
+                    app: me,
+                    aboutCfg: data
                 });
             },
             failure: function() {
