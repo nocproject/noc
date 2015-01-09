@@ -363,8 +363,8 @@ Ext.define("NOC.core.ModelApplication", {
             itemId: "save",
             text: "Save",
             glyph: NOC.glyph.save,
-            // formBind: true,
-            // disabled: true,
+            formBind: true,
+            disabled: true,
             scope: me,
             // @todo: check access
             handler: me.onSave
@@ -591,7 +591,9 @@ Ext.define("NOC.core.ModelApplication", {
                     }
                 },
                 items: formFields,
-                tbar: {
+                dockedItems: {
+                    xtype: "toolbar",
+                    dock: "top",
                     layout: {
                         overflowHandler: "Menu"
                     },
