@@ -65,7 +65,7 @@ class AccountApplication(ExtApplication):
         c = CPClient()
         if c.has_account():
             try:
-                c.update_account(email, country=country,
+                c.update_account(name, email, country=country,
                                  language=language, org=org,
                                  industries=industries)
             except CPClient.Error, why:
