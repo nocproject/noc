@@ -135,8 +135,8 @@ Ext.define("NOC.main.userprofile.Application", {
         Ext.apply(me, {
             items: [
                 {
-                    xtype: "panel",
-                    bodyPadding: 4,
+                    xtype: "form",
+                    padding: 4,
                     items: [
                         me.usernameField,
                         me.nameField,
@@ -149,19 +149,21 @@ Ext.define("NOC.main.userprofile.Application", {
                             title: "Notification Contacts",
                             items: [me.contactsGrid]
                         }
-                    ]
-                }
-            ],
-            dockedItems: [
-                {
-                    xtype: "toolbar",
-                    dock: "top",
-                    items: [
+                    ],
+                    dockedItems: [
                         {
-                            glyph: NOC.glyph.save,
-                            text: "Save",
-                            scope: me,
-                            handler: me.onSave
+                            xtype: "toolbar",
+                            dock: "top",
+                            items: [
+                                {
+                                    glyph: NOC.glyph.save,
+                                    text: "Save",
+                                    scope: me,
+                                    handler: me.onSave,
+                                    disabled: true,
+                                    formBind: true
+                                }
+                            ]
                         }
                     ]
                 }
