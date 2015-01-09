@@ -112,7 +112,9 @@ class NOCAuthBackend(object):
                 "name": "retype_password",
                 "fieldLabel": "Retype New Password",
                 "allowBlank": False,
-                "inputType": "password"
+                "inputType": "password",
+                "vtype": "password",
+                "peerField": "new_password"
             }
         ]
 
