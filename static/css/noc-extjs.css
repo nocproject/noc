@@ -147,3 +147,22 @@ TABLE {
     font-style: italic !important;
     padding-left: 10px !important;
 }
+
+.noc-info-balloon {
+    border-radius: 4px;
+    border: 1px solid;
+    padding: 4px;
+    margin: 4px;
+}
+
+.noc-warning {
+    background-color: #cc0000;
+    border-color: #660000;
+    color: #330000;
+}
+
+.noc-info {
+    background-color: #00cc00;
+    border-color: #006600;
+    color: #003300;
+}
