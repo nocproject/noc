@@ -78,9 +78,15 @@ Ext.define("NOC.support.account.AccountPanel", {
                 {
                     xtype: "textfield",
                     name: "name",
-                    fieldLabel: "Name",
+                    fieldLabel: "Login",
                     allowBlank: false,
                     regex: /^[a-z0-9\.\-_]+$/i
+                },
+                {
+                    xtype: "textfield",
+                    name: "org",
+                    fieldLabel: "Company",
+                    allowBlank: true
                 },
                 {
                     xtype: "textfield",
