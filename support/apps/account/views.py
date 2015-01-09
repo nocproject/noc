@@ -51,13 +51,14 @@ class AccountApplication(ExtApplication):
           validate={
               "name": REStringParameter("^[a-zA-Z0-9\.\-_]+$"),
               "email": StringParameter(),
+              "org": StringParameter(),
               "country": REStringParameter("^[A-Z]{2}$"),
               "language": REStringParameter("^[A-Z]{2}$"),
               "password": StringParameter(required=False)
           }
     )
     def api_save_account(self, request, name, email, password=None,
-                         country=None, language=None,
+                         org=None, country=None, language=None,
                          *args, **kwargs):
         industries = [k[4:] for k in kwargs
                       if k.startswith("ind_") and kwargs[k]]
@@ -65,14 +66,14 @@ class AccountApplication(ExtApplication):
         if c.has_account():
             try:
                 c.update_account(email, country=country,
-                                 language=language,
+                                 language=language, org=org,
                                  industries=industries)
             except CPClient.Error, why:
                 return {"status": False, "message": str(why)}
         else:
             # Create account
             try:
-                c.create_account(name, email, password,
+                c.create_account(name, email, password, org=org,
                                  country=country, language=language,
                                  industries=industries)
             except CPClient.Error, why:
