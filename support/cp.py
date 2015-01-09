@@ -165,7 +165,7 @@ class CPClient(object):
         self.account_password = password
         self.write_config()
 
-    def update_account(self, email,
+    def update_account(self, name, email,
                        country=None, org=None, industries=None,
                        language=None):
         if not self.has_account():
@@ -182,7 +182,7 @@ class CPClient(object):
             info["industries"] = industries
         if language:
             info["language"] = language
-        self.call(self.ACCOUNT_SERVICE, "update", email, info)
+        self.call(self.ACCOUNT_SERVICE, "update", name, email, info)
 
     def account_info(self):
         if not self.has_account():
