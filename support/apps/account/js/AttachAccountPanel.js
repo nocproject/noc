@@ -36,7 +36,7 @@ Ext.define("NOC.support.account.AttachAccountPanel", {
                 {
                     xtype: "textfield",
                     name: "name",
-                    fieldLabel: "Name",
+                    fieldLabel: "Login",
                     allowBlank: false
                 },
                 {
