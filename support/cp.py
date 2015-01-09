@@ -29,7 +29,7 @@ class CPClient(object):
     SYSTEM_SERVICE = "/api/v1.0/SystemService/"
 
     def __init__(self):
-        self.cp_url = None
+        self.cp_url = self.CP_URL
         self.account_uuid = None
         self.account_name = None
         self.account_password = None
@@ -85,7 +85,7 @@ class CPClient(object):
         ]
         if self.cp_url or self.account_uuid:
             cfg += ["[account]"]
-            if self.cp_url:
+            if self.cp_url and self.cp_url != self.CP_URL:
                 cfg += ["cp_url = %s" % self.cp_url]
             if self.account_uuid:
                 cfg += [
