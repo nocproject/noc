@@ -10,11 +10,15 @@
 import time
 import logging
 import warnings
+import errno
 ## NOC modules
 from noc.lib.nbsocket.exceptions import *
 from noc.lib.log import PrefixLoggerAdapter
+from noc.lib.debug import error_report
 
 logger = logging.getLogger(__name__)
+
+IGNORABLE_CLOSE_ERRORS = set([errno.EBADF, errno.EINTR])
 
 
 class Socket(object):
@@ -142,11 +146,12 @@ class Socket(object):
         self.closing = True
         if self.socket:
             self.factory.unregister_socket(self)
-            try:
-                if self.socket:
-                    self.socket.close()  # Can raise EBADF/EINTR
-            except socket.error, why:
-                pass
+            if self.socket:
+                try:
+                    self.socket.close()
+                except socket.error, why:
+                    if why[0] not in IGNORABLE_CLOSE_ERRORS:
+                        error_report(logger=self.logger)
             self.socket = None
             self.on_close()
 

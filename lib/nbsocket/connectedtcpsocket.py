@@ -57,6 +57,11 @@ class ConnectedTCPSocket(TCPSocket):
             return
         elif e not in (0, EISCONN, EINPROGRESS, EALREADY, EWOULDBLOCK):
             raise socket.error, (e, errorcode[e])
+        elif e != 0:
+            self.logger.debug(
+                "create_socket returns non-zero code %s[%s]",
+                e, errorcode[e]
+            )
         self.set_status(r=self.is_connected, w=not self.is_connected)
 
     def handle_read(self):
