@@ -494,8 +494,11 @@ class DesktopApplication(ExtApplication):
 
     @view(url="^about/", method=["GET"], access=True, api=True)
     def api_about(self, request):
+        cp = CPClient()
         return {
             "version": get_version(),
             "installation": config.get("customization",
-                                       "installation_name")
+                                       "installation_name"),
+            "system_id": cp.system_uuid,
+            "copyright": "2007-%d, The NOC Project" % datetime.date.today().year
         }
