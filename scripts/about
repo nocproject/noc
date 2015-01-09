@@ -26,6 +26,12 @@ else:
         return subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
 
 
+def get_system_uuid():
+    from noc.support.cp import CPClient
+    c = CPClient()
+    return c.system_uuid
+
+
 def get_branch():
     from mercurial import ui, localrepo
     try:
@@ -96,8 +102,10 @@ def get_solutions():
 
 
 def about():
+    sid = get_system_uuid()
     versions = [
         ["NOC", get_version()],
+        ["System ID", sid if sid else "Not registred"],
         ["Branch", get_branch()],
         ["OS", " ".join(os.uname())]
     ]
