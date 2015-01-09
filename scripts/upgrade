@@ -64,6 +64,15 @@ if [ "$ENABLED" != "yes" ]; then
     error_exit "Upgrade is disabled. Please edit etc/upgrade.conf and run $0 again"
 fi
 ##
+## Check etc/support.conf
+##
+if [ -f "etc/support.conf" ]; then
+    info "Creating empty etc/support.conf"
+    touch etc/support.conf
+fi
+chown $NOC_USER:$NOC_GROUP etc/support.conf
+chmod 600 etc/support.conf
+##
 ## Apply OS-depended settings
 ##
 OSNAME=`uname -s`
