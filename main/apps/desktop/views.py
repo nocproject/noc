@@ -21,6 +21,7 @@ from noc.settings import LANGUAGE_CODE
 from noc.main.auth.backends import backend as auth_backend
 from noc.main.models import Group, UserSession, UserState, Permission
 from noc.main.models.favorites import Favorites
+from noc.support.cp import CPClient
 
 
 class DesktopApplication(ExtApplication):
@@ -105,6 +106,7 @@ class DesktopApplication(ExtApplication):
         """
         Render application root template
         """
+        cp = CPClient()
         ext_apps = [a for a in self.site.apps
                     if isinstance(self.site.apps[a], ExtApplication) or\
                     isinstance(self.site.apps[a], ModelApplication)]
@@ -119,6 +121,7 @@ class DesktopApplication(ExtApplication):
             favicon_mime = None
 
         setup = {
+            "system_uuid": cp.system_uuid,
             "installation_name": config.get("customization",
                                             "installation_name"),
             "logo_url": config.get("customization", "logo_url"),
