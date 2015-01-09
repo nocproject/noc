@@ -35,6 +35,7 @@ Ext.define("NOC.core.LookupField", {
         Ext.apply(me, {
             store: Ext.create(sclass)
         });
+        me.restUrl = me.store.url;
         if(me.query) {
             Ext.apply(me.store.proxy.extraParams, me.query);
         }
@@ -51,6 +52,28 @@ Ext.define("NOC.core.LookupField", {
         if(e.keyCode == e.ESC) {
             me.clearValue();
             me.fireEvent("clear");
+        }
+    },
+
+    setValue: function(value, doSelect) {
+        var me = this;
+        if(typeof value === "string" || typeof value === "number") {
+            Ext.Ajax.request({
+                url: me.restUrl,
+                method: "GET",
+                scope: me,
+                params: {
+                    id: value
+                },
+                success: function (response) {
+                    var data = Ext.decode(response.responseText);
+                    if (data.length === 1) {
+                        me.setValue(me.store.getModel().create(data[0]));
+                    }
+                }
+            });
+        } else {
+            me.callParent([value, doSelect]);
         }
     }
 });
