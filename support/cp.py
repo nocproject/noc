@@ -183,6 +183,9 @@ class CPClient(object):
         if language:
             info["language"] = language
         self.call(self.ACCOUNT_SERVICE, "update", name, email, info)
+        if name != self.account_name:
+            self.account_name = name
+            self.write_config()
 
     def account_info(self):
         if not self.has_account():
