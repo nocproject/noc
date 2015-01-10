@@ -12,6 +12,16 @@
 error_exit ( ) {
     echo "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m" 1>&2
     echo "Terminating" 1>&2
+    # Report status
+    if [ -x ./scripts/cptool ]; then
+        info "Reporting upgrade status"
+        ./scripts/cptool --quiet --upgrade --failure --log=${UPGRADE_LOG}
+    fi
+    # Save upgrade log when local/ is available
+    if [ -d local ]; then
+        info "Saving upgrade log to local/upgrade.log"
+        mv ${UPGRADE_LOG} local/upgrade.log
+    fi
     exit 1
 }
 
@@ -52,6 +62,16 @@ if [ -f "./etc/noc-launcher.conf" ]; then
         error_exit "NOC is running now. Shutdown it first."
     fi
 fi
+##
+## Setup logging
+##
+UPGRADE_LOG=`mktemp -t /tmp`
+UPGRADE_PIPE=${UPGRADE_LOG}.pipe
+mkfifo $UPGRADE_PIPE
+tee < $UPGRADE_PIPE $UPGRADE_LOG &
+exec &> $UPGRADE_PIPE
+rm $UPGRADE_PIPE
+echo "Logging to ${UPGRADE_LOG}"
 ##
 ## Include configs
 ##
@@ -266,4 +286,8 @@ if [ -x ./local/bin/post-upgrade ]; then
     ./local/bin/post-upgrade
 fi
 # Done
+info "Reporting upgrade status"
+./scripts/cptool --quiet --upgrade --success
 info "$PROGNAME complete"
+info "Upgrade log stored to local/upgrade.log"
+mv ${UPGRADE_LOG} local/upgrade.log
