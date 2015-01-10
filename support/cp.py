@@ -14,6 +14,9 @@ import requests
 import os
 import ConfigParser
 from noc.lib.serialize import json_encode
+from noc.lib.version import (get_branch, get_tip,
+                             get_os_brand, get_os_version,
+                             get_versions, get_solutions)
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +30,7 @@ class CPClient(object):
 
     ACCOUNT_SERVICE = "/api/v1.0/AccountService/"
     SYSTEM_SERVICE = "/api/v1.0/SystemService/"
+    UPGRADE_SERVICE = "/api/v1.0/UpgradeService/"
 
     def __init__(self):
         self.cp_url = self.CP_URL
@@ -245,3 +249,12 @@ class CPClient(object):
         if not self.has_system():
             raise self.Error("System is not registered")
         return self.call(self.SYSTEM_SERVICE, "info", self.system_uuid)
+
+    def upgrade(self, status, log=""):
+        if not self.has_system():
+            raise self.Error("System is not registred")
+        return self.call(self.UPGRADE_SERVICE, "upgrade",
+                         self.system_uuid,
+                         get_os_brand(), get_os_version(),
+                         get_branch(), get_tip(),
+                         get_versions(), get_solutions(), status, log)
