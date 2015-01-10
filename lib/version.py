@@ -8,9 +8,26 @@
 
 ## Python modules
 import os
+import sys
+import subprocess
+import platform
+## Third-party modules
+import pymongo
+## NOC modules
+from noc import settings
+
 
 ## Version cache
 _version = None
+BRANCH = None
+TIP = None
+OS_BRAND = None
+
+if hasattr(subprocess, "check_output"):
+    check_output = subprocess.check_output
+else:
+    def check_output(args):
+        return subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
 
 
 def get_version():
@@ -51,3 +68,106 @@ def get_version():
         # Develop or feature branch
         _version = "%sdev%s" % (v, tip)
     return _version
+
+
+def get_branch():
+    global BRANCH
+
+    if BRANCH:
+        return BRANCH
+    if os.path.exists(".hg/branch"):
+        with open(".hg/branch") as f:
+            BRANCH = f.read().strip()
+    return BRANCH
+
+
+def get_tip():
+    global TIP
+
+    if TIP:
+        return TIP
+
+    try:
+        from mercurial import ui, localrepo
+    except ImportError:
+        return None
+    repo = localrepo.localrepository(ui.ui(), path=".")
+    TIP = repo.changelog.tip()[:6].encode("hex")
+    return TIP
+
+
+def get_os_brand():
+    """
+    Get OS brand
+    :return:
+    """
+    global OS_BRAND
+
+    if OS_BRAND:
+        return OS_BRAND
+    o = os.uname()[0].lower()
+    if o == "linux":
+        # First, try lsb_release -d
+        try:
+            b = check_output(["lsb_release", "-d"])
+            return b.split(":", 1)[1].strip()
+        except OSError:
+            pass
+        if os.path.exists("/etc/SuSE-release"):
+            # SuSE
+            with open("/etc/SuSE-release") as f:
+                return f.readline().strip()
+    elif o == "darwin":
+        # OS X
+        return "Mac OS X %s" % platform.mac_ver()[0]
+    return None
+
+
+def get_os_version():
+    return " ".join(os.uname())
+
+
+def get_python_version():
+    return sys.version.split()[0]
+
+
+def get_pg_version():
+    with os.popen("pg_config --version") as f:
+        return f.read().strip().split(" ", 1)[1]
+
+
+def get_mongo_version():
+    connection_args = {}
+    if settings.NOSQL_DATABASE_HOST:
+        connection_args["host"] = settings.NOSQL_DATABASE_HOST
+    if settings.NOSQL_DATABASE_PORT:
+        connection_args["port"] = int(settings.NOSQL_DATABASE_PORT)
+    c = pymongo.Connection(**connection_args)
+    i = c.server_info()
+    return "%s (%dbit)" % (i["version"], i["bits"])
+
+
+def get_python_packages():
+    o = check_output(["./bin/pip", "freeze"])
+    return dict(l.split("==", 1) for l in o.splitlines() if "==" in l)
+
+
+def get_versions():
+    r = {
+        "Python": get_python_version(),
+        "PostgreSQL": get_pg_version(),
+        "MongoDB": get_mongo_version()
+    }
+    r.update(get_python_packages())
+    return r
+
+
+def get_solutions():
+    """
+    Get installed solutions
+    """
+    r = []
+    for sn in settings.config.options("solutions"):
+        if settings.config.getboolean("solutions", sn):
+            r += [[sn, None]]
+    return r

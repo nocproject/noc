@@ -19,7 +19,7 @@ import traceback
 import uuid
 ## NOC modules
 from noc.settings import TRACEBACK_REVERSE
-from noc.lib.version import get_version
+from noc.lib.version import get_branch, get_tip
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.serialize import json_encode
 
@@ -27,9 +27,6 @@ logger = logging.getLogger(__name__)
 if not logger.handlers:
     logging.basicConfig()
 
-
-BRANCH = None
-TIP = None
 
 # CP error reporting
 ENABLE_CP = True
@@ -344,27 +341,3 @@ def BQ(s):
         return "(%s)" % " ".join(["%02X" % ord(c) for c in s])
 
 
-def get_branch():
-    global BRANCH
-
-    if BRANCH:
-        return BRANCH
-    if os.path.exists(".hg/branch"):
-        with open(".hg/branch") as f:
-            BRANCH = f.read().strip()
-    return BRANCH
-
-
-def get_tip():
-    global TIP
-
-    if TIP:
-        return TIP
-
-    try:
-        from mercurial import ui, localrepo
-    except ImportError:
-        return None
-    repo = localrepo.localrepository(ui.ui(), path=".")
-    TIP = repo.changelog.tip()[:6].encode("hex")
-    return TIP
