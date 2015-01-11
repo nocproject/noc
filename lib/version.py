@@ -99,26 +99,32 @@ def get_os_brand():
     Get OS brand
     :return:
     """
+    def _get_brand():
+        o = os.uname()[0].lower()
+        if o == "linux":
+            # First, try lsb_release -d
+            try:
+                b = check_output(["lsb_release", "-d"])
+                return b.split(":", 1)[1].strip()
+            except OSError:
+                pass
+            if os.path.exists("/etc/SuSE-release"):
+                # SuSE
+                with open("/etc/SuSE-release") as f:
+                    return f.readline().strip()
+        elif o == "freebsd":
+            u = os.uname()
+            return "%s %s" % (u[0], u[2])
+        elif o == "darwin":
+            # OS X
+            return "Mac OS X %s" % platform.mac_ver()[0]
+        return None
+
     global OS_BRAND
 
-    if OS_BRAND:
-        return OS_BRAND
-    o = os.uname()[0].lower()
-    if o == "linux":
-        # First, try lsb_release -d
-        try:
-            b = check_output(["lsb_release", "-d"])
-            return b.split(":", 1)[1].strip()
-        except OSError:
-            pass
-        if os.path.exists("/etc/SuSE-release"):
-            # SuSE
-            with open("/etc/SuSE-release") as f:
-                return f.readline().strip()
-    elif o == "darwin":
-        # OS X
-        return "Mac OS X %s" % platform.mac_ver()[0]
-    return None
+    if not OS_BRAND:
+        OS_BRAND = _get_brand()
+    return OS_BRAND
 
 
 def get_os_version():
