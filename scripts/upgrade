@@ -17,11 +17,7 @@ error_exit ( ) {
         info "Reporting upgrade status"
         ./scripts/cptool --quiet --upgrade --failure --log=${UPGRADE_LOG}
     fi
-    # Save upgrade log when local/ is available
-    if [ -d local ]; then
-        info "Saving upgrade log to local/upgrade.log"
-        mv ${UPGRADE_LOG} local/upgrade.log
-    fi
+    save_upgrade_log
     exit 1
 }
 
@@ -47,6 +43,24 @@ ensure_prog ( ) {
         error_exit "$LINENO: '$1' is not found"
     fi
     ./scripts/set-conf.py ./etc/noc.conf $2 $3 $prog || error_exit "Unable to set etc/noc.conf:[$2]/$3"
+}
+
+save_upgrade_log ( ) {
+    log_dst=""
+    if [ ! -z "${LOG}" ]; then
+        if [ -d "${LOG}" ]; then
+            log_dst="${LOG}/upgrade.log"
+        fi
+    else
+        if [ -d "local" ]; then
+            log_dst="local/upgrade.log"
+        fi
+    fi
+    if [ -z "${log_dst}" ]; then
+        log_dst="$HOME/noc-upgrade.log"
+    fi
+    info "Saving upgrade log to ${log_dst}"
+    mv "${UPGRADE_LOG}" "${log_dst}"
 }
 
 ##
@@ -289,5 +303,4 @@ fi
 info "Reporting upgrade status"
 ./scripts/cptool --quiet --upgrade --success
 info "$PROGNAME complete"
-info "Upgrade log stored to local/upgrade.log"
-mv ${UPGRADE_LOG} local/upgrade.log
+save_upgrade_log
