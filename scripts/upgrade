@@ -65,7 +65,7 @@ fi
 ##
 ## Setup logging
 ##
-UPGRADE_LOG=`mktemp -t /tmp`
+UPGRADE_LOG=`mktemp /tmp/noc-upgrade.log.XXXXXX`
 UPGRADE_PIPE=${UPGRADE_LOG}.pipe
 mkfifo $UPGRADE_PIPE
 tee < $UPGRADE_PIPE $UPGRADE_LOG &
