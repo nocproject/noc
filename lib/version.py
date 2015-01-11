@@ -11,8 +11,6 @@ import os
 import sys
 import subprocess
 import platform
-## Third-party modules
-import pymongo
 ## NOC modules
 from noc import settings
 
@@ -137,6 +135,10 @@ def get_pg_version():
 
 
 def get_mongo_version():
+    try:
+        import pymongo
+    except ImportError:
+        return ""
     connection_args = {}
     if settings.NOSQL_DATABASE_HOST:
         connection_args["host"] = settings.NOSQL_DATABASE_HOST
