@@ -61,7 +61,7 @@ Ext.define("NOC.support.account.AccountPanel", {
         me.infoText = Ext.create("Ext.container.Container", {
             border: 2,
             html: self.notRegisteredText,
-            cls: "noc-info-balloon"
+            cls: "noc-alert noc-alert-success"
         });
 
         me.form = Ext.create("Ext.form.Panel", {
@@ -165,8 +165,8 @@ Ext.define("NOC.support.account.AccountPanel", {
         me.attachButton.show();
         me.changePasswordButton.hide();
         me.infoText.setHtml(me.notRegisteredText);
-        me.infoText.addCls("noc-warning");
-        me.infoText.removeCls("noc-info");
+        me.infoText.addCls("noc-alert-warning");
+        me.infoText.removeCls("noc-alert-success");
         me.form.getComponent("password").show();
         me.form.getComponent("password").setDisabled(false);
         me.form.getComponent("password2").show();
@@ -179,8 +179,8 @@ Ext.define("NOC.support.account.AccountPanel", {
         me.attachButton.hide();
         me.changePasswordButton.show();
         me.infoText.setHtml(me.registeredText);
-        me.infoText.addCls("noc-info");
-        me.infoText.removeCls("noc-warning");
+        me.infoText.addCls("noc-alert-success");
+        me.infoText.removeCls("noc-alert-warning");
         me.form.getComponent("password").hide();
         me.form.getComponent("password").setDisabled(true);
         me.form.getComponent("password2").hide();
