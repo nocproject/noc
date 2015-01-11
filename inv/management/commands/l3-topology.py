@@ -24,7 +24,9 @@ from noc.lib.validators import is_rd
 
 
 class Command(BaseCommand):
-    help = "Show Links"
+    help = "Show L3 topology"
+    LAYOUT = ["neato", "cicro", "sfdp", "dot", "twopi"]
+
     option_list = BaseCommand.option_list + (
         make_option("--afi", dest="afi",
                     action="store", default="4",
@@ -34,7 +36,12 @@ class Command(BaseCommand):
         make_option("-o", "--out", dest="output", action="store",
                     help="Save output to file"),
         make_option("--core", dest="core", action="store_true",
-                    help="Reduce to network core")
+                    help="Reduce to network core"),
+        make_option("--layout", dest="layout", action="store",
+                    default="sfdp",
+                    help="Use layout engine: %s" % ", ".join(LAYOUT)),
+        make_option("--exclude", dest="exclude", action="append",
+                    help="Exclude prefix from map"),
     )
 
     SI = namedtuple("SI", ["object", "interface", "fi", "ip", "prefix"])
@@ -63,6 +70,9 @@ class Command(BaseCommand):
                 pass
             elif ext not in ".dot":
                 raise CommandError("Unknown output format")
+        if options["layout"] not in self.LAYOUT:
+            raise CommandError("Invalid layout: %s" % options["layout"])
+        exclude = options["exclude"] or []
         # Check VRF
         rd = "0:0"
         if options["vrf"]:
@@ -85,7 +95,7 @@ class Command(BaseCommand):
         # out += ["    splines=true;"]
         objects = set()
         prefixes = set()
-        interfaces = list(self.get_interfaces(afi, rd))
+        interfaces = list(self.get_interfaces(afi, rd, exclude=exclude))
         if options["core"]:
             interfaces = [si for si in interfaces if self.p_power[si.prefix] > 1]
         for si in interfaces:
@@ -114,13 +124,13 @@ class Command(BaseCommand):
                 f.write(data)
                 f.flush()
                 subprocess.check_call([
-                    "neato",
+                    options["layout"],
                     "-T%s" % self.GV_FORMAT[ext],
                     "-o%s" % options["output"],
                     f.name
                 ])
 
-    def get_interfaces(self, afi, rd, selector=None):
+    def get_interfaces(self, afi, rd, exclude=None):
         """
         Returns a list of SI
         """
@@ -136,6 +146,7 @@ class Command(BaseCommand):
             else:
                 return True
 
+        exclude = exclude or []
         si_fields = {"_id": 0, "name": 1, "forwarding_instance": 1,
                      "managed_object": 1}
         if afi == self.IPv4:
@@ -153,7 +164,7 @@ class Command(BaseCommand):
         for si in SubInterface._get_collection().find({"enabled_afi": AFI}, si_fields):
             if rd != self.get_rd(si["managed_object"], si.get("forwarding_instance")):
                 continue
-            seen = set()
+            seen = set(exclude)
             for a in [a for a in get_addresses(si) if check(a)]:
                 prefix = str(IP.prefix(a).first)
                 if prefix in seen:
