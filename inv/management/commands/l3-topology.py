@@ -11,7 +11,7 @@ import os
 import tempfile
 import subprocess
 from optparse import make_option
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
@@ -32,7 +32,9 @@ class Command(BaseCommand):
         make_option("--vrf", dest="vrf", action="store",
                     help="VRF Name/RD"),
         make_option("-o", "--out", dest="output", action="store",
-                    help="Save output to file")
+                    help="Save output to file"),
+        make_option("--core", dest="core", action="store_true",
+                    help="Reduce to network core")
     )
 
     SI = namedtuple("SI", ["object", "interface", "fi", "ip", "prefix"])
@@ -75,14 +77,18 @@ class Command(BaseCommand):
         self.mo_cache = {}
         self.fi_cache = {}
         self.rd_cache = {}
+        self.p_power = defaultdict(int)
         out = ["graph {"]
         out += ["    node [fontsize=12];"]
         out += ["    edge [fontsize=8];"]
+        out += ["    overlap=scale;"]
+        # out += ["    splines=true;"]
         objects = set()
         prefixes = set()
-        for si in self.get_interfaces(afi, None):
-            if rd != self.get_rd(si.object, si.fi):
-                continue
+        interfaces = list(self.get_interfaces(afi, rd))
+        if options["core"]:
+            interfaces = [si for si in interfaces if self.p_power[si.prefix] > 1]
+        for si in interfaces:
             o_id = "o_%s" % si.object
             p_id = "p_%s" % si.prefix.replace(".", "_").replace(":", "__").replace("/", "___")
             if si.object not in objects:
@@ -114,7 +120,7 @@ class Command(BaseCommand):
                     f.name
                 ])
 
-    def get_interfaces(self, afi, vrf, selector=None):
+    def get_interfaces(self, afi, rd, selector=None):
         """
         Returns a list of SI
         """
@@ -145,15 +151,18 @@ class Command(BaseCommand):
         else:
             raise NotImplementedError()
         for si in SubInterface._get_collection().find({"enabled_afi": AFI}, si_fields):
+            if rd != self.get_rd(si["managed_object"], si.get("forwarding_instance")):
+                continue
             seen = set()
             for a in [a for a in get_addresses(si) if check(a)]:
-                prefix = IP.prefix(a).first
+                prefix = str(IP.prefix(a).first)
                 if prefix in seen:
                     continue
                 seen.add(prefix)
+                self.p_power[prefix] += 1
                 yield self.SI(si["managed_object"], si["name"],
                               si.get("forwarding_instance"), a,
-                              str(prefix))
+                              prefix)
 
     def get_object(self, o):
         """
