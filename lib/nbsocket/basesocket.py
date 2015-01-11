@@ -217,3 +217,12 @@ class Socket(object):
         """
         return (self.socket_is_ready() and self.ttl
                 and time.time() - self.last_read >= self.ttl)
+
+    def get_af(self, address):
+        """
+        Returns socket address family
+        """
+        if ":" in address:
+            return socket.AF_INET6
+        else:
+            return socket.AF_INET

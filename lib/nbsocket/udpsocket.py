@@ -33,7 +33,7 @@ class UDPSocket(Socket):
             try:
                 self.socket.sendto(msg, addr)
             except socket.error, why:  # ENETUNREACH
-                self.debug("Socket error: %s" % why)
+                self.logger.debug("Socket error: %s" % why)
                 self.close()
                 return
         self.set_status(w=bool(self.out_buffer))

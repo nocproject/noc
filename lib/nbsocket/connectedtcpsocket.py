@@ -44,7 +44,9 @@ class ConnectedTCPSocket(TCPSocket):
                              self.address, self.port)
 
     def create_socket(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = socket.socket(
+            self.get_af(self.address), socket.SOCK_STREAM
+        )
         super(ConnectedTCPSocket, self).create_socket()
         if self.local_address:
             self.socket.bind((self.local_address, 0))
