@@ -81,3 +81,8 @@ mongoengine.signals.post_save.connect(
     ProbeConfig.on_change_metric_set,
     sender=MetricSet
 )
+
+mongoengine.signals.pre_delete.connect(
+    ProbeConfig.on_delete_metric_set,
+    sender=MetricSet
+)
