@@ -660,13 +660,16 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             },
             onFailure = function(response) {
-                var data = response.responseText ? Ext.decode(response.responseText) : null;
-                if(data && data.success === false) {
-                    NOC.error(data.message);
-                } else {
-                    NOC.error("Error saving record!");
-                    console.log(response.responseText);
+                var message = "Error saving record";
+                if(response.responseText) {
+                    try {
+                        message = Ext.decode(response.responseText).message;
+                    }
+                    catch(err) {
+                        console.log(response.responseText);
+                    }
                 }
+                NOC.error(message);
                 me.unmask();
             };
 
@@ -837,8 +840,13 @@ Ext.define("NOC.core.ModelApplication", {
             }
         },
         onFailure = function(response) {
-            var data = Ext.decode(response.responseText);
-            NOC.error(data.message);
+            var message;
+            try {
+                message = Ext.decode(response.responseText).message;
+            } catch(err) {
+                message = "Internal error";
+            }
+            NOC.error(message);
             me.unmask();
         };
 
