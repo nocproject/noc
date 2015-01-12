@@ -382,6 +382,16 @@ class ProbeConfig(Document):
             cls._refresh_object(ms.get_object())
 
     @classmethod
+    def on_delete_metric_set(cls, sender, document, *args, **kwargs):
+        logger.info("Deleting MetricSet '%s'", document.name)
+        for ms in MetricSettings.objects.filter(
+            metric_sets__metric_set=document.id
+        ):
+            ms.metric_sets = [s for s in ms.metric_sets
+                              if s.metric_set.id != document.id]
+            ms.save()  # Triggers refresh_object
+
+    @classmethod
     def on_change_probe(cls, sender, document=None, *args, **kwargs):
         logger.info("Applying changes to Probe '%s'", document.name)
         for pc in ProbeConfig.objects.filter(probe_id=str(document.id)):
