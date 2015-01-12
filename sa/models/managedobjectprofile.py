@@ -14,6 +14,7 @@ from django.template import Template, Context
 from noc.main.models.style import Style
 from noc.lib.validators import is_fqdn
 from noc.lib.stencil import stencil_registry
+from noc.lib.solutions import get_probe_config
 
 
 class ManagedObjectProfile(models.Model):
@@ -202,3 +203,11 @@ class ManagedObjectProfile(models.Model):
         if not is_fqdn(f):
             raise ValueError("Invalid FQDN: %s" % f)
         return f
+
+    def get_probe_config(self, config):
+        # Get via solutions
+        try:
+            return get_probe_config(self, config)
+        except ValueError:
+            pass
+        raise ValueError("Invalid config parameter '%s'" % config)
