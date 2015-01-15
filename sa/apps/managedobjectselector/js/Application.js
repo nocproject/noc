@@ -183,12 +183,6 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "filter_repo_path",
-                    xtype: "textfield",
-                    fieldLabel: "Filter by Repo Path (REGEXP)",
-                    allowBlank: true
-                },
-                {
                     name: "filter_tags",
                     xtype: "textfield",
                     fieldLabel: "Filter By Tags",
