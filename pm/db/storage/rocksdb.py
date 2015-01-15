@@ -50,7 +50,10 @@ class RocksDBStorage(KVStorage):
             self.db = self.get_db(read_only=True)
         # @todo: Apply PrefixExtractor
         it = self.db.iteritems()
-        it.seek(start)
+        try:
+            it.seek(start)
+        except rocksdb.errors.RocksIOError:
+            raise StopIteration  # Sometime raises "file not found"
         for k, v in it:
             if k > end:
                 break
