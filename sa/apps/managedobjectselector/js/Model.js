@@ -142,10 +142,6 @@ Ext.define("NOC.sa.managedobjectselector.Model", {
             type: "string"
         },
         {
-            name: "filter_repo_path",
-            type: "string"
-        },
-        {
             name: "filter_tags",
             type: "auto"
         },

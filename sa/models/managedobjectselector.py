@@ -78,8 +78,6 @@ class ManagedObjectSelector(models.Model):
             max_length=256, null=True, blank=True, validators=[check_re])
     filter_description = models.CharField(_("Filter by Description (REGEXP)"),
             max_length=256, null=True, blank=True, validators=[check_re])
-    filter_repo_path = models.CharField(_("Filter by Repo Path (REGEXP)"),
-            max_length=256, null=True, blank=True, validators=[check_re])
     filter_tags = TagsField(_("Filter By Tags"),
             null=True, blank=True)
     source_combine_method = models.CharField(_("Source Combine Method"),
@@ -156,9 +154,6 @@ class ManagedObjectSelector(models.Model):
         # Filter by description
         if self.filter_description:
             q &= Q(description__regex=self.filter_description)
-        # Filter by repo path
-        if self.filter_repo_path:
-            q &= Q(repo_path__regex=self.filter_repo_path)
         # Restrict to tags when necessary
         if self.filter_tags:
             q &= QTags(self.filter_tags)
