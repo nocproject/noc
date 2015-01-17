@@ -24,7 +24,6 @@ Ext.define("NOC.core.ModelApplication", {
     groupChangeTitle: "Change {0} {1}",
     rowClassField: undefined,
     actions: undefined,
-    idField: "id",
     previewIcon: "icon_magnifier",
     preview: null,
     treeFilter: null,
@@ -551,20 +550,6 @@ Ext.define("NOC.core.ModelApplication", {
         var formFields = [me.formTitle];
         // Append configured fields
         formFields = formFields.concat(me.fields);
-        // Check if id field is configured
-        var hasIdField = false;
-        Ext.each(me.fields, function(f) {
-            if(f.name === me.idField) {
-                hasIdField = true;
-            }
-        }, this);
-        //
-        if(!hasIdField) {
-            formFields.push({
-                xtype: "hiddenfield",
-                name: me.idField
-            });
-        }
         // Append custom fields
         if(me.noc.cust_form_fields) {
             formFields = formFields.concat(me.noc.cust_form_fields);
@@ -684,6 +669,9 @@ Ext.define("NOC.core.ModelApplication", {
             if(me.persistentFields[name]) {
                 result[name] = data[name];
             }
+        }
+        if(me.currentRecord) {
+            result[me.idField] = me.currentRecord.get(me.idField);
         }
         me.mask("Saving ...");
         // Save data
