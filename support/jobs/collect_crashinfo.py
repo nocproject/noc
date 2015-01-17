@@ -12,7 +12,7 @@ from noc.support.models.crashinfo import Crashinfo
 
 
 class CollectCrashinfoJob(AutoIntervalJob):
-    name = "main.collect_crashinfo"
+    name = "support.collect_crashinfo"
     interval = 60
     randomize = True
 
