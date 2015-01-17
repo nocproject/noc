@@ -301,6 +301,7 @@ def error_fingerprint():
             noc_lineno = tb_lineno
         tb = tb.tb_next
     parts = [
+        get_branch(),
         os.path.relpath(sys.argv[0]),  # Process
         str(t),  # Exception class
         noc_file, noc_function, str(noc_lineno),  # NOC code point
