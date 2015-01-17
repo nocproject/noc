@@ -248,7 +248,7 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
             c = {
                 "ts": datetime.datetime.now().isoformat(),
                 "uuid": fp,
-                "installation": None,
+                # "installation": None,
                 "process": os.path.relpath(sys.argv[0]),
                 "branch": get_branch(),
                 "tip": get_tip(),
@@ -301,12 +301,10 @@ def error_fingerprint():
             noc_lineno = tb_lineno
         tb = tb.tb_next
     parts = [
-        str(get_branch()),
-        str(get_tip()),
-        os.path.relpath(sys.argv[0]),
-        str(t),
-        noc_file, noc_function, str(noc_lineno),
-        tb_file, tb_function, str(tb_lineno)
+        os.path.relpath(sys.argv[0]),  # Process
+        str(t),  # Exception class
+        noc_file, noc_function, str(noc_lineno),  # NOC code point
+        tb_file, tb_function, str(tb_lineno)  # Absolute code point
     ]
     hash = hashlib.sha1("|".join(parts)).digest()
     return str(uuid.UUID(bytes=hash[:16], version=5))
