@@ -154,7 +154,6 @@ for d in ./etc/noc*.defaults; do
         ./scripts/set-conf.py $conf main pidfile $PIDDIR || error_exit "$LINENO: Unable to set $conf:[main]/pidfile"
         if [ $conf = "./etc/noc.conf" ]; then
             # Set up paths
-            ensure_prog ssh path ssh
             ensure_prog pg_dump path pg_dump
             ensure_prog tar path tar
             ensure_prog gzip path gzip
@@ -206,6 +205,31 @@ if [ ! -x ./bin/python ]; then
         error_exit "$LINENO: Cannot setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
     fi
 fi
+##
+## Uninstall legacy patches
+##
+PATCH_FLAG="local/.patch"
+if [ ! -f $PATCH_FLAG ]; then
+    if [ ! -h lib/python ]; then
+        info "Creating lib/python symlink"
+        if [ -d lib/python2.7 ]; then
+            (cd lib && ln -s python2.7 python)
+        else
+            (cd lib && ln -s python2.6 python)
+        fi
+    fi
+    info "Reverting legacy patches"
+    ./scripts/apply-patches --fix || error_exit "$LINENO: Failed to revert legacy patches"
+    touch $PATCH_FLAG
+fi
+
+##
+## Revert applied patches
+##
+QUILT=`which quilt`
+[ -z "$QUILT" ] && error_exit "$LINENO: quilt not found. Please install quilt from OS packages"
+info "Reverting local patches"
+./scripts/apply-patches --revert || error_exit "$LINENO: Failed to revert local patches"
 ##
 ## Pull repo
 ##
@@ -262,6 +286,11 @@ fi
 ./bin/pip install $PIP_ARGS || error_exit "$LINENO: Cannot update python libraries"
 touch $PIP_FLAG
 ##
+## Apply local patches
+##
+info "Apply local patches"
+./scripts/apply-patches || error_exit "$LINENO: Cannot apply patches"
+##
 ## Install noc.pth
 ##
 info "Installing noc.pth"
@@ -271,11 +300,6 @@ info "Installing noc.pth"
 ##
 info "Customizing Python site settings"
 ./scripts/check-sitecustomize.py || error_exit "$LINENO: Cannot install check-sitecustomize.py"
-##
-## Apply local patches
-##
-info "Apply local patches"
-./scripts/apply-patches || error_exit "$LINENO: Cannot apply patches"
 ##
 ## Compile bytecode
 ##
