@@ -12,10 +12,29 @@ Ext.define("NOC.support.crashinfo.Application", {
         "NOC.support.crashinfo.Model"
     ],
     model: "NOC.support.crashinfo.Model",
+    idField: "uuid",
+
+    statuses: {
+        N: "New",
+        r: "Reporting",
+        R: "Reported",
+        X: "Rejected",
+        f: "Fix ready",
+        F: "Fixed"
+    },
 
     initComponent: function() {
         var me = this;
         me.tbField = null;
+
+        me.buttonReport = Ext.create("Ext.button.Button", {
+            text: "Report",
+            glyph: NOC.glyph.share,
+            disabled: true,
+            scope: me,
+            handler: me.onReport
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -32,14 +51,7 @@ Ext.define("NOC.support.crashinfo.Application", {
                     text: "Status",
                     dataIndex: "status",
                     width: 50,
-                    renderer: NOC.render.Choices({
-                        N: "New",
-                        r: "To report",
-                        R: "Reported",
-                        X: "Rejected",
-                        f: "Fix ready",
-                        F: "Fixed"
-                    })
+                    renderer: NOC.render.Choices(me.statuses)
                 },
                 {
                     text: "Priority",
@@ -102,12 +114,21 @@ Ext.define("NOC.support.crashinfo.Application", {
                         {
                             xtype: "displayfield",
                             fieldLabel: "Status",
-                            name: "status"
+                            name: "status",
+                            renderer: NOC.render.Choices(me.statuses)
                         },
                         {
-                            xtype: "displayfield",
+                            xtype: "combobox",
                             fieldLabel: "Priority",
-                            name: "priority"
+                            name: "priority",
+                            store: [
+                                ["I", "Info"],
+                                ["L", "Low"],
+                                ["M", "Medium"],
+                                ["H", "High"],
+                                ["C", "Critical"]
+                            ],
+                            allowBlank: false
                         }
                     ]
                 },
@@ -132,6 +153,11 @@ Ext.define("NOC.support.crashinfo.Application", {
                     ]
                 },
                 {
+                    xtype: "displayfield",
+                    fieldLabel: "Process",
+                    name: "process"
+                },
+                {
                     xtype: "textarea",
                     fieldLabel: "Comment",
                     name: "comment"
@@ -140,6 +166,9 @@ Ext.define("NOC.support.crashinfo.Application", {
                     xtype: "container",
                     itemId: "tb"
                 }
+            ],
+            formToolbar: [
+                me.buttonReport
             ]
         });
         me.callParent();
@@ -148,6 +177,7 @@ Ext.define("NOC.support.crashinfo.Application", {
     showForm: function() {
         var me = this;
         me.callParent();
+        me.buttonReport.setDisabled(me.currentRecord.get("status") != "N");
         Ext.Ajax.request({
             method: "GET",
             url: "/support/crashinfo/" + me.currentRecord.get("uuid") + "/traceback/",
@@ -165,5 +195,18 @@ Ext.define("NOC.support.crashinfo.Application", {
             me.tbField = me.formPanel.items.first().getComponent("tb");
         }
         me.tbField.setHtml("<pre style='border: 1px solid gray; padding: 4px; border-radius: 4px'>" + tb + "</pre>");
+    },
+    //
+    onReport: function() {
+        var me = this;
+        if (NOC.settings.systemId) {
+            //me.currentRecord.set("status", "r");
+            me.form.setValues({
+                status: "r"
+            });
+            me.onSave();
+        } else {
+            NOC.error("System is not registred. Please register your system at Support > Setup > Account");
+        }
     }
 });

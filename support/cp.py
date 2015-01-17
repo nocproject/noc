@@ -31,6 +31,7 @@ class CPClient(object):
     ACCOUNT_SERVICE = "/api/v1.0/AccountService/"
     SYSTEM_SERVICE = "/api/v1.0/SystemService/"
     UPGRADE_SERVICE = "/api/v1.0/UpgradeService/"
+    CRASHINFO_SERVICE = "/api/v1.0/CrashinfoService/"
 
     def __init__(self):
         self.cp_url = self.CP_URL
@@ -258,3 +259,10 @@ class CPClient(object):
                          get_os_brand(), get_os_version(),
                          get_branch(), get_tip(),
                          get_versions(), get_solutions(), status, log)
+
+    def report_crashinfo(self, crashinfo):
+        if not self.has_system():
+            raise self.Error("System is not registred")
+        return self.call(
+            self.CRASHINFO_SERVICE, "report",
+            self.system_uuid, crashinfo)
