@@ -17,6 +17,7 @@ import mongoengine.signals
 import dateutil.parser
 ## NOC modules
 from noc.lib.serialize import json_decode
+from noc.support.cp import CPClient
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +51,8 @@ class Crashinfo(Document):
             ("M", "Medium"),
             ("H", "High"),
             ("C", "Critical")
-        ]
+        ],
+        default="I"
     )
     # @todo: comment
 
@@ -98,19 +100,26 @@ class Crashinfo(Document):
         return os.path.join(self.NEW_ROOT, "%s.json" % self.uuid)
 
     @property
-    def traceback(self):
+    def json(self):
         path = self.json_path
         if os.path.exists(path):
             try:
                 with open(path) as f:
-                    ci = json_decode(f.read())
-                    return ci["traceback"]
+                    return json_decode(f.read())
             except Exception, why:
                 logger.error(
                     "Unable to load and decode crashinfo %s: %s",
                     self.uuid, why
                 )
         return None
+
+    @property
+    def traceback(self):
+        json = self.json
+        if json:
+            return json.get("traceback")
+        else:
+            return None
 
     @classmethod
     def on_delete(cls, sender, document, **kwargs):
@@ -121,6 +130,20 @@ class Crashinfo(Document):
                 os.unlink(path)
             except OSError, why:
                 logger.error("Cannot remove file %s: %s", path, why)
+
+    def report(self):
+        logger.info("Reporting crashinfo %s", self.uuid)
+        if self.status not in ("N", "r"):
+            raise CPClient.Error("Cannot share not-new crashinfo")
+        cp = CPClient()
+        if not cp.has_system():
+            raise CPClient.Error("System is not registred")
+        ci = self.json
+        ci["comment"] = self.comment
+        ci["priority"] = self.priority
+        cp.report_crashinfo(ci)
+        self.status = "R"
+        self.save()
 
 ##
 mongoengine.signals.pre_delete.connect(
