@@ -6,11 +6,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## NOC modules
-from noc.lib import nosql
+## Python modules
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField, ListField
 
 
-class WhoisOriginRoute(nosql.Document):
+class WhoisOriginRoute(Document):
     """
     origin -> route
     """
@@ -19,8 +21,8 @@ class WhoisOriginRoute(nosql.Document):
         "allow_inheritance": False
     }
 
-    origin = nosql.StringField(unique=True)
-    routes = nosql.ListField(nosql.StringField())
+    origin = StringField(primary_key=True, unique=True)
+    routes = ListField(StringField())
 
     def __unicode__(self):
         return self.as_set
@@ -43,7 +45,7 @@ class WhoisOriginRoute(nosql.Document):
         """
         c = cls._get_collection()
         c.drop()
-        c.insert(data, manipulate=False, check_keys=False)
-        # Reindex
-        c.ensure_index("origin", unique=True)
-        return c.count()
+        c.insert([{"_id": k.upper(), "routes": data[k]} for k in data],
+                 manipulate=False, check_keys=False)
+        # Implicit reindex
+        return cls.objects.count()

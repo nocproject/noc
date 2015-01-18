@@ -131,9 +131,7 @@ class Task(NOCTask):
         if r:
             # Upload to database
             self.info("Updating noc.whois.asset.members collection")
-            count = WhoisASSetMembers.upload(
-                [{"as_set": k, "members": r[k]} for k in r]
-            )
+            count = WhoisASSetMembers.upload(r)
             self.info("%d records written into noc.whois.asset.members collection" % count)
 
     def process_origin_route(self):
@@ -162,9 +160,7 @@ class Task(NOCTask):
         if r:
             # Upload to database
             self.info("Updating noc.whois.origin.route collection")
-            count = WhoisOriginRoute.upload(
-                [{"origin": k, "routes": r[k]} for k in r]
-            )
+            count = WhoisOriginRoute.upload(r)
             self.info("%d records written into noc.whois.origin.route collection" % count)
 
     def execute(self):
