@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## OS.Linux.get_config
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -29,8 +29,8 @@ class Script(noc.sa.script.Script):
             config = self.cli("cat /tmp/system.cfg 2>/dev/null")
         if not config:
             cmd = "for i in `du -a /etc/ 2>/dev/null |awk '{print $2}' "
-            cmd += "2>/dev/null`; do echo ''; echo $i; if [ -f $i ];"
-            cmd += "then cat $i; fi; done"
+            cmd += "2>/dev/null |grep -v shadow`; do echo ''; echo $i; "
+            cmd += "if [ -f $i ]; then cat $i; fi; done"
             config = self.cli(cmd)
         if not config:
             raise Exception("Not implemented")
