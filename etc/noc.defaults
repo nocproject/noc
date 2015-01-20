@@ -316,8 +316,6 @@ url = http://example.com/ticket=%%(tt)s
 # Directory to store database and repo backups
 backup_dir = /var/backup
 # Paths to utilities
-ssh        = /usr/bin/ssh
-rsync      = /usr/bin/rsync
 pg_dump    = /usr/local/bin/pg_dump
 tar        = /usr/bin/tar
 gzip       = /usr/bin/gzip
