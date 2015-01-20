@@ -13,11 +13,13 @@ error_exit ( ) {
     echo "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m" 1>&2
     echo "Terminating" 1>&2
     # Report status
-    if [ -x ./scripts/cptool ]; then
-        info "Reporting upgrade status"
-        ./scripts/cptool --quiet --upgrade --failure --log=${UPGRADE_LOG}
+    if [ ! -z "${UPGRADE_LOG}" ]; then
+        if [ -x ./scripts/cptool ]; then
+            info "Reporting upgrade status"
+            ./scripts/cptool --quiet --upgrade --failure --log=${UPGRADE_LOG}
+        fi
+        save_upgrade_log
     fi
-    save_upgrade_log
     exit 1
 }
 
