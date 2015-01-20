@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+import datetime
 import time
 ## NOC modules
 from base import Partition
@@ -30,7 +31,9 @@ class DailyPartition(Partition):
         :param start: integer start timestamp
         :param end: integer end timestamp
         """
-        t = start
-        while t <= end:
-            yield time.strftime("%Y.%m.%d", time.localtime(t))
-            t += 86400  # 1 day
+        t = datetime.date.fromtimestamp(start)
+        et = datetime.date.fromtimestamp(end)
+        day = datetime.timedelta(days=1)
+        while t <= et:
+            yield t.strftime("%Y.%m.%d")
+            t += day
