@@ -38,4 +38,4 @@ noc-pkg-flot==0.8.3
 noc-pkg-font-awesome==4.2.0
 noc-pkg-codemirror==4.6
 noc-pkg-stacktrace==1.0.0
-noc-pkg-grafana==1.8.1
+noc-pkg-grafana==1.9.1
