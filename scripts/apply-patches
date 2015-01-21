@@ -26,8 +26,10 @@ def fix_patches():
     Uninstall legacy patches
     """
     print "Fixing patches"
-    subprocess.check_call(["./bin/pip", "uninstall", "-y", "Django"])
-    subprocess.check_call(["./bin/pip", "uninstall", "-y", "mongoengine"])
+    uninstall = [d.project_name for d in get_installed_distributions()
+                 if d.project_name in ("Django", "mongoengine")]
+    for p in uninstall:
+        subprocess.check_call(["./bin/pip", "uninstall", "-y", p])
 
 
 def revert_patches():
