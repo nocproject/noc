@@ -18,7 +18,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
     pattern_password = "^[Pp]assword:"
     pattern_unpriveleged_prompt = r"^\w+.+\w+.~ ?\$"
-    pattern_prompt = r"^(\[?\s*root@(?P<hostname>\S+)\]?(\s+|:)\S+\s*(#|$)\s*|\S+:~>\s+|\[admin@(?P<hostname>\S+):/root\])"
+    pattern_prompt = r"^(\[?\s*root@(?P<hostname>\S+)\]?(\s+|:)\S+\s*(#|$)\s*|\S+:~>\s+|\[admin@\S+:/root\])"
     pattern_syntax_error = r"^(-\w+: \w+: not found|-\w+: \w+: No such file or directory|\w+: \w+: command not found|\w+: \w+: \w+: No such file or directory)"
     command_disable_pager = "export LANG=en_GB.UTF-8"
     command_super = "su"
