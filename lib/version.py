@@ -86,10 +86,13 @@ def get_tip():
         return TIP
 
     try:
-        from mercurial import ui, localrepo
+        from mercurial import ui, localrepo, error
     except ImportError:
         return None
-    repo = localrepo.localrepository(ui.ui(), path=".")
+    try:
+        repo = localrepo.localrepository(ui.ui(), path=".")
+    except error.RepoError:
+        return None
     TIP = repo.changelog.tip()[:6].encode("hex")
     return TIP
 
