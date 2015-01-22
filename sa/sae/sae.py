@@ -440,10 +440,13 @@ class SAE(Daemon):
         """
         # Log into logfile
         rt = u"-"
-        if task.task:
-            try:
+        has_task = False
+        try:
+            if task.task:
+                has_task = True
                 rt = u"%s" % task.task.id
-            except ReduceTask.DoesNotExist:
+        except ReduceTask.DoesNotExist:
+            if has_task:
                 rt = u"?"
         r = [u"MRT task=%s/%d object=%s(%s) script=%s status=%s" % (
                 rt, task.id, task.managed_object.name,
