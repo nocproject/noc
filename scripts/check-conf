@@ -21,7 +21,7 @@ CONFIGS = ["noc-activator.conf", "noc-classifier.conf", "noc-collector.conf",
     "noc-sae.conf", "noc-scheduler.conf", "noc-stomp.conf", "noc-sync.conf",
     "noc-web.conf", "noc-wf.conf", "noc.conf"]
 
-EXECUTABLES = ["ssh", "pg_dump", "tar", "gzip", "smidump", "smilint",
+EXECUTABLES = ["pg_dump", "tar", "gzip", "smidump", "smilint",
                "mongodump"]
 
 
