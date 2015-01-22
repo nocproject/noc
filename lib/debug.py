@@ -307,7 +307,7 @@ def error_fingerprint():
         noc_file, noc_function, str(noc_lineno),  # NOC code point
         tb_file, tb_function, str(tb_lineno)  # Absolute code point
     ]
-    hash = hashlib.sha1("|".join(parts)).digest()
+    hash = hashlib.sha1("|".join(p if p else "" for p in parts)).digest()
     return str(uuid.UUID(bytes=hash[:16], version=5))
 
 
