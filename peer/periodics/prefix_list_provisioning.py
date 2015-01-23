@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## peer.prefix_list_provisioning
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -21,7 +21,9 @@ class Task(noc.lib.periodic.Task):
         #
         prefix_lists={} # PeeringPoint -> [prefix_lists]
         # For all out-of-dated prefix lists
-        for pc in PrefixListCache.objects.filter(peering_point__enable_prefix_list_provisioning=True):
+        for pc in PrefixListCache.objects.filter():
+            if not pc.peering_point.enable_prefix_list_provisioning:
+                continue
             if pc.pushed is not None and pc.pushed>pc.changed:
                 continue
             if not pc.data:
