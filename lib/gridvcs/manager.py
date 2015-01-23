@@ -98,6 +98,9 @@ class GridVCSObjectProxy(object):
             safe_rewrite(self.mirror, data)
         return r
 
+    def delete(self):
+        return self.get_gridvcs().delete(self.id)
+
     def get_revision(self, r):
         g = self.get_gridvcs()
         if isinstance(r, basestring):
