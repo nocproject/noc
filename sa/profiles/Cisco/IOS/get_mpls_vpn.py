@@ -21,6 +21,17 @@ class Script(NOCScript):
                          r"(?P<rd>\S+:\S+|<not set>)\s+"
                          "(?P<iface>.*?)\s*$", re.IGNORECASE)
     rx_cont = re.compile("^\s{6,}(?P<iface>.+?)\s*$")
+    rx_portchannel = re.compile(r"^Po\d+$")
+
+    portchannel_members = {}
+
+    def _get_portchannel_members(self, iface):
+        iface = self.profile.convert_interface_name(iface)
+        if not self.portchannel_members:
+            for pc in self.scripts.get_portchannel():
+                i = pc["interface"]
+                self.portchannel_members[i] = pc["members"]
+        return self.portchannel_members[iface]
 
     def execute(self, **kwargs):
         vpns = []
@@ -31,6 +42,10 @@ class Script(NOCScript):
                 iface = match.group("iface").strip()
                 if iface:
                     interfaces = [iface]
+                    po_match = self.rx_portchannel.match(iface)
+                    if po_match:
+                        members = self._get_portchannel_members(iface)
+                        interfaces += members
                 else:
                     interfaces = []
                 vpn = {
@@ -46,5 +61,11 @@ class Script(NOCScript):
             elif vpns:
                 match = self.rx_cont.match(l)
                 if match:
-                    vpns[-1]["interfaces"] += [match.group("iface")]
+                    iface = match.group("iface")
+                    interfaces = [iface]
+                    po_match = self.rx_portchannel.match(iface)
+                    if po_match:
+                        members = self._get_portchannel_members(iface)
+                        interfaces += members
+                    vpns[-1]["interfaces"] += interfaces
         return vpns
