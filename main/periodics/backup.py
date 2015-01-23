@@ -33,6 +33,7 @@ class Task(PeriodicTask):
         b_dir = config.get("path", "backup_dir")
         if not os.access(b_dir, os.W_OK):
             self.error("%s is not writable" % b_dir)
+            return False
         # Check binaries
         for p in ("pg_dump", "mongodump", "tar", "gzip"):
             path = config.get("path", p)
@@ -109,7 +110,7 @@ class Task(PeriodicTask):
             return
         tar_cmd = [config.get("path", "tar"), "cf", "-"] + files
         gzip_cmd = [config.get("path", "gzip")]
-        self.debug(("cd %s &&" % cwd if cwd else "") + " ".join(tar_cmd) +
+        self.debug(("cd %s &&" % cwd if cwd else ".") + " ".join(tar_cmd) +
             " | " + " ".join(gzip_cmd))
         with open(archive, "w") as f:
             p1 = subprocess.Popen(tar_cmd, cwd=cwd, stdout=subprocess.PIPE)
