@@ -1147,15 +1147,15 @@ class IPAMAppplication(Application):
         Ping check task result
         """
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        p = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         task = self.get_object_or_404(ReduceTask, id=int(task_id))
         try:
             result = task.get_result(block=False)
         except ReduceTask.NotReady:
             return self.render_json(None)  # Waiting
         r = {}
-        for s in result:
-            r[s["ip"]] = s["status"]
+        if result:
+            for s in result:
+                r[s["ip"]] = s["status"]
         return self.render_json(r)
 
     class RebaseForm(NOCForm):
