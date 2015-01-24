@@ -127,6 +127,7 @@ class Activator(Daemon, FSM):
         self.ping_interval = {}  # address -> interval
         self.ping_failures = defaultdict(int)  # address -> failure count
         self.ping_failure_threshold = self.config.getint("activator", "ping_failure_threshold")
+        self.ping_check_limit = self.config.getint("activator", "ping_check_limit")
         self.running_pings = set()  # address
         self.status_change_queue = []  # [(object_id, new status)]
         self.ignore_event_rules = []  # [(left_re,right_re)]
@@ -770,7 +771,7 @@ class Activator(Daemon, FSM):
         Ping addresses
         """
         def spool():
-            while left and len(running) < LIMIT:
+            while left and len(running) < self.ping_check_limit:
                 a = left.pop(0)
                 running.add(a)
                 self.ping4_socket.ping(
@@ -789,7 +790,6 @@ class Activator(Daemon, FSM):
         status = []
         la = len(addresses)
         left = [a for a in addresses]
-        LIMIT = 20  # @todo: Make configurable
         running = set()
         spool()  # Run first batch
 
