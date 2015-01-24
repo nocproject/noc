@@ -33,6 +33,8 @@ ping_instance   = 0
 ping_count = 3
 ping_timeout = 5
 ping_failure_threshold = 3
+# Limit of concurrent pings for ping_check request
+ping_check_limit = 256
 listen_traps    =
 listen_syslog   =
 listen_pm_data  = 127.0.0.1
