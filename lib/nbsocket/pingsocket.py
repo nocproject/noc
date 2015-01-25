@@ -17,6 +17,8 @@ from noc.lib.nbsocket.basesocket import Socket
 
 ICMPv4_PROTO = socket.IPPROTO_ICMP
 ICMPv4_ECHOREPLY = 0
+ICMPv4_UNREACHABLE = 3
+ICMPv4_TTL_EXCEEDED = 11
 ICMPv4_ECHO = 8
 ICMPv6_PROTO = socket.IPPROTO_ICMPV6
 ICMPv6_ECHO = 128
@@ -55,7 +57,7 @@ class PingSocket(Socket):
         return self.sessions.get((addr, req_id))
 
     def handle_write(self):
-        self.debug("%d packets to send" % len(self.out_buffer))
+        self.logger.debug("%d packets to send" % len(self.out_buffer))
         n = 0
         while self.out_buffer and n < 50:  # @todo: Configurable
             n += 1
@@ -127,14 +129,14 @@ class PingSocket(Socket):
                    if self.sessions[r].expire and
                       self.sessions[r].expire <= t]
         for s in expired:
-            self.debug("Ping timeout: %s" % s.address)
+            self.logger.debug("Ping timeout: %s" % s.address)
             s.register_miss()
         if self.sessions:
-            self.debug("Current sessions: %d" % len(self.sessions))
+            self.logger.debug("Current sessions: %d" % len(self.sessions))
         return False
 
     def on_error(self, exc):
-        self.error("Failed to create ping socket. Check process permissions")
+        self.logger.error("Failed to create ping socket. Check process permissions")
 
     def get_req_id(self):
         r = self.req_id
@@ -158,7 +160,8 @@ class Ping4Socket(PingSocket):
         (ver, tos, plen, pid, flags,
          ttl, proto, checksum, src_ip,
          dst_ip) = struct.unpack("!BBHHHBBHII", ip_header)
-
+        if proto != ICMPv4_PROTO:
+            return
         icmp_header = msg[20:28]
         (icmp_type, icmp_code, icmp_checksum,
         req_id, seq) = struct.unpack(
@@ -168,6 +171,17 @@ class Ping4Socket(PingSocket):
             if session:
                 session.register_reply(address=src_ip, seq=seq, ttl=ttl,
                     payload=msg[self.HEADER_SIZE:])
+        elif icmp_type in (ICMPv4_UNREACHABLE, ICMPv4_TTL_EXCEEDED):
+            # Decode original message
+            (_, _, _, _, _, _, o_proto, _, o_src_ip, o_dst_ip) = struct.unpack("!BBHHHBBHII", msg[28:48])
+            if o_proto != ICMPv4_PROTO:
+                return
+            (o_icmp_type, _, _, o_req_id, _) = struct.unpack("!BBHHH", msg[48:56])
+            if o_icmp_type != ICMPv4_ECHO:
+                return
+            session = self.get_session(socket.inet_ntoa(msg[44:48]), o_req_id)
+            if session:
+                session.register_miss()
 
 
 class Ping6Socket(PingSocket):
