@@ -74,9 +74,14 @@ class TimeSeries(list):
         Function must be callable of f([v1, .., vn]) -> float
         """
         if len(slist) == 1:
-            return [slist[0]]
+            print "1"
+            return slist[0]
         values = []
-        for ts in cls.unique_timestamps(slist):
+        timestamps = cls.unique_timestamps(slist)
+        if not timestamps:
+            # Empty list
+            return slist[0]
+        for ts in timestamps:
             p = [t.interpolate(ts) for t in slist]
             if safe:
                 p = [v for v in p if v is not None]
