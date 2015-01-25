@@ -1146,7 +1146,6 @@ class IPAMAppplication(Application):
         """
         Ping check task result
         """
-        vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         task = self.get_object_or_404(ReduceTask, id=int(task_id))
         try:
             result = task.get_result(block=False)
