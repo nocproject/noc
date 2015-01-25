@@ -573,7 +573,7 @@ class SAE(Daemon):
                 next_try__lte=t,
                 managed_object__activator__shard__is_active=True,
                 managed_object__activator__shard__name__in=self.shards
-            ).order_by("next_try").select_related().select_for_update():
+            ).order_by("next_try").select_related("activator", "managed_object").select_for_update():
             # Check object is managed
             if not mt.managed_object.is_managed:
                 fail_task(mt, ERR_OBJECT_NOT_MANAGED, "Object is not managed")
