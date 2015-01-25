@@ -74,7 +74,6 @@ class TimeSeries(list):
         Function must be callable of f([v1, .., vn]) -> float
         """
         if len(slist) == 1:
-            print "1"
             return slist[0]
         values = []
         timestamps = cls.unique_timestamps(slist)
