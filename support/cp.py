@@ -32,6 +32,7 @@ class CPClient(object):
     SYSTEM_SERVICE = "/api/v1.0/SystemService/"
     UPGRADE_SERVICE = "/api/v1.0/UpgradeService/"
     CRASHINFO_SERVICE = "/api/v1.0/CrashinfoService/"
+    PASTE_SERVICE = "/api/v1.0/PasteService/"
 
     def __init__(self):
         self.cp_url = self.CP_URL
@@ -266,3 +267,9 @@ class CPClient(object):
         return self.call(
             self.CRASHINFO_SERVICE, "report",
             self.system_uuid, crashinfo)
+
+    def create_paste(self, subject=None, data=None, syntax=None, ttl=None, public=False):
+        if not self.has_system():
+            raise self.Error("System is not registred")
+        return self.call(self.PASTE_SERVICE, "create",
+                         subject, data, syntax, ttl, public)
