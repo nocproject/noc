@@ -135,7 +135,8 @@ class Command(BaseCommand):
         Returns a list of SI
         """
         def check_ipv4(a):
-            if a.startswith("127.") or a.startswith("169.254"):
+            if (a.startswith("127.") or a.startswith("169.254") or
+                    a.endswith("/32") or a.startswith("0.0.0.0")):
                 return False
             else:
                 return True
