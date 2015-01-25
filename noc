@@ -5,13 +5,16 @@
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-if [ $1 = "runserver" ]; then
+if [ "$1" = "runserver" ]; then
     shift
     if [ $# -ge 1 ]; then
         exec ./scripts/noc-web.py -f start -l $1
     else
         exec ./scripts/noc-web.py -f start
     fi
+elif [ "$1" = "paste" ]; then
+    shift
+    exec ./scripts/paste.py "$@"
 else
     exec ./bin/python manage.py "$@"
 fi
