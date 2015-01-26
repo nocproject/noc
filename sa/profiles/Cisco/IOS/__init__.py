@@ -78,7 +78,7 @@ class Profile(NOCProfile):
         if il.startswith("srp"):
             return "SRP %s" % interface[3:].strip()
         if il.startswith("Foreign Exchange Station"):
-            return "FES %s" % interface[24:].strip()
+            return "FXS %s" % interface[24:].strip()
         if il.startswith("cable"):
             match = self.rx_cable_if.search(interface)
             if match:
