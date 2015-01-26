@@ -68,14 +68,14 @@ class GetNowApplication(ExtApplication):
 
     def instance_to_dict(self, o, fields=None):
         last_success = humanize_distance(o.ts) if o.ts else '--'
-        last_update = o.managed_object.config.get_revisions(reverse=True)
+        mo = ManagedObject.objects.get(id = o.object)
+        last_update = mo.config.get_revisions(reverse=True)
         if last_update:
             last_update = humanize_distance(last_update[0].ts)
-        name = o.managed_object.name.split(".")[0:2]
         return {
-            'id': str(o.managed_object.id),
-            'name': ".".join(name),
-            'profile_name': o.managed_object.profile_name,
+            'id': str(mo.id),
+            'name': mo.name,
+            'profile_name': mo.profile_name,
             'last_success': last_success,
             'status': o.status,
             'last_status': o.last_status,
