@@ -368,6 +368,9 @@ class ProbeConfig(Document):
         object = document.get_object()
         logger.debug("Apply changed MetricSettings for '%s'", object)
         cls._refresh_object(object)
+        if not document.metric_sets:
+            logger.debug("Delete empty MetricSettings for %s", object)
+            document.delete()
 
     @classmethod
     def on_delete_metric_settings(cls, sender, document, *args, **kwargs):
