@@ -102,6 +102,13 @@ class Task(PeriodicTask):
             except:
                 pass
 
+    def subprocess_call(self, cmd, env=None):
+        try:
+            return subprocess.call(cmd, env=env)
+        except OSError, why:
+            self.error("Failed to call '%s': %s" % (cmd, why))
+            return -1
+
     def tar(self, archive, files, cwd=None):
         """
         Create TAR archive
@@ -113,8 +120,12 @@ class Task(PeriodicTask):
         self.debug(("cd %s &&" % cwd if cwd else ".") + " ".join(tar_cmd) +
             " | " + " ".join(gzip_cmd))
         with open(archive, "w") as f:
-            p1 = subprocess.Popen(tar_cmd, cwd=cwd, stdout=subprocess.PIPE)
-            p2 = subprocess.Popen(gzip_cmd, stdin=p1.stdout, stdout=f)
+            try:
+                p1 = subprocess.Popen(tar_cmd, cwd=cwd, stdout=subprocess.PIPE)
+                p2 = subprocess.Popen(gzip_cmd, stdin=p1.stdout, stdout=f)
+            except OSError, why:
+                self.error("Failed to tar: %s" % why)
+                return False
             return p2.wait() == 0
 
     def backup_postgres(self):
@@ -155,7 +166,7 @@ class Task(PeriodicTask):
         # Launch pg_dump
         self.info("Dumping PostgreSQL database into %s" % out)
         self.debug(" ".join(cmd))
-        retcode = subprocess.call(cmd, env=env)
+        retcode = self.subprocess_call(cmd, env=env)
         if retcode != 0:
             self.error("dump failed. Removing broken dump %s" % out)
             self.safe_unlink(out)
@@ -189,15 +200,15 @@ class Task(PeriodicTask):
         if settings.NOSQL_DATABASE_PASSWORD:
             cmd += ["-p", settings.NOSQL_DATABASE_PASSWORD]
         self.info("Dumping MongoDB database into %s" % out)
-        retcode = subprocess.call(cmd)
+        retcode = self.subprocess_call(cmd)
         if retcode:
             self.error("dump failed. Removing broken dump %s" % out)
             self.safe_unlink(out)
             return False
         self.info("Archiving dump")
-        self.tar(out + ".tar.gz", [settings.NOSQL_DATABASE_NAME], cwd=out)
+        r = self.tar(out + ".tar.gz", [settings.NOSQL_DATABASE_NAME], cwd=out)
         self.safe_unlink(out)
-        return True
+        return r
 
     def backup_repo(self):
         """
@@ -227,8 +238,7 @@ class Task(PeriodicTask):
         files += [os.path.join("etc", "ssh", f)
                   for f in os.listdir(os.path.join("etc", "ssh"))
                   if not f.startswith(".")]
-        self.tar(etc_out, files)
-        return True
+        return self.tar(etc_out, files)
 
     def execute(self):
         from django.conf import settings
