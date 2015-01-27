@@ -54,7 +54,7 @@ class DefaultRouter(BaseRouter):
             "model_id": model_id,
             "metric_type": settings.metric_type
         }))
-        settings.probe = cls.get_default_probe()
+        settings.probe = cls.route_probe(object, settings)
         # Apply rules
         for r in cls._RULES:
             if r.rx.search(settings.metric):
@@ -72,6 +72,39 @@ class DefaultRouter(BaseRouter):
             model_id, object, settings.metric_type,
             settings.metric, settings.probe
         )
+
+    @classmethod
+    def route_probe(cls, object, settings):
+        """
+        Get probe name by object.
+        First, try to call model routers.
+        i.e, for sa.ManagedObject model try to call
+        route_probe_sa_managedobject function
+        """
+        model_id = cls.get_model_id(object)
+        model_handler = "route_probe_%s" % model_id.replace(".", "_").lower()
+        if hasattr(cls, model_handler):
+            pn = getattr(cls, model_handler)(object, settings)
+            if isinstance(pn, basestring):
+                return cls.get_probe(pn)
+            else:
+                return pn
+        else:
+            return cls.get_default_probe()
+
+    @classmethod
+    def route_probe_sa_managedobject(cls, object, settings):
+        """
+        Default probe router for managed object
+        """
+        return cls.get_default_probe()
+
+    @classmethod
+    def route_probe_inv_interface(cls, object, settings):
+        """
+        Default probe router for interface
+        """
+        return cls.get_default_probe()
 
     @classmethod
     def is_active(cls, model_id, object):

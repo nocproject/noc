@@ -149,9 +149,14 @@ class ProbeConfig(Document):
 
     @classmethod
     def _delete_object(cls, object):
+        model_id = cls.get_model_id(object)
+        object_id = str(object.id)
+        # Mark probeconfig as deleted
+        logger.debug("Marking ProbeConfig as deleted: %s:%s",
+                     model_id, object_id)
         cls._get_collection().update({
-                "model_id": cls.get_model_id(object),
-                "object_id": str(object.id)
+                "model_id": model_id,
+                "object_id": object_id
             },
             {
                 "$set": {
@@ -161,6 +166,13 @@ class ProbeConfig(Document):
             },
             multi=True
         )
+        # wipe out metricsettings
+        logger.debug("Deleting MetricSettings: %s:%s",
+                     model_id, object_id)
+        MetricSettings._get_collection().remove({
+            "model_id": model_id,
+            "object_id": object_id
+        })
 
     @classmethod
     def get_ttl(cls):
