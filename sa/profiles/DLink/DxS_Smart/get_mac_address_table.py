@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(NOCScript):
@@ -24,6 +24,12 @@ class Script(NOCScript):
     rx_line1 = re.compile(
         r"^(?P<vlan_id>\d+)\s+(?P<vlan_name>\S+)?\s+(?P<mac>\S+)\s+"
         "(?P<interface>\d+)\s+(?P<type>Dynamic|Static)", re.MULTILINE)
+
+    T_MAP = {
+        "Learnt": "D",
+        "Dynamic": "D",
+        "Static": "S"
+    }
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
@@ -99,7 +105,7 @@ class Script(NOCScript):
                         "vlan_id": m_vlan,
                         "mac": m_mac,
                         "interfaces": [m_interface],
-                        "type": {"Learnt": "D", "Static": "S"}[match.group("type")]
+                        "type": self.T_MAP[match.group("type")]
                     }]
             return r
         except self.CLISyntaxError:
@@ -120,6 +126,6 @@ class Script(NOCScript):
                 "vlan_id": m_vlan,
                 "mac": m_mac,
                 "interfaces": [m_interface],
-                "type": {"Learnt": "D", "Static": "S"}[match.group("type")]
+                "type": self.T_MAP[match.group("type")]
             }]
         return r
