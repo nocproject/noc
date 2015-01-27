@@ -24,8 +24,10 @@ class Profile(noc.sa.profiles.Profile):
         ("CTRL\+C.+?(a All)|(r Refresh)", "a")
     ]
     pattern_unpriveleged_prompt = r"^\S+:(3|6|user|operator)#"
-    pattern_syntax_error = r"(% Invalid (Command|input detected at))|"
-    r"((Available commands|Next possible completions):)"
+    pattern_syntax_error = r"(?:% Invalid Command|" \
+                           r"% Invalid input detected at|" \
+                           r"Available commands:|" \
+                           r"Next possible completions:)"
     command_super = "enable admin"
     pattern_prompt = r"(?P<hostname>\S+(:\S+)*)[#>]"
     command_disable_pager = ""
