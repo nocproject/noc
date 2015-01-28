@@ -48,7 +48,7 @@ class Script(noc.sa.script.Script):
                     else:
                         if n[:6] == "Slot0/":
                             n = n[6:]
-                        admin_status.update(n: int(s) == 1})
+                        admin_status.update({n: int(s) == 1})
             except self.snmp.TimeOutError:
                 pass
         else:
