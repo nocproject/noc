@@ -71,10 +71,21 @@ class Command(BaseCommand):
                 )
                 remove_ms(ms)
                 continue
+            # Check metric sets references
+            msl = []
+            for m in ms.metric_sets:
+                try:
+                    x = m.metric_set
+                    msl += [m]
+                except Exception, why:
+                    self.info("    ... Unable to dereference metric set. Pulling")
+            if len(msl) < len(ms.metric_sets):
+                ms.metric_sets = msl
+                ms.save()
             # Remove empty metric sets
             if not ms.metric_sets:
                 self.info(
-                    "   ... Empty metric sets for %s:%s. Removing",
+                    "    ... Empty metric sets for %s:%s. Removing",
                     ms.model_id, ms.object_id
                 )
                 remove_ms(ms)
