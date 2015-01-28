@@ -32,4 +32,14 @@ class Script(NOCScript):
                 pass
             return r
         else:
-            raise self.NotSupportedError()
+            try:
+                r = []
+                vlans = self.profile.get_vlans(self)
+                for v in vlans:
+                    r += [{
+                        "vlan_id": v['vlan_id'],
+                        "name": v['vlan_name']
+                    }]
+                return r
+            except:
+                raise self.NotSupportedError()
