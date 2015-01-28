@@ -68,6 +68,7 @@ class CLI(StreamFSM):
             "PROMPT": "PROMPT",
             "PAGER": "PROMPT",
             "CLOSE": "CLOSED",
+            "FAILURE": "FAILURE"
             },
         "FAILURE": {
             "FAILURE": "FAILURE",
