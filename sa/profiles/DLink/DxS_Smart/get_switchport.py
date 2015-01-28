@@ -160,5 +160,29 @@ class Script(NOCScript):
                 return r
             except self.snmp.TimeOutError:
                 pass
+        else:
+            ports = self.profile.get_ports(self)
+            vlans = self.profile.get_vlans(self)
+            interfaces = []
 
-        return r
+            for p in ports:
+                iface = p['port']
+                i = {
+                    "interface": iface,
+                    "status": p['status'],
+                    "members": [],
+                    "802.1Q Enabled": True
+                }
+                if 'descr' in p:
+                    descr = p['descr']
+                    if descr != '' and descr != 'null':
+                        i['description'] = descr
+                tagged_vlans = []
+                for v in vlans:
+                    if iface in v['tagged_ports']:
+                        tagged_vlans += [v['vlan_id']]
+                    if iface in v['untagged_ports']:
+                        i['untagged'] = v['vlan_id']
+                i['tagged'] = tagged_vlans
+                interfaces += [i]
+            return interfaces

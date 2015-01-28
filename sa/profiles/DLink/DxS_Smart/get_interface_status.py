@@ -39,3 +39,20 @@ class Script(NOCScript):
                 return r
             except self.snmp.TimeOutError:
                 raise self.NotSupportedError()
+        else:
+            # Fallback to CLI
+            ports = self.profile.get_ports(self, interface)
+            for p in ports:
+                if interface is not None:
+                    if interface == p['port']:
+                        return [{
+                            "interface": interface,
+                            "status": p['status']
+                        }]
+                        break
+                else:
+                    r += [{
+                        "interface": p['port'],
+                        "status": p['status']
+                    }]
+            return r
