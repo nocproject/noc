@@ -25,6 +25,11 @@ class Script(NOCScript):
                 for n, s in self.snmp.join_tables(
                         "1.3.6.1.2.1.31.1.1.1.1",
                         "1.3.6.1.2.1.2.2.1.8", bulk=True):  # IF-MIB
+                    if n[:3] == 'Aux' or n[:4] == 'Vlan' \
+                    or n[:11] == 'InLoopBack':
+                        continue
+                    if n[:6] == "Slot0/":
+                        n = n[6:]
                     if interface:
                         if n == interface:
                             r += [{
