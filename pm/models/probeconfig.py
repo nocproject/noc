@@ -248,7 +248,7 @@ class ProbeConfig(Document):
                         }
                     }
                 )
-            for m, n in cls.PROFILES[object.__class__]:
+            for m, n in cls.PROFILES[o.__class__]:
                 for obj in m.objects.filter(**{n: o.id}):
                     get_refresh_ops(bulk, obj)
 
