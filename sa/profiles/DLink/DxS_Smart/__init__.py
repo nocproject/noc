@@ -72,18 +72,23 @@ class Profile(noc.sa.profiles.Profile):
 
     def get_ports(self, script, interface=None):
         descr = []
-        c = script.cli("show ports description", cached=True)
-        for match in self.rx_descr.finditer(c):
-            descr += [{
-                "port": match.group("port"),
-                "descr": match.group("descr").strip()
-            }]
-
+        try:
+            c = script.cli("show ports description", cached=True)
+            for match in self.rx_descr.finditer(c):
+                descr += [{
+                    "port": match.group("port"),
+                    "descr": match.group("descr").strip()
+                }]
+        except:
+            pass
         objects = []
-        if interface is not None:
-            c = script.cli(("show ports %s" % interface), cached=True)
-        else:
-            c = script.cli("show ports", cached=True)
+        try:
+            if interface is not None:
+                c = script.cli(("show ports %s" % interface), cached=True)
+            else:
+                c = script.cli("show ports", cached=True)
+        except:
+            raise script.NotSupportedError()
         for match in self.rx_port.finditer(c):
             objects += [{
                 "port": match.group("port"),
