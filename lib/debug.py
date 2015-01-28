@@ -205,8 +205,24 @@ def format_frames(frames, reverse=TRACEBACK_REVERSE):
     return u"\n".join(r)
 
 
+def check_fatal_errors(t, v):
+    def die(msg, *args, **kwargs):
+        logger.error(msg, *args, **kwargs)
+        os._exit(1)
+
+    xn = "%s.%s" % (t.__module__, t.__name__)
+    if xn == "pymongo.errors.AutoReconnect":
+        die("Failed to connect MongoDB: %s", v)
+    elif xn == "django.db.utils.DatabaseError" and "server closed" in v:
+        die("Failed to connect PostgreSQL: %s", v)
+
+
 def get_traceback(reverse=TRACEBACK_REVERSE, fp=None):
     t, v, tb = sys.exc_info()
+    try:
+        check_fatal_errors(t, v)
+    except:
+        pass  # Ignore exceptions
     now = datetime.datetime.now()
     r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
     r += ["BRANCH: %s TIP: %s" % (get_branch(), get_tip())]
