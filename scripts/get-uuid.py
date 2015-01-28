@@ -1,3 +1,4 @@
+#!./bin/python
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
 ## job management
@@ -8,15 +9,10 @@
 
 ## Python modules
 import uuid
-## Django modules
-from django.core.management.base import BaseCommand, CommandError
 
 
-class Command(BaseCommand):
-    """
-    Generate UUID
-    """
-    help = "Generate UUID"
+def main():
+    print uuid.uuid4()
 
-    def handle(self, *args, **options):
-        print uuid.uuid4()
+if __name__ == "__main__":
+    main()
