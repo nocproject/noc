@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS_Smart.get_arp
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -19,6 +19,9 @@ class Script(NOCScript):
     rx_line = re.compile(
         r"(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s+"
         r"ARPA\s+(?P<interface>\S+)\s+\S+", re.MULTILINE)
+    rx_line1 = re.compile(
+        r"^(?P<interface>\S+)\s+(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+"
+        r"(?P<mac>\S+)\s+(?:Static|Dynamic)", re.MULTILINE)
 
     def execute(self):
         r = []
@@ -39,10 +42,24 @@ class Script(NOCScript):
                 pass
 
         # Fallback to CLI
-        for match in self.rx_line.finditer(self.cli("debug info")):
-            r += [{
-                "ip": match.group("ip"),
-                "mac": match.group("mac"),
-                "interface": match.group("interface"),
-            }]
+        r = []
+        try:
+            s = self.cli("debug info")
+            for match in self.rx_line.finditer(s):
+                r += [{
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "interface": match.group("interface"),
+                }]
+            return r
+        except self.CLISyntaxError:
+            pass
+        s = self.cli("show arpentry")
+        for match in self.rx_line1.finditer(s):
+            if match.group("mac") != "ff:ff:ff:ff:ff:ff":
+                r += [{
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "interface": match.group("interface"),
+                }]
         return r
