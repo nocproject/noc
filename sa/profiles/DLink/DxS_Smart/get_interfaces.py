@@ -88,42 +88,42 @@ class Script(noc.sa.script.Script):
                     n["enabled_protocols"] = ["LACP"]
             interfaces += [iface]
 
-            ipif = self.cli("show ipif")
-            match = self.rx_ipif.search(ipif)
-            if match:
-                i = {
+        ipif = self.cli("show ipif")
+        match = self.rx_ipif.search(ipif)
+        if match:
+            i = {
+                "name": "System",
+                "type": "SVI",
+                "admin_status": True,
+                "oper_status": True,
+                "subinterfaces": [{
                     "name": "System",
-                    "type": "SVI",
                     "admin_status": True,
                     "oper_status": True,
-                    "subinterfaces": [{
-                        "name": "System",
-                        "admin_status": True,
-                        "oper_status": True,
-                        "enabled_afi": ["IPv4"]
-                    }]
-                }
-                ip_address = match.group("ip_address")
-                ip_subnet = match.group("ip_subnet")
-                ip_address = \
-                    "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-                i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
-                ch_id = self.scripts.get_chassis_id()
-                i["mac"] = ch_id[0]['first_chassis_mac']
-                i['subinterfaces'][0]["mac"] = ch_id[0]['first_chassis_mac']
-                mgmt_vlan = 1
-                sw = self.cli("show switch", cached=True)
-                match = self.rx_mgmt_vlan.search(ipif)
-                if match:
-                    vlan = match.group("vlan")
-                    if vlan != "Disabled":
-                        vlans = self.profile.get_vlans(self)
-                        for v in vlans:
-                            if vlan == v['name']:
-                                mgmt_vlan = int(v['vlan_id'])
-                                break
-                # Need hardware to testing
-                i['subinterfaces'][0].update({"vlan_ids": [mgmt_vlan]})
-                interfaces += [i]
+                    "enabled_afi": ["IPv4"]
+                }]
+            }
+            ip_address = match.group("ip_address")
+            ip_subnet = match.group("ip_subnet")
+            ip_address = \
+                "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
+            i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+            ch_id = self.scripts.get_chassis_id()
+            i["mac"] = ch_id[0]['first_chassis_mac']
+            i['subinterfaces'][0]["mac"] = ch_id[0]['first_chassis_mac']
+            mgmt_vlan = 1
+            sw = self.cli("show switch", cached=True)
+            match = self.rx_mgmt_vlan.search(ipif)
+            if match:
+                vlan = match.group("vlan")
+                if vlan != "Disabled":
+                    vlans = self.profile.get_vlans(self)
+                    for v in vlans:
+                        if vlan == v['name']:
+                            mgmt_vlan = int(v['vlan_id'])
+                            break
+            # Need hardware to testing
+            i['subinterfaces'][0].update({"vlan_ids": [mgmt_vlan]})
+            interfaces += [i]
 
         return [{"interfaces": interfaces}]
