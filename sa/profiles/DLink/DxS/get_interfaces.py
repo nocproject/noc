@@ -103,7 +103,7 @@ class Script(NOCScript):
 
     rx_pd = re.compile(r"Port\s+:\s+(?P<port>\S+)\s*\n"
     r"\-+\s*\nPort Status\s+: Link (?:Up|Down)\s*\n"
-    r"Description\s+:\s*(?P<desc>\S*?)\s*\n"
+    r"Description\s+:\s*(?P<desc>.*?)\s*\n"
     r"HardWare Type\s+:\s*.+\s*\n"
     r"MAC Address\s+:\s*(?P<mac>\S+)\s*\n")
 
