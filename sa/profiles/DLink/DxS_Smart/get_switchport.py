@@ -75,6 +75,8 @@ class Script(NOCScript):
                         if s[i] == '1':
                             oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
                             iface = self.snmp.get(oid, cached=True)
+                            if iface[:6] == "Slot0/":
+                                iface = iface[6:]
                             if iface not in port_vlans:
                                 port_vlans.update({
                                     iface: {
@@ -91,6 +93,8 @@ class Script(NOCScript):
                         if s[i] == '1' and str(i + 1) not in un:
                             oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
                             iface = self.snmp.get(oid, cached=True)
+                            if iface[:6] == "Slot0/":
+                                iface = iface[6:]
                             if iface not in port_vlans:
                                 port_vlans.update({
                                     iface: {
@@ -105,6 +109,12 @@ class Script(NOCScript):
                 for iface, description in self.snmp.join_tables(
                     "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18",
                         bulk=True):
+                    if iface[:3] == 'Aux' or iface[:4] == 'Vlan' \
+                    or iface[:11] == 'InLoopBack' \
+                    or iface == 'System':
+                        continue
+                    if iface[:6] == "Slot0/":
+                        iface = iface[6:]
                     port_descr.update({iface: description})
 
                 # Get switchport data and overall result
