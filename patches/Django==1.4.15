@@ -11,3 +11,20 @@ Index: noc/lib/python/site-packages/django/contrib/gis/geos/libgeos.py
  def geos_version_info():
      """
      Returns a dictionary containing the various version metadata parsed from
+Index: noc/lib/python/site-packages/django/contrib/gis/gdal/srs.py
+===================================================================
+--- noc.orig/lib/python/site-packages/django/contrib/gis/gdal/srs.py
++++ noc/lib/python/site-packages/django/contrib/gis/gdal/srs.py
+@@ -87,8 +87,12 @@ class SpatialReference(GDALBase):
+ 
+         # Importing from either the user input string or an integer SRID.
+         if srs_type == 'user':
++            if srs_input == "EPSG:900913":
++                srs_input = "EPSG:3857"
+             self.import_user_input(srs_input)
+         elif srs_type == 'epsg':
++            if srs_input == 900913:
++                srs_input = 3857
+             self.import_epsg(srs_input)
+ 
+     def __del__(self):
