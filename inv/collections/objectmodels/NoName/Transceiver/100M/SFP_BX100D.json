@@ -1,0 +1,26 @@
+{
+    "name": "NoName | Transceiver | 100M | SFP BX100D",
+    "uuid": "01c91692-869f-4381-b6d3-6447d6c693dd",
+    "vendor__code": "NONAME",
+    "description": "NoName SFP BX100-D (tx 1550nm) transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "txrx",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {}
+}
