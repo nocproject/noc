@@ -13,6 +13,7 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 from noc.sa.profiles.DLink.DxS import DxS_L2
+from noc.sa.profiles.DLink.DxS import DGS3120
 from noc.sa.profiles.DLink.DxS import DGS3620
 
 
@@ -94,13 +95,13 @@ class Script(NOCScript):
     rx_ospfv3 = re.compile(r"(?P<ipif>\S+)\s+\S+\s+(?P<state>Enabled)\s+"
     r"Link (?:Up|DOWN)\s+\d+", re.IGNORECASE)
 
-    rx_lldp = re.compile(r"Port ID\s+:\s+(?P<ipif>\S+)\s*\n"
+    rx_lldp = re.compile(r"Port ID\s+:\s+(?P<port>\S+)\s*\n"
     r"\-+\s*\nAdmin Status\s+: (?:TX_and_RX|RX_Only|TX_Only)")
-    rx_lldp1 = re.compile(r"Port ID\s+:\s+(?P<ipif>\S+)\s*\n"
+    rx_lldp1 = re.compile(r"Port ID\s+:\s+(?P<port>\S+)\s*\n"
     r"\-+\s*\nPort ID Subtype\s+: MAC Address\s*\n"
     r"Port ID\s+: (?P<mac>\S+)")
 
-    rx_pd = re.compile(r"Port\s+:\s+(?P<ipif>\S+)\s*\n"
+    rx_pd = re.compile(r"Port\s+:\s+(?P<port>\S+)\s*\n"
     r"\-+\s*\nPort Status\s+: Link (?:Up|Down)\s*\n"
     r"Description\s+:\s*(?P<desc>\S*?)\s*\n"
     r"HardWare Type\s+:\s*.+\s*\n"
@@ -214,7 +215,7 @@ class Script(NOCScript):
                 c = self.cli("show lldp local_ports")
                 for match in self.rx_lldp1.finditer(c):
                     macs += [{
-                        "ipif": match.group("ipif"),
+                        "port": match.group("port"),
                         "mac":  match.group("mac")
                     }]
             except self.CLISyntaxError:
@@ -227,18 +228,20 @@ class Script(NOCScript):
             except self.CLISyntaxError:
                 c = ""
             for match in self.rx_lldp.finditer(c):
-                lldp += [match.group("ipif")]
+                lldp += [match.group("port")]
 
-        if self.match_version(DGS3620, version__gte="2.60.16"):
-            try:
-                c = self.cli("show ports details")
-                for match in self.rx_pd.finditer(c):
-                    macs += [{
-                        "ipif": match.group("ipif"),
-                        "mac":  match.group("mac")
-                    }]
-            except self.CLISyntaxError:
-                pass
+        if len(macs) == 0:
+            if self.match_version(DGS3620, version__gte="2.60.16") \
+            or self.match_version(DGS3120, version__gte="4.00.00"):
+                try:
+                    c = self.cli("show ports details")
+                    for match in self.rx_pd.finditer(c):
+                        macs += [{
+                            "port": match.group("port"),
+                            "mac":  match.group("mac")
+                        }]
+                except self.CLISyntaxError:
+                    pass
 
         udld = []
         try:
@@ -325,7 +328,7 @@ class Script(NOCScript):
                 i.update({"description": desc})
                 i['subinterfaces'][0].update({"description": desc})
             for m in macs:
-                if p['port'] == m['ipif']:
+                if p['port'] == m['port']:
                     i['mac'] = m['mac']
                     i['subinterfaces'][0]["mac"] = m['mac']
             tagged_vlans = []
