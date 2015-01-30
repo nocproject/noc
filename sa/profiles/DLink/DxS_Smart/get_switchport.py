@@ -119,8 +119,11 @@ class Script(NOCScript):
                                 for interface in p["members"]:
                                     if interface_status.get(interface):
                                         status = True
-                                description = port_descr[name]
-                                if not description:
+                                if name in port_descr:
+                                    description = port_descr[name]
+                                    if not description:
+                                        description = ''
+                                else:
                                     description = ''
                                 members = p["members"]
                                 portchannels.remove(p)
@@ -131,8 +134,11 @@ class Script(NOCScript):
                             status = True
                         else:
                             status = False
-                        description = port_descr[name]
-                        if not description:
+                        if name in port_descr:
+                            description = port_descr[name]
+                            if not description:
+                                description = ''
+                        else:
                             description = ''
                         members = []
                         write = True
