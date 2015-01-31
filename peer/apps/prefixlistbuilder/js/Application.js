@@ -1,49 +1,45 @@
 //---------------------------------------------------------------------
 // peer.prefixlistbuilder application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2015 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.peer.prefixlistbuilder.Application");
 
 Ext.define("NOC.peer.prefixlistbuilder.Application", {
     extend: "NOC.core.Application",
-    requires: ["NOC.peer.peeringpoint.LookupField", "Ext.ux.form.UCField"],
-    layout: { type: 'vbox', align: 'stretch' },
+    requires: [
+        "NOC.peer.peeringpoint.LookupField",
+        "Ext.ux.form.UCField"
+    ],
+    layout: {type: "vbox", align: "stretch"},
     border: 0,
-    items :  [{
-        xtype: "container",
-        items: [{
-            xtype: 'form',
-            border: 0,
-            url: "/peer/prefixlistbuilder/",
+
+    initComponent: function () {
+        var me = this;
+
+        me.form = Ext.create("Ext.form.Panel", {
             padding: 4,
             bodyPadding: 4,
-            waitMsgTarget : true,
+            waitMsgTarget: true,
             defaults: {
                 enableKeyEvents: true,
                 listeners: {
-                    specialkey: function(field, key) {
+                    specialkey: function (field, key) {
                         if (field.xtype != "textfield")
                             return;
-                        var get_button = function(scope, name) {
-                            return scope.ownerCt.down("toolbar").getComponent(name);
-                        }
-                        switch(key.getKey()) {
+                        switch (key.getKey()) {
                             case Ext.EventObject.ENTER:
-                                var b = get_button(field, "build");
-                                key.stopEvent();
-                                b.handler.call(b);
+                                me.onBuild();
                                 break;
                             case Ext.EventObject.ESC:
-                                var b = get_button(field, "reset");
-                                key.stopEvent();
-                                b.handler.call(b);
+                                me.onReset();
+                                break;
                         }
                     }
                 },
                 xtype: "textfield",
-                msgTarget : "side",
+                msgTarget: "side",
                 size: 30
             },
             items: [
@@ -53,7 +49,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                     emptyText: "Prefix list name ...",
                     allowBlank: true,
                     regex: /^[0-9a-zA-Z_\-]*$/,
-                    invalidText: "Prefix list name must contains only 0-9,a-z,A-Z,'-','_'"
+                    invalidText: "Prefix list name must contains only 0-9,a-z,A-Z,-,_"
                 },
                 {
                     xtype: "peer.peeringpoint.LookupField",
@@ -68,7 +64,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                     allowBlank: false,
                     regex: /^AS(\d+|-\w+)(-\w+)*(:\S+)?(\s+AS(\d+|-\w+)(:\S+)?)*$/,
                     invalidText: "Enter list valid ASnumber (ex., AS1234) or as sets (ex. AS-MEGASET, AS-MEGA-SET)",
-                    plugins: [ 'ucfield' ]
+                    plugins: ["ucfield"]
                 }
             ],
             buttonAlign: "left",
@@ -79,35 +75,57 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                     glyph: NOC.glyph.play,
                     formBind: true,
                     disabled: true,
-                    handler : function() {
-                        var form = this.up("form").getForm();
-                        form.submit({
-                            method: "GET",
-                            submitEmptyText : false,
-                            params : { __format: "ext" },
-                            waitMsg : "Compute prefix list",
-                            success: function(form, action) {
-                                form.owner.up("panel").down("textareafield").setValue(action.result.prefix_list);
-                            }
-                        });
-                    }
+                    scope: me,
+                    handler: me.onBuild
                 },
                 {
                     text: "Reset",
                     itemId: "reset",
                     glyph: NOC.glyph.refresh,
                     disabled: false,
-                    handler: function() {
-                        this.up("form").getForm().reset();
-                    }
+                    scope: me,
+                    handler: me.onReset
                 }
             ]
-        }]
+
+        });
+
+        me.resultField = Ext.create("NOC.core.CMText", {
+            readOnly: true
+        });
+
+        Ext.apply(me, {
+            items: [
+                me.form,
+                me.resultField
+            ]
+        });
+        me.callParent();
     },
-    {
-        xtype: "textarea",
-        fieldStyle: {"padding-left": "7px"},
-        flex: 1
+    //
+    onBuild: function () {
+        var me = this,
+            form = me.form.getForm();
+        if (!form.isValid()) {
+            return;
+        }
+        Ext.Ajax.request({
+            url: "/peer/prefixlistbuilder/",
+            method: "GET",
+            params: form.getValues(),
+            scope: me,
+            mask: true,
+            success: function (response) {
+                var data = Ext.decode(response.responseText);
+                me.resultField.setValue(data.prefix_list);
+            },
+            failure: function () {
+                NOC.error("Failed to build prefix list");
+            }
+        });
+    },
+    onReset: function () {
+        var me = this;
+        me.form.getForm().reset();
     }
-    ]
 });
