@@ -17,6 +17,7 @@ from noc.lib.fields import INETField, TagsField
 from noc.sa.profiles import profile_registry
 from noc.main.models import NotificationGroup
 from noc.lib.app.site import site
+from noc.lib.ip import IP
 from noc.peer.tree import optimize_prefix_list, optimize_prefix_list_maxlen
 from noc.lib import nosql
 
@@ -77,7 +78,7 @@ class WhoisCache(object):
                 # ASN Given
                 members.update([a.upper()])
             else:
-                o = collection.find_one({"as_set": a}, fields=["members"])
+                o = collection.find_one({"_id": a}, fields=["members"])
                 if o:
                     for m in [x for x in o["members"] if x not in seen]:
                         members.update(cls.resolve_as_set(m, seen, collection))
@@ -90,7 +91,7 @@ class WhoisCache(object):
         # Resolve
         prefixes = set()
         for a in cls.resolve_as_set(as_set):
-            o = collection.find_one({"origin": a}, fields=["routes"])
+            o = collection.find_one({"_id": a}, fields=["routes"])
             if o:
                 prefixes.update(o["routes"])
         return prefixes
