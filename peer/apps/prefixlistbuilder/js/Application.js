@@ -12,8 +12,12 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
         "NOC.peer.peeringpoint.LookupField",
         "Ext.ux.form.UCField"
     ],
-    layout: {type: "vbox", align: "stretch"},
+    layout: {
+        type: "vbox",
+        align: "stretch"
+    },
     border: 0,
+    autoScroll: true,
 
     initComponent: function () {
         var me = this;
@@ -91,7 +95,8 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
         });
 
         me.resultField = Ext.create("NOC.core.CMText", {
-            readOnly: true
+            readOnly: true,
+            flex: 1
         });
 
         Ext.apply(me, {
@@ -109,17 +114,19 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
         if (!form.isValid()) {
             return;
         }
+        me.mask("Building");
         Ext.Ajax.request({
             url: "/peer/prefixlistbuilder/",
             method: "GET",
             params: form.getValues(),
             scope: me,
-            mask: true,
             success: function (response) {
                 var data = Ext.decode(response.responseText);
+                me.unmask();
                 me.resultField.setValue(data.prefix_list);
             },
             failure: function () {
+                me.unmask();
                 NOC.error("Failed to build prefix list");
             }
         });

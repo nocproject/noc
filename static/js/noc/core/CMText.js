@@ -5,20 +5,39 @@
 // Copyright (C) 2007-2011 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.core.CMText");
+console.debug("Defining NOC.core.CMTextLayout");
 
+Ext.define("NOC.core.CMTextLayout", {
+    extend: "Ext.layout.component.field.FieldContainer",
+    alias: ["layout.cmtext"],
+    renderItems: Ext.emptyFn,
+    type: "cmtext",
+
+    beginLayout: function (ownerContext) {
+        var me = this;
+        me.callParent(arguments);
+        ownerContext.editorContext = ownerContext.getEl("containerEl");
+    },
+
+    publishInnerHeight: function (ownerContext, height) {
+        var me = this;
+        ownerContext.editorContext.setHeight(height, true);
+    }
+});
+
+console.debug("Defining NOC.core.CMText");
 Ext.define("NOC.core.CMText", {
     extend: "Ext.form.field.Base",
     alias: "widget.cmtext",
+    componentLayout: "cmtext",
     readOnly: false,
     lineNumbers: true,
-
     childEls: [
-        "editorEl"
+        "containerEl"
     ],
 
     fieldSubTpl: [
-        '<div id="{cmpId}-editorEl" class="{editorCls}" data-ref="editorEl" style="{size}"></div>',
+        '<div id="{cmpId}-containerEl" class="{editorCls}" data-ref="containerEl" style="{size}"></div>',
         {
             disableFormats: true
         }
@@ -28,12 +47,13 @@ Ext.define("NOC.core.CMText", {
 
     initComponent: function () {
         var me = this;
-        me.viewer = null;
-        me._value = null;
+        me.editor = null;
+        me.rawValue = null;
         me.callParent();
         me.initLabelable();
         me.initField();
-        me.on("resise", me.onFieldResize, me);
+        me.on("resize", me.onFieldResize, me);
+        me.on("beforedestroy", me.onBeforeDestroy, me);
     },
 
     afterRender: function () {
@@ -71,10 +91,11 @@ Ext.define("NOC.core.CMText", {
         var me = this;
 
         // Create CodeMirror
-        me.viewer = new CodeMirror(me.editorEl.dom, {
+        me.editor = new CodeMirror(me.containerEl.dom, {
             readOnly: me.readOnly,
             lineNumbers: me.lineNumbers,
-            styleActiveLine: true
+            styleActiveLine: true,
+            value: me.rawValue || ""
         });
         // change the codemirror css
         var css = Ext.util.CSS.getRule(".CodeMirror");
@@ -83,15 +104,11 @@ Ext.define("NOC.core.CMText", {
             css.style.position = "relative";
             css.style.overflow = "hidden";
         }
-        css = Ext.util.CSS.getRule('.CodeMirror-Scroll');
+        css = Ext.util.CSS.getRule(".CodeMirror-Scroll");
         if (css) {
-            css.style.height = '100%';
+            css.style.height = "100%";
         }
         me.setTheme(NOC.settings.preview_theme);
-        if(me._value !== null) {
-            me.setValue(me._value);
-            me._value = null;
-        }
     },
 
     // Set CodeMirror theme
@@ -103,26 +120,54 @@ Ext.define("NOC.core.CMText", {
                 "/static/pkg/codemirror/theme/" + name + ".css"
             );
         }
-        me.viewer.setOption("theme", name);
+        me.editor.setOption("theme", name);
     },
+
     renderText: function (text, syntax) {
         var me = this;
         syntax = syntax || null;
         text = text || "NO DATA";
         CodeMirror.modeURL = "/static/pkg/codemirror/mode/%N/%N.js";
-        me.viewer.setValue(text);
+        me.editor.setValue(text);
         if (syntax) {
-            me.viewer.setOption("mode", syntax);
-            CodeMirror.autoLoadMode(me.viewer, syntax);
+            me.editor.setOption("mode", syntax);
+            CodeMirror.autoLoadMode(me.editor, syntax);
         }
     },
 
     setValue: function (value) {
         var me = this;
-        if(me.viewer === null) {
-            me._value = value;
-        } else {
+        me.rawValue = value;
+        if (me.editor) {
             me.renderText(value);
+        }
+        return me;
+    },
+
+    getValue: function () {
+        var me = this;
+        return me.editor ? me.editor.getValue() : null;
+    },
+
+    getRawValue: function () {
+        var me = this;
+        return me.getValue();
+    },
+
+    getSubmitValue: function () {
+        var me = this;
+        return me.getValue();
+    },
+
+    onBeforeDestroy: function () {
+        var me = this;
+        me.un("resize", me.onFieldResize, me);
+        if (me.editor) {
+            try {
+                delete me.editor;
+            } catch (e) {
+            }
+            Ext.destroyMembers("containerEl");
         }
     }
 });
