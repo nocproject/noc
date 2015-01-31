@@ -28,6 +28,7 @@ Ext.define("NOC.core.ModelApplication", {
     preview: null,
     treeFilter: null,
     metricModelId: null,  // Add MetricSettings button
+    formLayout: "fit",
     //
     initComponent: function() {
         var me = this;
@@ -561,6 +562,7 @@ Ext.define("NOC.core.ModelApplication", {
             layout: "fit",
             items: {
                 xtype: 'form',
+                layout: me.formLayout,
                 border: true,
                 padding: 4,
                 bodyPadding: 4,
