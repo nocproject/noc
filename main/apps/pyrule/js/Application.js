@@ -13,6 +13,10 @@ Ext.define("NOC.main.pyrule.Application", {
         "NOC.main.ref.interface.LookupField"
     ],
     model: "NOC.main.pyrule.Model",
+    formLayout: {
+        type: "vbox",
+        align: "stretch"
+    },
     search: true,
     columns: [
         {
@@ -54,20 +58,17 @@ Ext.define("NOC.main.pyrule.Application", {
             anchor: "100%"
         },
         {
-            name: "text",
-            xtype: "textareafield",
-            fieldLabel: "Text",
-            allowBlank: false,
-            anchor: "100%",
-            height: 200,
-            fieldStyle: {
-                fontFamily: "Courier"
-            }
-        },
-        {
             name: "is_builtin",
             xtype: "checkboxfield",
             boxLabel: "Is Builtin"
+        },
+        {
+            name: "text",
+            xtype: "cmtext",
+            fieldLabel: "Text",
+            allowBlank: false,
+            flex: 1,
+            mode: "python"
         }
     ],
     filters: [
