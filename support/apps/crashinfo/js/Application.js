@@ -14,6 +14,11 @@ Ext.define("NOC.support.crashinfo.Application", {
     model: "NOC.support.crashinfo.Model",
     idField: "uuid",
 
+    formLayout: {
+        type: "vbox",
+        align: "stretch"
+    },
+
     statuses: {
         N: "New",
         r: "Reporting",
@@ -81,7 +86,6 @@ Ext.define("NOC.support.crashinfo.Application", {
                     flex: 1
                 }
             ],
-
             fields: [
                 {
                     xtype: "fieldset",
@@ -163,8 +167,9 @@ Ext.define("NOC.support.crashinfo.Application", {
                     name: "comment"
                 },
                 {
-                    xtype: "container",
-                    itemId: "tb"
+                    xtype: "cmtext",
+                    itemId: "tb",
+                    flex: 1
                 }
             ],
             formToolbar: [
@@ -194,7 +199,7 @@ Ext.define("NOC.support.crashinfo.Application", {
         if(!me.tbField) {
             me.tbField = me.formPanel.items.first().getComponent("tb");
         }
-        me.tbField.setHtml("<pre style='border: 1px solid gray; padding: 4px; border-radius: 4px'>" + tb + "</pre>");
+        me.tbField.setValue(tb);
     },
     //
     onReport: function() {
