@@ -16,6 +16,7 @@ Ext.define("NOC.main.desktop.Application", {
         "Ext.ux.form.DictField",
         "Ext.ux.form.ColorField",
         "Ext.ux.grid.column.GlyphAction",
+        "NOC.core.CMText",
         "NOC.main.desktop.templates.About"
     ],
 
