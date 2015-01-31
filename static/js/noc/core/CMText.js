@@ -32,6 +32,7 @@ Ext.define("NOC.core.CMText", {
     componentLayout: "cmtext",
     readOnly: false,
     lineNumbers: true,
+    mode: null,
     childEls: [
         "containerEl"
     ],
@@ -91,12 +92,14 @@ Ext.define("NOC.core.CMText", {
         var me = this;
 
         // Create CodeMirror
+        CodeMirror.modeURL = "/static/pkg/codemirror/mode/%N/%N.js";
         me.editor = new CodeMirror(me.containerEl.dom, {
             readOnly: me.readOnly,
             lineNumbers: me.lineNumbers,
             styleActiveLine: true,
-            value: me.rawValue || ""
+            value: me.rawValue || "",
         });
+        me.setMode(me.mode);
         // change the codemirror css
         var css = Ext.util.CSS.getRule(".CodeMirror");
         if (css) {
@@ -168,6 +171,15 @@ Ext.define("NOC.core.CMText", {
             } catch (e) {
             }
             Ext.destroyMembers("containerEl");
+        }
+    },
+
+    setMode: function(mode) {
+        var me = this;
+        me.mode = mode;
+        if(me.mode) {
+            CodeMirror.autoLoadMode(me.editor, me.mode);
+            me.editor.setOption("mode", me.mode);
         }
     }
 });
