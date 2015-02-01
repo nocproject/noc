@@ -7,6 +7,9 @@
 ##----------------------------------------------------------------------
 
 case "$1" in
+    "generate-ssh-keys")
+        exec ./scripts/generate-ssh-keys.py "$@"
+        ;;
     "get-uuid")
         exec ./scripts/get-uuid.py
         ;;
