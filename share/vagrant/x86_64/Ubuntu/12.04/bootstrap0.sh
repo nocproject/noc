@@ -83,6 +83,7 @@ aptinstall mongodb
 aptinstall mercurial
 aptinstall libsmi2ldbl
 aptinstall sudo
+aptinstall quilt
 ##
 ## Set up Postgresql database
 ##
