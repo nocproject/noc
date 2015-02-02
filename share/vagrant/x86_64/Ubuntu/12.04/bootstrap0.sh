@@ -90,7 +90,7 @@ aptinstall quilt
 info "Create PostgreSQL 'noc' user and database"
 su - postgres -c psql << __EOF__
 CREATE USER noc SUPERUSER ENCRYPTED PASSWORD 'thenocproject';
-CREATE DATABASE noc WITH OWNER=noc ENCODING='UTF8';
+CREATE DATABASE noc WITH OWNER=noc ENCODING='UTF8' TEMPLATE template0;
 __EOF__
 [ $? -eq 0 ] || error_exit "Failed to initialize PostgreSQL database and user"
 ##
