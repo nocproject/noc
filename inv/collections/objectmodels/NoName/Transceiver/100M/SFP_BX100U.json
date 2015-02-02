@@ -18,7 +18,7 @@
             "direction": "s",
             "gender": "f",
             "name": "txrx",
-            "protocols": ["<100BASELX-1310", ">1000BASELX-1550"],
+            "protocols": ["<100BASELX-1310", ">100BASELX-1550"],
             "type__name": "Optical | LC"
         }
     ],

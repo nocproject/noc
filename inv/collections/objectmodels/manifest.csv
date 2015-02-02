@@ -442,8 +442,8 @@ NoName | Patch | LC-LC SMF Duplex Patch Cord,c16eb516-bbb1-45b1-a3d4-a960c3109e2
 NoName | Patch | LC-LC SMF Simplex Patch Cord,217ba845-5309-4c4b-8543-d26dea35f11a,NoName/Patch/LC-LC_SMF_Simplex_Patch_Cord.json,bea4a13dbb4a39f8f97b94c0f47c81ee5850c7ab969760f5029b4cea9bf4ee2f
 "NoName | Rack | 19"" 42U 1000mm Shelf",b85ca077-991d-463c-97a3-64995f4148c8,NoName/Rack/19_42U_1000mm_Shelf.json,7853c9e373382c992c8949d97b800524720aa064bafb951ae186debf8ece2fb7
 "NoName | Rack | 19"" 44U 1000mm Shelf",4dd00852-56bd-4c7e-91e4-00c2c270031f,NoName/Rack/19_44U_1000mm_Shelf.json,822a203f05e754d616b392034aa7af999f1726cf5378aa89990dc320ed9e9195
-NoName | Transceiver | 100M | SFP BX100D,01c91692-869f-4381-b6d3-6447d6c693dd,NoName/Transceiver/100M/SFP_BX100D.json,c75417769f556f2e4d1a530ba667a4c2782a1a5d6c87e46a1d2a6d694705ae61
-NoName | Transceiver | 100M | SFP BX100U,316d4d59-c2e2-4274-8522-7981832a777e,NoName/Transceiver/100M/SFP_BX100U.json,2443df780fc68aaa900ef8ba321b1dcaa86c8be2d41aac730cf6f2bcc6e6bb77
+NoName | Transceiver | 100M | SFP BX100D,01c91692-869f-4381-b6d3-6447d6c693dd,NoName/Transceiver/100M/SFP_BX100D.json,71cadf561d380d63599df2524445ded7f8e03aa0830cdab09e9e0b280e6393b1
+NoName | Transceiver | 100M | SFP BX100U,316d4d59-c2e2-4274-8522-7981832a777e,NoName/Transceiver/100M/SFP_BX100U.json,39c17666e5cf06c8cde007b894b43cce5b16310931dc4f6fc93308ee7f3bb6cf
 NoName | Transceiver | 100M | SFP FX,fb502b5f-41ca-4f88-90fd-5c1f6b61cb3f,NoName/Transceiver/100M/SFP_FX.json,3fe7a161a7f4732b2ebe157fd39465b39dbf02e9a137abbaf5ca2c7821157442
 NoName | Transceiver | 10G | SFP+ ER,385fb8e6-ccdf-4795-8608-af18354513ad,NoName/Transceiver/10G/SFP+_ER.json,f2111cf0c8e9ee2476bf458744aa2d229defe1a83a485441dbd0c908e2a9e41c
 NoName | Transceiver | 10G | SFP+ LR,625eaea0-5323-46ac-bd6b-0a9c8d736e91,NoName/Transceiver/10G/SFP+_LR.json,fd3badeac50c366c8f2ff778491316ef19351673361b03913f2fa99bef29211c
