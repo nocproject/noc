@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## OS.Linux.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -18,9 +18,9 @@ class Script(NOCScript):
     cache = True
     implements = [IGetVersion]
 
-    rx_distrib = re.compile(r"^DISTRIB_ID=+(?P<distrib>\S+)$", re.MULTILINE)
+    rx_distrib = re.compile(r"^NAME=+(?P<distrib>.+)$", re.MULTILINE)
     rx_release = re.compile(
-        r"^DISTRIB_RELEASE=+(?P<release>\S+)$", re.MULTILINE)
+        r"^(?P<release>.+ release .+)$", re.MULTILINE)
     rx_vendor = re.compile(
         r"option 'Manufacturer' '(?P<vendor>\S+)'$", re.MULTILINE)
     rx_platform = re.compile(
@@ -114,17 +114,13 @@ class Script(NOCScript):
         if not vendor or not version:
             cmd = "cat /etc/*{-,_}{release,version} 2>/dev/null; echo ''"
             vers = self.cli(cmd)
-            ver = vers.split('\n')
-            if len(ver) > 3:
-                distrib = self.re_search(self.rx_distrib, vers)
-                release = self.re_search(self.rx_release, vers)
-                if distrib:
-                    vendor = distrib.group("distrib")
-                if release:
-                    version = release.group("release")
-            if not version:
-                version = ver[0]
-
+            distrib = self.re_search(self.rx_distrib, vers)
+            release = self.re_search(self.rx_release, vers)
+            if distrib:
+                vendor = distrib.group("distrib")
+            if release:
+                version = release.group("release")
+ 
         if not vendor:
             ven = self.cli("uname -s 2>/dev/null")
             ven = ven.split('\n')[0]
@@ -133,7 +129,7 @@ class Script(NOCScript):
             else:
                 vendor = "Unknown"
 
-        if not version:
+#        if not version:
 # Russian latter!!!
 #            vers = self.cli(smart_str("cat /etc/version 2>/dev/null"))
 #            match = self.rx_eltex_version.search(vers)
@@ -141,7 +137,7 @@ class Script(NOCScript):
 #                vendor = 'Eltex'
 #                platform = match.group("platform")
 #                version = match.group("version")
-            version = vers.split('\n')[0]
+#            version = vers.split('\n')[0]
         if not version:
             vers = self.cli("uname -r 2>/dev/null")
             version = vers.split('\n')[0]
