@@ -171,7 +171,7 @@ for d in ./etc/noc*.defaults; do
             ./scripts/set-conf.py ./etc/noc.conf database password $PG_PASSWORD || error_exit "$LINENO: Unable to set etc/noc.conf:[database]/password"
             ./scripts/set-conf.py ./etc/noc.conf database host $PG_HOST || error_exit "$LINENO: Unable to set etc/noc.conf:[database]/host"
             ./scripts/set-conf.py ./etc/noc.conf database port $PG_PORT || error_exit "$LINENO: Unable to set etc/noc.conf:[database]/port"
-            # Set up PostgreSQL database
+            # Set up MongoDB database
             ./scripts/set-conf.py ./etc/noc.conf nosql_database name $MONGO_DB || error_exit "$LINENO: Unable to set etc/noc.conf:[nosql_database]/name"
             ./scripts/set-conf.py ./etc/noc.conf nosql_database user $MONGO_USER || error_exit "$LINENO: Unable to set etc/noc.conf:[nosql_database]/user"
             ./scripts/set-conf.py ./etc/noc.conf nosql_database password $MONGO_PASSWORD || error_exit "$LINENO: Unable to set etc/noc.conf:[nosql_database]/password"
