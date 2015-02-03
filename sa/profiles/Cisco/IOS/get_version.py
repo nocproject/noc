@@ -38,14 +38,15 @@ class Script(NOCScript):
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
                 if v:
                     match = self.re_search(self.rx_snmp_ver, v)
-                    return {
-                        "vendor": "Cisco",
-                        "platform": match.group("platform"),
-                        "version": match.group("version"),
-                        "attributes": {
-                            "image": match.group("image"),
+                    if not platform in ["IOS-XE", "EGR"]:
+                        return {
+                            "vendor": "Cisco",
+                            "platform": match.group("platform"),
+                            "version": match.group("version"),
+                            "attributes": {
+                                "image": match.group("image"),
+                            }
                         }
-                    }
             except self.snmp.TimeOutError:
                 pass
         v = self.cli("show version", cached=True)
