@@ -38,7 +38,7 @@ class Script(NOCScript):
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
                 if v:
                     match = self.re_search(self.rx_snmp_ver, v)
-                    if not platform in ["IOS-XE", "EGR"]:
+                    if not match.group("platform") in ["IOS-XE", "EGR"]:
                         return {
                             "vendor": "Cisco",
                             "platform": match.group("platform"),
