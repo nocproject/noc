@@ -4,7 +4,7 @@
 ## OS:     FreeBSD
 ## Compatible:
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -19,6 +19,6 @@ class Profile(noc.sa.profiles.Profile):
     command_super = "su"
     command_exit = "exit"
     pattern_username = r"^[Ll]ogin:"
-    pattern_unpriveleged_prompt = r"^\S*?(%|\$)"
-    pattern_prompt = r"^(?P<hostname>\S*)#"
+    pattern_unpriveleged_prompt = r"^\S*?\s*(%|\$)\s*"
+    pattern_prompt = r"^(?P<hostname>\S*)\s*#\s*"
     pattern_syntax_error = r": Command not found\."
