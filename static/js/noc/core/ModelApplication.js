@@ -28,7 +28,7 @@ Ext.define("NOC.core.ModelApplication", {
     preview: null,
     treeFilter: null,
     metricModelId: null,  // Add MetricSettings button
-    formLayout: "auto",
+    formLayout: "anchor",
     //
     initComponent: function() {
         var me = this;
