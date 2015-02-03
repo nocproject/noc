@@ -233,11 +233,15 @@ class Task(PeriodicTask):
                                     now.month, now.day, now.hour, now.minute)
         etc_out = os.path.join(config.get("path", "backup_dir"), etc_out)
         self.info("dumping etc/ into %s" % etc_out)
-        files = [os.path.join("etc", f) for f in os.listdir("etc")
-                 if f.endswith(".conf") and not f.startswith(".")]
-        files += [os.path.join("etc", "ssh", f)
-                  for f in os.listdir(os.path.join("etc", "ssh"))
-                  if not f.startswith(".")]
+        try:
+            files = [os.path.join("etc", f) for f in os.listdir("etc")
+                     if f.endswith(".conf") and not f.startswith(".")]
+            files += [os.path.join("etc", "ssh", f)
+                      for f in os.listdir(os.path.join("etc", "ssh"))
+                      if not f.startswith(".")]
+        except OSError, why:
+            self.error("Failed to get list of files: %s" % why)
+            return False
         return self.tar(etc_out, files)
 
     def execute(self):
