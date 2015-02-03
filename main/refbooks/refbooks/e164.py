@@ -14,7 +14,7 @@ class E164(RefBook):
     name="E.164 Country Prefixes"
     description="E.164 Country Prefixes"
     downloader="CSV"
-    download_url="http://update.nocproject.org/db/e164.csv"
+    download_url="https://cdn.nocproject.org/refbook/e164.csv"
     refresh_interval=90
     fields=[
         Field(name="Prefix",search_method="string"),

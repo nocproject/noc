@@ -15,7 +15,7 @@ class RussianNumberPlan(RefBook):
     description="Российский план нумерации, коды ABC"
     language="Russian"
     downloader="CSV"
-    download_url="http://update.nocproject.org/db/russian_number_plan.csv"
+    download_url="https://cdn.nocproject.org/refbook/russian_number_plan.csv"
     refresh_interval=90
     fields=[
         Field(name="Зона нумерации",search_method="substring"),
