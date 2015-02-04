@@ -27,7 +27,8 @@ class DailyPartition(Partition):
     @classmethod
     def enumerate(cls, start, end):
         """
-        Yield all partitions from start to end
+        Yield all partitions from start to end.
+        Generator yields partition name, start and end timestamps
         :param start: integer start timestamp
         :param end: integer end timestamp
         """
@@ -35,5 +36,6 @@ class DailyPartition(Partition):
         et = datetime.date.fromtimestamp(end)
         day = datetime.timedelta(days=1)
         while t <= et:
-            yield t.strftime("%Y.%m.%d")
+            t0 = time.mktime(t.timetuple())
+            yield t.strftime("%Y.%m.%d"), t0, t0 + 86399
             t += day
