@@ -117,10 +117,26 @@ class TimeSeriesDatabase(object):
         r = []
         for pn in self.partition.enumerate(start, end):
             partition = self.get_partition_by_name(pn)
-            for k, v in partition.iterate(k0, k1):
-                t = self.get_time(k)
-                v = self.get_value(v)
-                r += [(v, t)]
+            r += [(self.get_value(v), self.get_time(k))
+                  for k, v in partition.iterate(k0, k1)]
+        return r
+
+    def find_and_fetch(self, path, start, end):
+        """
+        Find all metrics matching path and fetch them
+        Returns dict of metric -> [(time, value)]
+        """
+        metrics = self.find(path)
+        r = dict((m, []) for m in metrics)
+        for pn, s, e in self.partition.enumerate(start, end):
+            partition = self.get_partition_by_name(pn)
+            for m in metrics:
+                r[m] += [
+                    (self.get_value(v), self.get_time(k))
+                    for k, v in partition.iterate(
+                        self.get_key(m, max(s, start)),
+                        self.get_key(m, min(e, end)))
+                ]
         return r
 
     def get_batch(self):

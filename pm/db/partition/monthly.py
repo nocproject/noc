@@ -27,6 +27,7 @@ class MonthlyPartition(Partition):
     def enumerate(cls, start, end):
         """
         Yield all partitions from start to end
+        Generator yields partition name, start and end timestamps
         :param start: integer start timestamp
         :param end: integer end timestamp
         """
