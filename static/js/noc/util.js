@@ -531,3 +531,30 @@ Handlebars.registerHelper("grid", function(val) {
     // return r.join("");
     return new Handlebars.SafeString(r.join(""));
 });
+
+//
+// UI Styles
+// Predefined set of size and settings.
+// Applied to field as uiStyle property
+//
+NOC.uiStyles = {
+    // 3 letters
+    small: {
+        width: 50,
+        anchor: null
+    },
+    // 20 letters
+    medium: {
+        width: 155,
+        anchor: null
+    },
+    // 40 letters
+    large: {
+        width: 310,
+        anchor: null
+    },
+    // Full width
+    extra: {
+        anchor: "100%"
+    }
+};

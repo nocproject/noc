@@ -26,26 +26,29 @@ Ext.override(Ext.grid.column.Column, {
 //
 // Override form field labels
 //
-Ext.override(Ext.form.Panel, {
+
+//
+// Mark required fields and apply style templates
+//
+Ext.override(Ext.form.field.Base, {
     initComponent: function() {
-        var me = this,
-            applyLabelStyle = function(field) {
-                if((field.xtype == "fieldset") || (field.xtype == "container")) {
-                    Ext.each(field.items.items, function(f) {
-                        applyLabelStyle(f);
-                    });
-                } else {
-                    if(!field.allowBlank) {
-                        field.labelClsExtra = "noc-label-required";
-                    }
-                }
-            };
-        me.on("beforeadd", function(form, field) {
-            applyLabelStyle(field);
-        });
+        var me = this;
+        // Apply label style
+        if(!me.allowBlank) {
+            me.labelClsExtra = "noc-label-required";
+        }
+        // Apply uiStyle
+        if(me.uiStyle) {
+            var style = Ext.apply({}, NOC.uiStyles[me.uiStyle] || {});
+            if(me.labelWidth && style.width && (me.labelAlign === "left" || me.labelAlign == "right")) {
+                style.width += me.labelWidth;
+            }
+            Ext.apply(me, style);
+        }
         me.callParent();
     }
 });
+
 //
 // Glyphs in tree column
 //
