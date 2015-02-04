@@ -9,6 +9,8 @@
 ## Python modules
 import calendar
 import bisect
+import logging
+from itertools import groupby
 ## Third-party modules
 import pytz
 ## NOC modules
@@ -165,8 +167,9 @@ def fetchData(ctx, path):
     start = int(epoch(ctx["startTime"]))
     end = int(epoch(ctx["endTime"]))
     max_points = ctx["maxDataPoints"]
-    for metric in tsdb.find(path):
-        values = tsdb.fetch(metric, start, end)
+    md = tsdb.find_and_fetch(path, start, end)
+    for metric in md:
+        values = md[metric]
         if max_points and len(values) > max_points:
             values = list(consolidate(values, start, end, max_points))
         ts = TimeSeries(metric, start, end, values)
@@ -176,20 +179,7 @@ def fetchData(ctx, path):
 
 
 def consolidate(values, start, end, max_points):
-    """
-    Consolidating generator
-    """
-    ws = (end - start) // max_points
-    s = (start // ws) * ws
-    e = s + ws
-    points = []
-    for v, t in values:
-        while t >= e:
-            if points:
-                yield max(points), s
-                points = []
-            s += ws
-            e += ws
-        points += [v]
-    if points:
-        yield max(points), s
+    ws = (end - start) // (max_points - 1)
+    for k, g in groupby(values, lambda x: x[1] // ws):
+        yield max(y[0] for y in g), k * ws
+
