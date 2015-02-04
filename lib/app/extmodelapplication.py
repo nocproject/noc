@@ -273,7 +273,8 @@ class ExtModelApplication(ExtApplication):
                     r["%s__label" % f.name] = ""
         # Add m2m fields
         for n in self.m2m_fields:
-            r[n] = list(getattr(o, n).values_list("id", flat=True))
+            r[n] = [{"id": str(mmo.pk), "label": unicode(mmo)} for mmo in getattr(o, n).all()]
+            # r[n] = list(getattr(o, n).values_list("id", flat=True))
         # Add custom fields
         for f in self.custom_fields:
             if fields and f not in fields:
