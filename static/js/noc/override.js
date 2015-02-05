@@ -43,6 +43,12 @@ Ext.override(Ext.form.field.Base, {
             if(me.labelWidth && style.width && (me.labelAlign === "left" || me.labelAlign == "right")) {
                 style.width += me.labelWidth;
             }
+            if(style.width && me.getTriggers) {
+                var triggers = me.getTriggers();
+                Ext.Array.each(Object.keys(triggers), function(v) {
+                    style.width += 25;
+                });
+            }
             Ext.apply(me, style);
         }
         me.callParent();
