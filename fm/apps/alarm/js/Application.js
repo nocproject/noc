@@ -153,6 +153,9 @@ Ext.define("NOC.fm.alarm.Application", {
                 {
                     xtype: "toolbar",
                     dock: "top",
+                    layout: {
+                        overflowHandler: "Menu"
+                    },
                     items: [
                         me.typeCombo,
                         me.selectorCombo,
