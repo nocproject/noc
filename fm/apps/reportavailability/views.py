@@ -25,7 +25,7 @@ class ReportAvailabilityApplication(SimpleReport):
         d = datetime.timedelta(days=days)
         b = now - d
         outages = defaultdict(int)
-        q = Q(start__gte=b) | Q(stop__gte=b)
+        q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
         for o in Outage.objects.filter(q):
             start = max(o.start, b)
             stop = o.stop if o.stop else now
