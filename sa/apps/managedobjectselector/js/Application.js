@@ -62,7 +62,8 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: "Name",
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
                     name: "description",
