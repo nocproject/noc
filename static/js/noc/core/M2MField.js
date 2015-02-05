@@ -15,10 +15,10 @@ Ext.define("NOC.core.M2MField", {
 
     initComponent: function() {
         var me = this,
-            sclass, toolbar;
+            eclass, toolbar;
 
         me.store = Ext.create("Ext.data.Store", {
-            fields: ["id", "label"],
+            fields: ["id", {name: "label", persist: false}],
             idField: "id",
             data: []
         });
@@ -27,7 +27,7 @@ Ext.define("NOC.core.M2MField", {
             text: "Add",
             glyph: NOC.glyph.plus,
             scope: me,
-            handler: me.onAdd
+            handler: me.onAddRecord
         });
 
         me.deleteButton = Ext.create("Ext.button.Button", {
@@ -35,7 +35,7 @@ Ext.define("NOC.core.M2MField", {
             glyph: NOC.glyph.minus,
             disabled: true,
             scope: me,
-            handler: me.onDelete
+            handler: me.onDeleteRecord
         });
 
         toolbar = [me.addButton, me.deleteButton];
@@ -111,7 +111,7 @@ Ext.define("NOC.core.M2MField", {
         me.deleteButton.setDisabled(false);
     },
     //
-    onAdd: function() {
+    onAddRecord: function() {
         var me = this,
             rowEditing = me.grid.plugins[0];
         rowEditing.cancelEdit();
@@ -119,7 +119,7 @@ Ext.define("NOC.core.M2MField", {
         rowEditing.startEdit(0, 0);
     },
     //
-    onDelete: function() {
+    onDeleteRecord: function() {
         var me = this,
             sm = me.grid.getSelectionModel(),
             rowEditing = me.grid.plugins[0];
