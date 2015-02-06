@@ -197,3 +197,8 @@ TABLE {
     background-repeat: repeat-x;
     border-color: #dca7a7;
 }
+
+.x-form-focus {
+    filter: brightness(0.95);
+    -webkit-filter: brightness(0.95);
+}
