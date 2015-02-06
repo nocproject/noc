@@ -41,7 +41,7 @@ class Script(NOCScript):
     @NOCScript.match(platform__regex=r"DES-1210-28\/ME")
     def execute_config_current(self):
         config = self.cli("show config current_config")
-        config = self.strip_first_lines(config, 31)
+        config = self.strip_first_lines(config, 3)
         return self.cleaned_config(config)
 
     ##

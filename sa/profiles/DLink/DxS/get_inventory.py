@@ -37,6 +37,13 @@ class Script(NOCScript):
     rx_mod3 = re.compile(
         r"\s+(?P<number>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+"
         r"(?P<serial>(\xFF)+)\s+(?P<descr>.+?)\s*$")
+    rx_media_type = re.compile(
+        r"^\s(\d+:)?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
+        r"(?P<vendor>.+?)/\s+(?P<part_no>.+?)/\s+(?P<serial>.+?)/\s+\n"
+        r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S+)?\s+\d+\s+\n"
+        r"\s+Compatibility: Single Mode \(SM\),"
+        r"(?P<mbd>\d+)Mbd, (?P<nm>\d+)nm\n", re.MULTILINE)
+    fake_vendors = ["OEM", "CISCO-FINISAR"]
 
     def execute(self):
         r = []
@@ -109,6 +116,63 @@ class Script(NOCScript):
                         "description": [match.group("descr")],
                     }
                     r += [p]
+        except self.CLISyntaxError:
+            pass
+        try:
+            c = self.cli("show ports media_type")
+            for match in self.rx_media_type.finditer(c):
+                vendor = match.group("vendor")
+                part_no = match.group("part_no")
+                description = match.group("part_no")
+                revision = match.group("revision")
+                mbd = int(match.group("mbd"))
+                nm = int(match.group("nm"))
+                if vendor in self.fake_vendors:
+                    vendor = "NONAME"
+                    part_no = 'NoName | Transceiver | '
+                    if mbd == 1300 and nm == 1310:
+                        part_no = part_no + '1G | SFP BXU'
+                    elif mbd == 1300 and nm == 1550:
+                        part_no = part_no + '1G | SFP BXD'
+                    elif mbd == 1200 and nm == 1310:
+                        part_no = part_no + '1G | SFP BX10U'
+                    elif mbd >= 1200 and nm == 1490:
+                        part_no = part_no + '1G | SFP BX10D'
+                    elif mbd >= 1000 and nm == 0:
+                        if description.endswith(tuple([" EX", "-EX"])):
+                            part_no = part_no + '1G | SFP EX'
+                        elif description.endswith(tuple([" LH", "-LH"])):
+                            part_no = part_no + '1G | SFP LH'
+                        elif description.endswith(tuple([" LX", "-LX"])):
+                            part_no = part_no + '1G | SFP LX'
+                        elif description.endswith(tuple([" SX", "-SX"])):
+                            part_no = part_no + '1G | SFP SX'
+                        elif description.endswith(tuple([" T", "-T"])):
+                            part_no = part_no + '1G | SFP T'
+                        elif description.endswith(tuple([" TX", "-TX"])):
+                            part_no = part_no + '1G | SFP TX'
+                        elif description.endswith(tuple([" ZX", "-ZX"])):
+                            part_no = part_no + '1G | SFP ZX'
+                        else:
+                            part_no = part_no + '1G | SFP'
+                    elif mbd == 100 and nm == 1310:
+                        part_no = part_no + '100M | SFP BX100U'
+                    elif mbd == 100 and nm == 1550:
+                        part_no = part_no + '100M | SFP BX100D'
+                    else:
+                        part_no = part_no + 'Unknown SFP'
+
+                i = {
+                    "type": "MODULE",
+                    "number": match.group("port"),
+                    "vendor": vendor,
+                    "part_no": part_no,
+                    "serial": match.group("serial"),
+                    "description": "%s, %dMbd, %dnm" % (description, mbd, nm)
+                }
+                if revision is not None:
+                    i["revision"] = revision
+                r += [i]
         except self.CLISyntaxError:
             pass
 

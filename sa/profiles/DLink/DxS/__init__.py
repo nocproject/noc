@@ -174,6 +174,11 @@ class Profile(NOCProfile):
                 }]
         else:
             try:
+                # See NOC-1508 for discussion on this hack
+                if script.match_version(platform__regex=r"DES-1210-\d+\/ME") \
+                or script.match_version(platform__regex=r"DGS-1100-\d+\/ME"):
+                    script.telnet_naws = "\x00\x7f\x00\x7f"
+
                 if interface is not None:
                     objects = script.cli_object_stream(
                         ("show ports %s description" % interface),
