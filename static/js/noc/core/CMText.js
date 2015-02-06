@@ -181,5 +181,10 @@ Ext.define("NOC.core.CMText", {
             CodeMirror.autoLoadMode(me.editor, me.mode);
             me.editor.setOption("mode", me.mode);
         }
+    },
+
+    scrollDown: function() {
+        var me = this;
+        me.editor.scrollTo(null, Infinity);
     }
 });
