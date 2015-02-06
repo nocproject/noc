@@ -14,7 +14,7 @@ class ISO3166(RefBook):
     name="ISO 3166 Country Codes"
     description="ISO 3166 Country Codes"
     downloader="CSV"
-    download_url="https://cdn.nocproject.org/db/refbook.csv"
+    download_url="https://cdn.nocproject.org/refbook/iso3166_1.csv"
     refresh_interval=90
     fields=[
         Field(name="Country",search_method="substring"),
