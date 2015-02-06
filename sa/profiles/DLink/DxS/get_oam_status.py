@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS.get_oam_status
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -17,22 +17,20 @@ class Script(NOCScript):
     name = "DLink.DxS.get_oam_status"
     implements = [IGetOAMStatus]
 
-    rx_line = re.compile(
-        r"Port\s+",re.MULTILINE )
-    rx_line1 = re.compile(r"\nRemote Client", re.MULTILINE )
-    rx_oam = re.compile(r"\s+OAM\s+:\s+Enable",re.MULTILINE | re.IGNORECASE)
-    rx_capsU = re.compile(
-        r"\n\s+Unidirection\s+:\s+(?P<caps_U>\S+)", re.IGNORECASE | re.MULTILINE )
-    rx_capsL = re.compile(    
-        r"\n\s+Link Monitoring\s+:\s+(?P<caps_L>\S+)",re.IGNORECASE | re.MULTILINE )
-    rx_capsV = re.compile(
-        r"\n\s+Variable Request\s+:\s+(?P<caps_V>\S+)",re.IGNORECASE | re.MULTILINE )
+    rx_line = re.compile(r"Port\s+", re.MULTILINE)
+    rx_line1 = re.compile(r"\nRemote Client", re.MULTILINE)
+    rx_oam = re.compile(r"\s+OAM\s+:\s+Enable", re.MULTILINE | re.IGNORECASE)
+    rx_capsU = re.compile(r"\n\s+Unidirection\s+:\s+(?P<caps_U>\S+)",
+        re.IGNORECASE | re.MULTILINE)
+    rx_capsL = re.compile(r"\n\s+Link Monitoring\s+:\s+(?P<caps_L>\S+)",
+        re.IGNORECASE | re.MULTILINE)
+    rx_capsV = re.compile(r"\n\s+Variable Request\s+:\s+(?P<caps_V>\S+)",
+        re.IGNORECASE | re.MULTILINE)
 
     rx_port = re.compile(r"^(?P<port>\S+)", re.MULTILINE)
-    rx_mac = re.compile(
-        r"\s+MAC Address\s+:\s+(?P<mac>\S+)",
-        re.IGNORECASE | re.MULTILINE )
-        
+    rx_mac = re.compile(r"\s+MAC Address\s+:\s+(?P<mac>\S+)",
+        re.IGNORECASE | re.MULTILINE)
+
     def execute(self, **kwargs):
         r = []
         try:
