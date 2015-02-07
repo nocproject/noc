@@ -2,91 +2,144 @@
 // NOC.core.M2MField -
 // Lookup Many-To-Many form field
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2015 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.M2MField");
 
 Ext.define("NOC.core.M2MField", {
-    extend: "Ext.ux.form.ItemSelector",
-    displayField: "label",
-    valueField: "id",
-    queryMode: "remote",
-    queryParam: "__query",
-    queryCaching: false,
-    queryDelay: 200,
-    forceSelection: true,
-    autoScroll: true,
-    delimiter: ",",
-    typeAhead: true,
-    triggerAction: "all",
-    stateful: false,
-    autoSelect: false,
-    pageSize: 0,
-    fromTitle: "Available",
-    toTitle: "Selected",
-    buttons: ["add", "remove"],
-    buttonsGlyph: {
-        add: NOC.glyph.arrow_right,
-        remove: NOC.glyph.arrow_left
+    extend: "Ext.form.FieldContainer",
+    mixins: {
+        field: 'Ext.form.field.Field'
     },
 
     initComponent: function() {
         var me = this,
-            sclass = me.$className.replace("M2MField", "Lookup");
-        Ext.apply(me, {
-            store: Ext.create(sclass, {
-                autoLoad: true
-            })
+            eclass, toolbar;
+
+        me.store = Ext.create("Ext.data.Store", {
+            fields: ["id", {name: "label", persist: false}],
+            idField: "id",
+            data: []
         });
+
+        me.addButton = Ext.create("Ext.button.Button", {
+            text: "Add",
+            glyph: NOC.glyph.plus,
+            scope: me,
+            handler: me.onAddRecord
+        });
+
+        me.deleteButton = Ext.create("Ext.button.Button", {
+            text: "Delete",
+            glyph: NOC.glyph.minus,
+            disabled: true,
+            scope: me,
+            handler: me.onDeleteRecord
+        });
+
+        toolbar = [me.addButton, me.deleteButton];
+        eclass = me.$className.replace("M2MField", "LookupField");
+        Ext.require(eclass);
+        me.grid = Ext.create("Ext.grid.Panel", {
+            layout: "fit",
+            store: me.store,
+            header: false,
+            columns: [{
+                name: "id",
+                flex: 1,
+                renderer: function(value, meta, record) {
+                    return record.get("label");
+                },
+                editor: eclass.substr(4)  // Strip NOC.
+            }],
+            plugins: [
+                Ext.create("Ext.grid.plugin.CellEditing", {
+                    clicksToEdit: 2,
+                    listeners: {
+                        scope: me,
+                        edit: me.onCellEdit
+                    }
+                })
+            ],
+            dockedItems: [
+                {
+                    xtype: "toolbar",
+                    dock: "top",
+                    items: toolbar
+                }
+            ],
+            listeners: {
+                scope: me,
+                select: me.onSelect
+            }
+        });
+
+        Ext.apply(me, {
+            items: [
+                me.grid
+            ]
+        });
+        me.currentSelection = undefined;
+
         me.callParent();
     },
 
-    createButtons: function() {
+    getValue: function() {
         var me = this,
-            buttons = [];
-
-        if (!me.hideNavIcons) {
-            Ext.Array.forEach(me.buttons, function(name) {
-                buttons.push({
-                    xtype: "button",
-                    tooltip: me.buttonsText[name],
-                    handler: me["on" + Ext.String.capitalize(name) + "BtnClick"],
-                    glyph: me.buttonsGlyph[name],
-                    navBtn: true,
-                    scope: me,
-                    margin: "4 0 0 0"
-                });
-            });
-        }
-        return buttons;
+            records = [];
+        me.store.each(function(r) {
+            records.push(r.get("id"));
+        });
+        return records;
     },
 
-    _setValue: function(value) {
+    setValue: function(v) {
         var me = this;
-        if(value === undefined) {
-            return;
+        if(v === undefined || v === "") {
+            v = [];
+        } else {
+            v = v || [];
         }
-
-        if(me.store.loading) {
-            // Value will actually be set
-            // by store.load callback.
-            // Ignore it now
-            return me;
+        me.store.loadData(v);
+        return me.mixins.field.setValue.call(me, v);
+    },
+    //
+    onSelect: function(grid, record, index) {
+        var me = this;
+        me.currentSelection = index;
+        me.deleteButton.setDisabled(false);
+    },
+    //
+    onAddRecord: function() {
+        var me = this,
+            rowEditing = me.grid.plugins[0];
+        rowEditing.cancelEdit();
+        me.grid.store.insert(0, {});
+        rowEditing.startEdit(0, 0);
+    },
+    //
+    onDeleteRecord: function() {
+        var me = this,
+            sm = me.grid.getSelectionModel(),
+            rowEditing = me.grid.plugins[0];
+        rowEditing.cancelEdit();
+        me.grid.store.remove(sm.getSelection());
+        if(me.grid.store.getCount() > 0) {
+            sm.select(0);
+        } else {
+            me.deleteButton.setDisabled(true);
         }
-
-        me.store.load({
-            scope: me,
-            callback: function(records, operation, success) {
-                if(success) {
-                    var fromStore = me.fromField.boundList.getStore(),
-                        toStore = me.toField.boundList.getStore();
-                    fromStore.removeAll();
-                    toStore.removeAll();
-                    fromStore.loadRecords(records);
-                    // me.setRawValue(value);
-                }
-            }
-        });
+    },
+    //
+    onCellEdit: function(editor, e) {
+        var me = this,
+            ge = e.grid.columns[e.colIdx].getEditor();
+        if(ge.rawValue) {
+            e.record.set("id", ge.getValue());
+            e.record.set("label", ge.getRawValue());
+        } else {
+            me.store.remove(e.record);
+        }
     }
 });

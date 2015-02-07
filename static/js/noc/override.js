@@ -26,26 +26,35 @@ Ext.override(Ext.grid.column.Column, {
 //
 // Override form field labels
 //
-Ext.override(Ext.form.Panel, {
+
+//
+// Mark required fields and apply style templates
+//
+Ext.override(Ext.form.field.Base, {
     initComponent: function() {
-        var me = this,
-            applyLabelStyle = function(field) {
-                if((field.xtype == "fieldset") || (field.xtype == "container")) {
-                    Ext.each(field.items.items, function(f) {
-                        applyLabelStyle(f);
-                    });
-                } else {
-                    if(!field.allowBlank) {
-                        field.labelClsExtra = "noc-label-required";
-                    }
-                }
-            };
-        me.on("beforeadd", function(form, field) {
-            applyLabelStyle(field);
-        });
+        var me = this;
+        // Apply label style
+        if(!me.allowBlank) {
+            me.labelClsExtra = "noc-label-required";
+        }
+        // Apply uiStyle
+        if(me.uiStyle) {
+            var style = Ext.apply({}, NOC.uiStyles[me.uiStyle] || {});
+            if(me.labelWidth && style.width && (me.labelAlign === "left" || me.labelAlign == "right")) {
+                style.width += me.labelWidth;
+            }
+            if(style.width && me.getTriggers) {
+                var triggers = me.getTriggers();
+                Ext.Array.each(Object.keys(triggers), function(v) {
+                    style.width += 25;
+                });
+            }
+            Ext.apply(me, style);
+        }
         me.callParent();
     }
 });
+
 //
 // Glyphs in tree column
 //
@@ -151,3 +160,40 @@ if(NOC.settings.traceExtJSEvents) {
             return true;
         });
 }
+
+Ext.define('EXTJS-15862.tab.Bar', {
+    override: 'Ext.tab.Bar',
+
+    initComponent: function() {
+        var me = this,
+            initialLayout = me.initialConfig.layout,
+            initialAlign = initialLayout && initialLayout.align,
+            initialOverflowHandler = initialLayout && initialLayout.overflowHandler,
+            layout;
+
+
+        if (me.plain) {
+            me.addCls(me.baseCls + '-plain');
+        }
+
+
+        me.callParent();
+
+
+        me.setLayout({
+            align: initialAlign || (me.getTabStretchMax() ? 'stretchmax' :
+                    me._layoutAlign[me.dock]),
+            overflowHandler: initialOverflowHandler || 'scroller'
+        });
+
+
+        // We have to use mousedown here as opposed to click event, because
+        // Firefox will not fire click in certain cases if mousedown/mouseup
+        // happens within btnInnerEl.
+        me.on({
+            mousedown: me.onClick,
+            element: 'el',
+            scope: me
+        });
+    }
+});

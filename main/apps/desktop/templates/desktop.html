@@ -88,12 +88,42 @@
                     "Ext.ux": "/static/js/noc/ux"
                 }});
             Ext.setGlyphFontFamily("FontAwesome");
+            Ext.require("NOC.main.desktop.Application");
         </script>
         <script type="text/javascript" src="/static/js/noc/override.js"></script>
         <script type="text/javascript" src="/main/desktop/js/app.js"></script>
     </head>
     <body>
     <!-- "Loading" Splash Screen -->
+    <style>
+        /*
+         * Splash screen
+         */
+        #noc-loading-mask {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20000;
+            background-color: #c0c0c0;
+        }
+
+        #noc-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -10px;
+            margin-left: -150px;
+            width: 300px;
+            height: 100px;
+            color: #ffffff;
+            z-index: 20001;
+            font-size: 20px;
+            font-family: sans-serif !important;
+            text-align: center;
+        }
+    </style>
     <div id="noc-loading-mask"></div>
     <div id="noc-loading">Loading NOC. Please wait ...</div>
     <form id="history-form" class="x-hide-display">

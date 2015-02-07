@@ -9,5 +9,6 @@ console.debug("Defining NOC.sa.activator.LookupField");
 Ext.define("NOC.sa.activator.LookupField", {
     extend: "NOC.core.LookupField",
     alias: "widget.sa.activator.LookupField",
-    requires: ["NOC.sa.activator.Lookup"]
+    requires: ["NOC.sa.activator.Lookup"],
+    uiStyle: "medium"
 });

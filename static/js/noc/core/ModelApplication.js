@@ -198,7 +198,9 @@ Ext.define("NOC.core.ModelApplication", {
                 c.renderer = eval(c.renderer);
             }
         });
-        var selModel = Ext.create("Ext.selection.CheckboxModel");
+        var selModel = Ext.create("Ext.selection.CheckboxModel", {
+            preventFocus: true
+        });
         if(me.actions) {
             selModel.on("selectionchange", me.onActionSelectionChange, me);
         }
@@ -357,7 +359,9 @@ Ext.define("NOC.core.ModelApplication", {
     },
     //
     createForm: function() {
-        var me = this;
+        var me = this,
+            focusField = null,
+            autoFocusFields;
         //
         me.saveButton = Ext.create("Ext.button.Button", {
             itemId: "save",
@@ -586,9 +590,19 @@ Ext.define("NOC.core.ModelApplication", {
                     },
                     items: me.applyPermissions(formToolbar)
                 }
+            },
+            getDefaultFocus: function() {
+                return focusField;
             }
         });
         me.form = me.formPanel.items.first().getForm();
+        // detect autofocus field
+        autoFocusFields = Ext.ComponentQuery.query("[autoFocus=true]", me.formPanel);
+        if(autoFocusFields && autoFocusFields.length > 0) {
+            focusField = autoFocusFields[0];
+        } else {
+            focusField = me.form.getFields().items[1];
+        }
         return me.formPanel;
     },
     // Show grid
@@ -601,6 +615,9 @@ Ext.define("NOC.core.ModelApplication", {
     showForm: function() {
         var me = this;
         me.showItem(me.ITEM_FORM);
+        if(me.formPanel.getDefaultFocus) {
+            me.formPanel.getDefaultFocus().focus();
+        }
     },
     //
     showPreview: function(record) {
@@ -717,12 +734,6 @@ Ext.define("NOC.core.ModelApplication", {
             return;
         me.editRecord(record);
     },
-    // Set focus to first non-hidden field
-    // @todo: check for hidden attribute
-    focusOnFirstField: function() {
-        var me = this;
-        me.form.getFields().items[1].focus(false, 100);
-    },
     // New record. Hide grid and open form
     newRecord: function(defaults) {
         var me = this,
@@ -738,8 +749,6 @@ Ext.define("NOC.core.ModelApplication", {
         me.setFormTitle(me.createTitle);
         me.setFormId("NEW");
         me.showForm();
-        // Focus on first field
-        me.focusOnFirstField();
         // Activate delete button
         me.deleteButton.setDisabled(true);
         me.saveButton.setDisabled(!me.hasPermission("create"));
@@ -790,8 +799,6 @@ Ext.define("NOC.core.ModelApplication", {
         // Load records
         me.form.setValues(r);
         me.loadInlines();
-        // Focus on first field
-        me.focusOnFirstField();
         // Activate delete button
         me.deleteButton.setDisabled(!me.hasPermission("delete"));
         me.saveButton.setDisabled(!me.hasPermission("update"));

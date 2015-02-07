@@ -145,6 +145,9 @@ Ext.define("NOC.fm.event.Application", {
                 {
                     xtype: "toolbar",
                     dock: "top",
+                    layout: {
+                        overflowHandler: "Menu"
+                    },
                     items: [
                         me.typeCombo,
                         me.admdomCombo,
