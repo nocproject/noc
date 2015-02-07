@@ -185,6 +185,6 @@ Ext.define("NOC.core.CMText", {
 
     scrollDown: function() {
         var me = this;
-        me.editor.scrollTo(null, Infinity);
+        me.editor.setCursor(me.editor.lineCount() - 1, 0);
     }
 });
