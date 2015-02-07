@@ -23,6 +23,7 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
             anchor: "100%",
             fieldLabel: ">",
             labelWidth: 16,
+            itemId: "cmdfield",
             listeners: {
                 scope: me,
                 specialkey: me.onSpecialKey
@@ -85,7 +86,6 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         me.setTitle(c.join(" "));
         me.clearBody();
         me.prompt = record.get("name") + "> ";
-        me.cmdField.focus();
     },
     //
     onSpecialKey: function(field, e) {
@@ -141,7 +141,6 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
                     t = result[0].result[0];
                 }
                 me.consoleOut(t);
-                me.cmdField.focus();
             },
             failure: function() {
                 NOC.error("Failed to run command");
@@ -165,5 +164,10 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
             me.consoleBody.getValue() + v + "\n"
         );
         me.consoleBody.scrollDown();
+    },
+
+    getDefaultFocus: function() {
+        var me = this;
+        return me.cmdField;
     }
 });
