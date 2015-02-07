@@ -11,6 +11,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
     requires: [
         "NOC.sa.managedobjectselector.Model",
         "NOC.sa.managedobjectselector.AttributesModel",
+        "NOC.sa.managedobjectselector.LookupField",
         "NOC.sa.managedobjectselector.M2MField",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.main.prefixtable.LookupField",
@@ -61,7 +62,8 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: "Name",
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
                     name: "description",

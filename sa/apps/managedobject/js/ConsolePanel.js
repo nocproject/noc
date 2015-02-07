@@ -15,24 +15,23 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
     initComponent: function() {
         var me = this;
 
-        me.prompt = "&gt;&nbsp;";
+        me.prompt = "> ";
         me.cmdHistory = [];
         me.cmdIndex = null;
 
         me.cmdField = Ext.create("Ext.form.field.Text", {
-            width: 500,
+            anchor: "100%",
+            fieldLabel: ">",
+            labelWidth: 16,
+            itemId: "cmdfield",
             listeners: {
                 scope: me,
                 specialkey: me.onSpecialKey
             }
         });
 
-        me.consoleBody = Ext.create("Ext.container.Container", {
-            autoEl: {
-                tag: "pre",
-                cls: "noc-console"
-            },
-            autoScroll: true
+        me.consoleBody = Ext.create("NOC.core.CMText", {
+            readOnly: true
         });
 
         me.closeButton = Ext.create("Ext.button.Button", {
@@ -66,8 +65,8 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
                 {
                     xtype: "toolbar",
                     dock: "bottom",
+                    layout: "fit",
                     items: [
-                        ">",
                         me.cmdField
                     ]
                 }
@@ -86,8 +85,7 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         me.currentRecord = record;
         me.setTitle(c.join(" "));
         me.clearBody();
-        me.prompt = record.get("name") + "&gt;&nbsp;"
-        me.cmdField.focus();
+        me.prompt = record.get("name") + "> ";
     },
     //
     onSpecialKey: function(field, e) {
@@ -127,10 +125,7 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         }
         me.cmdIndex = me.cmdHistory.length;
         // Display
-        me.consoleBody.update(
-            v + "<div class='cmd'>" + me.prompt + Ext.htmlEncode(cmd) + "</div>"
-        );
-        me.scrollDown();
+        me.consoleOut(me.prompt + cmd);
         NOC.mrt({
             url: "/sa/managedobject/mrt/console/",
             selector: me.currentRecord.get("id"),
@@ -145,11 +140,7 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
                 if(result) {
                     t = result[0].result[0];
                 }
-                me.consoleBody.update(
-                    me.consoleBody.html + "<div class='result'>" +
-                        Ext.htmlEncode(t) + "</div>");
-                me.scrollDown();
-                me.cmdField.focus();
+                me.consoleOut(t);
             },
             failure: function() {
                 NOC.error("Failed to run command");
@@ -157,19 +148,26 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         });
     },
     //
-    scrollDown: function() {
-        var me = this;
-        me.consoleBody.scrollBy(0, Infinity, true);
-    },
-    //
     clearBody: function() {
         var me = this;
-        me.consoleBody.update("<div class='banner'>Welcome to the "
-            + me.currentRecord.get("name") + " console!</div>");
+        me.consoleBody.setValue("Welcome to the " + me.currentRecord.get("name") + " console!\n");
     },
     //
     onClose: function() {
         var me = this;
         me.app.showForm();
+    },
+
+    consoleOut: function(v) {
+        var me = this;
+        me.consoleBody.setValue(
+            me.consoleBody.getValue() + v + "\n"
+        );
+        me.consoleBody.scrollDown();
+    },
+
+    getDefaultFocus: function() {
+        var me = this;
+        return me.cmdField;
     }
 });

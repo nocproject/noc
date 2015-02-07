@@ -40,7 +40,7 @@ Ext.define("Ext.ux.form.GridField", {
             text: "Add",
             glyph: NOC.glyph.plus,
             scope: me,
-            handler: me.onAdd
+            handler: me.onAddRecord
         });
 
         me.deleteButton = Ext.create("Ext.button.Button", {
@@ -48,7 +48,7 @@ Ext.define("Ext.ux.form.GridField", {
             glyph: NOC.glyph.minus,
             disabled: true,
             scope: me,
-            handler: me.onDelete
+            handler: me.onDeleteRecord
         });
 
         me.cloneButton = Ext.create("Ext.button.Button", {
@@ -56,7 +56,7 @@ Ext.define("Ext.ux.form.GridField", {
             glyph: NOC.glyph.copy,
             disabled: true,
             scope: me,
-            handler: me.onClone
+            handler: me.onCloneRecord
         });
 
         // Build toolbar
@@ -143,7 +143,7 @@ Ext.define("Ext.ux.form.GridField", {
         me.cloneButton.setDisabled(false);
     },
     //
-    onAdd: function() {
+    onAddRecord: function() {
         var me = this,
             rowEditing = me.grid.plugins[0];
         rowEditing.cancelEdit();
@@ -151,7 +151,7 @@ Ext.define("Ext.ux.form.GridField", {
         rowEditing.startEdit(0, 0);
     },
     //
-    onDelete: function() {
+    onDeleteRecord: function() {
         var me = this,
             sm = me.grid.getSelectionModel(),
             rowEditing = me.grid.plugins[0];
@@ -165,7 +165,7 @@ Ext.define("Ext.ux.form.GridField", {
         }
     },
     //
-    onClone: function() {
+    onCloneRecord: function() {
         var me = this,
             sm = me.grid.getSelectionModel(),
             sel = sm.getLastSelected(),
@@ -184,9 +184,9 @@ Ext.define("Ext.ux.form.GridField", {
     //
     onCellEdit: function(editor, e) {
         var me = this,
-            editor = e.grid.columns[e.colIdx].getEditor();
-        if(editor.rawValue) {
-            e.record.set(e.field + "__label", editor.rawValue);
+            ed = e.grid.columns[e.colIdx].getEditor();
+        if(ed.rawValue) {
+            e.record.set(e.field + "__label", ed.rawValue);
         }
     }
 });

@@ -10,6 +10,7 @@ Ext.define("NOC.peer.maintainer.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.peer.maintainer.Model",
+        "NOC.peer.person.LookupField",
         "NOC.peer.person.M2MField",
         "NOC.peer.rir.LookupField"
     ],

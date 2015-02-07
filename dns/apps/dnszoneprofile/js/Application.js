@@ -10,6 +10,7 @@ Ext.define("NOC.dns.dnszoneprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.dns.dnszoneprofile.Model",
+        "NOC.dns.dnsserver.LookupField",
         "NOC.dns.dnsserver.M2MField",
         "NOC.main.notificationgroup.LookupField"
     ],

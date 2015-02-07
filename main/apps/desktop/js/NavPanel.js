@@ -17,7 +17,7 @@ Ext.define("NOC.main.desktop.NavPanel", {
     layout: "fit",
     app: null,
     useArrows: true,
-    //rootVisible: false,
+    rootVisible: false,
     singleExpand: true,
     lines: false,
     hideHeaders: true,
