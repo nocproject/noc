@@ -14,6 +14,7 @@ import datetime
 from django.core.cache.backends.db import BaseDatabaseCache
 ## Third-party modules
 import bson
+import pymongo.errors
 ## NOC modules
 from noc.lib.nosql import get_db
 from noc.lib.serialize import pickle
@@ -149,6 +150,8 @@ class MongoDBCache(BaseDatabaseCache):
         new_document = {"_id": key, "v": value, "e": expires}
         try:
             collection.save(new_document)
+        except pymongo.errors.DocumentTooLarge:
+            return False
         except bson.errors.InvalidDocument:
             # value can't be serialized to BSON, fall back to pickle.
             # TODO: Suppress PyMongo warning here by writing a PyMongo patch
