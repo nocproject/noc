@@ -160,6 +160,23 @@ def aliasByMetric(ctx, series_list):
     return series_list
 
 
+@api("aliasSub")
+def aliasSub(ctx, series_list, search, replace):
+    """
+    Runs series names through a regex search/replace.
+
+   Example::
+
+        &target=aliasSub(ip.*TCP*,"^.*TCP(\d+)","\\1")
+    """
+    try:
+        series_list.name = re.sub(search, replace, series_list.name)
+    except AttributeError:
+        for series in series_list:
+            series.name = re.sub(search, replace, series.name)
+    return series_list
+    
+
 @api("alpha")
 def alpha(ctx, series_list, alpha):
     """
@@ -647,6 +664,34 @@ def lowestAverage(ctx, series_list, n=1):
     return sorted(series_list, key=lambda s: s.average())[:n]
 
 
+@api("map")
+def mapSeries(ctx, series_list, mapNode):
+    """
+    Takes a series_list and maps it to a list of sub-series_list. Each
+    sub-series_list has the given mapNode in common.
+
+    Example::
+
+        map(servers.*.cpu.*,1) =>
+            [
+                servers.server1.cpu.*,
+                servers.server2.cpu.*,
+                ...
+                servers.serverN.cpu.*
+            ]
+    """
+    metaSeries = {}
+    keys = []
+    for series in series_list:
+        key = series.name.split(".")[mapNode]
+        if key not in metaSeries:
+            metaSeries[key] = [series]
+            keys.append(key)
+        else:
+            metaSeries[key].append(series)
+    return [metaSeries[k] for k in keys]
+
+
 @api("maximumAbove")
 def maximumAbove(ctx, series_list, n):
     """
@@ -1014,6 +1059,26 @@ def sinFunction(ctx, name, amplitude=1):
         )
     ]
 
+@api("sortByName")
+def sortByName(ctx, series_list):
+    """
+    Takes one metric or a wildcard series_list.
+
+    Sorts the list of metrics by the metric name.
+    """
+    return list(sorted(series_list, key=lambda x: x.name))
+
+
+@api("sortByTotal")
+def sortByTotal(ctx, series_list):
+    """
+    Takes one metric or a wildcard series_list.
+
+    Sorts the list of metrics by the sum of values across the time period
+    specified.
+    """
+    return list(sorted(series_list, key=sum, reverse=True))
+
 
 @api("stddevSeries")
 def stddevSeries(ctx, *series_lists):
@@ -1260,8 +1325,6 @@ def transformNull(ctx, series_list, default=0):
 #     'currentAbove': currentAbove,
 #     'currentBelow': currentBelow,
 #     'nPercentile': nPercentile,
-#     'sortByTotal': sortByTotal,
-#     'sortByName': sortByName,
 #     'averageOutsidePercentile': averageOutsidePercentile,
 #     'removeBetweenPercentile': removeBetweenPercentile,
 #     'sortByMaxima': sortByMaxima,
@@ -1275,7 +1338,6 @@ def transformNull(ctx, series_list, default=0):
 #     'removeBelowValue': removeBelowValue,
 #     # Special functions
 #     'legendValue': legendValue,
-#     'aliasSub': aliasSub,
 #     'cumulative': cumulative,
 #     'consolidateBy': consolidateBy,
 #     'keepLastValue': keepLastValue,
@@ -1283,7 +1345,6 @@ def transformNull(ctx, series_list, default=0):
 #     'secondYAxis': secondYAxis,
 #     'substr': substr,
 #     'group': group,
-#     'map': mapSeries,
 #     'reduce': reduceSeries,
 #     'groupByNode': groupByNode,
 #     'constantLine': constantLine,
