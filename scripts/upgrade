@@ -83,7 +83,7 @@ fi
 ##
 UPGRADE_LOG=`mktemp /tmp/noc-upgrade.log.XXXXXX`
 UPGRADE_PIPE=${UPGRADE_LOG}.pipe
-mkfifo $UPGRADE_PIPE
+mkfifo $UPGRADE_PIPE || error_exit "Cannot create logging pipe"
 tee < $UPGRADE_PIPE $UPGRADE_LOG &
 exec &> $UPGRADE_PIPE
 rm $UPGRADE_PIPE
