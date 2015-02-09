@@ -58,6 +58,8 @@ class Script(NOCScript):
                                 continue
                     else:
                         continue
+                    if v[2] is None:
+                        continue
                     if int(v[2]) > 3 or int(v[2]) < 1:
                         continue
                     iface = self.snmp.get(
