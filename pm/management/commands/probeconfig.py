@@ -56,6 +56,10 @@ class Command(BaseCommand):
             self._handle(*args, **kwargs)
         except CommandError:
             raise
+        except KeyboardInterrupt:
+            raise CommandError("Interrupted")
+        except IOError, why:
+            raise CommandError("IO Error: %s", why)
         except:
             error_report()
 
