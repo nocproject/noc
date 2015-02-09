@@ -46,8 +46,10 @@ class Command(BaseCommand):
     """
     help = "Fix database"
 
-
     def handle(self, *args, **kwargs):
+        self.fix_inv_root()
+        self.fix_inv_lost_and_found()
+        self.fix_inv_orphans()
         self.fix_metricsettings()
 
     def info(self, msg, *args):
@@ -92,3 +94,55 @@ class Command(BaseCommand):
                 continue
         self.info("... done")
 
+    def fix_inv_root(self):
+        from noc.inv.models.object import Object
+        from noc.inv.models.objectmodel import ObjectModel
+
+        root_model = ObjectModel.objects.get(uuid="0f1b7c90-c611-4046-9a83-b120377eb6e0")
+        self.info("Checking inventory Root")
+        rc = Object.objects.filter(model=root_model.id).count()
+        if rc == 0:
+            # Create missed root
+            self.info("    ... creating missed root")
+            Object(model=root_model, name="Root").save()
+        elif rc == 1:
+            return  # OK
+        else:
+            # Merge roots
+            roots = Object.objects.filter(model=root_model.id).order_by("id")
+            r0 = roots[0]
+            for r in roots[1:]:
+                for o in Object.objects.filter(container=r.id):
+                    self.info("    ... moving %s to primary root", unicode(o))
+                    o.container = r0.id
+                    o.save()
+                self.info("   ... removing duplicated root %s", r)
+                r.delete()
+
+    def fix_inv_lost_and_found(self):
+        from noc.inv.models.object import Object
+        from noc.inv.models.objectmodel import ObjectModel
+
+        lf_model = ObjectModel.objects.get(uuid="b0fae773-b214-4edf-be35-3468b53b03f2")
+        self.info("Checking inventory Lost&Found")
+        rc = Object.objects.filter(model=lf_model.id).count()
+        if rc == 0:
+            # Create missed l&f
+            self.info("    ... creating missed Lost&Found")
+            Object(model=lf_model, name="Global Lost&Found").save()
+        elif rc == 1:
+            return  # OK
+        else:
+            # Merge roots
+            lfs = Object.objects.filter(model=lf_model.id).order_by("id")
+            r0 = roots[0]
+            for r in lfs[1:]:
+                for o in Object.objects.filter(container=r.id):
+                    self.info("    ... moving %s to primary Lost&Found", unicode(o))
+                    o.container = r0.id
+                    o.save()
+                self.info("   ... removing duplicated lost&found %s", r.uuid)
+                r.delete()
+
+    def fix_inv_orphans(self):
+        pass
