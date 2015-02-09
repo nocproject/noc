@@ -47,6 +47,9 @@ class ObjectStatus(Document):
                 if status:
                     # False -> True transition
                     DiscoveryJob.reset_deferred(object)
+                else:
+                    # True -> False transition
+                    DiscoveryJob.set_deferred(object)
         else:
             cls(object=object.id, status=status).save()
         Outage.register_outage(object, not status)
