@@ -84,7 +84,7 @@ class AlarmApplication(ExtApplication):
         for p in q:
             qp = p.split("__")[0]
             if qp in self.clean_fields:
-                q[p] = self.clean_fields[qp].form_clean(q[p])
+                q[p] = self.clean_fields[qp].clean(q[p])
         if "administrative_domain" in q:
             a = AdministrativeDomain.objects.get(id = q["administrative_domain"])
             q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
