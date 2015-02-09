@@ -91,13 +91,12 @@ class IntervalJob(Job):
                 return None  # Zero interval means disabled job
             offset = self.schedule["offset"] % i
             return self.get_next_aligned(i, next=True, offset=offset)
-        elif status == self.S_DEFERRED:
-            return None  # Left until next initial submit
         elif status == self.S_LATE and self.delay_interval:
             return (datetime.datetime.now() +
                     datetime.timedelta(
                         seconds=random.random() * self.delay_interval))
         else:
+            # FAIL and DEFERRED
             fi = self.get_failed_interval()
             if self.schedule.get("randomize"):
                 fi *= (0.5 + random.random())
