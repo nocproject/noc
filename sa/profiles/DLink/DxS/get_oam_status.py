@@ -36,7 +36,10 @@ class Script(NOCScript):
         try:
             v = self.cli("show ethernet_oam ports status")
         except self.CLISyntaxError:
-            raise self.NotSupportedError
+            try:
+                v = self.cli("show ethernet_oam ports all status")
+            except self.CLISyntaxError:
+                raise self.NotSupportedError
         for s in self.rx_line.split(v)[1:]:
             match = self.rx_line1.search(s)
             if match:
