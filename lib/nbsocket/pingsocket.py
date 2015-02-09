@@ -172,6 +172,8 @@ class Ping4Socket(PingSocket):
                 session.register_reply(address=src_ip, seq=seq, ttl=ttl,
                     payload=msg[self.HEADER_SIZE:])
         elif icmp_type in (ICMPv4_UNREACHABLE, ICMPv4_TTL_EXCEEDED):
+            if plen < 48:
+                return
             # Decode original message
             (_, _, _, _, _, _, o_proto, _, o_src_ip, o_dst_ip) = struct.unpack("!BBHHHBBHII", msg[28:48])
             if o_proto != ICMPv4_PROTO:
