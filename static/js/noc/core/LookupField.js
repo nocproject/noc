@@ -49,9 +49,15 @@ Ext.define("NOC.core.LookupField", {
 
     onSpecialKey: function(field, e) {
         var me = this;
-        if(e.keyCode == e.ESC) {
-            me.clearValue();
-            me.fireEvent("clear");
+        switch(e.keyCode) {
+            case e.ESC:
+                me.clearValue();
+                me.fireEvent("clear");
+                break;
+            case e.ENTER:
+                var keyNav = me.getPicker().getNavigationModel();
+                keyNav.selectHighlighted(e);
+                break;
         }
     },
 
