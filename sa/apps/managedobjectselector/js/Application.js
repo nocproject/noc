@@ -21,7 +21,8 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
         "NOC.ip.vrf.LookupField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.sa.terminationgroup.LookupField",
-        "NOC.sa.terminationgroup.LookupField"
+        "NOC.sa.terminationgroup.LookupField",
+        "NOC.main.ref.profile.LookupField"
     ],
     model: "NOC.sa.managedobjectselector.Model",
     search: true,
@@ -81,13 +82,16 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     name: "filter_id",
                     xtype: "numberfield",
                     fieldLabel: "Filter by ID",
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "small",
+                    hideTrigger: true
                 },
                 {
                     name: "filter_name",
                     xtype: "textfield",
                     fieldLabel: "Filter by Name (REGEXP)",
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large"
                 },
                 {
                     name: "filter_managed",
@@ -96,13 +100,14 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     allowBlank: true,
                     store: [
                         [null, "-"],
-                        [true, "Is managed"],
-                        [false, "Not Managed"]
-                    ]
+                        [true, "Yes"],
+                        [false, "No"]
+                    ],
+                    uiStyle: "small"
                 },
                 {
                     name: "filter_profile",
-                    xtype: "textfield",
+                    xtype: "main.ref.profile.LookupField",
                     fieldLabel: "Filter by Profile",
                     allowBlank: true
                 },
@@ -198,7 +203,8 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     store: [
                         ["O", "OR"],
                         ["A", "AND"]
-                    ]
+                    ],
+                    uiStyle: "small"
                 },
                 {
                     xtype: "sa.managedobjectselector.M2MField",
