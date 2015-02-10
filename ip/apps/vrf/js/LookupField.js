@@ -9,5 +9,6 @@ console.debug("Defining NOC.ip.vrf.LookupField");
 Ext.define("NOC.ip.vrf.LookupField", {
     extend: "NOC.core.LookupField",
     alias: "widget.ip.vrf.LookupField",
-    requires: ["NOC.ip.vrf.Lookup"]
+    requires: ["NOC.ip.vrf.Lookup"],
+    uiStyle: "medium"
 });
