@@ -33,4 +33,4 @@ class IGetDOMStatus(Interface):
         "optical_tx_dbm": (FloatParameter(required=False) |
                            NoneParameter(required=False)),
         }))
-    template = "interfaces/igetdomstatus.html"
+    preview = "NOC.sa.managedobject.scripts.ShowDomStatus"
