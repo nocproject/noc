@@ -41,6 +41,7 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
             store: me.store,
             stateful: true,
             stateId: "sa.managedobject-links",
+            autoScroll: true,
             columns: [
                 {
                     text: "Local",
