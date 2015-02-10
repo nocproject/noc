@@ -260,7 +260,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             xtype: "textfield",
                             fieldLabel: "Name",
                             allowBlank: false,
-                            uiStyle: "medium"
+                            uiStyle: "large"
                         },
                         {
                             name: "is_managed",
