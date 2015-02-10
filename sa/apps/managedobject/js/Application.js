@@ -253,7 +253,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: "Name",
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
                     name: "is_managed",
@@ -264,23 +265,34 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     name: "description",
-                    xtype: "textfield",
+                    xtype: "textarea",
                     fieldLabel: "Description",
-                    allowBlank: true
-                },
-                {
-                    name: "object_profile",
-                    xtype: "sa.managedobjectprofile.LookupField",
-                    fieldLabel: "Object Profile",
-                    allowBlank: false,
-                    groupEdit: true
-                },
-                {
-                    name: "shape",
-                    xtype: "main.ref.stencil.LookupField",
-                    fieldLabel: "Shape",
                     allowBlank: true,
-                    groupEdit: true
+                    uiStyle: "extra"
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: "Role",
+                    defaults: {
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "object_profile",
+                            xtype: "sa.managedobjectprofile.LookupField",
+                            fieldLabel: "Object Profile",
+                            allowBlank: false,
+                            groupEdit: true
+                        },
+                        {
+                            name: "shape",
+                            xtype: "main.ref.stencil.LookupField",
+                            fieldLabel: "Shape",
+                            allowBlank: true,
+                            groupEdit: true
+                        }
+                    ]
                 },
                 {
                     xtype: "fieldset",
@@ -336,12 +348,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                     title: "Access",
                     items: [
                         {
-                            name: "profile_name",
-                            xtype: "main.ref.profile.LookupField",
-                            fieldLabel: "SA Profile",
-                            allowBlank: false
-                        },
-                        {
                             xtype: "container",
                             layout: "hbox",
                             defaults: {
@@ -350,22 +356,44 @@ Ext.define("NOC.sa.managedobject.Application", {
                             },
                             items: [
                                 {
+                                    name: "profile_name",
+                                    xtype: "main.ref.profile.LookupField",
+                                    fieldLabel: "SA Profile",
+                                    allowBlank: false
+                                },
+                                {
                                     name: "scheme",
                                     xtype: "sa.managedobject.SchemeLookupField",
                                     fieldLabel: "Scheme",
-                                    allowBlank: false
+                                    allowBlank: false,
+                                    uiStyle: "small"
                                 },
                                 {
                                     name: "address",
                                     xtype: "textfield",
                                     fieldLabel: "Address",
-                                    allowBlank: false
+                                    allowBlank: false,
+                                    uiStyle: "medium"
                                 },
                                 {
                                     name: "port",
                                     xtype: "numberfield",
                                     fieldLabel: "Port",
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    uiStyle: "small",
+                                    minValue: 0,
+                                    maxValue: 65535,
+                                    hideTrigger: true
+                                },
+                                {
+                                    name: "max_scripts",
+                                    xtype: "numberfield",
+                                    fieldLabel: "Max. Scripts",
+                                    allowBlank: true,
+                                    uiStyle: "small",
+                                    hideTrigger: true,
+                                    minValue: 0,
+                                    maxValue: 99
                                 }
                             ]
                         },
@@ -389,7 +417,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "textfield",
                                     fieldLabel: "User",
                                     allowBlank: true,
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    uiStyle: "medium"
                                 },
                                 {
                                     name: "password",
@@ -397,7 +426,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: "Password",
                                     allowBlank: true,
                                     inputType: "password",
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    uiStyle: "medium"
                                 },
                                 {
                                     name: "super_password",
@@ -405,15 +435,17 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: "Super Password",
                                     allowBlank: true,
                                     inputType: "password",
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    uiStyle: "medium"
+                                },
+                                {
+                                    name: "remote_path",
+                                    xtype: "textfield",
+                                    fieldLabel: "Path",
+                                    allowBlank: true,
+                                    uiStyle: "medium"
                                 }
                             ]
-                        },
-                        {
-                            name: "remote_path",
-                            xtype: "textfield",
-                            fieldLabel: "Path",
-                            allowBlank: true
                         }
                     ]
                 },
@@ -455,28 +487,32 @@ Ext.define("NOC.sa.managedobject.Application", {
                             name: "trap_source_ip",
                             xtype: "textfield",
                             fieldLabel: "Trap Source IP",
-                            allowBlank: true
+                            allowBlank: true,
+                            uiStyle: "medium"
                         },
                         {
                             name: "trap_community",
                             xtype: "textfield",
                             fieldLabel: "Trap Community",
                             allowBlank: true,
-                            groupEdit: true
+                            groupEdit: true,
+                            uiStyle: "medium"
                         },
                         {
                             name: "snmp_ro",
                             xtype: "textfield",
                             fieldLabel: "RO Community",
                             allowBlank: true,
-                            groupEdit: true
+                            groupEdit: true,
+                            uiStyle: "medium"
                         },
                         {
                             name: "snmp_rw",
                             xtype: "textfield",
                             fieldLabel: "RW Community",
                             allowBlank: true,
-                            groupEdit: true
+                            groupEdit: true,
+                            uiStyle: "medium"
                         }
                     ]
                 },
@@ -513,16 +549,11 @@ Ext.define("NOC.sa.managedobject.Application", {
                     ]
                 },
                 {
-                    name: "max_scripts",
-                    xtype: "numberfield",
-                    fieldLabel: "Max. Scripts",
-                    allowBlank: true
-                },
-                {
                     name: "tags",
                     xtype: "tagsfield",
                     fieldLabel: "Tags",
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "extra"
                 }
             ],
             formToolbar: [
