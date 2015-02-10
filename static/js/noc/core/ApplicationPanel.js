@@ -11,6 +11,7 @@ Ext.define("NOC.core.ApplicationPanel", {
     app: undefined,
     backItem: undefined,
     currentRecord: undefined,
+    autoScroll: true,
 
     preview: function(record, backItem) {
         var me = this,
