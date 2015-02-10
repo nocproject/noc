@@ -250,18 +250,28 @@ Ext.define("NOC.sa.managedobject.Application", {
             ],
             fields: [
                 {
-                    name: "name",
-                    xtype: "textfield",
-                    fieldLabel: "Name",
-                    allowBlank: false,
-                    uiStyle: "medium"
-                },
-                {
-                    name: "is_managed",
-                    xtype: "checkboxfield",
-                    boxLabel: "Is Managed?",
-                    allowBlank: false,
-                    groupEdit: true
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    border: false,
+                    defaults: {
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "name",
+                            xtype: "textfield",
+                            fieldLabel: "Name",
+                            allowBlank: false,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "is_managed",
+                            xtype: "checkboxfield",
+                            boxLabel: "Is Managed?",
+                            allowBlank: false,
+                            groupEdit: true
+                        }
+                    ]
                 },
                 {
                     name: "description",
