@@ -97,7 +97,7 @@ Ext.define("NOC.inv.interface.Application", {
     // Called when managed object changed
     onObjectChange: function(combo, s) {
         var me = this;
-        me.currentObject = s[0].get("id");
+        me.currentObject = s.get("id");
         me.loadInterfaces();
     },
     // Load object's interfaces
