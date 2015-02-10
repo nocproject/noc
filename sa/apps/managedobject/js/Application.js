@@ -300,8 +300,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             xtype: "main.ref.stencil.LookupField",
                             fieldLabel: "Shape",
                             allowBlank: true,
-                            groupEdit: true,
-                            uiStyle: "medium"
+                            groupEdit: true
                         }
                     ]
                 },
