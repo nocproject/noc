@@ -20,4 +20,4 @@ class IGetInterfaceStatus(Interface):
         "interface": InterfaceNameParameter(),
         "status": BooleanParameter()
     }))
-    template = "interfaces/igetinterfacestatus.html"
+    preview = "NOC.sa.managedobject.scripts.ShowInterfaceStatus"
