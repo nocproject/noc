@@ -253,9 +253,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     xtype: "fieldset",
                     layout: "hbox",
                     border: false,
-                    defaults: {
-                        padding: 4
-                    },
+                    padding: 0,
                     items: [
                         {
                             name: "name",
@@ -269,7 +267,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                             xtype: "checkboxfield",
                             boxLabel: "Is Managed?",
                             allowBlank: false,
-                            groupEdit: true
+                            groupEdit: true,
+                            padding: "0px 0px 0px 4px"
                         }
                     ]
                 },
@@ -292,6 +291,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                             name: "object_profile",
                             xtype: "sa.managedobjectprofile.LookupField",
                             fieldLabel: "Object Profile",
+                            labelWidth: 90,
+                            itemId: "object_profile",
                             allowBlank: false,
                             groupEdit: true
                         },
@@ -300,7 +301,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                             xtype: "main.ref.stencil.LookupField",
                             fieldLabel: "Shape",
                             allowBlank: true,
-                            groupEdit: true
+                            groupEdit: true,
+                            labelWidth: 40
                         }
                     ]
                 },
