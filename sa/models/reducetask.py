@@ -173,7 +173,7 @@ class ReduceTask(models.Model):
                     if ms not in o.profile.scripts:
                         continue
                     s = o.profile.scripts[ms]
-                    ts += [s.TIMEOUT]
+                    ts += [s.get_timeout()]
                 pool_timeouts[pool] = ts
             # Calculate timeouts by pools
             for pool in pool_timeouts:
