@@ -19,8 +19,6 @@ class Script(NOCScript):
     name = "Huawei.VRP.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 240
-
     rx_iface_sep = re.compile(r"^(\S+) current state\s*:\s+",
                               re.MULTILINE)
     rx_line_proto = re.compile(

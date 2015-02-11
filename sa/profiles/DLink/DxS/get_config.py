@@ -15,7 +15,6 @@ from noc.sa.profiles.DLink.DxS import DGS3600
 class Script(NOCScript):
     name = "DLink.DxS.get_config"
     implements = [IGetConfig]
-    TIMEOUT = 360
 
     ##
     ## DGS-3612, DGS-3612G, DGS-3627, DGS-3627G, DGS-3650

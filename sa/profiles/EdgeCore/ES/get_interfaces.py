@@ -20,7 +20,6 @@ class Script(NOCScript):
     name = "EdgeCore.ES.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 240
     cache = True
     types = {
         "Eth": "physical",

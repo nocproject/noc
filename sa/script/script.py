@@ -19,6 +19,7 @@ import cPickle
 import ctypes
 import datetime
 import warnings
+from ConfigParser import SafeConfigParser
 ## NOC modules
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.registry import Registry
@@ -116,6 +117,23 @@ class ScriptRegistry(Registry):
         """Register all scripts and generic scripts"""
         super(ScriptRegistry, self).register_all()
         self.register_generics()
+        # Set timeouts
+        config = SafeConfigParser()
+        config.optionxform = str
+        config.read("etc/noc.defaults")
+        config.read("etc/noc.conf")
+        self.default_timeout = 120
+        self.timeouts = {}
+        SECTION = "script_timeout"
+        if config.has_section(SECTION):
+            for opt in config.options(SECTION):
+                if opt == "default":
+                    self.default_timeout = config.getint(SECTION, "default")
+                elif opt in self.classes:
+                    self.timeouts[opt] = config.getint(SECTION, opt)
+
+    def get_timeout(self, name):
+        return self.timeouts.get(name, self.default_timeout)
 
 
 script_registry = ScriptRegistry()
@@ -160,7 +178,6 @@ class Script(threading.Thread):
     TELNET = TELNET
     SSH = SSH
     HTTP = HTTP
-    TIMEOUT = 120  # 2min by default
     CLI_TIMEOUT = None  # Optional timeout for telnet/ssh providers
     #
     LoginError = LoginError
@@ -182,7 +199,7 @@ class Script(threading.Thread):
         self.object_name = object_name
         self.access_profile = access_profile
         self.attrs = {}
-        self._timeout = timeout if timeout else self.TIMEOUT
+        self._timeout = timeout if timeout else self.get_timeout()
         if self.access_profile.address:
             p = self.access_profile.address
         elif self.access_profile.path:
@@ -426,8 +443,8 @@ class Script(threading.Thread):
         for i in self.implements:
             self.kwargs = i.script_clean_input(self.profile, **self.kwargs)
         t0 = time.time()
-        self.logger.debug("Running script: %s (%r)",
-                          self.name, self.kwargs)
+        self.logger.debug("Running script: %s (%r), timeout %ss",
+                          self.name, self.kwargs, self._timeout)
         # Use cached result when available
         if self.cache and self.parent is not None:
             try:
@@ -1089,3 +1106,7 @@ class Script(threading.Thread):
         except self.snmp.TimeOutError:
             return
         return n is not None and n != ""
+
+    @classmethod
+    def get_timeout(cls):
+        return script_registry.get_timeout(cls.name)

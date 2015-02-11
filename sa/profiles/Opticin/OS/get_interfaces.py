@@ -19,7 +19,6 @@ class Script(NOCScript):
     name = "Opticin.OS.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 240
     cache = True
 
     rx_svi_name = re.compile(r"^system management vlan:\s+(?P<vl_id>\d)$",

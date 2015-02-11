@@ -19,8 +19,6 @@ class Script(NOCScript):
     name = "Cisco.IOSXR.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 240
-
     types = {
         "packet over sonet/sdh": "physical",
         "gigabitethernet/ieee 802.3 interface(s)": "physical",

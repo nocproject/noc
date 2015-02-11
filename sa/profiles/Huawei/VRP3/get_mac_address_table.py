@@ -18,7 +18,6 @@ class Script(NOCScript):
     name = "Huawei.VRP3.get_mac_address_table"
     implements = [IGetMACAddressTable]
     rx_line = re.compile(r"^\s*(?:\d+)\s+(?:\d+)\s+(?:\d+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\d+/\d+)\s+(?P<mac>\S+)", re.MULTILINE)
-    TIMEOUT = 600
 
     def execute(self, interface=None, vlan=None, mac=None):
         with self.configure():

@@ -21,8 +21,6 @@ class Script(NOCScript):
     name = "DLink.DxS.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 300
-
     rx_ipif1 = re.compile(r"Interface Name\s+:\s+(?P<ifname>.+?)\s*\n"
     r"IP Address\s+:\s+(?P<ip_address>\S+)\s+\(\S+\)\s*\n"
     r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n"

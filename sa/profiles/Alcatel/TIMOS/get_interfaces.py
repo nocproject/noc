@@ -10,7 +10,6 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
 
 class Script(NOCScript):
-    TIMEOUT = 850
     name = "Alcatel.TIMOS.get_interfaces"
     implements = [IGetInterfaces]
 

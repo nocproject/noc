@@ -15,7 +15,6 @@ class Script(noc.sa.script.Script):
     name = "Alcatel.7302.get_config"
     implements = [IGetConfig]
 
-    TIMEOUT = 1800
     noc.sa.script.telnet.CLITelnetSocket.TTL = 600
 
     def execute(self):

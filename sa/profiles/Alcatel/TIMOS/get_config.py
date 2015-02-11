@@ -13,7 +13,6 @@ from noc.sa.interfaces import IGetConfig
 
 
 class Script(NOCScript):
-    TIMEOUT = 850
     name = "Alcatel.TIMOS.get_config"
     implements = [IGetConfig]
 
