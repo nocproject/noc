@@ -53,6 +53,8 @@ class PGDriver(object):
         if self.check_postgis():
             if self.is_broken():
                 self.info("   ... broken installation. Removing")
+                if not self.check_superuser():
+                    sys.exit(1)
                 if not self.uninstall_postgis():
                     self.info("Failed to uninstall broken PostGIS installation!")
                     self.info("Uninstall PostGIS from database manually and run upgrade again")
@@ -66,6 +68,8 @@ class PGDriver(object):
                 sys.exit(0)
         # Install postgis
         self.info("   ... not found")
+        if not self.check_superuser():
+            sys.exit(1)
         self.install_postgis()
 
     def check_paths(self):
@@ -143,6 +147,19 @@ class PGDriver(object):
         except OGRException, why:
             self.info("GDAL check falied: %s" % why)
             return False
+
+    def check_superuser(self):
+        cn = psycopg2.connect(**self.db_cred)
+        c = cn.cursor()
+        c.execute("SELECT usesuper FROM pg_user WHERE usename = CURRENT_USER")
+        r = bool(c.fetchall()[0][0])
+        if not r:
+            c.execute("SELECT CURRENT_USER")
+            uname = c.fetchall()[0][0]
+            self.info("PostgreSQL superuser permissions are required to install PostGIS")
+            self.info("Temporary grant superuser permissions in psql console:")
+            self.info("    > ALTER USER %s SUPERUSER" % uname)
+        return r
 
     def check_postgis(self):
         cn = psycopg2.connect(**self.db_cred)
