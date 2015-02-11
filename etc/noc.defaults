@@ -630,3 +630,37 @@ config_ttl_jitter = 0.01
 expired_refresh_timeout = 25
 # Refresh expired configs batch
 expired_refresh_chunk = 100
+
+[script_timeout]
+# Script timeouts, in seconds
+# Default timeout
+default = 120
+# Custom timeouts in form:
+# <script name> = <timeout>
+Alcatel.7302.get_config = 1800
+Alcatel.TIMOS.get_arp = 240
+Alcatel.TIMOS.get_config = 850
+Alcatel.TIMOS.get_interfaces = 850
+Alentis.NetPing.get_config = 300
+Brocade.CER.get_interfaces = 900
+Brocade.CER-ADV.get_interfaces = 900
+Brocade.IronWare.get_interfaces = 900
+Cisco.IOS.get_interfaces = 240
+Cisco.IOSXR.get_interfaces = 240
+Cisco.SCOS.get_interfaces = 240
+DLink.DGS3100.get_config = 360
+DLink.DGS3100.get_interfaces = 300
+DLink.DxS.get_config = 360
+DLink.DxS.get_interfaces = 300
+DLink.DxS.get_inventory = 300
+EdgeCore.ES.get_interfaces = 240
+Eltex.MES.get_interfaces = 240
+f5.BIGIP.get_config = 300
+HP.1905.get_mac_address_table = 300
+Huawei.VRP.get_interfaces = 240
+Huawei.VRP3.get_mac_address_table = 600
+Juniper.JUNOS.sync_prefix_lists = 1800
+NSN.hiX56xx.get_arp = 600
+NSN.hiX56xx.get_mac_address_table = 600
+Opticin.OS.get_interfaces = 240
+Qtech.QSW.get_interfaces = 600
