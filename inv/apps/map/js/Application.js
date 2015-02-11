@@ -278,7 +278,7 @@ Ext.define("NOC.inv.map.Application", {
     //
     onSelectChart: function(combo, records, opts) {
         var me = this;
-        me.mapId = records[0].get("id");
+        me.mapId = records.get("id");
         me.requestChart();
     },
     //
