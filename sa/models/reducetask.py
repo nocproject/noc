@@ -252,6 +252,9 @@ class ReduceTask(models.Model):
                     else:
                         m.script_result = dict(code=ERR_INVALID_SCRIPT,
                                                text="Invalid script %s" % msn)
+                elif status == "W":
+                    # get effective timeout
+                    m.script_timeout = o.profile.scripts[ms].get_timeout()
                 m.save()
         return r_task
 

@@ -22,8 +22,6 @@ class Script(NOCScript):
     name = "Cisco.SCOS.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 240
-
     rx_int = re.compile(r"ifIndex.\d+\s+=\s+(?P<ifindex>\d+)\n"
         r"\s*ifDescr.\d+\s+=\s+(?P<ifname>\S+)\n",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)

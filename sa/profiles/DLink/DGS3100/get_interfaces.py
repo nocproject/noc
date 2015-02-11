@@ -18,8 +18,6 @@ class Script(NOCScript):
     name = "DLink.DGS3100.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 300
-
     rx_ipif = re.compile(
         r"Interface\s*Name\s*: System\s*\nIP\s*Address\s*:\s*"
         r"(?P<ip_address>\S+)\s+\(\S+\)\s*\nSubnet\s*Mask\s*:\s*"

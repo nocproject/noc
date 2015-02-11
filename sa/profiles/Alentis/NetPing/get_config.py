@@ -16,7 +16,6 @@ from noc.sa.interfaces import IGetConfig
 class Script(NOCScript):
     name = "Alentis.NetPing.get_config"
     implements = [IGetConfig]
-    TIMEOUT = 300
 
     def execute(self):
         r = ''

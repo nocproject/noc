@@ -376,6 +376,7 @@ class Command(BaseCommand):
             a = r.kwargs.add()
             a.key = k
             a.value = v
+        r.timeout = script_registry.get_timeout(r.script)
         return r
 
     def expand_selectors(self, objects):

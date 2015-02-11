@@ -18,8 +18,6 @@ class Script(NOCScript):
     name = "DLink.DxS.get_inventory"
     implements = [IGetInventory]
 
-    TIMEOUT = 300
-
     rx_dev = re.compile(
         r"Device Type\s+:\s+(?P<part_no>\S+).+"
         r"[Hh]ardware [Vv]ersion\s+:\s+(?P<revision>\S+)",

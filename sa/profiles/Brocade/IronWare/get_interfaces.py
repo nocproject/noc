@@ -19,7 +19,6 @@ from noc.lib.ip import IPv4
 class Script(NOCScript):
     name = "Brocade.IronWare.get_interfaces"
     implements = [IGetInterfaces]
-    TIMEOUT = 900
 
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)",

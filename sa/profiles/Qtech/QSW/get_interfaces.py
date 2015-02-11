@@ -30,8 +30,6 @@ class Script(NOCScript):
     name = "Qtech.QSW.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 600
-
     rx_mac = re.compile(r"^The mac-address of interface is\s+(?P<mac>\S+)$",
         re.MULTILINE)
 

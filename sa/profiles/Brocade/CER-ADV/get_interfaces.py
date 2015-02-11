@@ -20,7 +20,6 @@ from noc.lib.ip import IPv4
 class Script(NOCScript):
     name = 'Brocade.CER-ADV.get_interfaces'
     implements = [IGetInterfaces]
-    TIMEOUT = 900
     rx_sh_int = re.compile('^(?P<interface>.+?)\\s+is\\s+(?P<admin_status>up|down),\\s+line\\s+protocol\\s+is\\s+(?P<oper_status>up|down)', re.MULTILINE | re.IGNORECASE)
     rx_int_alias = re.compile('^(Description|Vlan alias name is)\\s*(?P<alias>.*?)$', re.MULTILINE | re.IGNORECASE)
     rx_int_mac = re.compile('address\\s+is\\s+(?P<mac>\\S+)', re.MULTILINE | re.IGNORECASE)

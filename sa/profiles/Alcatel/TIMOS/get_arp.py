@@ -10,7 +10,6 @@ import re
 
 
 class Script(noc.sa.script.Script):
-    TIMEOUT = 240
     name = 'Alcatel.TIMOS.get_arp'
     implements = [IGetARP]
     rx_line = re.compile(

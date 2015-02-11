@@ -18,7 +18,6 @@ class Script(NOCScript):
     implements = [IGetARP]
     rx_line = re.compile(
         "^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)$")
-    TIMEOUT = 600
 
     def execute(self):
         s = self.cli("show arp")
