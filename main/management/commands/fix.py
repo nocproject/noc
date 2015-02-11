@@ -133,9 +133,9 @@ class Command(BaseCommand):
         elif rc == 1:
             return  # OK
         else:
-            # Merge roots
+            # Merge lost&founds
             lfs = Object.objects.filter(model=lf_model.id).order_by("id")
-            r0 = roots[0]
+            r0 = lfs[0]
             for r in lfs[1:]:
                 for o in Object.objects.filter(container=r.id):
                     self.info("    ... moving %s to primary Lost&Found", unicode(o))
