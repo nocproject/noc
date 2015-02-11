@@ -99,6 +99,7 @@ class Daemon(object):
         self.metrics = MetricsHub("noc.%s.%s" % (self.daemon_name, self.instance_id),
                                   *self.METRICS)
         self.manhole_status = False
+        self.start_delay = 0
         self.load_config()
         # Register signal handlers if any
         for s in [s for s in dir(self) if s.startswith("SIG")]:
@@ -208,6 +209,8 @@ class Daemon(object):
             logging.root.setLevel(logging.DEBUG)
         self.setup_manhole()
         self.setup_perf()
+        if self.config.has_option("main", "start_delay"):
+            self.start_delay = self.config.getint("main", "start_delay")
 
     def setup_manhole(self):
         to_start_manhole = (
@@ -403,6 +406,10 @@ class Daemon(object):
         Run daemon and catch common exceptions
         :return:
         """
+        if self.start_delay:
+            self.logger.info("Delaying start for %s seconds",
+                             self.start_delay)
+            time.sleep(self.start_delay)
         try:
             self.run()
         except KeyboardInterrupt:
