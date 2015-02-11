@@ -1283,6 +1283,9 @@ Ext.define("NOC.core.ModelApplication", {
                 }
                 for(var i = 0; i < seq.length; i++) {
                     var v = seq[i];
+                    if(!v) {
+                        continue;
+                    }
                     if(v.groupEdit === true) {
                         return true;
                     }
