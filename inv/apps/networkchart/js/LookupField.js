@@ -9,5 +9,6 @@ console.debug("Defining NOC.inv.networkchart.LookupField");
 Ext.define("NOC.inv.networkchart.LookupField", {
     extend: "NOC.core.LookupField",
     alias: "widget.inv.networkchart.LookupField",
-    requires: ["NOC.inv.networkchart.Lookup"]
+    requires: ["NOC.inv.networkchart.Lookup"],
+    uiStyle: "medium"
 });
