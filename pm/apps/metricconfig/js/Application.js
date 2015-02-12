@@ -45,7 +45,8 @@ Ext.define("NOC.pm.metricconfig.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: "Name",
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "large"
                 },
                 {
                     name: "is_active",
@@ -56,17 +57,8 @@ Ext.define("NOC.pm.metricconfig.Application", {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: "Description",
-                    allowBlank: true
-                },
-                {
-                    name: "handler",
-                    xtype: "main.ref.probehandler.LookupField",
-                    fieldLabel: "Handler",
-                    allowBlank: false,
-                    listeners: {
-                        scope: me,
-                        change: me.onChangeHandler
-                    }
+                    allowBlank: true,
+                    uiStyle: "extra"
                 },
                 {
                     name: "probe",
@@ -75,10 +67,22 @@ Ext.define("NOC.pm.metricconfig.Application", {
                     allowBlank: false
                 },
                 {
+                    name: "handler",
+                    xtype: "main.ref.probehandler.LookupField",
+                    fieldLabel: "Handler",
+                    allowBlank: false,
+                    listeners: {
+                        scope: me,
+                        select: me.onSelectHandler
+                    }
+                },
+                {
                     name: "interval",
                     xtype: "numberfield",
                     fieldLabel: "Interval",
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "small",
+                    hideTrigger: true
                 },
                 {
                     name: "metrics",
@@ -141,53 +145,62 @@ Ext.define("NOC.pm.metricconfig.Application", {
             ]
         });
         me.callParent();
+        me.handlerField = me.form.findField("handler");
     },
     //
-    onChangeHandler: function(combo, newValue, oldValue, eOpts) {
+    onSelectHandler: function(combo, record, eOpts) {
+        var me = this;
+        me.setConfigForm(record);
+    },
+    //
+    setConfigForm: function(record) {
         var me = this,
-            metrics,
-            r = [],
+            cf, f,
             form = me.formPanel.items.first(),
             currentConfig = {},
-            vm, cf, f;
-        if((newValue === oldValue)) {
-            return;
-        }
-        if(!oldValue && newValue) {
-            vm = combo.valueModels[0];
-            if(me.form.getValues().metrics.length === 0) {
-                // Fill available metrics
-                r = vm.get("metrics").map(function (v) {
-                    return {
-                        metric_type: v.id,
-                        metric_type__label: v.label,
-                        is_active: true
-                    }
-                });
-                me.form.setValues({
-                    metrics: r
-                });
-            }
-            cf = vm.get("form");
-            if(!me.currentConfigForm || (me.currentConfigForm.xtype != cf)) {
-                if(me.currentConfigForm) {
-                    // Delete old config
-                    currentConfig = me.currentConfigForm.getValue();
-                    me.formPanel.remove(me.currentConfigForm);
-                } else {
-                    if(me.currentRecord) {
-                        currentConfig = me.currentRecord.get("config");
-                    }
+            r = [];
+        // Fill available metrics
+        if(me.form.getValues().metrics.length === 0) {
+            // Fill available metrics
+            r = record.get("metrics").map(function (v) {
+                return {
+                    metric_type: v.id,
+                    metric_type__label: v.label,
+                    is_active: true
                 }
-                f = Ext.create(cf, {
-                    name: "config",
-                    fieldLabel: "Config"
-                });
-                // Insert before metrics grid
-                form.insert(form.items.length - 2, f);
-                f.setValue(currentConfig);
-                me.currentConfigForm = f;
-            }
+            });
+            me.form.setValues({
+                metrics: r
+            });
         }
+        //
+        cf = record.get("form");
+        if(!me.currentConfigForm || (me.currentConfigForm.xtype != cf)) {
+            if(me.currentConfigForm) {
+                // Delete old config
+                currentConfig = me.currentConfigForm.getValue();
+                me.formPanel.remove(me.currentConfigForm);
+                me.currentConfigForm.destroy();
+            } else {
+                if(me.currentRecord) {
+                    currentConfig = me.currentRecord.get("config");
+                }
+            }
+            f = Ext.create(cf, {
+                name: "config",
+                fieldLabel: "Config"
+            });
+            // Insert before metrics grid
+            form.insert(form.items.length - 2, f);
+            f.setValue(currentConfig);
+            me.currentConfigForm = f;
+        }
+    },
+    //
+    editRecord: function(record) {
+        var me = this;
+        me.callParent([record]);
+        // Set the record and fire select event
+        me.handlerField.setValue(record.get("handler"), true);
     }
 });
