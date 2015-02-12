@@ -62,7 +62,8 @@ Ext.define("NOC.core.LookupField", {
     },
 
     setValue: function(value, doSelect) {
-        var me = this;
+        var me = this,
+            vm;
         if(typeof value === "string" || typeof value === "number") {
             if(value === "") {
                 me.clearValue();
@@ -78,12 +79,16 @@ Ext.define("NOC.core.LookupField", {
                 success: function (response) {
                     var data = Ext.decode(response.responseText);
                     if (data.length === 1) {
-                        me.setValue(me.store.getModel().create(data[0]));
+                        vm = me.store.getModel().create(data[0]);
+                        me.setValue(vm);
+                        if(doSelect) {
+                            me.fireEvent("select", me, vm, {});
+                        }
                     }
                 }
             });
         } else {
-            me.callParent([value, doSelect]);
+            me.callParent([value]);
         }
     }
 });
