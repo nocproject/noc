@@ -15,31 +15,37 @@ Ext.define("NOC.metricconfig.pm.probes.db.postgres.PostgresConfig", {
             name: "host",
             xtype: "textfield",
             fieldLabel: "host",
-            allowBlank: false
+            allowBlank: false,
+            uiStyle: "medium"
         },
         {
             name: "port",
-            xtype: "textfield",
+            xtype: "numberfield",
             fieldLabel: "port",
-            allowBlank: true
+            allowBlank: true,
+            uiStyle: "small",
+            hideTrigger: true
         },
         {
             name: "database",
             xtype: "textfield",
             fieldLabel: "database",
-            allowBlank: false
+            allowBlank: false,
+            uiStyle: "medium"
         },
         {
             name: "user",
             xtype: "textfield",
             fieldLabel: "user",
-            allowBlank: true
+            allowBlank: true,
+            uiStyle: "medium"
         },
         {
             name: "password",
             xtype: "textfield",
             fieldLabel: "password",
-            allowBlank: true
+            allowBlank: true,
+            uiStyle: "medium"
         }
     ]
 });
