@@ -22,5 +22,6 @@ Ext.define("NOC.main.ref.probehandler.LookupField", {
                 '<div class="item-description">{description}</div>',
             '</div>',
         '</tpl>'
-    ]
+    ],
+    uiStyle: "large"
 });
