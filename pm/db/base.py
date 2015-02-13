@@ -112,13 +112,14 @@ class TimeSeriesDatabase(object):
             return []
         elif end < start:
             start, end = end, start
-        k0 = self.get_key(metric, start)
-        k1 = self.get_key(metric, end)
         r = []
-        for pn in self.partition.enumerate(start, end):
+        for pn, s, e in self.partition.enumerate(start, end):
             partition = self.get_partition_by_name(pn)
             r += [(self.get_value(v), self.get_time(k))
-                  for k, v in partition.iterate(k0, k1)]
+                    for k, v in partition.iterate(
+                        self.get_key(metric, max(s, start)),
+                        self.get_key(metric, min(e, end)))
+            ]
         return r
 
     def find_and_fetch(self, path, start, end):
