@@ -18,73 +18,88 @@ Ext.define("NOC.main.pyrule.Application", {
         align: "stretch"
     },
     search: true,
-    columns: [
-        {
-            text: "Name",
-            dataIndex: "name",
-            width: 200
-        },
+    initComponent: function () {
+        var me = this;
+        Ext.apply(me, {
+            columns: [
+                {
+                    text: "Name",
+                    dataIndex: "name",
+                    width: 200
+                },
 
-        {
-            text: "Interface",
-            dataIndex: "interface"
-        },
+                {
+                    text: "Interface",
+                    dataIndex: "interface"
+                },
 
-        {
-            dataIndex: "is_builtin",
-            text: "Builtin",
-            renderer: NOC.render.Bool,
-            width: 50
-        }
-    ],
-    fields: [
-        {
-            name: "name",
-            xtype: "textfield",
-            fieldLabel: "Name",
-            allowBlank: false
-        },
-        {
-            name: "interface",
-            xtype: "main.ref.interface.LookupField",
-            fieldLabel: "Interface",
-            allowBlank: false
-        },
-        {
-            name: "description",
-            xtype: "textareafield",
-            fieldLabel: "Description",
-            allowBlank: false,
-            anchor: "100%"
-        },
-        {
-            name: "is_builtin",
-            xtype: "checkboxfield",
-            boxLabel: "Is Builtin"
-        },
-        {
-            name: "text",
-            xtype: "cmtext",
-            fieldLabel: "Text",
-            allowBlank: false,
-            flex: 1,
-            mode: "python"
-        }
-    ],
-    filters: [
-        {
-            title: "By Is Builtin",
-            name: "is_builtin",
-            ftype: "boolean"
-        }
-    ],
-    showOpError: function(action, op, status) {
+                {
+                    dataIndex: "is_builtin",
+                    text: "Builtin",
+                    renderer: NOC.render.Bool,
+                    width: 50
+                }
+            ],
+            fields: [
+                {
+                    xtype: "container",
+                    layout: "hbox",
+                    items: [
+                        {
+                            name: "name",
+                            xtype: "textfield",
+                            fieldLabel: "Name",
+                            allowBlank: false,
+                            uiStyle: "medium",
+                            padding: "0px 0px 4px 0px"
+                        },
+                        {
+                            name: "is_builtin",
+                            xtype: "checkboxfield",
+                            boxLabel: "Is Builtin",
+                            padding: "0px 0px 4px 4px"
+                        }
+                    ]
+                },
+                {
+                    name: "interface",
+                    xtype: "main.ref.interface.LookupField",
+                    fieldLabel: "Interface",
+                    allowBlank: false
+                },
+                {
+                    name: "description",
+                    xtype: "textareafield",
+                    fieldLabel: "Description",
+                    allowBlank: false,
+                    uiStyle: "extra"
+                },
+                {
+                    name: "text",
+                    xtype: "cmtext",
+                    fieldLabel: "Text",
+                    allowBlank: false,
+                    flex: 1,
+                    mode: "python"
+                }
+            ],
+            filters: [
+                {
+                    title: "By Is Builtin",
+                    name: "is_builtin",
+                    ftype: "boolean"
+                }
+            ]
+        });
+        me.callParent();
+    },
+    showOpError: function (action, op, status) {
         var me = this;
         // Detect Syntax Errors
-        if(status.traceback) {
+        if (status.traceback) {
             var rx = /^Syntax error: (.+) \(<string>, line (\d+)\)$/i,
                 g = rx.exec(status.traceback);
-            if(g != null) {
+            if (g != null) {
                 var error = g[1],
                     line = g[2];
                 NOC.error("Syntax error at line " + line + "<br/>" + error);
