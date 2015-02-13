@@ -38,6 +38,7 @@ class RunCommandsAppplication(SAApplication):
     menu = "Tasks | Run Commands"
     reduce_task = reduce_commands
     map_task = "commands"
+    timeout = None
 
     class CommandsForm(forms.Form):
         commands = forms.CharField(widget=forms.Textarea,
