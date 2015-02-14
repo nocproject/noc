@@ -93,9 +93,18 @@ name = noc
 user = noc
 # MongoDB database password
 password = noc
-#
+# MongoDB hosts.
+# Possible settings
+# Localhost:
+#   host =
+# Host myhost, port 21017
+#   host = myhost
+# Host myhost, port 21018
+#   host = myhost:21018
+# Replica set connection, two seed hosts myhost1:21018 and myhost2:21019
+#   host = myhost1:21018,myhost2:21019
 host =
-#
+# Deprecated, use host:port form instead
 port =
 # Mongo replica set name for HA configuration
 replica_set =
