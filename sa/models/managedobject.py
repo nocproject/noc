@@ -636,6 +636,15 @@ class ManagedObject(models.Model):
             return self.profile_name
         raise ValueError("Invalid config parameter '%s'" % config)
 
+    def iter_recursive_objects(self):
+        """
+        Generator yilding all recursive objects
+        for effective PM settings
+        """
+        from noc.inv.models.interface import Interface
+        for i in Interface.objects.filter(managed_object=self.id):
+            yield i
+
     def get_caps(self):
         """
         Returns a dict of effective object capabilities

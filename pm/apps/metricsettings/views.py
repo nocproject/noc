@@ -80,7 +80,7 @@ class MetricSettingsApplication(ExtDocApplication):
         if not o:
             return self.response_not_found()
         r = []
-        for es in MetricSettings.get_effective_settings(o, trace=True):
+        for es in MetricSettings.get_effective_settings(o, trace=True, recursive=True):
             for m in es.metrics:
                 r += [{
                     "metric": m.metric or None,
