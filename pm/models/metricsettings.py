@@ -100,7 +100,7 @@ class MetricSettings(Document):
         ).first()
 
     @classmethod
-    def get_effective_settings(cls, object, trace=False):
+    def get_effective_settings(cls, object, trace=False, recursive=False):
         """
         Returns a list of effective settings for object
         """
@@ -118,6 +118,15 @@ class MetricSettings(Document):
                     raise cvars[name]
             return v
 
+        def get_recursive():
+            r = []
+            handler = getattr(object, "iter_recursive_objects", None)
+            if recursive and handler:
+                for o in handler():
+                    r += cls.get_effective_settings(
+                        o, trace=trace, recursive=True)
+            return r
+
         s_seq = []
         # Check profiles
         model_id = cls.get_model_id(object)
@@ -133,7 +142,7 @@ class MetricSettings(Document):
         if s:
             s_seq += [s]
         if not s_seq:
-            return []
+            return get_recursive()
         mt = {}  # metric type -> metric item
         mti = {}  # metric type -> interval
         for s in s_seq:
@@ -259,7 +268,7 @@ class MetricSettings(Document):
                 es.convert = None
                 es.scale = None
                 rr[key] = es
-        return rr.values()
+        return rr.values() + get_recursive()
 
 
 _router = get_solution(config.get("pm", "metric_router")).route
