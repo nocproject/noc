@@ -22,6 +22,8 @@ import mongoengine
 ## NOC modules
 from noc import settings
 
+logger = logging.getLogger(__name__)
+
 ##
 ## Create database connection
 ## @todo: Handle tests
@@ -35,17 +37,37 @@ connection_args = {
     "password": settings.NOSQL_DATABASE_PASSWORD
 }
 if settings.NOSQL_DATABASE_HOST:
-    connection_args["host"] = settings.NOSQL_DATABASE_HOST
+    if "," in settings.NOSQL_DATABASE_HOST:
+        # Replica set connection
+        connection_args["host"] = "mongodb://%s" % settings.NOSQL_DATABASE_HOST
+        connection_args["replicaSet"] = True
+        connection_args["slave_okay"] = True
+    elif ":" in settings.NOSQL_DATABASE_HOST:
+        # host:port form
+        h, p = settings.NOSQL_DATABASE_HOST.rsplit(":", 1)
+        connection_args["host"] = h
+        connection_args["port"] = int(p)
+    else:
+        # Simple host settings
+        connection_args["host"] = settings.NOSQL_DATABASE_HOST
 if settings.NOSQL_DATABASE_PORT:
-    connection_args["port"] = int(settings.NOSQL_DATABASE_PORT)
+    if "port" in connection_args:
+        logger.info("Port is already specified in host setting. Ignoring")
+    else:
+        logger.info("Using deprecated [nosql_database]/port option. Consider using host option")
+        connection_args["port"] = int(settings.NOSQL_DATABASE_PORT)
 if settings.NOSQL_DATABASE_REPLICA_SET:
     connection_args["replicaSet"] = settings.NOSQL_DATABASE_REPLICA_SET
+elif "," in settings.NOSQL_DATABASE_HOST:
+    logger.error("[nosql_database]/replica_set must be set for replicaset connection")
+    sys.exit(1)
 
 ## Connect to the database
 try:
+    logger.info("Connecting to MongoDB %s", connection_args)
     connect(**connection_args)
 except mongoengine.connection.ConnectionError, why:
-    logging.error("Cannot connect to mongodb: %s" % why)
+    logger.error("Cannot connect to mongodb: %s" % why)
     sys.exit(1)
 
 ## Shortcut to ObjectId
