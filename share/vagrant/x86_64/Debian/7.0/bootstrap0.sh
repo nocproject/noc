@@ -39,6 +39,11 @@ if [ $? -eq 0 ]; then
     exit 1
 fi
 ##
+## Append additional repositories
+##
+apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10 || error_exit "Failed to install MongoDB Public GPG Key"
+echo 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen' > /etc/apt/sources.list.d/mongodb.list
+##
 ## Update base system
 ##
 info "Updating base system"
@@ -79,7 +84,7 @@ aptinstall libpq-dev
 aptinstall libgdal1
 aptinstall postgresql-9.1-postgis
 aptinstall postgis
-aptinstall mongodb
+aptinstall mongodb-org
 aptinstall mercurial
 aptinstall smitools
 aptinstall sudo
@@ -98,7 +103,7 @@ __EOF__
 ##
 info "Setting MongoDB authentication"
 mongo noc << __EOF__
-db.addUser("noc", "thenocproject")
+db.createUser({"user": "noc", "pwd": "thenocproject", "roles": ["readWrite", "dbAdmin"]})
 __EOF__
 ##
 ## Set up daemon autostart
