@@ -556,6 +556,8 @@ class ManagedObject(models.Model):
                     managed_object=self, config=old_data)
                 new_data = self.config_diff_filter_rule(
                     managed_object=self, config=data)
+                if not old_data and not new_data:
+                    logger.error("[%s] broken config_diff_filter: Returns empty result", self.name)
             else:
                 new_data = data
             if old_data == new_data:
