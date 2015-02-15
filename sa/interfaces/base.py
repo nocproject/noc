@@ -1154,6 +1154,8 @@ class RDParameter(Parameter):
         '10.10.10.10:10'
         >>> RDParameter().clean("100000:500")
         '100000:500'
+        >>> RDParameter().clean("100000L:100")
+        '100000:100'
         """
         try:
             l, r = value.split(":")
@@ -1173,6 +1175,8 @@ class RDParameter(Parameter):
         else:
             # ASN:N
             try:
+                if l.endswith("L") or l.endswith("l"):
+                    l = l[:-1]
                 l = int(l)
             except ValueError:
                 self.raise_error(value)
