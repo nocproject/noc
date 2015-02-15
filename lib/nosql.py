@@ -64,7 +64,10 @@ elif "," in settings.NOSQL_DATABASE_HOST:
 
 ## Connect to the database
 try:
-    logger.info("Connecting to MongoDB %s", connection_args)
+    ca = connection_args.copy()
+    if connection_args.get("password"):
+        ca["password"] = "********"
+    logger.info("Connecting to MongoDB %s", ca)
     connect(**connection_args)
 except mongoengine.connection.ConnectionError, why:
     logger.error("Cannot connect to mongodb: %s" % why)
