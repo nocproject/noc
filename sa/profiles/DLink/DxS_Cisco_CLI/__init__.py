@@ -16,6 +16,7 @@ class Profile(NOCProfile):
     name = "DLink.DxS_Cisco_CLI"
     supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = "([Uu]ser[Nn]ame|[Ll]ogin):"
+    pattern_password = "[Pp]ass[Ww]ord:"
     pattern_more = "^ --More--"
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at"
