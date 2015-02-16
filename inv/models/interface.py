@@ -204,6 +204,16 @@ class Interface(Document):
             raise ValueError("Cannot net LAG members for not-aggregated interface")
         return Interface.objects.filter(aggregated_interface=self.id)
 
+    @property
+    def effective_vc_domain(self):
+        if self.type in ("null", "tunnel", "other", "unknown"):
+            return None
+        if self.vc_domain:
+            return self.vc_domain
+        if self.managed_object.vc_domain:
+            return self.managed_object.vc_domain
+        return VCDomain.get_default()
+
     def get_probe_config(self, config):
         # Get via solutions
         try:
