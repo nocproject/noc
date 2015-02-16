@@ -72,5 +72,10 @@ class VCDomain(models.Model):
                     return l  # Return first free found
         return None  # Nothing found
 
+    @classmethod
+    def get_default(cls):
+        return VCDomain.objects.get(name="default")
+
+
 ## Avoid circular references
 from vc import VC
