@@ -91,5 +91,6 @@ Ext.define("NOC.main.audittrail.Application", {
             ]
         });
         me.callParent();
+        me.saveButton.hide();
     }
 });
