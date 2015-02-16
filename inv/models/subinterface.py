@@ -83,3 +83,7 @@ class SubInterface(Document):
 
     def __unicode__(self):
         return "%s %s" % (self.interface.managed_object.name, self.name)
+
+    @property
+    def effective_vc_domain(self):
+        return self.interface.effective_vc_domain
