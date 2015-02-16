@@ -21,7 +21,7 @@ class Script(NOCScript):
                          r"(?P<rd>\S+:\S+|<not set>)\s+"
                          "(?P<iface>.*?)\s*$", re.IGNORECASE)
     rx_cont = re.compile("^\s{6,}(?P<iface>.+?)\s*$")
-    rx_portchannel = re.compile(r"^Po\s*\d+$")
+    rx_portchannel = re.compile(r"^Po\s*\d+(?:A|B)?$")
 
     portchannel_members = {}
 
