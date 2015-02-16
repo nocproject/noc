@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOS.get_mpls_vpn
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetMPLSVPN
+from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
 
 
 class Script(NOCScript):
@@ -21,7 +21,7 @@ class Script(NOCScript):
                          r"(?P<rd>\S+:\S+|<not set>)\s+"
                          "(?P<iface>.*?)\s*$", re.IGNORECASE)
     rx_cont = re.compile("^\s{6,}(?P<iface>.+?)\s*$")
-    rx_portchannel = re.compile(r"^Po\d+$")
+    rx_portchannel = re.compile(r"^Po\s*\d+$")
 
     portchannel_members = {}
 
