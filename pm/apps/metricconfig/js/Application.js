@@ -160,19 +160,16 @@ Ext.define("NOC.pm.metricconfig.Application", {
             currentConfig = {},
             r = [];
         // Fill available metrics
-        if(me.form.getValues().metrics.length === 0) {
-            // Fill available metrics
-            r = record.get("metrics").map(function (v) {
-                return {
-                    metric_type: v.id,
-                    metric_type__label: v.label,
-                    is_active: true
-                }
-            });
-            me.form.setValues({
-                metrics: r
-            });
-        }
+        r = record.get("metrics").map(function (v) {
+            return {
+                metric_type: v.id,
+                metric_type__label: v.label,
+                is_active: true
+            }
+        });
+        me.form.setValues({
+            metrics: r
+        });
         //
         cf = record.get("form");
         if(!me.currentConfigForm || (me.currentConfigForm.xtype != cf)) {
