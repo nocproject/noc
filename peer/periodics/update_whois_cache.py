@@ -2,13 +2,13 @@
 ##----------------------------------------------------------------------
 ## peer.update_whois_cache periodic task
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 from collections import defaultdict
+import urllib2
 ## NOC modules
 from noc.lib.periodic import Task as NOCTask
 from noc.settings import config
@@ -93,7 +93,12 @@ class Task(NOCTask):
         else:
             u = lambda k, v: r[v].append(k)
         n = 0
-        f = self.urlopen(url)
+        try:
+            f = self.urlopen(url)
+        except urllib2.URLError, why:
+            self.error("Failed to download %s: %s" % (url, why))
+            self.download_status = False
+            return 0
         for o in parser(f, [key_field, values_field]):
             if key_field in o and values_field in o:
                 k = o[key_field][0].upper()
@@ -165,6 +170,7 @@ class Task(NOCTask):
 
     def execute(self):
         self._url_cache = {}  # URL -> data
+        self.download_status = True
         # Read config
         self.use_ripe = config.getboolean("peer", "use_ripe")
         self.use_arin = config.getboolean("peer", "use_arin")
@@ -172,4 +178,4 @@ class Task(NOCTask):
         # Process
         self.process_as_set_members()
         self.process_origin_route()
-        return True
+        return self.download_status
