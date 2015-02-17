@@ -255,6 +255,7 @@ class RenderApplication(ExtApplication):
         return response
 
     def render_graph(self, request_opts, graph_opts):
+        return self.response_bad_request("Server-side rendering is not implemented yet")
         # Render PNG
         out = StringIO()
         img = request_opts["graphClass"](**graph_opts)
