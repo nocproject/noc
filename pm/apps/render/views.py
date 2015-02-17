@@ -89,9 +89,15 @@ class RenderApplication(ExtApplication):
         elif rawData is not None:
             format = "raw"
         # Get time range
-        t0 = parseATTime(kwargs.get("from", "-1d"))
-        t1 = parseATTime(kwargs.get("until", "now"))
-        assert t0 != t1, "Empty time range"
+        try:
+            t0 = parseATTime(kwargs.get("from", "-1d"))
+            t1 = parseATTime(kwargs.get("until", "now"))
+        except Exception, why:
+            return self.response_bad_request(
+                "Cannot parse time: %s" % why
+            )
+        if t0 == t1:
+            return self.response_bad_request("Empty time range")
         # Collect parameters
         request_opts = {
             "graphType": graphType,
