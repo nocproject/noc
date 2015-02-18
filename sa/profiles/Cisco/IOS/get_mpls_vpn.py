@@ -31,7 +31,10 @@ class Script(NOCScript):
             for pc in self.scripts.get_portchannel():
                 i = pc["interface"]
                 self.portchannel_members[i] = pc["members"]
-        return self.portchannel_members[iface]
+        if iface in self.portchannel_members:
+            return self.portchannel_members[iface]
+        else:
+            return []
 
     def execute(self, **kwargs):
         vpns = []
