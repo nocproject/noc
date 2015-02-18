@@ -26,6 +26,7 @@ class Command(BaseCommand):
             self.fix_inv_lost_and_found()
             self.fix_inv_orphans()
             self.fix_metricsettings()
+            self.fix_wiping_mo()
         except:
             error_report()
             sys.exit(1)
@@ -124,3 +125,14 @@ class Command(BaseCommand):
 
     def fix_inv_orphans(self):
         pass
+
+    def fix_wiping_mo(self):
+        from noc.sa.models.managedobject import ManagedObject
+        from noc.lib.nosql import get_db
+        from noc.lib.scheduler.utils import submit_job
+
+        c = get_db().noc.schedules.main.jobs
+        for mo in ManagedObject.objects.filter(name__startswith="wiping-"):
+            if not c.find({"object": mo.id, "jcls": "sa.wipe_managed_object"}).count():
+                self.info("Restarting wipe process: %s", mo)
+                submit_job("main.jobs", "sa.wipe_managed_object", mo.id)
