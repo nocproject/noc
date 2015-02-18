@@ -32,7 +32,7 @@ class TimeSeriesDatabase(object):
     MIN_TIMESTAMP = 0
     MAX_TIMESTAMP = 0xFFFFFFFF
 
-    rx_variant = re.compile(r"\\{([^}]*)\\}")
+    rx_variant = re.compile(r"{([^}]*)}")
 
     def __init__(self):
         self.mhashes = {}  # metric -> metric hash
@@ -69,7 +69,7 @@ class TimeSeriesDatabase(object):
         def get_pattern(p):
             def variant(match):
                 v = match.group(0)
-                return "(?:%s)" % "|".join(v[2:-2].split("\\,"))
+                return "(?:%s)" % "|".join(v[1:-1].split(","))
 
             mp = p.replace("*", "[^.]*")
             mp = mp.replace("?", "[^.]")
@@ -98,7 +98,7 @@ class TimeSeriesDatabase(object):
                 else:
                     yield m["name"]
 
-        parts = path.split(".")
+        parts = path.replace(" ", "").split(".")
         return [m for m in iter_path("", parts[0], parts[1:])]
 
     def fetch(self, metric, start, end):
