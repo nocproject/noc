@@ -24,6 +24,7 @@ from noc.pm.db.partition.base import Partition
 from batch import Batch
 from noc.lib.nosql import get_db
 from noc.lib.modutils import load_name
+from noc.lib.text import split_alnum
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +84,7 @@ class TimeSeriesDatabase(object):
                 mp = "\\.%s" % mp
             else:
                 mp = "^%s" % mp
-            for m in self.metrics.find(
+            for m in sorted(self.metrics.find(
                 {
                     "parent": parent,
                     "name": {
@@ -91,7 +92,7 @@ class TimeSeriesDatabase(object):
                     }
                 },
                 {"name": 1, "_id": 0}
-            ):
+            ), key=lambda x: split_alnum(x["name"])):
                 if rest:
                     for m in iter_path(m["name"], rest[0], rest[1:]):
                         yield m
