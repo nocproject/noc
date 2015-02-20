@@ -21,7 +21,7 @@ class Script(noc.sa.script.Script):
         r"^(?P<interface>\S+)\s+(\S+|)\s+(?P<status>(up|down))\s",
         re.MULTILINE)
     rx_interface_status1 = re.compile(
-        r"^(?P<interface>\S+)\s+(?<status>UP|DOWN)", re.MULTILINE)
+        r"^(?P<interface>\S+)\s+(?P<status>UP|DOWN)", re.MULTILINE)
 
     def execute(self, interface=None):
         r = []
