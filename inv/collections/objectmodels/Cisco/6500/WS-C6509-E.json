@@ -1,9 +1,9 @@
 {
-    "name": "Cisco | 6500 | WS-C6509",
-    "uuid": "aeb463c3-d585-4f70-a90d-09d0e3ed0683",
+    "name": "Cisco | 6500 | WS-C6509-E",
+    "uuid": "0d5ae327-cc0f-4568-8a2b-7ee0bb54896a",
     "vendor__code": "CISCO",
-    "description": "Cisco C6509 9-slot Chassis",
-    "connection_rule__name": "Cisco | 6500",
+    "description": "Cisco C6509-E 9-slot Chassis",
+    "connection_rule__name": "Cisco | 6500-E",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -25,21 +25,28 @@
             "direction": "i",
             "gender": "f",
             "name": "vtt1",
-            "type__name": "Cisco | 6500 | VTT"
+            "type__name": "Cisco | 6500 | VTT-E"
         },
         {
             "description": "VTT module slot 2",
             "direction": "i",
             "gender": "f",
             "name": "vtt2",
-            "type__name": "Cisco | 6500 | VTT"
+            "type__name": "Cisco | 6500 | VTT-E"
         },
         {
             "description": "VTT module slot 3",
             "direction": "i",
             "gender": "f",
             "name": "vtt3",
-            "type__name": "Cisco | 6500 | VTT"
+            "type__name": "Cisco | 6500 | VTT-E"
+        },
+        {
+            "description": "Enhanced 9-slot Fan Tray 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan1",
+            "type__name": "Cisco | 6500 | FAN-E"
         },
         {
             "description": "Linecard/Supervisor slot 1",
@@ -125,7 +132,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C6509"
+            "part_no0": "WS-C6509-E"
         },
         "dimensions": {
             "depth": 460,

@@ -86,7 +86,8 @@
         "asset": {
             "part_no0": "VS-S720-10G",
             "part_no1": "VS-S720-10G-3C",
-            "part_no2": "VS-S720-10G-3CXL"
+            "part_no2": "VS-S720-10G-3CXL",
+            "part_no3": "VS-SUP2T-10G"
         }
     }
 }

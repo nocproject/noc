@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | 6500 | WS-C6K-VTT-E",
+    "uuid": "3dbc556f-10dd-4cd8-a8e1-9f623671b3a9",
+    "vendor__code": "CISCO",
+    "description": "Voltage termination module Cisco Catalyst 6500-E",
+    "cr_context": "VTT",
+    "connections": [
+        {
+            "description": "VTT connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500 | VTT-E"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-C6K-VTT-E"
+        }
+    }
+}
