@@ -84,8 +84,8 @@ Network | BFD | Session Down,824c5272-33dd-4b37-b588-1fb6e4cf2174,Network/BFD/Se
 Network | BFD | Session Up,c81f31b9-f8a6-425a-a5b4-d4d3653f62f8,Network/BFD/Session_Up.json,5659b0ecb9ca723fa4e03e80f4050044c7ae68fa9ba5579458f70598f449a85b
 Network | BGP | Backward Transition,df53d877-2473-4074-a9a0-0a7352731784,Network/BGP/Backward_Transition.json,cd1f4c76b2239ee3f6f8d307f283a10380c88a0db6d1f1955a9cb902db19c190
 Network | BGP | Established,132e470f-6dae-4e85-915f-d861934a56ab,Network/BGP/Established.json,8b1be0ffd8c57e0716aee89158c02d210c377f48336380555c744d2e07ac0243
-Network | BGP | Max Prefixes Exceeds,468a5649-f050-44ad-88cc-aa55e616207e,Network/BGP/Max_Prefixes_Exceeds.json,14972b34e1543a59d29b560af8185223213b836200760da112f0f726a7d8ab08
-Network | BGP | Max Prefixes Warning,65556dfa-77c5-4840-9306-30dd8d3d0164,Network/BGP/Max_Prefixes_Warning.json,7679111b36ddd0160213c202898a3fe750dd11a46e7cf2f799f86d17052d2342
+Network | BGP | Max Prefixes Exceeds,468a5649-f050-44ad-88cc-aa55e616207e,Network/BGP/Max_Prefixes_Exceeds.json,8f1cded76523d16ac424b8b21f39513bf1b3485d52225863e94b96b08df9ceb0
+Network | BGP | Max Prefixes Warning,65556dfa-77c5-4840-9306-30dd8d3d0164,Network/BGP/Max_Prefixes_Warning.json,708d9bcd035e533b85f508a6234bde655fb0126d3d317b49fda27bf702170725
 Network | BGP | Peer Down,eeffb1d4-7ce3-4967-917c-fd8cdd949a23,Network/BGP/Peer_Down.json,f69c67c9d8fc9e15b00280892c386066d2a2b4e1a648c97cf680f6c6a061c78b
 Network | BGP | Peer State Changed,b4ab69c1-15d3-4dd9-a6c8-aecb25c249b0,Network/BGP/Peer_State_Changed.json,dfe460c3de1b0a5bb0425289c7b72fb60fdc04dfbb2ffdd24e35e2a3eea80f02
 Network | BGP | Prefix Limit Exceeded,d028a97e-8501-4633-a043-09c0f25819bd,Network/BGP/Prefix_Limit_Exceeded.json,2b22ae1136e21f75c7daf50a0ca82688a8b886405c100973e902380d3683a341

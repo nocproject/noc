@@ -36,8 +36,8 @@
     ],
     "text": {
         "en": {
-            "subject_template": "Number of prefixes received from {{peer}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} reaches {{recv}}{% if max %}, max {{max}}{% endif %}",
-            "body_template": "Number of prefixes received from {{peer}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} reaches {{recv}}{% if max %}, max {{max}}{% endif %}",
+            "subject_template": "Number of prefixes received from {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} reaches {{recv}}{% if max %}, max {{max}}{% endif %}",
+            "body_template": "Number of prefixes received from {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} reaches {{recv}}{% if max %}, max {{max}}{% endif %}",
             "symptoms": "",
             "probable_causes": "",
             "recommended_actions": ""
