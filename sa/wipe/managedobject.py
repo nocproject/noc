@@ -26,6 +26,8 @@ from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.outage import Outage
+from noc.sa.models.objectstatus import ObjectStatus
 from noc.ip.models import Address
 from noc.lib.nosql import get_db
 
@@ -36,6 +38,9 @@ def wipe(o):
     if o.profile_name.startswith("NOC."):
         return True
     log = PrefixLoggerAdapter(logger, str(o.id))
+    # Delete active map tasks
+    log.debug("Wiping MAP tasks")
+    MapTask.objects.filter(managed_object=o).delete()
     # Wiping discovery tasks
     log.debug("Wiping discovery tasks")
     db = get_db()
@@ -86,9 +91,12 @@ def wipe(o):
     for a in Address.objects.filter(managed_object=o):
         a.managed_object = None
         a.save()
-    # Delete active map tasks
-    log.debug("Wiping MAP tasks")
-    MapTask.objects.filter(managed_object=o).delete()
+    # Wipe object status
+    log.debug("Wiping object status")
+    ObjectStatus.objects.filter(object=o.id).delete()
+    # Wipe outages
+    log.debug("Wiping outages")
+    Outage.objects.filter(object=o.id).delete()
     # Delete Managed Object's capabilities
     log.debug("Wiping capabilitites")
     ObjectCapabilities.objects.filter(object=o.id).delete()
