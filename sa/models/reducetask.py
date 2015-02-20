@@ -248,7 +248,7 @@ class ReduceTask(models.Model):
                 if status == "F":
                     if no_sessions:
                         m.script_result = dict(code=ERR_ACTIVATOR_NOT_AVAILABLE,
-                                               text="Activator pool is down")
+                            text="Activator pool '%s' is down" % o.activator.name)
                     else:
                         m.script_result = dict(code=ERR_INVALID_SCRIPT,
                                                text="Invalid script %s" % msn)
