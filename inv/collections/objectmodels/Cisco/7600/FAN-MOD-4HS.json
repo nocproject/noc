@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | 7600 | FAN-MOD-4HS",
+    "uuid": "7bf56bcb-849a-49e2-8c2c-82bbd8526d15",
+    "vendor__code": "CISCO",
+    "description": "High Speed Fan Module for Cisco 7604",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "Fan connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | 7604 Fan"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "FAN-MOD-4HS"
+        }
+    }
+}
