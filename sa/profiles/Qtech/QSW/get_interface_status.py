@@ -20,6 +20,8 @@ class Script(noc.sa.script.Script):
     rx_interface_status = re.compile(
         r"^(?P<interface>\S+)\s+(\S+|)\s+(?P<status>(up|down))\s",
         re.MULTILINE)
+    rx_interface_status1 = re.compile(
+        r"^(?P<interface>\S+)\s+(?<status>UP|DOWN)", re.MULTILINE)
 
     def execute(self, interface=None):
         r = []
@@ -49,11 +51,26 @@ class Script(noc.sa.script.Script):
             cmd = "show interface brief ethernet %s" % interface[1:]
         else:
             cmd = "show interface brief"
-        for match in self.rx_interface_status.finditer(self.cli(cmd)):
-            iface = match.group("interface")
-            if iface[:1] == 'e' or iface[:1] == 'g' or iface[:1] == 't':
-                r.append({
+        try:
+            c = self.cli(cmd)
+            for match in self.rx_interface_status.finditer(c):
+                iface = match.group("interface")
+                if iface[:1] == 'e' or iface[:1] == 'g' or iface[:1] == 't':
+                    r.append({
                         "interface": iface,
                         "status": match.group("status") == "up"
-                        })
+                    })
+        except self.CLISyntaxError:
+            if interface:
+                cmd = "show interface ethernet %s status" % interface
+            else:
+                cmd = "show interface ethernet status"
+            c = self.cli(cmd)
+            for match in self.rx_interface_status1.finditer(c):
+                iface = match.group("interface")
+                r.append({
+                    "interface": iface,
+                    "status": match.group("status") == "UP"
+                })
+
         return r
