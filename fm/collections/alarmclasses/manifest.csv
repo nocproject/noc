@@ -8,6 +8,7 @@ Chassis | Hardware | Hardware Error,4999ae4c-107a-4ba9-8fcc-5302f4a2378e,Chassis
 Chassis | Hardware | Hardware Port Error,358f89fa-6c04-4556-a25b-33728ad61217,Chassis/Hardware/Hardware_Port_Error.json,641e30b822c56074a398b2d5de58cc80501859e71fd185490accc30de3f9b5bd
 Chassis | Hardware | Hardware Port Warning,875a2377-53a3-4a0d-b14f-1d9c34fb6d3c,Chassis/Hardware/Hardware_Port_Warning.json,eac9e8b301626e6ac3ac7b24f5aa2a48060ef2086b0fa15928138750abd94427
 Chassis | Hardware | Hardware Warning,7045d7e2-80e3-4caa-9980-96ed94e4fac1,Chassis/Hardware/Hardware_Warning.json,4fdff93aa5cc0e3182cd98923b13a02b45bf472ad8cc3d581db24a202143ebac
+Chassis | Hardware | Module | Invalid Module,578c1375-6759-4123-86c2-8427de40ff92,Chassis/Hardware/Module/Invalid_Module.json,3628e9fd8b436ac96def66fbe12a1c7010a32c2267081d06100414b98e7325b1
 Chassis | Hardware | Module | Module Error,f3d81e67-27fc-4100-ba8d-4f9f01e772da,Chassis/Hardware/Module/Module_Error.json,7a2192876af8c031bc019ac0ed0e86077eb1091046e0458672b422b6a10f2e3c
 Chassis | Linecard | LC Down,c79bdd80-f835-42e3-b6bc-e44ad60bb04b,Chassis/Linecard/LC_Down.json,c9224a5fa5d4415a427425a55f59e95d86c2350539174282661cecbf50c0669f
 Chassis | PSU | PSU Failed,d18d5446-7559-4600-a51a-44fba150f135,Chassis/PSU/PSU_Failed.json,574eb0185e4dd23db8ee87ed28fa731d85af43c4b0d00b9322ce6851fd5233da

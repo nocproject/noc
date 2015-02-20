@@ -15,6 +15,7 @@ Chassis | Hardware | Hardware Port Error Recover,2ad0d762-1003-4b15-b88a-ce1644e
 Chassis | Hardware | Hardware Port Warning,644d544a-958b-4c8d-b8f0-e4aa8642c19c,Chassis/Hardware/Hardware_Port_Warning.json,d56d2386d02a4a00773aa459cb6153ffc03ada98e73e7d95156fa687c1f6e93e
 Chassis | Hardware | Hardware Port Warning Recover,7f83d8ec-161c-41e1-8ab3-09f84f7470f0,Chassis/Hardware/Hardware_Port_Warning_Recover.json,409c9ff5e9be9873fa5d04881fd1c9a40c7ec8264f7fd6d1a65a6a221a643bb0
 Chassis | Hardware | Hardware Warning,d299572a-1369-4c46-8b88-9b40de992682,Chassis/Hardware/Hardware_Warning.json,9b1a7ec744d4d000c4236c7b1788fe3bbfcf0ce7db1383353e0ce6141eef1f49
+Chassis | Hardware | Module | Invalid Module,6cbad313-b948-440c-9271-750375b6a116,Chassis/Hardware/Module/Invalid_Module.json,ca2d9a797be9b2782c1b74815246bcca946918fa7cfbcd5fa0d40d2aa97cce9d
 Chassis | Hardware | Module | Module Error,8cc009d5-3d92-4f5f-a12e-678a1a4a29d9,Chassis/Hardware/Module/Module_Error.json,3caf784525c29df6d965b1b11938cf0aa1f4e155b70b463e2195dd36ff870055
 Chassis | Hardware | Module | Module Inserted,6e70a64d-9932-4d1d-a516-a099d7899f59,Chassis/Hardware/Module/Module_Inserted.json,f052add41686dd73c36b88493a64a0add67267c2f7ab0d069b9593756303e4d6
 Chassis | Hardware | Module | Module Present,3425bd20-bc9f-4a5d-910d-1955ab9cc3ef,Chassis/Hardware/Module/Module_Present.json,e9f3950965cac4fcf6df84ede79de5022f3739cc6389d5e9ae337b8726aba21b
