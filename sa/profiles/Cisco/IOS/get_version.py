@@ -28,7 +28,7 @@ class Script(NOCScript):
         r"\((?P<image>[^)]+)\), (Experimental )?Version (?P<version>[^,]+),",
         re.MULTILINE | re.DOTALL)
     rx_platform = re.compile(
-        r"^cisco (?P<platform>\S+) \(\S+\) processor( \(revision \S+\))? with",
+        r"^cisco (?P<platform>\S+) \(\S+\) processor( \(revision.+?\))? with",
         re.IGNORECASE | re.MULTILINE)
     rx_invalid_platforms = re.compile("IOS-XE|EGR|s\d+\S+")
 
