@@ -219,6 +219,8 @@ def check_fatal_errors(t, v):
         die("PostgreSQL connection closed: %s", v)
     elif xn == "django.db.utils.DatabaseError":
         die("PostgreSQL database error: %s", v)
+    elif xn == "django.core.exceptions.ImproperlyConfigured":
+        die("Improperly configured: %s", v)
 
 
 def get_traceback(reverse=TRACEBACK_REVERSE, fp=None):
