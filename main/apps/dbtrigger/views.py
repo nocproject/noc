@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.main.models import DBTrigger
+from noc.main.models.dbtrigger import DBTrigger
 
 
 class DBTriggerApplication(ExtModelApplication):

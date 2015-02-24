@@ -115,26 +115,10 @@ class UserState(nosql.Document):
     value = nosql.StringField()
 
     def __unicode__(self):
-        return "%s: %s" % (self.user_id, name)
+        return "%s: %s" % (self.user_id, self.key)
 
 from style import Style
-
-
-class Language(models.Model):
-    """
-    Language
-    """
-    class Meta:
-        verbose_name = "Language"
-        verbose_name_plural = "Languages"
-        ordering = ["name"]
-
-    name = models.CharField("Name", max_length=32, unique=True)
-    native_name = models.CharField("Native Name", max_length=32)
-    is_active = models.BooleanField("Is Active", default=False)
-
-    def __unicode__(self):
-        return self.name
+from language import Language
 
 
 class DatabaseStorage(models.Model):
@@ -205,127 +189,8 @@ class MIMEType(models.Model):
             return "application/octet-stream"
 
 from resourcestate import ResourceState
+from pyrule import PyRule, NoPyRuleException
 
-
-class NoPyRuleException(Exception):
-    pass
-
-rx_coding = re.compile(r"^#\s*-\*-\s*coding:\s*\S+\s*-\*-\s*$", re.MULTILINE)
-
-
-class PyRule(models.Model):
-    class Meta:
-        verbose_name = "pyRule"
-        verbose_name_plural = "pyRules"
-        ordering = ["name"]
-
-    name = models.CharField("Name", max_length=64, unique=True)
-    interface = models.CharField("Interface", max_length=64,
-            choices=[(i, i) for i in sorted(interface_registry)])
-    description = models.TextField("Description")
-    text = models.TextField("Text")
-    is_builtin = models.BooleanField("Is Builtin", default=False)
-    changed = models.DateTimeField("Changed", auto_now=True, auto_now_add=True)
-    # Compiled pyRules cache
-    compiled_pyrules = {}
-    compiled_changed = {}
-    compiled_lock = threading.Lock()
-    NoPyRule = NoPyRuleException
-
-    alters_data = True   # Tell Django's template engine to not call PyRule
-
-    # Use special filter for interface
-    interface.existing_choices_filter = True
-
-    def __unicode__(self):
-        return self.name
-
-    def save(self, **kwargs):
-        """
-        Check syntax and save
-        """
-        self.compile_text(unicode(self.text))
-        super(PyRule, self).save(**kwargs)
-
-    @property
-    def interface_class(self):
-        """
-        Get interface class
-        """
-        return interface_registry[self.interface]
-
-    @classmethod
-    def compile_text(self, text):
-        """
-        Compile pyRule
-        """
-        # Built-in pyRule decorator
-        def pyrule(f):
-            f.is_pyrule = True
-            return f
-
-        # Inject @pyrule decorator into namespace
-        d = {"pyrule": pyrule}
-        # Remove coding declarations and \r
-        text = rx_coding.sub("", text.replace("\r\n", "\n"))
-        # Compile text
-        exec text in d
-        # Find marked pyrule
-        rules = [r for r in d.values()
-                 if hasattr(r, "is_pyrule") and r.is_pyrule]
-        if len(rules) < 1:
-            raise SyntaxError("No @pyrule decorated symbol found")
-        if len(rules) != 1:
-            raise SyntaxError("More than one @pyrule deorated symbols found")
-        rule = rules[0]
-        if not callable(rule):
-            raise SyntaxError("Rule is not callable")
-        return rule
-
-    @classmethod
-    def lookup(cls, name):
-        if name.startswith("noc_"):
-            l = [name]
-        else:
-            l = [name, "noc_%s" % name]
-        for n in l:
-            try:
-                return cls.objects.get(name=n)
-            except cls.DoesNotExist:
-                pass
-        raise cls.NoPyRule
-
-    ##
-    ## Call pyRule
-    ##
-    def __call__(self, **kwargs):
-        t = datetime.datetime.now()
-        # Try to get compiled rule from cache
-        with self.compiled_lock:
-            requires_recompile = (self.name not in self.compiled_changed or
-                                  self.compiled_changed[self.name] < self.changed)
-            if not requires_recompile:
-                f = self.compiled_pyrules[self.name]
-        # Recompile rule and place in cache when necessary
-        if requires_recompile:
-            f = self.compile_text(str(self.text))
-            with self.compiled_lock:
-                self.compiled_pyrules[self.name] = f
-                self.compiled_changed[self.name] = t
-        # Check interface
-        i = self.interface_class()
-        kwargs = i.clean(**kwargs)
-        # Evaluate pyRule
-        result = f(**kwargs)
-        # Check and result
-        return i.clean_result(result)
-
-    @classmethod
-    def call(cls, py_rule_name, **kwargs):
-        """
-        Call pyRule by name
-        """
-        return cls.lookup(py_rule_name)(**kwargs)
 
 ##
 ## Search patters
@@ -573,126 +438,8 @@ class SystemNotification(models.Model):
 
 from userprofile import UserProfile, UserProfileManager
 from userprofilecontact import UserProfileContact
+from dbtrigger import DBTrigger, model_choices
 
-
-##
-## Triggers
-##
-def model_choices():
-    for m in models.get_models():
-        yield (m._meta.db_table, m._meta.db_table)
-
-
-class DBTrigger(models.Model):
-    class Meta:
-        verbose_name = "Database Trigger"
-        verbose_name_plural = "Database Triggers"
-        ordering = ("model", "order")
-
-    name = models.CharField("Name", max_length=64, unique=True)
-    model = models.CharField("Model", max_length=128, choices=model_choices())
-    is_active = models.BooleanField("Is Active", default=True)
-    order = models.IntegerField("Order", default=100)
-    description = models.TextField("Description", null=True, blank=True)
-    pre_save_rule = models.ForeignKey(PyRule,
-            verbose_name="Pre-Save Rule",
-            related_name="dbtrigger_presave_set",
-            limit_choices_to={"interface": "IDBPreSave"},
-            blank=True, null=True)
-    post_save_rule = models.ForeignKey(PyRule,
-            verbose_name="Post-Save Rule",
-            related_name="dbtrigger_postsave_set",
-            limit_choices_to={"interface": "IDBPostSave"},
-            blank=True, null=True)
-    pre_delete_rule = models.ForeignKey(PyRule,
-            verbose_name="Pre-Delete Rule",
-            related_name="dbtrigger_predelete_set",
-            limit_choices_to={"interface": "IDBPreDelete"},
-            blank=True, null=True)
-    post_delete_rule = models.ForeignKey(PyRule,
-            verbose_name="Post-Delete Rule",
-            related_name="dbtrigger_postdelete_set",
-            limit_choices_to={"interface": "IDBPostDelete"},
-            blank=True, null=True)
-    ## State cache
-    _pre_save_triggers = {}     # model.meta.db_table -> [rules]
-    _post_save_triggers = {}    # model.meta.db_table -> [rules]
-    _pre_delete_triggers = {}   # model.meta.db_table -> [rules]
-    _post_delete_triggers = {}  # model.meta.db_table -> [rules]
-
-    def __unicode__(self):
-        return u"%s: %s" % (self.model, self.name)
-
-    ##
-    ## Refresh triggers cache
-    ##
-    @classmethod
-    def refresh_cache(cls, *args, **kwargs):
-        # Clear cache
-        cls._pre_save_triggers = {}
-        cls._post_save_triggers = {}
-        cls._pre_delete_triggers = {}
-        cls._post_delete_triggers = {}
-        # Add all active triggers
-        for t in cls.objects.filter(is_active=True).order_by("order"):
-            for r in ["pre_save", "post_save", "pre_delete", "post_delete"]:
-                c = getattr(cls, "_%s_triggers" % r)
-                rule = getattr(t, "%s_rule" % r)
-                if rule:
-                    try:
-                        c[t.model] += [rule]
-                    except KeyError:
-                        c[t.model] = [rule]
-
-    ##
-    ## Dispatcher for pre-save
-    ##
-    @classmethod
-    def pre_save_dispatch(cls, **kwargs):
-        m = kwargs["sender"]._meta.db_table
-        if m in cls._pre_save_triggers:
-            for t in cls._pre_save_triggers[m]:
-                t(model=kwargs["sender"], instance=kwargs["instance"])
-
-    ##
-    ## Dispatcher for post-save
-    ##
-    @classmethod
-    def post_save_dispatch(cls, **kwargs):
-        m = kwargs["sender"]._meta.db_table
-        if m in cls._post_save_triggers:
-            for t in cls._post_save_triggers[m]:
-                t(model=kwargs["sender"], instance=kwargs["instance"],
-                  created=kwargs["created"])
-
-    ##
-    ## Dispatcher for pre-delete
-    ##
-    @classmethod
-    def pre_delete_dispatch(cls, **kwargs):
-        m = kwargs["sender"]._meta.db_table
-        if m in cls._pre_delete_triggers:
-            for t in cls._pre_delete_triggers[m]:
-                t(model=kwargs["sender"], instance=kwargs["instance"])
-
-    ##
-    ## Dispatcher for post-delete
-    ##
-    @classmethod
-    def post_delete_dispatch(cls, **kwargs):
-        m = kwargs["sender"]._meta.db_table
-        if m in cls._post_delete_triggers:
-            for t in cls._post_delete_triggers[m]:
-                t(model=kwargs["sender"], instance=kwargs["instance"])
-
-    ##
-    ## Called when all models are initialized
-    ##
-    @classmethod
-    def x(cls):
-        f = cls._meta.get_field_by_name("model")[0]
-        f.choices = [(m._meta.db_table, m._meta.db_table)
-            for m in models.get_models()]
 
 
 class Schedule(models.Model):
