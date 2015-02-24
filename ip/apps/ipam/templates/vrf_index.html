@@ -141,7 +141,8 @@ function on_mynetworks(n)
                     <th class="status">State</th>
                     <th class="project">Project</th>
                     <th class="vc">VC</th>
-                    <th class"description">Description</th>
+                    <th class="description">Description</th>
+                    <th class="usage">Usage</th>
                     <th class="tt">TT</th>
                     <th>Tags</th>
                 </tr>
@@ -155,6 +156,7 @@ function on_mynetworks(n)
                         <td>{% if p.project %}{{ p.project.code }}{% endif %}</td>
                         <td>{% if p.vc %}{{p.vc}}{% endif %}</td>
                         <td title="{{p.description}}">{{p.short_description}}</td>
+                        <td>{{p.usage_percent}}</td>
                         <td>{% if p.tt %}{{p.tt}}{% endif %}</td>
                         <td>{% tags p %}</td>
                     </tr>
