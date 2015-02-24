@@ -553,6 +553,30 @@ class Prefix(models.Model):
         else:
             return self.enable_ip_discovery
 
+    @property
+    def usage(self):
+        if self.afi == "4":
+            size = IPv4(self.prefix).size
+            if not size:
+                return 100.0
+            n_ips = Address.objects.filter(prefix=self).count()
+            n_pfx = sum(
+                IPv4(p).size
+                for p in Prefix.objects.filter(parent=self).only("prefix").values_list("prefix", flat=True)
+            )
+            if n_ips:
+                size -= 2  # Exclude broadcast and network
+            return float(n_ips + n_pfx) * 100.0 / float(size)
+        else:
+            return None
+
+    @property
+    def usage_percent(self):
+        u = self.usage
+        if u is None:
+            return ""
+        else:
+            return "%.2f%%" % u
 
 # Avoid circular references
 from address import Address
