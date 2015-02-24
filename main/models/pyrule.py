@@ -14,6 +14,7 @@ import datetime
 from django.db import models
 ## NOC modules
 from noc.sa.interfaces.base import interface_registry
+from noc.lib.solutions import get_solution
 
 
 class NoPyRuleException(Exception):
@@ -34,8 +35,9 @@ class PyRule(models.Model):
     interface = models.CharField("Interface", max_length=64,
             choices=[(i, i) for i in sorted(interface_registry)])
     description = models.TextField("Description")
-    text = models.TextField("Text")
-    is_builtin = models.BooleanField("Is Builtin", default=False)
+    handler = models.CharField("Handler", max_length=255,
+                               null=True, blank=True)
+    text = models.TextField("Text", null=True, blank=True)
     changed = models.DateTimeField("Changed", auto_now=True, auto_now_add=True)
     # Compiled pyRules cache
     compiled_pyrules = {}
@@ -106,28 +108,31 @@ class PyRule(models.Model):
                 pass
         raise cls.NoPyRule
 
-    def __call__(self, **kwargs):
+    def __call__(self, *args, **kwargs):
         """
         Call pyRule
         """
-        t = datetime.datetime.now()
-        # Try to get compiled rule from cache
-        with self.compiled_lock:
-            requires_recompile = (self.name not in self.compiled_changed or
-                                  self.compiled_changed[self.name] < self.changed)
-            if not requires_recompile:
-                f = self.compiled_pyrules[self.name]
-        # Recompile rule and place in cache when necessary
-        if requires_recompile:
-            f = self.compile_text(str(self.text))
+        if self.handler:
+            f = get_solution(self.handler)
+        else:
+            t = datetime.datetime.now()
+            # Try to get compiled rule from cache
             with self.compiled_lock:
-                self.compiled_pyrules[self.name] = f
-                self.compiled_changed[self.name] = t
+                requires_recompile = (self.name not in self.compiled_changed or
+                                      self.compiled_changed[self.name] < self.changed)
+                if not requires_recompile:
+                    f = self.compiled_pyrules[self.name]
+            # Recompile rule and place in cache when necessary
+            if requires_recompile:
+                f = self.compile_text(str(self.text))
+                with self.compiled_lock:
+                    self.compiled_pyrules[self.name] = f
+                    self.compiled_changed[self.name] = t
         # Check interface
         i = self.interface_class()
         kwargs = i.clean(**kwargs)
         # Evaluate pyRule
-        result = f(**kwargs)
+        result = f(*args, **kwargs)
         # Check and result
         return i.clean_result(result)
 

@@ -11,7 +11,8 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-@pyrule
+
+
 def vc_provisioning(task,config):
     created={}
     removed={}
