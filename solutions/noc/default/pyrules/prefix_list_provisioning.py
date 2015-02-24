@@ -10,9 +10,13 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.peer.models import PrefixListCache
 
-@pyrule
+## Python modules
+import datetime
+## NOC modules
+from noc.peer.models.prefixlistcache import PrefixListCache
+
+
 def prefix_list_provisioning(task,peering_point):
     status={True:[],False:[]}
     for mt in task.maptask_set.filter(status="C"):

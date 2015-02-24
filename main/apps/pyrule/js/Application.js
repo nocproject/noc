@@ -30,36 +30,22 @@ Ext.define("NOC.main.pyrule.Application", {
 
                 {
                     text: "Interface",
-                    dataIndex: "interface"
+                    dataIndex: "interface",
+                    width: 200
                 },
-
                 {
-                    dataIndex: "is_builtin",
-                    text: "Builtin",
-                    renderer: NOC.render.Bool,
-                    width: 50
+                    text: "handler",
+                    dataIndex: "handler",
+                    flex: 1
                 }
             ],
             fields: [
                 {
-                    xtype: "container",
-                    layout: "hbox",
-                    items: [
-                        {
-                            name: "name",
-                            xtype: "textfield",
-                            fieldLabel: "Name",
-                            allowBlank: false,
-                            uiStyle: "medium",
-                            padding: "0px 0px 4px 0px"
-                        },
-                        {
-                            name: "is_builtin",
-                            xtype: "checkboxfield",
-                            boxLabel: "Is Builtin",
-                            padding: "0px 0px 4px 4px"
-                        }
-                    ]
+                    name: "name",
+                    xtype: "textfield",
+                    fieldLabel: "Name",
+                    allowBlank: false,
+                    uiStyle: "medium",
                 },
                 {
                     name: "interface",
@@ -75,19 +61,27 @@ Ext.define("NOC.main.pyrule.Application", {
                     uiStyle: "extra"
                 },
                 {
+                    name: "handler",
+                    xtype: "textfield",
+                    fieldLabel: "Handler",
+                    allowBlank: true,
+                    uiStyle: "large",
+                    triggers: {
+                        clear: {
+                            cls: Ext.baseCSSPrefix + "form-clear-trigger",
+                            handler: function(field) {
+                                field.reset();
+                            }
+                        }
+                    }
+                },
+                {
                     name: "text",
                     xtype: "cmtext",
                     fieldLabel: "Text",
-                    allowBlank: false,
+                    allowBlank: true,
                     flex: 1,
                     mode: "python"
-                }
-            ],
-            filters: [
-                {
-                    title: "By Is Builtin",
-                    name: "is_builtin",
-                    ftype: "boolean"
                 }
             ]
         });

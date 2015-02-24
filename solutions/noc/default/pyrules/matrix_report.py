@@ -12,7 +12,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import types
-@pyrule
+
 def matrix_report(task):
     data={}
     cl={}

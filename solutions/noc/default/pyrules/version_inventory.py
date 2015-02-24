@@ -12,7 +12,8 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-@pyrule
+
+
 def version_inventory(task):
     from noc.main.models import SystemNotification
     

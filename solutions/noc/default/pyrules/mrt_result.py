@@ -11,7 +11,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-@pyrule
 def mrt_result(task):
     """
     Format MRT task result to return as JSON

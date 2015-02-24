@@ -33,9 +33,8 @@ Ext.define("NOC.main.pyrule.Model", {
             type: "string"
         },
         {
-            name: "is_builtin",
-            type: "boolean",
-            defaultValue: false
+            name: "handler",
+            type: "string"
         }
     ]
 });
