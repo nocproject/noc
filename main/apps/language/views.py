@@ -10,7 +10,7 @@
 from django.utils.translation import ugettext as _
 ## NOC modules
 from noc.lib.app import ExtModelApplication
-from noc.main.models import Language
+from noc.main.models.language import Language
 
 
 class LanguageApplication(ExtModelApplication):

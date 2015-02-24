@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.main.models import PyRule
+from noc.main.models.pyrule import PyRule
 
 
 class PyRuleApplication(ExtModelApplication):
