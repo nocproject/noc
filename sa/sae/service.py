@@ -18,6 +18,8 @@ from noc.sa.rpc import (get_nonce, get_digest, PROTOCOL_NAME,
                         COMPRESSIONS, KEY_EXCHANGES)
 from noc.lib.ip import IP
 
+logger = logging.getLogger(__name__)
+
 
 class Service(SAEService):
     """
@@ -269,7 +271,8 @@ class Service(SAEService):
             try:
                 mo = ManagedObject.objects.get(id=int(s.object))
             except ManagedObject.DoesNotExist:
-                pass
+                logger.error("Missed managed object id: %s", s.object)
+                continue
             self.sae.object_status[mo.id] = s.status
             mo.set_status(s.status)
             # Save event to database
