@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Qtech.QSW2800.get_chassis_id
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -23,7 +23,9 @@ class Script(NOCScript):
     rx_mac_old = re.compile(r"^\d+\s+(?P<mac>\S+)\s+\S+\s+\S+\s+CPU$")
 
     def execute(self):
-        if self.match_version(version__gte="6.3.100.12"):
+        v = self.scripts.get_version()
+        if v["version"].startswith("7") \
+        or self.match_version(version__gte="6.3.100.12"):
             macs = []
             cmd = self.cli("show version")
             for match in self.rx_mac.finditer(cmd):

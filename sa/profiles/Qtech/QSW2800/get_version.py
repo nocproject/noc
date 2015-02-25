@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Qtech.QSW.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ class Script(NOCScript):
         r"\s*SoftWare Version (?P<version>\S+)."
         r"\s*BootRom Version (?P<bootprom>\S+).+"
         r"\s*HardWare Version (?P<hardware>\S+).+"
-        r"\s*Device serial number (?P<serial>\S+).",
+        r"\s*(?:Device serial number |Serial No.:)(?P<serial>\S+).",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
     def execute(self):
