@@ -29,6 +29,8 @@ class Script(NOCScript):
             cmd = "show interface | include line"
         for match in self.rx_interface_status.finditer(self.cli(cmd)):
             iface = match.group("interface")
+            if iface.startswith("Vlan"):
+                continue
             r.append({
                     "interface": iface,
                     "status": match.group("status").lower() == "up"
