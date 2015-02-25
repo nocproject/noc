@@ -217,6 +217,8 @@ def check_fatal_errors(t, v):
         die("Failed to connect PostgreSQL: %s", v)
     elif xn == "psycopg2.InterfaceError" and "connection already closed" in v:
         die("PostgreSQL connection closed: %s", v)
+    elif xn == "psycopg2.OperationalError":
+        die("PostgreSQL operational error: %s", v)
     elif xn == "django.db.utils.DatabaseError":
         die("PostgreSQL database error: %s", v)
     elif xn == "django.core.exceptions.ImproperlyConfigured":
