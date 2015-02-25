@@ -55,7 +55,9 @@ class ReportOutagesApplication(SimpleReport):
             mos = mos[chunk:]
         r = []
         for o in sorted(otime, key=lambda x: -otime[x]):
-            m = mo[o]
+            m = mo.get(o)
+            if not mo:
+                continue  # Hanging Outage
             dt = otime[o]
             downtime = "%02d:%02d:%02d" % (
                 (dt // 3600) % 24,
