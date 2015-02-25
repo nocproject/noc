@@ -34,12 +34,12 @@ class Script(noc.sa.script.Script):
                         if interface:
                             if n == interface:
                                 r.append({
-                                    "interface": n,
+                                    "interface": self.profile.convert_interface_name(n),
                                     "status": int(s) == 1
                                     })
                         else:
                             r.append({
-                                "interface": n,
+                                "interface": self.profile.convert_interface_name(n),
                                 "status": int(s) == 1
                                 })
                 return r
@@ -57,7 +57,7 @@ class Script(noc.sa.script.Script):
                 iface = match.group("interface")
                 if iface[:1] == 'e' or iface[:1] == 'g' or iface[:1] == 't':
                     r.append({
-                        "interface": iface,
+                        "interface": self.profile.convert_interface_name(iface),
                         "status": match.group("status") == "up"
                     })
         except self.CLISyntaxError:
@@ -69,7 +69,7 @@ class Script(noc.sa.script.Script):
             for match in self.rx_interface_status1.finditer(c):
                 iface = match.group("interface")
                 r.append({
-                    "interface": iface,
+                    "interface": self.profile.convert_interface_name(iface),
                     "status": match.group("status") == "UP"
                 })
 

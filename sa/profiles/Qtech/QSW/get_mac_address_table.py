@@ -101,15 +101,15 @@ class Script(noc.sa.script.Script):
             rx_iter = self.rx_line1
         for match in rx_iter.finditer(v):
             interfaces = match.group("interfaces")
-            if interfaces == '0':
+            if interfaces == '0' \
+            or interfaces.lower() == 'cpu':
                 continue
-            elif interfaces[0].lower() != 'e' \
-            and interfaces[:3].lower() != 'cpu':
-                interfaces = 'e' + interfaces
             r.append({
                 "vlan_id": match.group("vlan_id"),
                 "mac": match.group("mac"),
-                "interfaces": [interfaces],
+                "interfaces": [
+                    self.profile.convert_interface_name(interfaces)
+                ],
                 "type": {
                     "dynamic": "D",
                     "static": "S",
