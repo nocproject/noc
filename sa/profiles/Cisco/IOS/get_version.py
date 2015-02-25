@@ -54,7 +54,7 @@ class Script(NOCScript):
         v = self.cli("show version", cached=True)
         match = self.re_search(self.rx_ver, v)
         platform = match.group("platform")
-        if self.re_search(self.rx_invalid_platforms, platform):
+        if self.rx_invalid_platforms.search(platform):
             # Process IOS XE platform
             pmatch = self.re_search(self.rx_platform, v)
             if pmatch:
