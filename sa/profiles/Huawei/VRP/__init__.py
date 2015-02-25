@@ -20,7 +20,9 @@ class Profile(NOCProfile):
         (r"^  ---- More ----", " "),
         (r"[Cc]ontinue?\S+", "y\n\r"),
         (r"[Cc]onfirm?\S+", "y\n\r"),
-        (r" [Aa]re you sure?\S+", "y\n\r")
+        (r" [Aa]re you sure?\S+", "y\n\r"),
+        (r"^Delete flash:", "y\n\r"),
+        (r"^Squeeze flash:", "y\n\r")
     ]
     pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
     pattern_syntax_error = r"^Error: "
