@@ -21,12 +21,12 @@
 
 td[class=nav-label] {
     font-weight: bold;
-    vertical-align: center;
+    vertical-align: middle;
     width: 80px;
 }
 
 td[class=nav-form] {
-    vertical-align: center;
+    vertical-align: middle;
     width: 120px;
 }
 
@@ -49,6 +49,12 @@ th[class=range] {
 
 th[class=fqdn] {
     width: 17em;
+}
+
+th[class=usage] {
+    width: 5em;
+    text-align: right;
+    color: red;
 }
 
 th[class=mac] {
