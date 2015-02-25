@@ -60,7 +60,13 @@ class ReduceTask(models.Model):
         elif self.script.startswith("pyrule:"):
             # Reference to existing pyrule
             r = PyRule.objects.get(name=self.script[7:], interface="IReduceTask")
-            self.script = r.text
+            if r.handler:
+                self.script = "from noc.lib.solutions import get_solution\n" \
+                              "@pyrule\n" \
+                              "def rule(*args, **kwargs):\n" \
+                              "    return get_solution(\"%s\")(*args, **kwargs)\n" % r.handler
+            else:
+                self.script = r.text
         # Check syntax
         PyRule.compile_text(self.script)
         # Save
