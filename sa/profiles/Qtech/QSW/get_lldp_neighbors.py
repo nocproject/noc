@@ -80,8 +80,8 @@ class Script(NOCScript):
             raise self.NotSupportedError()
         for match in self.rx_line.finditer(lldp):
             local_interface = match.group("interface")
-            if local_interface[0] != 'e':
-                local_interface = 'e' + local_interface
+            local_interface = \
+                self.profile.convert_interface_name(local_interface)
             remote_chassis_id = match.group("chassis_id")
             remote_port = match.group("port_id")
             remote_system_name = match.group("name")
