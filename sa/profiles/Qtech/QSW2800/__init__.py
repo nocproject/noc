@@ -19,8 +19,13 @@ class Profile(NOCProfile):
     pattern_username = r"^login:"
     pattern_password = r"^Password:"
     pattern_more = [
-        (r"^Confirm to overwrite current startup-config configuration \[Y/N\]:", "y\n"),
-        (r"^\s*--More--\s*", " ")
+        (r"^\.\.\.\.press ENTER to next line, CTRL_C to break, other key to next page\.\.\.\.", "\n"),
+        (r"^Startup config in flash will be updated, are you sure\(y/n\)\? \[n\]", "y\n"),
+        (r"^ --More-- $", " "),
+        (r"^Confirm to overwrite current startup-config configuration","\ny\n"),
+        (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
+        (r"^Begin to receive file, please wait", " "),
+        (r"#####"," ")
     ]
     pattern_unpriveleged_prompt = r"^\S+>"
     pattern_syntax_error = r" % Unrecognized command, and error detected at '\^' marker."
