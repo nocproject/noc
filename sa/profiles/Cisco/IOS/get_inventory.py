@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOS.get_inventory
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -21,9 +21,8 @@ class Script(NOCScript):
 
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
-        r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+(?P<vid>[\S ]+)?\s*, SN: (?P<serial>\S+)",
-        re.MULTILINE | re.DOTALL
-    )
+        r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+(?P<vid>[\S ]+)?\s*, "
+        r"SN: (?P<serial>\S+)", re.MULTILINE | re.DOTALL)
     rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
     rx_cvend = re.compile("(CISCO.(?P<ven>\S{3,15}))")
     rx_idprom = re.compile(
@@ -32,19 +31,20 @@ class Script(NOCScript):
         r"\s*Vendor (PN|Part No.|Part Number)\s+(:|=)(\s+)?(?P<t_part_no>\S+[\S ]*)\n"
         r"\s*Vendor (rev|Revision|Part Rev.)\s+(:|=)(\s+)?(?P<t_rev>\S+[\S ]*)?\n"
         r"\s*Vendor (SN|Serial No.|Serial Number)\s+(:|=)(\s+)?(?P<t_sn>\S+)(\s+)?\n",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL
-    )
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
     rx_ver = re.compile(
         r"Model revision number\s+:\s+(?P<revision>\S+)\s*\n"
         r"Motherboard revision number\s+:\s+\S+\s*\n"
         r"Model number\s+:\s+(?P<part_no>\S+)\s*\n"
         r"System serial number\s+:\s+(?P<serial>\S+)\s*\n",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL
-    )
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    rx_ver1 = re.compile(
+        r"^cisco (?P<part_no>\S+) \(\S+\) processor( "
+        r"\(revision(?P<revision>.+?)\))? with",
+        re.IGNORECASE | re.MULTILINE)
     rx_7100 = re.compile(
         r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? "
-        r"(?:Universal Broadband Router|chassis)",
-    )
+        r"(?:Universal Broadband Router|chassis)")
 
     IGNORED_SERIAL = set([
         "H22L714"
@@ -117,8 +117,9 @@ class Script(NOCScript):
                         objects += self.get_transceivers("sh int " +
                             "status module " + str(number))
         except self.CLISyntaxError:
-            v = self.rx_ver.search(self.cli("show version"))
-            if v:
+            c = self.cli("show version", cached=True)
+            match = self.rx_ver.search(c)
+            if match:
                 return [{
                     "type": "CHASSIS",
                     "vendor": "CISCO",
@@ -127,6 +128,18 @@ class Script(NOCScript):
                     "revision": match.group("revision"),
                     "builtin": False
                 }]
+            else:
+                match = self.rx_ver1.search(c)
+                if match:
+                    return [{
+                        "type": "CHASSIS",
+                        "vendor": "CISCO",
+                        "part_no": [match.group("part_no")],
+                        "revision": match.group("revision"),
+                        "builtin": False
+                    }]
+                else:
+                    raise self.NotSupportedError()
         return objects
 
 
