@@ -125,7 +125,7 @@ class Command(BaseCommand):
         mo = task.managed_object
         result = task.script_result
         if task.status == "C":
-            print "@@@ %s: OK" % mo.name
+            print "@@@ %s %s : OK" % (mo.name, mo.address)
             if self.debug:
                 for c, r in zip(task.script_params["commands"], result):
                     print "> %s" % c
@@ -137,4 +137,4 @@ class Command(BaseCommand):
             if "text" in result:
                 r += [result["text"]]
             er = ": ".join(r)
-            print "@@@ %s: FAILED (%s)" % (mo.name, er)
+            print "@@@ %s %s : FAILED (%s)" % (mo.name, mo.address, er)
