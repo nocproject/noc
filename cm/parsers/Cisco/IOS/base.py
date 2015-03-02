@@ -11,7 +11,7 @@ from pyparsing import *
 ## NOC modules
 from noc.lib.ip import IPv4
 from noc.cm.parsers.pyparser import BasePyParser
-from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST
+from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS
 
 
 class BaseIOSParser(BasePyParser):
@@ -21,7 +21,8 @@ class BaseIOSParser(BasePyParser):
         DOMAIN_NAME = LineStart() + Literal("ip") + Literal("domain-name") + REST.copy().setParseAction(self.on_domain_name)
         TIMEZONE = LineStart() + Literal("clock") + Literal("timezone") + REST.copy().setParseAction(self.on_timezone)
         NAMESERVER = LineStart() + Literal("ip") + Literal("name-server") + REST.copy().setParseAction(self.on_nameserver)
-        SYSTEM_BLOCK = HOSTNAME | DOMAIN_NAME | TIMEZONE | NAMESERVER
+        USER = LineStart() + Literal("username") + (Word(alphanums + "-_") + Optional(Literal("privilege") + DIGITS)).setParseAction(self.on_user) + REST
+        SYSTEM_BLOCK = HOSTNAME | DOMAIN_NAME | TIMEZONE | NAMESERVER | USER
         # Interface
         INTERFACE = LineStart() + Literal("interface") + REST.copy().setParseAction(self.on_interface)
         INTERFACE_DESCRIPTION = Literal("description") + REST.copy().setParseAction(self.on_interface_descripion)
@@ -58,6 +59,11 @@ class BaseIOSParser(BasePyParser):
             "ip_proxy_arp": True
         }
 
+    def get_user_defaults(self):
+        return {
+            "level": 0
+        }
+
     def on_hostname(self, tokens):
         self.get_system_fact().hostname = tokens[0]
 
@@ -69,6 +75,13 @@ class BaseIOSParser(BasePyParser):
 
     def on_nameserver(self, tokens):
         self.get_system_fact().nameservers += [tokens[0]]
+
+    def on_user(self, tokens):
+        tokens = list(tokens)
+        user = self.get_user_fact(tokens[0])
+        if "privilege" in tokens:
+            i = tokens.index("privilege")
+            user.level = int(tokens[i + 1])
 
     def on_interface(self, tokens):
         name = tokens[0]

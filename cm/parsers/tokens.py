@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Third-party modules
-from pyparsing import (Combine, Group, LineEnd, nums, Suppress, Word,
+from pyparsing import (alphanums, Combine, Group, LineEnd, nums, Suppress, Word,
                        restOfLine)
 
 # Match \s+
@@ -21,6 +21,8 @@ REST = SPACE + restOfLine
 
 # Sequence of numbers
 DIGITS = Word(nums)
+# Sequence of letters and numbers
+ALPHANUMS = Word(alphanums)
 # Number from 0 to 255
 OCTET = Word(nums, max=3)
 # IPv4 address
