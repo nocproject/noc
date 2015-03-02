@@ -39,6 +39,7 @@ from noc.main.models.fts_queue import FTSQueue
 from noc.settings import config
 from noc.lib.solutions import get_probe_config
 from noc.inv.discovery.utils import get_active_discovery_methods
+from noc.lib.solutions import get_solution
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
@@ -734,6 +735,21 @@ class ManagedObject(models.Model):
             if getattr(self.object_profile, cfg):
                 methods += [cfg]
         # @todo: Create tasks
+
+    def get_parser(self):
+        """
+        Return parser instance or None.
+        Depends on version_discovery
+        """
+        cls = self.profile.get_parser(
+            self.get_attr("vendor"),
+            self.get_attr("platform"),
+            self.get_attr("version")
+        )
+        if cls:
+            return get_solution(cls)(self)
+        else:
+            return None
 
 
 class ManagedObjectAttribute(models.Model):
