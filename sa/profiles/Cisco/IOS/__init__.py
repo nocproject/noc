@@ -34,6 +34,7 @@ class Profile(NOCProfile):
     config_volatile = ["^ntp clock-period .*?^"]
 
     rx_cable_if = re.compile(r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)", re.IGNORECASE)
+    default_parser = "noc.cm.parsers.Cisco.IOS.base.BaseIOSParser"
 
     def convert_interface_name(self, interface):
         if " efp_id " in interface:
@@ -117,6 +118,13 @@ class Profile(NOCProfile):
         if cluster_member:
             script.debug("Switching to cluster member '%s'" % cluster_member)
             script.cli("rc %s" % cluster_member)
+
+    @classmethod
+    def get_parser(cls, vendor, platform, version):
+        if ("SE" in version or "SG" in version or "SX" in version or
+                    "SR" in version):
+            return "noc.cm.parsers.Cisco.IOS.switch.IOSSwitchParser"
+        return cls.default_parser
 
 
 def uBR(v):
