@@ -12,6 +12,7 @@ from pyparsing import *
 from noc.lib.ip import IPv4
 from noc.cm.parsers.pyparser import BasePyParser
 from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
+from noc.lib.text import ranges_to_list
 
 
 class BaseIOSParser(BasePyParser):
@@ -23,6 +24,11 @@ class BaseIOSParser(BasePyParser):
         NAMESERVER = LineStart() + Literal("ip") + Literal("name-server") + REST.copy().setParseAction(self.on_nameserver)
         USER = LineStart() + Literal("username") + (Word(alphanums + "-_") + Optional(Literal("privilege") + DIGITS)).setParseAction(self.on_user) + REST
         SYSTEM_BLOCK = HOSTNAME | DOMAIN_NAME | TIMEZONE | NAMESERVER | USER
+        # VLAN
+        VLAN_RANGE = LineStart() + Literal("vlan") + Combine(DIGITS + Word("-,") + restOfLine).setParseAction(self.on_vlan_range)
+        VLAN = LineStart() + Literal("vlan") + DIGITS.copy().setParseAction(self.on_vlan)
+        VLAN_NAME = Literal("name") + REST.copy().setParseAction(self.on_vlan_name)
+        VLAN_BLOCK = VLAN + ZeroOrMore(INDENT + (VLAN_NAME | LINE))
         # Interface
         INTERFACE = LineStart() + Literal("interface") + REST.copy().setParseAction(self.on_interface)
         INTERFACE_DESCRIPTION = Literal("description") + REST.copy().setParseAction(self.on_interface_descripion)
@@ -49,7 +55,14 @@ class BaseIOSParser(BasePyParser):
         NTP_SERVER = LineStart() + Literal("ntp") + Literal("server") + IPv4_ADDRESS.copy().setParseAction(self.on_ntp_server)
         NTP_BLOCK = NTP_SERVER
 
-        CONFIG = SYSTEM_BLOCK | INTERFACE_BLOCK | LOGGING_BLOCK | NTP_BLOCK
+        CONFIG = (
+            SYSTEM_BLOCK |
+            VLAN_RANGE |
+            VLAN_BLOCK |
+            INTERFACE_BLOCK |
+            LOGGING_BLOCK |
+            NTP_BLOCK
+        )
         return CONFIG
 
     def get_interface_defaults(self):
@@ -130,3 +143,13 @@ class BaseIOSParser(BasePyParser):
 
     def on_ntp_server(self, tokens):
         self.get_ntpserver_fact(tokens[0])
+
+    def on_vlan(self, tokens):
+        self.get_vlan_fact(int(tokens[0].strip()))
+
+    def on_vlan_range(self, tokens):
+        for v in ranges_to_list(tokens[0].strip()):
+            self.get_vlan_fact(v)
+
+    def on_vlan_name(self, tokens):
+        self.get_current_vlan().name = tokens[0]
