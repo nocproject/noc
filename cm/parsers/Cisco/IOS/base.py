@@ -11,7 +11,7 @@ from pyparsing import *
 ## NOC modules
 from noc.lib.ip import IPv4
 from noc.cm.parsers.pyparser import BasePyParser
-from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS
+from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
 
 
 class BaseIOSParser(BasePyParser):
@@ -30,12 +30,16 @@ class BaseIOSParser(BasePyParser):
         INTERFACE_SHUTDOWN = (Optional(Literal("no")) + Literal("shutdown")).setParseAction(self.on_interface_shutdown)
         INTERFACE_REDIRECTS = (Optional(Literal("no")) + Literal("ip") + Literal("redirects")).setParseAction(self.on_interface_redirects)
         INTERFACE_PROXY_ARP = (Optional(Literal("no")) + Literal("ip") + Literal("proxy-arp")).setParseAction(self.on_interface_proxy_arp)
+        INTERFACE_SPEED = Literal("speed") + ALPHANUMS.copy().setParseAction(self.on_interface_speed)
+        INTERFACE_DUPLEX = Literal("duplex") + ALPHANUMS.copy().setParseAction(self.on_interface_duplex)
         INTERFACE_BLOCK = INTERFACE + ZeroOrMore(INDENT + (
             INTERFACE_DESCRIPTION |
             INTERFACE_ADDRESS |
             INTERFACE_SHUTDOWN |
             INTERFACE_REDIRECTS |
             INTERFACE_PROXY_ARP |
+            INTERFACE_SPEED |
+            INTERFACE_DUPLEX |
             LINE
         ))
         # Logging
@@ -114,6 +118,12 @@ class BaseIOSParser(BasePyParser):
 
     def on_interface_proxy_arp(self, tokens):
         self.get_current_subinterface().ip_proxy_arp = tokens[0] != "no"
+
+    def on_interface_speed(self, tokens):
+        self.get_current_interface().speed = tokens[-1]
+
+    def on_interface_duplex(self, tokens):
+        self.get_current_interface().duplex = tokens[-1]
 
     def on_logging_host(self, tokens):
         self.get_sysloghost_fact(tokens[0])
