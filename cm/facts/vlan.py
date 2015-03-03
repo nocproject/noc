@@ -17,6 +17,12 @@ class VLAN(BaseFact):
         self.id = id
         self.name = name
 
+    def __unicode__(self):
+        r = "VLAN %d" % self.id
+        if self.name and self.name != str(self.id):
+            r += " (%s)" % self.name
+        return r
+
     @property
     def id(self):
         return self._id

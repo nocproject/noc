@@ -126,6 +126,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onCaps
         });
 
+        me.factsButton = Ext.create("Ext.button.Button", {
+            text: "Facts",
+            glyph: NOC.glyph.file,
+            scope: me,
+            handler: me.onFacts
+        });
+
         me.ITEM_CONFIG = me.registerItem(
             Ext.create("NOC.core.RepoPreview", {
                 app: me,
@@ -164,6 +171,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         );
 
         me.ITEM_CAPS = me.registerItem("NOC.sa.managedobject.CapsPanel");
+        me.ITEM_FACTS = me.registerItem("NOC.sa.managedobject.FactsPanel");
 
         Ext.apply(me, {
             columns: [
@@ -579,7 +587,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.alarmsButton,
                 me.interactionsButton,
                 me.metricsButton,
-                me.capsButton
+                me.capsButton,
+                me.factsButton
             ]
         });
         me.callParent();
@@ -725,6 +734,11 @@ Ext.define("NOC.sa.managedobject.Application", {
     onCaps: function() {
         var me = this;
         me.previewItem(me.ITEM_CAPS, me.currentRecord);
+    },
+    //
+    onFacts: function() {
+        var me = this;
+        me.previewItem(me.ITEM_FACTS, me.currentRecord);
     },
     //
     onInterfaceClick: function(record) {
