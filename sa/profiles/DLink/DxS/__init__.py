@@ -30,6 +30,7 @@ class Profile(NOCProfile):
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
     telnet_naws = "\x00\x7f\x00\x7f"
+    default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
     ##
     ## Version comparison
     ## Version format:
