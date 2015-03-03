@@ -676,3 +676,25 @@ class ManagedObjectApplication(ExtModelApplication):
                     "value": c.local_value if c.local_value is not None else c.discovered_value
                 }]
         return sorted(r, key=lambda x: x["capability"])
+
+    @view(url="(?P<id>\d+)/facts/$", method=["GET"],
+          access="read", api=True)
+    def api_get_facts(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        config = o.config.read()
+        if not config:
+            return []
+        parser = o.get_parser()
+        if not parser:
+            return []
+        r = []
+        for f in list(parser.parse(config)):
+            r += [{
+                "cls": f.cls,
+                "label": unicode(f),
+                "attrs": [{
+                    "name": a,
+                    "value": getattr(f, a)
+                } for a in f.ATTRS]
+            }]
+        return r

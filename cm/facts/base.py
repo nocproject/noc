@@ -14,3 +14,10 @@ class BaseFact(object):
         print "- %s:" % self.__class__.__name__
         for a in self.ATTRS:
             print "    %s: %s" % (a, getattr(self, a))
+
+    @property
+    def cls(self):
+        return self.__class__.__name__
+
+    def __unicode__(self):
+        return self.cls

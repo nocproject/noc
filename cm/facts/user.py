@@ -18,6 +18,9 @@ class User(BaseFact):
         self.level = level
         self.groups = groups
 
+    def __unicode__(self):
+        return "User %s" % self.name
+
     @property
     def name(self):
         return self._name

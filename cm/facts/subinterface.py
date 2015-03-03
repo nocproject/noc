@@ -34,8 +34,8 @@ class SubInterface(BaseFact):
         self.untagged_vlan = untagged_vlan
 
     def __unicode__(self):
-        return u"interface %s" % self.name
-        
+        return "SubInterface %s" % self.name
+
     @property
     def description(self):
         return self._description

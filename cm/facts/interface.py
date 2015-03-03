@@ -23,7 +23,7 @@ class Interface(BaseFact):
         self.duplex = duplex
 
     def __unicode__(self):
-        return u"interface %s" % self.name
+        return "Interface %s" % self.name
         
     @property
     def description(self):
