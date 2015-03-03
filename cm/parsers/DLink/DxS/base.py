@@ -10,7 +10,7 @@
 from noc.cm.parsers.base import BaseParser
 
 
-class DLinkParser(BaseParser):
+class BaseDLinkParser(BaseParser):
     def parse(self, config):
         for l in config.splitlines():
             if not l or l.startswith("#"):
