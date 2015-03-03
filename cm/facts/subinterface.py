@@ -13,11 +13,14 @@ from base import BaseFact
 class SubInterface(BaseFact):
     ATTRS = ["name", "description", "admin_status",
              "ipv4_addresses", "ipv6_addresses",
-             "ip_proxy_arp", "ip_redirects"]
+             "ip_proxy_arp", "ip_redirects",
+             "tagged_vlans", "untagged_vlan"
+             ]
 
     def __init__(self, name, interface, description=None,
                  admin_status=False, ip_proxy_arp=False, 
-                 ip_redirects=False):
+                 ip_redirects=False, tagged_vlans=None, 
+                 untagged_vlan=None):
         self.name = name
         self.interface = interface
         self.description = description
@@ -27,6 +30,8 @@ class SubInterface(BaseFact):
         self.ipv6_addresses = []
         self.ip_proxy_arp = ip_proxy_arp
         self.ip_redirects = ip_redirects
+        self.tagged_vlans = tagged_vlans
+        self.untagged_vlan = untagged_vlan
 
     def __unicode__(self):
         return u"interface %s" % self.name
@@ -86,3 +91,23 @@ class SubInterface(BaseFact):
     @ip_redirects.setter
     def ip_redirects(self, value):
         self._ip_redirects = bool(value)
+        
+    @property
+    def tagged_vlans(self):
+        return self._tagged_vlans
+    
+    @tagged_vlans.setter
+    def tagged_vlans(self, value):
+        if value:
+            value = [int(v) for v in value]
+        self._tagged_vlans = value or []
+
+    @property
+    def untagged_vlan(self):
+        return self._untagged_vlan
+    
+    @untagged_vlan.setter
+    def untagged_vlan(self, value):
+        if value:
+            value = int(value)
+        self._untagged_vlan = value or None

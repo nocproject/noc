@@ -38,6 +38,12 @@ class BaseIOSParser(BasePyParser):
         INTERFACE_PROXY_ARP = (Optional(Literal("no")) + Literal("ip") + Literal("proxy-arp")).setParseAction(self.on_interface_proxy_arp)
         INTERFACE_SPEED = Literal("speed") + ALPHANUMS.copy().setParseAction(self.on_interface_speed)
         INTERFACE_DUPLEX = Literal("duplex") + ALPHANUMS.copy().setParseAction(self.on_interface_duplex)
+        INTERFACE_UNTAGGED = Literal("switchport") + Literal("access") + Literal("vlan") + DIGITS.copy().setParseAction(self.on_interface_untagged)
+        INTERFACE_TAGGED = (
+            Literal("switchport") + Literal("trunk") +
+            Literal("allowed") + Literal("vlan") +
+            REST.copy().setParseAction(self.on_interface_tagged)
+        )
         INTERFACE_BLOCK = INTERFACE + ZeroOrMore(INDENT + (
             INTERFACE_DESCRIPTION |
             INTERFACE_ADDRESS |
@@ -46,6 +52,8 @@ class BaseIOSParser(BasePyParser):
             INTERFACE_PROXY_ARP |
             INTERFACE_SPEED |
             INTERFACE_DUPLEX |
+            INTERFACE_UNTAGGED |
+            INTERFACE_TAGGED |
             LINE
         ))
         # Logging
@@ -137,6 +145,17 @@ class BaseIOSParser(BasePyParser):
 
     def on_interface_duplex(self, tokens):
         self.get_current_interface().duplex = tokens[-1]
+
+    def on_interface_untagged(self, tokens):
+        self.get_current_subinterface().untagged_vlan = int(tokens[0])
+
+    def on_interface_tagged(self, tokens):
+        vlans = tokens[0].strip()
+        if vlans.startswith("add"):
+            vlans = vlans.split(" ", 1)[1].strip()
+        si = self.get_current_subinterface()
+        for v in ranges_to_list(vlans):
+            si.tagged_vlans += [int(v)]
 
     def on_logging_host(self, tokens):
         self.get_sysloghost_fact(tokens[0])
