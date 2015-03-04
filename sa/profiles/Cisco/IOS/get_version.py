@@ -40,7 +40,7 @@ class Script(NOCScript):
                 if v:
                     match = self.re_search(self.rx_snmp_ver, v)
                     platform = match.group("platform")
-                    if not self.re_search(self.rx_invalid_platforms, platform):
+                    if not self.rx_invalid_platforms.search(platform):
                         return {
                             "vendor": "Cisco",
                             "platform": match.group("platform"),
