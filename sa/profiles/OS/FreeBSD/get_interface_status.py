@@ -16,8 +16,10 @@ class Script(NOCScript):
     name = "OS.FreeBSD.get_interface_status"
     implements = [IGetInterfaceStatus]
     rx_if_name = re.compile(
-    r"^(?P<ifname>\S+): flags=\d+<\S+> metric \d+ mtu \d+$")
-    rx_if_status = re.compile(r"^\tstatus: (?P<status>active|no carrier)$")
+        r"^(?P<ifname>\S+): flags=\d+<\S+> metric \d+ mtu \d+$")
+    rx_if_status = re.compile(
+        r"^\tstatus: "
+        r"(?P<status>active|no carrier|inserted|no ring|associated|running)$")
 
     def execute(self):
         r = []
@@ -30,7 +32,7 @@ class Script(NOCScript):
             if match:
                 r += [{
                     "interface": if_name,
-                    "status": match.group("status") == "active"
+                    "status": not match.group("status").startswith("no ")
                 }]
                 continue
         return r
