@@ -18,7 +18,7 @@ class Profile(NOCProfile):
     supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_more = [
         (r"^ --More--", "\n"),
-        (r"\?\s*\[confirm\]", "\n")
+        (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
     ]
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
