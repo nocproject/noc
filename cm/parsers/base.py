@@ -67,7 +67,7 @@ class BaseParser(object):
             self.yield_fact(self.system_fact)
         return self.system_fact
 
-    def get_interface_defaults(self):
+    def get_interface_defaults(self, name):
         """
         Get interface default settings
         """
@@ -88,7 +88,9 @@ class BaseParser(object):
     def get_interface_fact(self, name):
         n = self.convert_interface_name(name)
         if n not in self.interface_facts:
-            self.interface_facts[n] = Interface(n, **self.get_interface_defaults())
+            self.interface_facts[n] = Interface(
+                n, **self.get_interface_defaults(n)
+            )
             self.yield_fact(self.interface_facts[n])
         self.current_interface = self.interface_facts[n]
         return self.current_interface
