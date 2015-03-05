@@ -23,4 +23,3 @@ class IGetCDPNeighbors(Interface):
             "remote_interface": StringParameter()
         }))
     })
-    template = "interfaces/igetcdpneighbors.html"

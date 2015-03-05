@@ -14,4 +14,3 @@ class IGetChassisID(Interface):
         "first_chassis_mac": MACAddressParameter(required=False),
         "last_chassis_mac": MACAddressParameter(required=False)
     }, convert=True)
-    template = "interfaces/igetchassisid.html"
