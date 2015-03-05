@@ -27,4 +27,3 @@ class IGetBFDSessions(Interface):
         # Detection time, microseconds
         "detect_time": IntParameter()
     })
-    template = "interfaces/igetbfdsessions.html"

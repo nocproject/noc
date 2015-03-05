@@ -14,4 +14,3 @@ class IPing(Interface):
         "success": IntParameter(),
         "count": IntParameter()
     })
-    template = "interfaces/iping.html"
