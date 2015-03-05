@@ -11,7 +11,9 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVlans
 import re
 
-rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+\S+\s+\d+(?:\s+(?:\d|-|\/|,)+)?$")
+rx_vlan_line = re.compile(
+    r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+\S+\s+\d+"
+    r"(?:\s+(?:\d|-|\/|,)+)?$")
 
 
 class Script(noc.sa.script.Script):

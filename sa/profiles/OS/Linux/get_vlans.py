@@ -26,13 +26,8 @@ class Script(NOCScript):
         vconfig = self.cli("cat /proc/net/vlan/config")
         for vlan in self.rx_vlan.finditer(vconfig):
             vlan_id = vlan.group("vlan")
-# TODO vlan name... Looking for way find vlan name in GNU/Linux and *BSD
-            name = 'br' + vlan_id
-            if {"vlan_id": vlan_id, "name": name} not in r:
-                r.append({
-                            "vlan_id": vlan_id,
-                            "name": name,
-                            })
+            if {"vlan_id": vlan_id} not in r:
+                r.append({"vlan_id": vlan_id})
         if not r:
             raise Exception("Not implemented")
         return r
