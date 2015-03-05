@@ -6,6 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from pyparsing import nums, Word, Group, Optional, Suppress, Combine,\
+    Literal, delimitedList
 ## NOC modules
 from noc.cm.parsers.base import BaseParser
 
@@ -34,19 +37,34 @@ class BaseDLinkParser(BaseParser):
             1,2,5
             1,2-4,7
             2:2,2:5-2:7,2:9
+            1:2,1:(5,6-9,15)
+            1:2,1:(5,7,9),2:10
         """
-        for p in expr.split(","):
-            if "-" in p:
-                l, r = p.split("-")
-                if ":" in l and ":" in r:
-                    pfx = l.split(":")[0] + ":%d"
-                    for i in range(int(l.split(":")[1]), int(r.split(":")[1]) + 1):
-                        yield pfx % i
-                else:
-                    for i in range(int(l), int(r) + 1):
-                        yield str(i)
-            else:
-                yield p
+        for s, _, _ in PORT_EXPR.scanString(expr):
+            for x in s.asList():
+                if isinstance(x, basestring):
+                    # Single port
+                    yield x
+                elif len(x) == 2:
+                    # Range
+                    l, r = x
+                    if ":" in l:
+                        # 2:5-2:7
+                        pfx = "%s:%%d" % l.split(":")[0]
+                        for i in range(int(l.split(":")[1]), int(r.split(":")[-1]) + 1):
+                            yield pfx % i
+                    else:
+                        # 5-7
+                        for i in range(int(l), int(r) + 1):
+                            yield str(i)
+                elif x[1] == ":(":
+                    pfx = "%s:%%s" % x[0]
+                    for y in x[2:]:
+                        if isinstance(y, basestring):
+                            yield pfx % y
+                        else:
+                            for i in range(int(y[0]), int(y[1]) + 1):
+                                yield pfx % i
 
     def next_item(self, tokens, name):
         """
@@ -100,3 +118,18 @@ class BaseDLinkParser(BaseParser):
         if untagged:
             for i in self.iter_ports(untagged):
                 self.get_subinterface_fact(i).untagged_vlan = vid
+
+
+# Port expression parser
+DIGITS = Word(nums)
+PORT = Combine(DIGITS + Optional(Literal(":") + DIGITS))
+# 1:(2,3,10-20)
+PORT_RANGE_PT = Group(
+    DIGITS + Literal(":(") +
+    delimitedList(Group(DIGITS + Suppress(Literal("-")) + DIGITS) | DIGITS, delim=",") +
+    Suppress(Literal(")"))
+)
+# 1:2-1:5
+PORT_RANGE = Group(PORT + Suppress(Literal("-")) + PORT)
+# Port expression
+PORT_EXPR = delimitedList(PORT_RANGE_PT | PORT_RANGE | PORT, delim=",")
