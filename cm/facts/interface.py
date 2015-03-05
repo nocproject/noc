@@ -11,16 +11,18 @@ from base import BaseFact
 
 
 class Interface(BaseFact):
-    ATTRS = ["name", "description", "admin_status", "speed", "duplex"]
+    ATTRS = ["name", "description", "admin_status", "speed", "duplex",
+             "protocols"]
 
     def __init__(self, name, description=None, admin_status=False, 
-                 speed="auto", duplex="auto"):
+                 speed="auto", duplex="auto", protocols=None):
         self.name = name
         self.description = description
         self.admin_status = admin_status
         self.has_description = False
         self.speed = speed
         self.duplex = duplex
+        self.protocols = protocols
 
     def __unicode__(self):
         return "Interface %s" % self.name
@@ -70,3 +72,19 @@ class Interface(BaseFact):
             elif value.startswith("half"):
                 value = "half"
         self._duplex = value or "auto"
+
+    @property
+    def protocols(self):
+        return self._protocols
+
+    @protocols.setter
+    def protocols(self, value):
+        self._protocols = value or []
+
+    def add_protocol(self, protocol):
+        if protocol not in self.protocols:
+            self.protocols += [protocol]
+
+    def remove_protocol(self, protocol):
+        if protocol in self.protocols:
+            self.protocols.remove(protocol)
