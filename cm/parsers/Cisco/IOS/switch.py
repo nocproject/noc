@@ -11,10 +11,10 @@ from base import BaseIOSParser
 
 
 class IOSSwitchParser(BaseIOSParser):
-    def get_interface_defaults(self):
-        return {
-            "admin_status": True
-        }
+    def get_interface_defaults(self, name):
+        r = super(IOSSwitchParser, self).get_interface_defaults(name)
+        r["admin_status"] = True
+        return r
 
     def get_subinterface_defaults(self):
         return {

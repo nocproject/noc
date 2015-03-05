@@ -16,6 +16,10 @@ from noc.lib.text import ranges_to_list
 
 
 class BaseIOSParser(BasePyParser):
+    def __init__(self, managed_object):
+        super(BaseIOSParser, self).__init__(managed_object)
+        self.enable_cdp = True
+
     def create_parser(self):
         # System
         HOSTNAME = LineStart() + Literal("hostname") + REST.copy().setParseAction(self.on_hostname)
@@ -23,7 +27,8 @@ class BaseIOSParser(BasePyParser):
         TIMEZONE = LineStart() + Literal("clock") + Literal("timezone") + REST.copy().setParseAction(self.on_timezone)
         NAMESERVER = LineStart() + Literal("ip") + Literal("name-server") + REST.copy().setParseAction(self.on_nameserver)
         USER = LineStart() + Literal("username") + (Word(alphanums + "-_") + Optional(Literal("privilege") + DIGITS)).setParseAction(self.on_user) + REST
-        SYSTEM_BLOCK = HOSTNAME | DOMAIN_NAME | TIMEZONE | NAMESERVER | USER
+        CDP_RUN = LineStart() + (Optional(Literal("no")) + Literal("cdp") + Literal("run")).setParseAction(self.on_cdp_run)
+        SYSTEM_BLOCK = HOSTNAME | DOMAIN_NAME | TIMEZONE | NAMESERVER | USER | CDP_RUN
         # VLAN
         VLAN_RANGE = LineStart() + Literal("vlan") + Combine(DIGITS + Word("-,") + restOfLine).setParseAction(self.on_vlan_range)
         VLAN = LineStart() + Literal("vlan") + DIGITS.copy().setParseAction(self.on_vlan)
@@ -44,6 +49,7 @@ class BaseIOSParser(BasePyParser):
             Literal("allowed") + Literal("vlan") +
             REST.copy().setParseAction(self.on_interface_tagged)
         )
+        INTERFACE_CDP = (Optional(Literal("no")) + Literal("cdp") + Literal("enable")).setParseAction(self.on_interface_cdp)
         INTERFACE_BLOCK = INTERFACE + ZeroOrMore(INDENT + (
             INTERFACE_DESCRIPTION |
             INTERFACE_ADDRESS |
@@ -54,6 +60,7 @@ class BaseIOSParser(BasePyParser):
             INTERFACE_DUPLEX |
             INTERFACE_UNTAGGED |
             INTERFACE_TAGGED |
+            INTERFACE_CDP |
             LINE
         ))
         # Logging
@@ -73,10 +80,15 @@ class BaseIOSParser(BasePyParser):
         )
         return CONFIG
 
-    def get_interface_defaults(self):
-        return {
+    def get_interface_defaults(self, name):
+        r = {
             "admin_status": False,
+            "protocols": []
         }
+        # @todo: Replace with more reliable type detection
+        if self.enable_cdp and name[:2] in ("Fa", "Gi", "Te"):
+            r["protocols"] += ["CDP"]
+        return r
 
     def get_subinterface_defaults(self):
         return {
@@ -108,6 +120,9 @@ class BaseIOSParser(BasePyParser):
             i = tokens.index("privilege")
             user.level = int(tokens[i + 1])
 
+    def on_cdp_run(self, tokens):
+        self.enable_cdp = tokens[0] != "no"
+
     def on_interface(self, tokens):
         name = tokens[0]
         if "." in name:
@@ -133,6 +148,12 @@ class BaseIOSParser(BasePyParser):
         si.admin_status = status
         if "." not in si.name:
             si.interface.admin_status = status
+
+    def on_interface_cdp(self, tokens):
+        if tokens[0] == "no":
+            self.get_current_interface().remove_protocol("CDP")
+        else:
+            self.get_current_interface().add_protocol("CDP")
 
     def on_interface_redirects(self, tokens):
         self.get_current_subinterface().ip_redirects = tokens[0] != "no"
