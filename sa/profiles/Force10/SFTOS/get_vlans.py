@@ -19,5 +19,5 @@ class Script(NOCScript):
     def execute(self):
         return [{
             "vlan_id": x[0],
-            "name":x[1]
+            "name": x[1]
         } for x in parse_table(self.cli("show vlan brief"))]

@@ -18,12 +18,13 @@ class Script(NOCScript):
     implements = [IGetVlans]
 
     rx_vlan = re.compile(
-        r"^(VLAN name\s+:\s*(?P<vlanname>\S+).|)VLAN ID\s+:\s*(?P<vlanid>\d+)$",
-        re.DOTALL|re.MULTILINE)
+        r"^(VLAN name\s+:\s*(?P<vlanname>\S+).|)"
+        r"VLAN ID\s+:\s*(?P<vlanid>\d+)$",
+        re.DOTALL | re.MULTILINE)
 
     rx_vlan1 = re.compile(
         r"^(?P<vlanid>\d+)\s+(?P<vlanname>\S+)\s+(Static|Dynamic)\s+ENET",
-        re.DOTALL|re.MULTILINE)
+        re.DOTALL | re.MULTILINE)
 
     def execute(self):
         r = []
@@ -53,20 +54,26 @@ class Script(NOCScript):
             vlan_id = match.group('vlanid')
             name = match.group('vlanname')
             if not name:
-                name = "vlan-" + vlan_id
-            r.append({
-                "vlan_id": int(vlan_id),
-                "name": name
-            })
+                r.append({
+                    "vlan_id": int(vlan_id)
+                })
+            else:
+                r.append({
+                    "vlan_id": int(vlan_id),
+                    "name": name
+                })
         if r == []:
             for match in self.rx_vlan1.finditer(v):
                 vlan_id = match.group('vlanid')
                 name = match.group('vlanname')
                 if not name:
-                    name = "vlan-" + vlan_id
-                r.append({
-                    "vlan_id": int(vlan_id),
-                    "name": name
-                })
+                    r.append({
+                        "vlan_id": int(vlan_id)
+                    })
+                else:
+                    r.append({
+                        "vlan_id": int(vlan_id),
+                        "name": name
+                    })
 
         return r
