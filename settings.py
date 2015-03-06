@@ -5,6 +5,10 @@ import ConfigParser
 import sys
 import os
 
+# Check when started from notebook
+if not os.path.isfile("etc/noc.defaults") and os.path.isfile("../etc/noc.defaults"):
+    os.chdir("..")
+
 # Load config
 config = ConfigParser.SafeConfigParser()
 config.read(["etc/noc.defaults", "etc/noc.conf"])
