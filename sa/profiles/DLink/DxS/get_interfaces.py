@@ -122,6 +122,7 @@ class Script(NOCScript):
     rx_stp1 = re.compile(r"Port Index\s+: (?P<ipif>\d+)\s*\n"
         r"Connection\s+: Link (?:Up|Down)\s*\n"
         r"State : (?P<state>Yes|Enabled|No|Disabled)")
+    rx_stp2 = re.compile(r"^(?P<ipif>\d+)\s+\S+\/\S+\s+(?P<state>Yes|No)")
 
     def parse_ctp(self, s):
         match = self.rx_ctp.search(s)
@@ -147,6 +148,13 @@ class Script(NOCScript):
                 state = match.group("state")
                 obj = {"port": key, "state": state}
                 return key, obj, s[match.end():]
+            else:
+                match = self.rx_stp2.search(s)
+                if match:
+                    key = match.group("ipif")
+                    state = match.group("state")
+                    obj = {"port": key, "state": state}
+                    return key, obj, s[match.end():]
         return None
 
     def execute(self):
