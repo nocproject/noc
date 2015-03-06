@@ -347,6 +347,7 @@ DLink | Modules | DEM-420CX,8d44af10-0aff-49cf-9cc8-3d6ea8aa3a94,DLink/Modules/D
 DLink | Modules | DEM-420X,3e4a7ec7-1b07-4437-ad6d-bd53df12fc7c,DLink/Modules/DEM-420X.json,eda1956d6d16b6cec9362cbefffaeaf49230c5894b1b919d1762645873e4e225
 DLink | Modules | DEM-540,b42574e6-c536-4ac1-abe6-2bc716f63910,DLink/Modules/DEM-540.json,191b2608c15a0dabf826b3bb1a9d621fc7a5b5148c1b0841eb31ae00a6303089
 DLink | Modules | DES-132GB,ad2f4760-ac4a-45b0-a993-5c03f0ee921a,DLink/Modules/DES-132GB.json,bd2b445def6e9d9df59b74c42f9be587a7eab88e1c86ec7a88f1d6e21071f5cb
+DLink | Modules | DES-132T,f18a9707-72be-4c35-aca6-6a74df1f9d18,DLink/Modules/DES-132T.json,04e4e8847659b1191fba1780dcedd7bb75189dda1b1847164e96a7af0f95d149
 Ducts | Cable Entry,ae6a7aff-af07-489e-b222-8cf71b62b5b4,Ducts/Cable_Entry.json,60ae9d5cd6c373756ba98304f0c64eab878e6de6ff78040dd89658bbeedbb5ef
 Ducts | Conduits,bedc97be-259d-4928-9217-ffe88aebdb27,Ducts/Conduits.json,97cd9b8edbd7d72737997a566da521743f28745266513f73856d0c1d7e8af765
 Ducts | Manhole,edf46d3b-841c-4d2f-bc85-6301a4d0c6d8,Ducts/Manhole.json,7cb90ae36fabb027a4036ac2e5151cdb49ff130120c52153d6627f0f5a6b4cd3
