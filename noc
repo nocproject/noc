@@ -6,6 +6,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+cd `dirname $0`
+
+error_exit ( ) {
+    printf "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m\n" 1>&2
+    exit 1
+}
+
 case "$1" in
     "generate-ssh-keys")
         exec ./scripts/generate-ssh-keys.py "$@"
@@ -27,6 +34,12 @@ case "$1" in
         ;;
     "upgrade")
         exec ./scripts/upgrade
+        ;;
+    "notebook")
+        if [ ! -d ".ipython" ]; then
+            mkdir .ipython || error_exit "Cannot create .ipython directory"
+        fi
+        exec ./bin/ipython notebook --notebook-dir=.ipython
         ;;
     *)
         exec ./bin/python manage.py "$@"
