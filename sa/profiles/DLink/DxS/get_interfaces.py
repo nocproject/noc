@@ -288,9 +288,10 @@ class Script(NOCScript):
 
         stp = []
         try:
-            c = self.cli("show stp")
+            c = self.cli("show stp\nq")
         except self.CLISyntaxError:
-            c = ""
+            pass
+        self.reset_cli_queue()
         stp_enable = self.rx_stp_gs.search(c) is not None
         if stp_enable:
             c = self.cli_object_stream(
