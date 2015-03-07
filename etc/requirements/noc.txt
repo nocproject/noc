@@ -15,7 +15,6 @@ jsonschema==2.4.0
 protobuf==2.5.0
 pyasn1==0.1.7
 pyasn1-modules==0.0.5
-pyclips==1.0.7.348-clips-6.24
 pyparsing==2.0.3
 pysnmp==4.2.1
 python-creole==0.2.4
@@ -43,3 +42,4 @@ noc-pkg-font-awesome==4.2.0
 noc-pkg-codemirror==4.6
 noc-pkg-stacktrace==1.0.0
 noc-pkg-grafana==1.9.1
+https://cdn.nocproject.org/pkg/pyclips-1.0.7.348-clips-6.24.tar.gz#md5=c548d62ec951bf9f98c86c70815ed27c
