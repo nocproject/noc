@@ -689,6 +689,8 @@ class ManagedObjectApplication(ExtModelApplication):
             return []
         r = []
         for f in list(parser.parse(config)):
+            f.managed_object = o
+            f.bind()
             r += [{
                 "cls": f.cls,
                 "label": unicode(f),
