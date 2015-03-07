@@ -14,6 +14,7 @@ from noc.cm.facts.sysloghost import SyslogHost
 from noc.cm.facts.ntpserver import NTPServer
 from noc.cm.facts.user import User
 from noc.cm.facts.vlan import VLAN
+from noc.cm.facts.service import Service
 
 
 class BaseParser(object):
@@ -27,9 +28,11 @@ class BaseParser(object):
         self.ntpserver_facts = {}
         self.user_facts = {}
         self.vlan_facts = {}
+        self.service_facts = {}
         self.current_interface = None
         self.current_subinterface = None
         self.current_vlan = None
+        self.current_service = None
 
     def parse(self, config):
         """
@@ -152,3 +155,16 @@ class BaseParser(object):
         Returns last get_vlan_fact call
         """
         return self.current_vlan
+
+    def get_service_fact(self, name):
+        if name not in self.service_facts:
+            self.service_facts[name] = Service(name)
+            self.yield_fact(self.service_facts[name])
+        self.current_service = self.service_facts[name]
+        return self.current_service
+
+    def get_current_service(self):
+        """
+        Returns last get_service_fact call
+        """
+        return self.current_service
