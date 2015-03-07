@@ -17,6 +17,7 @@ class System(BaseFact):
     def __init__(self, hostname=None, domain_name=False, profile=None,
                  vendor=None, platform=None, version=None,
                  timezone=None, nameservers=None):
+        super(System, self).__init__()
         self.hostname = hostname
         self.domain_name = domain_name
         self.profile = profile

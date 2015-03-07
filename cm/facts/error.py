@@ -14,6 +14,7 @@ class Error(BaseFact):
     ATTRS = ["name", "obj"]
 
     def __init__(self, name, obj=None):
+        super(Error, self).__init__()
         self.name = name
         self.obj = obj
 

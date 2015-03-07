@@ -21,6 +21,7 @@ class SubInterface(BaseFact):
                  admin_status=False, ip_proxy_arp=False, 
                  ip_redirects=False, tagged_vlans=None, 
                  untagged_vlan=None):
+        super(SubInterface, self).__init__()
         self.name = name
         self.interface = interface
         self.description = description

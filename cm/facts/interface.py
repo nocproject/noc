@@ -6,16 +6,22 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import logging
 ## NOC modules
 from base import BaseFact
+from noc.inv.models.interface import Interface as DBInterface
+
+logger = logging.getLogger(__name__)
 
 
 class Interface(BaseFact):
     ATTRS = ["name", "description", "admin_status", "speed", "duplex",
-             "[protocols]"]
+             "[protocols]", "profile"]
 
     def __init__(self, name, description=None, admin_status=False, 
                  speed="auto", duplex="auto", protocols=None):
+        super(Interface, self).__init__()
         self.name = name
         self.description = description
         self.admin_status = admin_status
@@ -23,6 +29,7 @@ class Interface(BaseFact):
         self.speed = speed
         self.duplex = duplex
         self.protocols = protocols
+        self.profile = None
 
     def __unicode__(self):
         return "Interface %s" % self.name
@@ -88,3 +95,22 @@ class Interface(BaseFact):
     def remove_protocol(self, protocol):
         if protocol in self.protocols:
             self.protocols.remove(protocol)
+
+    @property
+    def profile(self):
+        return self._profile
+
+    @profile.setter
+    def profile(self, value):
+        self._profile = value
+
+    def bind(self):
+        if self.name:
+            iface = DBInterface.objects.filter(
+                managed_object=self.managed_object.id,
+                name=self.name
+            ).first()
+            if iface:
+                logger.debug("bind %s to database", unicode(self))
+                if iface.profile:
+                    self.profile = iface.profile.name

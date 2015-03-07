@@ -51,7 +51,6 @@ class Engine(object):
             logger.debug("Assert [%s].%s = %s", unicode(fact), k, v)
             f.Slots[k] = v
         f.Assert()
-        fact._index = f.Index
         self.facts[f.Index] = fact
 
     def learn(self, gen):
@@ -60,6 +59,9 @@ class Engine(object):
         """
         n = 0
         for f in gen:
+            if hasattr(f, "managed_object") and f.managed_object is not None:
+                f.bind()
+                # @todo: Custom bindings from solutions
             self.assert_fact(f)
             n += 1
         logger.debug("%d facts learned", n)
