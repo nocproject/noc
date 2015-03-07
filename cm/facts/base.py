@@ -10,14 +10,39 @@
 class BaseFact(object):
     ATTRS = []
 
+    def __init__(self):
+        self._index = None  # CLIPS fact index
+
     def dump(self):
         print "- %s:" % self.__class__.__name__
-        for a in self.ATTRS:
+        for a in self.iter_attrs():
             print "    %s: %s" % (a, getattr(self, a))
 
     @property
     def cls(self):
-        return self.__class__.__name__
+        return self.__class__.__name__.lower()
+
+    @classmethod
+    def iter_attrs(cls):
+        for a in cls.ATTRS:
+            if a.startswith("["):
+                yield a[1:-1]
+            else:
+                yield a
+
+    @classmethod
+    def get_template(cls):
+        r = []
+        for a in cls.iter_attrs():
+            if a not in cls.ATTRS:
+                r += ["(multislot %s)" % a]
+            else:
+                r += ["(slot %s)" % a]
+        return "".join(r)
+
+    def iter_factitems(self):
+        for a in self.iter_attrs():
+            yield a, getattr(self, a)
 
     def __unicode__(self):
         return self.cls

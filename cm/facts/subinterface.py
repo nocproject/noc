@@ -12,9 +12,9 @@ from base import BaseFact
 
 class SubInterface(BaseFact):
     ATTRS = ["name", "description", "admin_status",
-             "ipv4_addresses", "ipv6_addresses",
+             "[ipv4_addresses]", "[ipv6_addresses]",
              "ip_proxy_arp", "ip_redirects",
-             "tagged_vlans", "untagged_vlan"
+             "[tagged_vlans]", "untagged_vlan"
              ]
 
     def __init__(self, name, interface, description=None,

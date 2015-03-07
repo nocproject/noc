@@ -12,7 +12,7 @@ from base import BaseFact
 
 class System(BaseFact):
     ATTRS = ["hostname", "domain_name", "profile",
-             "vendor", "platform", "version", "timezone", "nameservers"]
+             "vendor", "platform", "version", "timezone", "[nameservers]"]
 
     def __init__(self, hostname=None, domain_name=False, profile=None,
                  vendor=None, platform=None, version=None,
