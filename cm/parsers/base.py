@@ -44,6 +44,7 @@ class BaseParser(object):
 
     def iter_facts(self):
         for f in self.pending_facts:
+            f.managed_object = self.managed_object
             yield f
         self.pending_facts = []
 

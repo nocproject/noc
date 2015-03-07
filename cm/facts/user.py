@@ -14,6 +14,7 @@ class User(BaseFact):
     ATTRS = ["name", "level", "[groups]"]
 
     def __init__(self, name=None, level=None, groups=None):
+        super(User, self).__init__()
         self.name = name
         self.level = level
         self.groups = groups

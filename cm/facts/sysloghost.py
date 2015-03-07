@@ -14,6 +14,7 @@ class SyslogHost(BaseFact):
     ATTRS = ["ip"]
 
     def __init__(self, ip=None):
+        super(SyslogHost, self).__init__()
         self.ip = ip
 
     @property

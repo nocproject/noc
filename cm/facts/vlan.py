@@ -14,6 +14,7 @@ class VLAN(BaseFact):
     ATTRS = ["id", "name"]
 
     def __init__(self, id, name=None):
+        super(VLAN, self).__init__()
         self.id = id
         self.name = name
 

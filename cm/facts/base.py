@@ -11,7 +11,7 @@ class BaseFact(object):
     ATTRS = []
 
     def __init__(self):
-        self._index = None  # CLIPS fact index
+        self.managed_object = None
 
     def dump(self):
         print "- %s:" % self.__class__.__name__
@@ -46,3 +46,17 @@ class BaseFact(object):
 
     def __unicode__(self):
         return self.cls
+
+    @property
+    def managed_object(self):
+        return self._managed_object
+
+    @managed_object.setter
+    def managed_object(self, value):
+        self._managed_object = value
+
+    def bind(self):
+        """
+        Bind to external data. Called when facts are learned by engine
+        """
+        pass
