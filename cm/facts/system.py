@@ -13,7 +13,7 @@ from base import BaseFact
 class System(BaseFact):
     ATTRS = ["hostname", "domain_name", "profile",
              "vendor", "platform", "version", "timezone",
-             "[nameservers]", "managed_object_name"]
+             "[nameservers]", "managed_object_name", "object_profile"]
 
     def __init__(self, hostname=None, domain_name=False, profile=None,
                  vendor=None, platform=None, version=None,
@@ -28,6 +28,7 @@ class System(BaseFact):
         self.timezone = timezone
         self.nameservers = nameservers
         self.managed_object_name = None
+        self.object_profile = None
 
     @property
     def hostname(self):
@@ -101,5 +102,15 @@ class System(BaseFact):
     def managed_object_name(self, value):
         self._managed_object_name = value
 
+    @property
+    def object_profile(self):
+        return self._object_profile
+
+    @object_profile.setter
+    def object_profile(self, value):
+        self._object_profile = value
+
     def bind(self):
         self.managed_object_name = self.managed_object.name
+        if self.managed_object.object_profile:
+            self.object_profile = self.managed_object.object_profile.name
