@@ -10,7 +10,6 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
     extend: "NOC.core.ApplicationPanel",
     requires: [
     ],
-    autoScroll: true,
 
     initComponent: function() {
         var me = this;
@@ -25,16 +24,23 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
         me.store = Ext.create("Ext.data.Store", {
             model: "NOC.fm.alarm.Model",
             fields: ["cls", "label", "attrs"],
-            data: []
+            data: [],
+            groupField: "cls"
         });
 
         me.grid = Ext.create("Ext.grid.Panel", {
             store: me.store,
             stateful: true,
             stateId: "sa.managedobject-facts",
+            autoScroll: true,
             columns: [
                 {
-                    text: "Fact",
+                    text: "Class",
+                    dataIndex: "cls",
+                    flex: 1
+                },
+                {
+                    text: "Facts",
                     dataIndex: "label",
                     flex: 1
                 }
@@ -56,6 +62,18 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
                     )
                 }
             ],
+            features: [{
+                ftype: "grouping",
+                //groupHeaderTpl: '{cls}: {rows.length} Item{[values.rows.length > 1 ? "s" : ""]}',
+                hideGroupedHeader: true,
+                startCollapsed: true,
+                id: "fcls-grouping"
+            }]
+        });
+        Ext.apply(me, {
+            items: [
+                me.grid
+            ],
             dockedItems: [
                 {
                     xtype: "toolbar",
@@ -65,11 +83,6 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
                         me.refreshButton
                     ]
                 }
-            ]
-        });
-        Ext.apply(me, {
-            items: [
-                me.grid
             ]
         });
         me.callParent();
