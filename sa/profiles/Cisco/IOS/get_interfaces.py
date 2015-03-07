@@ -46,48 +46,6 @@ class Script(NOCScript):
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$", re.IGNORECASE)
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
-
-    types = {
-           "As": "physical",    # Async
-           "AT": "physical",    # ATM
-           "At": "physical",    # ATM
-           "Br": "physical",    # ISDN Basic Rate Interface
-           "BD": "physical",    # Bridge Domain Interface
-           "BV": "aggregated",  # BVI
-           "Bu": "aggregated",  # Bundle
-           "C": "physical",     # @todo: fix
-           "Ca": "physical",    # Cable
-           "CD": "physical",    # CDMA Ix
-           "Ce": "physical",    # Cellular
-           "Em": "physical",    # Embedded Service Engine
-           "Et": "physical",    # Ethernet
-           "Fa": "physical",    # FastEthernet
-           "Fd": "physical",    # Fddi
-           "Gi": "physical",    # GigabitEthernet
-           "Gm": "physical",    # GMPLS
-           "Gr": "physical",    # Group-Async
-           "Lo": "loopback",    # Loopback
-           "In": "physical",    # Integrated-service-engine
-           "M": "management",   # @todo: fix
-           "MF": "aggregated",  # Multilink Frame Relay
-           "Mf": "aggregated",  # Multilink Frame Relay
-           "Mu": "aggregated",  # Multilink-group interface
-           "PO": "physical",    # Packet OC-3 Port Adapter
-           "Po": "aggregated",  # Port-channel/Portgroup
-           "R": "aggregated",   # @todo: fix
-           "SR": "physical",    # Spatial Reuse Protocol
-           "Sr": "physical",    # Spatial Reuse Protocol
-           "Se": "physical",    # Serial
-           "Sp": "physical",    # Special-Services-Engine
-           "Te": "physical",    # TenGigabitEthernet
-           "To": "physical",    # TokenRing
-           "Tu": "tunnel",      # Tunnel
-           "VL": "SVI",         # VLAN, found on C3500XL
-           "Vl": "SVI",         # Vlan
-           "Vo": "physical",    # Voice
-           "XT": "SVI"          # Extended Tag ATM
-           }
-
     rx_lldp = re.compile("^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
         re.MULTILINE | re.DOTALL)
 
@@ -307,7 +265,7 @@ class Script(NOCScript):
                 sub["snmp_ifindex"] = ifindex[full_ifname]
 
             if "." not in ifname and ":" not in ifname:
-                iftype = self.types.get(ifname[:2])
+                iftype = self.profile.get_interface_type(ifname)
                 if not iftype:
                     self.logger.info(
                         "Ignoring unknown interface type: '%s", iftype
@@ -317,7 +275,7 @@ class Script(NOCScript):
                     "name": ifname,
                     "admin_status": a_stat,
                     "oper_status": o_stat,
-                    "type": self.types[ifname[:2]],
+                    "type": iftype,
                     "enabled_protocols": [],
                     "subinterfaces": [sub]
                 }

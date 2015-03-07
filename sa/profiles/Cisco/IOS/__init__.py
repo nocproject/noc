@@ -126,6 +126,51 @@ class Profile(NOCProfile):
             return "noc.cm.parsers.Cisco.IOS.switch.IOSSwitchParser"
         return cls.default_parser
 
+    INTERFACE_TYPES = {
+        "As": "physical",  # Async
+        "AT": "physical",  # ATM
+        "At": "physical",  # ATM
+        "Br": "physical",  # ISDN Basic Rate Interface
+        "BD": "physical",  # Bridge Domain Interface
+        "BV": "aggregated",  # BVI
+        "Bu": "aggregated",  # Bundle
+        "C": "physical",  # @todo: fix
+        "Ca": "physical",  # Cable
+        "CD": "physical",  # CDMA Ix
+        "Ce": "physical",  # Cellular
+        "Em": "physical",  # Embedded Service Engine
+        "Et": "physical",  # Ethernet
+        "Fa": "physical",  # FastEthernet
+        "Fd": "physical",  # Fddi
+        "Gi": "physical",  # GigabitEthernet
+        "Gm": "physical",  # GMPLS
+        "Gr": "physical",  # Group-Async
+        "Lo": "loopback",  # Loopback
+        "In": "physical",  # Integrated-service-engine
+        "M": "management",  # @todo: fix
+        "MF": "aggregated",  # Multilink Frame Relay
+        "Mf": "aggregated",  # Multilink Frame Relay
+        "Mu": "aggregated",  # Multilink-group interface
+        "PO": "physical",  # Packet OC-3 Port Adapter
+        "Po": "aggregated",  # Port-channel/Portgroup
+        "R": "aggregated",  # @todo: fix
+        "SR": "physical",  # Spatial Reuse Protocol
+        "Sr": "physical",  # Spatial Reuse Protocol
+        "Se": "physical",  # Serial
+        "Sp": "physical",  # Special-Services-Engine
+        "Te": "physical",  # TenGigabitEthernet
+        "To": "physical",  # TokenRing
+        "Tu": "tunnel",  # Tunnel
+        "VL": "SVI",  # VLAN, found on C3500XL
+        "Vl": "SVI",  # Vlan
+        "Vo": "physical",  # Voice
+        "XT": "SVI"  # Extended Tag ATM
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:2])
+
 
 def uBR(v):
     """

@@ -376,3 +376,11 @@ class Profile(object):
         as config parser. None means no parser for particular platform
         """
         return cls.default_parser
+
+    @classmethod
+    def get_interface_type(cls, name):
+        """
+        Return IGetInterface-compatible interface type
+        :param Name: Normalized interface name
+        """
+        return None
