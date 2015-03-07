@@ -64,7 +64,7 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
             ],
             features: [{
                 ftype: "grouping",
-                //groupHeaderTpl: '{cls}: {rows.length} Item{[values.rows.length > 1 ? "s" : ""]}',
+                groupHeaderTpl: '{name}: {rows.length} Item{[values.rows.length > 1 ? "s" : ""]}',
                 hideGroupedHeader: true,
                 startCollapsed: true,
                 id: "fcls-grouping"
