@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Interface(BaseFact):
     ATTRS = ["name", "description", "admin_status", "speed", "duplex",
-             "[protocols]", "profile"]
+             "[protocols]", "profile", "type"]
 
     def __init__(self, name, description=None, admin_status=False, 
                  speed="auto", duplex="auto", protocols=None):
@@ -30,6 +30,7 @@ class Interface(BaseFact):
         self.duplex = duplex
         self.protocols = protocols
         self.profile = None
+        self.type = None
 
     def __unicode__(self):
         return "Interface %s" % self.name
@@ -104,8 +105,17 @@ class Interface(BaseFact):
     def profile(self, value):
         self._profile = value
 
+    @property
+    def type(self):
+        return self._type
+
+    @type.setter
+    def type(self, value):
+        self._type = value
+
     def bind(self):
         if self.name:
+            self.name = self.managed_object.profile.convert_interface_name(self.name)
             iface = DBInterface.objects.filter(
                 managed_object=self.managed_object.id,
                 name=self.name
@@ -114,3 +124,5 @@ class Interface(BaseFact):
                 logger.debug("bind %s to database", unicode(self))
                 if iface.profile:
                     self.profile = iface.profile.name
+            if not self.type:
+                self.type = self.managed_object.profile.get_interface_type(self.name)
