@@ -17,6 +17,9 @@ class NTPServer(BaseFact):
         super(NTPServer, self).__init__()
         self.ip = ip
 
+    def __unicode__(self):
+        return "NTPServer %s" % self.ip
+
     @property
     def ip(self):
         return self._ip

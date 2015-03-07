@@ -17,6 +17,9 @@ class SyslogHost(BaseFact):
         super(SyslogHost, self).__init__()
         self.ip = ip
 
+    def __unicode__(self):
+        return "SyslogHost %s" % self.ip
+
     @property
     def ip(self):
         return self._ip
