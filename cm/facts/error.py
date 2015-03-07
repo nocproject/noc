@@ -6,17 +6,22 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## NOC modules
+from base import BaseFact
 
-class Error(object):
+
+class Error(BaseFact):
+    ATTRS = ["name", "obj"]
+
     def __init__(self, name, obj=None):
         self.name = name
         self.obj = obj
 
-    def __repr__(self):
+    def __unicode__(self):
         if self.obj:
-            return "<Error %s: %s>" % (self.name, unicode(self.obj))
+            return "Error %s: %s" % (self.name, unicode(self.obj))
         else:
-            return "<Error %s>" % self.name
+            return "Error %s" % self.name
 
     @property
     def obj(self):

@@ -11,7 +11,7 @@ from base import BaseFact
 
 
 class User(BaseFact):
-    ATTRS = ["name", "level", "groups"]
+    ATTRS = ["name", "level", "[groups]"]
 
     def __init__(self, name=None, level=None, groups=None):
         self.name = name

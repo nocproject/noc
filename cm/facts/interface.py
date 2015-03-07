@@ -12,7 +12,7 @@ from base import BaseFact
 
 class Interface(BaseFact):
     ATTRS = ["name", "description", "admin_status", "speed", "duplex",
-             "protocols"]
+             "[protocols]"]
 
     def __init__(self, name, description=None, admin_status=False, 
                  speed="auto", duplex="auto", protocols=None):
