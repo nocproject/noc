@@ -28,7 +28,18 @@ class BaseIOSParser(BasePyParser):
         NAMESERVER = LineStart() + Literal("ip") + Literal("name-server") + REST.copy().setParseAction(self.on_nameserver)
         USER = LineStart() + Literal("username") + (Word(alphanums + "-_") + Optional(Literal("privilege") + DIGITS)).setParseAction(self.on_user) + REST
         CDP_RUN = LineStart() + (Optional(Literal("no")) + Literal("cdp") + Literal("run")).setParseAction(self.on_cdp_run)
-        SYSTEM_BLOCK = HOSTNAME | DOMAIN_NAME | TIMEZONE | NAMESERVER | USER | CDP_RUN
+        SERVICE = LineStart() + (Optional(Literal("no")) + Literal("service") + Word(alphanums + "-") + restOfLine).setParseAction(self.on_service)
+        SSH_VERSION = LineStart() + Literal("ip") + Literal("ssh") + Literal("version") + (Word(nums) + restOfLine).setParseAction(self.on_ssh_version)
+        SYSTEM_BLOCK = (
+            HOSTNAME |
+            DOMAIN_NAME |
+            TIMEZONE |
+            NAMESERVER |
+            USER |
+            CDP_RUN |
+            SERVICE |
+            SSH_VERSION
+        )
         # VLAN
         VLAN_RANGE = LineStart() + Literal("vlan") + Combine(DIGITS + Word("-,") + restOfLine).setParseAction(self.on_vlan_range)
         VLAN = LineStart() + Literal("vlan") + DIGITS.copy().setParseAction(self.on_vlan)
@@ -122,6 +133,22 @@ class BaseIOSParser(BasePyParser):
 
     def on_cdp_run(self, tokens):
         self.enable_cdp = tokens[0] != "no"
+
+    def on_service(self, tokens):
+        """
+        [no] service <name> <config>
+        """
+        enabled = tokens[0] != "no"
+        if not enabled:
+            tokens = tokens[1:]
+        name = tokens[1]
+        sf = self.get_service_fact(name)
+        sf.enabled = enabled
+
+    def on_ssh_version(self, tokens):
+        sf = self.get_service_fact("ssh")
+        sf.enabled = True
+        sf.version = tokens[0]
 
     def on_interface(self, tokens):
         name = tokens[0]
