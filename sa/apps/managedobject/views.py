@@ -695,6 +695,6 @@ class ManagedObjectApplication(ExtModelApplication):
                 "attrs": [{
                     "name": a,
                     "value": getattr(f, a)
-                } for a in f.ATTRS]
+                } for a in f.iter_attrs()]
             }]
         return r
