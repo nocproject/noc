@@ -17,6 +17,7 @@ from noc.cm.parsers.base import BaseParser
 
 class BaseDLinkParser(BaseParser):
     STATUSES = set(["sntp"])
+    SERVICES = set(["telnet", "web", "ssh", "password_recovery"])
 
     def parse(self, config):
         # Various protocol statuses
@@ -35,8 +36,16 @@ class BaseDLinkParser(BaseParser):
                 self.parse_create_account(ll)
             elif l.startswith("config sntp "):
                 self.parse_config_sntp(ll)
-            elif len(ll) > 1 and ll[0] in ("enable", "disable") and ll[1] in self.STATUSES:
-                self.statuses[ll[1]] = ll[0] == "enable"
+            elif l.startswith("disable password encryption"):
+                self.get_service_fact("password_encryption").enabled = False
+            elif l.startswith("enable password encryption"):
+                self.get_service_fact("password_encryption").enabled = True
+            elif len(ll) > 1 and ll[0] in ("enable", "disable"):
+                if ll[1] in self.STATUSES:
+                    self.statuses[ll[1]] = ll[0] == "enable"
+                elif ll[1] in self.SERVICES:
+                    s = self.get_service_fact(ll[1])
+                    s.enabled = ll[0] == "enable"
             # Yield facts
             for f in self.iter_facts():
                 yield f
