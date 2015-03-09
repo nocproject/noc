@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+from collections import defaultdict
 ## Third-party modules
 from pyparsing import nums, Word, Group, Optional, Suppress, Combine,\
     Literal, delimitedList
@@ -14,7 +16,11 @@ from noc.cm.parsers.base import BaseParser
 
 
 class BaseDLinkParser(BaseParser):
+    STATUSES = set(["sntp"])
+
     def parse(self, config):
+        # Various protocol statuses
+        self.statuses = defaultdict(lambda: False)
         for l in config.splitlines():
             if not l or l.startswith("#"):
                 continue
@@ -27,6 +33,10 @@ class BaseDLinkParser(BaseParser):
                 self.parse_config_vlan(ll)
             elif l.startswith("create account "):
                 self.parse_create_account(ll)
+            elif l.startswith("config sntp "):
+                self.parse_config_sntp(ll)
+            elif len(ll) > 1 and ll[0] in ("enable", "disable") and ll[1] in self.STATUSES:
+                self.statuses[ll[1]] = ll[0] == "enable"
             # Yield facts
             for f in self.iter_facts():
                 yield f
@@ -141,6 +151,20 @@ class BaseDLinkParser(BaseParser):
         user = tokens[3]
         u = self.get_user_fact(user)
         u.groups = [group]
+
+    def parse_config_sntp(self, tokens):
+        """
+        enable sntp
+        config sntp primary IP1 secondary IP2 poll-interval 720
+        """
+        if not self.statuses["sntp"]:
+            return
+        primary = self.next_item(tokens, "primary")
+        if primary:
+            self.get_ntpserver_fact(primary)
+        secondary = self.next_item(tokens, "secondary")
+        if secondary:
+            self.get_ntpserver_fact(secondary)
 
 
 # Port expression parser
