@@ -25,6 +25,8 @@ class BaseDLinkParser(BaseParser):
                 self.parse_create_vlan(ll)
             elif l.startswith("config vlan "):
                 self.parse_config_vlan(ll)
+            elif l.startswith("create account "):
+                self.parse_create_account(ll)
             # Yield facts
             for f in self.iter_facts():
                 yield f
@@ -130,6 +132,15 @@ class BaseDLinkParser(BaseParser):
         if untagged:
             for i in self.iter_ports(untagged):
                 self.get_subinterface_fact(i).untagged_vlan = vid
+
+    def parse_create_account(self, tokens):
+        """
+        create account <group> <name>
+        """
+        group = tokens[2]
+        user = tokens[3]
+        u = self.get_user_fact(user)
+        u.groups = [group]
 
 
 # Port expression parser
