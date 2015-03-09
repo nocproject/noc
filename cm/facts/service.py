@@ -11,13 +11,14 @@ from base import BaseFact
 
 
 class Service(BaseFact):
-    ATTRS = ["name", "enabled", "version"]
+    ATTRS = ["name", "enabled", "version", "port"]
 
-    def __init__(self, name, enabled=False, version=None):
+    def __init__(self, name, enabled=False, version=None, port=None):
         super(Service, self).__init__()
         self.name = name
         self.enabled = enabled
         self.version = version
+        self.port = port
 
     def __unicode__(self):
         return "Service %s" % self.name
@@ -45,3 +46,11 @@ class Service(BaseFact):
     @version.setter
     def version(self, value):
         self._version = value
+
+    @property
+    def port(self):
+        return self._port
+    
+    @port.setter
+    def port(self, value):
+        self._port = value
