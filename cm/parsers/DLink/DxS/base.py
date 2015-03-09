@@ -75,6 +75,18 @@ class BaseDLinkParser(BaseParser):
         else:
             return None
 
+    def get_items(self, tokens, *args):
+        """
+        Fetch and return list of items
+        """
+        return [self.next_item(tokens, p) for p in args]
+
+    def next_bool_item(self, tokens, name):
+        return self.next_item(tokens, name) == "enable"
+
+    def get_bool_items(self, tokens, *args):
+        return [self.next_bool_item(tokens, p) for p in args]
+
     def parse_config_ports(self, tokens):
         """
         config ports 1:7,1:9,1:11,1:13 speed auto
