@@ -167,7 +167,9 @@ class BaseIOSParser(BasePyParser):
 
     def on_interface_address(self, tokens):
         ip = str(IPv4(tokens[0], netmask=tokens[1]))
-        self.get_current_subinterface().ipv4_addresses += [ip]
+        si = self.get_current_subinterface()
+        si.ipv4_addresses += [ip]
+        si.add_afi("IPv4")
 
     def on_interface_shutdown(self, tokens):
         status = tokens[0] == "no"
@@ -195,7 +197,9 @@ class BaseIOSParser(BasePyParser):
         self.get_current_interface().duplex = tokens[-1]
 
     def on_interface_untagged(self, tokens):
-        self.get_current_subinterface().untagged_vlan = int(tokens[0])
+        si = self.get_current_subinterface()
+        si.untagged_vlan = int(tokens[0])
+        si.add_afi("BRIDGE")
 
     def on_interface_tagged(self, tokens):
         vlans = tokens[0].strip()
@@ -204,6 +208,7 @@ class BaseIOSParser(BasePyParser):
         si = self.get_current_subinterface()
         for v in ranges_to_list(vlans):
             si.tagged_vlans += [int(v)]
+        si.add_afi("BRIDGE")
 
     def on_logging_host(self, tokens):
         self.get_sysloghost_fact(tokens[0])
