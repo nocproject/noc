@@ -46,6 +46,7 @@ scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
+Version = namedtuple("Version", ["profile", "vendor", "platform", "version"])
 
 
 logger = logging.getLogger(__name__)
@@ -736,16 +737,27 @@ class ManagedObject(models.Model):
                 methods += [cfg]
         # @todo: Create tasks
 
+    @property
+    def version(self):
+        """
+        Returns filled Version object
+        """
+        if not hasattr(self, "_c_version"):
+            self._c_version = Version(
+                profile=self.profile_name,
+                vendor=self.get_attr("vendor"),
+                platform=self.get_attr("platform"),
+                version=self.get_attr("version")
+            )
+        return self._c_version
+
     def get_parser(self):
         """
         Return parser instance or None.
         Depends on version_discovery
         """
-        cls = self.profile.get_parser(
-            self.get_attr("vendor"),
-            self.get_attr("platform"),
-            self.get_attr("version")
-        )
+        v = self.version
+        cls = self.profile.get_parser(v.vendor, v.platform, v.version)
         if cls:
             return get_solution(cls)(self)
         else:
