@@ -14,25 +14,29 @@ class SubInterface(BaseFact):
     ATTRS = ["name", "description", "admin_status",
              "[ipv4_addresses]", "[ipv6_addresses]",
              "ip_proxy_arp", "ip_redirects",
-             "[tagged_vlans]", "untagged_vlan"
+             "[tagged_vlans]", "untagged_vlan",
+             "[protocols]", "[afi]"
              ]
 
     def __init__(self, name, interface, description=None,
                  admin_status=False, ip_proxy_arp=False, 
                  ip_redirects=False, tagged_vlans=None, 
-                 untagged_vlan=None):
+                 untagged_vlan=None, ipv4_addresses=None,
+                 ipv6_addresses=None, protocols=None, afi=None):
         super(SubInterface, self).__init__()
         self.name = name
         self.interface = interface
         self.description = description
         self.admin_status = admin_status
         self.has_description = False
-        self.ipv4_addresses = []
-        self.ipv6_addresses = []
+        self.ipv4_addresses = ipv4_addresses
+        self.ipv6_addresses = ipv6_addresses
         self.ip_proxy_arp = ip_proxy_arp
         self.ip_redirects = ip_redirects
         self.tagged_vlans = tagged_vlans
         self.untagged_vlan = untagged_vlan
+        self.protocols = protocols
+        self.afi = afi
 
     def __unicode__(self):
         return "SubInterface %s" % self.name
@@ -112,3 +116,35 @@ class SubInterface(BaseFact):
         if value:
             value = int(value)
         self._untagged_vlan = value or None
+
+    @property
+    def protocols(self):
+        return self._protocols
+
+    @protocols.setter
+    def protocols(self, value):
+        self._protocols = value or []
+
+    def add_protocol(self, protocol):
+        if protocol not in self.protocols:
+            self.protocols += [protocol]
+
+    def remove_protocol(self, protocol):
+        if protocol in self.protocols:
+            self.protocols.remove(protocol)
+
+    @property
+    def afi(self):
+        return self._afi
+
+    @afi.setter
+    def afi(self, value):
+        self._afi = value or []
+
+    def add_afi(self, afi):
+        if afi not in self.afi:
+            self.afi += [afi]
+
+    def remove_afi(self, afi):
+        if afi in self.afi:
+            self.afi.remove(afi)
