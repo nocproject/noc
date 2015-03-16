@@ -40,8 +40,8 @@ class Migration:
                 ])
             else:
                 # Create new pyrule
-                db.execute("INSERT INTO main_pyrule(name, interface, handler) VALUES(%s, %s, %s)", [
-                    name, iface, handler
+                db.execute("INSERT INTO main_pyrule(name, interface, handler, description) VALUES(%s, %s, %s, %s)", [
+                    name, iface, handler, "%s solution" % handler
                 ])
 
     def backwards(self):
