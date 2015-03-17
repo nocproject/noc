@@ -91,7 +91,7 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
     preview: function(record, backItem) {
         var me = this;
         me.callParent(arguments);
-        me.setTitle(record.get("name") + " capabilities");
+        me.setTitle(record.get("name") + " facts");
         Ext.Ajax.request({
             url: "/sa/managedobject/" + me.currentRecord.get("id") + "/facts/",
             method: "GET",
