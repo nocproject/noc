@@ -44,6 +44,11 @@ Ext.define("NOC.cm.validationrule.Application", {
                     renderer: NOC.render.Bool
                 },
                 {
+                    text: "Scope",
+                    dataIndex: "scope",
+                    width: 100
+                },
+                {
                     text: "Description",
                     dataIndex: "description",
                     flex: 1
