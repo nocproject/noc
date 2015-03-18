@@ -14,6 +14,7 @@ from mongoengine.fields import (StringField, BooleanField, DictField,
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.lib.nosql import ForeignKeyField
+from noc.lib.solutions import get_solution
 
 A_DISABLE = ""
 A_INCLUDE = "I"
@@ -77,3 +78,9 @@ class ValidationRule(Document):
                 elif A_INCLUDE in actions:
                     return True
         return not self.selectors_list and not self.objects_list
+
+    def get_handler(self):
+        if self.handler:
+            return get_solution(self.handler)
+        else:
+            return None

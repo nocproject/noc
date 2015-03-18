@@ -43,6 +43,11 @@ Ext.define("NOC.cm.validationrule.Model", {
         {
             name: "handler",
             type: "string"
+        },
+        {
+            name: "scope",
+            type: "string",
+            persist: false
         }
     ]
 });
