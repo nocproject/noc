@@ -761,7 +761,7 @@ class ManagedObject(models.Model):
         if cls:
             return get_solution(cls)(self)
         else:
-            return None
+            return get_solution("noc.cm.parsers.base.BaseParser")(self)
 
 
 class ManagedObjectAttribute(models.Model):
