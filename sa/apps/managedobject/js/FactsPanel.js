@@ -21,9 +21,16 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
             handler: me.onRefresh
         });
 
+        me.revalidateButton = Ext.create("Ext.button.Button", {
+            text: "Revalidate",
+            glyph: NOC.glyph.refresh,
+            scope: me,
+            handler: me.onRevalidate
+        });
+
         me.store = Ext.create("Ext.data.Store", {
             model: "NOC.fm.alarm.Model",
-            fields: ["cls", "label", "attrs"],
+            fields: ["cls", "label", "attrs", "introduced", "changed"],
             data: [],
             groupField: "cls"
         });
@@ -43,7 +50,17 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
                     text: "Facts",
                     dataIndex: "label",
                     flex: 1
-                }
+                },
+                {
+                    text: "Introduced",
+                    dataIndex: "introduced",
+                    width: 150
+                },
+                {
+                    text: "Changed",
+                    dataIndex: "changed",
+                    width: 150
+                },
             ],
             plugins: [
                 {
@@ -80,7 +97,8 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
                     dock: "top",
                     items: [
                         me.getCloseButton(),
-                        me.refreshButton
+                        me.refreshButton,
+                        me.revalidateButton
                     ]
                 }
             ]
@@ -114,5 +132,50 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
     renderValue: function(v) {
         var me = this;
         return v;
+    },
+    //
+    onRevalidate: function() {
+        var me = this;
+            pollProgress = function(url) {
+                Ext.Ajax.request({
+                    url: url,
+                    method: "GET",
+                    scope: me,
+                    success: onSuccess,
+                    failure: onFailure
+                });
+            },
+            onSuccess = function(response) {
+                if(response.status === 202) {
+                    // Future in progress
+                    Ext.Function.defer(
+                        pollProgress, 1000, me,
+                        [response.getResponseHeader("Location")]
+                    );
+                } else {
+                    // Process result
+                    me.unmask();
+                    me.onRefresh();
+                }
+            },
+            onFailure = function(response) {
+                var data = response.responseText ? Ext.decode(response.responseText) : null;
+                if(data && data.success === false) {
+                    NOC.error(data.message);
+                } else {
+                    NOC.error("Error saving record!");
+                    console.log(response.responseText);
+                }
+                me.unmask();
+            };
+
+        me.mask();
+        Ext.Ajax.request({
+            url: "/sa/managedobject/" + me.currentRecord.get("id") + "/revalidate/",
+            method: "POST",
+            scope: me,
+            success: onSuccess,
+            failure: onFailure
+        });
     }
 });

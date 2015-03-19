@@ -313,7 +313,8 @@ class Engine(object):
                     bulk.find({"_id": f["_id"]}).update({
                         "$set": {
                             "attrs": f_attrs,
-                            "changed": now
+                            "changed": now,
+                            "label": unicode(fact)
                         }
                     })
                     changed = True
@@ -330,8 +331,9 @@ class Engine(object):
             self.logger.debug("Creating fact %s: %s", f, f_attrs)
             bulk.insert({
                 "_id": f,
-                "managed_object": self.object.id,
+                "object": self.object.id,
                 "cls": fact.cls,
+                "label": unicode(fact),
                 "attrs": f_attrs,
                 "introduced": now,
                 "changed": now
