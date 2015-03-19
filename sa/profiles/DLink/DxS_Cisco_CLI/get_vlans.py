@@ -24,11 +24,11 @@ class Script(NOCScript):
             vlanid = int(match.group("vlan_id"))
             if vlanid == 1:
                 r += [{
-                    "vlan_id": int(match.group("vlan_id"))
+                    "vlan_id": 1
                 }]
             else:
                 r += [{
-                    "vlan_id": int(match.group("vlan_id")),
+                    "vlan_id": vlanid,
                     "name": match.group("name")
                 }]
         return r
