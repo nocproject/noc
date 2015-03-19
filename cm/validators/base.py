@@ -171,17 +171,17 @@ class BaseValidator(object):
         """
         pass
 
-    @property
-    def is_interface(self):
-        return bool(self.scope & self.INTERFACE)
+    @classmethod
+    def is_interface(cls):
+        return bool(cls.scope & cls.INTERFACE)
 
-    @property
-    def is_object(self):
-        return bool(self.scope & self.OBJECT)
+    @classmethod
+    def is_object(cls):
+        return bool(cls.scope & cls.OBJECT)
 
-    @property
-    def is_topology(self):
-        return bool(self.scope & self.TOPOLOGY)
+    @classmethod
+    def is_topology(cls):
+        return bool(cls.scope & cls.TOPOLOGY)
 
     @property
     def object_config(self):
