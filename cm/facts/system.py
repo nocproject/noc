@@ -17,7 +17,8 @@ class System(BaseFact):
 
     def __init__(self, hostname=None, domain_name=False, profile=None,
                  vendor=None, platform=None, version=None,
-                 timezone=None, nameservers=None):
+                 timezone=None, nameservers=None, object_profile=None,
+                 **kwargs):
         super(System, self).__init__()
         self.hostname = hostname
         self.domain_name = domain_name
@@ -28,7 +29,7 @@ class System(BaseFact):
         self.timezone = timezone
         self.nameservers = nameservers
         self.managed_object_name = None
-        self.object_profile = None
+        self.object_profile = object_profile
 
     @property
     def hostname(self):

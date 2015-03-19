@@ -12,6 +12,7 @@ from base import BaseFact
 
 class Service(BaseFact):
     ATTRS = ["name", "enabled", "version", "port"]
+    ID = ["name"]
 
     def __init__(self, name, enabled=False, version=None, port=None):
         super(Service, self).__init__()

@@ -12,6 +12,7 @@ from base import BaseFact
 
 class Error(BaseFact):
     ATTRS = ["name", "obj"]
+    ID = ["name", "obj"]
 
     def __init__(self, name, obj=None):
         super(Error, self).__init__()

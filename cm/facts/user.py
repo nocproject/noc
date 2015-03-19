@@ -12,6 +12,7 @@ from base import BaseFact
 
 class User(BaseFact):
     ATTRS = ["name", "level", "[groups]"]
+    ID = ["name"]
 
     def __init__(self, name=None, level=None, groups=None):
         super(User, self).__init__()

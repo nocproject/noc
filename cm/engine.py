@@ -9,8 +9,11 @@
 ## Python modules
 import logging
 from collections import defaultdict
+import datetime
+import uuid
 ## Third-party modules
 import clips
+from pymongo.errors import BulkWriteError
 ## NOC modules
 from noc.cm.facts.error import Error
 from noc.cm.facts.role import Role
@@ -19,6 +22,7 @@ from noc.cm.models.validationpolicysettings import ValidationPolicySettings
 from noc.inv.models.interface import Interface as InvInterface
 from noc.lib.debug import error_report
 from noc.lib.solutions import get_solution
+from noc.cm.models.objectfact import ObjectFact
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +34,7 @@ class Engine(object):
         self.logger.debug("Creating CLIPS environment")
         self.env = clips.Environment()
         self.templates = {}  # fact class -> template
+        self.fcls = {}  # template -> Fact class
         self.get_template(Error(None))
         self.get_template(Role(None))
         self.facts = {}  # Index -> Fact
@@ -41,6 +46,7 @@ class Engine(object):
             self.logger.debug("Creating template %s", fact.cls)
             self.templates[fact.cls] = self.env.BuildTemplate(
                 fact.cls, fact.get_template())
+            self.fcls[fact.cls] = fact.__class__
             self.logger.debug("Define template %s",
                               self.templates[fact.cls].PPForm())
         return self.templates[fact.cls]
@@ -179,8 +185,9 @@ class Engine(object):
             break  # @todo: Check for commands
         # Extract errors
         for e in self.iter_errors():
-            self.logger.error("Error found: %s", e)
-        # @todo: Store object facts
+            self.logger.info("Error found: %s", e)
+        # Store object's facts
+        self.sync_facts()
 
     def _get_rule_settings(self, ps, scope):
         """
@@ -196,7 +203,7 @@ class Engine(object):
                 if not ri.is_active:
                     continue
                 rule = ri.rule
-                if rule.is_applicable_for(self.object):
+                if rule.is_active and rule.is_applicable_for(self.object):
                     vc = get_solution(rule.handler)
                     if vc and bool(vc.scope & scope):
                         r += [(vc, rule.config)]
@@ -256,6 +263,90 @@ class Engine(object):
                         for vc, config in rs
                     ]
         return r
+
+    def get_fact_uuid(self, fact):
+        r = [str(self.object.id), fact.cls] + [str(getattr(fact, n)) for n in fact.ID]
+        return uuid.uuid5(
+            uuid.NAMESPACE_URL,
+            "-".join(r)
+        )
+
+    def get_fact_attrs(self, fact):
+        return dict(fact.iter_factitems())
+
+    def sync_facts(self):
+        """
+        Retrieve known facts and synchronize with database
+        """
+        self.logger.debug("Synchronizing facts")
+        # Get facts from CLIPS
+        self.logger.debug("Extracting facts")
+        e_facts = {}  # uuid -> fact
+        f = self.env.InitialFact()
+        while f:
+            if f.Template and f.Template.Name in self.templates:
+                self.facts[f.Index] = f
+                args = {}
+                for k in f.Slots.keys():
+                    v = f.Slots[k]
+                    if v == clips.Nil:
+                        v = None
+                    args[str(k)] = v
+                fi = self.fcls[f.Template.Name](**args)
+                e_facts[self.get_fact_uuid(fi)] = fi
+            f = f.Next()
+        # Get facts from database
+        now = datetime.datetime.now()
+        collection = ObjectFact._get_collection()
+        bulk = collection.initialize_unordered_bulk_op()
+        new_facts = set(e_facts)
+        changed = False
+        for f in collection.find({"managed_object": self.object.id}):
+            if f["_id"] in e_facts:
+                fact = e_facts[f["_id"]]
+                f_attrs = self.get_fact_attrs(fact)
+                if f_attrs != f["attrs"]:
+                    # Changed facts
+                    self.logger.debug(
+                        "Fact %s has been changed: %s -> %s",
+                        f["_id"], f_attrs, f["attrs"])
+                    bulk.find({"_id": f["_id"]}).update({
+                        "$set": {
+                            "attrs": f_attrs,
+                            "changed": now
+                        }
+                    })
+                    changed = True
+                new_facts.remove(f["_id"])
+            else:
+                # Removed fact
+                self.logger.debug("Fact %s has been removed", f["_id"])
+                bulk.find({"_id": f["_id"]}).remove()
+                changed = True
+        # New facts
+        for f in new_facts:
+            fact = e_facts[f]
+            f_attrs = self.get_fact_attrs(fact)
+            self.logger.debug("Creating fact %s: %s", f, f_attrs)
+            bulk.insert({
+                "_id": f,
+                "managed_object": self.object.id,
+                "cls": fact.cls,
+                "attrs": f_attrs,
+                "introduced": now,
+                "changed": now
+            })
+        if new_facts:
+            changed = True
+        if changed:
+            self.logger.debug("Commiting changes to database")
+            try:
+                bulk.execute()
+            except BulkWriteError, bwe:
+                self.logger.error("Bulk write error: '%s'", bwe.details)
+            self.logger.debug("Database has been synced")
+        else:
+            self.logger.debug("Nothing changed")
 
 #
 from noc.cm.validators.base import BaseValidator
