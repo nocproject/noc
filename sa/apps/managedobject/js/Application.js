@@ -44,6 +44,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             glyph: NOC.glyph.times
         }
     ],
+    validationModelId: "sa.ManagedObject",
     //
     initComponent: function() {
         var me = this;
@@ -119,6 +120,14 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onMetrics
         });
 
+        me.validationSettingsButton = Ext.create("Ext.button.Button", {
+            text: "Validation",
+            glyph: NOC.glyph.file,
+            scope: me,
+            handler: me.onValidationSettings
+        });
+
+
         me.capsButton = Ext.create("Ext.button.Button", {
             text: "Capabilities",
             glyph: NOC.glyph.file,
@@ -167,6 +176,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             Ext.create("NOC.core.MetricSettingsPanel", {
                 app: me,
                 metricModelId: "sa.ManagedObject"
+            })
+        );
+
+        me.ITEM_VALIDATION_SETTINGS = me.registerItem(
+            Ext.create("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
+                app: me,
+                validationModelId: me.validationModelId
             })
         );
 
@@ -587,6 +603,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.alarmsButton,
                 me.interactionsButton,
                 me.metricsButton,
+                me.validationSettingsButton,
                 me.capsButton,
                 me.factsButton
             ]
@@ -749,6 +766,11 @@ Ext.define("NOC.sa.managedobject.Application", {
     onLinkClick: function(record) {
         var me = this;
         me.previewItem(me.ITEM_LINKS, record);
+    },
+    //
+    onValidationSettings: function () {
+        var me = this;
+        me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
     },
     //
     showForm: function() {
