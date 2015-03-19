@@ -24,6 +24,7 @@ class ObjectFact(Document):
     uuid = UUIDField(binary=True, primary_key=True)
     object = ForeignKeyField(ManagedObject)
     cls = StringField()
+    label = StringField()
     attrs = DictField()
     introduced = DateTimeField(default=datetime.datetime.now)
     changed = DateTimeField(default=datetime.datetime.now)

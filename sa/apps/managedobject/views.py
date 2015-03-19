@@ -39,6 +39,8 @@ from noc.lib.scheduler.utils import (get_job, refresh_schedule,
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.inv.discovery.utils import get_active_discovery_methods
+from noc.cm.models.objectfact import ObjectFact
+from noc.cm.engine import Engine
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -681,22 +683,29 @@ class ManagedObjectApplication(ExtModelApplication):
           access="read", api=True)
     def api_get_facts(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
-        config = o.config.read()
-        if not config:
-            return []
-        parser = o.get_parser()
-        if not parser:
-            return []
-        r = []
-        for f in list(parser.parse(config)):
-            f.managed_object = o
-            f.bind()
-            r += [{
-                "cls": f.cls,
-                "label": unicode(f),
-                "attrs": [{
-                    "name": a,
-                    "value": getattr(f, a)
-                } for a in f.iter_attrs()]
-            }]
-        return r
+        return sorted(
+            (
+                {
+                    "cls": f.cls,
+                    "label": f.label,
+                    "attrs": [
+                        {
+                            "name": a,
+                            "value": f.attrs[a]
+                        } for a in f.attrs
+                    ],
+                    "introduced": f.introduced.isoformat(),
+                    "changed": f.changed.isoformat()
+                } for f in ObjectFact.objects.filter(object=o.id)),
+            key=lambda x: (x["cls"], x["label"]))
+
+    @view(url="(?P<id>\d+)/revalidate/$", method=["POST"],
+          access="read", api=True)
+    def api_revalidate(self, request, id):
+        def revalidate(o):
+            engine = Engine(o)
+            engine.check()
+            return self.response({"status": True}, self.OK)
+
+        o = self.get_object_or_404(ManagedObject, id=id)
+        self.submit_slow_op(request, revalidate, o)
