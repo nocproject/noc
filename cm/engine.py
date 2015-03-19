@@ -138,10 +138,6 @@ class Engine(object):
         """
         self.logger.info("Checking %s", self.object)
         parser = self.object.get_parser()
-        if not parser:
-            self.logger.error("No parser for %s. Giving up", self.object)
-            return
-        #
         self.config = self.object.config.read()
         if not self.config:
             self.logger.error("No config for %s. Giving up", self.object)
