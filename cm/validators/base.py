@@ -187,8 +187,8 @@ class BaseValidator(object):
     def object_config(self):
         return self.engine.config
 
-    def assert_error(self, name, obj=None, message=None):
-        self.engine.assert_fact(Error(name, obj=obj, message=message))
+    def assert_error(self, name, obj=None):
+        self.engine.assert_fact(Error(name, obj=obj))
 
 #
 validator_registry.load_all()

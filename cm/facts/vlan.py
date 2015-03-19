@@ -12,6 +12,7 @@ from base import BaseFact
 
 class VLAN(BaseFact):
     ATTRS = ["id", "name"]
+    ID = ["id"]
 
     def __init__(self, id, name=None):
         super(VLAN, self).__init__()

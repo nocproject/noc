@@ -18,9 +18,11 @@ logger = logging.getLogger(__name__)
 class Interface(BaseFact):
     ATTRS = ["name", "description", "admin_status", "speed", "duplex",
              "[protocols]", "profile", "type"]
+    ID = ["name"]
 
     def __init__(self, name, description=None, admin_status=False, 
-                 speed="auto", duplex="auto", protocols=None):
+                 speed="auto", duplex="auto", protocols=None,
+                 profile=None, type=None, **kwargs):
         super(Interface, self).__init__()
         self.name = name
         self.description = description
@@ -29,8 +31,8 @@ class Interface(BaseFact):
         self.speed = speed
         self.duplex = duplex
         self.protocols = protocols
-        self.profile = None
-        self.type = None
+        self.profile = profile
+        self.type = type
 
     def __unicode__(self):
         return "Interface %s" % self.name

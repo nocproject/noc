@@ -28,6 +28,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.outage import Outage
 from noc.sa.models.objectstatus import ObjectStatus
+from noc.cm.models.objectfact import ObjectFact
 from noc.ip.models import Address
 from noc.lib.nosql import get_db
 
@@ -100,6 +101,9 @@ def wipe(o):
     # Delete Managed Object's capabilities
     log.debug("Wiping capabilitites")
     ObjectCapabilities.objects.filter(object=o.id).delete()
+    # Delete Managed Object's facts
+    log.debug("Wiping facts")
+    ObjectFact.objects.filter(object=o.id).delete()
     # Delete Managed Object's attributes
     log.debug("Wiping attributes")
     ManagedObjectAttribute.objects.filter(managed_object=o).delete()

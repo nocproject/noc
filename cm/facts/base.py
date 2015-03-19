@@ -6,9 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-
 class BaseFact(object):
     ATTRS = []
+    ID = []
 
     def __init__(self):
         self.managed_object = None

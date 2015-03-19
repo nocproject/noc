@@ -21,6 +21,6 @@ class InterfaceShutdownValidator(CLIPSInterfaceValidator):
         =>
         (assert
             (error (name "Interface | Shutdown")
-                   (obj ?i)))
+                   (obj "{{name}}")))
     )
     """

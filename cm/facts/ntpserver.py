@@ -12,6 +12,7 @@ from base import BaseFact
 
 class NTPServer(BaseFact):
     ATTRS = ["ip"]
+    ID = ["ip"]
 
     def __init__(self, ip=None):
         super(NTPServer, self).__init__()

@@ -17,12 +17,14 @@ class SubInterface(BaseFact):
              "[tagged_vlans]", "untagged_vlan",
              "[protocols]", "[afi]"
              ]
+    ID = ["name"]
 
-    def __init__(self, name, interface, description=None,
+    def __init__(self, name, interface=None, description=None,
                  admin_status=False, ip_proxy_arp=False, 
                  ip_redirects=False, tagged_vlans=None, 
                  untagged_vlan=None, ipv4_addresses=None,
-                 ipv6_addresses=None, protocols=None, afi=None):
+                 ipv6_addresses=None, protocols=None, afi=None,
+                 **kwargs):
         super(SubInterface, self).__init__()
         self.name = name
         self.interface = interface
