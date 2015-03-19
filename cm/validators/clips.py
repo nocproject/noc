@@ -39,7 +39,7 @@ class CLIPSValidator(BaseValidator):
         logger.debug("ADD RULE: %s", t)
         self.engine.add_rule(t)
 
-    def prepare(self):
+    def prepare(self, **kwargs):
         if isinstance(self.RULES, (list, tuple)):
             for r in self.RULES:
                 self.add_rule(r)

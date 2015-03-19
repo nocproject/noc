@@ -155,7 +155,8 @@ class Engine(object):
         for r in self.get_rules():
             if r.is_applicable():
                 try:
-                    r.prepare()
+                    cfg = r.get_config()
+                    r.prepare(**cfg)
                 except clips.ClipsError, why:
                     self.logger.error(
                         "CLIPS Error: %s\n%s",
@@ -166,10 +167,9 @@ class Engine(object):
                 except:
                     error_report()
                     continue
-                rules += [r]
+                rules += [(r, cfg)]
         # Run python validators
-        for r in rules:
-            cfg = r.get_config()
+        for r, cfg in rules:
             r.check(**cfg)
         # Run CLIPS engine
         while True:
