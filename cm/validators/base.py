@@ -159,7 +159,7 @@ class BaseValidator(object):
                 return r.get("applicable", True)
         return False
 
-    def prepare(self):
+    def prepare(self, **config):
         """
         Check preparation. Can be used to install rules
         """
