@@ -43,6 +43,12 @@ class Script(NOCScript):
     rx_ospf_gs = re.compile(r"Routing Protocol is \"ospf \d+\"")
     rx_ospf = re.compile(r"^(?P<if_ospf>.+)\s+is up, line protocol is up",
                          re.IGNORECASE)
+    rx_igmp = re.compile(
+        r"^Interface (?P<if_igmp>.+?)\s+\(Index \d+\)\s*\n IGMP Active",
+        re.MULTILINE | re.IGNORECASE)
+    rx_pim = re.compile(
+        r"^\d+\S+\s+(?P<if_pim>.+?)\s+\d+\s+v\S+\s+\d+\s+\d+",
+        re.MULTILINE | re.IGNORECASE)
     rx_lldp_gs = re.compile(r"Global\s+status\s+of\s+LLDP\s+:\s+Enable")
     rx_lldp = re.compile(r"Port\s+\[(?P<port>.+)\]\nPort status of LLDP\s+:\s+Enable",
                          re.IGNORECASE)
@@ -87,6 +93,26 @@ class Script(NOCScript):
                 if_ospf = match.group("if_ospf")
                 iface_ospf = self.profile.convert_interface_name(if_ospf)
                 ospf += [if_ospf]
+
+        igmp = []
+        try:
+            c = self.cli("show ip igmp interface")
+        except self.CLISyntaxError:
+            c = ""
+        for match in self.rx_igmp.finditer(c):
+            if_igmp = match.group("if_igmp")
+            iface_igmp = self.profile.convert_interface_name(if_igmp)
+            igmp += [if_igmp]
+
+        pim = []
+        try:
+            c = self.cli("show ip pim sparse-mode interface")
+        except self.CLISyntaxError:
+            c = ""
+        for match in self.rx_pim.finditer(c):
+            if_pim = match.group("if_pim")
+            iface_pim = self.profile.convert_interface_name(if_pim)
+            pim += [if_pim]
 
         r = []
         try:
@@ -187,6 +213,10 @@ class Script(NOCScript):
             enabled_protocols = []
             if ospf_enable and iface in ospf:
                 enabled_protocols += ["OSPF"]
+            if iface in igmp:
+                enabled_protocols += ["IGMP"]
+            if iface in pim:
+                enabled_protocols += ["PIM"]
 
             iface = {"name": iface,
                      "type": "SVI",
@@ -209,4 +239,5 @@ class Script(NOCScript):
                 iface["description"] = description
                 iface["subinterfaces"][0]["description"] = description
             r += [iface]
+
         return [{"interfaces": r}]
