@@ -71,7 +71,8 @@ Ext.define("NOC.cm.validationpolicy.Application", {
                             text: "Validation Rule",
                             dataIndex: "rule",
                             flex: 1,
-                            editor: "cm.validationrule.LookupField"
+                            editor: "cm.validationrule.LookupField",
+                            renderer: NOC.render.Lookup("rule")
                         }
                     ]
                 }
