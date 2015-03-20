@@ -301,7 +301,7 @@ class Engine(object):
         bulk = collection.initialize_unordered_bulk_op()
         new_facts = set(e_facts)
         changed = False
-        for f in collection.find({"managed_object": self.object.id}):
+        for f in collection.find({"object": self.object.id}):
             if f["_id"] in e_facts:
                 fact = e_facts[f["_id"]]
                 f_attrs = self.get_fact_attrs(fact)
@@ -344,9 +344,10 @@ class Engine(object):
             self.logger.debug("Commiting changes to database")
             try:
                 bulk.execute()
+                self.logger.debug("Database has been synced")
             except BulkWriteError, bwe:
                 self.logger.error("Bulk write error: '%s'", bwe.details)
-            self.logger.debug("Database has been synced")
+                self.logger.error("Stopping check")
         else:
             self.logger.debug("Nothing changed")
 
