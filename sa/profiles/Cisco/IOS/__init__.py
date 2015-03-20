@@ -119,15 +119,6 @@ class Profile(NOCProfile):
             script.debug("Switching to cluster member '%s'" % cluster_member)
             script.cli("rc %s" % cluster_member)
 
-    @classmethod
-    def get_parser(cls, vendor, platform, version):
-        if not version:
-            return cls.default_parser
-        if ("SE" in version or "SG" in version or "SX" in version or
-                    "SR" in version):
-            return "noc.cm.parsers.Cisco.IOS.switch.IOSSwitchParser"
-        return cls.default_parser
-
     INTERFACE_TYPES = {
         "As": "physical",  # Async
         "AT": "physical",  # ATM
