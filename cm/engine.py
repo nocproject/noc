@@ -282,7 +282,10 @@ class Engine(object):
         # Get facts from CLIPS
         self.logger.debug("Extracting facts")
         e_facts = {}  # uuid -> fact
-        f = self.env.InitialFact()
+        try:
+            f = self.env.InitialFact()
+        except clips.ClipsError, w:
+            return  # No facts
         while f:
             if f.Template and f.Template.Name in self.templates:
                 self.facts[f.Index] = f
