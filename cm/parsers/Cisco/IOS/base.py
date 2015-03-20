@@ -93,7 +93,7 @@ class BaseIOSParser(BasePyParser):
 
     def get_interface_defaults(self, name):
         r = {
-            "admin_status": False,
+            "admin_status": True,
             "protocols": []
         }
         # @todo: Replace with more reliable type detection
@@ -104,7 +104,8 @@ class BaseIOSParser(BasePyParser):
     def get_subinterface_defaults(self):
         return {
             "ip_redirects": True,
-            "ip_proxy_arp": True
+            "ip_proxy_arp": True,
+            "admin_status": True
         }
 
     def get_user_defaults(self):
