@@ -38,7 +38,8 @@ class BaseParser(object):
         """
         Parse config, yield and modify facts
         """
-        raise StopIteration
+        if False:
+            yield  # Empty iterator
 
     def parse_file(self, path):
         with open(path) as f:
