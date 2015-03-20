@@ -37,7 +37,9 @@ class Script(NOCScript):
                         "vlan_id":int(oids[o]),
                         "name":v.strip().rstrip('\x00')
                     }]
-                return sorted(result, lambda x, y: cmp(x["vlan_id"], y["vlan_id"]))
+                return sorted(
+                    result, lambda x, y: cmp(x["vlan_id"], y["vlan_id"])
+                )
             except self.snmp.TimeOutError:
                 # SNMP failed, continue with CLI
                 pass
@@ -45,9 +47,11 @@ class Script(NOCScript):
         ## Other
         ##
         else:
-            rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S*\s+\S*)",
-            re.IGNORECASE | re.DOTALL | re.MULTILINE)
+            rx_vlan_line = re.compile(
+                r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S*\s+\S*)",
+                re.IGNORECASE | re.DOTALL | re.MULTILINE)
             vlans = self.cli("show vlan")
-            return [{"vlan_id": int(match.group("vlan_id")),
-                   "name": match.group("name")} 
-                   for match in rx_vlan_line.finditer(vlans)]
+            return [{
+                "vlan_id": int(match.group("vlan_id")),
+                "name": match.group("name")
+            } for match in rx_vlan_line.finditer(vlans)]

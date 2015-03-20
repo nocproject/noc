@@ -18,7 +18,8 @@ class Script(NOCScript):
     name = "Cisco.SMB.get_vlans"
     implements = [IGetVlans]
 
-    rx_vlan_line = re.compile(r"^\s*(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+.*$", re.MULTILINE)
+    rx_vlan_line = re.compile(
+        r"^\s*(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+.*$", re.MULTILINE)
 
     def extract_vlans(self, data):
         return [

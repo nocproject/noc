@@ -30,7 +30,7 @@ class Script(NOCScript):
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
-        c = self.cli("show version")
+        c = self.cli("show version", cached=True)
         match = self.rx_ver.search(c)
         if match:
             return {

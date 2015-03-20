@@ -17,7 +17,6 @@ class IGetSNMPGetNext(Interface):
     bulk = BooleanParameter(default=True)
     min_index = IntParameter(required=False)
     max_index = IntParameter(required=False)
-    
+
     returns = (NoneParameter() |
                ListOfParameter(element=[OIDParameter(), StringParameter()]))
-    template = "interfaces/igetsnmpgetnext.html"

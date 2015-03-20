@@ -565,8 +565,9 @@ class Prefix(models.Model):
                 for p in Prefix.objects.filter(parent=self).only("prefix").values_list("prefix", flat=True)
             )
             if n_ips:
-                size -= 2  # Exclude broadcast and network
-            return float(n_ips + n_pfx) * 100.0 / float(size)
+                if size > 2:  # Not /31 or /32
+                    size -= 2  # Exclude broadcast and network
+                return float(n_ips + n_pfx) * 100.0 / float(size)
         else:
             return None
 

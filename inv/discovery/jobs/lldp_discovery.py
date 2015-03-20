@@ -97,6 +97,7 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
             return None
 
     def get_remote_port_by_name(self, object, port):
+        self.debug("Remote port name: %s" % port)
         return object.profile.convert_interface_name(port)
 
     def get_remote_port_by_description(self, object, port):
@@ -106,6 +107,7 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
         :param port:
         :return: port name if found, None otherwise.
         """
+        self.debug("Remote port description: %s" % port)
         try:
             i = Interface.objects.filter(
                 managed_object=object.id, description=port).first()
@@ -123,6 +125,7 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
         :param port:
         :return:
         """
+        self.debug("Remote port local: %s" % port)
         # Try ifindex
         if is_int(port):
             i = Interface.objects.filter(
@@ -149,6 +152,7 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
         return port
 
     def get_remote_port_by_mac(self, object, mac):
+        self.debug("Remote port mac: %s" % mac)
         i = Interface.objects.filter(managed_object=object.id,
             mac=mac).first()
         if i:
@@ -163,6 +167,7 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
         :param port:
         :return:
         """
+        self.debug("Remote port unspecified: %s" % port)
         # Try to find interface with given name.
         try:
             n_port = self.get_remote_port_by_name(object, port)

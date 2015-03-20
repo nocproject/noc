@@ -21,8 +21,14 @@ class Script(NOCScript):
     def execute(self):
         r = []
         for match in self.rx_vlan_line.finditer(self.cli("show vlan")):
-            r += [{
-                "vlan_id": int(match.group("vlan_id")),
-                "name": match.group("name")
+            vlanid = int(match.group("vlan_id"))
+            if vlanid == 1:
+                r += [{
+                    "vlan_id": 1
+                }]
+            else:
+                r += [{
+                    "vlan_id": vlanid,
+                    "name": match.group("name")
                 }]
         return r
