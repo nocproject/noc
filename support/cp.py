@@ -48,7 +48,7 @@ class CPClient(object):
     def load_config(self):
         if os.path.exists(self.CONFIG):
             logger.debug("Loading config %s", self.CONFIG)
-            config = ConfigParser.SafeConfigParser()
+            config = ConfigParser.RawConfigParser()
             config.read(self.CONFIG)
             # Read account settings
             if config.has_section("account"):

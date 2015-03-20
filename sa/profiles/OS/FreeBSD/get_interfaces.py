@@ -28,7 +28,7 @@ class Script(NOCScript):
     rx_if_status = re.compile(
         r"^\tstatus: (?P<status>active|associated|running|inserted)\s*$")
     rx_if_vlan = re.compile(
-        r"^\tvlan: (?P<vlan>\d+) parent interface: (?P<parent>\S+)$")
+        r"^\tvlan: (?P<vlan>[1-9]\d*) parent interface: (?P<parent>\S+)$")
     rx_if_lagg = re.compile(r"^\tlaggport: (?P<ifname>\S+) flags=\d+<.*>$")
     rx_if_wlan = re.compile(r"^\tssid .+$")
     rx_if_bridge = re.compile(r"^\tgroups:.+?bridge.*?$")

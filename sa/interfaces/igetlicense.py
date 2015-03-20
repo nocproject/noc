@@ -12,4 +12,3 @@ from base import *
 
 class IGetLicense(Interface):
     returns = DictParameter()
-    template = "interfaces/igetlicense.html"

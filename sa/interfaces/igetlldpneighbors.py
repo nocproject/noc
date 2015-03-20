@@ -59,4 +59,3 @@ class IGetLLDPNeighbors(Interface):
             "remote_capabilities": IntParameter(default=0),
         }))
     }))
-    template = "interfaces/igetlldpneighbors.html"
