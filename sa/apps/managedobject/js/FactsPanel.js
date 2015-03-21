@@ -163,13 +163,13 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
                 if(data && data.success === false) {
                     NOC.error(data.message);
                 } else {
-                    NOC.error("Error saving record!");
+                    NOC.error("Error getting validation results");
                     console.log(response.responseText);
                 }
                 me.unmask();
             };
 
-        me.mask();
+        me.mask("Validating");
         Ext.Ajax.request({
             url: "/sa/managedobject/" + me.currentRecord.get("id") + "/revalidate/",
             method: "POST",

@@ -708,4 +708,4 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response({"status": True}, self.OK)
 
         o = self.get_object_or_404(ManagedObject, id=id)
-        self.submit_slow_op(request, revalidate, o)
+        return self.submit_slow_op(request, revalidate, o)
