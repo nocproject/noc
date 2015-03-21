@@ -11,6 +11,9 @@ from base import BaseParser
 
 
 class BasePyParser(BaseParser):
+    # Enable packrat optimization
+    ENABLE_PACKRAT = True
+
     def __init__(self, managed_object):
         super(BasePyParser, self).__init__(managed_object)
         self.pending_facts = []
@@ -26,6 +29,8 @@ class BasePyParser(BaseParser):
         Parse config, yield and modify facts
         """
         parser = self.create_parser()
+        if self.ENABLE_PACKRAT:
+            parser.enablePackrat()
         for _ in parser.scanString(config):
             for f in self.iter_facts():
                 yield f
