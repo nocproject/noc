@@ -48,7 +48,7 @@ class BaseIOSParser(BasePyParser):
         # Interface
         INTERFACE = LineStart() + Literal("interface") + REST.copy().setParseAction(self.on_interface)
         INTERFACE_DESCRIPTION = Literal("description") + REST.copy().setParseAction(self.on_interface_descripion)
-        INTERFACE_ADDRESS = Literal("ip") + Literal("address") + (IPv4_ADDRESS("address") + IPv4_ADDRESS("mask")).setParseAction(self.on_interface_address)
+        INTERFACE_ADDRESS = Literal("ip") + Literal("address") + (IPv4_ADDRESS("address") + IPv4_ADDRESS("mask") + Optional(Literal("secondary"))).setParseAction(self.on_interface_address)
         INTERFACE_SHUTDOWN = (Optional(Literal("no")) + Literal("shutdown")).setParseAction(self.on_interface_shutdown)
         INTERFACE_REDIRECTS = (Optional(Literal("no")) + Literal("ip") + Literal("redirects")).setParseAction(self.on_interface_redirects)
         INTERFACE_PROXY_ARP = (Optional(Literal("no")) + Literal("ip") + Literal("proxy-arp")).setParseAction(self.on_interface_proxy_arp)
@@ -169,7 +169,10 @@ class BaseIOSParser(BasePyParser):
     def on_interface_address(self, tokens):
         ip = str(IPv4(tokens[0], netmask=tokens[1]))
         si = self.get_current_subinterface()
-        si.ipv4_addresses += [ip]
+        if len(tokens) > 2 and tokens[2] == "secondary":
+            si.ipv4_addresses += [ip]
+        else:
+            si.ipv4_addresses = [ip] + si.ipv4_addresses
         si.add_afi("IPv4")
 
     def on_interface_shutdown(self, tokens):
