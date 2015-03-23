@@ -41,7 +41,7 @@ class ReportStaleDiscoveryJob(SimpleReport):
                         tb["text"] = "Job crashed"
                     msg = "(%s) %s" % (tb["text"], tb["code"])
 
-            if mo.name == "SAE":
+            if mo.name == "SAE" or not mo.is_managed:
                 continue
             data += [[
                          mo.administrative_domain.name,
