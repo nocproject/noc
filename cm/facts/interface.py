@@ -17,12 +17,13 @@ logger = logging.getLogger(__name__)
 
 class Interface(BaseFact):
     ATTRS = ["name", "description", "admin_status", "speed", "duplex",
-             "[protocols]", "profile", "type"]
+             "[protocols]", "profile", "type", "mac", "default_name"]
     ID = ["name"]
 
     def __init__(self, name, description=None, admin_status=False, 
                  speed="auto", duplex="auto", protocols=None,
-                 profile=None, type=None, **kwargs):
+                 profile=None, type=None, mac=None, default_name=None,
+                 **kwargs):
         super(Interface, self).__init__()
         self.name = name
         self.description = description
@@ -33,6 +34,8 @@ class Interface(BaseFact):
         self.protocols = protocols
         self.profile = profile
         self.type = type
+        self.mac = mac
+        self.default_name = default_name
 
     def __unicode__(self):
         return "Interface %s" % self.name
@@ -114,6 +117,24 @@ class Interface(BaseFact):
     @type.setter
     def type(self, value):
         self._type = value
+
+    @property
+    def mac(self):
+        return self._mac
+
+    @mac.setter
+    def mac(self, value):
+        self._mac = value
+
+    @property
+    def default_name(self):
+        return self._default_name or self.name
+
+    @default_name.setter
+    def default_name(self, value):
+        self._default_name = value
+        if not self.name:
+            self.name = value
 
     def bind(self):
         if self.name:
