@@ -24,6 +24,12 @@ class BasePyParser(BaseParser):
         """
         raise NotImplementedError()
 
+    def preprocess(self, config):
+        """
+        Perform config preprocessing
+        """
+        return config
+
     def parse(self, config):
         """
         Parse config, yield and modify facts
@@ -31,7 +37,7 @@ class BasePyParser(BaseParser):
         parser = self.create_parser()
         if self.ENABLE_PACKRAT:
             parser.enablePackrat()
-        for _ in parser.scanString(config):
+        for _ in parser.scanString(self.preprocess(config)):
             for f in self.iter_facts():
                 yield f
 
