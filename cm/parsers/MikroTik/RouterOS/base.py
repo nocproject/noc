@@ -38,12 +38,12 @@ class RouterOSParser(BasePyParser):
     def create_parser(self):
         LBRACKET, RBRACKET, EQ, QUOTE, SLASH = map(Suppress, "[]=\"/")
         KEY = Word(alphanums + "-")
-        VALUE = Word(alphanums + "-/.:") | QuotedString("\"")
+        VALUE = Word(alphanums + "-/.:_+") | QuotedString("\"")
         FIND = LBRACKET + Group(Literal("find") + Literal("default-name") + EQ + VALUE) + RBRACKET
         KVP = Group(KEY + EQ + VALUE)
         BEGIN = LineStart() + SLASH + restOfLine.setParseAction(self.on_begin)
         ADD_OP = LineStart() + Literal("add") + ZeroOrMore(KVP).setParseAction(self.on_add)
-        SET_OP = LineStart() + Literal("set") + (Optional(FIND | KEY + ~FollowedBy(EQ)) + ZeroOrMore(KVP)).setParseAction(self.on_set)
+        SET_OP = LineStart() + Literal("set") + (Optional(FIND | KEY + ~FollowedBy(EQ) | QuotedString("\"")) + ZeroOrMore(KVP)).setParseAction(self.on_set)
         CONFIG = ZeroOrMore(BEGIN | ADD_OP | SET_OP)
         return CONFIG
 
@@ -101,12 +101,21 @@ class RouterOSParser(BasePyParser):
         if "name" in args:
             self.get_system_fact().hostname = args["name"]
 
+    def on_system_clock_manual_set(self, name, args):
+        """
+        /system clock manual
+        set time-zone=+04:00
+        """
+        print "@@@@ CLOCK", args
+        if "time-zone" in args:
+            self.get_system_fact().timezone = args["time-zone"]
+
     def on_ip_service_set(self, name, args):
         """
         /ip service
         set telnet disabled=yes
         """
-        self.get_service_fact(name).enabled = not args.get("disabled") == "yes"
+        self.get_service_fact(name).enabled = args.get("disabled") != "yes"
 
     def on_system_ntp_client_set(self, name, args):
         """
@@ -129,3 +138,7 @@ class RouterOSParser(BasePyParser):
             iface.speed = self.SPEED_MAP.get(args["speed"])
         if "master-port" in args:
             self.slave_ports[args["master-port"]] += [iface]
+        if "comment" in args:
+            iface.description = args["comment"]
+        if "disabled" in args:
+            iface.admin_status = args["disabled"] != "yes"
