@@ -1,0 +1,124 @@
+{
+    "name": "Edge-Core | ES | ECS4210-12T",
+    "uuid": "50d5837d-d0e2-4ca3-803f-7670e1b928b8",
+    "vendor__code": "EDGECORE",
+    "description": "ECS4210-12T L2 Switch with 8 10/100/1000Base-TX  Ports + 4 SFP Uplink Ports",
+    "connections": [
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Management console",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Ethernet1/1 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/2 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/3 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/4 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/5 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/6 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/7 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/8 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/9 interface",
+            "direction": "i",
+            "gender": "f",
+            "name": "Ethernet1/9",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/10 interface",
+            "direction": "i",
+            "gender": "f",
+            "name": "Ethernet1/10",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/11 interface",
+            "direction": "i",
+            "gender": "f",
+            "name": "Ethernet1/11",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/12 interface",
+            "direction": "i",
+            "gender": "f",
+            "name": "Ethernet1/12",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": "ECS4210-12T"
+        }
+    }
+}
