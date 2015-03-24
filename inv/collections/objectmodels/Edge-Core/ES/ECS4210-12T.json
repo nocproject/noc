@@ -118,7 +118,13 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": "ECS4210-12T"
+            "part_no0": "ECS4210-12T"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1
         }
     }
 }
