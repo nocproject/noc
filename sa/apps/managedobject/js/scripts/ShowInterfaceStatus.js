@@ -17,7 +17,7 @@ Ext.define("NOC.sa.managedobject.scripts.ShowInterfaceStatus", {
         {
             text: "Status",
             dataIndex: "status",
-            width: 100,
+            renderer: NOC.render.Bool,
             flex: 1
         }
     ],

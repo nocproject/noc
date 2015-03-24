@@ -15,3 +15,4 @@ class IGetObjectStatus(Interface):
         "name": StringParameter(),
         "status": BooleanParameter()
     }))
+    preview = "NOC.sa.managedobject.scripts.ShowObjectStatus"
