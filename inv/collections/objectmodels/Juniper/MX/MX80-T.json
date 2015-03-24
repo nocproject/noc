@@ -71,7 +71,7 @@
             "direction": "s",
             "gender": "f",
             "name": "ether",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
