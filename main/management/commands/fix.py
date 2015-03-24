@@ -8,10 +8,12 @@
 
 ## Python modules
 import sys
+import uuid
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.lib.debug import error_report
+from noc.main.management.commands.collection import Command as CollectionCommand
 
 
 class Command(BaseCommand):
@@ -22,6 +24,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         try:
+            self.fix_uuids()
             self.fix_inv_root()
             self.fix_inv_lost_and_found()
             self.fix_inv_orphans()
@@ -36,6 +39,37 @@ class Command(BaseCommand):
             print msg % args
         else:
             print msg
+
+    def fix_uuids(self):
+        """
+        Fix collection uuids to binary format
+        """
+        self.info("Checking collections UUID")
+        for n, c in CollectionCommand.collections:
+            if ("uuid" in c._fields and
+                    hasattr(c._fields["uuid"], "_binary") and
+                    c._fields["uuid"]._binary
+                ):
+                self.fix_collection_uuids(n, c)
+        self.info("... done")
+
+    def fix_collection_uuids(self, name, collection):
+        c = collection._get_collection()
+        for doc in c.find({
+            "uuid": {
+                "$type": 2  # string type
+            }
+        }, {"uuid": 1}):
+            self.info("    Fix %s UUID %s", name, doc["uuid"])
+            c.update(
+                {"_id": doc["_id"]},
+                {
+                    "$set": {
+                        "uuid": uuid.UUID(doc["uuid"])
+                    }
+                }
+            )
+
 
     def fix_metricsettings(self):
         def remove_ms(ms):
