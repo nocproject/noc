@@ -793,6 +793,9 @@ class IPv4Parameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
+        if len(value) == 4:
+            # IP address in binary form
+            value = ".".join(["%02X" % ord(c) for c in value])
         v = super(IPv4Parameter, self).clean(value)
         X = v.split(".")
         if len(X) != 4:

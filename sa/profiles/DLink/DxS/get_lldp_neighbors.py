@@ -15,6 +15,7 @@
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.base import IPv4Parameter
 from noc.lib.validators import is_int, is_ipv4
 import re
 import binascii
@@ -178,7 +179,10 @@ class Script(NOCScript):
                                 MACAddressParameter().clean(n["remote_port"])
                         except:
                             pass
-
+                # IP Address
+                if n["remote_port_subtype"] == 4:
+                    n["remote_port"] = \
+                        IPv4Parameter().clean(n["remote_port"])
                 '''
                 Possible variants of Port ID, if Remote Port ID is "Local":
                 Big thanks to D-Link developers :)
