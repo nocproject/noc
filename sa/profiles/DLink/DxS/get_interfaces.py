@@ -15,6 +15,7 @@ from noc.lib.ip import IPv4
 from noc.sa.profiles.DLink.DxS import DxS_L2
 from noc.sa.profiles.DLink.DxS import DGS3120
 from noc.sa.profiles.DLink.DxS import DGS3620
+from noc.sa.profiles.DLink.DxS import DES3x2x
 
 
 class Script(NOCScript):
@@ -288,10 +289,12 @@ class Script(NOCScript):
 
         stp = []
         try:
-            c = self.cli("show stp\nq")
+            if self.match_version(DES3x2x):
+                c = self.cli("show stp\nq")
+            else:
+                c = self.cli("show stp")
         except self.CLISyntaxError:
             pass
-        self.reset_cli_queue()
         stp_enable = self.rx_stp_gs.search(c) is not None
         if stp_enable:
             c = self.cli_object_stream(
