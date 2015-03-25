@@ -293,8 +293,9 @@ class SNMPGetNextSocket(SNMPGetSocket):
                 # Check for SNMP errors reported
                 errorStatus = self.api_pdu.getErrorStatus(rsp_pdu)
                 if errorStatus and errorStatus != 2:
-                    raise errorStatus
-                    # Format var-binds table
+                    self.provider.script.error("%s SNMP GETNEXT ERROR: %s" % (self.address, errorStatus.prettyPrint()))
+                    break
+                # Format var-binds table
                 var_bind_table = self.api_pdu.getVarBindTable(self.req_PDU, rsp_pdu)
                 # Report SNMP table
                 for table_row in var_bind_table:
