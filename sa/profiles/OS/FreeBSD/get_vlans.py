@@ -20,6 +20,7 @@ class Script(NOCScript):
 
     def execute(self):
         r = []
-        for match in self.rx_vlan.finditer(self.cli("ifconfig", cached=True)):
+        for match in self.rx_vlan.finditer(
+            self.cli("ifconfig -v", cached=True)):
             r += [{"vlan_id": int(match.group('vlanid'))}]
         return r
