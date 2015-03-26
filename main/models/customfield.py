@@ -2,15 +2,22 @@
 ##----------------------------------------------------------------------
 ## CustomField model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import logging
 ## Django modules
 from django.db import models, connection
+## Third-party modules
+from mongoengine.base.common import _document_registry
+from mongoengine import fields
 ## NOC modules
 from customfieldenumgroup import CustomFieldEnumGroup
 from noc.lib.validators import is_int
+
+logger = logging.getLogger(__name__)
 
 
 class CustomField(models.Model):
@@ -61,6 +68,10 @@ class CustomField(models.Model):
         return u"%s.%s" % (self.table, self.name)
 
     @property
+    def is_table(self):
+        return "." not in self.table
+
+    @property
     def db_column(self):
         return "cust_%s" % self.name
 
@@ -89,35 +100,59 @@ class CustomField(models.Model):
         Return *Field instance
         """
         name = str(self.name)
-        if self.type == "str":
-            l = self.max_length if self.max_length else 256
-            return models.CharField(
-                name=name,
-                db_column=self.db_column,
-                null=True, blank=True,
-                max_length=l, choices=self.get_enums())
-        elif self.type == "int":
-            return models.IntegerField(
-                name=name,
-                db_column=self.db_column,
-                null=True, blank=True)
-        elif self.type == "bool":
-            return models.BooleanField(
-                name=name,
-                db_column=self.db_column,
-                default=False)
-        elif self.type == "date":
-            return models.DateField(
-                name=name,
-                db_column=self.db_column,
-                null=True, blank=True)
-        elif self.type == "datetime":
-            return models.DateTimeField(
-                name=name,
-                db_column=self.db_column,
-                null=True, blank=True)
+        if self.is_table:
+            if self.type == "str":
+                l = self.max_length if self.max_length else 256
+                return models.CharField(
+                    name=name,
+                    db_column=self.db_column,
+                    null=True, blank=True,
+                    max_length=l, choices=self.get_enums())
+            elif self.type == "int":
+                return models.IntegerField(
+                    name=name,
+                    db_column=self.db_column,
+                    null=True, blank=True)
+            elif self.type == "bool":
+                return models.BooleanField(
+                    name=name,
+                    db_column=self.db_column,
+                    default=False)
+            elif self.type == "date":
+                return models.DateField(
+                    name=name,
+                    db_column=self.db_column,
+                    null=True, blank=True)
+            elif self.type == "datetime":
+                return models.DateTimeField(
+                    name=name,
+                    db_column=self.db_column,
+                    null=True, blank=True)
+            else:
+                raise NotImplementedError
         else:
-            raise NotImplementedError
+            if self.type == "str":
+                return fields.StringField(
+                    db_field=self.db_column,
+                    required=False
+                )
+            elif self.type == "int":
+                return fields.IntField(
+                    db_field=self.db_column,
+                    required=False
+                )
+            elif self.type == "bool":
+                return fields.BooleanField(
+                    db_field=self.db_column,
+                    required=False
+                )
+            elif self.type in ("date", "datetime"):
+                return fields.DateTimeField(
+                    db_field=self.db_column,
+                    required=False
+                )
+            else:
+                raise NotImplementedError
 
     @property
     def db_create_statement(self):
@@ -146,27 +181,39 @@ class CustomField(models.Model):
             self.table, self.db_column)
 
     def exec_commit(self, sql):
+        logger.debug("Execute: %s", sql)
         c = connection.cursor()
         c.execute(sql)
         c.execute("COMMIT")
 
     def activate_field(self):
-        self.exec_commit(self.db_create_statement)
+        logger.info("Activating field %s.%s", self.table, self.name)
+        if self.is_table:
+            self.exec_commit(self.db_create_statement)
 
     def deactivate_field(self):
-        self.exec_commit(self.db_drop_statement)
+        logger.info("Deactivating field %s.%s", self.table, self.name)
+        if self.is_table:
+            self.exec_commit(self.db_drop_statement)
 
     def create_index(self):
-        self.exec_commit("CREATE INDEX %s ON %s(%s)" % (
-            self.index_name, self.table, self.db_column))
+        logger.info("Creating index %s", self.index_name)
+        if self.is_table:
+            self.exec_commit("CREATE INDEX %s ON %s(%s)" % (
+                self.index_name, self.table, self.db_column))
 
     def drop_index(self):
-        self.exec_commit("DROP INDEX %s" % self.index_name)
+        logger.info("Dropping index %s", self.index_name)
+        if self.is_table:
+            self.exec_commit("DROP INDEX %s" % self.index_name)
 
     def rename(self, old_name):
-        self.exec_commit("ALTER TABLE %s RENAME \"%s\" TO \"%s\"" % (
-            self.table, old_name, self.db_column
-        ))
+        logger.info("Renaming custom field %s.%s to %s.%s",
+                    old_name.table, old_name.name, self.table, self.name)
+        if self.is_table:
+            self.exec_commit("ALTER TABLE %s RENAME \"%s\" TO \"%s\"" % (
+                self.table, old_name, self.db_column
+            ))
 
     def save(self, *args, **kwargs):
         """
@@ -210,6 +257,15 @@ class CustomField(models.Model):
         a, m = self.table.split("_", 1)
         return models.get_model(a, m)
 
+    def document_class(self):
+        """
+        Return appropriative document class
+        """
+        for dc in _document_registry.itervalues():
+            if dc._get_collection_name() == self.table:
+                return dc
+        return None
+
     @classmethod
     def table_fields(cls, table):
         return CustomField.objects.filter(is_active=True, table=table)
@@ -220,14 +276,26 @@ class CustomField(models.Model):
         Install custom fields to models.
         Must be called after all models are initialized
         """
-        m = None
         for f in cls.objects.filter(is_active=True).order_by("table"):
-            # Get model
-            if m is None or m._meta.db_table != f.table:
+            fn = str(f.name)
+            logger.info("Installing custom field %s.%s", f.table, f.name)
+            if f.is_table:
+                # Get model
                 m = f.model_class()
-            # Install field
-            mf = f.get_field()
-            mf.contribute_to_class(m, str(f.name))
+                # Install field
+                mf = f.get_field()
+                mf.contribute_to_class(m, fn)
+            else:
+                # Get Document
+                m = f.document_class()
+                # Install field
+                mf = f.get_field()
+                setattr(m, fn, mf)
+                mf.name = fn
+                m._fields[fn] = mf
+                m._db_field_map[fn] = mf.db_field
+                m._reverse_db_field_map[mf.db_field] = fn
+                m._fields_ordered = m._fields_ordered + (fn,)
 
     @property
     def ext_model_field(self):
