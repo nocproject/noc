@@ -96,10 +96,22 @@ class ExtDocApplication(ExtApplication):
             if callable(h):
                 self.custom_fields[fn[6:]] = h
 
+    def get_custom_fields(self):
+        from noc.main.models.customfield import CustomField
+        return list(CustomField.table_fields(self.model._get_collection_name()))
+
     def get_launch_info(self, request):
         li = super(ExtDocApplication, self).get_launch_info(request)
         if self.json_collection:
             li["params"]["collection"] = self.json_collection
+        cf = self.get_custom_fields()
+        if cf:
+            li["params"].update({
+                "cust_model_fields": [f.ext_model_field for f in cf],
+                "cust_grid_columns": [f.ext_grid_column for f in cf],
+                "cust_form_fields": [f.ext_form_field for f in cf
+                                     if not f.is_hidden]
+            })
         return li
 
     def get_Q(self, request, query):
