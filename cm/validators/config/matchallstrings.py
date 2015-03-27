@@ -41,7 +41,7 @@ class MatchAllStringsValidator(TextValidator):
         if strip:
             tpl = [x.strip() for x in tpl]
         seen = set(x for x in tpl if x)
-        for l in self.object_config.splitlines():
+        for l in self.get_config_block().splitlines():
             if strip:
                 l = l.strip()
             if l in seen:

@@ -11,6 +11,9 @@ from base import BaseParser
 
 
 class BasePyParser(BaseParser):
+    # Optional regular expression to match interface block range
+    # Must contain group *name* holding interface name
+    RX_INTERFACE_BLOCK = None
     # Enable packrat optimization
     ENABLE_PACKRAT = True
 
@@ -40,6 +43,12 @@ class BasePyParser(BaseParser):
         for _ in parser.scanString(self.preprocess(config)):
             for f in self.iter_facts():
                 yield f
+        if self.RX_INTERFACE_BLOCK:
+            for match in self.RX_INTERFACE_BLOCK.finditer(config):
+                self.register_interface_section(
+                    match.group("name"),
+                    match.start(), match.end()
+                )
 
     def on_tokens(self, tokens):
         print "@@@", tokens

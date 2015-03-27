@@ -17,7 +17,13 @@ logger = logging.getLogger(__name__)
 
 
 class TextValidator(BaseValidator):
-    scope = BaseValidator.OBJECT
+    SCOPE = BaseValidator.OBJECT | BaseValidator.INTERFACE
 
     def expand_template(self, tpl, context=None):
         return Template(tpl).render(Context(context or {}))
+
+    def get_config_block(self):
+        if self.scope == self.INTERFACE:
+            return self.engine.get_interface_config(self.object.name)
+        else:
+            return self.engine.config

@@ -31,7 +31,7 @@ class MatchStringValidator(TextValidator):
 
     def check(self, template, error_text, **kwargs):
         tpl = self.expand_template(template)
-        if tpl not in self.object_config:
+        if tpl not in self.get_config_block():
             self.assert_error(
                 "String not in config",
                 obj=error_text or template
