@@ -84,6 +84,8 @@ class Profile(NOCProfile):
             match = self.rx_cable_if.search(interface)
             if match:
                 return "Ca %s/%s" % (match.group('pr_if'), match.group('sub_if'))
+        if il.startswith("virtual-template"):
+            return "Vi %s" % il[16:].strip()
         # Fake name. Used only with FM
         if il == "all":
             return "all"
@@ -154,6 +156,7 @@ class Profile(NOCProfile):
         "Te": "physical",  # TenGigabitEthernet
         "To": "physical",  # TokenRing
         "Tu": "tunnel",  # Tunnel
+        "Vi": "template", # Virtual-Template
         "VL": "SVI",  # VLAN, found on C3500XL
         "Vl": "SVI",  # Vlan
         "Vo": "physical",  # Voice
