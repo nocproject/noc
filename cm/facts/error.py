@@ -11,19 +11,20 @@ from base import BaseFact
 
 
 class Error(BaseFact):
-    ATTRS = ["name", "obj"]
-    ID = ["name", "obj"]
+    ATTRS = ["type", "obj", "msg"]
+    ID = ["type", "obj", "msg"]
 
-    def __init__(self, name, obj=None):
+    def __init__(self, type, obj=None, msg=None):
         super(Error, self).__init__()
-        self.name = name
+        self.type = type
         self.obj = obj
+        self.msg = msg
 
     def __unicode__(self):
         if self.obj:
-            return "Error %s: %s" % (self.name, unicode(self.obj))
+            return "Error %s: %s" % (self.type, unicode(self.obj))
         else:
-            return "Error %s" % self.name
+            return "Error %s" % self.type
 
     @property
     def obj(self):
@@ -32,3 +33,11 @@ class Error(BaseFact):
     @obj.setter
     def obj(self, value):
         self._obj = value
+
+    @property
+    def msg(self):
+        return self._msg
+
+    @msg.setter
+    def msg(self, value):
+        self._msg = value or None

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Config *MUST* match string
+## Config *MUST* match all strings
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
@@ -10,10 +10,10 @@
 from noc.cm.validators.text import TextValidator
 
 
-class MatchStringValidator(TextValidator):
-    TITLE = "Config *MUST* match string"
+class MismatchAnyStringValidator(TextValidator):
+    TITLE = "Config *MUST NOT* match any string"
     DESCRIPTION = """
-        Config must contain exact string
+        Config must not contain ant strings in arbitrary order
     """
     CONFIG_FORM = [
         {
@@ -27,18 +27,35 @@ class MatchStringValidator(TextValidator):
             "xtype": "textarea",
             "fieldLabel": "Error text",
             "allowBlank": True
+        },
+        {
+            "name": "strip",
+            "xtype": "checkbox",
+            "boxLabel": "Strip spaces",
+            "inputValue": True
         }
     ]
 
-    def check(self, template, error_text, **kwargs):
+    def check(self, template, error_text, strip=False, **kwargs):
         tpl = self.expand_template(template)
-        if tpl not in self.get_config_block():
+        tpl = tpl.splitlines()
+        if strip:
+            tpl = [x.strip() for x in tpl]
+        seen = set(x for x in tpl if x)
+        for l in self.get_config_block().splitlines():
+            if strip:
+                l = l.strip()
+            if l not in seen:
+                seen.remove(l)
+            if not seen:
+                break
+        if seen:
             if self.scope == self.INTERFACE:
                 obj = self.object.name
             else:
                 obj = None
             self.assert_error(
-                "Config | Mismatch Template",
+                "Config | Match Template",
                 obj=obj,
-                msg=error_text or template
+                msg=error_text or "\n".join(seen)
             )

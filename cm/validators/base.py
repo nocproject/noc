@@ -202,8 +202,8 @@ class BaseValidator(object):
         else:
             return ""
 
-    def assert_error(self, name, obj=None):
-        self.engine.assert_fact(Error(name, obj=obj))
+    def assert_error(self, type, obj=None, msg=None):
+        self.engine.assert_fact(Error(type, obj=obj, msg=msg))
 
 #
 validator_registry.load_all()
