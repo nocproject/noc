@@ -174,6 +174,7 @@ Ext.define("NOC.cm.validationrule.Application", {
         }
         // Set values
         if(me.currentConfigForm !== null && me.currentRecord !== null) {
+            me.currentConfigForm.reset(true);
             me.currentConfigForm.setValue(
                 me.currentRecord.get("config")
             );
