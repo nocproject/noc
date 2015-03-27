@@ -96,8 +96,8 @@ class Daemon(object):
         self.pidfile = None
         self.config = None
         self.instance_id = self.options.instance_id
-        self.metrics = MetricsHub("noc.%s.%s" % (self.daemon_name, self.instance_id),
-                                  *self.METRICS)
+        self.metrics = MetricsHub(
+            "noc.%s.%s" % (self.daemon_name, self.instance_id), *self.METRICS)
         self.manhole_status = False
         self.start_delay = 0
         self.load_config()
@@ -115,6 +115,21 @@ class Daemon(object):
             self.logger.info("Initializing solutions")
             from noc.lib.solutions import init_solutions
             init_solutions()
+
+    def parse_logsize(self, s):
+        if s and s.isdigit():
+            return int(s)
+        if len(s) > 1:
+            s = s.upper()
+            i = s[:1]
+            if i.isdigit():
+                if s.endswith('K'):
+                    return (int(i) * 1024)
+                if s.endswith('M'):
+                    return (int(i) * 1024 * 1024)
+                if s.endswith('G'):
+                    return (int(i) * 1024 * 1024 * 1024)
+        return 0
 
     def load_config(self):
         """
@@ -157,7 +172,9 @@ class Daemon(object):
                 # Log to file
                 rf_handler = logging.handlers.RotatingFileHandler(
                     filename=filename,
-                    maxBytes=self.config.getint("main", "logsize"),
+                    maxBytes=self.parse_logsize(
+                        self.config.get("main", "logsize")
+                    ),
                     backupCount=self.config.getint("main", "logfiles")
                 )
                 # @todo: Configurable parameter
@@ -446,7 +463,8 @@ class Daemon(object):
                 else:
                     pid = None
             if pid is not None:
-                self.logger.info("Stopping %s pid=%s" % (self.daemon_name, pid))
+                self.logger.info(
+                    "Stopping %s pid=%s" % (self.daemon_name, pid))
                 try:
                     os.kill(pid, signal.SIGTERM)
                 except:

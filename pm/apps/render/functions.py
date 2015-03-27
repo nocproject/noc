@@ -63,7 +63,7 @@ def get_percentile(points, n, interpolate=False):
     Statistics Handbook:
     http://www.itl.nist.gov/div898/handbook/prc/section2/prc252.htm
     """
-    sorted_points = sorted(p for p in points if p is not None)
+    sorted_points = sorted(p for p in points if p[0] is not None)
     if len(sorted_points) == 0:
         return None
     fractional_rank = (n/100.0) * (len(sorted_points) + 1)
@@ -858,6 +858,25 @@ def nonNegativeDerivative(ctx, series_list, max_value=None):
     return results
 
 
+@api("nPercentile")
+def nPercentile(ctx, series_list, n):
+    """Returns n-percent of each series in the series_list."""
+    assert n, "The requested percent is required to be greater than 0"
+
+    results = []
+    for s in series_list:
+        pv = get_percentile(s, n)[0]
+        if pv is not None:
+            name = "nPercentile(%s, %g)" % (s.name, n)
+            ps = TimeSeries(
+                name, s.start, s.end,
+                [(pv, t) for _, t in s]
+            )
+            ps.pathExpression = name
+            results += [ps]
+    return results
+
+
 @api("offset")
 def offset(ctx, series_list, factor):
     """
@@ -1294,7 +1313,7 @@ def transformNull(ctx, series_list, default=0):
         series.set_name("transformNull(%s,%g)" % (series.name, default))
     return series_list
 
-## Graphite functions to be ported frim graphite/functions
+## Graphite functions to be ported from graphite/functions
 ## Remove appropriative lines for ported functions
 #     # Combine functions
 #     'weightedAverage': weightedAverage,
@@ -1324,7 +1343,6 @@ def transformNull(ctx, series_list, default=0):
 #     'highestMax': highestMax,
 #     'currentAbove': currentAbove,
 #     'currentBelow': currentBelow,
-#     'nPercentile': nPercentile,
 #     'averageOutsidePercentile': averageOutsidePercentile,
 #     'removeBetweenPercentile': removeBetweenPercentile,
 #     'sortByMaxima': sortByMaxima,

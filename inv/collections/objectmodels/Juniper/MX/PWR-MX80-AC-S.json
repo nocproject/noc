@@ -1,0 +1,30 @@
+{
+    "name": "Juniper | MX | PWR-MX80-AC-S",
+    "uuid": "1ad8cac8-b6a6-45c3-b21a-411ed7b590e5",
+    "vendor__code": "JUNIPER",
+    "description": "MX80 AC Power Supply",
+    "cr_context": "PEM",
+    "connections": [
+        {
+            "description": "Internal power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX80 PEM"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "PWR-MX80-AC-S",
+            "part_no0": "740-028288"
+        }
+    }
+}
