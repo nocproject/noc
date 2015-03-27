@@ -94,7 +94,8 @@ class BaseValidator(object):
     # Validation scope
     SCOPE = OBJECT
 
-    def __init__(self, engine, object=None, config=None, scope=None):
+    def __init__(self, engine, object=None, config=None, scope=None,
+                 rule=None):
         """
         object depends on scope:
             * OBJECT -> Managed Object
@@ -104,6 +105,7 @@ class BaseValidator(object):
         self.object = object
         self.config = config or {}
         self.scope = scope
+        self.rule = rule
 
     def get_priority(self):
         """
