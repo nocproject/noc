@@ -1319,6 +1319,12 @@ Ext.define("NOC.core.ModelApplication", {
                             if(v.defaults) {
                                 x.defaults = v.defaults;
                             }
+                            if(v.border || v.border === false) {
+                                x.border = v.border;
+                            }
+                            if(v.padding || v.padding === 0) {
+                                x.padding = v.padding;
+                            }
                             items.push(x);
                             break;
                         case "checkbox":
