@@ -29,10 +29,12 @@ class CLIPSValidator(BaseValidator):
             self.__class__.__module__, self.__class__.__name__, num
         )
         name = name.replace(".", "-")
-        return {
+        r = self.get_config()
+        r.update({
             "RULENUM": num,
             "RULENAME": name
-        }
+        })
+        return r
 
     def add_rule(self, rule):
         t = Template(rule).render(Context(self.get_context()))
