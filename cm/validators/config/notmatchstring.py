@@ -31,7 +31,7 @@ class NotMatchStringValidator(TextValidator):
 
     def check(self, template, error_text, **kwargs):
         tpl = self.expand_template(template)
-        if tpl in self.object_config:
+        if tpl in self.get_config_block():
             self.assert_error(
                 "String in config",
                 obj=error_text or template

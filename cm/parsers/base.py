@@ -33,6 +33,9 @@ class BaseParser(object):
         self.current_subinterface = None
         self.current_vlan = None
         self.current_service = None
+        # Offsets of interface config sections
+        # <interface name> -> [(start, end), .., (start, end)]
+        self.interface_ranges = {}
 
     def parse(self, config):
         """
@@ -169,3 +172,13 @@ class BaseParser(object):
         Returns last get_service_fact call
         """
         return self.current_service
+
+    def register_interface_section(self, name, start, end):
+        """
+        Register offsets of interface config section
+        """
+        name = self.convert_interface_name(name)
+        if name in self.interface_ranges:
+            self.interface_ranges[name] += [(start, end)]
+        else:
+            self.interface_ranges[name] = [(start, end)]

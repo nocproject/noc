@@ -20,4 +20,4 @@ class InterfaceCLIPSRulesValidator(CLIPSRulesValidator):
     DESCRIPTION = """
         Apply one or more CLIPS rules at interface level
     """
-    scope = CLIPSRulesValidator.INTERFACE
+    SCOPE = CLIPSRulesValidator.INTERFACE

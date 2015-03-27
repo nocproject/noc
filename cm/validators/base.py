@@ -92,9 +92,9 @@ class BaseValidator(object):
     OBJECT = 1 << 1
     TOPOLOGY = 1 << 2
     # Validation scope
-    scope = OBJECT
+    SCOPE = OBJECT
 
-    def __init__(self, engine, object=None, config=None):
+    def __init__(self, engine, object=None, config=None, scope=None):
         """
         object depends on scope:
             * OBJECT -> Managed Object
@@ -103,6 +103,7 @@ class BaseValidator(object):
         self.engine = engine
         self.object = object
         self.config = config or {}
+        self.scope = scope
 
     def get_priority(self):
         """
@@ -173,19 +174,31 @@ class BaseValidator(object):
 
     @classmethod
     def is_interface(cls):
-        return bool(cls.scope & cls.INTERFACE)
+        return bool(cls.SCOPE & cls.INTERFACE)
 
     @classmethod
     def is_object(cls):
-        return bool(cls.scope & cls.OBJECT)
+        return bool(cls.SCOPE & cls.OBJECT)
 
     @classmethod
     def is_topology(cls):
-        return bool(cls.scope & cls.TOPOLOGY)
+        return bool(cls.SCOPE & cls.TOPOLOGY)
 
     @property
     def object_config(self):
         return self.engine.config
+
+    def get_interface_config(self, name):
+        """
+        Get interface config section
+        """
+        if name in self.engine.interface_ranges:
+            r = []
+            for start, end in self.engine.interface_ranges[name]:
+                r += [self.engine.config[start:end]]
+            return "".join(r)
+        else:
+            return ""
 
     def assert_error(self, name, obj=None):
         self.engine.assert_fact(Error(name, obj=obj))

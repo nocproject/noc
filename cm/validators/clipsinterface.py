@@ -11,7 +11,7 @@ from clips import CLIPSValidator
 
 
 class CLIPSInterfaceValidator(CLIPSValidator):
-    scope = CLIPSValidator.INTERFACE
+    SCOPE = CLIPSValidator.INTERFACE
 
     def get_context(self):
         ctx = super(CLIPSInterfaceValidator, self).get_context()

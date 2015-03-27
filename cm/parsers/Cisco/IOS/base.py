@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import re
 ## Third-party modules
 from pyparsing import *
 ## NOC modules
@@ -16,6 +18,12 @@ from noc.lib.text import ranges_to_list
 
 
 class BaseIOSParser(BasePyParser):
+    RX_INTERFACE_BLOCK = re.compile(
+        r"^interface\s+(?P<name>\S+(?:\s+\d+\S*)?)\n"
+        r"(?:\s+[^\n]*\n)*",
+        re.MULTILINE
+    )
+
     def __init__(self, managed_object):
         super(BaseIOSParser, self).__init__(managed_object)
         self.enable_cdp = True
