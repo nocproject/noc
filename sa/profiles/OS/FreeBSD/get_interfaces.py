@@ -29,7 +29,6 @@ class Script(NOCScript):
         r"^\tstatus: (?P<status>active|associated|running|inserted)\s*$")
     rx_if_vlan = re.compile(
         r"^\tvlan: (?P<vlan>[1-9]\d*) parent interface: (?P<parent>\S+)$")
-    rx_if_lagg = re.compile(r"^\tlaggport: (?P<ifname>\S+) flags=\d+<.*>$")
     rx_if_wlan = re.compile(r"^\tssid .+$")
     rx_if_bridge = re.compile(r"^\tgroups:.+?bridge.*?$")
     rx_if_bridge_m = re.compile(r"^\tmember: (?P<ifname>\S+) flags=\d+<.+>$")
@@ -60,13 +59,14 @@ class Script(NOCScript):
         self.parent = ""
 
     def execute(self):
+        self.portchannel = self.scripts.get_portchannel()
         self.if_stp = []
         self.interfaces = []
         self.iface = {}
         self.subiface = {}
         self.parent = ""
         self.snmp_ifindex = 0
-        for s in self.cli("ifconfig -v").splitlines():
+        for s in self.cli("ifconfig -v", cached=True).splitlines():
             match = self.rx_if_name.search(s)
             if match:
                 self.snmp_ifindex += 1
@@ -79,6 +79,7 @@ class Script(NOCScript):
                 self.subiface["enabled_afi"] = []
                 self.subiface["mtu"] = int(match.group("mtu"))
                 self.iface["snmp_ifindex"] = self.snmp_ifindex
+                self.iface["enabled_protocols"] = []
                 if "LOOPBACK" in flags:
                     self.iface["type"] = "loopback"
                     self.iface["oper_status"] = flags.startswith("UP,")
@@ -135,15 +136,15 @@ class Script(NOCScript):
                 })
                 self.parent = match.group("parent")
                 continue
-            match = self.rx_if_lagg.search(s)
-            if match:
-                ifname = match.group("ifname")
-                if "aggregated_interface" in self.iface:
-                    self.iface["aggregated_interface"] += [ifname]
-                else:
-                    self.iface["aggregated_interface"] = [ifname]
-                    self.iface["enabled_protocols"] = ["LACP"]
-                continue
+            for i in self.portchannel:
+                if self.iface["name"] == i["interface"]:
+                    self.iface["type"] = "aggregated"
+                    #self.subiface["enabled_afi"] = ["BRIDGE"]
+                if self.iface["name"] in i["members"]:
+                    if i["type"] == "L" and \
+                    not "LACP" in self.iface["enabled_protocols"]:
+                        self.iface["enabled_protocols"] += ["LACP"]
+                    self.iface["aggregated_interface"] = i["interface"]
             match = self.rx_if_wlan.search(s)
             if match:
                 self.parent = "IEEE 802.11"
@@ -151,7 +152,8 @@ class Script(NOCScript):
             match = self.rx_if_bridge.search(s)
             if match:
                 self.iface["type"] = "SVI"
-                self.subiface["enabled_afi"] = ["BRIDGE"]
+                if not "BRIDGE" in self.subiface["enabled_afi"]:
+                    self.subiface["enabled_afi"] += ["BRIDGE"]
                 continue
             match = self.rx_if_bridge_m.search(s)
             if match:
@@ -177,5 +179,5 @@ class Script(NOCScript):
                         i["snmp_ifindex"] = int(s["ifindex"])
                         i["aggregated_interface"] = s["parent"]
                     if "STP" in s:
-                        i["enabled_protocols"] = ["STP"]
+                        i["enabled_protocols"] += ["STP"]
         return [{"interfaces": self.interfaces}]

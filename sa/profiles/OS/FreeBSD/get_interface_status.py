@@ -23,7 +23,7 @@ class Script(NOCScript):
 
     def execute(self):
         r = []
-        for s in self.cli("ifconfig", cached=True).splitlines():
+        for s in self.cli("ifconfig -v", cached=True).splitlines():
             match = self.rx_if_name.search(s)
             if match:
                 if_name = match.group("ifname")

@@ -269,6 +269,19 @@ def DES3028(v):
     """
     return v["platform"].startswith("DES-3028")
 
+def DES3x2x(v):
+    """
+    DES-3x2x-series
+    :param v:
+    :return:
+    """
+    return (
+        v["platform"].startswith("DES-3226") or \
+        v["platform"].startswith("DES-3250") or \
+        v["platform"].startswith("DES-3326") or \
+        v["platform"].startswith("DES-3350")
+    )
+
 def DES3500(v):
     """
     DES-3500-series

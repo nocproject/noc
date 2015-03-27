@@ -17,3 +17,4 @@ class IGetDHCPBinding(Interface):
         "expiration": DateTimeParameter(),
         "type": StringParameter()  # Choices=["A","M"]
     }))
+    preview = "NOC.sa.managedobject.scripts.ShowDHCPBinding"

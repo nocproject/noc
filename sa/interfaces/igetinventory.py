@@ -43,3 +43,4 @@ class IGetInventory(Interface):
             "gain": FloatParameter()
         }, required=False)
     })
+    preview = "NOC.sa.managedobject.scripts.ShowInventory"

@@ -103,16 +103,14 @@ class IGetInterfaces(Interface):
                 name = interface name (same as parent for most platforms)
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = list of IPv4 addresses
-    
+
             name = if2
             type = "physical"
-            is_lacp = True  # @todo: Deprecated
             enabled_protoocols = ["LACP"]
             aggregated_interface = "if1"
 
             name = if3
             type = "physical"
-            is_lacp = True  # @todo: Deprecated
             enabled_protoocols = ["LACP"]
             aggregated_interface = "if1"
 
@@ -130,12 +128,12 @@ class IGetInterfaces(Interface):
                 tagged_vlans = list of tagged vlans
 
             name = if2
-            type = "aggregate"
+            type = "physical"
             enabled_protocols = ["LACP"]
             aggregated_interface = "if1"
 
             name = if3
-            type = "aggregate"
+            type = "physical"
             aggregated_interface = "if1"
 
     802.1Q trunk. (VLAN1 is L3, VLAN2 in VRF1)

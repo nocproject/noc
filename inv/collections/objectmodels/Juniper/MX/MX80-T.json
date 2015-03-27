@@ -1,6 +1,6 @@
 {
-    "name": "Juniper | MX | MX80",
-    "uuid": "105b4a26-db6b-41fe-b34c-d4ac35f2aef2",
+    "name": "Juniper | MX | MX80-T",
+    "uuid": "5b4b3ef4-ddd9-4909-b3dd-29ede782a8e6",
     "vendor__code": "JUNIPER",
     "description": "Juniper MX80 chassis",
     "connection_rule__name": "Juniper | MX80",
@@ -97,14 +97,28 @@
             "name": "usb",
             "protocols": [">USB1"],
             "type__name": "Electrical | USB"
+        },
+        {
+            "description": "CLK",
+            "direction": "s",
+            "gender": "m",
+            "name": "clk",
+            "type__name": "Electrical | F"
+        },
+        {
+            "description": "SYNC",
+            "direction": "s",
+            "gender": "m",
+            "name": "sync",
+            "type__name": "Electrical | F"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no0": "MX80",
-            "order_part_no1": "MX40",
-            "order_part_no2": "MX10",
-            "order_part_no3": "MX5"
+            "order_part_no0": "MX80-T",
+            "order_part_no1": "MX40-T",
+            "order_part_no2": "MX10-T",
+            "order_part_no3": "MX5-T"
         },
         "management": {
             "managed": true

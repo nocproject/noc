@@ -122,7 +122,13 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": "ES3510MA"
+            "part_no0": "ES3510MA"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1
         }
     }
 }
