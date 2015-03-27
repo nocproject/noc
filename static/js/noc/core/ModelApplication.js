@@ -366,6 +366,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.saveButton = Ext.create("Ext.button.Button", {
             itemId: "save",
             text: "Save",
+            tooltip: "Save changes",
             glyph: NOC.glyph.save,
             formBind: true,
             disabled: true,
@@ -377,6 +378,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.closeButton = Ext.create("Ext.button.Button", {
             itemId: "close",
             text: "Close",
+            tooltip: "Close without saving",
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.onClose
@@ -385,6 +387,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.resetButton = Ext.create("Ext.button.Button", {
             itemId: "reset",
             text: "Reset",
+            tooltip: "Reset to default values",
             glyph: NOC.glyph.undo,
             disabled: true,
             scope: me,
@@ -394,6 +397,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.deleteButton = Ext.create("Ext.button.Button", {
             itemId: "delete",
             text: "Delete",
+            tooltip: "Delete object",
             glyph: NOC.glyph.times,
             disabled: true,
             hasAccess: NOC.hasPermission("delete"),
@@ -404,6 +408,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.cloneButton = Ext.create("Ext.button.Button", {
             itemId: "clone",
             text: "Clone",
+            tooltip: "Copy existing values to a new object",
             glyph: NOC.glyph.copy,
             disabled: true,
             hasAccess: NOC.hasPermission("create"),
@@ -424,6 +429,7 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.onPreview) {
             formToolbar.push({
                 text: "View",
+                tooltip: "Preview",
                 glyph: NOC.glyph.eye,
                 // hasAccess:
                 scope: me,
@@ -437,6 +443,7 @@ Ext.define("NOC.core.ModelApplication", {
             // Create *Show metrics* button
             formToolbar.push({
                 text: "Metrics",
+                tooltip: "View metrics, attached to an object",
                 glyph: NOC.glyph.bar_chart_o,
                 scope: me,
                 handler: function() {
