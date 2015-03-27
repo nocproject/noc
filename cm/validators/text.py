@@ -24,6 +24,6 @@ class TextValidator(BaseValidator):
 
     def get_config_block(self):
         if self.scope == self.INTERFACE:
-            return self.engine.get_interface_config(self.object.name)
+            return self.get_interface_config(self.object.name)
         else:
             return self.engine.config
