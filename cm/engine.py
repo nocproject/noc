@@ -163,6 +163,8 @@ class Engine(object):
         rules = []
         for r in self.get_rules():
             if r.is_applicable():
+                self.logger.debug("Using validation rule: %s",
+                                  r.rule.name)
                 try:
                     cfg = r.get_config()
                     r.prepare(**cfg)
@@ -176,8 +178,6 @@ class Engine(object):
                 except:
                     error_report()
                     continue
-                self.logger.debug("Using validation rule: %s",
-                                  r.rule.name)
                 rules += [(r, cfg)]
         # Run python validators
         for r, cfg in rules:
