@@ -18,9 +18,3 @@ class ErrorTypeApplication(ExtDocApplication):
     title = "Error Type"
     menu = "Setup | Error Types"
     model = ErrorType
-
-    @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"],
-          access="read", api=True)
-    def api_json(self, request, id):
-        et = self.get_object_or_404(ErrorType, id=id)
-        return et.to_json()
