@@ -169,7 +169,8 @@ Ext.define("NOC.sa.managedobject.Application", {
             columns: [
                 {
                     text: "Name",
-                    dataIndex: "name"
+                    dataIndex: "name",
+                    width: 130,
                 },
                 {
                     text: "Managed",
@@ -196,7 +197,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     text: "Adm. Domain",
                     dataIndex: "administrative_domain",
                     renderer: NOC.render.Lookup("administrative_domain"),
-                    width: 120
+                    width: 100
                 },
                 {
                     text: "Auth Profile",
@@ -207,7 +208,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     text: "VRF",
                     dataIndex: "vrf",
-                    renderer: NOC.render.Lookup("vrf")
+                    renderer: NOC.render.Lookup("vrf"),
+                    width: 100
                 },
                 {
                     text: "Address",
@@ -216,12 +218,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     text: "Activator",
                     dataIndex: "activator",
-                    renderer: NOC.render.Lookup("activator")
+                    renderer: NOC.render.Lookup("activator"),
+                    width: 100,
                 },
                 {
                     text: "Description",
                     dataIndex: "description",
-                    flex: 1
+                    width: 100
                 },
                 {
                     text: "Interfaces",
