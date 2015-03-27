@@ -40,7 +40,7 @@ class Engine(object):
         self.facts = {}  # Index -> Fact
         self.rn = 0  # Rule number
         self.config = None  # Cached config
-        self.inteface_ranges = None
+        self.interface_ranges = None
 
     def get_template(self, fact):
         if fact.cls not in self.templates:
@@ -56,25 +56,24 @@ class Engine(object):
         return self.rn
 
     def assert_fact(self, fact):
-        def _clean(v):
-            if isinstance(v, (list, tuple)):
-                return clips.Multifield([_clean(x) for x in v])
-            elif isinstance(v, bool):
-                return clips.Symbol("yes") if v else clips.Symbol("no")
-            elif v is None:
-                return clips.Symbol("none")
-            elif isinstance(v, (int, long, float, basestring)):
-                return v
-            else:
-                raise ValueError("Invalid data type %s" % type(v))
-
         f = self.get_template(fact).BuildFact()
         f.AssignSlotDefaults()
         for k, v in fact.iter_factitems():
             if v is None or v == [] or v == tuple():
                 continue
+            if isinstance(v, basestring):
+                v = v.replace("\n", "\\n")
             f.Slots[k] = v
-        f.Assert()
+        try:
+            f.Assert()
+        except clips.ClipsError, why:
+            self.logger.error("Could not assert: %s", f.PPForm())
+            self.logger.error(
+                "CLIPS Error: %s\n%s",
+                why,
+                clips.ErrorStream.Read()
+            )
+            return
         self.facts[f.Index] = fact
         self.logger.debug("Assert %s", f.PPForm())
 
@@ -153,9 +152,9 @@ class Engine(object):
         self.logger.debug("Parsing facts")
         facts = list(parser.parse(self.config))
         self.logger.debug("%d facts are extracted", len(facts))
-        self.inteface_ranges = parser.interface_ranges
+        self.interface_ranges = parser.interface_ranges
         self.logger.debug("%d interface sections detected",
-                          len(self.inteface_ranges))
+                          len(self.interface_ranges))
         # Learn facts
         self.logger.debug("Learning facts")
         self.learn(facts)
@@ -177,6 +176,8 @@ class Engine(object):
                 except:
                     error_report()
                     continue
+                self.logger.debug("Using validation rule: %s",
+                                  r.rule.name)
                 rules += [(r, cfg)]
         # Run python validators
         for r, cfg in rules:
@@ -210,7 +211,7 @@ class Engine(object):
                 if rule.is_active and rule.is_applicable_for(self.object):
                     vc = get_solution(rule.handler)
                     if vc and bool(vc.SCOPE & scope):
-                        r += [(vc, rule.config)]
+                        r += [(vc, rule)]
         return r
 
     def _get_rules(self, model, id, scope, obj=None):
@@ -220,8 +221,8 @@ class Engine(object):
         if not ps or not ps.policies:
             return []
         return [
-            vc(self, obj, config, scope)
-            for vc, config in self._get_rule_settings(ps, scope)
+            vc(self, obj, rule.config, scope, rule)
+            for vc, rule in self._get_rule_settings(ps, scope)
         ]
 
     def get_rules(self):
@@ -263,8 +264,9 @@ class Engine(object):
             if rs:
                 for iface in profile_interfaces[p]:
                     r += [
-                        vc(self, iface, config)
-                        for vc, config in rs
+                        vc(self, iface, rule.config,
+                           BaseValidator.INTERFACE, rule)
+                        for vc, rule in rs
                     ]
         return r
 
