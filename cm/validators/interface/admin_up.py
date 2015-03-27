@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Interface | Shutdown
+## Interface *MUST BE* administratively up
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## NOC modules
 from noc.cm.validators.clipsinterface import CLIPSInterfaceValidator
 
 
-class InterfaceShutdownValidator(CLIPSInterfaceValidator):
-    TITLE = "Interface *MUST BE* shutdown"
+class InterfaceAdminUpValidator(CLIPSInterfaceValidator):
+    TITLE = "Interface *MUST BE* administratively up"
     DESCRIPTION = """
-        Interface must be administratively down
+        Interface must be administratively up
     """
-    TAGS = ["shutdown"]
+    TAGS = ["admin.status"]
     RULES = """
     (defrule {{RULENAME}}
-        ?i <- (interface (name "{{name}}") (admin_status 1))
+        ?i <- (interface (name "{{name}}") (admin_status 0))
         =>
         (assert
-            (error (name "Interface | Shutdown")
+            (error (type "Interface | Admin Status Down")
                    (obj "{{name}}")))
     )
     """

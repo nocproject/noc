@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-##
+## Config *MUST* match all strings
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## NOC modules
 from noc.cm.validators.text import TextValidator
 
 
 class MatchAllStringsValidator(TextValidator):
-    TITLE = "Config *MUST* match all string"
+    TITLE = "Config *MUST* match all strings"
     DESCRIPTION = """
         Config must contain all strings in arbitrary order
     """
@@ -49,7 +50,12 @@ class MatchAllStringsValidator(TextValidator):
             if not seen:
                 break
         if seen:
+            if self.scope == self.INTERFACE:
+                obj = self.object.name
+            else:
+                obj = None
             self.assert_error(
-                "String not in config",
-                obj=error_text or template
+                "Config | Mismatch Template",
+                obj=obj,
+                msg=error_text or "\n".join(seen)
             )
