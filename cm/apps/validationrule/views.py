@@ -20,7 +20,10 @@ class ValidationRuleApplication(ExtDocApplication):
     model = ValidationRule
 
     def field_scope(self, o):
-        h = o.get_handler()
+        try:
+            h = o.get_handler()
+        except ImportError:
+            return ""
         if h:
             r = []
             if h.is_interface():
