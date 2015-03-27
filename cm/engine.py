@@ -106,7 +106,7 @@ class Engine(object):
                         obj = self.facts[obj.Index]
             else:
                 obj = None
-            error = Error(e.Slots["name"], obj=obj)
+            error = Error(e.Slots["type"], obj=obj, msg=e.Slots["msg"])
             if e.Index not in self.facts:
                 self.facts[e.Index] = error
             yield error
