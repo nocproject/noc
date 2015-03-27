@@ -312,7 +312,7 @@ class Engine(object):
                     # Changed facts
                     self.logger.debug(
                         "Fact %s has been changed: %s -> %s",
-                        f["_id"], f_attrs, f["attrs"])
+                        f["_id"], f["attrs"], f_attrs)
                     bulk.find({"_id": f["_id"]}).update({
                         "$set": {
                             "attrs": f_attrs,
