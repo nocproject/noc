@@ -69,7 +69,7 @@ class AuditTrail(Document):
         "admin.logentry",
         "main.audittrail",
         "kb.kbentryhistory",
-        "kb/kbentrypreviewlog",
+        "kb.kbentrypreviewlog",
         "sa.maptask",
         "sa.reducetask",
     ])
