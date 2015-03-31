@@ -20,7 +20,30 @@ class MongoDBProbe(Probe):
     TITLE = "MongoDB"
     DESCRIPTION = "MongoDB server statistics"
     TAGS = ["db", "mongodb"]
-    CONFIG_FORM = "MongoDBConfig"
+    CONFIG_FORM = [
+        {
+            "name": "host",
+            "xtype": "textfield",
+            "fieldLabel": "Database Host",
+            "allowBlank": False,
+            "value": "127.0.0.1"
+        },
+        {
+            "name": "port",
+            "xtype": "numberfield",
+            "fieldLabel": "Port",
+            "minValue": 1,
+            "maxValue": 65535,
+            "value": 27017
+        },
+        {
+            "name": "database",
+            "xtype": "textfield",
+            "fieldLabel": "DB",
+            "allowBlank": False,
+            "value": "noc"
+        }
+    ]
 
     @metric([
         "DB | Ops | Query", "DB | Ops | Command",
