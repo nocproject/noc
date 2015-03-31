@@ -17,7 +17,8 @@ class SubInterface(BaseFact):
              "[tagged_vlans]", "untagged_vlan",
              "[protocols]", "[afi]",
              "input_ipv4_filter", "output_ipv4_filter",
-             "isis_l1_metric", "isis_l2_metric"
+             "isis_l1_metric", "isis_l2_metric",
+             "isis_ptp"
              ]
     ID = ["name"]
 
@@ -28,6 +29,7 @@ class SubInterface(BaseFact):
                  ipv6_addresses=None, protocols=None, afi=None,
                  input_ipv4_filter=None, output_ipv4_filter=None,
                  isis_l1_metric=None, isis_l2_metric=None,
+                 isis_ptp=None,
                  **kwargs):
         super(SubInterface, self).__init__()
         self.name = name
@@ -47,6 +49,7 @@ class SubInterface(BaseFact):
         self.output_ipv4_filter = output_ipv4_filter
         self.isis_l1_metric = isis_l1_metric
         self.isis_l2_metric = isis_l2_metric
+        self.isis_ptp = isis_ptp
 
     def __unicode__(self):
         return "SubInterface %s" % self.name
@@ -190,3 +193,11 @@ class SubInterface(BaseFact):
     @isis_l2_metric.setter
     def isis_l2_metric(self, value):
         self._isis_l2_metric = value or None
+
+    @property
+    def isis_ptp(self):
+        return self._isis_ptp
+
+    @isis_ptp.setter
+    def isis_ptp(self, value):
+        self._isis_ptp = bool(value)
