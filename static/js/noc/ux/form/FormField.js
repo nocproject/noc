@@ -20,7 +20,10 @@ Ext.define("Ext.ux.form.FormField", {
 
         me.formPanel = Ext.create("Ext.form.Panel", {
             items: me.form,
-            border: false
+            border: false,
+            defaults: {
+                anchor: "100%"
+            }
         });
 
         Ext.apply(me, {

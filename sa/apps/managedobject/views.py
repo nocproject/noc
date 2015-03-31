@@ -39,6 +39,8 @@ from noc.lib.scheduler.utils import (get_job, refresh_schedule,
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.inv.discovery.utils import get_active_discovery_methods
+from noc.cm.models.objectfact import ObjectFact
+from noc.cm.engine import Engine
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -676,3 +678,34 @@ class ManagedObjectApplication(ExtModelApplication):
                     "value": c.local_value if c.local_value is not None else c.discovered_value
                 }]
         return sorted(r, key=lambda x: x["capability"])
+
+    @view(url="(?P<id>\d+)/facts/$", method=["GET"],
+          access="read", api=True)
+    def api_get_facts(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        return sorted(
+            (
+                {
+                    "cls": f.cls,
+                    "label": f.label,
+                    "attrs": [
+                        {
+                            "name": a,
+                            "value": f.attrs[a]
+                        } for a in f.attrs
+                    ],
+                    "introduced": f.introduced.isoformat(),
+                    "changed": f.changed.isoformat()
+                } for f in ObjectFact.objects.filter(object=o.id)),
+            key=lambda x: (x["cls"], x["label"]))
+
+    @view(url="(?P<id>\d+)/revalidate/$", method=["POST"],
+          access="read", api=True)
+    def api_revalidate(self, request, id):
+        def revalidate(o):
+            engine = Engine(o)
+            engine.check()
+            return self.response({"status": True}, self.OK)
+
+        o = self.get_object_or_404(ManagedObject, id=id)
+        return self.submit_slow_op(request, revalidate, o)

@@ -34,6 +34,7 @@ class Profile(NOCProfile):
     config_volatile = ["^ntp clock-period .*?^"]
 
     rx_cable_if = re.compile(r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)", re.IGNORECASE)
+    default_parser = "noc.cm.parsers.Cisco.IOS.base.BaseIOSParser"
 
     def convert_interface_name(self, interface):
         if " efp_id " in interface:
@@ -83,6 +84,8 @@ class Profile(NOCProfile):
             match = self.rx_cable_if.search(interface)
             if match:
                 return "Ca %s/%s" % (match.group('pr_if'), match.group('sub_if'))
+        if il.startswith("virtual-template"):
+            return "Vi %s" % il[16:].strip()
         # Fake name. Used only with FM
         if il == "all":
             return "all"
@@ -117,6 +120,52 @@ class Profile(NOCProfile):
         if cluster_member:
             script.debug("Switching to cluster member '%s'" % cluster_member)
             script.cli("rc %s" % cluster_member)
+
+    INTERFACE_TYPES = {
+        "As": "physical",  # Async
+        "AT": "physical",  # ATM
+        "At": "physical",  # ATM
+        "Br": "physical",  # ISDN Basic Rate Interface
+        "BD": "physical",  # Bridge Domain Interface
+        "BV": "aggregated",  # BVI
+        "Bu": "aggregated",  # Bundle
+        "C": "physical",  # @todo: fix
+        "Ca": "physical",  # Cable
+        "CD": "physical",  # CDMA Ix
+        "Ce": "physical",  # Cellular
+        "Em": "physical",  # Embedded Service Engine
+        "Et": "physical",  # Ethernet
+        "Fa": "physical",  # FastEthernet
+        "Fd": "physical",  # Fddi
+        "Gi": "physical",  # GigabitEthernet
+        "Gm": "physical",  # GMPLS
+        "Gr": "physical",  # Group-Async
+        "Lo": "loopback",  # Loopback
+        "In": "physical",  # Integrated-service-engine
+        "M": "management",  # @todo: fix
+        "MF": "aggregated",  # Multilink Frame Relay
+        "Mf": "aggregated",  # Multilink Frame Relay
+        "Mu": "aggregated",  # Multilink-group interface
+        "PO": "physical",  # Packet OC-3 Port Adapter
+        "Po": "aggregated",  # Port-channel/Portgroup
+        "R": "aggregated",  # @todo: fix
+        "SR": "physical",  # Spatial Reuse Protocol
+        "Sr": "physical",  # Spatial Reuse Protocol
+        "Se": "physical",  # Serial
+        "Sp": "physical",  # Special-Services-Engine
+        "Te": "physical",  # TenGigabitEthernet
+        "To": "physical",  # TokenRing
+        "Tu": "tunnel",  # Tunnel
+        "Vi": "template", # Virtual-Template
+        "VL": "SVI",  # VLAN, found on C3500XL
+        "Vl": "SVI",  # Vlan
+        "Vo": "physical",  # Voice
+        "XT": "SVI"  # Extended Tag ATM
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:2])
 
 
 def uBR(v):

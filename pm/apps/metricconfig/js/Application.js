@@ -155,7 +155,7 @@ Ext.define("NOC.pm.metricconfig.Application", {
     //
     setConfigForm: function(record) {
         var me = this,
-            cf, f,
+            cf, f, cfHash,
             form = me.formPanel.items.first(),
             currentConfig = {},
             r = [];
@@ -167,30 +167,40 @@ Ext.define("NOC.pm.metricconfig.Application", {
                 is_active: true
             }
         });
+        //
         me.form.setValues({
             metrics: r
         });
         //
-        cf = record.get("form");
-        if(!me.currentConfigForm || (me.currentConfigForm.xtype != cf)) {
+        cf = record.get("form") || [];
+        cfHash = Ext.encode(cf);
+        if(cfHash !== me.cfHash) {
+            // Remove old config form
             if(me.currentConfigForm) {
-                // Delete old config
-                currentConfig = me.currentConfigForm.getValue();
                 me.formPanel.remove(me.currentConfigForm);
                 me.currentConfigForm.destroy();
-            } else {
-                if(me.currentRecord) {
-                    currentConfig = me.currentRecord.get("config");
-                }
+                me.currentConfigForm = null;
+                me.cfHash = null;
             }
-            f = Ext.create(cf, {
-                name: "config",
-                fieldLabel: "Config"
-            });
-            // Insert before metrics grid
-            form.insert(form.items.length - 2, f);
-            f.setValue(currentConfig);
-            me.currentConfigForm = f;
+            // Create new config form
+            if(cf.length > 0) {
+                me.currentConfigForm = Ext.create("Ext.ux.form.FormField", {
+                    name: "config",
+                    fieldLabel: "Config",
+                    anchor: "100%",
+                    form: cf
+                });
+                me.cfHash = cfHash;
+                // Insert form field before selectors
+                form.insert(form.items.length - 2, me.currentConfigForm);
+            }
+        }
+        // Set values
+        if(me.currentConfigForm !== null && me.currentRecord !== null) {
+            me.currentConfigForm.reset(true);
+            me.currentConfigForm.setValue(
+                me.currentRecord.get("config")
+            );
         }
     },
     //

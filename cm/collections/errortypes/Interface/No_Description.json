@@ -1,0 +1,7 @@
+{
+    "name": "Interface | No Description",
+    "uuid": "0f16d7c3-d06c-4959-9208-f2ad3951b09c",
+    "description": "Interface must have descirption",
+    "subject_template": "Interface {{object.name}} must have description",
+    "body_template": "Interface {{object.name}} must have description"
+}

@@ -17,21 +17,24 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
     rowClassField: "row_class",
+    metricModelId: "sa.ManagedObjectProfile",
+    validationModelId: "sa.ManagedObjectProfile",
+
     initComponent: function() {
         var me = this;
 
-        me.ITEM_METRICS = me.registerItem(
-            Ext.create("NOC.core.MetricSettingsPanel", {
+        me.ITEM_VALIDATION_SETTINGS = me.registerItem(
+            Ext.create("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
                 app: me,
-                metricModelId: "sa.ManagedObjectProfile"
+                validationModelId: me.validationModelId
             })
         );
 
-        me.metricsButton = Ext.create("Ext.button.Button", {
-            text: "Metrics",
-            glyph: NOC.glyph.bar_chart_o,
+        me.validationSettingsButton = Ext.create("Ext.button.Button", {
+            text: "Validation",
+            glyph: NOC.glyph.file,
             scope: me,
-            handler: me.onMetrics
+            handler: me.onValidationSettings
         });
 
         Ext.apply(me, {
@@ -39,6 +42,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 {
                     text: "Name",
                     dataIndex: "name"
+                },
+                {
+                    text: "Level",
+                    dataIndex: "level",
+                    width: 50,
+                    align: "right"
                 },
                 {
                     text: "Ping",
@@ -174,6 +183,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     xtype: "textarea",
                     fieldLabel: "Description",
                     allowBlank: true
+                },
+                {
+                    name: "level",
+                    xtype: "numberfield",
+                    fieldLabel: "Level",
+                    allowBlank: false,
+                    uiStyle: "small"
                 },
                 {
                     name: "style",
@@ -603,14 +619,14 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 }
             ],
             formToolbar: [
-                me.metricsButton
+                me.validationSettingsButton
             ]
         });
         me.callParent();
     },
     //
-    onMetrics: function() {
+    onValidationSettings: function () {
         var me = this;
-        me.showItem(me.ITEM_METRICS).preview(me.currentRecord);
+        me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
     }
 });

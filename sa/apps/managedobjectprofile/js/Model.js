@@ -24,6 +24,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
+            name: "level",
+            type: "int"
+        },
+        {
             name: "style",
             type: "int"
         },

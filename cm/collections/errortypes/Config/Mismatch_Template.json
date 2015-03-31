@@ -1,0 +1,7 @@
+{
+    "name": "Config | Mismatch Template",
+    "uuid": "6cf5dfb8-c00a-4572-8950-f2f6738f5254",
+    "description": "Config must match template",
+    "subject_template": "Config must match template",
+    "body_template": "Config must match template"
+}

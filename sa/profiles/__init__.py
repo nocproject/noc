@@ -154,6 +154,10 @@ class Profile(object):
     requires_netmask_conversion = False
     # Upper concurrent scripts limit, if set
     max_scripts = None
+    # Default config parser name. Full path to BaseParser subclass
+    # i.e noc.cm.parsers.Cisco.IOS.switch.IOSSwitchParser
+    # Can be overriden in get_parser method
+    default_parser = None
     #
     # Converts ip prefix to the format acceptable by router
     #
@@ -364,3 +368,19 @@ class Profile(object):
             lexer = TextLexer
         # Return highlighted text
         return highlight(cfg, lexer(), NOCHtmlFormatter())
+
+    @classmethod
+    def get_parser(cls, vendor, platform, version):
+        """
+        Returns full path to BaseParser instance to be used
+        as config parser. None means no parser for particular platform
+        """
+        return cls.default_parser
+
+    @classmethod
+    def get_interface_type(cls, name):
+        """
+        Return IGetInterface-compatible interface type
+        :param Name: Normalized interface name
+        """
+        return None

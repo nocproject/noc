@@ -1,0 +1,7 @@
+{
+    "name": "Interface | CDP Disabled",
+    "uuid": "792f0273-71db-4c38-8afd-316b82f20cb8",
+    "description": "Interface must have CDP enabled",
+    "subject_template": "Interface {{object.name}} has disabled CDP",
+    "body_template": "Interface {{object.name}} must have CDP enabled"
+}

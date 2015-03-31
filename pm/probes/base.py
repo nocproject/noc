@@ -117,7 +117,7 @@ class ProbeBase(type):
         m = type.__new__(mcs, name, bases, attrs)
         class_name = "%s.%s" % (m.__module__, m.__name__)
         # Normalize configuration form
-        if m.CONFIG_FORM:
+        if m.CONFIG_FORM and isinstance(m.CONFIG_FORM, basestring):
             if m.CONFIG_FORM.endswith(".js"):
                 m.CONFIG_FORM = m.CONFIG_FORM[:-3]
             if "." not in m.CONFIG_FORM:
@@ -186,7 +186,8 @@ class Probe(object):
     # List of strings
     # Means only for human-configurable probes
     TAGS = []
-    # JS file name with configuration form
+    # Either list of field configuration or
+    # string containing full JS class name
     # Means only for human-configurable probes
     CONFIG_FORM = None
 

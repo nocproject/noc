@@ -214,21 +214,10 @@ class ExtApplication(Application):
         """
         v = action == "set"
         item = self.fav_convert(item)
-        fv = Favorites.objects.filter(
-            user=request.user.id, app=self.app_id).first()
-        if fv:
-            fi = fv.favorites
-            if v and item not in fi:
-                fv.favorites += [item]
-                fv.save()
-            elif not v and item in fi:
-                fi.remove(item)
-                fv.favorites = fi
-                fv.save()
-        elif v:
-            # Add single item
-            Favorites(user=request.user, app=self.app_id,
-                favorites=[item]).save()
+        if action == "set":
+            Favorites.add_item(request.user, self.app_id, item)
+        else:
+            Favorites.remove_item(request.user, self.app_id, item)
         return True
 
     @view(url="^futures/(?P<f_id>[0-9a-f]{24})/$", method=["GET"],
