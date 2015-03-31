@@ -44,6 +44,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             glyph: NOC.glyph.times
         }
     ],
+    validationModelId: "sa.ManagedObject",
     //
     initComponent: function() {
         var me = this;
@@ -119,11 +120,26 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onMetrics
         });
 
+        me.validationSettingsButton = Ext.create("Ext.button.Button", {
+            text: "Validation",
+            glyph: NOC.glyph.file,
+            scope: me,
+            handler: me.onValidationSettings
+        });
+
+
         me.capsButton = Ext.create("Ext.button.Button", {
             text: "Capabilities",
             glyph: NOC.glyph.file,
             scope: me,
             handler: me.onCaps
+        });
+
+        me.factsButton = Ext.create("Ext.button.Button", {
+            text: "Facts",
+            glyph: NOC.glyph.file,
+            scope: me,
+            handler: me.onFacts
         });
 
         me.ITEM_CONFIG = me.registerItem(
@@ -163,7 +179,15 @@ Ext.define("NOC.sa.managedobject.Application", {
             })
         );
 
+        me.ITEM_VALIDATION_SETTINGS = me.registerItem(
+            Ext.create("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
+                app: me,
+                validationModelId: me.validationModelId
+            })
+        );
+
         me.ITEM_CAPS = me.registerItem("NOC.sa.managedobject.CapsPanel");
+        me.ITEM_FACTS = me.registerItem("NOC.sa.managedobject.FactsPanel");
 
         Ext.apply(me, {
             columns: [
@@ -582,7 +606,9 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.alarmsButton,
                 me.interactionsButton,
                 me.metricsButton,
-                me.capsButton
+                me.validationSettingsButton,
+                me.capsButton,
+                me.factsButton
             ]
         });
         me.callParent();
@@ -730,6 +756,11 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.previewItem(me.ITEM_CAPS, me.currentRecord);
     },
     //
+    onFacts: function() {
+        var me = this;
+        me.previewItem(me.ITEM_FACTS, me.currentRecord);
+    },
+    //
     onInterfaceClick: function(record) {
         var me = this;
         me.previewItem(me.ITEM_INTERFACE, record);
@@ -738,6 +769,11 @@ Ext.define("NOC.sa.managedobject.Application", {
     onLinkClick: function(record) {
         var me = this;
         me.previewItem(me.ITEM_LINKS, record);
+    },
+    //
+    onValidationSettings: function () {
+        var me = this;
+        me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
     },
     //
     showForm: function() {

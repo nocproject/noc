@@ -29,6 +29,7 @@ class ManagedObjectProfile(models.Model):
     name = models.CharField(_("Name"), max_length=64, unique=True)
     description = models.TextField(
         _("Description"), blank=True, null=True)
+    level = models.IntegerField(_("Level"), default=25)
     style = models.ForeignKey(
         Style, verbose_name=_("Style"), blank=True, null=True)
     # Stencils

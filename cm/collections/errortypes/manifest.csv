@@ -1,0 +1,9 @@
+name,uuid,path,hash
+Config | Match Template,d5e465d1-eb4b-45d5-a314-17d037793767,Config/Match_Template.json,535830f27c168ea9eabc29ef40f49240ebde1743f259fe351f3dc7bf19144b50
+Config | Mismatch Template,6cf5dfb8-c00a-4572-8950-f2f6738f5254,Config/Mismatch_Template.json,09b7e8d0da0897673d73c0c77fc4ed85608a709038ec481dcc479a7917b97c83
+Interface | Admin Status Down,96b43e7a-2062-4de8-b6d4-bcac6fd26866,Interface/Admin_Status_Down.json,3be9885e4e42c8cf38b65ea4c020d5dc9ad099679d588c879ae56f8e37965e2b
+Interface | Admin Status Up,bace145e-ce70-41b9-a7a0-8ecdcc83727f,Interface/Admin_Status_Up.json,8b91a030d74dbf85b76ce263fa02f7360f13c76cee7adfed339476d5d72f827f
+Interface | CDP Disabled,792f0273-71db-4c38-8afd-316b82f20cb8,Interface/CDP_Disabled.json,3f77b9976d2ccdcfb8a5a1f572988df571cf70b322e9b737fdeb03130f138ef2
+Interface | CDP Enabled,c65aced9-ec4b-457d-b9a7-1c1e86860eff,Interface/CDP_Enabled.json,064bcd31eb688ad9c771ffc03141b5c919729e7d3f19399a41c20a74572c0021
+Interface | No Description,0f16d7c3-d06c-4959-9208-f2ad3951b09c,Interface/No_Description.json,3669810a0744cb922cf59afc883b2a8b340ed2b7d98344f58a6e09b46d20069f
+Service | Enabled,93b907f1-a7c4-470e-9528-db3122446510,Service/Enabled.json,945edd138ab4f21606065dbd65852a6867f3d9e8d19e9475ed93b669b804a45b

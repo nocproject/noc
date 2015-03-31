@@ -17,7 +17,22 @@ class SinProbe(Probe):
     TITLE = "Sin"
     DESCRIPTION = "Sample sine function"
     TAGS = ["test"]
-    CONFIG_FORM = "SinConfig"
+    CONFIG_FORM = [
+        {
+            "name": "Period",
+            "xtype": "numberfield",
+            "fieldLabel": "Period",
+            "allowBlank": False,
+            "defaultValue": 60
+        },
+        {
+            "name": "Scale",
+            "xtype": "numberfield",
+            "fieldLabel": "Scale",
+            "allowBlank": False,
+            "defaultValue": 1
+        }
+    ]
 
     @metric("Test | Sin",
             preference=metric.PREF_COMMON, convert=metric.NONE)

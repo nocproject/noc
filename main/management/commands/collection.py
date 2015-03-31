@@ -24,6 +24,7 @@ from noc.inv.models.connectiontype import ConnectionType
 from noc.inv.models.connectionrule import ConnectionRule
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.capability import Capability
+from noc.cm.models.errortype import ErrorType
 from noc.fm.models.oidalias import OIDAlias
 from noc.fm.models.syntaxalias import SyntaxAlias
 from noc.fm.models.mibalias import MIBAlias
@@ -101,6 +102,8 @@ class Command(BaseCommand):
         ("inv.connectionrules", ConnectionRule),
         ("inv.objectmodels", ObjectModel),
         ("inv.capabilities", Capability),
+        # Configuration management
+        ("cm.errortypes", ErrorType),
         # Fault Management
         ("fm.oidaliases", OIDAlias),
         ("fm.syntaxaliases", SyntaxAlias),

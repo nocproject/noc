@@ -21,6 +21,7 @@ from noc import settings
 from noc.main.models.notification import USER_NOTIFICATION_METHOD_CHOICES
 from noc.pm.probes.base import probe_registry
 from noc.pm.models.metrictype import MetricType
+from noc.cm.validators.base import validator_registry
 
 
 class RefAppplication(ExtApplication):
@@ -183,6 +184,38 @@ class RefAppplication(ExtApplication):
             (
                 f(k, v)
                 for k, v in probe_registry.probe_classes.iteritems()
+                if v.TITLE
+            ),
+            key=lambda x: x["label"]
+        )
+
+    def build_validator(self):
+        def f(k, v):
+            solution = None
+            if k.startswith("noc.solutions."):
+                p = k.split(".")
+                solution = "%s.%s" % (p[2], p[3])
+            tags = []
+            if v.is_object:
+                tags += ["OBJECT"]
+            if v.is_interface:
+                tags += ["INTERFACE"]
+            if v.TAGS:
+                tags += v.TAGS
+            r = {
+                "id": k,
+                "label": v.TITLE if v.TITLE else k,
+                "description": v.DESCRIPTION if v.DESCRIPTION else None,
+                "form": v.CONFIG_FORM if v.CONFIG_FORM else None,
+                "solution": solution,
+                "tags": tags
+            }
+            return r
+
+        return sorted(
+            (
+                f(k, v)
+                for k, v in validator_registry.validators.items()
                 if v.TITLE
             ),
             key=lambda x: x["label"]

@@ -235,7 +235,7 @@ info "Reverting local patches"
 ##
 ## Pull repo
 ##
-info "Pulling repo $REPO"
+info "Pulling branch $BRANCH from repo $REPO"
 if [ -x ./bin/hg ]; then
     HG=./bin/hg
 else
@@ -248,7 +248,7 @@ fi
 if [ $BRANCH != "none" ]; then
     UPGRADETS=./local/upgrade-time
     touch $UPGRADETS
-    $HG pull -u $REPO || error_exit "$LINENO: Failed to pull repo $REPO"
+    $HG pull -b "$BRANCH" -u $REPO || error_exit "$LINENO: Failed to pull branch $BRANCH out of repo $REPO"
     if [ `$HG branch` = "$BRANCH" ]; then
         $HG update || error_exit "$LINENO: Failed to update repo"
     else

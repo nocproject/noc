@@ -26,6 +26,7 @@ class Profile(NOCProfile):
     ]
     pattern_syntax_error = r"bad command name"
     config_volatile = [r"^#.*?$", r"^\s?"]
+    default_parser = "noc.cm.parsers.MikroTik.RouterOS.base.RouterOSParser"
 
     def setup_script(self, script):
         """
