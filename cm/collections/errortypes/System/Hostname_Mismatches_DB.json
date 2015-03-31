@@ -1,0 +1,7 @@
+{
+    "name": "System | Hostname Mismatches DB",
+    "uuid": "31bb4277-65c8-49dc-bb41-3228b0b22ce2",
+    "description": "Hostname must match managed object's name",
+    "subject_template": "Hostname does not match database",
+    "body_template": "Hostname must match managed object's name"
+}
