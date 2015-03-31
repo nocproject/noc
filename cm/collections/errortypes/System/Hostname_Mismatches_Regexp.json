@@ -1,0 +1,7 @@
+{
+    "name": "System | Hostname Mismatches Regexp",
+    "uuid": "df1e4852-235b-4211-a307-583040b02681",
+    "description": "Hostname must match regular expression",
+    "subject_template": "Hostname does not match regexp",
+    "body_template": "Hostname must match regular expression:\n\n{{msg}}"
+}
