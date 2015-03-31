@@ -69,6 +69,7 @@ class BaseIOSParser(BasePyParser):
             REST.copy().setParseAction(self.on_interface_tagged)
         )
         INTERFACE_CDP = (Optional(Literal("no")) + Literal("cdp") + Literal("enable")).setParseAction(self.on_interface_cdp)
+        INTERFACE_ACL = Literal("ip") + Literal("access-group") + (Word(alphanums + "-_") + (Literal("in") | Literal("out"))).setParseAction(self.on_interface_acl)
         INTERFACE_BLOCK = INTERFACE + ZeroOrMore(INDENT + (
             INTERFACE_DESCRIPTION |
             INTERFACE_ADDRESS |
@@ -80,6 +81,7 @@ class BaseIOSParser(BasePyParser):
             INTERFACE_UNTAGGED |
             INTERFACE_TAGGED |
             INTERFACE_CDP |
+            INTERFACE_ACL |
             LINE
         ))
         # Logging
@@ -221,6 +223,14 @@ class BaseIOSParser(BasePyParser):
         for v in ranges_to_list(vlans):
             si.tagged_vlans += [int(v)]
         si.add_afi("BRIDGE")
+
+    def on_interface_acl(self, tokens):
+        si = self.get_current_subinterface()
+        name = tokens[0]
+        if tokens[1] == "in":
+            si.input_filter = name
+        else:
+            si.output_filter = name
 
     def on_logging_host(self, tokens):
         self.get_sysloghost_fact(tokens[0])
