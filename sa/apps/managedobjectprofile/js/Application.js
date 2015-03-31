@@ -44,6 +44,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     dataIndex: "name"
                 },
                 {
+                    text: "Level",
+                    dataIndex: "level",
+                    width: 50,
+                    align: "right"
+                },
+                {
                     text: "Ping",
                     dataIndex: "enable_ping",
                     width: 50,
@@ -177,6 +183,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     xtype: "textarea",
                     fieldLabel: "Description",
                     allowBlank: true
+                },
+                {
+                    name: "level",
+                    xtype: "numberfield",
+                    fieldLabel: "Level",
+                    allowBlank: false,
+                    uiStyle: "small"
                 },
                 {
                     name: "style",
