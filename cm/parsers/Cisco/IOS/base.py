@@ -228,9 +228,9 @@ class BaseIOSParser(BasePyParser):
         si = self.get_current_subinterface()
         name = tokens[0]
         if tokens[1] == "in":
-            si.input_filter = name
+            si.input_ipv4_filter = name
         else:
-            si.output_filter = name
+            si.output_ipv4_filter = name
 
     def on_logging_host(self, tokens):
         self.get_sysloghost_fact(tokens[0])

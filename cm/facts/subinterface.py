@@ -15,7 +15,8 @@ class SubInterface(BaseFact):
              "[ipv4_addresses]", "[ipv6_addresses]",
              "ip_proxy_arp", "ip_redirects",
              "[tagged_vlans]", "untagged_vlan",
-             "[protocols]", "[afi]", "input_filter", "output_filter"
+             "[protocols]", "[afi]",
+             "input_ipv4_filter", "output_ipv4_filter"
              ]
     ID = ["name"]
 
@@ -24,7 +25,7 @@ class SubInterface(BaseFact):
                  ip_redirects=False, tagged_vlans=None, 
                  untagged_vlan=None, ipv4_addresses=None,
                  ipv6_addresses=None, protocols=None, afi=None,
-                 input_filter=None, output_filter=None,
+                 input_ipv4_filter=None, output_ipv4_filter=None,
                  **kwargs):
         super(SubInterface, self).__init__()
         self.name = name
@@ -40,8 +41,8 @@ class SubInterface(BaseFact):
         self.untagged_vlan = untagged_vlan
         self.protocols = protocols
         self.afi = afi
-        self.input_filter = input_filter
-        self.output_filter = output_filter
+        self.input_ipv4_filter = input_ipv4_filter
+        self.output_ipv4_filter = output_ipv4_filter
 
     def __unicode__(self):
         return "SubInterface %s" % self.name
@@ -155,17 +156,17 @@ class SubInterface(BaseFact):
             self.afi.remove(afi)
 
     @property
-    def input_filter(self):
-        return self._input_filter
+    def input_ipv4_filter(self):
+        return self._input_ipv4_filter
 
-    @input_filter.setter
-    def input_filter(self, value):
-        self._input_filter = value or []
+    @input_ipv4_filter.setter
+    def input_ipv4_filter(self, value):
+        self._input_ipv4_filter = value or []
 
     @property
-    def output_filter(self):
-        return self._output_filter
+    def output_ipv4_filter(self):
+        return self._output_ipv4_filter
 
-    @output_filter.setter
-    def output_filter(self, value):
-        self._output_filter = value or []
+    @output_ipv4_filter.setter
+    def output_ipv4_filter(self, value):
+        self._output_ipv4_filter = value or []
