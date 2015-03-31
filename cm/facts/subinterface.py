@@ -15,7 +15,7 @@ class SubInterface(BaseFact):
              "[ipv4_addresses]", "[ipv6_addresses]",
              "ip_proxy_arp", "ip_redirects",
              "[tagged_vlans]", "untagged_vlan",
-             "[protocols]", "[afi]"
+             "[protocols]", "[afi]", "input_filter", "output_filter"
              ]
     ID = ["name"]
 
@@ -24,6 +24,7 @@ class SubInterface(BaseFact):
                  ip_redirects=False, tagged_vlans=None, 
                  untagged_vlan=None, ipv4_addresses=None,
                  ipv6_addresses=None, protocols=None, afi=None,
+                 input_filter=None, output_filter=None,
                  **kwargs):
         super(SubInterface, self).__init__()
         self.name = name
@@ -39,6 +40,8 @@ class SubInterface(BaseFact):
         self.untagged_vlan = untagged_vlan
         self.protocols = protocols
         self.afi = afi
+        self.input_filter = input_filter
+        self.output_filter = output_filter
 
     def __unicode__(self):
         return "SubInterface %s" % self.name
@@ -150,3 +153,19 @@ class SubInterface(BaseFact):
     def remove_afi(self, afi):
         if afi in self.afi:
             self.afi.remove(afi)
+
+    @property
+    def input_filter(self):
+        return self._input_filter
+
+    @input_filter.setter
+    def input_filter(self, value):
+        self._input_filter = value or []
+
+    @property
+    def output_filter(self):
+        return self._output_filter
+
+    @output_filter.setter
+    def output_filter(self, value):
+        self._output_filter = value or []
