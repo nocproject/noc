@@ -73,6 +73,7 @@ class BaseIOSParser(BasePyParser):
         INTERFACE_ACL = Literal("ip access-group") + (Word(alphanums + "-_") + (Literal("in") | Literal("out"))).setParseAction(self.on_interface_acl)
         INTERFACE_ISIS = Literal("ip router isis").setParseAction(self.on_interface_isis)
         INTERFACE_ISIS_METRIC = Literal("isis metric") + (Word(nums) + Optional(Literal("level-1") | Literal("level-2"))).setParseAction(self.on_interface_isis_metric)
+        INTERFACE_ISIS_PTP = Literal("isis network point-to-point").setParseAction(self.on_interface_isis_ptp)
         INTERFACE_BLOCK = INTERFACE + ZeroOrMore(INDENT + (
             INTERFACE_DESCRIPTION |
             INTERFACE_ADDRESS_SECONDARY |
@@ -87,6 +88,7 @@ class BaseIOSParser(BasePyParser):
             INTERFACE_CDP |
             INTERFACE_ISIS |
             INTERFACE_ISIS_METRIC |
+            INTERFACE_ISIS_PTP |
             INTERFACE_ACL |
             LINE
         ))
@@ -257,6 +259,10 @@ class BaseIOSParser(BasePyParser):
             si.isis_l1_metric = metric
         if len(tokens) == 1 or tokens[-1] == "level-2":
             si.isis_l2_metric = metric
+
+    def on_interface_isis_ptp(self, tokens):
+        si = self.get_current_subinterface()
+        si.isis_ptp = True
 
     def on_logging_host(self, tokens):
         self.get_sysloghost_fact(tokens[0])
