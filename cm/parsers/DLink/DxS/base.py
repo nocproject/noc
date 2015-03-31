@@ -43,6 +43,8 @@ class BaseDLinkParser(BaseParser):
                 self.get_service_fact("password_encryption").enabled = False
             elif l.startswith("enable password encryption"):
                 self.get_service_fact("password_encryption").enabled = True
+            elif l.startswith("config snmp "):
+                self.parse_config_snmp(ll)
             elif len(ll) > 1 and ll[0] in ("enable", "disable"):
                 if ll[1] in self.STATUSES:
                     self.statuses[ll[1]] = ll[0] == "enable"
@@ -207,6 +209,16 @@ class BaseDLinkParser(BaseParser):
         secondary = self.next_item(tokens, "secondary")
         if secondary:
             self.get_ntpserver_fact(secondary)
+
+    def parse_config_snmp(self, tokens):
+        """
+        config snmp system_name <name>
+        config snmp system_location <name>
+        """
+        if tokens[2] == "system_name":
+            self.get_system_fact().hostname = tokens[3]
+        elif tokens[2] == "system_location":
+            self.get_system_fact().location = tokens[3]
 
 
 # Port expression parser
