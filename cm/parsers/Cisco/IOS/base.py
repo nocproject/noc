@@ -98,6 +98,9 @@ class BaseIOSParser(BasePyParser):
         # NTP
         NTP_SERVER = LineStart() + Literal("ntp") + Literal("server") + IPv4_ADDRESS.copy().setParseAction(self.on_ntp_server)
         NTP_BLOCK = NTP_SERVER
+        # HTTP
+        HTTPS_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http secure-server")).setParseAction(self.on_http_server)
+        HTTP_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http server")).setParseAction(self.on_https_server)
 
         CONFIG = (
             INTERFACE_BLOCK |
@@ -106,6 +109,8 @@ class BaseIOSParser(BasePyParser):
             VLAN_BLOCK |
             LOGGING_BLOCK |
             NTP_BLOCK |
+            HTTPS_SERVER |
+            HTTP_SERVER |
             LINE
         )
         return CONFIG
@@ -268,3 +273,9 @@ class BaseIOSParser(BasePyParser):
 
     def on_vlan_name(self, tokens):
         self.get_current_vlan().name = tokens[0]
+
+    def on_http_server(self, tokens):
+        self.get_service_fact("http").enabled = tokens[0] != "no"
+
+    def on_https_server(self, tokens):
+        self.get_service_fact("https").enabled = tokens[0] != "no"
