@@ -23,7 +23,7 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
 
         me.revalidateButton = Ext.create("Ext.button.Button", {
             text: "Revalidate",
-            glyph: NOC.glyph.refresh,
+            glyph: NOC.glyph.check_circle,
             scope: me,
             handler: me.onRevalidate
         });
