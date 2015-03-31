@@ -19,7 +19,44 @@ class PostgresProbe(Probe):
     TITLE = "Postgres"
     DESCRIPTION = "Postgres server statistics"
     TAGS = ["db", "postgres"]
-    CONFIG_FORM = "PostgresConfig"
+    CONFIG_FORM = [
+        {
+            "name": "host",
+            "xtype": "textfield",
+            "fieldLabel": "Host",
+            "allowBlank": False,
+            "uiStyle": "medium"
+        },
+        {
+            "name": "port",
+            "xtype": "numberfield",
+            "fieldLabel": "Port",
+            "allowBlank": True,
+            "uiStyle": "small",
+            "hideTrigger": True
+        },
+        {
+            "name": "database",
+            "xtype": "textfield",
+            "fieldLabel": "database",
+            "allowBlank": False,
+            "uiStyle": "medium"
+        },
+        {
+            "name": "user",
+            "xtype": "textfield",
+            "fieldLabel": "user",
+            "allowBlank": True,
+            "uiStyle": "medium"
+        },
+        {
+            "name": "password",
+            "xtype": "textfield",
+            "fieldLabel": "password",
+            "allowBlank": True,
+            "uiStyle": "medium"
+        }
+    ]
 
     DB_STATS_FIELDS = {
         "numbackends":  "DB | Connections | Current",
