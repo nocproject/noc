@@ -31,13 +31,13 @@ class BaseIOSParser(BasePyParser):
     def create_parser(self):
         # System
         HOSTNAME = LineStart() + Literal("hostname") + REST.copy().setParseAction(self.on_hostname)
-        DOMAIN_NAME = LineStart() + Literal("ip") + Literal("domain-name") + REST.copy().setParseAction(self.on_domain_name)
-        TIMEZONE = LineStart() + Literal("clock") + Literal("timezone") + REST.copy().setParseAction(self.on_timezone)
-        NAMESERVER = LineStart() + Literal("ip") + Literal("name-server") + REST.copy().setParseAction(self.on_nameserver)
+        DOMAIN_NAME = LineStart() + Literal("ip domain-name") + REST.copy().setParseAction(self.on_domain_name)
+        TIMEZONE = LineStart() + Literal("clock timezone") + REST.copy().setParseAction(self.on_timezone)
+        NAMESERVER = LineStart() + Literal("ip name-server") + REST.copy().setParseAction(self.on_nameserver)
         USER = LineStart() + Literal("username") + (Word(alphanums + "-_") + Optional(Literal("privilege") + DIGITS)).setParseAction(self.on_user) + REST
         CDP_RUN = LineStart() + (Optional(Literal("no")) + Literal("cdp") + Literal("run")).setParseAction(self.on_cdp_run)
         SERVICE = LineStart() + (Optional(Literal("no")) + Literal("service") + Word(alphanums + "-") + restOfLine).setParseAction(self.on_service)
-        SSH_VERSION = LineStart() + Literal("ip") + Literal("ssh") + Literal("version") + (Word(nums) + restOfLine).setParseAction(self.on_ssh_version)
+        SSH_VERSION = LineStart() + Literal("ip ssh version") + (Word(nums) + restOfLine).setParseAction(self.on_ssh_version)
         SYSTEM_BLOCK = (
             HOSTNAME |
             DOMAIN_NAME |
@@ -56,10 +56,11 @@ class BaseIOSParser(BasePyParser):
         # Interface
         INTERFACE = LineStart() + Literal("interface") + REST.copy().setParseAction(self.on_interface)
         INTERFACE_DESCRIPTION = Literal("description") + REST.copy().setParseAction(self.on_interface_descripion)
-        INTERFACE_ADDRESS = Literal("ip") + Literal("address") + (IPv4_ADDRESS("address") + IPv4_ADDRESS("mask") + Optional(Literal("secondary"))).setParseAction(self.on_interface_address)
+        INTERFACE_ADDRESS = Literal("ip address") + (IPv4_ADDRESS("address") + IPv4_ADDRESS("mask")).setParseAction(self.on_interface_address)
+        INTERFACE_ADDRESS_SECONDARY = Literal("ip address") + (IPv4_ADDRESS("address") + IPv4_ADDRESS("mask") + Literal("secondary")).setParseAction(self.on_interface_address)
         INTERFACE_SHUTDOWN = (Optional(Literal("no")) + Literal("shutdown")).setParseAction(self.on_interface_shutdown)
-        INTERFACE_REDIRECTS = (Optional(Literal("no")) + Literal("ip") + Literal("redirects")).setParseAction(self.on_interface_redirects)
-        INTERFACE_PROXY_ARP = (Optional(Literal("no")) + Literal("ip") + Literal("proxy-arp")).setParseAction(self.on_interface_proxy_arp)
+        INTERFACE_REDIRECTS = (Optional(Literal("no")) + Literal("ip redirects")).setParseAction(self.on_interface_redirects)
+        INTERFACE_PROXY_ARP = (Optional(Literal("no")) + Literal("ip proxy-arp")).setParseAction(self.on_interface_proxy_arp)
         INTERFACE_SPEED = Literal("speed") + ALPHANUMS.copy().setParseAction(self.on_interface_speed)
         INTERFACE_DUPLEX = Literal("duplex") + ALPHANUMS.copy().setParseAction(self.on_interface_duplex)
         INTERFACE_UNTAGGED = Literal("switchport") + Literal("access") + Literal("vlan") + DIGITS.copy().setParseAction(self.on_interface_untagged)
@@ -68,10 +69,13 @@ class BaseIOSParser(BasePyParser):
             Literal("allowed") + Literal("vlan") +
             REST.copy().setParseAction(self.on_interface_tagged)
         )
-        INTERFACE_CDP = (Optional(Literal("no")) + Literal("cdp") + Literal("enable")).setParseAction(self.on_interface_cdp)
-        INTERFACE_ACL = Literal("ip") + Literal("access-group") + (Word(alphanums + "-_") + (Literal("in") | Literal("out"))).setParseAction(self.on_interface_acl)
+        INTERFACE_CDP = (Optional(Literal("no")) + Literal("cdp enable")).setParseAction(self.on_interface_cdp)
+        INTERFACE_ACL = Literal("ip access-group") + (Word(alphanums + "-_") + (Literal("in") | Literal("out"))).setParseAction(self.on_interface_acl)
+        INTERFACE_ISIS = Literal("ip router isis").setParseAction(self.on_interface_isis)
+        INTERFACE_ISIS_METRIC = Literal("isis metric") + (Word(nums) + Optional(Literal("level-1") | Literal("level-2"))).setParseAction(self.on_interface_isis_metric)
         INTERFACE_BLOCK = INTERFACE + ZeroOrMore(INDENT + (
             INTERFACE_DESCRIPTION |
+            INTERFACE_ADDRESS_SECONDARY |
             INTERFACE_ADDRESS |
             INTERFACE_SHUTDOWN |
             INTERFACE_REDIRECTS |
@@ -81,9 +85,13 @@ class BaseIOSParser(BasePyParser):
             INTERFACE_UNTAGGED |
             INTERFACE_TAGGED |
             INTERFACE_CDP |
+            INTERFACE_ISIS |
+            INTERFACE_ISIS_METRIC |
             INTERFACE_ACL |
             LINE
         ))
+
+        #INTERFACE_ADDRESS.setDebug()
         # Logging
         LOGGING_HOST = LineStart() + Literal("logging") + IPv4_ADDRESS.copy().setParseAction(self.on_logging_host)
         LOGGING_BLOCK = LOGGING_HOST
@@ -92,12 +100,13 @@ class BaseIOSParser(BasePyParser):
         NTP_BLOCK = NTP_SERVER
 
         CONFIG = (
+            INTERFACE_BLOCK |
             SYSTEM_BLOCK |
             VLAN_RANGE |
             VLAN_BLOCK |
-            INTERFACE_BLOCK |
             LOGGING_BLOCK |
-            NTP_BLOCK
+            NTP_BLOCK |
+            LINE
         )
         return CONFIG
 
@@ -231,6 +240,18 @@ class BaseIOSParser(BasePyParser):
             si.input_ipv4_filter = name
         else:
             si.output_ipv4_filter = name
+
+    def on_interface_isis(self, tokens):
+        si = self.get_current_subinterface()
+        si.add_afi("ISO")
+
+    def on_interface_isis_metric(self, tokens):
+        si = self.get_current_subinterface()
+        metric = int(tokens[0])
+        if len(tokens) == 1 or tokens[-1] == "level-1":
+            si.isis_l1_metric = metric
+        if len(tokens) == 1 or tokens[-1] == "level-2":
+            si.isis_l2_metric = metric
 
     def on_logging_host(self, tokens):
         self.get_sysloghost_fact(tokens[0])
