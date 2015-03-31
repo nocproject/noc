@@ -360,5 +360,31 @@ class Engine(object):
         else:
             self.logger.debug("Nothing changed")
 
+    def compile_query(self, **kwargs):
+        def wrap(x):
+            for k in kwargs:
+                if getattr(x, k) != kwargs[k]:
+                    return False
+            return True
+
+        return wrap
+
+    def find(self, **kwargs):
+        """
+        Search facts for match. Returns a list of matching facts
+        """
+        q = self.compile_query(**kwargs)
+        return [f for f in self.facts.itervalues() if q(f)]
+
+    def find_one(self, **kwargs):
+        """
+        Search for first matching fact. Returns fact or None
+        """
+        q = self.compile_query(**kwargs)
+        for f in self.facts.itervalues():
+            if q(f):
+                return f
+        return None
+
 #
 from noc.cm.validators.base import BaseValidator
