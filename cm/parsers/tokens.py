@@ -27,5 +27,6 @@ ALPHANUMS = Word(alphanums)
 OCTET = Word(nums, max=3)
 # IPv4 address
 IPv4_ADDRESS = Combine(OCTET + "." + OCTET + "." + OCTET + "." + OCTET)
-
+# RD
+RD = Combine(Word(nums) + Word(":") + Word(nums))
 

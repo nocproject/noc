@@ -13,7 +13,7 @@ from pyparsing import *
 ## NOC modules
 from noc.lib.ip import IPv4
 from noc.cm.parsers.pyparser import BasePyParser
-from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
+from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS, RD
 from noc.lib.text import ranges_to_list
 
 
@@ -104,6 +104,13 @@ class BaseIOSParser(BasePyParser):
         HTTPS_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http secure-server")).setParseAction(self.on_http_server)
         HTTP_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http server")).setParseAction(self.on_https_server)
 
+        # VRF
+        VRF_NAME = LineStart() + Literal("ip vrf") + Word(alphanums + "_-.").setParseAction(self.on_vrf_name)
+        VRF_RD = Literal("rd") + RD("rd").setParseAction(self.on_vrf_rd)
+        VRF_BLOCK = VRF_NAME + ZeroOrMore(INDENT + (
+            VRF_RD
+        ))
+
         CONFIG = (
             INTERFACE_BLOCK |
             SYSTEM_BLOCK |
@@ -113,6 +120,7 @@ class BaseIOSParser(BasePyParser):
             NTP_BLOCK |
             HTTPS_SERVER |
             HTTP_SERVER |
+            VRF_BLOCK |
             LINE
         )
         return CONFIG
@@ -285,3 +293,9 @@ class BaseIOSParser(BasePyParser):
 
     def on_https_server(self, tokens):
         self.get_service_fact("https").enabled = tokens[0] != "no"
+
+    def on_vrf_name(self, tokens):
+        self.get_vrf_fact(tokens[0])
+
+    def on_vrf_rd(self, tokens):
+        self.current_vrf.rd = tokens[0]
