@@ -15,6 +15,7 @@ from noc.cm.facts.ntpserver import NTPServer
 from noc.cm.facts.user import User
 from noc.cm.facts.vlan import VLAN
 from noc.cm.facts.service import Service
+from noc.cm.facts.vrf import VRF
 
 
 class BaseParser(object):
@@ -29,10 +30,12 @@ class BaseParser(object):
         self.user_facts = {}
         self.vlan_facts = {}
         self.service_facts = {}
+        self.vrf_facts = {}
         self.current_interface = None
         self.current_subinterface = None
         self.current_vlan = None
         self.current_service = None
+        self.current_vrf = None
         # Offsets of interface config sections
         # <interface name> -> [(start, end), .., (start, end)]
         self.interface_ranges = {}
@@ -172,6 +175,19 @@ class BaseParser(object):
         Returns last get_service_fact call
         """
         return self.current_service
+
+    def get_vrf_fact(self, name):
+        if name not in self.vrf_facts:
+            self.vrf_facts[name] = VRF(name)
+            self.yield_fact(self.vrf_facts[name])
+        self.current_vrf = self.vrf_facts[name]
+        return self.current_vrf
+
+    def get_current_vrf(self):
+        """
+        Returns last get_vrf_fact call
+        """
+        return self.current_vrf
 
     def register_interface_section(self, name, start, end):
         """
