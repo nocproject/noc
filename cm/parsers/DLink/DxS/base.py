@@ -22,6 +22,7 @@ class BaseDLinkParser(BaseParser):
     def parse(self, config):
         # Various protocol statuses
         self.statuses = defaultdict(lambda: False)
+        self.vlan_ids = {}  # name -> id
         for l in config.splitlines():
             if not l or l.startswith("#"):
                 continue
@@ -30,6 +31,8 @@ class BaseDLinkParser(BaseParser):
                 self.parse_config_ports(ll)
             elif l.startswith("create vlan "):
                 self.parse_create_vlan(ll)
+            elif l.startswith("config vlan vlanid "):
+                self.parse_config_vlan_vlanid(ll)
             elif l.startswith("config vlan "):
                 self.parse_config_vlan(ll)
             elif l.startswith("create account "):
@@ -128,21 +131,51 @@ class BaseDLinkParser(BaseParser):
             if desc:
                 iface.description = desc
 
+    def get_vlan_fact(self, id):
+        return super(BaseDLinkParser, self).get_vlan_fact(
+            self.vlan_ids.get(id, id)
+        )
+
     def parse_create_vlan(self, tokens):
         """
         create vlan 306 tag 306
         """
         tag = self.next_item(tokens, "tag")
         if tag:
-            self.get_vlan_fact(int(tag)).name = tokens[2]
+            name = self.next_item(tokens, "vlan")
+            vid = int(tag)
+            self.get_vlan_fact(vid).name = name
+            self.vlan_ids[tag] = vid
+            self.vlan_ids[name] = vid
+
+    def parse_config_vlan_vlanid(self, tokens):
+        """
+        config vlan vlanid 601-603,605 add tagged 2,12,28
+        """
+        tagged = self.next_item(tokens, "tagged")
+        if tagged:
+            tv = [self.get_subinterface_fact(t) for p in self.iter_ports(tagged)]
+        else:
+            tv = []
+        untagged = self.next_item(tokens, "untagged")
+        if untagged:
+            uv = [self.get_subinterface_fact(p) for p in self.iter_ports(untagged)]
+        else:
+            uv = []
+        for vid in self.iter_ports(tokens[3]):
+            for f in tv:
+                f.tagged_vlans += [vid]
+            for f in uv:
+                f.untagged_vlan = vid
 
     def parse_config_vlan(self, tokens):
         """
         config vlan 307 add tagged 1:1,1:5,2:21-2:22 advertisement disable
+        config vlan vlan307 add tagged 1:1,1:5,2:21-2:22 advertisement disable
         """
         if tokens[2] == "default":
             return
-        vid = int(tokens[2])
+        vid = int(self.vlan_ids.get(tokens[2], tokens[2]))
         tagged = self.next_item(tokens, "tagged")
         if tagged:
             for i in self.iter_ports(tagged):
