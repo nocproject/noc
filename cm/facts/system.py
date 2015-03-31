@@ -14,12 +14,12 @@ class System(BaseFact):
     ATTRS = ["hostname", "domain_name", "profile",
              "vendor", "platform", "version", "timezone",
              "[nameservers]", "managed_object_name", "object_profile",
-             "level"]
+             "level", "location"]
 
     def __init__(self, hostname=None, domain_name=False, profile=None,
                  vendor=None, platform=None, version=None,
                  timezone=None, nameservers=None, object_profile=None,
-                 level=None,
+                 level=None, location=None,
                  **kwargs):
         super(System, self).__init__()
         self.hostname = hostname
@@ -33,6 +33,7 @@ class System(BaseFact):
         self.managed_object_name = None
         self.object_profile = object_profile
         self.level = level
+        self.location = location
 
     @property
     def hostname(self):
@@ -121,6 +122,14 @@ class System(BaseFact):
     @level.setter
     def level(self, value):
         self._level = value
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, value):
+        self._location = value
 
     def bind(self):
         self.managed_object_name = self.managed_object.name
