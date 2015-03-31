@@ -8,3 +8,5 @@ Interface | CDP Enabled,c65aced9-ec4b-457d-b9a7-1c1e86860eff,Interface/CDP_Enabl
 Interface | No Description,0f16d7c3-d06c-4959-9208-f2ad3951b09c,Interface/No_Description.json,3669810a0744cb922cf59afc883b2a8b340ed2b7d98344f58a6e09b46d20069f
 Service | Enabled,93b907f1-a7c4-470e-9528-db3122446510,Service/Enabled.json,945edd138ab4f21606065dbd65852a6867f3d9e8d19e9475ed93b669b804a45b
 System | Hostname Mismatches DB,31bb4277-65c8-49dc-bb41-3228b0b22ce2,System/Hostname_Mismatches_DB.json,6c57f2ab75351a3c3bfe4c07b4f6ddea12af7410e38b9b1044705c55b0cb0f43
+System | Hostname Mismatches Regexp,df1e4852-235b-4211-a307-583040b02681,System/Hostname_Mismatches_Regexp.json,350aa0d84deeef6078d20e66859b25d5db2c005d0d8d279069860ca04d17e274
+Validator | Internal Error,20852593-d198-486b-8f0e-ea0da8b17002,Validator/Internal_Error.json,637c757aba1d287c16d997b8d9f6d04a5d5ea358e131c329244fcf54ce981373
