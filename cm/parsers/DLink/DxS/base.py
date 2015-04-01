@@ -156,7 +156,7 @@ class BaseDLinkParser(BaseParser):
         """
         tagged = self.next_item(tokens, "tagged")
         if tagged:
-            tv = [self.get_subinterface_fact(t) for p in self.iter_ports(tagged)]
+            tv = [self.get_subinterface_fact(p) for p in self.iter_ports(tagged)]
         else:
             tv = []
         untagged = self.next_item(tokens, "untagged")
