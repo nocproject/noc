@@ -17,10 +17,13 @@ from django.core.cache import cache
 from django.http import HttpResponse
 ## Third-party modules
 import pytz
-from reportlab.graphics.shapes import Drawing
-from reportlab.graphics.charts.lineplots import LinePlot
-from reportlab.graphics.charts.legends import LineLegend
-from reportlab.lib.colors import Color
+try:
+    from reportlab.graphics.shapes import Drawing
+    from reportlab.graphics.charts.lineplots import LinePlot
+    from reportlab.graphics.charts.legends import LineLegend
+    from reportlab.lib.colors import Color
+except ImportError:
+    pass
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces.base import (StringParameter, IntParameter,
