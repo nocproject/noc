@@ -43,6 +43,8 @@ class BaseDLinkParser(BaseParser):
                 self.get_service_fact("password_encryption").enabled = False
             elif l.startswith("enable password encryption"):
                 self.get_service_fact("password_encryption").enabled = True
+            elif l.startswith("create syslog host "):
+                self.parse_syslog_host(ll)
             elif l.startswith("config snmp "):
                 self.parse_config_snmp(ll)
             elif len(ll) > 1 and ll[0] in ("enable", "disable"):
@@ -219,6 +221,16 @@ class BaseDLinkParser(BaseParser):
             self.get_system_fact().hostname = tokens[3]
         elif tokens[2] == "system_location":
             self.get_system_fact().location = tokens[3]
+
+    def parse_syslog_host(self, tokens):
+        """
+        create syslog host 1 severity informational facility local7 udp_port 514 ipaddress 10.101.10.1 state enable
+        """
+        if self.next_item(tokens, "state") != "enable":
+            return
+        address = self.next_item(tokens, "ipaddress")
+        if address:
+            self.get_sysloghost_fact(address)
 
 
 # Port expression parser
