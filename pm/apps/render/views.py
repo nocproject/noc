@@ -12,12 +12,15 @@ import time
 import csv
 import datetime
 import cPickle as pickle
-from cStringIO import StringIO
 ## Django modules
 from django.core.cache import cache
 from django.http import HttpResponse
 ## Third-party modules
 import pytz
+from reportlab.graphics.shapes import Drawing
+from reportlab.graphics.charts.lineplots import LinePlot
+from reportlab.graphics.charts.legends import LineLegend
+from reportlab.lib.colors import Color
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces.base import (StringParameter, IntParameter,
@@ -25,6 +28,7 @@ from noc.sa.interfaces.base import (StringParameter, IntParameter,
 from settings import config, TIME_ZONE
 from noc.lib.serialize import json_encode
 from data import TimeSeries
+from noc.lib.colors import get_float_pallete
 ## Graphite contribution
 from graphite.glyph import GraphTypes
 from graphite.attime import parseATTime
@@ -41,6 +45,11 @@ class RenderApplication(ExtApplication):
 
     DEFAULT_GRAPH_WIDTH = 330
     DEFAULT_GRAPH_HEIGTH = 250
+
+    # Empty space around the borders of chart
+    X_PADDING = 10
+    Y_PADDING = 10
+    #
 
     @view(url="^$", method=["GET"], access="launch",
           validate={
@@ -255,25 +264,45 @@ class RenderApplication(ExtApplication):
         return response
 
     def render_graph(self, request_opts, graph_opts):
-        return self.response_bad_request("Server-side rendering is not implemented yet")
-        # Render PNG
-        out = StringIO()
-        img = request_opts["graphClass"](**graph_opts)
-        img.output(out)
-        img_data = out.getvalue()
-        out.close()
-        #
-        use_svg = graph_opts.get("outputFormat") == "svg"
-        if use_svg and request_opts.get("jsonp") is not None:
-            response = HttpResponse(
-                content="%s(%s)" % (
-                    request_opts["jsonp"], json_encode(img_data)),
-                mimetype='text/javascript')
-        else:
-            response = HttpResponse(
-                content=img_data,
-                mimetype="image/svg+xml" if use_svg else "image/png"
-            )
+        def label_fmt(x):
+            print "@@@", x
+            return str(x)
+
+        ld = len(graph_opts["data"])
+        palette = [Color(*x) for x in get_float_pallete(ld)]
+        w = graph_opts["width"]
+        h = graph_opts["height"]
+        drawing = Drawing(w, h)
+        # Legend
+        legend = LineLegend()
+        legend.colorNamePairs = [
+            (palette[i], graph_opts["data"][i].name)
+            for i in range(ld)
+        ]
+        legend.boxAnchor = "sw"
+        legend.columnMaximum = 2
+        legend.alignment = "right"
+        drawing.add(legend)
+        lh = legend._calcHeight() + self.X_PADDING / 2
+        # Plot
+        lp = LinePlot()
+        lfs = lp.xValueAxis.labels.fontSize
+        lp.x = self.X_PADDING
+        lp.y = self.Y_PADDING + lh + lfs
+        lp.width = w - 2 * self.X_PADDING
+        lp.height = h - self.Y_PADDING - lp.y
+        lp.data = [
+            [(t, v) for v, t in ts] for ts in graph_opts["data"]
+        ]
+        for i in range(ld):
+            lp.lines[i].strokeColor = palette[i]
+        drawing.add(lp)
+        # Render
+        cdata = drawing.asString(format="png")
+        response = self.render_plain_text(
+            cdata,
+            mimetype="image/png"
+        )
         if not request_opts["noCache"]:
             cache.set(request_opts["requestKey"], response,
                       request_opts["cacheTimeout"])
