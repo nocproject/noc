@@ -77,7 +77,6 @@ class RouterOSParser(BasePyParser):
         return r
 
     def on_set(self, tokens):
-        print "@SET", self.context, tokens
         if self.set_handler:
             if isinstance(tokens[0], basestring) or tokens[0][0] == "find":
                 name = tokens[0]
@@ -85,13 +84,11 @@ class RouterOSParser(BasePyParser):
             else:
                 name = None
                 args = self.parse_kvp(tokens)
-            print "@>", self.set_handler, name, args
             self.set_handler(name, args)
 
     def on_add(self, tokens):
-        print "@ADD", self.context, tokens
         if self.add_handler:
-            self.add_handler(tokens)
+            self.add_handler(self.parse_kvp(tokens))
 
     def on_system_identity_set(self, name, args):
         """
@@ -106,7 +103,6 @@ class RouterOSParser(BasePyParser):
         /system clock manual
         set time-zone=+04:00
         """
-        print "@@@@ CLOCK", args
         if "time-zone" in args:
             self.get_system_fact().timezone = args["time-zone"]
 
@@ -142,3 +138,14 @@ class RouterOSParser(BasePyParser):
             iface.description = args["comment"]
         if "disabled" in args:
             iface.admin_status = args["disabled"] != "yes"
+
+    def on_ip_route_add(self, args):
+        if args.get("disabled", "no") != "no":
+            return
+        if "dst-address" not in args:
+            return
+        f = self.get_static_route_fact(args["dst-address"])
+        if "gateway" in args:
+            f.next_hop = args["gateway"]
+        if "distance" in args:
+            f.distance = args["distance"]
