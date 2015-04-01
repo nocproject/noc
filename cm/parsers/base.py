@@ -16,6 +16,7 @@ from noc.cm.facts.user import User
 from noc.cm.facts.vlan import VLAN
 from noc.cm.facts.service import Service
 from noc.cm.facts.vrf import VRF
+from noc.cm.facts.staticroute import StaticRoute
 
 
 class BaseParser(object):
@@ -198,3 +199,8 @@ class BaseParser(object):
             self.interface_ranges[name] += [(start, end)]
         else:
             self.interface_ranges[name] = [(start, end)]
+
+    def get_static_route_fact(self, prefix):
+        f = StaticRoute(prefix=prefix)
+        self.yield_fact(f)
+        return f

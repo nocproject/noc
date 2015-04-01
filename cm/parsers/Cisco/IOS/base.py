@@ -15,6 +15,7 @@ from noc.lib.ip import IPv4
 from noc.cm.parsers.pyparser import BasePyParser
 from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS, RD
 from noc.lib.text import ranges_to_list
+from noc.lib.validators import is_ipv4, is_int
 
 
 class BaseIOSParser(BasePyParser):
@@ -111,6 +112,8 @@ class BaseIOSParser(BasePyParser):
             VRF_RD |
             LINE
         ))
+        # Static Route
+        STATIC_ROUTE = LineStart() + Literal("ip route") + (IPv4_ADDRESS("net") + IPv4_ADDRESS("mask") + REST).setParseAction(self.on_ipv4_route)
 
         CONFIG = (
             INTERFACE_BLOCK |
@@ -120,6 +123,7 @@ class BaseIOSParser(BasePyParser):
             LOGGING_BLOCK |
             NTP_BLOCK |
             VRF_BLOCK |
+            STATIC_ROUTE |
             LINE
         )
         return CONFIG
@@ -298,3 +302,25 @@ class BaseIOSParser(BasePyParser):
 
     def on_vrf_rd(self, tokens):
         self.current_vrf.rd = tokens[0]
+
+    def on_ipv4_route(self, tokens):
+        print "@@@@ ip route", tokens
+        p = IPv4(tokens[0], netmask=tokens[1])
+        sf = self.get_static_route_fact(str(p))
+        rest = tokens[2].split()
+        nh = rest.pop(0)
+        if is_ipv4(nh):
+            sf.next_hop = nh
+        else:
+            sf.interface = self.convert_interface_name(nh)
+        if rest and is_int(rest[0]):
+            sf.distance = rest.pop(0)
+        while rest:
+            if rest[0] == "name":
+                sf.description = rest[1]
+                rest = rest[2:]
+            elif rest[0] == "tag":
+                sf.tag = rest[1]
+                rest = rest[2:]
+            else:
+                break
