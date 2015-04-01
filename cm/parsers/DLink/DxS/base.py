@@ -238,11 +238,16 @@ class BaseDLinkParser(BaseParser):
 
     def parse_iproute(self, tokens):
         """
+        create iproute default 10.254.10.129 1
         create iproute 10.0.0.0/255.252.0.0 null0
         create iproute 10.125.0.0/255.255.255.0 10.125.0.1 1 primary
         """
-        net, mask = tokens[2].split("/")
-        f = self.get_static_route_fact(str(IPv4(net, netmask=mask)))
+        if tokens[2] == "default":
+            prefix = "0.0.0.0/0"
+        else:
+            net, mask = tokens[2].split("/")
+            prefix = str(IPv4(net, netmask=mask))
+        f = self.get_static_route_fact(prefix)
         if is_ipv4(tokens[3]):
             f.next_hop = tokens[3]
         else:
