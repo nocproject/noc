@@ -51,6 +51,8 @@ class StaticRoute(BaseFact):
     
     @afi.setter
     def afi(self, value):
+        if value is None and self.prefix:
+            return
         self._afi = value or None
 
     @property
