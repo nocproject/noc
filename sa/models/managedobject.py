@@ -40,6 +40,7 @@ from noc.settings import config
 from noc.lib.solutions import get_probe_config
 from noc.inv.discovery.utils import get_active_discovery_methods
 from noc.lib.solutions import get_solution
+from noc.lib.debug import error_report
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
@@ -534,6 +535,7 @@ class ManagedObject(models.Model):
             data = self.config_filter_rule(
                 managed_object=self, config=data)
         # Pass data through the validation filter, if given
+        # @todo: Remove
         if self.config_validation_rule:
             warnings = self.config_validation_rule(
                 managed_object=self, config=data)
@@ -582,6 +584,14 @@ class ManagedObject(models.Model):
         )
         # Save config
         self.config.write(data)
+        # Run config validation
+        from noc.cm.engine import Engine
+        engine = Engine(self)
+        try:
+            engine.check()
+        except:
+            logger.error("Failed to validate config for %s", self.name)
+            error_report()
 
     @property
     def credentials(self):
