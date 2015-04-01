@@ -13,6 +13,8 @@ from pyparsing import nums, Word, Group, Optional, Suppress, Combine,\
     Literal, delimitedList
 ## NOC modules
 from noc.cm.parsers.base import BaseParser
+from noc.lib.ip import IPv4
+from noc.lib.validators import is_ipv4
 
 
 class BaseDLinkParser(BaseParser):
@@ -45,6 +47,8 @@ class BaseDLinkParser(BaseParser):
                 self.get_service_fact("password_encryption").enabled = True
             elif l.startswith("create syslog host "):
                 self.parse_syslog_host(ll)
+            elif l.startswith("create iproute "):
+                self.parse_iproute(ll)
             elif l.startswith("config snmp "):
                 self.parse_config_snmp(ll)
             elif len(ll) > 1 and ll[0] in ("enable", "disable"):
@@ -232,6 +236,17 @@ class BaseDLinkParser(BaseParser):
         if address:
             self.get_sysloghost_fact(address)
 
+    def parse_iproute(self, tokens):
+        """
+        create iproute 10.0.0.0/255.252.0.0 null0
+        create iproute 10.125.0.0/255.255.255.0 10.125.0.1 1 primary
+        """
+        net, mask = tokens[2].split("/")
+        f = self.get_static_route_fact(str(IPv4(net, netmask=mask)))
+        if is_ipv4(tokens[3]):
+            f.next_hop = tokens[3]
+        else:
+            f.interface = tokens[3]
 
 # Port expression parser
 DIGITS = Word(nums)
