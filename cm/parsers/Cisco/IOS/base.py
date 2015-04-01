@@ -38,6 +38,9 @@ class BaseIOSParser(BasePyParser):
         CDP_RUN = LineStart() + (Optional(Literal("no")) + Literal("cdp") + Literal("run")).setParseAction(self.on_cdp_run)
         SERVICE = LineStart() + (Optional(Literal("no")) + Literal("service") + Word(alphanums + "-") + restOfLine).setParseAction(self.on_service)
         SSH_VERSION = LineStart() + Literal("ip ssh version") + (Word(nums) + restOfLine).setParseAction(self.on_ssh_version)
+        HTTPS_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http secure-server")).setParseAction(self.on_http_server)
+        HTTP_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http server")).setParseAction(self.on_https_server)
+
         SYSTEM_BLOCK = (
             HOSTNAME |
             DOMAIN_NAME |
@@ -46,7 +49,9 @@ class BaseIOSParser(BasePyParser):
             USER |
             CDP_RUN |
             SERVICE |
-            SSH_VERSION
+            SSH_VERSION |
+            HTTPS_SERVER |
+            HTTP_SERVER
         )
         # VLAN
         VLAN_RANGE = LineStart() + Literal("vlan") + Combine(DIGITS + Word("-,") + restOfLine).setParseAction(self.on_vlan_range)
@@ -93,22 +98,18 @@ class BaseIOSParser(BasePyParser):
             LINE
         ))
 
-        #INTERFACE_ADDRESS.setDebug()
         # Logging
         LOGGING_HOST = LineStart() + Literal("logging") + IPv4_ADDRESS.copy().setParseAction(self.on_logging_host)
         LOGGING_BLOCK = LOGGING_HOST
         # NTP
         NTP_SERVER = LineStart() + Literal("ntp") + Literal("server") + IPv4_ADDRESS.copy().setParseAction(self.on_ntp_server)
         NTP_BLOCK = NTP_SERVER
-        # HTTP
-        HTTPS_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http secure-server")).setParseAction(self.on_http_server)
-        HTTP_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http server")).setParseAction(self.on_https_server)
-
         # VRF
         VRF_NAME = LineStart() + Literal("ip vrf") + Word(alphanums + "_-.").setParseAction(self.on_vrf_name)
         VRF_RD = Literal("rd") + RD("rd").setParseAction(self.on_vrf_rd)
         VRF_BLOCK = VRF_NAME + ZeroOrMore(INDENT + (
-            VRF_RD
+            VRF_RD |
+            LINE
         ))
 
         CONFIG = (
@@ -118,8 +119,6 @@ class BaseIOSParser(BasePyParser):
             VLAN_BLOCK |
             LOGGING_BLOCK |
             NTP_BLOCK |
-            HTTPS_SERVER |
-            HTTP_SERVER |
             VRF_BLOCK |
             LINE
         )
