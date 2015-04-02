@@ -12,6 +12,7 @@ from base import BaseFact
 
 class SubInterface(BaseFact):
     ATTRS = ["name", "description", "admin_status",
+             "[vlan_ids]",
              "[ipv4_addresses]", "[ipv6_addresses]",
              "ip_proxy_arp", "ip_redirects",
              "[tagged_vlans]", "untagged_vlan",
@@ -24,7 +25,8 @@ class SubInterface(BaseFact):
     ID = ["name"]
 
     def __init__(self, name, interface=None, description=None,
-                 admin_status=False, ip_proxy_arp=False, 
+                 admin_status=False, vlan_ids=None,
+                 ip_proxy_arp=False,
                  ip_redirects=False, tagged_vlans=None, 
                  untagged_vlan=None, ipv4_addresses=None,
                  ipv6_addresses=None, protocols=None, afi=None,
@@ -38,6 +40,7 @@ class SubInterface(BaseFact):
         self.interface = interface
         self.description = description
         self.admin_status = admin_status
+        self.vlan_ids = vlan_ids
         self.has_description = False
         self.ipv4_addresses = ipv4_addresses
         self.ipv6_addresses = ipv6_addresses
@@ -81,6 +84,14 @@ class SubInterface(BaseFact):
     @has_description.setter
     def has_description(self, value):
         pass
+
+    @property
+    def vlan_ids(self):
+        return self._vlan_ids
+
+    @vlan_ids.setter
+    def vlan_ids(self, value):
+        self._vlan_ids = [int(v) for v in value] if value else None
 
     @property
     def ipv4_addresses(self):
