@@ -18,7 +18,8 @@ class SubInterface(BaseFact):
              "[protocols]", "[afi]",
              "input_ipv4_filter", "output_ipv4_filter",
              "isis_l1_metric", "isis_l2_metric",
-             "isis_ptp"
+             "isis_ptp",
+             "port_security", "port_security_max"
              ]
     ID = ["name"]
 
@@ -30,6 +31,7 @@ class SubInterface(BaseFact):
                  input_ipv4_filter=None, output_ipv4_filter=None,
                  isis_l1_metric=None, isis_l2_metric=None,
                  isis_ptp=None,
+                 port_security=None, port_security_max=None,
                  **kwargs):
         super(SubInterface, self).__init__()
         self.name = name
@@ -50,6 +52,8 @@ class SubInterface(BaseFact):
         self.isis_l1_metric = isis_l1_metric
         self.isis_l2_metric = isis_l2_metric
         self.isis_ptp = isis_ptp
+        self.port_security = port_security
+        self.port_security_max = port_security_max
 
     def __unicode__(self):
         return "SubInterface %s" % self.name
@@ -201,3 +205,19 @@ class SubInterface(BaseFact):
     @isis_ptp.setter
     def isis_ptp(self, value):
         self._isis_ptp = bool(value)
+
+    @property
+    def port_security(self):
+        return self._port_security
+
+    @port_security.setter
+    def port_security(self, value):
+        self._port_security = bool(value)
+
+    @property
+    def port_security_max(self):
+        return self._port_security_max
+
+    @port_security_max.setter
+    def port_security_max(self, value):
+        self._port_security_max = int(value) if value is not None else None
