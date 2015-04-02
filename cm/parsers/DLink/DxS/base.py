@@ -51,6 +51,8 @@ class BaseDLinkParser(BaseParser):
                 self.parse_iproute(ll)
             elif l.startswith("config snmp "):
                 self.parse_config_snmp(ll)
+            elif l.startswith("config port_security ports "):
+                self.parse_port_security(ll)
             elif len(ll) > 1 and ll[0] in ("enable", "disable"):
                 if ll[1] in self.STATUSES:
                     self.statuses[ll[1]] = ll[0] == "enable"
@@ -173,8 +175,10 @@ class BaseDLinkParser(BaseParser):
         for vid in self.iter_ports(tokens[3]):
             for f in tv:
                 f.tagged_vlans += [vid]
+                f.add_afi("BRIDGE")
             for f in uv:
                 f.untagged_vlan = vid
+                f.add_afi("BRIDGE")
 
     def parse_config_vlan(self, tokens):
         """
@@ -187,11 +191,15 @@ class BaseDLinkParser(BaseParser):
         tagged = self.next_item(tokens, "tagged")
         if tagged:
             for i in self.iter_ports(tagged):
-                self.get_subinterface_fact(i).tagged_vlans += [vid]
+                si = self.get_subinterface_fact(i)
+                si.tagged_vlans += [vid]
+                si.add_afi("BRIDGE")
         untagged = self.next_item(tokens, "untagged")
         if untagged:
             for i in self.iter_ports(untagged):
-                self.get_subinterface_fact(i).untagged_vlan = vid
+                si = self.get_subinterface_fact(i)
+                si.untagged_vlan = vid
+                si.add_afi("BRIDGE")
 
     def parse_create_account(self, tokens):
         """
@@ -252,6 +260,19 @@ class BaseDLinkParser(BaseParser):
             f.next_hop = tokens[3]
         else:
             f.interface = tokens[3]
+
+    def parse_port_security(self, tokens):
+        """
+        config port_security ports 1:1-1:25 admin_state disable max_learning_addr 1 lock_address_mode DeleteOnReset
+        """
+        ports = self.next_item(tokens, "ports") or ""
+        ps_max = self.next_item(tokens, "max_learning_addr")
+        for p in self.iter_ports(ports):
+            si = self.get_subinterface_fact(p)
+            si.port_security = True
+            if ps_max is not None:
+                si.port_security_max = ps_max
+
 
 # Port expression parser
 DIGITS = Word(nums)
