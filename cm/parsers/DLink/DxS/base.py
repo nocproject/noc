@@ -224,7 +224,7 @@ class BaseDLinkParser(BaseParser):
         if tokens[2] == "system_name":
             self.get_system_fact().hostname = tokens[3]
         elif tokens[2] == "system_location":
-            self.get_system_fact().location = tokens[3]
+            self.get_system_fact().location = " ".join(tokens[3:])
 
     def parse_syslog_host(self, tokens):
         """
