@@ -24,6 +24,7 @@ class Profile(noc.sa.profiles.Profile):
     command_disable_pager = "set cli screen-length 0"
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"
+    default_parser = "noc.cm.parsers.Juniper.JUNOS.base.BaseJUNOSParser"
 
     def cmp_version(self, x, y):
         """
