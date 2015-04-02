@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "(?P<name>\\S+) temperature value (?P<measure>\\-\\d+) exceeds its limit temperature value"
+            "value_re": "(?P<name>\\S+) temperature value (?P<measure>\\-?\\d+) exceeds its limit temperature value"
         }
     ]
 }
