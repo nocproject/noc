@@ -38,6 +38,8 @@ class BaseJUNOSParser(BaseParser):
                 if l.endswith("{"):
                     inactive_level = len(context)
                     context += [l[9:-1].strip()]
+            elif l.startswith("/*"):
+                continue
             elif l.endswith("{"):
                 context += [l[:-1].strip()]
             elif l == "}":
@@ -51,20 +53,31 @@ class BaseJUNOSParser(BaseParser):
                 h = self.handlers
                 for p in cp:
                     if callable(h):
+                        # print "[MATCH]", cp
                         h(self, VALUE.parseString(" ".join(cp)))
                         break
                     elif h is None:
+                        # print "[IGNORE]", cp
                         break
                     if p in h:
                         h = h[p]
+                        continue
                     else:
                         if "*" in h:
                             h = h["*"]
+                            continue
                         else:
+                            # print "[NO MATCH]", cp
                             break
+                    #print "[????] %s" % p, cp
         # Yield facts
         for f in self.iter_facts():
             yield f
+
+    def get_subinterface_fact(self, name, interface=None):
+        if "." in name and interface is None:
+            interface = name.split(".")[0]
+        return super(BaseJUNOSParser, self).get_subinterface_fact(name, interface)
 
     def on_system_host_name(self, tokens):
         """
@@ -112,7 +125,10 @@ class BaseJUNOSParser(BaseParser):
         """
         set interfaces <N> gigether-options 802.3ad ae<N>
         """
-        print "@@@@", tokens
+        a_iface = tokens[4]
+        iface = self.get_interface_fact(tokens[1])
+        if a_iface.startswith("ae"):
+            iface.aggregated_interface = a_iface
 
     def on_subinterface_description(self, tokens):
         """
@@ -149,6 +165,7 @@ class BaseJUNOSParser(BaseParser):
         """
         set protocols isis interface <N> point-to-point
         """
+        print "@@@@@PTP", tokens
         si = self.get_subinterface_fact(tokens[3])
         si.isis_ptp = True
         si.add_afi("ISO")
@@ -191,10 +208,7 @@ class BaseJUNOSParser(BaseParser):
             "*": {
                 "description": on_interfaces_description,
                 "gigether-options": {
-                    "802.3ad": {
-                        "link-index": None,
-                        "*": on_interface_aggregated  # @todo: Not working
-                    }
+                    "802.3ad": on_interface_aggregated
                 },
                 "unit": {
                     "*": {
