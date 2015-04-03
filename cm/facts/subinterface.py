@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import bisect
 ## NOC modules
 from base import BaseFact
 
@@ -155,7 +157,7 @@ class SubInterface(BaseFact):
 
     def add_protocol(self, protocol):
         if protocol not in self.protocols:
-            self.protocols += [protocol]
+            bisect.insort(self._protocols, protocol)
 
     def remove_protocol(self, protocol):
         if protocol in self.protocols:
@@ -171,7 +173,7 @@ class SubInterface(BaseFact):
 
     def add_afi(self, afi):
         if afi not in self.afi:
-            self.afi += [afi]
+            bisect.insort(self._afi, afi)
 
     def remove_afi(self, afi):
         if afi in self.afi:
