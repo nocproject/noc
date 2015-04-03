@@ -80,6 +80,7 @@ class BaseIOSParser(BasePyParser):
         INTERFACE_ISIS = Literal("ip router isis").setParseAction(self.on_interface_isis)
         INTERFACE_ISIS_METRIC = Literal("isis metric") + (Word(nums) + Optional(Literal("level-1") | Literal("level-2"))).setParseAction(self.on_interface_isis_metric)
         INTERFACE_ISIS_PTP = Literal("isis network point-to-point").setParseAction(self.on_interface_isis_ptp)
+        INTERFACE_MPLS_IP = Literal("mpls ip").setParseAction(self.on_interface_mpls_ip)
         INTERFACE_BLOCK = INTERFACE + ZeroOrMore(INDENT + (
             INTERFACE_DESCRIPTION |
             INTERFACE_ADDRESS_SECONDARY |
@@ -95,6 +96,7 @@ class BaseIOSParser(BasePyParser):
             INTERFACE_ISIS |
             INTERFACE_ISIS_METRIC |
             INTERFACE_ISIS_PTP |
+            INTERFACE_MPLS_IP |
             INTERFACE_ACL |
             LINE
         ))
@@ -262,6 +264,7 @@ class BaseIOSParser(BasePyParser):
     def on_interface_isis(self, tokens):
         si = self.get_current_subinterface()
         si.add_afi("ISO")
+        si.add_protocol("ISIS")
 
     def on_interface_isis_metric(self, tokens):
         si = self.get_current_subinterface()
@@ -274,6 +277,11 @@ class BaseIOSParser(BasePyParser):
     def on_interface_isis_ptp(self, tokens):
         si = self.get_current_subinterface()
         si.isis_ptp = True
+
+    def on_interface_mpls_ip(self, tokens):
+        si = self.get_current_subinterface()
+        si.add_afi("MPLS")
+        si.add_protocol("LDP")  # @todo: Check global label-protocol
 
     def on_logging_host(self, tokens):
         self.get_sysloghost_fact(tokens[0])
@@ -304,7 +312,6 @@ class BaseIOSParser(BasePyParser):
         self.current_vrf.rd = tokens[0]
 
     def on_ipv4_route(self, tokens):
-        print "@@@@ ip route", tokens
         p = IPv4(tokens[0], netmask=tokens[1])
         sf = self.get_static_route_fact(str(p))
         rest = tokens[2].split()
