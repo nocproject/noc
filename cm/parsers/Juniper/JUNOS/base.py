@@ -34,7 +34,7 @@ class BaseJUNOSParser(BaseParser):
             l = l.strip()
             if l == "{master}":
                 continue
-            if l.startswith("inactive:"):
+            elif l.startswith("inactive:"):
                 if l.endswith("{"):
                     inactive_level = len(context)
                     context += [l[9:-1].strip()]
@@ -52,24 +52,17 @@ class BaseJUNOSParser(BaseParser):
                 cp = " ".join(context).split() + l[:-1].split()
                 h = self.handlers
                 for p in cp:
+                    if p in h:
+                        h = h[p]
+                    elif "*" in h:
+                        h = h["*"]
+                    else:
+                        break
                     if callable(h):
-                        # print "[MATCH]", cp
                         h(self, VALUE.parseString(" ".join(cp)))
                         break
                     elif h is None:
-                        # print "[IGNORE]", cp
                         break
-                    if p in h:
-                        h = h[p]
-                        continue
-                    else:
-                        if "*" in h:
-                            h = h["*"]
-                            continue
-                        else:
-                            # print "[NO MATCH]", cp
-                            break
-                    #print "[????] %s" % p, cp
         # Yield facts
         for f in self.iter_facts():
             yield f
@@ -165,7 +158,6 @@ class BaseJUNOSParser(BaseParser):
         """
         set protocols isis interface <N> point-to-point
         """
-        print "@@@@@PTP", tokens
         si = self.get_subinterface_fact(tokens[3])
         si.isis_ptp = True
         si.add_afi("ISO")
@@ -230,7 +222,7 @@ class BaseJUNOSParser(BaseParser):
             "isis": {
                 "interface": {
                     "*": {
-                        "point-to-point": on_isis_interface_ptp,  # @todo: Not working,
+                        "point-to-point": on_isis_interface_ptp,
                         "level": {
                             "*": {
                                 "metric": on_isis_interface_metric
