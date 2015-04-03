@@ -70,7 +70,9 @@ class BaseJUNOSParser(BaseParser):
     def get_subinterface_fact(self, name, interface=None):
         if "." in name and interface is None:
             interface = name.split(".")[0]
-        return super(BaseJUNOSParser, self).get_subinterface_fact(name, interface)
+        si = super(BaseJUNOSParser, self).get_subinterface_fact(name, interface)
+        si.admin_status = True
+        return si
 
     def get_isis_subinterface_fact(self, name):
         """
