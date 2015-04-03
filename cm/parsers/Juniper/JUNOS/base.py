@@ -72,6 +72,30 @@ class BaseJUNOSParser(BaseParser):
             interface = name.split(".")[0]
         return super(BaseJUNOSParser, self).get_subinterface_fact(name, interface)
 
+    def get_isis_subinterface_fact(self, name):
+        """
+        Get subinterface fact with default ISIS settings
+        """
+        si = self.get_subinterface_fact(name)
+        si.add_protocol("ISIS")
+        return si
+
+    def get_ospf_subinterface_fact(self, name):
+        """
+        Get subinterface fact with default ISIS settings
+        """
+        si = self.get_subinterface_fact(name)
+        si.add_protocol("OSPF")
+        return si
+
+    def get_ldp_subinterface_fact(self, name):
+        """
+        Get subinterface fact with default ISIS settings
+        """
+        si = self.get_subinterface_fact(name)
+        si.add_protocol("LDP")
+        return si
+
     def on_system_host_name(self, tokens):
         """
         set system host-name <hostname>
@@ -136,6 +160,18 @@ class BaseJUNOSParser(BaseParser):
         si = self.get_subinterface_fact("%s.%s" % (tokens[1], tokens[3]))
         si.vlan_ids = [tokens[-1]]
 
+    def on_subinterface_iso(self, tokens):
+        """
+        set interface <N> unit <M> family iso
+        """
+        self.get_subinterface_fact("%s.%s" % (tokens[1], tokens[3])).add_afi("ISO")
+
+    def on_subinterface_mpls(self, tokens):
+        """
+        set interface <N> unit <M> family mpls
+        """
+        self.get_subinterface_fact("%s.%s" % (tokens[1], tokens[3])).add_afi("MPLS")
+
     def on_subinterface_ipv4_address(self, tokens):
         """
         set interface <N> unit <M> family inet address <K>
@@ -158,20 +194,23 @@ class BaseJUNOSParser(BaseParser):
         """
         set protocols isis interface <N> point-to-point
         """
-        si = self.get_subinterface_fact(tokens[3])
-        si.isis_ptp = True
-        si.add_afi("ISO")
+        self.get_isis_subinterface_fact(tokens[3]).isis_ptp = True
 
     def on_isis_interface_metric(self, tokens):
         """
         set protocols isis interface <N> level <M> metric <K>
         """
-        si = self.get_subinterface_fact(tokens[3])
-        si.add_afi("ISO")
+        si = self.get_isis_subinterface_fact(tokens[3])
         if tokens[5] == "1":
             si.isis_l1_metric = int(tokens[7])
         else:
             si.isis_l2_metric = int(tokens[7])
+
+    def on_ldp_interface(self, tokens):
+        """
+        set protocols ldp interface <N>
+        """
+        self.get_ldp_subinterface_fact(tokens[3])
 
     def on_snmp_contact(self, tokens):
         """
@@ -212,7 +251,9 @@ class BaseJUNOSParser(BaseParser):
                                 "filter": {
                                     "*": on_subinterface_ipv4_filter
                                 }
-                            }
+                            },
+                            "iso": on_subinterface_iso,
+                            "mpls": on_subinterface_mpls
                         }
                     }
                 }
@@ -229,6 +270,11 @@ class BaseJUNOSParser(BaseParser):
                             }
                         }
                     }
+                }
+            },
+            "ldp": {
+                "interface": {
+                    "*": on_ldp_interface
                 }
             }
         },
