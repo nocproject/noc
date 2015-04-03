@@ -17,12 +17,14 @@ logger = logging.getLogger(__name__)
 
 class Interface(BaseFact):
     ATTRS = ["name", "description", "admin_status", "speed", "duplex",
-             "[protocols]", "profile", "type", "mac", "default_name"]
+             "[protocols]", "profile", "type", "mac", "default_name",
+             "aggregated_interface"]
     ID = ["name"]
 
     def __init__(self, name, description=None, admin_status=False, 
                  speed="auto", duplex="auto", protocols=None,
                  profile=None, type=None, mac=None, default_name=None,
+                 aggregated_interface=None,
                  **kwargs):
         super(Interface, self).__init__()
         self.name = name
@@ -36,6 +38,7 @@ class Interface(BaseFact):
         self.type = type
         self.mac = mac
         self.default_name = default_name
+        self.aggregated_interface = aggregated_interface
 
     def __unicode__(self):
         return "Interface %s" % self.name
@@ -135,6 +138,14 @@ class Interface(BaseFact):
         self._default_name = value
         if not self.name:
             self.name = value
+
+    @property
+    def aggregated_interface(self):
+        return self._aggregated_interface
+
+    @aggregated_interface.setter
+    def aggregated_interface(self, value):
+        self._aggregated_interface = value or None
 
     def bind(self):
         if self.name:
