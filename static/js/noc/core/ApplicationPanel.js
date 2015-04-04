@@ -12,12 +12,19 @@ Ext.define("NOC.core.ApplicationPanel", {
     backItem: undefined,
     currentRecord: undefined,
     autoScroll: true,
+    historyHashPrefix: null,
 
     preview: function(record, backItem) {
         var me = this,
             bi = backItem === undefined? me.backItem : backItem;
         me.currentRecord = record;
         me.backItem = bi;
+        if(me.historyHashPrefix) {
+            me.app.setHistoryHash(
+                me.currentRecord.get("id"),
+                me.historyHashPrefix
+            );
+        }
     },
     //
     onClose: function() {
