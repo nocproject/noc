@@ -12,11 +12,12 @@ from base import BaseFact
 
 class StaticRoute(BaseFact):
     ATTRS = ["prefix", "afi", "vrf", "interface", "next_hop",
-             "description", "tag", "distance"]
+             "description", "tag", "distance", "discard"]
     ID = ["vrf", "prefix", "next_hop"]
 
     def __init__(self, prefix, afi=None, vrf=None, interface=None,
-                 next_hop=None, description=None, tag=None, distance=None):
+                 next_hop=None, description=None, tag=None,
+                 distance=None, discard=None):
         super(StaticRoute, self).__init__()
         self.prefix = prefix
         self.afi = afi
@@ -26,6 +27,7 @@ class StaticRoute(BaseFact):
         self.description = description
         self.tag = tag
         self.distance = distance
+        self.discard = discard
 
     def __unicode__(self):
         if self.vrf:
@@ -102,3 +104,11 @@ class StaticRoute(BaseFact):
     @distance.setter
     def distance(self, value):
         self._distance = int(value) if value is not None else None
+
+    @property
+    def discard(self):
+        return self._discard
+    
+    @discard.setter
+    def discard(self, value):
+        self._discard = bool(value) if value is not None else None
