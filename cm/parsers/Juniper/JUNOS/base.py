@@ -214,6 +214,25 @@ class BaseJUNOSParser(BaseParser):
         """
         self.get_ldp_subinterface_fact(tokens[3])
 
+    def on_static_route(self, tokens):
+        """
+        set routing-options static route <N> next-hop <NH>
+        set routing-options static route <N> discard
+        set routing-options static route <N> tag <N>
+        set routing-options static route <N> preference <N>
+        set routing-options static route <N> community [c1 c2 cN]
+        """
+        prefix = tokens[3]
+        cmd = tokens[4] if len(tokens) >= 4 else None
+        if cmd == "next-hop":
+            self.get_static_route_fact(prefix).next_hop = tokens[5]
+        elif cmd == "discard":
+            self.get_static_route_fact(prefix).discard = True
+        elif cmd == "tag":
+            self.get_static_route_fact(prefix).tag = int(tokens[5])
+        elif cmd == "preference":
+            self.get_static_route_fact(prefix).distance = int(tokens[5])
+
     def on_snmp_contact(self, tokens):
         """
         set snmp contact <N>
@@ -277,6 +296,13 @@ class BaseJUNOSParser(BaseParser):
             "ldp": {
                 "interface": {
                     "*": on_ldp_interface
+                }
+            }
+        },
+        "routing-options": {
+            "static": {
+                "route": {
+                    "*": on_static_route
                 }
             }
         },
