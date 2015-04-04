@@ -319,7 +319,11 @@ class BaseIOSParser(BasePyParser):
         if is_ipv4(nh):
             sf.next_hop = nh
         else:
-            sf.interface = self.convert_interface_name(nh)
+            iface = self.convert_interface_name(nh)
+            if iface.startswith("Nu"):
+                sf.discard = True
+            else:
+                sf.interface = iface
         if rest and is_int(rest[0]):
             sf.distance = rest.pop(0)
         while rest:
