@@ -8,8 +8,11 @@
 
 ## Python modules
 import bisect
+import logging
 ## NOC modules
 from base import BaseFact
+
+logger = logging.getLogger(__name__)
 
 
 class SubInterface(BaseFact):
@@ -22,7 +25,8 @@ class SubInterface(BaseFact):
              "input_ipv4_filter", "output_ipv4_filter",
              "isis_l1_metric", "isis_l2_metric",
              "isis_ptp",
-             "port_security", "port_security_max"
+             "port_security", "port_security_max",
+             "pim_mode", "pim_version"
              ]
     ID = ["name"]
 
@@ -36,6 +40,7 @@ class SubInterface(BaseFact):
                  isis_l1_metric=None, isis_l2_metric=None,
                  isis_ptp=None,
                  port_security=None, port_security_max=None,
+                 pim_mode=None, pim_version=None,
                  **kwargs):
         super(SubInterface, self).__init__()
         self.name = name
@@ -59,6 +64,8 @@ class SubInterface(BaseFact):
         self.isis_ptp = isis_ptp
         self.port_security = port_security
         self.port_security_max = port_security_max
+        self.pim_mode = pim_mode
+        self.pim_version = pim_version
 
     def __unicode__(self):
         return "SubInterface %s" % self.name
@@ -217,7 +224,7 @@ class SubInterface(BaseFact):
 
     @isis_ptp.setter
     def isis_ptp(self, value):
-        self._isis_ptp = bool(value)
+        self._isis_ptp = bool(value) if value is not None else None
 
     @property
     def port_security(self):
@@ -234,3 +241,35 @@ class SubInterface(BaseFact):
     @port_security_max.setter
     def port_security_max(self, value):
         self._port_security_max = int(value) if value is not None else None
+
+    @property
+    def pim_mode(self):
+        return self._pim_mode
+
+    @pim_mode.setter
+    def pim_mode(self, value):
+        if value:
+            value = value.lower()
+            if value in ("sparse", "dense"):
+                self._pim_mode = value
+            else:
+                logger.error("Unknown PIM mode '%s'", value)
+        else:
+            self._pim_mode = None
+
+    @property
+    def pim_version(self):
+        return self._pim_version
+
+    @pim_version.setter
+    def pim_version(self, value):
+        if value:
+            value = str(value)
+            if value.startswith("v"):
+                value = value[1]
+            if value in ("2",):
+                self._pim_version = value
+            else:
+                logger.error("Unknown PIM version '%s'", value)
+        else:
+            self._pim_version = None
