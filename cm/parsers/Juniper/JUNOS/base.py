@@ -214,6 +214,23 @@ class BaseJUNOSParser(BaseParser):
         """
         self.get_ldp_subinterface_fact(tokens[3])
 
+    def on_pim_interface(self, tokens):
+        """
+        set protocols pim interface <N>
+        set protocols pim interface <N> mode <sparse|dense>
+        set protocols pim interface <N> version 2
+        """
+        si = self.get_subinterface_fact(tokens[3])
+        cmd = tokens[4] if len(tokens) >= 4 else None
+        if cmd == "mode":
+            si.pim_mode = tokens[5]
+        elif cmd == "version":
+            si.pim_version = tokens[5]
+        elif cmd is None:
+            si.pim_version = "2"
+            si.pim_mode = "sparse"
+        si.add_protocol("PIM")
+
     def on_static_route(self, tokens):
         """
         set routing-options static route <N> next-hop <NH>
@@ -296,6 +313,11 @@ class BaseJUNOSParser(BaseParser):
             "ldp": {
                 "interface": {
                     "*": on_ldp_interface
+                }
+            },
+            "pim": {
+                "interface": {
+                    "*": on_pim_interface
                 }
             }
         },
