@@ -10,6 +10,7 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
     extend: "NOC.core.ApplicationPanel",
     app: null,
     autoScroll: true,
+    historyHashPrefix: "interfaces",
 
     initComponent: function() {
         var me = this;

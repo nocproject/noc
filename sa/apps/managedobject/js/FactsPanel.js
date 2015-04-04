@@ -10,6 +10,7 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
     extend: "NOC.core.ApplicationPanel",
     requires: [
     ],
+    historyHashPrefix: "facts",
 
     initComponent: function() {
         var me = this;
