@@ -801,20 +801,28 @@ Ext.define("NOC.sa.managedobject.Application", {
         var me = this;
         me.loadById(args[0], function(record) {
             me.onEditRecord(record);
-            if(args[1] === "config") {
-                switch(args.length) {
-                    case 2:
-                        me.onConfig();
-                        break;
-                    case 3:
-                        me.onConfig();
-                        // @todo: Fix
-                        me.showItem(me.ITEM_CONFIG).historyRevision(record, args[2]);
-                        break;
-                    case 4:
-                        me.showItem(me.ITEM_CONFIG).historyDiff(record, args[2], args[3]);
-                        break;
-                }
+            switch (args[1]) {
+                case "config":
+                    switch(args.length) {
+                        case 2:
+                            me.onConfig();
+                            break;
+                        case 3:
+                            me.onConfig();
+                            // @todo: Fix
+                            me.showItem(me.ITEM_CONFIG).historyRevision(record, args[2]);
+                            break;
+                        case 4:
+                            me.showItem(me.ITEM_CONFIG).historyDiff(record, args[2], args[3]);
+                            break;
+                    }
+                    break;
+                case "facts":
+                    me.onFacts();
+                    break;
+                case "interfaces":
+                    me.onInterfaces();
+                    break;
             }
         });
     }
