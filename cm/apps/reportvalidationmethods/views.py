@@ -20,9 +20,9 @@ class ReportvalidationmethodsApplication(SimpleReport):
         for vn in validator_registry.validators:
             v = validator_registry.validators[vn]
             scopes = []
-            if v.is_object:
+            if v.is_object():
                 scopes += ["OBJECT"]
-            if v.is_interface:
+            if v.is_interface():
                 scopes += ["INTERFACE"]
             r = [
                 SectionRow(
@@ -32,9 +32,9 @@ class ReportvalidationmethodsApplication(SimpleReport):
                 ["Handler", "%s.%s" % (v.__module__, v.__name__)],
                 ["Tags", ", ".join(v.TAGS or [])]
             ]
-            if v.is_object:
+            if v.is_object():
                 ov[v.TITLE] = r
-            if v.is_interface:
+            if v.is_interface():
                 iv[v.TITLE] = r
         r = []
         for vn in sorted(ov):
