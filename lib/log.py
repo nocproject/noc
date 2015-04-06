@@ -42,27 +42,27 @@ class TeeLoggerAdapter(logging.LoggerAdapter):
 
     def debug(self, msg, *args, **kwargs):
         self._append(msg, args)
-        super(TeeLoggerAdapter, self).debug(msg, *args, **kwargs)
+        logging.LoggerAdapter.debug(self, msg, *args, **kwargs)
 
     def info(self, msg, *args, **kwargs):
         self._append(msg, args)
-        super(TeeLoggerAdapter, self).info(msg, *args, **kwargs)
+        logging.LoggerAdapter.info(self, msg, *args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):
         self._append(msg, args)
-        super(TeeLoggerAdapter, self).warning(msg, *args, **kwargs)
+        logging.LoggerAdapter.warning(self, msg, *args, **kwargs)
 
     def error(self, msg, *args, **kwargs):
         self._append(msg, args)
-        super(TeeLoggerAdapter, self).error(msg, *args, **kwargs)
+        logging.LoggerAdapter.error(self, msg, *args, **kwargs)
 
     def critical(self, msg, *args, **kwargs):
         self._append(msg, args)
-        super(TeeLoggerAdapter, self).critical(msg, *args, **kwargs)
+        logging.LoggerAdapter.critical(self, msg, *args, **kwargs)
 
     def log(self, level, msg, *args, **kwargs):
         self._append(msg, args)
-        super(TeeLoggerAdapter, self).log(msg, *args, **kwargs)
+        logging.LoggerAdapter.log(self, msg, *args, **kwargs)
 
 
 class ColorFormatter(logging.Formatter):
