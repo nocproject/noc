@@ -2,6 +2,6 @@
     "name": "Interface | CDP Enabled",
     "uuid": "c65aced9-ec4b-457d-b9a7-1c1e86860eff",
     "description": "Interface must not have CDP enabled",
-    "subject_template": "Interface {{object.name}} has enabled CDP",
-    "body_template": "Interface {{object.name}} must have CDP disabled"
+    "subject_template": "Interface {{obj}} has enabled CDP",
+    "body_template": "Interface {{obj}} must have CDP disabled"
 }
