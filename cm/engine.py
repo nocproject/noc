@@ -193,6 +193,8 @@ class Engine(object):
             self.logger.info("Error found: %s", e)
         # Store object's facts
         self.sync_facts()
+        # Manage related alarms
+        self.sync_alarms()
 
     def _get_rule_settings(self, ps, scope):
         """
@@ -363,7 +365,7 @@ class Engine(object):
     def compile_query(self, **kwargs):
         def wrap(x):
             for k in kwargs:
-                if getattr(x, k) != kwargs[k]:
+                if getattr(x, k, None) != kwargs[k]:
                     return False
             return True
 
@@ -386,5 +388,38 @@ class Engine(object):
                 return f
         return None
 
+    def sync_alarms(self):
+        """
+        Raise/close related alarms
+        """
+        # Check errors are exists
+        n_errors = sum(1 for e in self.iter_errors())
+        alarm = ActiveAlarm.objects.filter(
+            alarm_class=ac_policy_violation.id,
+            managed_object=self.object.id).first()
+        if n_errors:
+            if not alarm:
+                self.logger.info("Raise alarm")
+                # Raise alarm
+                alarm = ActiveAlarm(
+                    timestamp=datetime.datetime.now(),
+                    managed_object=self.object,
+                    alarm_class=ac_policy_violation,
+                    severity=2000  # WARNING
+                )
+            # Alarm is already exists
+            alarm.log_message("%d errors has been found", n_errors)
+        elif alarm:
+            # Clear alarm
+            self.logger.info("Clear alarm")
+            alarm.clear_alarm("No errors has been registered")
+
 #
 from noc.cm.validators.base import BaseValidator
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.activealarm import ActiveAlarm
+
+ac_policy_violation = AlarmClass.objects.filter(
+    name="Config | Policy Violation").first()
+if not ac_policy_violation:
+    logger.error("Alarm class 'Config | Policy Violation' is not found. Alarms cannot be raised")

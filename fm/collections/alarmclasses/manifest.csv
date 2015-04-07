@@ -23,6 +23,7 @@ Config | Config Download Failed,43445211-53db-4d0f-b559-f299151fdcaa,Config/Conf
 Config | Config Sync Failed,16c2b30a-4378-40ae-889f-c78e09f5c335,Config/Config_Sync_Failed.json,187b667e60462868e2794bbdebcf9b3fe6db0b0932100332e8446ef895385f12
 Config | Config Upload Failed,0d2c70a7-27c6-4027-8ee2-5e44c378f0f6,Config/Config_Upload_Failed.json,c92aa3c9ce76143e9fa77beb4a344d49ff4e2ddb05a1d13071a594d3718666b3
 Config | Invalid Config,55475472-e013-4c73-94da-15a7b1380991,Config/Invalid_Config.json,5231f19ee177f96f25510b5fe91c51bdb8fe97fe8e9e5a09d6200e7185c496ae
+Config | Policy Violation,4b6d0752-859e-42dc-8ead-b271fc312f8c,Config/Policy_Violation.json,8dcc7aa93817d5d2d2c3c2d5bcc886559fe8b3e3096b429b8a64cff207ed2953
 Environment | AC Voltage Out of Range,bb4ae098-e4f6-4fa2-b618-03af9de53443,Environment/AC_Voltage_Out_of_Range.json,124e6950dca82328c3329ba134b624dccf43a589fa1aa07a6cbb39c818308354
 Environment | Chassis Voltage Out of Range,a4ff5329-9339-406b-bf60-caf575197df3,Environment/Chassis_Voltage_Out_of_Range.json,9d341ca60788b5ccbbbca0f88bd65493b95ae91023d68d325dc1c732812f35b2
 Environment | DC Voltage Out of Range,721168eb-a95b-48cd-9b9a-4a7d2ce9491a,Environment/DC_Voltage_Out_of_Range.json,26d91c0b1928caf71cbbbf1628b0b9d65f61d44a350bb4c0beb2d6f6f69b5e8a
