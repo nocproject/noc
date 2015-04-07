@@ -41,9 +41,9 @@ class Script(NOCScript):
                     }]
         if len(r) > 0:
             try:
-                t = self.cli("show config running include link_aggregation")
+                t = self.cli("show config running")
             except self.CLISyntaxError:
-                raise self.NotSupportedError()
+                pass
             for match in self.rx_type.finditer(t):
                 if match.group("type") == "lacp":
                     for i in r:
