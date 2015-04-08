@@ -216,9 +216,19 @@ TRACEBACK_REVERSE = config.get("main", "traceback_order") == "reverse"
 ## Set up by test runner
 TEST_FIXED_BEEF_BASE = None
 
+LOG_MRT_COMMAND = None
+if config.get("audit", "log_mrt_commands"):
+    lmc = config.get("audit", "log_mrt_commands")
+    if os.access(lmc, os.W_OK):
+        LOG_MRT_COMMAND = lmc
+    else:
+        import sys
+        sys.stderr.write(
+            "Cannot write to '%s'. MRT command logging disabled\n" % lmc
+        )
 ##
 ## Graphite settings
-##
+## @todo: Remove
 GRAPHTEMPLATES_CONF = ""
 LEGEND_MAX_ITEMS = 10
 ## Set up logging
