@@ -539,6 +539,9 @@ config_changed_ttl = 1y
 #     ttl.db.<module>.<model> - default autid log TTL for model (sa.ManagedObject)
 # 0 -- disable audit
 ttl.db = 5y
+# Path to directory to store MRT commands executed by user
+# Must be writable by NOC user
+log_mrt_commands =
 
 [pm]
 # Solution processing effective metric settings
