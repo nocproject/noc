@@ -900,8 +900,8 @@ Qtech | QSW | Unknown | Syslog LLDP Create (SYSLOG),934973b2-16d5-4191-ab6b-0eac
 Qtech | QSW | Unknown | Syslog STP received BPDU (SYSLOG),d266cd53-dffb-4781-b55a-46638bd39f21,Qtech/QSW/Unknown/Syslog_STP_received_BPDU_SYSLOG_.json,35cb6d47cbe0456169ca2df303168d75e3cbcdb7238c6c35a87c7744fd669321
 Qtech | QSW2800 | Config | Config Changed (SYSLOG),ccd83d2f-4990-435e-87ed-5e987a1cf9da,Qtech/QSW2800/Config/Config_Changed_SYSLOG_.json,2c231b7aac57dfb5e1422f669ec6e1c24c147eb367668566414b3da090bbca3c
 Qtech | QSW2800 | Security | Authentication | Login (SYSLOG),7abbb5e5-5950-47f8-8f2b-1763f74f1460,Qtech/QSW2800/Security/Authentication/Login_SYSLOG_.json,d369e3d5dc3f02a4e12f1abe3ee5ed82b0da73d58f59bc0e7c7da7749e66f9d5
-Qtech | QSW2800 | Security | Authentication | Logout (SYSLOG),37345a48-432a-435c-ac38-183a63272d4b,Qtech/QSW2800/Security/Authentication/Logout_SYSLOG_.json,5588eb25e205060fd322a02691a01331c8d766c6e6566fb6ef7295bdfb521185
 Qtech | QSW2800 | Security | Authentication | Login Failed (SYSLOG),8c74101d-0b6b-473a-9e13-f21c6eb3aba1,Qtech/QSW2800/Security/Authentication/Login_Failed_SYSLOG_.json,3ed565e908fcf9d8c6189f2fcd24134c33bf47a94ef28ec426184dedd1589d20
+Qtech | QSW2800 | Security | Authentication | Logout (SYSLOG),37345a48-432a-435c-ac38-183a63272d4b,Qtech/QSW2800/Security/Authentication/Logout_SYSLOG_.json,5588eb25e205060fd322a02691a01331c8d766c6e6566fb6ef7295bdfb521185
 Qtech | QSW2800 | System | Started (SYSLOG),cc1d3425-2950-4331-bc18-2146e9723f49,Qtech/QSW2800/System/Started_SYSLOG_.json,06ea205d6a14ad09c4a710ec2ba3dfc6db4ce4c2567c746914510232924bb75c
 Security | Authentication | Authentication Failed (SNMP),cc2a3ca2-bfd6-471d-9ae9-51a20a2d0bad,Security/Authentication/Authentication_Failed_SNMP_.json,0531fe8bdb1d2eb7bb484e4e4a59b361dbedced846f1796275ca3b995527a021
 System | Started #1 (SNMP),0d591533-5971-4068-bea2-7167b9c0d1bb,System/Started_1_SNMP_.json,d0bd208d61c7b9378893d2759293aaa71246815296986a0544b393073fc2d2a0
