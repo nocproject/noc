@@ -2,15 +2,16 @@ Index: noc/lib/python/site-packages/mongoengine/base/metaclasses.py
 ===================================================================
 --- noc.orig/lib/python/site-packages/mongoengine/base/metaclasses.py
 +++ noc/lib/python/site-packages/mongoengine/base/metaclasses.py
-@@ -11,6 +11,7 @@ from mongoengine.queryset import (DO_NOT
+@@ -11,6 +11,8 @@ from mongoengine.queryset import (DO_NOT
  
  from mongoengine.base.common import _document_registry, ALLOW_INHERITANCE
  from mongoengine.base.fields import BaseField, ComplexBaseField, ObjectIdField
 +from mongoengine import signals
++
  
  __all__ = ('DocumentMetaclass', 'TopLevelDocumentMetaclass')
  
-@@ -196,6 +197,7 @@ class DocumentMetaclass(type):
+@@ -218,6 +220,7 @@ class DocumentMetaclass(type):
                         "field name" % field.name)
                  raise InvalidDocumentError(msg)
  
