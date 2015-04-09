@@ -36,11 +36,11 @@ class Migration:
                 return s
 
         def iteritems(s, sep):
-            lines = s.splitlines()
             last = None
-            for l in lines:
+            for l in s.splitlines():
                 if sep not in l:
-                    last += "\n" + l
+                    if last is not None:
+                        last += "\n" + l
                 elif last:
                     k = l.split(sep)[0]
                     if self.rx_field.match(k):
@@ -70,7 +70,7 @@ class Migration:
                   WHERE id > %s
                   ORDER BY id
                   LIMIT 1000
-                  """, [last_id]
+                """, [last_id]
             ):
                 o = {
                     "timestamp": timestamp,
