@@ -271,7 +271,7 @@ info "Updating python libraries"
 PIP_REQUIREMENTS_COMMON=etc/requirements/common.txt
 PIP_REQUIREMENTS_NOC=etc/requirements/noc.txt
 PIP_FLAG=local/.pip
-PIP_ARGS="-r $PIP_REQUIREMENTS_COMMON -r $PIP_REQUIREMENTS_NOC"
+PIP_ARGS="-r $PIP_REQUIREMENTS_COMMON -r $PIP_REQUIREMENTS_NOC --trusted-host cdn.nocproject.org"
 if [ "$INSTALL_DEBUG" = "yes" ]; then
     PIP_ARGS="$PIP_ARGS -r etc/requirements/debug.txt"
 fi
