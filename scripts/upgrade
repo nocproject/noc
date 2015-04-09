@@ -130,6 +130,25 @@ fi
 if [ -z "$NOC_GROUP" ]; then
     NOC_GROUP=`id -n -g`
 fi
+##
+## Check virtualenv is enabled and set up
+##
+info "Checking virtualenv"
+if [ ! -x ./bin/python ]; then
+    info "vitualenv is not configured. Trying to set up"
+    # Check virtualenv is available
+    which virtualenv
+    if [ $? -ne 0 ]; then
+        error_exit "$LINENO: virtualenv is not installed.\nPlease install virtualenv:\n > pip install virtualenv\nand run $0 again"
+    fi
+    # Initialize virtualenv
+    info "Setting up virtualenv"
+    virtualenv $PWD --no-site-packages
+    if [ $? -ne 0 ]; then
+        error_exit "$LINENO: Cannot setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
+    fi
+fi
+
 ## Check upgrade.conf
 [ -z "$LOCAL_REPO" ] && error_exit "$LINENO: LOCAL_REPO is not set"
 [ -z "$BACKUP" ] && error_exit "$LINENO: BACKUP is not set"
@@ -189,24 +208,6 @@ ensure_dir etc/ssh 700
 [ -z "$LOCAL_REPO" ] || ensure_dir $LOCAL_REPO 750
 [ -z "$BACKUP" ] || ensure_dir $BACKUP 750
 [ -z "$LOG" ] || ensure_dir $LOG 750
-##
-## Check virtualenv is enabled and set up
-##
-info "Checking virtualenv"
-if [ ! -x ./bin/python ]; then
-    info "vitualenv is not configured. Trying to set up"
-    # Check virtualenv is available
-    which virtualenv
-    if [ $? -ne 0 ]; then
-        error_exit "$LINENO: virtualenv is not installed.\nPlease install virtualenv:\n > pip install virtualenv\nand run $0 again"
-    fi
-    # Initialize virtualenv
-    info "Setting up virtualenv"
-    virtualenv $PWD --no-site-packages
-    if [ $? -ne 0 ]; then
-        error_exit "$LINENO: Cannot setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
-    fi
-fi
 ##
 ## Uninstall legacy patches
 ##
