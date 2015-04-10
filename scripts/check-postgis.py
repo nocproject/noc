@@ -100,11 +100,14 @@ class PGDriver(object):
             args += ["-h", self.db_cred["host"]]
         if self.db_cred.get("port"):
             args += ["-p", self.db_cred["port"]]
+        args += ["-v", "ON_ERROR_STOP=1"]
         args += ["-w", "-f", path, self.db_cred["database"]]
         env = os.environ.copy()
         env["PGPASSFILE"] = self.pgpass_path
         try:
             subprocess.check_call(args, env=env)
+        except subprocess.CalledProcessError:
+            self.fail("Failed to install %s" % path)
         except OSError:
             self.fail("Failed to install %s" % path)
 
