@@ -25,7 +25,7 @@ class Profile(noc.sa.profiles.Profile):
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "wr mem\n"
-    pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\((config|bridge)[^\)]*\))?#"
 
     def shutdown_session(self, script):
         script.cli("terminal no length")
