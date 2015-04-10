@@ -41,12 +41,13 @@ class Script(NOCScript):
                     }]
         if len(r) > 0:
             try:
-                t = self.cli("show config running include link_aggregation")
+                t = self.cli("show config running")
+                for match in self.rx_type.finditer(t):
+                    if match.group("type") == "lacp":
+                        for i in r:
+                            if i["interface"] == "ch" + match.group("group_id"):
+                                i["type"] = "L"
             except self.CLISyntaxError:
-                raise self.NotSupportedError()
-            for match in self.rx_type.finditer(t):
-                if match.group("type") == "lacp":
-                    for i in r:
-                        if i["interface"] == "ch" + match.group("group_id"):
-                            i["type"] = "L"
+                pass
+                
         return r
