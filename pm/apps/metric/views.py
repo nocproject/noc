@@ -27,7 +27,7 @@ class MetricApplication(ExtDocApplication):
         query = request.GET.get("query")
         metrics = []
         for m in tsdb.find(query):
-            is_leaf = Metric.objects.filter(parent=m).count() == 0
+            is_leaf = not tsdb.has_children(m)
             metrics += [{
                 "leaf": 1 if is_leaf else 0,
                 "text": m.split(".")[-1],
