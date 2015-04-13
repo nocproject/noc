@@ -231,5 +231,17 @@ class TimeSeriesDatabase(object):
         logger.debug("Opening partition %s", name)
         return self.kvcls(self, name)
 
+    def has_children(self, name):
+        """
+        Return True if metric has children
+        """
+        m = self.metrics.find_one({"name": name})
+        if not m:
+            return False
+        if self.metrics.find_one({"parent": m["hash"]}):
+            return True
+        else:
+            return False
+
 ## Singleton
 tsdb = TimeSeriesDatabase()
