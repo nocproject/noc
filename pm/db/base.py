@@ -83,17 +83,20 @@ class TimeSeriesDatabase(object):
             return "^" + mp
 
         def iter_path(parent, path, p, rest):
-            q = {
-                "parent": parent
-            }
             if p == "*":
-                pass  # Match all
+                # Match all
+                q = {
+                    "parent": parent
+                }
             elif has_wildcards(p):
                 mp = get_pattern(p)
-                q["local"] = {
-                    "$regex": mp
+                q = {
+                    "parent": parent,
+                    "local": {
+                        "$regex": mp
+                    }
                 }
-            elif rest and not has_wildcards(rest[0]):
+            else:
                 # Quick direct descend
                 pp = [p]
                 while rest and not has_wildcards(rest[0]):
@@ -102,13 +105,19 @@ class TimeSeriesDatabase(object):
                 if path:
                     pp = path + "." + pp
                 # Exact match
-                del q["parent"]
-                q["name"] = pp
-            else:
-                # Exact match
-                q["local"] = p
-            for m in sorted(self.metrics.find(q, {"name": 1, "hash": 1, "_id": 0}),
-                            key=lambda x: split_alnum(x["name"])):
+                if 0 and rest and rest[0] == "*":
+                    # x.y.z.*
+                    m = self.metrics.find_one(
+                        {"name": pp},
+                        {"name": 1, "hash": 1, "_id": 0}
+                    )
+                    if not m:
+                        raise StopIteration
+                    q = {"parent": m["hash"]}
+                    rest = rest[1:]
+                else:
+                    q = {"name": pp}
+            for m in self.metrics.find(q, {"name": 1, "hash": 1, "_id": 0}):
                 if rest:
                     for m in iter_path(m["hash"], m["name"], rest[0], rest[1:]):
                         yield m
@@ -116,7 +125,10 @@ class TimeSeriesDatabase(object):
                     yield m["name"]
 
         parts = path.replace(" ", "").split(".")
-        return [m for m in iter_path(self.zero_hash, "", parts[0], parts[1:])]
+        return sorted(
+            [m for m in iter_path(self.zero_hash, "", parts[0], parts[1:])],
+            key=lambda x: split_alnum(x)
+        )
 
     def fetch(self, metric, start, end):
         """
@@ -191,7 +203,7 @@ class TimeSeriesDatabase(object):
         # Check parents
         if "." in metric:
             parent = ".".join(metric.split(".")[:-1])
-            ph = self.metric_hash(parent)  # Update parent hashes
+            ph = Binary(self.metric_hash(parent))  # Update parent hashes
         else:
             ph = self.zero_hash
         # Update metrics directory
