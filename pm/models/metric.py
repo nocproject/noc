@@ -6,19 +6,22 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## NOC Modules
-from noc.lib.nosql import (Document, StringField, BinaryField)
+## Third-marty modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField, BinaryField
 
 
 class Metric(Document):
     meta = {
         "collection": "noc.ts.metrics",
-        "indexes": ["parent"]
+        "indexes": ["parent", ("parent", "local")]
     }
 
     name = StringField(unique=True)
     hash = BinaryField(unique=True)
-    parent = StringField()
+    parent = BinaryField()
+    # Name within parent
+    local = StringField()
 
     def __unicode__(self):
         return self.name

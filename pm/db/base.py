@@ -62,11 +62,15 @@ class TimeSeriesDatabase(object):
                 time.strptime(
                     config.get("pm_storage", "epoch"), "%Y-%m-%d"))
         )
+        self.zero_hash = Binary("\x00" * self.hash_width)
 
     def find(self, path):
         """
         Returns all metrics matching to path
         """
+        def has_wildcards(path):
+            return "*" in path or "?" in path or "{" in path
+
         def get_pattern(p):
             def variant(match):
                 v = match.group(0)
@@ -76,31 +80,43 @@ class TimeSeriesDatabase(object):
             mp = mp.replace("?", "[^.]")
             mp = self.rx_variant.sub(variant, mp)
             mp += "$"
-            return mp
+            return "^" + mp
 
-        def iter_path(parent, p, rest):
-            mp = get_pattern(p)
-            if parent:
-                mp = "\\.%s" % mp
+        def iter_path(parent, path, p, rest):
+            q = {
+                "parent": parent
+            }
+            if p == "*":
+                pass  # Match all
+            elif has_wildcards(p):
+                mp = get_pattern(p)
+                q["local"] = {
+                    "$regex": mp
+                }
+            elif rest and not has_wildcards(rest[0]):
+                # Quick direct descend
+                pp = [p]
+                while rest and not has_wildcards(rest[0]):
+                    pp += [rest.pop(0)]
+                pp = ".".join(pp)
+                if path:
+                    pp = path + "." + pp
+                # Exact match
+                del q["parent"]
+                q["name"] = pp
             else:
-                mp = "^%s" % mp
-            for m in sorted(self.metrics.find(
-                {
-                    "parent": parent,
-                    "name": {
-                        "$regex": mp
-                    }
-                },
-                {"name": 1, "_id": 0}
-            ), key=lambda x: split_alnum(x["name"])):
+                # Exact match
+                q["local"] = p
+            for m in sorted(self.metrics.find(q, {"name": 1, "hash": 1, "_id": 0}),
+                            key=lambda x: split_alnum(x["name"])):
                 if rest:
-                    for m in iter_path(m["name"], rest[0], rest[1:]):
+                    for m in iter_path(m["hash"], m["name"], rest[0], rest[1:]):
                         yield m
                 else:
                     yield m["name"]
 
         parts = path.replace(" ", "").split(".")
-        return [m for m in iter_path("", parts[0], parts[1:])]
+        return [m for m in iter_path(self.zero_hash, "", parts[0], parts[1:])]
 
     def fetch(self, metric, start, end):
         """
@@ -175,9 +191,9 @@ class TimeSeriesDatabase(object):
         # Check parents
         if "." in metric:
             parent = ".".join(metric.split(".")[:-1])
-            self.metric_hash(parent)  # Update parent hashes
+            ph = self.metric_hash(parent)  # Update parent hashes
         else:
-            parent = ""
+            ph = self.zero_hash
         # Update metrics directory
         self.metrics_batch \
             .find({"name": metric}) \
@@ -185,7 +201,8 @@ class TimeSeriesDatabase(object):
             .update({
                 "$setOnInsert": {
                     "hash": Binary(ma),
-                    "parent": parent
+                    "parent": ph,
+                    "local": metric.split(".")[-1]
                 }
             })
         self.new_metrics += 1
