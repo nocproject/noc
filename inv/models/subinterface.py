@@ -12,6 +12,7 @@ from noc.lib.nosql import (Document, PlainReferenceField,
                            ListField, IntField)
 from forwardinginstance import ForwardingInstance
 from interface import Interface
+from interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
@@ -56,6 +57,8 @@ class SubInterface(Document):
         ForwardingInstance, required=False)
     name = StringField()
     description = StringField(required=False)
+    profile = PlainReferenceField(InterfaceProfile,
+        default=InterfaceProfile.get_default_profile)
     mtu = IntField(required=False)
     mac = StringField(required=False)
     vlan_ids = ListField(IntField(), default=[])
@@ -87,3 +90,9 @@ class SubInterface(Document):
     @property
     def effective_vc_domain(self):
         return self.interface.effective_vc_domain
+
+    def get_profile(self):
+        if self.profile:
+            return self.profile
+        else:
+            return self.interface.profile
