@@ -24,6 +24,10 @@ default_interface_profile =
 # Interval in seconds to find duplicated events
 # 0 - disable deduplication
 deduplication_window = 3
+# Rule lookup solution
+# * noc.fm.classifier.rulelookup.RuleLookup - default lookup
+# * noc.solutions.noc.hifm.fm.classifier.lookup.HiFMRLookup - HiFM
+lookup_solution = noc.fm.classifier.rulelookup.RuleLookup
 
 [collector]
 # Enable distributed event collecting and classification

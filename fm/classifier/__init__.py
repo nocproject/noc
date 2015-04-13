@@ -47,7 +47,7 @@ from trigger import Trigger
 from exception import InvalidPatternException, EventProcessingFailed
 from cloningrule import CloningRule
 from rule import Rule
-from noc.lib.solutions import get_event_class_handlers
+from noc.lib.solutions import get_event_class_handlers, get_solution
 
 ##
 ## Exceptions
@@ -101,6 +101,8 @@ class Classifier(Daemon):
         self.default_link_action = None
         self.is_distributed = False
         self.collector_id = None
+        # Lookup solution setup
+        self.lookup_cls = None
         Daemon.__init__(self)
         self.logger.info("Running Classifier version %s", self.version)
         self.correlator_scheduler = CorrelatorScheduler()
@@ -118,6 +120,9 @@ class Classifier(Daemon):
         super(Classifier, self).load_config()
         self.deduplication_window = self.config.getint(
             "classifier", "deduplication_window")
+        lsn = self.config.get("classifier", "lookup_solution")
+        self.logger.info("Using rule lookup solution: %s", lsn)
+        self.lookup_cls = get_solution(lsn)
         self.load_enumerations()
         self.load_rules()
         self.load_triggers()
@@ -185,6 +190,10 @@ class Classifier(Daemon):
             self,
             EventClassificationRule.objects.filter(name=self.DEFAULT_RULE).first()
         )
+        # Apply lookup solution
+        for p in self.rules:
+            for c in self.rules[p]:
+                self.rules[p][c] = self.lookup_cls(self.rules[p][c])
         self.logger.info("%d rules are loaded in the %d profiles",
             n, len(self.rules))
 
@@ -484,16 +493,16 @@ class Classifier(Daemon):
             chain = "snmp_trap"
         else:
             chain = "other"
-        # Find rules chain
-        rc = self.rules.get(event.managed_object.profile_name, {})
-        #
-        for r in rc.get(chain, []):
-            # Try to match rule
-            v = r.match(event, vars)
-            if v is not None:
-                self.logger.debug("Matching class for event %s found: %s (Rule: %s)",
-                    event.id, r.event_class_name, r.name)
-                return r, v
+        # Find rules lookup
+        lookup = self.rules.get(event.managed_object.profile_name, {}).get(chain)
+        if lookup:
+            for r in lookup.lookup_rules(event):
+                # Try to match rule
+                v = r.match(event, vars)
+                if v is not None:
+                    self.logger.debug("Matching class for event %s found: %s (Rule: %s)",
+                        event.id, r.event_class_name, r.name)
+                    return r, v
         if self.default_rule:
             return self.default_rule, {}
         return None, None
