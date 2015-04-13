@@ -31,6 +31,7 @@ class Rule(object):
     def __init__(self, classifier, rule, clone_rule=None):
         self.classifier = classifier
         self.rule = rule
+        self.preference = rule.preference
         self.name = rule.name
         if clone_rule:
             self.name += "(Clone %s)" % clone_rule.name
