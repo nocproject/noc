@@ -8,7 +8,7 @@
 
 ## Third-marty modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BinaryField
+from mongoengine.fields import StringField, BinaryField, BooleanField
 
 
 class Metric(Document):
@@ -22,6 +22,7 @@ class Metric(Document):
     parent = BinaryField()
     # Name within parent
     local = StringField()
+    has_children = BooleanField()
 
     def __unicode__(self):
         return self.name

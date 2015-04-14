@@ -14,6 +14,7 @@ import re
 import threading
 import time
 import datetime
+from collections import namedtuple
 ## Third-party modules
 import cachetools
 from bson.binary import Binary
@@ -54,7 +55,7 @@ class TimeSeriesDatabase(object):
         self.partition = load_name("noc.pm.db.partition", ps, Partition)
         # Index collection
         self.metrics = get_db()["noc.ts.metrics"]
-        self.metrics_batch = self.metrics.initialize_unordered_bulk_op()
+        self.metrics_batch = self.metrics.initialize_ordered_bulk_op()
         self.new_metrics = 0
         self.flush_lock = threading.Lock()
         self.epoch = int(
@@ -64,10 +65,7 @@ class TimeSeriesDatabase(object):
         )
         self.zero_hash = Binary("\x00" * self.hash_width)
 
-    def find(self, path):
-        """
-        Returns all metrics matching to path
-        """
+    def iter_path(self, parent, path, p, rest):
         def has_wildcards(path):
             return "*" in path or "?" in path or "{" in path
 
@@ -82,52 +80,70 @@ class TimeSeriesDatabase(object):
             mp += "$"
             return "^" + mp
 
-        def iter_path(parent, path, p, rest):
-            if p == "*":
-                # Match all
-                q = {
-                    "parent": parent
+        if p == "*":
+            # Match all
+            q = {
+                "parent": parent
+            }
+        elif has_wildcards(p):
+            mp = get_pattern(p)
+            q = {
+                "parent": parent,
+                "local": {
+                    "$regex": mp
                 }
-            elif has_wildcards(p):
-                mp = get_pattern(p)
-                q = {
-                    "parent": parent,
-                    "local": {
-                        "$regex": mp
-                    }
-                }
+            }
+        else:
+            # Quick direct descend
+            pp = [p]
+            while rest and not has_wildcards(rest[0]):
+                pp += [rest.pop(0)]
+            pp = ".".join(pp)
+            if path:
+                pp = path + "." + pp
+            # Exact match
+            if 0 and rest and rest[0] == "*":
+                # x.y.z.*
+                m = self.metrics.find_one(
+                    {"name": pp},
+                    {"name": 1, "hash": 1, "_id": 0}
+                )
+                if not m:
+                    raise StopIteration
+                q = {"parent": m["hash"]}
+                rest = rest[1:]
             else:
-                # Quick direct descend
-                pp = [p]
-                while rest and not has_wildcards(rest[0]):
-                    pp += [rest.pop(0)]
-                pp = ".".join(pp)
-                if path:
-                    pp = path + "." + pp
-                # Exact match
-                if 0 and rest and rest[0] == "*":
-                    # x.y.z.*
-                    m = self.metrics.find_one(
-                        {"name": pp},
-                        {"name": 1, "hash": 1, "_id": 0}
-                    )
-                    if not m:
-                        raise StopIteration
-                    q = {"parent": m["hash"]}
-                    rest = rest[1:]
-                else:
-                    q = {"name": pp}
-            for m in self.metrics.find(q, {"name": 1, "hash": 1, "_id": 0}):
-                if rest:
-                    for m in iter_path(m["hash"], m["name"], rest[0], rest[1:]):
-                        yield m
-                else:
-                    yield m["name"]
+                q = {"name": pp}
+        for m in self.metrics.find(
+                q,
+                {"name": 1, "hash": 1, "has_children": 1, "_id": 0}
+        ):
+            if rest:
+                if m["has_children"]:
+                    for mm in self.iter_path(m["hash"], m["name"],
+                                             rest[0], rest[1:]):
+                        yield mm
+            else:
+                yield IterResult(name=m["name"], has_children=m["has_children"])
 
+    def find(self, path):
+        """
+        Returns all metrics matching to path
+        """
         parts = path.replace(" ", "").split(".")
         return sorted(
-            [m for m in iter_path(self.zero_hash, "", parts[0], parts[1:])],
+            [m.name for m in self.iter_path(self.zero_hash, "", parts[0], parts[1:])],
             key=lambda x: split_alnum(x)
+        )
+
+    def find_detail(self, path):
+        """
+        Find metrics and return IterResult instances
+        """
+        parts = path.replace(" ", "").split(".")
+        return sorted(
+            [m for m in self.iter_path(self.zero_hash, "", parts[0], parts[1:])],
+            key=lambda x: split_alnum(x.name)
         )
 
     def fetch(self, metric, start, end):
@@ -204,6 +220,17 @@ class TimeSeriesDatabase(object):
         if "." in metric:
             parent = ".".join(metric.split(".")[:-1])
             ph = Binary(self.metric_hash(parent))  # Update parent hashes
+            self.metrics_batch.find({
+                "name": parent,
+                "$or": [
+                    {"has_children": False},
+                    {"has_children": {"$exists": False}}
+                ]
+            }).update({
+                "$set": {
+                    "has_children": True
+                }
+            })
         else:
             ph = self.zero_hash
         # Update metrics directory
@@ -214,7 +241,8 @@ class TimeSeriesDatabase(object):
                 "$setOnInsert": {
                     "hash": Binary(ma),
                     "parent": ph,
-                    "local": metric.split(".")[-1]
+                    "local": metric.split(".")[-1],
+                    "has_children": False
                 }
             })
         self.new_metrics += 1
@@ -254,6 +282,8 @@ class TimeSeriesDatabase(object):
             return True
         else:
             return False
+
+IterResult = namedtuple("IterResult", ["name", "has_children"])
 
 ## Singleton
 tsdb = TimeSeriesDatabase()
