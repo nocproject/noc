@@ -26,15 +26,19 @@ class MetricApplication(ExtDocApplication):
     def api_graphite_find(self, request):
         query = request.GET.get("query")
         metrics = []
-        for m in tsdb.find(query):
-            is_leaf = not tsdb.has_children(m)
+        seen = set()
+        for m in tsdb.find_detail(query):
+            name = m.name.split(".")[-1]
+            if name in seen:
+                continue
+            seen.add(name)
+            is_leaf = not m.has_children
             metrics += [{
                 "leaf": 1 if is_leaf else 0,
-                "text": m.split(".")[-1],
+                "text": name,
                 "id": m,
                 "allowChildren": 0 if is_leaf else 1,
                 "context": {},
                 "expandable": 0 if is_leaf else 1
             }]
-        self.logger.debug("find: %s", metrics)
         return metrics
