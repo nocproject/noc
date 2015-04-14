@@ -88,9 +88,10 @@ class BaseValidator(object):
     #   * version - string or re, or list of string or re to match version
     restrictions = []
 
-    INTERFACE = 1
-    OBJECT = 1 << 1
-    TOPOLOGY = 1 << 2
+    SUBINTERFACE = 1
+    INTERFACE = 1 << 1
+    OBJECT = 1 << 2
+    TOPOLOGY = 1 << 3
     # Validation scope
     SCOPE = OBJECT
 
@@ -173,6 +174,10 @@ class BaseValidator(object):
         Validate engine facts and raise error
         """
         pass
+
+    @classmethod
+    def is_subinterface(cls):
+        return bool(cls.SCOPE & cls.SUBINTERFACE)
 
     @classmethod
     def is_interface(cls):
