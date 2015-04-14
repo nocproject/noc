@@ -31,6 +31,8 @@ class DiscoveryScheduler(Scheduler):
                 self.register_all(jd)
 
     def can_run(self, job):
+        if not super(DiscoveryScheduler, self).can_run(job):
+            return False
         group = job.get_group()
         if group is not None:
             with self.running_lock:

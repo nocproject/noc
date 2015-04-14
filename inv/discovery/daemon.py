@@ -43,6 +43,8 @@ class DiscoveryDaemon(Daemon):
         self.scheduler.set_job_log(log_jobs)
         max_faults = self.config.getint("main", "max_job_faults")
         self.scheduler.max_faults = max_faults or None
+        mrt_limit = self.config.getint("main", "mrt_limit")
+        self.scheduler.mrt_limit = mrt_limit or None
 
     def load_beef_map(self):
         for o in self.config.options("beef"):
