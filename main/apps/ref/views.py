@@ -196,10 +196,12 @@ class RefAppplication(ExtApplication):
                 p = k.split(".")
                 solution = "%s.%s" % (p[2], p[3])
             tags = []
-            if v.is_object:
+            if v.is_object():
                 tags += ["OBJECT"]
-            if v.is_interface:
+            if v.is_interface():
                 tags += ["INTERFACE"]
+            if v.is_subinterface():
+                tags += ["SUBINTERFACE"]
             if v.TAGS:
                 tags += v.TAGS
             r = {
