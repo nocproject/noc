@@ -74,8 +74,8 @@ class TimeSeriesDatabase(object):
                 v = match.group(0)
                 return "(?:%s)" % "|".join(v[1:-1].split(","))
 
-            mp = p.replace("*", "[^.]*")
-            mp = mp.replace("?", "[^.]")
+            mp = p.replace("*", ".*")
+            mp = mp.replace("?", ".")
             mp = self.rx_variant.sub(variant, mp)
             mp += "$"
             return "^" + mp
