@@ -16,6 +16,9 @@ max_job_faults = 0
 # Delay running jobs for several seconds
 # to prevent failed SA jobs
 start_delay = 10
+# Limit concurrent SA tasks
+# 0 - no limit
+mrt_limit = 0
 
 [debug]
 enable_manhole = false

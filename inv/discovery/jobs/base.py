@@ -45,8 +45,14 @@ class MODiscoveryJob(IntervalJob):
         return {"id": self.key, "is_managed": True}
 
     def can_run(self):
-        return self.object.get_status() and (
-            not self.map_task or self.object.is_managed)
+        if self.map_task:
+            if not self.object.is_managed:
+                self.logger.debug("Object is not managed")
+                return False
+            if not self.object.get_status():
+                self.logger.debug("Object is down")
+                return False
+        return True
 
     def get_group(self):
         return "discovery-%s" % self.key

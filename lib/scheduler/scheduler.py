@@ -62,7 +62,8 @@ class Scheduler(object):
 
     def __init__(self, name, cleanup=None, reset_running=False,
                  initial_submit=False, max_threads=None,
-                 preserve_order=False, max_faults=None):
+                 preserve_order=False, max_faults=None,
+                 mrt_limit=None):
         self.logger = PrefixLoggerAdapter(logger, name)
         self.name = name
         self.job_classes = {}
@@ -77,6 +78,8 @@ class Scheduler(object):
         self.max_threads = max_threads
         self.preserve_order = preserve_order
         self.max_faults = max_faults
+        self.mrt_limit = mrt_limit
+        self.mrt_overload = False
         self.running_lock = threading.Lock()
         self.running_count = defaultdict(int)  # Group -> Count
         self.log_jobs = None
@@ -396,6 +399,7 @@ class Scheduler(object):
 
     def run_pending(self):
         n = 0
+        self.mrt_overload = False
         # Run pending intial submits
         if self.initial_submit_next_check:
             for jcls in self.initial_submit_next_check:
@@ -512,6 +516,13 @@ class Scheduler(object):
             return self.running_count.copy()
 
     def can_run(self, job):
+        if job.map_task and self.mrt_limit:
+            if self.mrt_overload:
+                return False
+            if len(self.active_mrt) >= self.mrt_limit:
+                self.logger.info("MRT limit reached. Suspending MRT jobs")
+                self.mrt_overload = True
+                return False
         return True
 
     def get_job(self, job_class, key=None):
