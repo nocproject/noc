@@ -24,6 +24,7 @@ from noc.inv.models.subinterface import SubInterface as InvSubInterface
 from noc.lib.debug import error_report
 from noc.lib.solutions import get_solution
 from noc.cm.models.objectfact import ObjectFact
+from noc.lib.clipsenv import CLIPSEnv
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +33,9 @@ class Engine(object):
     def __init__(self, object):
         self.object = object
         self.logger = PrefixLoggerAdapter(logger, self.object.name)
-        self.logger.debug("Creating CLIPS environment")
-        self.env = clips.Environment()
+        self.env = None
         self.templates = {}  # fact class -> template
         self.fcls = {}  # template -> Fact class
-        self.get_template(Error(None))
-        self.get_template(Role(None))
         self.facts = {}  # Index -> Fact
         self.rn = 0  # Rule number
         self.config = None  # Cached config
@@ -140,6 +138,11 @@ class Engine(object):
         self.rn += 1
 
     def check(self):
+        with CLIPSEnv() as env:
+            self.env = env
+            self._check()
+
+    def _check(self):
         """
         Perform object configuration check
         """
@@ -156,6 +159,9 @@ class Engine(object):
         self.interface_ranges = parser.interface_ranges
         self.logger.debug("%d interface sections detected",
                           len(self.interface_ranges))
+        # Define default templates
+        self.get_template(Error(None))
+        self.get_template(Role(None))
         # Learn facts
         self.logger.debug("Learning facts")
         self.learn(facts)
