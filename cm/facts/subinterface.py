@@ -11,12 +11,13 @@ import bisect
 import logging
 ## NOC modules
 from base import BaseFact
+from noc.inv.models.subinterface import SubInterface as DBSubInterface
 
 logger = logging.getLogger(__name__)
 
 
 class SubInterface(BaseFact):
-    ATTRS = ["name", "description", "admin_status",
+    ATTRS = ["name", "description", "admin_status", "profile",
              "[vlan_ids]",
              "[ipv4_addresses]", "[ipv6_addresses]",
              "ip_proxy_arp", "ip_redirects",
@@ -31,7 +32,7 @@ class SubInterface(BaseFact):
     ID = ["name"]
 
     def __init__(self, name, interface=None, description=None,
-                 admin_status=False, vlan_ids=None,
+                 admin_status=False, profile=None, vlan_ids=None,
                  ip_proxy_arp=False,
                  ip_redirects=False, tagged_vlans=None, 
                  untagged_vlan=None, ipv4_addresses=None,
@@ -47,6 +48,7 @@ class SubInterface(BaseFact):
         self.interface = interface
         self.description = description
         self.admin_status = admin_status
+        self.profile = profile
         self.vlan_ids = vlan_ids
         self.has_description = False
         self.ipv4_addresses = ipv4_addresses
@@ -273,3 +275,22 @@ class SubInterface(BaseFact):
                 logger.error("Unknown PIM version '%s'", value)
         else:
             self._pim_version = None
+
+    @property
+    def profile(self):
+        return self._profile
+
+    @profile.setter
+    def profile(self, value):
+        self._profile = value if value else None
+
+    def bind(self):
+        if self.name:
+            self.name = self.managed_object.profile.convert_interface_name(self.name)
+            si = DBSubInterface.objects.filter(
+                managed_object=self.managed_object.id,
+                name=self.name
+            ).first()
+            if si:
+                logger.debug("bind %s to database", unicode(self))
+                si.profile = si.get_profile()

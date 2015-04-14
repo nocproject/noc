@@ -20,6 +20,7 @@ from noc.cm.facts.role import Role
 from noc.lib.log import PrefixLoggerAdapter
 from noc.cm.models.validationpolicysettings import ValidationPolicySettings
 from noc.inv.models.interface import Interface as InvInterface
+from noc.inv.models.subinterface import SubInterface as InvSubInterface
 from noc.lib.debug import error_report
 from noc.lib.solutions import get_solution
 from noc.cm.models.objectfact import ObjectFact
@@ -268,6 +269,26 @@ class Engine(object):
                     r += [
                         vc(self, iface, rule.config,
                            BaseValidator.INTERFACE, rule)
+                        for vc, rule in rs
+                    ]
+        # Subinterface profile rules
+        profile_subinterfaces = defaultdict(list)
+        for si in InvSubInterface.objects.filter(managed_object=self.object.id):
+            p = si.get_profile()
+            if p:
+                profile_subinterfaces[p] += [si]
+        for p in profile_subinterfaces:
+            ps = ValidationPolicySettings.objects.filter(
+                model_id="inv.InterfaceProfile", object_id=str(p.id)
+            ).first()
+            if not ps or not ps.policies:
+                continue
+            rs = self._get_rule_settings(ps, BaseValidator.SUBINTERFACE)
+            if rs:
+                for si in profile_subinterfaces[p]:
+                    r += [
+                        vc(self, si, rule.config,
+                           BaseValidator.SUBINTERFACE, rule)
                         for vc, rule in rs
                     ]
         return r
