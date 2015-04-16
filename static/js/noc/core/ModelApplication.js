@@ -622,7 +622,7 @@ Ext.define("NOC.core.ModelApplication", {
     showForm: function() {
         var me = this;
         me.showItem(me.ITEM_FORM);
-        if(me.formPanel.getDefaultFocus) {
+        if(me.formPanel && me.formPanel.getDefaultFocus) {
             me.formPanel.getDefaultFocus().focus();
         }
     },
