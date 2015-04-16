@@ -218,7 +218,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
     onSelectEventClass: function(combo, records, opts) {
         var me = this;
         if(!me.currentRecord) {
-            var name = records[0].get("label"),
+            var name = records.get("label"),
                 f = me.form.findField("name"),
                 v = f.getValue();
             if(v.match(/<name>/)) {
