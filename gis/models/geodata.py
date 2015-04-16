@@ -1,32 +1,32 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Point object
+## Geodata
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.contrib.gis.db import models
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import ReferenceField, StringField, PointField
+## NOC modules
+from layer import Layer
+from noc.inv.models.object import Object
 
 
-class GeoData(models.Model):
-    class Meta:
-        verbose_name = "Geo Data"
-        verbose_name_plural = "Geo Data"
-        app_label = "gis"
-        db_table = "gis_geodata"
+class GeoData(Document):
+    meta = {
+        "collection": "noc.geodata"
+    }
 
     # Layer id
-    layer = models.CharField(max_length=24, db_index=True)
+    layer = ReferenceField(Layer)
     # Inventory Object's ObjectId
-    object = models.CharField(max_length=24, db_index=True)
+    object = ReferenceField(Object)
     #
-    label = models.CharField(max_length=64, null=True, blank=True)
+    label = StringField()
     # Spatial data
-    data = models.GeometryField()
-    #
-    objects = models.GeoManager()
+    data = PointField(auto_index=True)
 
     def __unicode__(self):
         return self.label or self.object
