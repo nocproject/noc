@@ -52,7 +52,6 @@ fi
 ##
 info "Installing system packages"
 install_pkg postgresql93-server
-install_pkg postgis-2.1.5
 install_pkg mongodb
 install_pkg python27
 install_pkg py27-virtualenv
@@ -61,7 +60,6 @@ install_pkg gmp
 install_pkg libsmi
 install_pkg nginx
 install_pkg quilt
-install_pkg gdal
 ##
 ## Set up daemon autostart
 ##
