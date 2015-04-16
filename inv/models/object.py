@@ -22,7 +22,6 @@ from noc.lib.nosql import PlainReferenceField
 from noc.lib.utils import deep_merge
 from noc.lib.middleware import get_user
 from noc.lib.gridvcs.manager import GridVCSField
-from noc.gis.map import map
 
 
 class Object(Document):
@@ -396,6 +395,7 @@ class Object(Document):
         """
         Update map point
         """
+        from noc.gis.map import map
         # Check geopoint interface is supported
         layer = document.get_data("geopoint", "layer")
         if not layer:
@@ -406,15 +406,16 @@ class Object(Document):
         if not x or not y:
             map.delete_point(document.id, layer)
         else:
-            map.set_point(document.id, layer, x, y, srid=srid, label=document.name)
+            map.set_point(document, layer, x, y, srid=srid, label=document.name)
 
     @classmethod
     def delete_geo_point(cls, sender, document, target=None):
         # Check geopoint interface is supported
+        from noc.gis.map import map
         layer = document.get_data("geopoint", "layer")
         if not layer:
             return
-        map.delete_point(document.id)
+        map.delete_point(document)
 
     @classmethod
     def delete_disconnect(cls, sender, document, target=None):
