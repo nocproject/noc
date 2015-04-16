@@ -6,16 +6,12 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.contrib.gis.geos import Point, Polygon
-from django.contrib.gis.gdal.srs import SpatialReference, CoordTransform
 ## Third-party modules
-from vectorformats.Formats.Django import Django as vfDjango
-from vectorformats.Formats.GeoJSON import GeoJSON as vfGeoJSON
+import pyproj
+import geojson
 ## NOC modules
 from noc.gis.models.layer import Layer
 from noc.gis.models.geodata import GeoData
-from noc.gis.models.srs import SRS
 
 
 class Map(object):
@@ -26,38 +22,35 @@ class Map(object):
     def __init__(self):
         self.layers = {}
         self.srid_map = {}
-        self.srid = SpatialReference("EPSG:4326")
+        # Database projection
+        self.proj = {}
+        self.db_proj = self.get_proj("EPSG:4326")
+        self.proj["EPSG:900913"] = self.get_proj("EPSG:3857")
 
-    def __del__(self):
-        # @todo: Remove dirty hack
-        # Override SpatialReference.__del__ exception
-        self.srid._ptr = None
-        self.srid = None
+    def get_proj(self, srid):
+        if isinstance(srid, pyproj.Proj):
+            return srid
+        ss = self.proj.get(srid)
+        if not ss:
+            ss = pyproj.Proj(init=srid)
+            self.proj[srid] = ss
+        return ss
 
     def set_point(self, object, layer, x, y, srid=None, label=None):
-        # Convert object to ObjectId
-        if hasattr(object, "id"):
-            object = object.id
-        object = str(object)
         # Resolve layer
         layer = self.get_layer(layer)
-        # Resolve SRS
-        if srid:
-            srid = self.get_srid(srid)
         # Try to find existing point
-        try:
-            p = GeoData.objects.get(layer=layer, object=object)
-        except GeoData.DoesNotExist:
+        p = GeoData.objects.filter(layer=layer, object=object).first()
+        if not p:
             p = GeoData(layer=layer, object=object)
-        p.data = Point(x, y, srid=srid)
+        # Set point
+        src_srid = self.get_proj(srid) if srid else self.db_proj
+        pd = geojson.Point(coordinates=[x, y])
+        p.data = self.transform(pd, src_srid, self.db_proj)
         p.label = label
         p.save()
 
     def delete_point(self, object, layer=None):
-        # Convert object to ObjectId
-        if hasattr(object, "id"):
-            object = object.id
-        object = str(object)
         if layer:
             # Resolve layer
             layer = self.get_layer(layer)
@@ -74,18 +67,6 @@ class Map(object):
             return self.layers[name]
         raise Exception("Layer not found: %s" % name)
 
-    def get_srid(self, srid):
-        if isinstance(srid, basestring):
-            if srid in self.srid_map:
-                return self.srid_map[srid]
-            auth_name, auth_srid = srid.split(":")
-            srs = SRS.objects.get(
-                auth_name=auth_name, auth_srid=int(auth_srid))
-            self.srid_map[srid] = srs.srid
-            return srs.srid
-        else:
-            return int(srid)
-
     def get_default_zoom(self, layer, object=None):
         layer = Layer.objects.filter(code=layer).first()
         if not layer:
@@ -96,6 +77,16 @@ class Map(object):
                 return zl
         return layer.default_zoom
 
+    def get_bbox(self, x0, y0, x1, y1, srid):
+        src_proj = self.get_proj(srid)
+        cx0, cy0 = pyproj.transform(src_proj, self.db_proj, x0, y0)
+        cx1, cy1 = pyproj.transform(src_proj, self.db_proj, x1, y1)
+        bbox = geojson.Polygon(
+            [[[cx0, cy0], [cx1, cy0], [cx1, cy1],
+              [cx0, cy1], [cx0, cy0]]]
+        )
+        return bbox
+
     def get_layer_objects(self, layer, x0, y0, x1, y1, srid):
         """
         Extract GeoJSON from bounding box
@@ -103,21 +94,18 @@ class Map(object):
         l = Layer.objects.filter(code=layer).first()
         if not l:
             return {}
-        # Build bounding box
-        dst_srid = SpatialReference(srid)
-        from_transform = CoordTransform(
-            dst_srid,
-            self.srid
-        )
-        bbox = Polygon.from_bbox((x0, y0, x1, y1))
-        bbox.srid = dst_srid.srid
-        bbox.transform(from_transform)
-        # Seed result
-        qs = GeoData.objects.filter(layer=l.id, data__intersects=bbox).transform(dst_srid.srid)
-        dj = vfDjango(geodjango="data", properties=["object", "label"])
-        gj = vfGeoJSON()
-        gj.crs = srid
-        return gj.encode(dj.decode(qs))
+        features = []
+        bbox = self.get_bbox(x0, y0, x1, y1, srid)
+        for d in GeoData.objects.filter(layer=l, data__geo_within=bbox):
+            features += [geojson.Feature(
+                id=str(d["id"]),
+                geometry=self.transform(d["data"], self.db_proj, srid),
+                properties={
+                    "object": str(d.object.id),
+                    "label": d.label.encode("utf-8") if d.label else ""
+                }
+            )]
+        return geojson.FeatureCollection(features=features, crs=srid)
 
     def get_conduits_layers(self):
         """
@@ -138,5 +126,60 @@ class Map(object):
                 code__in=self.POP_LAYERS).values_list("id")
         return self._pop_layers_ids
 
+    def transform(self, data, src_srid, dst_srid):
+        src = self.get_proj(src_srid)
+        dst = self.get_proj(dst_srid)
+        if src == dst:
+            return data
+        if data["type"] == "Point":
+            x, y = data["coordinates"]
+            data["coordinates"] = pyproj.transform(
+                src, dst, x, y)
+        return data
+
+    def get_connection_layer(self, layers, x0, y0, x1, y1, srid, name,
+                             cfilter=None):
+        """
+        Build line connections
+        """
+        bbox = self.get_bbox(x0, y0, x1, y1, srid)
+        # Get all objects from desired layer
+        points = {}  # Object.id, point
+        lines = set()  # (object1, object2)
+        for gd in GeoData.objects.filter(layer__in=layers, data__geo_within=bbox):
+            d = self.transform(gd.data, self.db_proj, srid)
+            points[str(gd.object.id)] = d["coordinates"]
+            # Get all lines connections
+            for c, remote, remote_name in gd.object.get_genderless_connections(name):
+                if (remote, gd.object) not in lines and (not cfilter or cfilter(c)):
+                    lines.add((gd.object, remote))
+        # Find and resolve missed points
+        missed_points = set()
+        for o1, o2 in lines:
+            o1_id = str(o1.id)
+            if o1_id not in points:
+                missed_points.add(o1_id)
+            o2_id = str(o2.id)
+            if o2_id not in points:
+                missed_points.add(o2_id)
+        if missed_points:
+            for gd in GeoData.objects.filter(
+                    layer__in=layers, object__in=missed_points):
+                d = self.transform(gd.data, self.db_proj, srid)
+                points[gd.object] = d["coordinates"]
+        features = []
+        for o1, o2 in lines:
+            o1_id = str(o1.id)
+            o2_id = str(o2.id)
+            if o1_id not in points or o2_id not in points:
+                continue  # Skip unresolved connection
+            ls = geojson.LineString(
+                coordinates=[points[o1_id], points[o2_id]]
+            )
+            features += [geojson.Feature(
+                id="%s-%s" % (o1_id, o2_id),
+                geometry=ls
+            )]
+        return geojson.FeatureCollection(features=features, crs=srid)
 
 map = Map()
