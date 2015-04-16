@@ -1,0 +1,30 @@
+{
+    "name": "Network | Monitor | CRC Error Detected",
+    "uuid": "5244b3d5-726f-4085-8b7d-e84ee6b85b57",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "text": {
+        "en": {
+            "subject_template": "CRC error detected on port {{interface}}",
+            "body_template": "CRC error detected {{interface}}",
+            "symptoms": "",
+            "probable_causes": "",
+            "recommended_actions": ""
+        }
+    },
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | Monitor | CRC Error Detected"
+        }
+    ]
+}
