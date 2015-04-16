@@ -9,9 +9,6 @@
 ## Django modules
 from django.contrib.gis.geos import Polygon, LineString, Point
 from django.contrib.gis.gdal.srs import SpatialReference, CoordTransform
-## Third-party modules
-from vectorformats.Formats.GeoJSON import GeoJSON
-from vectorformats.Feature import Feature
 ## NOC modules
 from base import InvPlugin
 from noc.gis.map import map
@@ -146,9 +143,7 @@ class MapPlugin(InvPlugin):
             builder = self.get_pop_links_layer
         else:
             builder = map.get_layer_objects
-        return self.app.render_response(
-            builder(layer, x0, y0, x1, y1, srid),
-            content_type="text/json")
+        return builder(layer, x0, y0, x1, y1, srid)
 
     def api_set_geopoint(self, request, id, srid=None, x=None, y=None):
         o = self.app.get_object_or_404(Object, id=id)
@@ -166,68 +161,11 @@ class MapPlugin(InvPlugin):
             "model": o.model.name
         }
 
-    def get_connection_layer(self, layers, x0, y0, x1, y1, srid, name,
-                             cfilter=None):
-        """
-        Build conduits layer
-        """
-        # Build bounding box
-        dst_srid = SpatialReference(srid)
-        from_transform = CoordTransform(
-            dst_srid,
-            map.srid
-        )
-        bbox = Polygon.from_bbox((x0, y0, x1, y1))
-        bbox.srid = dst_srid.srid
-        bbox.transform(from_transform)
-        # Get all objects from *manholes* layer
-        points = {}  # Object.id, point
-        lines = set()  # (object1, object2)
-        for gd in GeoData.objects.filter(
-                layer__in=layers, data__intersects=bbox
-        ).transform(dst_srid.srid):
-            object = Object.objects.get(id=gd.object)
-            points[str(object.id)] = gd.data
-            # Get all lines connections
-            for c, remote, remote_name in object.get_genderless_connections(name):
-                if (remote, object) not in lines and (not cfilter or cfilter(c)):
-                    lines.add((object, remote))
-        # Find and resolve missed points
-        missed_points = set()
-        for o1, o2 in lines:
-            o1_id = str(o1.id)
-            if o1_id not in points:
-                missed_points.add(o1_id)
-            o2_id = str(o2.id)
-            if o2_id not in points:
-                missed_points.add(o2_id)
-        if missed_points:
-            for gd in GeoData.objects.filter(
-                    layer__in=layers, object__in=missed_points
-            ).transform(dst_srid.srid):
-                points[gd.object] = gd.data
-        cdata = []
-        for o1, o2 in lines:
-            o1_id = str(o1.id)
-            o2_id = str(o2.id)
-            if o1_id not in points or o2_id not in points:
-                continue  # Skip unresolved conduit
-            ls = LineString(points[o1_id], points[o2_id])
-            f = Feature(len(cdata))
-            f.geometry = {
-                "type": ls.geom_type,
-                "coordinates": ls.coords
-            }
-            cdata += [f]
-        gj = GeoJSON()
-        gj.crs = srid
-        return gj.encode(cdata)
-
     def get_conduits_layer(self, layer, x0, y0, x1, y1, srid):
         layers = map.get_conduits_layers()
         if not layers:
             return {}
-        return self.get_connection_layer(
+        return map.get_connection_layer(
             layers, x0, y0, x1, y1, srid, "ducts")
 
     def get_pop_links_layer(self, layer, x0, y0, x1, y1, srid):
@@ -235,10 +173,10 @@ class MapPlugin(InvPlugin):
         if not layers:
             return {}
         level = int(layer[9:])
-        return self.get_connection_layer(
+        return map.get_connection_layer(
             layers, x0, y0, x1, y1, srid, "links",
             cfilter=lambda c: c.data.get("level") == level
-            )
+        )
 
     def api_set_layer_visibility(self, request, layer, status):
         l = self.app.get_object_or_404(Layer, code=layer)
