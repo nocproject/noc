@@ -91,7 +91,6 @@ yuminstall openssh-clients.x86_64
 yuminstall libpqxx-devel.x86_64
 yuminstall python-devel.x86_64
 yuminstall gmp-devel
-yuminstall postgis2_93
 yuminstall gcc
 pip install virtualenv mercurial
 ##

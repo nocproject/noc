@@ -73,7 +73,6 @@ zinstall python-pip
 zinstall python-virtualenv
 zinstall mercurial
 zinstall mongodb
-zinstall postgis2
 ##
 ## Set up Postgresql database
 ##

@@ -52,7 +52,6 @@ fi
 ##
 info "Installing system packages"
 install_pkg postgresql90-server
-install_pkg postgis-2.0.2_4
 install_pkg mongodb
 install_pkg py27-virtualenv
 install_pkg mercurial
