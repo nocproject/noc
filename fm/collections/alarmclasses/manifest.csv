@@ -76,6 +76,7 @@ Network | MPLS | LSP Down,7f0f26b3-00e9-4def-b968-05a3509d6c76,Network/MPLS/LSP_
 Network | MPLS | Path Down,f9c4c5bb-b584-4586-a188-533130d7a40c,Network/MPLS/Path_Down.json,773e5383bb03dd4ea4a0b9e3d3e0714b312fa467eb08146dc165e023fe6afa5d
 Network | MPLS | TDP Neighbor Down,9345af7a-41d8-48d7-b6d5-e216b3fbda20,Network/MPLS/TDP_Neighbor_Down.json,b56b9bb1d1b7477398a9688187f75988bc7fb6c9531fa90d0103e57dc0bb6d63
 Network | MSDP | Peer Down,5109bea9-c7da-4132-98b5-35f1767d4421,Network/MSDP/Peer_Down.json,75bf7506f3bfd8f03be5ba6e7b30ae2100e45376aacaa5d38cc2a9c782f2eb52
+Network | Monitor | CRC Error Detected,d9abf793-c82e-485b-8937-e35a9fbddfa4,Network/Monitor/CRC_Error_Detected.json,20cf5f00402e0b8712a929a3bac4e0bf2cc0ceda328d26119cf419a97e17e010
 Network | OSPF | Neighbor Down,7bd05776-7d5e-4eae-9401-2e45e290756f,Network/OSPF/Neighbor_Down.json,35a1d7705beb0bce7d7ddd1b903bf0d86ed9c8da9f048a732be44fcede4774ba
 Network | PIM | DR Change,bd8fa1b4-9bd9-4bef-a557-756255ccad1e,Network/PIM/DR_Change.json,1740eec11a2f2ab931df1527fab561a652b9f8f739865ad30f1ee701b90077cf
 Network | PIM | Invalid RP,c2b490f2-a0e2-4d44-8e1b-080eb7137835,Network/PIM/Invalid_RP.json,224f070433ebe6b6d260e1545a840b33d97eff0ffccd1fdb402f34b0b48500a0

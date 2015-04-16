@@ -158,6 +158,8 @@ Network | MPLS | TDP Neighbor Down,526bc5a8-fd7d-480f-ad23-47463e14c7b0,Network/
 Network | MPLS | TDP Neighbor Up,10f28e29-5945-4fdc-99dd-9791e21fac39,Network/MPLS/TDP_Neighbor_Up.json,dc81712b5c236ffbf780c7c200ebb684bdefda971ad3fef1fa34c547a2c00079
 Network | MSDP | Peer Down,68e8e127-e30a-4eb5-8e4f-b16621f96e7a,Network/MSDP/Peer_Down.json,b1054907655a4366ef114ef31ca0bae5adbc342e2698a0c350b9415f18e1d482
 Network | MSDP | Peer Up,2175cc38-9d47-4351-8b17-3a601e59b5e9,Network/MSDP/Peer_Up.json,09dda9da5d3d9a41612f48fc68c6c7532af5b59ff8f2048d11504da3a28c9ec2
+Network | Monitor | CRC Error Cleared,71654052-0cdc-4e5f-833d-7a744a41e99e,Network/Monitor/CRC_Error_Cleared.json,f99457dbd7e79e6523b0e4ef09229310a27a1bdb96e7bfcc1e4a6adeae94f02b
+Network | Monitor | CRC Error Detected,5244b3d5-726f-4085-8b7d-e84ee6b85b57,Network/Monitor/CRC_Error_Detected.json,bc89622c1f3029bd672b0264b63b6f00bd7c79c2244f9074ab8c35100d50fae2
 Network | NTP | Lost synchronization,67353603-b8d2-4887-bf80-19496713747d,Network/NTP/Lost_synchronization.json,104b6c1042451de9eb86eebe41f29fe23bf82cf3a5b6098fc02370c563f04bde
 Network | NTP | NTP Server Reachable,38891d3a-6ab1-4bc5-a161-394f2096c7d3,Network/NTP/NTP_Server_Reachable.json,b67d3353399f44ee658894118bee2cc41806f049284c23f4512c11006ea4beae
 Network | NTP | NTP Server Unreachable,0a70a416-e65d-42ef-bd4f-d601d9dc17fc,Network/NTP/NTP_Server_Unreachable.json,c92f2f49578ee569e0c68cf76cc9d5d79768246b68a757a24d26baa850512ae0
