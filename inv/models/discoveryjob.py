@@ -17,6 +17,7 @@ from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, StringField, IntField, DynamicField, FloatField
 ## NOC modules
 from noc.inv.discovery.utils import get_active_discovery_methods
+from noc.lib.scheduler.scheduler import Scheduler
 
 logger = logging.getLogger(__name__)
 
@@ -250,10 +251,10 @@ class DiscoveryJob(Document):
                      object)
         cls._get_collection().update({
             "key": object.id,
-            "state": "W"
+            Scheduler.ATTR_STATUS: Scheduler.S_WAIT
         }, {
             "$set": {
-                "state": "D"
+                Scheduler.ATTR_STATUS: Scheduler.S_DISABLED
             }
         }, multi=True)
 
@@ -263,10 +264,10 @@ class DiscoveryJob(Document):
                      object)
         cls._get_collection().update({
             "key": object.id,
-            "state": "D"
+            Scheduler.ATTR_STATUS: Scheduler.S_DISABLED
         }, {
             "$set": {
-                "state": "W"
+                Scheduler.ATTR_STATUS: Scheduler.S_WAIT
             }
         }, multi=True)
 
