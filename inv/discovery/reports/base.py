@@ -40,21 +40,25 @@ class Report(object):
     def debug(self, msg):
         self.job.debug(msg)
 
-    def update_if_changed(self, obj, values):
+    def update_if_changed(self, obj, values, ignore_empty=None):
         """
         Update fields if changed.
         :param obj: Document instance
         :type obj: Document
         :param values: New values
         :type values: dict
+        :param ignore_empty: List of fields which may be ignored if empty
         :returns: List of changed (key, value)
         :rtype: list
         """
         changes = []
+        ignore_empty = ignore_empty or []
         for k, v in values.items():
             vv = getattr(obj, k)
             if v != vv:
                 if type(v) != int or not hasattr(vv, "id") or v != vv.id:
+                    if k in ignore_empty and (v is None or v == ""):
+                        continue
                     setattr(obj, k, v)
                     changes += [(k, v)]
         if changes:
