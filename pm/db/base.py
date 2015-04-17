@@ -67,7 +67,7 @@ class TimeSeriesDatabase(object):
 
     def iter_path(self, parent, path, p, rest):
         def has_wildcards(path):
-            return "*" in path or "?" in path or "{" in path
+            return "*" in path or "?" in path or "{" in path or "[" in path
 
         def get_pattern(p):
             def variant(match):
