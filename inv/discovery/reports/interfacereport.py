@@ -140,7 +140,7 @@ class InterfaceReport(Report):
                 "aggregated_interface": aggregated_interface,
                 "enabled_protocols": enabled_protocols,
                 "ifindex": ifindex
-            })
+            }, ignore_empty=["ifindex"])
             self.log_changes("Interface '%s' has been changed" % name,
                 changes)
         else:
@@ -188,7 +188,7 @@ class InterfaceReport(Report):
                 "tagged_vlans": tagged_vlans,
                 # ip_unnumbered_subinterface
                 "ifindex": ifindex
-            })
+            }, ignore_empty=["ifindex"])
             self.log_changes(
                 "Subinterface '%s' has been changed" % name,
                 changes)
