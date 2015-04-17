@@ -11,8 +11,6 @@ import inspect
 ## NOC modules
 from noc.lib import nosql
 
-from srs import SRS
-
 class FontSet(nosql.Document):
     meta = {
         "collection": "noc.gis.fontsets",
@@ -69,7 +67,7 @@ class Layer(nosql.Document):
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
     is_active = nosql.BooleanField(default=True)
-    srs = nosql.ForeignKeyField(SRS)
+    #srs = nosql.ForeignKeyField(SRS)
     styles = nosql.ListField(nosql.StringField())
     datasource = nosql.DictField()
 
@@ -85,7 +83,7 @@ class Map(nosql.Document):
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
     is_active = nosql.BooleanField(default=True)
-    srs = nosql.ForeignKeyField(SRS)
+    # srs = nosql.ForeignKeyField(SRS)
     layers = nosql.ListField(nosql.StringField())
 
     def __unicode__(self):
