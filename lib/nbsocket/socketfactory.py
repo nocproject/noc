@@ -184,7 +184,7 @@ class SocketFactory(object):
     def close_stale(self):
         """Detect and close stale sockets"""
         with self.register_lock:
-            for s in [s for s in self.sockets.values() if s.is_stale()]:
+            for s in [s for s in self.sockets.itervalues() if s.is_stale()]:
                 logger.debug("Closing stale socket %s", s.get_label())
                 s.stale = True
                 s.close()
