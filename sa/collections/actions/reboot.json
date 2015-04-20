@@ -1,0 +1,8 @@
+{
+    "name": "reboot",
+    "uuid": "463e2a0f-5960-4ee6-ae51-de37897622c1",
+    "label": "Reboot",
+    "description": "Reboot equipment",
+    "access_level": 15,
+    "params": []
+}
