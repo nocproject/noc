@@ -1,0 +1,21 @@
+{
+    "name": "set_interface_description",
+    "uuid": "3fcb1d7d-be8f-414d-95b0-40ecc99925bb",
+    "label": "Set interface description",
+    "description": "Set interface description",
+    "access_level": 15,
+    "params": [
+        {
+            "description": "Interface description",
+            "is_required": true,
+            "name": "description",
+            "type": "str"
+        },
+        {
+            "description": "Interface name",
+            "is_required": true,
+            "name": "interface",
+            "type": "interface"
+        }
+    ]
+}

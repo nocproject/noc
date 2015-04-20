@@ -37,6 +37,8 @@ from commandsnippet import CommandSnippet
 from activatorcapabilitiescache import ActivatorCapabilitiesCache
 from mrtconfig import MRTConfig
 from failedscriptlog import FailedScriptLog
+from action import Action, ActionParameter
+from actioncommands import ActionCommands
 ##
 ## Post-initialization
 ##
