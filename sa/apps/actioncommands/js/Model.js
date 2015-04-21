@@ -46,6 +46,14 @@ Ext.define("NOC.sa.actioncommands.Model", {
         {
             name: "config_mode",
             type: "boolean"
+        },
+        {
+            name: "preference",
+            type: "integer"
+        },
+        {
+            name: "timeout",
+            type: "integer"
         }
     ]
 });
