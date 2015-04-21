@@ -67,7 +67,7 @@ class ActionCommands(Document):
             "config_mode": self.config_mode,
             "match": [c.json_data for c in self.match],
             "commands": self.commands,
-            "preference": self.commands,
+            "preference": self.preference,
             "timeout": self.timeout
         }
         return r

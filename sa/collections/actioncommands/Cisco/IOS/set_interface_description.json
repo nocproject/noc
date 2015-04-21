@@ -5,7 +5,8 @@
     "description": "",
     "profile": "Cisco.IOS",
     "config_mode": true,
-    "preference": "interface {{interface}}\n  description \"{{description}}\"",
+    "preference": 1000,
     "match": [],
-    "commands": "interface {{interface}}\n  description \"{{description}}\""
+    "commands": "interface {{interface}}\n  description \"{{description}}\"",
+    "timeout": 60
 }
