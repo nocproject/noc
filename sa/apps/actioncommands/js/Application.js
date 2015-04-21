@@ -140,6 +140,21 @@ Ext.define("NOC.sa.actioncommands.Application", {
         me.callParent();
     },
 
+    filters: [
+        {
+            title: "By SA Profile",
+            name: "profile",
+            ftype: "lookup",
+            lookup: "main.ref.profile"
+        },
+        {
+            title: "By Action",
+            name: "action",
+            ftype: "lookup",
+            lookup: "sa.action"
+        }
+    ],
+
     onJSON: function() {
         var me = this;
         me.showItem(me.ITEM_JSON);

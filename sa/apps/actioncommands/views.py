@@ -15,6 +15,6 @@ class ActionCommandsApplication(ExtDocApplication):
     """
     ActionCommands application
     """
-    title = "ActionCommands"
+    title = "Action Command"
     menu = "Setup | Action Commands"
     model = ActionCommands
