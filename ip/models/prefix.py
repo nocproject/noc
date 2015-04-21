@@ -567,7 +567,7 @@ class Prefix(models.Model):
             if n_ips:
                 if size > 2:  # Not /31 or /32
                     size -= 2  # Exclude broadcast and network
-                return float(n_ips + n_pfx) * 100.0 / float(size)
+            return float(n_ips + n_pfx) * 100.0 / float(size)
         else:
             return None
 
