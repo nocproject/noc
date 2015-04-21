@@ -11,7 +11,7 @@ import os
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField,
-                                BooleanField, ListField,
+                                BooleanField, ListField, IntField,
                                 EmbeddedDocumentField, ReferenceField)
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
@@ -46,6 +46,8 @@ class ActionCommands(Document):
     config_mode = BooleanField(default=False)
     match = ListField(EmbeddedDocumentField(PlatformMatch))
     commands = StringField()
+    preference = IntField(default=1000)
+    timeout = IntField(default=60)
 
     def __unicode__(self):
         return self.name
@@ -64,7 +66,9 @@ class ActionCommands(Document):
             "profile": self.profile,
             "config_mode": self.config_mode,
             "match": [c.json_data for c in self.match],
-            "commands": self.commands
+            "commands": self.commands,
+            "preference": self.commands,
+            "timeout": self.timeout
         }
         return r
 
@@ -75,6 +79,8 @@ class ActionCommands(Document):
                               "description",
                               "profile",
                               "config_mode",
+                              "preference",
                               "match",
-                              "commands"
+                              "commands",
+                              "timeout"
                               ])

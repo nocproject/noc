@@ -36,6 +36,12 @@ Ext.define("NOC.sa.actioncommands.Application", {
                     text: "Profile",
                     dataIndex: "profile",
                     width: 100
+                },
+                {
+                    text: "Preference",
+                    dataIndex: "preference",
+                    width: 100,
+                    align: "right"
                 }
             ],
 
@@ -76,6 +82,18 @@ Ext.define("NOC.sa.actioncommands.Application", {
                     name: "config_mode",
                     xtype: "checkbox",
                     boxLabel: "Config. Mode"
+                },
+                {
+                    name: "preference",
+                    xtype: "numberfield",
+                    fieldLabel: "Preference",
+                    allowBlank: true
+                },
+                {
+                    name: "timeout",
+                    xtype: "numberfield",
+                    fieldLabel: "Timeout",
+                    allowBlank: true
                 },
                 {
                     name: "match",
