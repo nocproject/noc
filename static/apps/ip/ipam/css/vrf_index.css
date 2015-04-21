@@ -53,8 +53,6 @@ th[class=fqdn] {
 
 th[class=usage] {
     width: 5em;
-    text-align: right;
-    color: red;
 }
 
 th[class=mac] {
