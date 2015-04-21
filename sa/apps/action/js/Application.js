@@ -37,6 +37,12 @@ Ext.define("NOC.sa.action.Application", {
                     width: 200
                 },
                 {
+                    text: "Builtin",
+                    dataIndex: "is_builtin",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
                     text: "Description",
                     dataIndex: "description",
                     flex: 1

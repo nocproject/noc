@@ -43,6 +43,11 @@ Ext.define("NOC.sa.action.Model", {
         {
             name: "label",
             type: "string"
+        },
+        {
+            name: "is_builtin",
+            type: "boolean",
+            persist: false
         }
     ]
 });
