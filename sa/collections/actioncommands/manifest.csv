@@ -1,4 +1,4 @@
 name,uuid,path,hash
 Cisco | IOS | disable_cdp,80276b39-2f50-4d89-bb9c-889065486c66,Cisco/IOS/disable_cdp.json,242841dfd94f3b067cd28aee179de8a72f6de0a67b531bb555d573be93cd53cb
 Cisco | IOS | enable_cdp,a446d920-e9ca-4415-b5a5-2207f33af5f7,Cisco/IOS/enable_cdp.json,4013d01ef0a2c9c75261d19755d8334e6f7aa43135598c9adbbe199caebc620d
-Cisco | IOS | set_description,248f86b8-9576-4ce8-b30b-d1b398f6f882,Cisco/IOS/set_description.json,501f1f6580121c3d7aa34cc73dee783768585033a065257a4d9b3f0b9495e5f4
+Cisco | IOS | set_interface_description,248f86b8-9576-4ce8-b30b-d1b398f6f882,Cisco/IOS/set_interface_description.json,e34b583b1b66c48adee6135c04079ce7d1c182a883500484e88a859f657eeaa4
