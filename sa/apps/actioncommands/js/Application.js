@@ -33,6 +33,12 @@ Ext.define("NOC.sa.actioncommands.Application", {
                     width: 300
                 },
                 {
+                    text: "Builtin",
+                    dataIndex: "is_builtin",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
                     text: "Profile",
                     dataIndex: "profile",
                     width: 100
