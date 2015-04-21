@@ -1,0 +1,12 @@
+{
+    "name": "Cisco | IOS | reboot",
+    "uuid": "50a46974-cac5-444f-b371-3860706c77b0",
+    "action__name": "reboot",
+    "description": "",
+    "profile": "Cisco.IOS",
+    "config_mode": false,
+    "preference": 1000,
+    "match": [],
+    "commands": "reload",
+    "timeout": 60
+}
