@@ -19,4 +19,7 @@ class Script(NOCScript):
 
     def execute(self):
         v = self.cli("show running-config")
+        if v.startswith("Building "):
+            # Strip "Building configuration\n\n"
+            v = self.strip_first_lines(v, 2)
         return v
