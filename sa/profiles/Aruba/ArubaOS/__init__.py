@@ -3,10 +3,12 @@
 ## Vendor: Aruba
 ## OS:     ArubaOS
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import re
 ## NOC modules
 from noc.sa.profiles import Profile as NOCProfile
 
@@ -21,4 +23,8 @@ class Profile(NOCProfile):
     command_super = "enable"
     pattern_more = [
         (r"--More-- \(q\) quit \(u\) pageup \(/\) search \(n\) repeat", " ")
+    ]
+    rogue_chars = [
+        re.compile(r"\r\s+\r"),
+        "\r"
     ]
