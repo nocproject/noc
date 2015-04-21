@@ -24,6 +24,8 @@ from noc.inv.models.connectiontype import ConnectionType
 from noc.inv.models.connectionrule import ConnectionRule
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.capability import Capability
+from noc.sa.models.action import Action
+from noc.sa.models.actioncommands import ActionCommands
 from noc.cm.models.errortype import ErrorType
 from noc.fm.models.oidalias import OIDAlias
 from noc.fm.models.syntaxalias import SyntaxAlias
@@ -102,6 +104,9 @@ class Command(BaseCommand):
         ("inv.connectionrules", ConnectionRule),
         ("inv.objectmodels", ObjectModel),
         ("inv.capabilities", Capability),
+        #
+        ("sa.actions", Action),
+        ("sa.actioncommands", ActionCommands),
         # Configuration management
         ("cm.errortypes", ErrorType),
         # Fault Management
