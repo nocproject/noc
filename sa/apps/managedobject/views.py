@@ -592,7 +592,6 @@ class ManagedObjectApplication(ExtModelApplication):
     @view(url="^(?P<id>\d+)/interactions/$", method=["GET"],
           access="interactions", api=True)
     def api_interactions(self, request, id):
-        # @todo: limit
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
@@ -666,6 +665,8 @@ class ManagedObjectApplication(ExtModelApplication):
           access="read", api=True)
     def api_get_caps(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
         r = []
         oc = ObjectCapabilities.objects.filter(object=o).first()
         if oc:
@@ -684,6 +685,8 @@ class ManagedObjectApplication(ExtModelApplication):
           access="read", api=True)
     def api_get_facts(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
         return sorted(
             (
                 {
@@ -709,16 +712,21 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response({"status": True}, self.OK)
 
         o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
         return self.submit_slow_op(request, revalidate, o)
 
     @view(url="(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"],
           access="action", api=True)
-    def api_get_caps(self, request, id, action):
+    def api_action(self, request, id, action):
         def execute(o, a, args):
             return a.execute(o, **args)
 
         o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
         a = self.get_object_or_404(Action, name=action)
+        # @todo: Check access
         body = request.raw_post_data
         if body:
             args = json_decode(body)
