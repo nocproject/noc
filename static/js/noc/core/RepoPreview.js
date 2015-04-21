@@ -368,7 +368,7 @@ Ext.define("NOC.core.RepoPreview", {
     //
     onSelectRev: function(combo, records, eOpts) {
         var me = this;
-        me.requestRevision(records[0].get("id"));
+        me.requestRevision(records.get("id"));
         me.diffCombo.setDisabled(false);
         me.swapRevButton.setDisabled(false);
     },
