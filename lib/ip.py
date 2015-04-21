@@ -234,10 +234,13 @@ class IP(object):
         # Return result
         if self.afi == "4" and self.mask != 31:
             # Remove network and broadcast address
+            ignored = [
+                IP.prefix(a.address) for a in (self.first, self.last)
+            ]
+            ignored = [a for a in ignored if a not in addresses]
             return [a for a in spot if (
                 a is None or
-                a.address not in (self.first.address,
-                                  self.last.address))]
+                a not in ignored)]
         else:
             return spot
 

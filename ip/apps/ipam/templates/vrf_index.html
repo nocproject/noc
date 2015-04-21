@@ -220,6 +220,7 @@ function on_mynetworks(n)
             free_shown=false;
             
             function install_spotted() {
+                var i;
                 if(spotted)
                     return;
                 
@@ -227,7 +228,6 @@ function on_mynetworks(n)
                 var $ce=addresses.shift();
                 var ca=$(".address a",$ce).html(); /* Current address */
                 var $cp=$("#at-start"); /* Current insertion point */
-                
                 /* Walk through all spotted addresses */
                 $.each(SPOT,function(index,spot){
                     var value=spot[0];
@@ -242,8 +242,9 @@ function on_mynetworks(n)
                         var s="";
                         for(i=0;i<slots.length;i++) {
                             var v=slots[i];
-                            if(v==null)
-                                v="none"
+                            if(v==null) {
+                                v = "none";
+                            }
                             s+="<td class='noc-ri-"+v+"'></td"
                         }
                         /* Insert row */
