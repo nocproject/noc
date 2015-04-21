@@ -363,7 +363,7 @@ class Activator(Daemon, FSM):
         profile = profile_registry["%s.%s" % (pv, pos)]()
         script_class = script_registry[script_name]
         if not timeout:
-            timeout = script_class.TIMEOUT
+            timeout = script_class.get_timeout()
         script = script_class(profile, self, object_name, access_profile, timeout, **kwargs)
         logger.info("Script %s(%s). Timeout set to %s" % (script_name,
                                             access_profile.address, timeout))
