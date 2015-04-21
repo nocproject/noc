@@ -41,6 +41,7 @@ from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.inv.discovery.utils import get_active_discovery_methods
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.engine import Engine
+from noc.sa.models.action import Action
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -709,3 +710,18 @@ class ManagedObjectApplication(ExtModelApplication):
 
         o = self.get_object_or_404(ManagedObject, id=id)
         return self.submit_slow_op(request, revalidate, o)
+
+    @view(url="(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"],
+          access="action", api=True)
+    def api_get_caps(self, request, id, action):
+        def execute(o, a, args):
+            return a.execute(o, **args)
+
+        o = self.get_object_or_404(ManagedObject, id=id)
+        a = self.get_object_or_404(Action, name=action)
+        body = request.raw_post_data
+        if body:
+            args = json_decode(body)
+        else:
+            args = {}
+        return self.submit_slow_op(request, execute, o, a, args)
