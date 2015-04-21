@@ -197,9 +197,34 @@ class ManagedObject(models.Model):
             self._cache[name] = cw
             return cw
 
+    class ActionsProxy(object):
+        class CallWrapper(object):
+            def __init__(self, obj, name, action):
+                self.name = name
+                self.object = obj
+                self.action = action
+
+            def __call__(self, **kwargs):
+                return self.action.execute(self.object, **kwargs)
+
+        def __init__(self, obj):
+            self._object = obj
+            self._cache = {}
+
+        def __getattr__(self, name):
+            if name in self._cache:
+                return self._cache[name]
+            a = Action.objects.filter(name=name).first()
+            if not a:
+                raise AttributeError(name)
+            cw = ManagedObject.ActionsProxy.CallWrapper(self._object, name, a)
+            self._cache[name] = cw
+            return cw
+
     def __init__(self, *args, **kwargs):
         super(ManagedObject, self).__init__(*args, **kwargs)
         self.scripts = ManagedObject.ScriptsProxy(self)
+        self.actions = ManagedObject.ActionsProxy(self)
 
     def __unicode__(self):
         return self.name
@@ -803,3 +828,4 @@ from objectnotification import ObjectNotification
 from selectorcache import SelectorCache
 from objectcapabilities import ObjectCapabilities, CapsItem
 from noc.inv.models.capability import Capability
+from action import Action
