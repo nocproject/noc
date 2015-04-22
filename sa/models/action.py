@@ -130,7 +130,8 @@ class Action(Document):
             return None
         ctx = Context(self.clean_args(obj, **kwargs))
         commands = Template(ac.commands).render(ctx)
-        t = MapTask.create_task(obj, "commands", {
+        script = "configure" if ac.config_mode else "commands"
+        t = MapTask.create_task(obj, script, {
             "commands": commands.splitlines()
         }, timeout=ac.timeout)
         while True:
