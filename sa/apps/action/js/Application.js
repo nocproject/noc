@@ -127,9 +127,17 @@ Ext.define("NOC.sa.action.Application", {
                                     ["str", "str"],
                                     ["float", "float"],
                                     ["int", "int"],
-                                    ["interface", "interface"]
+                                    ["interface", "interface"],
+                                    ["ip", "ip"],
+                                    ["vrf", "vrf"]
                                 ]
                             }
+                        },
+                        {
+                            text: "Default",
+                            dataIndex: "default",
+                            width: 100,
+                            editor: "textfield"
                         },
                         {
                             text: "Description",

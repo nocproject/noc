@@ -18,7 +18,8 @@ from mongoengine.fields import (StringField, UUIDField, IntField,
                                 EmbeddedDocumentField)
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
-##
+from noc.lib.ip import IP
+
 
 class ActionParameter(EmbeddedDocument):
     name = StringField()
@@ -27,23 +28,29 @@ class ActionParameter(EmbeddedDocument):
             ("int", "int"),
             ("float", "float"),
             ("str", "str"),
-            ("interface", "interface")
+            ("interface", "interface"),
+            ("ip", "ip"),
+            ("vrf", "vrf")
         ]
     )
     description = StringField()
     is_required = BooleanField(default=True)
+    default = StringField()
 
     def __unicode__(self):
         return self.name
 
     @property
     def json_data(self):
-        return {
+        r = {
             "name": self.name,
             "type": self.type,
             "description": self.description,
             "is_required": self.is_required
         }
+        if self.default is not None:
+            r["default"] = self.default
+        return r
 
 
 class Action(Document):
@@ -95,7 +102,9 @@ class Action(Document):
         :param obj: Managed Object
         """
         version = obj.version
-        for ac in ActionCommands.objects.filter(action=self).order_by("preference"):
+        for ac in ActionCommands.objects.filter(
+                action=self, profile=obj.profile_name
+        ).order_by("preference"):
             if not ac.match:
                 return ac
             for m in ac.match:
@@ -142,11 +151,13 @@ class Action(Document):
     def clean_args(self, obj, **kwargs):
         args = {}
         for p in self.params:
-            if not p.name in kwargs and p.is_required:
+            if not p.name in kwargs and p.is_required and not p.default:
                 raise ValueError(
                     "Required parameter '%s' is missed" % p.name
                 )
-            v = kwargs[p.name]
+            v = kwargs.get(p.name, p.default)
+            if v is None:
+                continue
             if p.type == "int":
                 # Integer type
                 try:
@@ -174,10 +185,40 @@ class Action(Document):
                         "Invalid interface name in parameter '%s': '%s'" % (
                             p.name, v)
                     )
-            args[p.name] = v
+            elif p.type == "ip":
+                # IP address
+                try:
+                    v = IP.prefix(v)
+                except ValueError, why:
+                    raise ValueError(
+                        "Invalid ip in parameter '%s': '%s'" % (p.name, v)
+                    )
+            elif p.type == "vrf":
+                if isinstance(v, VRF):
+                    pass
+                elif isinstance(v, (int, long)):
+                    try:
+                        v = VRF.objects.get(id=v)
+                    except VRF.DoesNotExist:
+                        raise ValueError(
+                            "Unknown VRF in parameter '%s': '%s'" % (p.name, v)
+                        )
+                elif isinstance(v, basestring):
+                    try:
+                        v = VRF.objects.get(name=v)
+                    except VRF.DoesNotExist:
+                        raise ValueError(
+                            "Unknown VRF in parameter '%s': '%s'" % (p.name, v)
+                        )
+                else:
+                    raise ValueError(
+                        "Unknown VRF in parameter '%s': '%s'" % (p.name, v)
+                    )
+            args[str(p.name)] = v
         return args
 
 
 ##
 from actioncommands import ActionCommands
 from maptask import MapTask
+from noc.ip.models.vrf import VRF
