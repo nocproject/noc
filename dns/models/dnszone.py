@@ -329,15 +329,15 @@ class DNSZone(models.Model):
         r = []
         l = len(self.name) + 1
         q = (
-            Q(fqdn=self.name) |
-            Q(fqdn__endswith=".%s" % self.name)
+            Q(fqdn__iexact=self.name) |
+            Q(fqdn__iendswith=".%s" % self.name)
         )
         for z in DNSZone.objects.filter(
-                name__endswith=".%s" % self.name
+                name__iendswith=".%s" % self.name
             ).values_list("name", flat=True):
             q &= ~(
-                Q(fqdn=z) |
-                Q(fqdn__endswith=".%s" % z)
+                Q(fqdn__iexact=z) |
+                Q(fqdn__iendswith=".%s" % z)
             )
         return [
             (
