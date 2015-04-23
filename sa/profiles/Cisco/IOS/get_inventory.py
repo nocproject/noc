@@ -315,6 +315,8 @@ class Script(NOCScript):
             return "PSU", name.split()[1], pid
         elif name.startswith("Power Supply "):
             return "PSU", name.split()[2], pid
+        elif "FRU Power Supply" in descr:
+            return "PSU", name.split()[-1], pid
         elif pid.startswith("FAN"):
             # Fan module
             try:
