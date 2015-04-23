@@ -12,6 +12,8 @@ Ext.define('Ext.ux.form.SearchField', {
     // Minimum characters to search
     // when typeAhead == true
     minChars: 2,
+    // Require explicit submit to search
+    explicitSubmit: false,
 
     initComponent: function() {
         var me = this;
@@ -40,7 +42,9 @@ Ext.define('Ext.ux.form.SearchField', {
             query = me.getValue(),
             ql = query.length;
         if(!ql || ql < me.lastChars || ql >= me.minChars) {
-            Ext.callback(me.handler, me.scope || this, [query]);
+            if(!me.explicitSubmit) {
+                me.onSearch();
+            }
         }
         me.lastChars = ql;
     },
