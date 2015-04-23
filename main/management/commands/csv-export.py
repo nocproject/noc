@@ -11,7 +11,7 @@ import sys
 from optparse import make_option
 ## Django modules
 from django.core.management.base import BaseCommand
-from django.contrib.contenttypes.models import ContentType
+from django.db import models
 ## Python modules
 from noc.lib.csvutils import csv_export
 
@@ -28,8 +28,10 @@ class Command(BaseCommand):
         print "Usage:"
         print "%s csv-export [-t] <model>" % (sys.argv[0])
         print "Where <model> is one of:"
-        for t in ContentType.objects.all():
-            print "%s.%s" % (t.app_label, t.model)
+        for m in models.get_models():
+            t = m._meta.db_table
+            app, model = t.split("_", 1)
+            print "%s.%s" % (app, model)
         sys.exit(1)
 
     def get_queryset(self, model, args):
@@ -49,10 +51,8 @@ class Command(BaseCommand):
         if len(r) != 2:
             self._usage()
         app, model = r
-        try:
-            m = ContentType.objects.get(app_label=app,
-                                        model=model).model_class()
-        except ContentType.DoesNotExist:
+        m = models.get_model(app, model)
+        if not m:
             return self._usage()
         print csv_export(m,
             queryset=self.get_queryset(m, args[1:]),
