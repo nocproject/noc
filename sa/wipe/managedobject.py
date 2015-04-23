@@ -29,6 +29,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.outage import Outage
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.cm.models.objectfact import ObjectFact
+from noc.cm.models.validationrule import ValidationRule
 from noc.ip.models import Address
 from noc.lib.nosql import get_db
 
@@ -107,6 +108,13 @@ def wipe(o):
     # Delete Managed Object's attributes
     log.debug("Wiping attributes")
     ManagedObjectAttribute.objects.filter(managed_object=o).delete()
+    # Detach from validation rule
+    log.debug("Detaching from validation rules")
+    for vr in ValidationRule.objects.filter(objects_list__object=o.id):
+        vr.objects_list = [x for x in vr.objects_list if x.object.id != o.id]
+        if not vr.objects_list and not vr.selectors_list:
+            vr.is_active = False
+        vr.save()
     # Finally delete object and config
     log.debug("Finally wiping object")
     o.delete()
