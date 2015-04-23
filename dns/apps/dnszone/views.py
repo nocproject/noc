@@ -20,6 +20,7 @@ class DNSZoneApplication(ExtModelApplication):
     title = "DNS Zone"
     menu = "Zones"
     model = DNSZone
+    query_condition = "icontains"
 
     records = ModelInline(DNSZoneRecord)
     zone = RepoInline("zone")
