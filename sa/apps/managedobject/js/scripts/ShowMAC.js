@@ -20,7 +20,8 @@ Ext.define("NOC.sa.managedobject.scripts.ShowMAC", {
             width: 70,
             renderer: NOC.render.Choices({
                 D: "DYNAMIC",
-                S: "STATIC"
+                S: "STATIC",
+                C: "CPU"
             })
         },
         {
