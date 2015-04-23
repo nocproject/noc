@@ -46,7 +46,7 @@ class ProbeApplication(ExtDocApplication):
         Get full probe configuration
         """
         probe = self.get_object_or_404(Probe, name=name)
-        if request.user.id != probe.user.id:
+        if not probe.user or request.user.id != probe.user.id:
             return self.response_forbidden()
         instance = int(instance)
         if instance >= probe.n_instances:
