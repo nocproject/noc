@@ -325,14 +325,30 @@ class DNSZone(models.Model):
         :return: (name, type, content, ttl, prio)
         """
         ttl = self.profile.zone_ttl
-        return [(
-            a.fqdn.split(".")[0],
-            "A" if a.afi == "4" else "AAAA",
-            a.address,
-            ttl,
-            None
-            ) for a in Address.objects.extra(
-                where=["domainname(fqdn)=%s"], params=[self.name])
+        # @todo: Filter by VRF
+        r = []
+        l = len(self.name) + 1
+        q = (
+            Q(fqdn=self.name) |
+            Q(fqdn__endswith=".%s" % self.name)
+        )
+        for z in DNSZone.objects.filter(
+                name__endswith=".%s" % self.name
+            ).values_list("name", flat=True):
+            q &= ~(
+                Q(fqdn=z) |
+                Q(fqdn__endswith=".%s" % z)
+            )
+        return [
+            (
+                fqdn[:-l],
+                "A" if afi == "4" else "AAAA",
+                address,
+                ttl,
+                None
+            ) for afi, fqdn, address in Address.objects.filter(
+                q
+            ).values_list("afi", "fqdn", "address")
         ]
 
     def get_ipam_ptr4(self):
