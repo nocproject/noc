@@ -108,6 +108,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 {
                     xtype: "searchfield",
                     padding: "0 0 0 4",
+                    explicitSubmit: true,
                     scope: me,
                     handler: me.app.onSearch
                 }
