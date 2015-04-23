@@ -25,7 +25,7 @@ Ext.define("NOC.main.search.Application", {
                     text: "Result",
                     xtype: "templatecolumn",
                     flex: 1,
-                    tpl: "<b>{title}</b><br/>{card}<tpl if='tags'>Tags: {tags}</tpl>"
+                    tpl: "<b>{title}</b><br/>{card}<tpl if='tags'><br/><span class='x-display-tag'>{tags}</span></tpl>"
                 }
             ],
             listeners: {
