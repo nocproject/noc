@@ -38,7 +38,7 @@ class Script(NOCScript):
     rx_log_protocol = re.compile(r"^\s+Protocol\s+", re.MULTILINE)
     rx_log_pname = re.compile(r"^(?P<proto>[a-zA-Z0-9\-]+)")
     rx_log_address = re.compile(r"^\s+Local:\s+(?P<address>\S+)", re.MULTILINE)
-    rx_log_netaddress = re.compile(r"^\s+Destination: (?P<dest>\S+?),\s+Local: (?P<local>\S+?),",
+    rx_log_netaddress = re.compile(r"^\s+Destination: (?P<dest>\S+?),\s+Local: (?P<local>\S+?)(?:,|$)",
         re.MULTILINE)
     rx_log_netaddress6 = re.compile(r"^\s+Destination: (?P<dest>\S+?),[ \r\n]+Local: (?P<local>\S+?)$",
         re.MULTILINE)
