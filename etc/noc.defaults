@@ -184,6 +184,13 @@ ad_superuser_group = noc_superusers
 # Filter to search user in superusers group
 ad_superuser_filter =
 
+# Radius server hostname or IP
+radius_server = radius.example.com
+# Radius secret
+radius_secret = 
+# NAS Identifier
+radius_nas_identifier = noc-project
+
 # Authentication pyrule (for pyrule method)
 pyrule_authentication =
 
