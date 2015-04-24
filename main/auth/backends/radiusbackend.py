@@ -24,13 +24,15 @@ from noc.settings import config
 
 class NOCRadiusBackend(NOCAuthBackend):
     """
-    LDAP Authentication backend
+    RADIUS Authentication backend
     """
     def __init__(self):
         super(NOCRadiusBackend, self).__init__()
         self.server = config.get("authentication", "radius_server")
         self.secret = config.get("authentication", "radius_secret")
         self.nas_identifier = config.get("authentication", "radius_nas_identifier")
+        self.superuser_attribute = config.get("authentication", "radius_superuser_attribute")
+        self.superuser_value = config.get("authentication", "radius_superuser_value")
 
     def authenticate(self, username=None, password=None, **kwargs):
         """
@@ -54,10 +56,13 @@ class NOCRadiusBackend(NOCAuthBackend):
             logging.debug("RADIUS access denied for '%s'" % username)
             return None
         
-        print "Attributes returned by server:"
-        for i in reply.keys():
-            print "%s: %s" % (i, reply[i])
+        logging.debug("RADIUS Attributes returned by server: %s" % reply)
 
+        logging.debug("RADIUS Check superuser_value of superuser_attribute '%s' to contain '%s'" % (self.superuser_attribute, self.superuser_value))
+        for i in reply.keys():
+            if str(i) == self.superuser_attribute and self.superuser_value in reply[i]:
+                is_superuser = True
+        
         # Successfull bind
         user = self.get_or_create_db_user(username=username,
                                           is_active=is_active,
