@@ -190,6 +190,10 @@ radius_server = radius.example.com
 radius_secret = 
 # NAS Identifier
 radius_nas_identifier = noc-project
+# Attribute to use to determine super user
+radius_superuser_attribute = 
+# Value of superuser attribute for user to be superuser
+radius_superuser_value = 
 
 # Authentication pyrule (for pyrule method)
 pyrule_authentication =
