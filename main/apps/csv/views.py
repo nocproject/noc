@@ -24,25 +24,26 @@ from noc.lib.csvutils import csv_export, csv_import, get_model_fields,\
 class CSVApplication(Application):
     title = "CSV Export/Import"
 
-    class ModelForm(forms.Form):
-        model = forms.ChoiceField(
-            choices=[
-                (m._meta.db_table.replace("_", "."),
-                 m._meta.db_table.replace("_", "."))
-                for m in sorted(models.get_models(),
-                key=lambda x: x._meta.db_table)])
-        action = forms.CharField(widget=forms.HiddenInput)
-
     @view(url="^$", url_name="index", menu="Setup | CSV Export/Import",
         access="import")
     def view_index(self, request):
+        class ModelForm(forms.Form):
+            model = forms.ChoiceField(
+                choices=[
+                    (m._meta.db_table.replace("_", "."),
+                     m._meta.db_table.replace("_", "."))
+                    for m in sorted(models.get_models(),
+                    key=lambda x: x._meta.db_table)])
+            action = forms.CharField(widget=forms.HiddenInput)
+
         if request.POST:
-            form = self.ModelForm(request.POST)
+            form = ModelForm(request.POST)
             if form.is_valid():
                 if form.cleaned_data["action"] == "Export":
                     app, m = form.cleaned_data["model"].split(".", 1)
-                    model = ContentType.objects.get(app_label=app,
-                                                    model=m).model_class()
+                    model = models.get_model(app, m)
+                    if not model:
+                        return self.response_not_found("Invalid model")
                     return self.render_plain_text(
                         csv_export(model),
                         mimetype="text/csv; encoding=utf-8"
@@ -51,7 +52,7 @@ class CSVApplication(Application):
                     return self.response_redirect("main:csv:import",
                         form.cleaned_data["model"])
         else:
-            form = self.ModelForm()
+            form = ModelForm()
         return self.render(request,
             "index.html", form=form)
 
