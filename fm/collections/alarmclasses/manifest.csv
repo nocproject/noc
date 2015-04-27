@@ -64,6 +64,7 @@ Network | LBD | Loop Detected,aadd3309-c0d4-4f52-9a93-b6231eb25111,Network/LBD/L
 Network | LBD | Vlan Loop Detected,c3a089e3-16b8-42aa-a4d2-801049177a22,Network/LBD/Vlan_Loop_Detected.json,1d7f9bf4011dee2e9deabd8912724cfe78c1487b6923feca6e84e680e194f053
 Network | Link | DOM | Alarm: Out of Threshold,e36bece7-964c-4267-8b5a-ef60faa46e24,Network/Link/DOM/Alarm_Out_of_Threshold.json,db5af089c31acc74e2014f50a7732e93979a0e3c07dce3b0ed35cb685608bef1
 Network | Link | DOM | Warning: Out of Threshold,2e064533-45ec-44bc-9f5b-9a3cbf8f51c2,Network/Link/DOM/Warning_Out_of_Threshold.json,f196146b17a852588d4076144bdd1d8e307d9f1de7381d89e7ef3f575eb2e5d4
+Network | Link | Duplex Mismatch,10d86131-7073-4671-9c9f-91924f86af62,Network/Link/Duplex_Mismatch.json,4cefd3b3d5592d2a29f128c9ea878f1ebf1b267b8769ff91c13164a4bf85f168
 Network | Link | Err-Disable,a567754e-8be6-498b-a790-97f34aa4d52b,Network/Link/Err-Disable.json,54decfb46f4c7bac1ca5c7e9cebf37ded8701a69b4e863df502303af8135f53c
 Network | Link | Half-Duplex,2b7c3501-a858-4296-afa5-512131a51cc9,Network/Link/Half-Duplex.json,c2565c7784d00b3eb8a77f7d7c9438032e45287a584ded3b30921873722187bd
 Network | Link | Link Down,9b5d51e7-ada9-4721-b13e-2f61835b5c8e,Network/Link/Link_Down.json,1723ccd0de2667378c38f202c2358576648b0216a79f30849cf6478fb8af31c1
