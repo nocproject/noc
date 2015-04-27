@@ -134,6 +134,7 @@ Network | Link | DOM | Alarm: Out of Threshold,cc37a2fd-857d-4351-85ef-35caa5728
 Network | Link | DOM | Alarm: Out of Threshold Recovered,2d32e8fd-1ebd-4b54-9533-40e035f197db,Network/Link/DOM/Alarm_Out_of_Threshold_Recovered.json,cda529a5c4c69581a714f989b72b3b0e5712c3493c56384ba000d8c0b0bf4100
 Network | Link | DOM | Warning: Out of Threshold,71faba70-4890-455b-af5b-295215979359,Network/Link/DOM/Warning_Out_of_Threshold.json,cc156a0fbbd0824e4335d0d070747d9afa953186555e0ba828cc7b0ae9c47c07
 Network | Link | DOM | Warning: Out of Threshold Recovered,ed2b35df-5a77-42e9-a583-f35a655c8610,Network/Link/DOM/Warning_Out_of_Threshold_Recovered.json,b8cd6c8e3e004a02a406903d81cb962326fd39d48dc10eb161d2720bd4fe3263
+Network | Link | Duplex Mismatch,05d1ce00-983a-4f90-8802-2a64e80d2742,Network/Link/Duplex_Mismatch.json,07e0d1fd4fd7e6dac401eebef9f538387611bdca64f1144ea20c8fcaa00ae175
 Network | Link | Err-Disable,7b9be94a-143f-45b6-bf02-3aa5620d90cb,Network/Link/Err-Disable.json,3c74723a3129b0f81939c1230c14cb847d8c855670b51172f320e65bf3b612bc
 Network | Link | Full-Duplex,cd1b636a-2fb8-48c1-91fa-157b46cbcfdf,Network/Link/Full-Duplex.json,b6eefec06fcc1084700193255ad13fb6467f90fced74fd01ec15914ff96f0519
 Network | Link | Half-Duplex,cccee9a1-4bb3-455c-a473-5d196c0fef1a,Network/Link/Half-Duplex.json,6451a526e5462225f5e00d52dd8f034ef4ec93ba6310f3da403a3564118a2c9b
