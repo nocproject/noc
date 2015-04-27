@@ -254,6 +254,7 @@ Cisco | IOS | Network | Link | Connection Problem (SYSLOG),f231b9d3-f9e7-44af-9b
 Cisco | IOS | Network | Link | DOM | Alarm: Out of Threshold (SYSLOG),f61c2e46-13e3-4517-839b-e87cadd8c395,Cisco/IOS/Network/Link/DOM/Alarm_Out_of_Threshold_SYSLOG_.json,632d65a8df3c08f565f6de8f4df3b2d8012221e2b8b30b04e84db65660c01f1f
 Cisco | IOS | Network | Link | DOM | Warning: Out of Threshold (SYSLOG),3b9f668e-53ca-4aff-9dcd-5b929e9b3cba,Cisco/IOS/Network/Link/DOM/Warning_Out_of_Threshold_SYSLOG_.json,03b8d98b6fd067404fffab3509f01826504088900bef1b5f756c6c8b7cd3b45c
 Cisco | IOS | Network | Link | Duplex Mismatch (SYSLOG),c67686f7-4387-4382-a8e2-1872690ebb59,Cisco/IOS/Network/Link/Duplex_Mismatch_SYSLOG_.json,9b813e8319fde2b88a20a4d2b7a5e7ad8e1a61973fdc84e6c10353f4b3e7a323
+,0a60acb2-a4dd-461e-8e09-84a11ca3876e,Cisco/IOS/Network/Link/Half-Duplex_SYSLOG_.json,041789416d910cd5b8cedaaaed6ed4fed9d8565c179ff448e1e7ebe9da182997
 Cisco | IOS | Network | Link | Link Down #1 (SNMP),281a5329-c290-428a-b522-47fb50fe8ee3,Cisco/IOS/Network/Link/Link_Down_1_SNMP_.json,8947b9a6170481d0848248783e7564daa0ac6ee37e8b6c3b510311a1932dd981
 Cisco | IOS | Network | Link | Link Down #2 (SNMP),6265ec7b-c62d-49e3-8f32-6b5fc159e99b,Cisco/IOS/Network/Link/Link_Down_2_SNMP_.json,3bf1f151546d2fec4867ff79a1bbbb2c6315dd0d645b0a4137fb818be3907914
 Cisco | IOS | Network | Link | Link Down #3 (SNMP),b2250a7c-3dad-4bc8-badb-e5983b7855f8,Cisco/IOS/Network/Link/Link_Down_3_SNMP_.json,fc9f47bfa271b2f8c2072ab7492fca5de61338d083de99b8600794ec8aa1ae8f
