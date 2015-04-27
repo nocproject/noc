@@ -109,13 +109,13 @@ class TCPSocket(Socket):
         if self.closing:
             self.logger.error("Attempting to write to closing socket")
             self.out_buffer += msg
-            if self.out_buffer:
+            if self.out_buffer and self.socket:
                 # Try to send
                 try:
-                    self.socket.send(msg)
+                    self.socket.send(self.out_buffer)
                 except socket.error, why:
                     self.logger.error("Failed to send rest of the buffer: %s", repr(why))
-                    return
+            return
         # Try to send immediately
         if self.socket and not self.character_mode and not self.out_buffer:
             try:
