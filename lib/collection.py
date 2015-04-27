@@ -176,6 +176,10 @@ class Collection(object):
         for i in collection.get_revoked_items():
             if i in self.items:
                 self.delete_item(i)
+            if i in sl:
+                sl.remove(i)
+            if i in sr:
+                sr.remove(i)
         # Check for new items
         for i in sr - sl:
             self.update_item(collection.items[i])
@@ -190,7 +194,7 @@ class Collection(object):
             self.save()
 
     def delete_item(self, u):
-        o = self.doc.get(uuid=u).first()
+        o = self.doc.objects.filter(uuid=u).first()
         if not o:
             return
         self.logger.info("Deleting %s", unicode(o))
