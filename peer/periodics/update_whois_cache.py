@@ -9,6 +9,7 @@
 ## Python modules
 from collections import defaultdict
 import urllib2
+import socket
 ## NOC modules
 from noc.lib.periodic import Task as NOCTask
 from noc.settings import config
@@ -96,6 +97,10 @@ class Task(NOCTask):
         try:
             f = self.urlopen(url)
         except urllib2.URLError, why:
+            self.error("Failed to download %s: %s" % (url, why))
+            self.download_status = False
+            return 0
+        except socket.error, why:
             self.error("Failed to download %s: %s" % (url, why))
             self.download_status = False
             return 0
