@@ -221,7 +221,7 @@ class BaseJUNOSParser(BaseParser):
         set protocols pim interface <N> version 2
         """
         si = self.get_subinterface_fact(tokens[3])
-        cmd = tokens[4] if len(tokens) >= 4 else None
+        cmd = tokens[4] if len(tokens) > 4 else None
         if cmd == "mode":
             si.pim_mode = tokens[5]
         elif cmd == "version":
