@@ -249,8 +249,9 @@ class BaseIOSParser(BasePyParser):
         if vlans.startswith("add"):
             vlans = vlans.split(" ", 1)[1].strip()
         si = self.get_current_subinterface()
-        for v in ranges_to_list(vlans):
-            si.tagged_vlans += [int(v)]
+        if vlans != "none":
+            for v in ranges_to_list(vlans):
+                si.tagged_vlans += [int(v)]
         si.add_afi("BRIDGE")
 
     def on_interface_acl(self, tokens):
