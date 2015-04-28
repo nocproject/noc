@@ -57,7 +57,8 @@ class PyRule(models.Model):
         """
         Check syntax and save
         """
-        self.compile_text(unicode(self.text))
+        if not self.handler:
+            self.compile_text(unicode(self.text))
         super(PyRule, self).save(**kwargs)
 
     @property
