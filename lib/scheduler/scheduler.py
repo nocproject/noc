@@ -15,6 +15,8 @@ import inspect
 import threading
 from collections import defaultdict
 import warnings
+## Third-party modules
+import pymongo.errors
 ## NOC modules
 from error import JobExists
 from job import Job
@@ -397,6 +399,31 @@ class Scheduler(object):
                 self._complete_job(job, job.S_FAILED, m.script_result)
         t.delete()
 
+    def iter_pending_jobs(self):
+        """
+        Iterate pending jobs
+        """
+        q = {
+            self.ATTR_TS: {"$lte": datetime.datetime.now()},
+            self.ATTR_STATUS: self.S_WAIT
+        }
+        if self.ignored:
+            q[self.ATTR_CLASS] = {"$nin": self.ignored}
+        # Get remaining pending tasks
+        qs = self.collection.find(q)
+        if self.preserve_order:
+            qs = qs.sort([(self.ATTR_TS, 1), ("_id", 1)])
+        else:
+            qs = qs.sort(self.ATTR_TS)
+        try:
+            for job in qs.batch_size(100):
+                yield job
+        except pymongo.errors.CursorNotFound:
+            self.logger.info("Server cursor timed out. Waiting for next cycle")
+        except pymongo.errors.OperationFailure, why:
+            self.logger.error("Operation failure: %s", why)
+            self.logger.error("Trying to recover")
+
     def run_pending(self):
         n = 0
         self.mrt_overload = False
@@ -430,19 +457,7 @@ class Scheduler(object):
                 (t, self.active_mrt[t])
                     for t in self.active_mrt if t not in complete)
         # Check for pending persistent tasks
-        q = {
-            self.ATTR_TS: {"$lte": datetime.datetime.now()},
-            self.ATTR_STATUS: self.S_WAIT
-        }
-        if self.ignored:
-            q[self.ATTR_CLASS] = {"$nin": self.ignored}
-        # Get remaining pending tasks
-        qs = self.collection.find(q)
-        if self.preserve_order:
-            qs = qs.sort([(self.ATTR_TS, 1), ("_id", 1)])
-        else:
-            qs = qs.sort(self.ATTR_TS)
-        for job_data in qs:
+        for job_data in self.iter_pending_jobs():
             jcls = self.job_classes.get(job_data[self.ATTR_CLASS])
             if not jcls:
                 # Invalid job class. Park job to FAIL state
