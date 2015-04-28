@@ -74,18 +74,18 @@ class ConnectedTCPSocket(TCPSocket):
         try:
             data = self.socket.recv(self.READ_CHUNK)
         except socket.error, why:
-            if why[0] in (ECONNREFUSED, EHOSTUNREACH):
-                self.logger.error("Connection refused (%s)", why[0])
+            if why[0] in (EINTR, EAGAIN):
+                return  # Silently ignore
+            elif why[0] in (ECONNREFUSED, EHOSTUNREACH):
+                self.logger.error("Connection refused: %s (%s)",
+                                  why[1], why[0])
                 self.on_conn_refused()
                 self.close()
                 return
-            if why[0] in (ECONNRESET, ENOTCONN, ESHUTDOWN, ETIMEDOUT):
-                self.logger.error("Connection lost (%s)", why[0])
-                self.close()
+            else:
+                self.logger.error("Connection lost: %s (%s)",
+                                  why[1], why[0])
                 return
-            if why[0] in (EINTR, EAGAIN):
-                return
-            raise socket.error, why
         if not data:
             self.close()
             return
@@ -100,14 +100,11 @@ class ConnectedTCPSocket(TCPSocket):
             try:
                 self.socket.send("")
             except socket.error, why:
-                err_code = why[0]
-                if err_code in (EPIPE, ECONNREFUSED, ETIMEDOUT,
-                                EHOSTUNREACH, ENETUNREACH):
-                    self.logger.error("Connection refused")
-                    self.on_conn_refused()
-                    self.close()
-                    return
-                raise socket.error, why
+                self.logger.error("Connection refused: %s (%s)",
+                                  why[1], why[0])
+                self.on_conn_refused()
+                self.close()
+                return
             self.handle_connect()
             return
         TCPSocket.handle_write(self)
