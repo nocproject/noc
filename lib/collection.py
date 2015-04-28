@@ -93,7 +93,7 @@ class Collection(object):
             return
         with open(path) as f:
             reader = csv.reader(f)
-            header = reader.next()
+            reader.next()  # Skip header
             for name, uuid, path, hash in reader:
                 uuid = UUID(uuid)
                 mi = CollectionItem(
@@ -435,3 +435,11 @@ class Collection(object):
                             yield "!", path  # Removed
                     else:
                         yield "?", path
+
+    def get_item(self, uuid):
+        """
+        Returns CollectionItem or None
+        """
+        if isinstance(uuid, basestring):
+            uuid = UUID(uuid)
+        return self.items.get(uuid)
