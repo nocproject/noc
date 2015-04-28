@@ -191,6 +191,11 @@ class MetricSettings(Document):
                 if trace:
                     r += [es]
                 continue
+            if not es.probe.storage:
+                es.errors("No assigned storage")
+                if trace:
+                    r += [es]
+                continue
             # Get handler
             for h in probe_registry.iter_handlers(m.name):
                 if trace:
