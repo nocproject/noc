@@ -224,11 +224,21 @@ class Command(BaseCommand):
         self.log("   ... done")
 
     def handle_install(self, name, files):
+        def iter_files(names):
+            for f in names:
+                if os.path.isdir(f):
+                    for dirpath, dirnames, filenames in os.walk(f):
+                        for ff in filenames:
+                            if ff.endswith(".json"):
+                                yield os.path.join(dirpath, ff)
+                else:
+                    yield f
+
         self.log("Installing files")
         d = self.get_collection(name)
         dc = Collection(name, d)
         dc.load()
-        for f in files:
+        for f in iter_files(files):
             self.log("    ... %s" % f)
             fd = read_file(f)
             if not fd:
@@ -241,6 +251,7 @@ class Command(BaseCommand):
             if "uuid" in data:
                 ci = dc.get_item(data["uuid"])
                 if ci and dc.get_hash(fd) == ci.hash:
+                    self.log("        ... not changed. Skipping")
                     continue  # Not changed
             dc.install_item(data, load=True)
         self.log("    ... saving manifest.csv")
