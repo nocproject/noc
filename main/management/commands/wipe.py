@@ -45,6 +45,8 @@ class Command(BaseCommand):
             with self.log("Wiping '%s':" % unicode(o), True):
                 try:
                     wiper(o)
+                except KeyboardInterrupt:
+                    raise CommandError("Interrupted. Wiping is not complete")
                 except:
                     error_report()
 
