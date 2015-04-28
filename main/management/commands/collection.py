@@ -230,10 +230,18 @@ class Command(BaseCommand):
         dc.load()
         for f in files:
             self.log("    ... %s" % f)
+            fd = read_file(f)
+            if not fd:
+                raise CommandError("Cannot read file: %s" % f)
+            # if dc.get_hash(fd) ==
             try:
-                data = json_decode(read_file(f))
+                data = json_decode(fd)
             except ValueError:
                 raise CommandError("Unable to parse JSON file: %s" % f)
+            if "uuid" in data:
+                ci = dc.get_item(data["uuid"])
+                if ci and dc.get_hash(fd) == ci.hash:
+                    continue  # Not changed
             dc.install_item(data, load=True)
         self.log("    ... saving manifest.csv")
         dc.save()
