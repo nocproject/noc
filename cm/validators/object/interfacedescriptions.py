@@ -16,12 +16,22 @@ class InterfaceDescriptionsValidator(CLIPSObjectValidator):
         All active interfaces must have descriptions
     """
     TAGS = ["description"]
-    RULES = """
-    (defrule {{RULENAME}}
-        ?i <- (interface (admin_status 1) (description nil) (name ?n))
-        =>
-        (assert
-            (error (type "Interface | No Description")
-                   (obj ?n)))
-    )
-    """
+    RULES = ["""
+        (defrule {{RULENAME}}-{{RULENUM}}
+            ?i <- (interface (admin_status 1) (description nil) (name ?n))
+            =>
+            (assert
+                (error (type "Interface | No Description")
+                       (obj ?n)))
+        )
+        """,
+        """
+        (defrule {{RULENAME}}-{{RULENUM}}
+            ?i <- (subinterface (admin_status 1) (description nil) (name ?n))
+            =>
+            (assert
+                (error (type "Interface | No Description")
+                       (obj ?n)))
+        )
+        """
+    ]
