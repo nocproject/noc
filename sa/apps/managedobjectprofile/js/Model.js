@@ -118,6 +118,21 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 86400
         },
         {
+            name: "enable_uptime_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "uptime_discovery_min_interval",
+            type: "int",
+            defaultValue: 60
+        },
+        {
+            name: "uptime_discovery_max_interval",
+            type: "int",
+            defaultValue: 300
+        },
+        {
             name: "enable_interface_discovery",
             type: "boolean",
             defaultValue: true

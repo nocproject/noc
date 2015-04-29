@@ -82,6 +82,13 @@ class ManagedObjectProfile(models.Model):
         _("Min. caps discovery interval"), default=600)
     caps_discovery_max_interval = models.IntegerField(
         _("Max. caps discovery interval"), default=86400)
+    # Uptime discovery
+    enable_uptime_discovery = models.BooleanField(
+        _("Enable uptime discovery"), default=True)
+    uptime_discovery_min_interval = models.IntegerField(
+        _("Min. uptime discovery interval"), default=60)
+    uptime_discovery_max_interval = models.IntegerField(
+        _("Max. uptime discovery interval"), default=300)
     # Interface discovery
     enable_interface_discovery = models.BooleanField(
         _("Enable interface discovery"), default=True)
