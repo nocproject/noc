@@ -26,6 +26,7 @@ class Profile(NOCProfile):
     pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
     convert_mac = NOCProfile.convert_mac_to_cisco
+    default_parser = "noc.cm.parsers.Cisco.IOSXR.base.BaseIOSXRParser"
 
     rx_interface_name = re.compile(
         r"^(?P<type>[a-z\-]+)\s*(?P<number>\d+(?:/\d+)*(?:\.\d+)?(?:(?:/RS?P\d+)?/CPU\d+(?:/\d+)*)?)$",
