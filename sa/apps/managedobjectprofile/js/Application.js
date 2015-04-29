@@ -74,6 +74,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     renderer: NOC.render.Bool
                 },
                 {
+                    text: "Uptime",
+                    dataIndex: "enable_uptime_discovery",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
                     text: "Int.",
                     dataIndex: "enable_interface_discovery",
                     width: 50,
@@ -332,6 +338,26 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                         },
                         {
                             name: "caps_discovery_max_interval",
+                            xtype: "numberfield",
+                            allowBlank: false
+                        },
+                        // Uptime discovery
+                        {
+                            xtype: "label",
+                            text: "Uptime Discovery"
+                        },
+                        {
+                            name: "enable_uptime_discovery",
+                            xtype: "checkboxfield",
+                            allowBlank: false
+                        },
+                        {
+                            name: "uptime_discovery_min_interval",
+                            xtype: "numberfield",
+                            allowBlank: false
+                        },
+                        {
+                            name: "uptime_discovery_max_interval",
                             xtype: "numberfield",
                             allowBlank: false
                         },

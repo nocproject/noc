@@ -13,6 +13,7 @@ from settings import config
 DISCOVERY_METHODS = [
     "version_inventory",
     "caps_discovery",
+    "uptime_discovery",
     "id_discovery",
     "config_discovery",
     "interface_discovery",

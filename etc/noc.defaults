@@ -417,6 +417,10 @@ enabled = true
 # Save result to database
 save = true
 
+[uptime_discovery]
+# Enable caps discovery process
+enabled = true
+
 [config_discovery]
 # Enable config discovery process
 enabled = true
