@@ -67,6 +67,11 @@ class BaseJUNOSParser(BaseParser):
         for f in self.iter_facts():
             yield f
 
+    def get_interface_defaults(self, name):
+        r = super(BaseJUNOSParser, self).get_interface_defaults(name)
+        r["admin_status"] = True
+        return r
+
     def get_subinterface_fact(self, name, interface=None):
         if "." in name and interface is None:
             interface = name.split(".")[0]
@@ -182,6 +187,14 @@ class BaseJUNOSParser(BaseParser):
         si.ipv4_addresses += [tokens[7]]
         si.add_afi("IPv4")
 
+    def on_subinterface_ipv6_address(self, tokens):
+        """
+        set interface <N> unit <M> family inet6 address <K>
+        """
+        si = self.get_subinterface_fact("%s.%s" % (tokens[1], tokens[3]))
+        si.ipv6_addresses += [tokens[7]]
+        si.add_afi("IPv6")
+
     def on_subinterface_ipv4_filter(self, tokens):
         """
         set interface <N> unit <M> family inet filter {input|output} <K>
@@ -289,6 +302,9 @@ class BaseJUNOSParser(BaseParser):
                                 "filter": {
                                     "*": on_subinterface_ipv4_filter
                                 }
+                            },
+                            "inet6": {
+                                "address": on_subinterface_ipv6_address
                             },
                             "iso": on_subinterface_iso,
                             "mpls": on_subinterface_mpls
