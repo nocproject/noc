@@ -26,7 +26,7 @@ default_interface_profile =
 deduplication_window = 3
 # Rule lookup solution
 # * noc.fm.classifier.rulelookup.RuleLookup - default lookup
-# * noc.solutions.noc.hifm.fm.classifier.lookup.HiFMRLookup - HiFM
+# * noc.fm.classifier.xrulelookup.XRuleLookup - Accelerated (experimental)
 lookup_solution = noc.fm.classifier.rulelookup.RuleLookup
 
 [collector]
