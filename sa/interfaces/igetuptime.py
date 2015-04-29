@@ -11,4 +11,7 @@ from base import *
 
 
 class IGetUptime(Interface):
-    returns = NoneParameter() | IntParameter()
+    """
+    System uptime in seconds
+    """
+    returns = NoneParameter() | FloatParameter()
