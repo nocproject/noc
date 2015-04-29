@@ -353,7 +353,10 @@ class Collection(object):
         First-time collection upgrade
         """
         def upgrade_item(u):
-            d = self.load_item(collection.items[u])
+            ci = collection.items[u]
+            if not ci.name:
+                return  # Revoked object
+            d = self.load_item(ci)
             if d is None:
                 p = self.get_item_path(collection.items[u])
                 self.die("File not found: %s" % p)
