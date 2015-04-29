@@ -24,3 +24,16 @@ class Profile(noc.sa.profiles.Profile):
     command_disable_pager = "terminal length 0"
     command_enter_config = "configure"
     command_leave_config = "commit\nexit"
+
+    @classmethod
+    def get_interface_type(cls, name):
+        if name.startswith("eth"):
+            return "physical"
+        elif name.startswith("lo"):
+            return "loopback"
+        elif name.startswith("br"):
+            return "aggregated"
+        elif name.startswith("vtun"):
+            return "tunnel"
+        else:
+            raise Exception("Cannot detect interface type for %s" % name)
