@@ -14,7 +14,7 @@ from noc.lib.mib import mib
 
 class Script(NOCScript):
     """
-    Returns system uptime in the thousands of second
+    Returns system uptime in seconds
     """
     name = "Generic.get_uptime"
     implements = [IGetUptime]
@@ -23,7 +23,8 @@ class Script(NOCScript):
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:
             try:
-                return self.snmp.get(mib["SNMPv2-MIB::sysUpTime", 0])
+                su = self.snmp.get(mib["SNMPv2-MIB::sysUpTime", 0])
+                return float(su) / 100.0
             except self.snmp.TimeOutError:
                 pass
         return None
