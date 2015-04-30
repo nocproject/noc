@@ -29,6 +29,7 @@ class Uptime(Document):
 
     EPSILON = datetime.timedelta(seconds=3)
     SEC = datetime.timedelta(seconds=1)
+    WRAP = float((1 << 32) - 1) / 100.0
 
     def __unicode__(self):
         return u"%d" % self.object
@@ -44,7 +45,7 @@ class Uptime(Document):
             return
         oid = managed_object.id
         now = datetime.datetime.now()
-        delta = datetime.timedelta(milliseconds=int(uptime * 1000))
+        delta = datetime.timedelta(seconds=uptime)
         logger.debug("[%s] Register uptime %s",
                      managed_object.name, delta)
         # Update data
@@ -55,11 +56,12 @@ class Uptime(Document):
         })
         if d:
             r_uptime = now - d["start"]
+            while r_uptime >= cls.WRAP:
+                r_uptime -= cls.WRAP
             if r_uptime - delta > cls.EPSILON:
                 logger.debug("[%s] Reboot registered",
                              managed_object.name)
                 # Reboot registered
-                # @todo: Fix counter wrapping
                 ts = now - delta
                 c.update(
                     {"_id": d["_id"]},
