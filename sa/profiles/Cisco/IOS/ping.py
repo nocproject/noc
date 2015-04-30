@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -13,9 +13,13 @@ import re
 class Script(noc.sa.script.Script):
     name = "Cisco.IOS.ping"
     implements = [IPing]
-    rx_result = re.compile(r"^Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\)(, round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms)?", re.MULTILINE | re.DOTALL)
+    rx_result = re.compile(
+        r"^Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\)"
+        r"(, round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)"
+        r" ms)?", re.MULTILINE | re.DOTALL)
 
-    def execute(self, address, count=None, source_address=None, size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None,
+    df=None, vrf=None):
         cmd = "ping ip %s" % address
         if count:
             cmd += " count %d" % int(count)
@@ -25,6 +29,8 @@ class Script(noc.sa.script.Script):
             cmd += " size %d" % int(size)
         if df:
             cmd += " df-bit"
+        if vrf:
+            cmd += " vrf %s" % vrf
         pr = self.cli(cmd)
         match = self.rx_result.search(pr)
         return {

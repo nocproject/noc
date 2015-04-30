@@ -26,7 +26,7 @@ class Script(NOCScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self, address, count=None, source_address=None, size=None,
-    df=None):
+    df=None, vrf=None):
         cmd = "ping no-resolve"
         if count:
             cmd += " count %d" % int(count)
@@ -38,6 +38,8 @@ class Script(NOCScript):
             cmd += " size %d" % int(size)
         if df:
             cmd += " do-not-fragment"
+        if vrf:
+            cmd += " routing-instance %s" % vrf
         cmd += " %s" % address
         s = self.cli(cmd)
         match = self.rx_result.search(s)
