@@ -29,7 +29,7 @@ class Uptime(Document):
 
     EPSILON = datetime.timedelta(seconds=3)
     SEC = datetime.timedelta(seconds=1)
-    WRAP = float((1 << 32) - 1) / 100.0
+    WRAP = datetime.timedelta(seconds=float((1 << 32) - 1) / 100.0)
 
     def __unicode__(self):
         return u"%d" % self.object
