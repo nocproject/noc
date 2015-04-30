@@ -18,5 +18,6 @@ class IGetOAMStatus(Interface):
             "L",  # Link monitor
             "R",  # Remote loopback
             "U",  # Unidirection
+            "V"   # Variable Request
         ]))
     }))
