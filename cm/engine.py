@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 class Engine(object):
     INITIALIZED = False
     ILOCK = threading.Lock()
+    AC_POLICY_VIOLATION = None
 
     def __init__(self, object):
         self.object = object
@@ -48,6 +49,10 @@ class Engine(object):
         with self.ILOCK:
             if not self.INITIALIZED:
                 self.setup()
+            self.AC_POLICY_VIOLATION = AlarmClass.objects.filter(
+                name="Config | Policy Violation").first()
+            if not self.AC_POLICY_VIOLATION:
+                logger.error("Alarm class 'Config | Policy Violation' is not found. Alarms cannot be raised")
 
     def get_template(self, fact):
         if fact.cls not in self.templates:
@@ -209,7 +214,8 @@ class Engine(object):
         # Store object's facts
         self.sync_facts()
         # Manage related alarms
-        self.sync_alarms()
+        if self.AC_POLICY_VIOLATION:
+            self.sync_alarms()
 
     def _get_rule_settings(self, ps, scope):
         """
@@ -430,7 +436,7 @@ class Engine(object):
         # Check errors are exists
         n_errors = sum(1 for e in self.iter_errors())
         alarm = ActiveAlarm.objects.filter(
-            alarm_class=ac_policy_violation.id,
+            alarm_class=self.AC_POLICY_VIOLATION.id,
             managed_object=self.object.id).first()
         if n_errors:
             if not alarm:
@@ -439,7 +445,7 @@ class Engine(object):
                 alarm = ActiveAlarm(
                     timestamp=datetime.datetime.now(),
                     managed_object=self.object,
-                    alarm_class=ac_policy_violation,
+                    alarm_class=self.AC_POLICY_VIOLATION,
                     severity=2000  # WARNING
                 )
             # Alarm is already exists
@@ -483,11 +489,6 @@ def clips_match_re(rx, s):
 from noc.cm.validators.base import BaseValidator
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
-
-ac_policy_violation = AlarmClass.objects.filter(
-    name="Config | Policy Violation").first()
-if not ac_policy_violation:
-    logger.error("Alarm class 'Config | Policy Violation' is not found. Alarms cannot be raised")
 
 CLIPS_TRUE = clips.Symbol("TRUE")
 CLIPS_FALSE = clips.Symbol("FALSE")
