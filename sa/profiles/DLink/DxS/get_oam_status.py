@@ -20,6 +20,8 @@ class Script(NOCScript):
     rx_line = re.compile(r"Port\s+", re.MULTILINE)
     rx_line1 = re.compile(r"\nRemote Client", re.MULTILINE)
     rx_oam = re.compile(r"\s+OAM\s+:\s+Enable", re.MULTILINE | re.IGNORECASE)
+    rx_capsR = re.compile(r"\n\s+Remote Loopback\s+:\s+(?P<caps_R>\S+)",
+        re.IGNORECASE | re.MULTILINE)
     rx_capsU = re.compile(r"\n\s+Unidirection\s+:\s+(?P<caps_U>\S+)",
         re.IGNORECASE | re.MULTILINE)
     rx_capsL = re.compile(r"\n\s+Link Monitoring\s+:\s+(?P<caps_L>\S+)",
@@ -52,12 +54,24 @@ class Script(NOCScript):
                 if mac == "-":
                     continue
                 caps = []
+                capsR = ""
+                capsU = ""
+                capsL = ""
+                capsV = ""
+                match = self.rx_capsR.search(s1)
+                if match:
+                    capsR = match.group("caps_R")
                 match = self.rx_capsU.search(s1)
-                capsU = match.group("caps_U")
+                if match:
+                    capsU = match.group("caps_U")
                 match = self.rx_capsL.search(s1)
-                capsL = match.group("caps_L")
+                if match:
+                    capsL = match.group("caps_L")
                 match = self.rx_capsV.search(s1)
-                capsV = match.group("caps_V")
+                if match:
+                    capsV = match.group("caps_V")
+                if 'Supported' in capsR:
+                    caps += ["R"]
                 if 'Supported' in capsU:
                     caps += ["U"]
                 if 'Support' in capsL:
