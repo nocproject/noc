@@ -11,6 +11,8 @@ import logging
 from collections import defaultdict
 import datetime
 import uuid
+import re
+import threading
 ## Third-party modules
 import clips
 from pymongo.errors import BulkWriteError
@@ -30,6 +32,9 @@ logger = logging.getLogger(__name__)
 
 
 class Engine(object):
+    INITIALIZED = False
+    ILOCK = threading.Lock()
+
     def __init__(self, object):
         self.object = object
         self.logger = PrefixLoggerAdapter(logger, self.object.name)
@@ -40,6 +45,9 @@ class Engine(object):
         self.rn = 0  # Rule number
         self.config = None  # Cached config
         self.interface_ranges = None
+        with self.ILOCK:
+            if not self.INITIALIZED:
+                self.setup()
 
     def get_template(self, fact):
         if fact.cls not in self.templates:
@@ -441,6 +449,36 @@ class Engine(object):
             self.logger.info("Clear alarm")
             alarm.clear_alarm("No errors has been registered")
 
+    @classmethod
+    def setup(cls):
+        """
+        Install additional CLIPS functions
+        """
+        logger.debug("Setting up CLIPS environment")
+        # Install python functions
+        clips.RegisterPythonFunction(
+            clips_match_re,
+            "py-match-re"
+        )
+        # Create wrappers
+        logger.debug("Install function: match-re")
+        clips.BuildFunction(
+            "match-re",
+            "?rx ?s",
+            "(return (python-call py-match-re ?rx ?s))"
+        )
+        cls.INITIALIZED = True
+
+
+## Extension functions
+def clips_match_re(rx, s):
+    """
+    Check string matches regular expression
+    Usage:
+        (match-re "^\s+test" ?f)
+    """
+    return CLIPS_TRUE if re.search(rx, s) else CLIPS_FALSE
+
 #
 from noc.cm.validators.base import BaseValidator
 from noc.fm.models.alarmclass import AlarmClass
@@ -450,3 +488,6 @@ ac_policy_violation = AlarmClass.objects.filter(
     name="Config | Policy Violation").first()
 if not ac_policy_violation:
     logger.error("Alarm class 'Config | Policy Violation' is not found. Alarms cannot be raised")
+
+CLIPS_TRUE = clips.Symbol("TRUE")
+CLIPS_FALSE = clips.Symbol("FALSE")
