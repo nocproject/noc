@@ -12,6 +12,7 @@ import re
 from pyparsing import OneOrMore, Word, alphanums, QuotedString
 ## NOC modules
 from noc.cm.parsers.base import BaseParser
+from noc.lib.validators import is_ipv4, is_ipv6
 
 
 class BaseIOSXRParser(BaseParser):
@@ -94,6 +95,22 @@ class BaseIOSXRParser(BaseParser):
         """
         self.get_system_fact().nameservers += [tokens[2]]
 
+    def on_ntp_server(self, tokens):
+        """
+        ntp
+         server <server> prefer
+         server <server>
+        """
+        self.get_ntpserver_fact(tokens[2])
+
+    def on_syslog_server(self, tokens):
+        """
+        logging <server>
+        """
+        h = tokens[1]
+        if is_ipv4(h) or is_ipv6(h):
+            self.get_sysloghost_fact(h)
+
     handlers = {
         "hostname": on_hostname,
         "clock": {
@@ -102,5 +119,9 @@ class BaseIOSXRParser(BaseParser):
         "domain": {
             "name": on_domain_name,
             "name-server": on_domain_name_server
-        }
+        },
+        "ntp": {
+            "server": on_ntp_server
+        },
+        "logging": on_syslog_server
     }
