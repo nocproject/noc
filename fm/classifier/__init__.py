@@ -500,8 +500,8 @@ class Classifier(Daemon):
                 # Try to match rule
                 v = r.match(event, vars)
                 if v is not None:
-                    self.logger.debug("Matching class for event %s found: %s (Rule: %s)",
-                        event.id, r.event_class_name, r.name)
+                    self.logger.debug("[%s] Matching class for event %s found: %s (Rule: %s)",
+                        event.managed_object.name, event.id, r.event_class_name, r.name)
                     return r, v
         if self.default_rule:
             return self.default_rule, {}
@@ -657,8 +657,8 @@ class Classifier(Daemon):
             de = self.find_duplicated_event(event, event_class, vars)
             if de:
                 self.logger.debug(
-                    "Event %s duplicates event %s. Discarding",
-                    event.id, de.id)
+                    "[%s] Event %s duplicates event %s. Discarding",
+                    event.managed_object.name, event.id, de.id)
                 de.log_message(
                     "Duplicated event %s has been discarded" % event.id
                 )
@@ -669,8 +669,8 @@ class Classifier(Daemon):
             suppress, name, nearest = self.to_suppress(event, event_class,
                                                        vars)
             if suppress:
-                self.logger.debug("Event %s was suppressed by rule %s",
-                    event.id, name)
+                self.logger.debug("[%s] Event %s was suppressed by rule %s",
+                    event.managed_object.name, event.id, name)
                 # Update suppressing event
                 nearest.log_suppression(event.timestamp)
                 # Delete suppressed event
@@ -706,7 +706,10 @@ class Classifier(Daemon):
                 except:
                     error_report()
                 if event.to_drop:
-                    self.logger.debug("Event dropped by handler")
+                    self.logger.debug(
+                        "[%s] Event dropped by handler",
+                        event.managed_object.name
+                    )
                     event.id = event_id  # Restore event id
                     event.delete()
                     return CR_DELETED
@@ -720,8 +723,11 @@ class Classifier(Daemon):
                     error_report()
                 if event.to_drop:
                     # Delete event and stop processing
-                    self.logger.debug("Drop event %s (Requested by trigger %s)",
-                                      event_id, t.name)
+                    self.logger.debug(
+                        "[%s] Drop event %s (Requested by trigger %s)",
+                        event.managed_object.name,
+                        event_id, t.name
+                    )
                     event.id = event_id  # Restore event id
                     event.delete()
                     return CR_DELETED
