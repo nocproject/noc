@@ -18,7 +18,7 @@ class InterfaceCDPDisabledValidator(CLIPSInterfaceValidator):
     TAGS = ["admin.status"]
     RULES = """
     (defrule {{RULENAME}}
-        ?i <- (interface (name "{{name}}") (protocols "CDP"))
+        (interface (name "{{name}}") (protocols $? "CDP" $?))
         =>
         (assert
             (error (type "Interface | CDP Enabled")
