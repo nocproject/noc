@@ -201,6 +201,8 @@ class BaseIOSParser(BasePyParser):
     def on_interface_descripion(self, tokens):
         si = self.get_current_subinterface()
         description = tokens[0]
+        if description.startswith("\"") and description.startswith("\""):
+            description = description[1:-1]
         si.description = description
         if "." not in si.name:
             si.interface.description = description
