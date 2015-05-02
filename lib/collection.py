@@ -41,6 +41,9 @@ class DereferenceError(Exception):
 
 
 class Collection(object):
+    TRANSLATIONS = {}
+    ALLOW_FUZZY = {}
+
     def __init__(self, name, doc, local=False):
         self.logger = PrefixLoggerAdapter(logger, name)
         m, c = name.split(".", 1)
@@ -65,6 +68,10 @@ class Collection(object):
                 self.logger.error("Cannot find unique index")
                 raise ValueError("No unique index")
             self.get_name = attrgetter(uname)
+        self.translations = self.TRANSLATIONS.get(
+            name,
+            self.TRANSLATIONS[None]
+        )
 
     def __unicode__(self):
         return self.name
@@ -261,6 +268,25 @@ class Collection(object):
             self.ref_cache[ref][field][key] = v
             return v
 
+    def i18n_translate(self, v):
+        """
+        Convert dicts like
+        {
+            "$i18n": {
+                "en": "Hello",
+                "ru": "Здравствуйте",
+                "fr": "[FUZZY] Bonjour"
+            }
+        }
+        to the translated string
+        """
+        for tr in self.translations:
+            if tr in v:
+                if v.startswith("[FUZZY] "):
+                    v = v[8:]
+                return v
+        self.die("Invalid translation")
+
     def dereference(self, doc, d):
         r = {}
         partial = False
@@ -271,6 +297,9 @@ class Collection(object):
             if k == "uuid":
                 r["uuid"] = UUID(v)
                 continue
+            # Convert i18n
+            if isinstance(v, dict) and len(v) == 1 and "$i18n" in v:
+                v = self.i18n_translate(v)
             # Dereference ref__name lookups
             if "__" in k:
                 # Lookup
@@ -451,3 +480,25 @@ class Collection(object):
         if isinstance(uuid, basestring):
             uuid = UUID(uuid)
         return self.items.get(uuid)
+
+    @classmethod
+    def setup(cls):
+        from noc.settings import config
+        for opt in config.options("i18n"):
+            if opt.startswith("collections."):
+                cn = opt[12:]
+                if cn.endswith(".allow_fuzzy"):
+                    cn = opt[:-12]
+                    if cn == "global":
+                        cn = None
+                    cls.ALLOW_FUZZY[cn] = config.getboolean("i18n", opt)
+                else:
+                    if cn == "global":
+                        cn = None
+                    tr = [x.strip() for x in config.get("i18n", opt).split(",")]
+                    if "en" not in tr:
+                        tr += ["en"]
+                    cls.TRANSLATIONS[cn] = tr
+
+
+Collection.setup()
