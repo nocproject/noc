@@ -28,7 +28,7 @@ class CLIPSValidator(BaseValidator):
         name = "%s.%s-%s" % (
             self.__class__.__module__, self.__class__.__name__, num
         )
-        name = name.replace(".", "-")
+        name = name.replace(".", "-").lower()
         r = self.get_config()
         r.update({
             "RULENUM": num,
@@ -37,7 +37,15 @@ class CLIPSValidator(BaseValidator):
         return r
 
     def add_rule(self, rule):
-        t = Template(rule).render(Context(self.get_context()))
+        ctx = self.get_context()
+        # CLIPS Escape
+        for n in ctx:
+            v = ctx[n]
+            if isinstance(v, basestring):
+                v = v.replace("\\", "\\\\").replace("\"", "\\\"")
+                ctx[n] = v
+        #
+        t = Template(rule).render(Context(ctx))
         logger.debug("ADD RULE: %s", t)
         self.engine.add_rule(t)
 
