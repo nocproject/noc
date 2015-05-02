@@ -115,6 +115,7 @@ class AlarmClass(nosql.Document):
         c = self
         r = ["{"]
         r += ["    \"name\": \"%s\"," % q(c.name)]
+        r += ["    \"$collection\": \"%s\"," % self._meta["json_collection"]]
         r += ["    \"uuid\": \"%s\"," % c.uuid]
         if c.description:
             r += ["    \"desciption\": \"%s\"," % q(c.description)]

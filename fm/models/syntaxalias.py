@@ -16,7 +16,8 @@ from noc.lib.prettyjson import to_json
 class SyntaxAlias(Document):
     meta = {
         "collection": "noc.syntaxaliases",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "json_collection": "fm.syntaxaliases"
     }
     name = StringField(unique=True, required=True)
     syntax = DictField(required=False)
@@ -40,6 +41,7 @@ class SyntaxAlias(Document):
     def to_json(self):
         return to_json({
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "syntax": self.syntax
-        }, order=["name", "uuid", "syntax"])
+        }, order=["name", "$collection", "uuid", "syntax"])

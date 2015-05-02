@@ -68,6 +68,7 @@ class ConnectionType(Document):
     def json_data(self):
         r = {
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
             "genders": self.genders,
@@ -79,7 +80,8 @@ class ConnectionType(Document):
 
     def to_json(self):
         return to_json(self.json_data,
-                       order=["name", "uuid", "description"])
+                       order=["name", "$collection",
+                              "uuid", "description"])
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

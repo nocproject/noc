@@ -35,6 +35,7 @@ class Capability(Document):
     def json_data(self):
         r = {
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
             "type": self.type
@@ -43,7 +44,8 @@ class Capability(Document):
 
     def to_json(self):
         return to_json(self.json_data,
-                       order=["name", "uuid", "description", "type"])
+                       order=["name", "$collection",
+                              "uuid", "description", "type"])
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

@@ -41,8 +41,10 @@ class Technology(Document):
     def to_json(self):
         r = {
             "name": self.name,
+            "$collection": self._meta["$collection"],
             "uuid": self.uuid
         }
         if self.description:
             r["description"] = self.description
-        return to_json(r, order=["name", "uuid", "description"])
+        return to_json(r, order=["name", "$collection",
+                                 "uuid", "description"])

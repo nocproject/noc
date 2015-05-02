@@ -34,6 +34,7 @@ class Enumeration(Document):
     def to_json(self):
         return to_json({
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "values": self.values
-        }, order=["name", "uuid"])
+        }, order=["name", "$collection", "uuid"])

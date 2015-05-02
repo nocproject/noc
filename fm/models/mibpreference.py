@@ -32,6 +32,7 @@ class MIBPreference(Document):
     def to_json(self):
         return to_json({
             "mib": self.mib,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "preference": self.preference
-        }, order=["mib", "uuid", "preference"])
+        }, order=["mib", "$collection", "uuid", "preference"])

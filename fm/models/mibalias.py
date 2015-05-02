@@ -20,7 +20,8 @@ class MIBAlias(Document):
     """
     meta = {
         "collection": "noc.mibaliases",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "json_collection": "fm.mibaliases"
     }
     rewrite_mib = StringField(unique=True)
     to_mib = StringField()
@@ -52,7 +53,8 @@ class MIBAlias(Document):
 
     def to_json(self):
         return to_json({
+            "$collection": self._meta["json_collection"],
             "rewrite_mib": self.rewrite_mib,
             "to_mib": self.to_mib,
             "uuid": self.uuid
-        }, order=["rewrite_mib", "to_mib", "uuid"])
+        }, order=["$collection", "rewrite_mib", "to_mib", "uuid"])

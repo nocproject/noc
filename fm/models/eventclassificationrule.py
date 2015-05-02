@@ -111,6 +111,7 @@ class EventClassificationRule(Document):
     def to_json(self):
         r = ["{"]
         r += ["    \"name\": \"%s\"," % jq(self.name)]
+        r += ["    \"$collection\": \"%s\"," % jq(self._meta["json_collection"])]
         r += ["    \"uuid\": \"%s\"," % self.uuid]
         if self.description:
             r += ["    \"description\": \"%s\"," % jq(self.description)]

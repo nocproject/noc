@@ -173,6 +173,7 @@ class ObjectModel(Document):
     def json_data(self):
         r = {
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
             "vendor__code": self.vendor.code,
@@ -189,7 +190,8 @@ class ObjectModel(Document):
 
     def to_json(self):
         return to_json(self.json_data,
-                       order=["name", "uuid", "vendor__code",
+                       order=["name", "$collection",
+                              "uuid", "vendor__code",
                               "description",
                               "connection_rule__name",
                               "cr_context",

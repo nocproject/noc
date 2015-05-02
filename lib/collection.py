@@ -266,6 +266,8 @@ class Collection(object):
         partial = False
         for k in d:
             v = d[k]
+            if k.startswith("$"):
+                continue  # Ignore $name
             if k == "uuid":
                 r["uuid"] = UUID(v)
                 continue
@@ -391,6 +393,9 @@ class Collection(object):
                 pass
 
     def install_item(self, data, load=False):
+        if "$collection" in data and data["$collection"] != self.name:
+            self.die("Installing to invalid collection: %s instead of %s",
+                     data["$collection"], self.name)
         o = self.doc(**self.dereference(self.doc, data))
         self.logger.info("Installing %s", unicode(o))
         if not o.uuid:
