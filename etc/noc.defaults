@@ -680,3 +680,15 @@ NSN.hiX56xx.get_arp = 600
 NSN.hiX56xx.get_mac_address_table = 600
 Opticin.OS.get_interfaces = 240
 Qtech.QSW.get_interfaces = 600
+
+[i18n]
+# Global translation settings
+# collections.global = ru, en
+collections.global = en
+# Collection-depended translations
+# collections.fm.eventclasses = ua, ru, en
+
+# Allow fuzzy translations
+collections.global.allow_fuzzy = true
+# Collection-depended fuzzy translations
+# collections.fm.eventclasses.allow_fuzzy = true
