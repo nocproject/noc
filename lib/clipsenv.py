@@ -9,6 +9,7 @@
 ## Python modules
 import threading
 import logging
+import re
 ## Third-party modules
 import clips
 
@@ -66,3 +67,43 @@ class CLIPSEnv(object):
         env.Reset()
         self.cond.notify()
         self.cond.release()
+
+    @classmethod
+    def prepare(cls):
+        """
+        Prepare CLIPS
+        """
+        logger.debug("Prepare CLIPS")
+        # Install python functions
+        logger.debug("Register python function py-match-re")
+        clips.RegisterPythonFunction(
+            clips_match_re,
+            "py-match-re"
+        )
+
+## Extension functions
+def _clips_bool(r):
+    """
+    Returns Clips TRUE or FALSE depending of value of r
+    """
+    if bool(r):
+        return CLIPS_TRUE
+    else:
+        return CLIPS_FALSE
+
+
+def clips_match_re(rx, s):
+    """
+    Check string matches regular expression
+    Usage:
+        (match-re "^\s+test" ?f)
+    """
+    logger.error("@@@@ MATCH RE: <%s> <%s> -> %s", rx, s, bool(re.search(rx, s)))
+    return _clips_bool(re.search(rx, s))
+
+
+CLIPS_TRUE = clips.Symbol("TRUE")
+CLIPS_FALSE = clips.Symbol("FALSE")
+
+## Initialize environment
+CLIPSEnv.prepare()

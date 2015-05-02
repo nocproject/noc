@@ -32,7 +32,6 @@ logger = logging.getLogger(__name__)
 
 
 class Engine(object):
-    INITIALIZED = False
     ILOCK = threading.Lock()
     AC_POLICY_VIOLATION = None
 
@@ -47,8 +46,6 @@ class Engine(object):
         self.config = None  # Cached config
         self.interface_ranges = None
         with self.ILOCK:
-            if not self.INITIALIZED:
-                self.setup()
             self.AC_POLICY_VIOLATION = AlarmClass.objects.filter(
                 name="Config | Policy Violation").first()
             if not self.AC_POLICY_VIOLATION:
@@ -152,7 +149,7 @@ class Engine(object):
 
     def check(self):
         with CLIPSEnv() as env:
-            self.env = env
+            self.setup_env(env)
             self._check()
 
     def _check(self):
@@ -455,40 +452,21 @@ class Engine(object):
             self.logger.info("Clear alarm")
             alarm.clear_alarm("No errors has been registered")
 
-    @classmethod
-    def setup(cls):
+    def setup_env(self, env):
         """
         Install additional CLIPS functions
         """
         logger.debug("Setting up CLIPS environment")
-        # Install python functions
-        clips.RegisterPythonFunction(
-            clips_match_re,
-            "py-match-re"
-        )
+        self.env = env
         # Create wrappers
         logger.debug("Install function: match-re")
-        clips.BuildFunction(
+        env.BuildFunction(
             "match-re",
             "?rx ?s",
             "(return (python-call py-match-re ?rx ?s))"
         )
-        cls.INITIALIZED = True
-
-
-## Extension functions
-def clips_match_re(rx, s):
-    """
-    Check string matches regular expression
-    Usage:
-        (match-re "^\s+test" ?f)
-    """
-    return CLIPS_TRUE if re.search(rx, s) else CLIPS_FALSE
 
 #
 from noc.cm.validators.base import BaseValidator
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
-
-CLIPS_TRUE = clips.Symbol("TRUE")
-CLIPS_FALSE = clips.Symbol("FALSE")
