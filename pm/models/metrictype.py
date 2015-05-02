@@ -38,6 +38,7 @@ class MetricType(Document):
     def json_data(self):
         r = {
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description
         }
@@ -49,7 +50,8 @@ class MetricType(Document):
 
     def to_json(self):
         return to_json(self.json_data,
-                       order=["name", "uuid", "description",
+                       order=["name", "$collection",
+                              "uuid", "description",
                               "is_vector", "measure"])
 
     def get_json_path(self):

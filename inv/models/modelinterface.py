@@ -117,6 +117,7 @@ class ModelInterface(Document):
         r = [
             "{",
             "    \"name\": \"%s\"," % q(self.name),
+            "    \"$collection\": \"%s\"," % self._meta["json_collection"],
             "    \"uuid\": \"%s\"," % str(self.uuid),
             "    \"description\": \"%s\"," % q(self.description),
             "    \"attrs\": [",

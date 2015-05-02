@@ -124,6 +124,8 @@ class Command(BaseCommand):
         ("pm.metrictypes", MetricType)
     ]
 
+    cdict = dict(collections)
+
     def log(self, msg):
         if not self.verbose:
             return
@@ -152,14 +154,15 @@ class Command(BaseCommand):
         elif options["cmd"] == "upgrade":
             return self.handle_upgrade(args)
         elif options["cmd"] == "install":
-            if len(args) < 2:
-                parts = args[0].split(os.path.sep)
-                if (len(parts) < 2 or parts[1] != "collections"):
-                    raise CommandError("Usage: <collection> <file1> .. <fileN>")
-                # Generate collection name from path
-                name = "%s.%s" % (parts[0], parts[2])
-                args = [name] + list(args)
-            return self.handle_install(args[0], args[1:])
+            # if len(args) < 2:
+            #     parts = args[0].split(os.path.sep)
+            #     if (len(parts) < 2 or parts[1] != "collections"):
+            #         raise CommandError("Usage: <collection> <file1> .. <fileN>")
+            #     # Generate collection name from path
+            #     name = "%s.%s" % (parts[0], parts[2])
+            #     args = [name] + list(args)
+            return self.handle_install(args)
+            # return self.handle_install(args[0], args[1:])
         elif options["cmd"] == "remove":
             return self.handle_remove(args[0])
         elif options["cmd"] == "check":
@@ -171,10 +174,11 @@ class Command(BaseCommand):
         pass
 
     def get_collection(self, name):
-        for n, d in self.collections:
-            if n == name:
-                return d
-        raise CommandError(self.not_found(name))
+        d = self.cdict.get(name)
+        if d:
+            return d
+        else:
+            raise CommandError(self.not_found(name))
 
     def handle_sync(self):
         DocCategory.fix_all()
@@ -223,7 +227,7 @@ class Command(BaseCommand):
             dc.save()
         self.log("   ... done")
 
-    def handle_install(self, name, files):
+    def handle_install(self, files):
         def iter_files(names):
             for f in names:
                 if os.path.isdir(f):
@@ -234,28 +238,52 @@ class Command(BaseCommand):
                 else:
                     yield f
 
+        dcs = {}  # name -> collection
+        if files[0] in self.cdict:
+            # Get collection name hints
+            current_name = files.pop(0)
+        else:
+            # Inplace update
+            parts = files[0].split(os.path.sep)
+            if (len(parts) > 3 and
+                    parts[1] == "collections" and
+                    "%s.%s" % (parts[0], parts[2]) in self.cdict):
+                current_name = "%s.%s" % (parts[0], parts[2])
+            else:
+                current_name = None
+
         self.log("Installing files")
-        d = self.get_collection(name)
-        dc = Collection(name, d)
-        dc.load()
         for f in iter_files(files):
-            self.log("    ... %s" % f)
+            self.log("    ... read %s" % f)
             fd = read_file(f)
             if not fd:
                 raise CommandError("Cannot read file: %s" % f)
-            # if dc.get_hash(fd) ==
             try:
                 data = json_decode(fd)
             except ValueError:
                 raise CommandError("Unable to parse JSON file: %s" % f)
+            if "$collection" in data:
+                current_name = data["$collection"]
+            if not current_name:
+                raise CommandError("Cannot detect collection for file: %s" % f)
+            if current_name in dcs:
+                dc = dcs[current_name]
+            else:
+                d = self.get_collection(current_name)
+                self.log("    ... open collection %s" % current_name)
+                dc = Collection(current_name, d)
+                dc.load()
+                dcs[current_name] = dc
             if "uuid" in data:
                 ci = dc.get_item(data["uuid"])
                 if ci and dc.get_hash(fd) == ci.hash:
                     self.log("        ... not changed. Skipping")
                     continue  # Not changed
             dc.install_item(data, load=True)
-        self.log("    ... saving manifest.csv")
-        dc.save()
+        # Save all modified manifests
+        for n, dc in dcs.iteritems():
+            self.log("    ... saving manifest.csv for %s" % n)
+            dc.save()
 
     def handle_remove(self, name):
         raise CommandError("Not implemented yet")

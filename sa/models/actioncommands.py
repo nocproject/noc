@@ -60,6 +60,7 @@ class ActionCommands(Document):
     def json_data(self):
         r = {
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "action__name": self.action.name,
             "description": self.description,
@@ -74,7 +75,7 @@ class ActionCommands(Document):
 
     def to_json(self):
         return to_json(self.json_data,
-                       order=["name", "uuid",
+                       order=["name", "$collection", "uuid",
                               "action__name",
                               "description",
                               "profile",

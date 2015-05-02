@@ -78,6 +78,7 @@ class Action(Document):
     def json_data(self):
         r = {
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "label": self.label,
             "description": self.description,
@@ -90,7 +91,7 @@ class Action(Document):
 
     def to_json(self):
         return to_json(self.json_data,
-                       order=["name", "uuid", "label",
+                       order=["name", "$collection", "uuid", "label",
                               "description",
                               "access_level",
                               "handler",

@@ -108,6 +108,7 @@ class ConnectionRule(Document):
     def json_data(self):
         return {
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
             "context": [c.json_data for c in self.context],
@@ -116,7 +117,9 @@ class ConnectionRule(Document):
 
     def to_json(self):
         return to_json(self.json_data,
-                       order=["name", "uuid", "description"])
+                       order=["name", "$collection",
+                              "uuid", "description",
+                              "context", "rules"])
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

@@ -16,7 +16,8 @@ from noc.lib.prettyjson import to_json
 class OIDAlias(Document):
     meta = {
         "collection": "noc.oidaliases",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "json_collection": "fm.oidaliases"
     }
 
     rewrite_oid = StringField(unique=True)
@@ -60,8 +61,10 @@ class OIDAlias(Document):
         r = {
             "rewrite_oid": self.rewrite_oid,
             "to_oid": self.to_oid,
-            "uuid": self.uuid
+            "uuid": self.uuid,
+            "$collection": self._meta["json_collection"]
         }
         if self.description:
             r["description"] = self.description
-        return to_json(r, order=["rewrite_oid", "to_oid", "uuid"])
+        return to_json(r, order=["$collection",
+                                 "rewrite_oid", "to_oid", "uuid"])

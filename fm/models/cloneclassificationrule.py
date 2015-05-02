@@ -40,6 +40,7 @@ class CloneClassificationRule(Document):
     def to_json(self):
         return to_json({
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "re": self.re,
             "key_re": self.key_re,

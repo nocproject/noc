@@ -51,8 +51,10 @@ class AlarmSeverity(Document):
     def to_json(self):
         return to_json({
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
             "severity": self.severity,
             "style__name": self.style.name
-        }, order=["name", "uuid", "description", "severity", "style"])
+        }, order=["name", "$collection", "uuid",
+                  "description", "severity", "style"])

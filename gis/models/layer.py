@@ -59,6 +59,7 @@ class Layer(Document):
     def json_data(self):
         r = {
             "name": self.name,
+            "$collection": self._meta["$collection"],
             "code": self.code,
             "uuid": str(self.uuid),
             "min_zoom": self.min_zoom,
@@ -78,7 +79,8 @@ class Layer(Document):
         return r
 
     def to_json(self):
-        return to_json(self.json_data, order=["name", "uuid", "description"])
+        return to_json(self.json_data, order=["name", "$collection",
+                                              "uuid", "description"])
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

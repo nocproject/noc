@@ -21,6 +21,7 @@ class Vendor(Document):
     meta = {
         "collection": "noc.vendors",
         "allow_inheritance": False,
+        "json_collection": "noc.vendors"
     }
 
     name = StringField(unique=True)
@@ -34,6 +35,7 @@ class Vendor(Document):
     def to_json(self):
         return to_json({
             "name": self.name,
+            "$collection": self._meta["json_collection"],
             "code": self.code,
             "site": self.site,
             "uuid": self.uuid
