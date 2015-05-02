@@ -6,6 +6,7 @@ Interface | Admin Status Up,bace145e-ce70-41b9-a7a0-8ecdcc83727f,Interface/Admin
 Interface | CDP Disabled,792f0273-71db-4c38-8afd-316b82f20cb8,Interface/CDP_Disabled.json,8e201e2e0a183e7a146f04b35759e0c39cdc49a03bbaadd7736f1d9fc4e7f643
 Interface | CDP Enabled,c65aced9-ec4b-457d-b9a7-1c1e86860eff,Interface/CDP_Enabled.json,a2e92cc8b8de9c9770fb5807959fd2e7599b6e49fd3d4a8fefc3d256eda06af0
 Interface | ISIS Without ISO,288c64c1-1e4a-424f-8be4-a29888330710,Interface/ISIS_Without_ISO.json,baa8418c5d55905e3bf894d57493f8d5b8b84c0f66c2c8d529df7af7d87ddfe1
+Interface | Invalid Description,40f29d82-c855-4156-b0c3-77fb1e3e147e,Interface/Invalid_Description.json,725937bc20bbde4f085aa4937c42e7aa94015602370460b78c3e352532868a0a
 Interface | MPLS Without ISIS,825ca2df-3ebb-4bcb-b7d3-6ed8eff0ff73,Interface/MPLS_Without_ISIS.json,3ab0044a5199c5785d5d91a017e9d06dfa12cb0635f6306457be494a09c57e55
 Interface | No Description,0f16d7c3-d06c-4959-9208-f2ad3951b09c,Interface/No_Description.json,d8ab6e4fd7e0bf0c38ad6326113c40470bde59f71a87c2341ed57ca45f8b103c
 Service | Enabled,93b907f1-a7c4-470e-9528-db3122446510,Service/Enabled.json,945edd138ab4f21606065dbd65852a6867f3d9e8d19e9475ed93b669b804a45b
