@@ -1,6 +1,8 @@
 {
     "name": "Chassis | PSU | PSU Recovered",
+    "$collection": "fm.eventclasses",
     "uuid": "0f338208-7629-4b2b-9406-05142ad764f9",
+    "description": "Power Suppply Unit recovered",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Power Supply Unit Recovered: {{name}}",
-            "body_template": "Power Supply Unit Recovered: {{name}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Power Supply Unit Recovered: {{name}}",
+    "body_template": "Power Supply Unit Recovered: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

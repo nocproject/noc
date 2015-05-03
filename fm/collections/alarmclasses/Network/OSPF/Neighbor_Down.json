@@ -1,5 +1,6 @@
 {
     "name": "Network | OSPF | Neighbor Down",
+    "$collection": "fm.alarmclasses",
     "uuid": "7bd05776-7d5e-4eae-9401-2e45e290756f",
     "is_unique": true,
     "discriminator": ["interface", "neighbor"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -42,15 +43,11 @@
             "default": "=InterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "OSPF lost{% if area %} area {{area}}{% endif %} adjacency to {{neighbor}}. Interface {{interface}}{% if description %} ({{description}}){% endif %}. Reason: {{reason}}",
-            "body_template": "OSPF lost{% if area %} area {{area}}{% endif %}{% if vrf %} VRF {{vrf}}{% endif %} adjacency to {{neighbor}}\nInterface {{interface}}{% if description %} ({{description}}){% endif %}\nReason: {{reason}}",
-            "symptoms": "Routing table changes and possible lost of connectivity",
-            "probable_causes": "Link failure or protocol misconfiguration",
-            "recommended_actions": "Check links and local and neighbor router configuration"
-        }
-    },
+    "subject_template": "OSPF lost{% if area %} area {{area}}{% endif %} adjacency to {{neighbor}}. Interface {{interface}}{% if description %} ({{description}}){% endif %}. Reason: {{reason}}",
+    "body_template": "OSPF lost{% if area %} area {{area}}{% endif %}{% if vrf %} VRF {{vrf}}{% endif %} adjacency to {{neighbor}}\nInterface {{interface}}{% if description %} ({{description}}){% endif %}\nReason: {{reason}}",
+    "symptoms": "Routing table changes and possible lost of connectivity",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check links and local and neighbor router configuration",
     "root_cause": [
         {
             "name": "Link Down",

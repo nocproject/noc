@@ -1,6 +1,8 @@
 {
     "name": "Network | OAM | Client Clear Remote Failure",
+    "$collection": "fm.eventclasses",
     "uuid": "39854dc7-40bd-46d6-96eb-ed4d950312d7",
+    "description": "Client has received a message to clear remote failure indication from its remote peer",
     "action": "A",
     "vars": [
         {
@@ -16,13 +18,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "The client on interface {{interface}} has clear remote failure indication from its remote peer",
-            "body_template": "The client on interface {{interface}} has clear remote failure indication from its remote peer{% if reason %}\nFailure reason: {{reason}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "The remote client received a message to clear a link fault, or a dying gasp (an unrecoverable local failure), or a critical event in the operations, administration, and maintenance Protocol Data Unit (OAMPDU).",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "The client on interface {{interface}} has clear remote failure indication from its remote peer",
+    "body_template": "The client on interface {{interface}} has clear remote failure indication from its remote peer{% if reason %}\nFailure reason: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "The remote client received a message to clear a link fault, or a dying gasp (an unrecoverable local failure), or a critical event in the operations, administration, and maintenance Protocol Data Unit (OAMPDU).",
+    "recommended_actions": ""
 }

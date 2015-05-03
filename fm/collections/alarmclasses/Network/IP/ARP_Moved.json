@@ -1,5 +1,6 @@
 {
     "name": "Network | IP | ARP Moved",
+    "$collection": "fm.alarmclasses",
     "uuid": "1fa45f6c-385c-421e-97fc-6b5310056418",
     "is_unique": true,
     "discriminator": ["ip", "from_mac", "to_mac"],
@@ -23,13 +24,9 @@
             "description": "To MAC"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
-            "body_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
+    "body_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

@@ -1,5 +1,6 @@
 {
     "name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded",
+    "$collection": "fm.alarmclasses",
     "uuid": "0c6d4a8f-2122-40a7-83c1-00dfa3e74991",
     "is_unique": true,
     "discriminator": ["farm", "real"],
@@ -19,13 +20,9 @@
             "description": "Real state"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Real {{real}} on SLB server farm {{farm}} has changed state to {{state}}",
-            "body_template": "Real {{real}} on SLB server farm {{farm}} has changed state to {{state}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Real {{real}} on SLB server farm {{farm}} has changed state to {{state}}",
+    "body_template": "Real {{real}} on SLB server farm {{farm}} has changed state to {{state}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

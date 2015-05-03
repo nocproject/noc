@@ -1,5 +1,6 @@
 {
     "name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
+    "$collection": "fm.alarmclasses",
     "uuid": "c4ebe882-c66b-42ec-9c33-47bb6caa25c3",
     "is_unique": true,
     "discriminator": ["module", "name"],
@@ -19,13 +20,9 @@
             "description": "serverfarm name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "SLB vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
-            "body_template": "SLB vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "SLB vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
+    "body_template": "SLB vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

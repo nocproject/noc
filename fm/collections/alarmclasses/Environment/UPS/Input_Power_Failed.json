@@ -1,5 +1,6 @@
 {
     "name": "Environment | UPS | Input Power Failed",
+    "$collection": "fm.alarmclasses",
     "uuid": "c3afd86c-dee6-4cdf-9daa-8b78222e7d12",
     "is_unique": true,
     "user_clearable": true,
@@ -7,13 +8,9 @@
     "vars": [
 
     ],
-    "text": {
-        "en": {
-            "subject_template": "Input power failed, going into on battery mode",
-            "body_template": "Input power failed, going into on battery mode",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Input power failed, going into on battery mode",
+    "body_template": "Input power failed, going into on battery mode",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

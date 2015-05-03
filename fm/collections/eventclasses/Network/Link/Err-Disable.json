@@ -1,6 +1,8 @@
 {
     "name": "Network | Link | Err-Disable",
+    "$collection": "fm.eventclasses",
     "uuid": "7b9be94a-143f-45b6-bf02-3aa5620d90cb",
+    "description": "Link in err-disable state",
     "action": "A",
     "vars": [
         {
@@ -17,15 +19,11 @@
         }
     ],
     "link_event": true,
-    "text": {
-        "en": {
-            "subject_template": "Link err-disable: {{interface}} ({{reason}})",
-            "body_template": "Link err-disable: {{interface}} ({{reason}})",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Link err-disable: {{interface}} ({{reason}})",
+    "body_template": "Link err-disable: {{interface}} ({{reason}})",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

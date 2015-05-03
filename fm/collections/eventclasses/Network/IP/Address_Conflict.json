@@ -1,6 +1,8 @@
 {
     "name": "Network | IP | Address Conflict",
+    "$collection": "fm.eventclasses",
     "uuid": "487fea0a-fb72-472a-942a-8c872f98c908",
+    "description": "Conflicted addresses",
     "action": "L",
     "vars": [
         {
@@ -22,15 +24,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Address conflict detected for {{ip}}{% if mac %} MAC: {{mac}}{% endif %}{% if interface %} on {{interface}}{% endif %}",
-            "body_template": "Address conflict detected for {{ip}}{% if mac %} MAC: {{mac}}{% endif %}{% if interface %} on {{interface}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Address conflict detected for {{ip}}{% if mac %} MAC: {{mac}}{% endif %}{% if interface %} on {{interface}}{% endif %}",
+    "body_template": "Address conflict detected for {{ip}}{% if mac %} MAC: {{mac}}{% endif %}{% if interface %} on {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

@@ -1,6 +1,8 @@
 {
     "name": "Network | MPLS | LDP Neighbor Up",
+    "$collection": "fm.eventclasses",
     "uuid": "99cdbce1-e7e8-42fd-99bc-a0091ffa6e3a",
+    "description": "MPLS LDP Neighbor Up",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "MPLS LDP Neighbor Up: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
-            "body_template": "MPLS LDP Neighbor Up: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "MPLS LDP Neighbor Up: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+    "body_template": "MPLS LDP Neighbor Up: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

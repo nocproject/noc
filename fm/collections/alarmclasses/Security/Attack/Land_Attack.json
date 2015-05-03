@@ -1,5 +1,6 @@
 {
     "name": "Security | Attack | Land Attack",
+    "$collection": "fm.alarmclasses",
     "uuid": "35e9d7f3-b6ba-483b-8fb1-d504d6c29295",
     "is_unique": true,
     "discriminator": ["interface"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -30,13 +31,9 @@
             "default": "=InterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Land Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
-            "body_template": "Land Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Land Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+    "body_template": "Land Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

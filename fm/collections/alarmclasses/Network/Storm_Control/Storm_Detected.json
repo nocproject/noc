@@ -1,5 +1,6 @@
 {
     "name": "Network | Storm Control | Storm Detected",
+    "$collection": "fm.alarmclasses",
     "uuid": "be893ec6-d9c7-41c5-b4d6-c37f2f95ae69",
     "is_unique": true,
     "discriminator": ["interface"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -26,13 +27,9 @@
             "default": "=InterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Storm detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
-            "body_template": "Storm detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Storm detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
+    "body_template": "Storm detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

@@ -1,5 +1,6 @@
 {
     "name": "Chassis | Clock | Clock Failed",
+    "$collection": "fm.alarmclasses",
     "uuid": "eeee96eb-77c0-436f-af37-1ef1d7513d92",
     "is_unique": true,
     "discriminator": ["name"],
@@ -11,13 +12,9 @@
             "description": "Clock Name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Clock failed: {{name}}",
-            "body_template": "Clock failed: {{name}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Clock failed: {{name}}",
+    "body_template": "Clock failed: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

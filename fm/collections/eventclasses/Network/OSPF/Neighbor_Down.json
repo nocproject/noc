@@ -1,6 +1,8 @@
 {
     "name": "Network | OSPF | Neighbor Down",
+    "$collection": "fm.eventclasses",
     "uuid": "a148d17b-feab-42ba-86c5-f83edc494495",
+    "description": "OSPF adjacency down",
     "action": "A",
     "vars": [
         {
@@ -46,15 +48,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "OSPF lost {% if area %}area {{area}} {% endif %}adjacency to {{neighbor}}. Reason: {{reason}}",
-            "body_template": "OSPF lost {% area %}area {{area}} {% endif %}{% if vrf %}VRF {{vrf}} {% endif %}adjacency to {{neighbor}}\nReason: {{reason}}\nTransiting from {{from_state}} to {{to_state}} state",
-            "symptoms": "Routing table changes and possible lost of connectivity",
-            "probable_causes": "Link failure or protocol misconfiguration",
-            "recommended_actions": "Check links and local and neighbor router configuration"
-        }
-    },
+    "subject_template": "OSPF lost {% if area %}area {{area}} {% endif %}adjacency to {{neighbor}}. Reason: {{reason}}",
+    "body_template": "OSPF lost {% area %}area {{area}} {% endif %}{% if vrf %}VRF {{vrf}} {% endif %}adjacency to {{neighbor}}\nReason: {{reason}}\nTransiting from {{from_state}} to {{to_state}} state",
+    "symptoms": "Routing table changes and possible lost of connectivity",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check links and local and neighbor router configuration",
     "disposition": [
         {
             "name": "dispose",

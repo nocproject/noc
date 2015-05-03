@@ -1,6 +1,8 @@
 {
     "name": "Network | LLDP | LLDP Aged Out",
+    "$collection": "fm.eventclasses",
     "uuid": "3380c0aa-97cc-4f8e-b350-c50afaa23a45",
+    "description": "LLDP Aged Out",
     "action": "L",
     "vars": [
         {
@@ -10,13 +12,9 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "LLDP: Neighbor on interface {{interface}} aged out.",
-            "body_template": "LLDP: Neighbor on interface {{interface}} aged out.",
-            "symptoms": "",
-            "probable_causes": " ",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "LLDP: Neighbor on interface {{interface}} aged out.",
+    "body_template": "LLDP: Neighbor on interface {{interface}} aged out.",
+    "symptoms": "",
+    "probable_causes": " ",
+    "recommended_actions": ""
 }

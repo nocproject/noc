@@ -1,6 +1,8 @@
 {
     "name": "Security | Authentication | 802.1x failed",
+    "$collection": "fm.eventclasses",
     "uuid": "bbaaffb9-d1ae-425a-83b4-9dab0b9d8063",
+    "description": "802.1x autentification failed",
     "action": "L",
     "vars": [
         {
@@ -10,13 +12,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "802.1x autentification failed{% if user %} for user {{user}}{% endif %}",
-            "body_template": "802.1x autentification failed{% if user %} for user {{user}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "802.1x autentification failed{% if user %} for user {{user}}{% endif %}",
+    "body_template": "802.1x autentification failed{% if user %} for user {{user}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

@@ -1,19 +1,17 @@
 {
     "name": "Chassis | Hardware | Hardware Error",
+    "$collection": "fm.eventclasses",
     "uuid": "054ce5c4-feb0-4edb-b2b3-8ea8e88fbc2a",
+    "description": "Hardware error occured",
     "action": "A",
     "vars": [
 
     ],
-    "text": {
-        "en": {
-            "subject_template": "Hardware error occured",
-            "body_template": "Hardware error occured",
-            "symptoms": "Device becomes unstable or is not responding",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Hardware error occured",
+    "body_template": "Hardware error occured",
+    "symptoms": "Device becomes unstable or is not responding",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

@@ -1,5 +1,6 @@
 {
     "name": "Network | RSVP | Neighbor Down",
+    "$collection": "fm.alarmclasses",
     "uuid": "a1086b80-e78b-4efe-b462-2ee0f2808a85",
     "is_unique": true,
     "discriminator": ["neighbor"],
@@ -19,13 +20,9 @@
             "description": "Neighbor lost reason"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "RSVP neighbor {{neighbor}} down on {{interface}}. Reason: {{reason}}",
-            "body_template": "RSVP neighbor {{neighbor}} down on {{interface}}. Reason: {{reason}}",
-            "symptoms": "Routing table changes and possible lost of connectivity",
-            "probable_causes": "Link failure or protocol misconfiguration",
-            "recommended_actions": "Check links and local and neighbor router configuration"
-        }
-    }
+    "subject_template": "RSVP neighbor {{neighbor}} down on {{interface}}. Reason: {{reason}}",
+    "body_template": "RSVP neighbor {{neighbor}} down on {{interface}}. Reason: {{reason}}",
+    "symptoms": "Routing table changes and possible lost of connectivity",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check links and local and neighbor router configuration"
 }

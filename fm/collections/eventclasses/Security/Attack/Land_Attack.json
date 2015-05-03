@@ -1,6 +1,8 @@
 {
     "name": "Security | Attack | Land Attack",
+    "$collection": "fm.eventclasses",
     "uuid": "21512010-818f-46fd-ba47-4ec0dfb26c60",
+    "description": "Land Attack detected",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Land Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-            "body_template": "Land Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Land Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+    "body_template": "Land Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

@@ -1,5 +1,6 @@
 {
     "name": "Network | STP | Root Guard Violation",
+    "$collection": "fm.alarmclasses",
     "uuid": "ca261ef8-3d29-4270-8fd2-eb616d9e6e76",
     "is_unique": true,
     "discriminator": ["interface"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -26,13 +27,9 @@
             "default": "=InterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "STP Root Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %}",
-            "body_template": "STP Root Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "STP Root Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %}",
+    "body_template": "STP Root Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

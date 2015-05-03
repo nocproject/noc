@@ -8,6 +8,8 @@
 
 ## Python modules
 import datetime
+## Django modules
+from django.template import Template, Context
 ## NOC modules
 import noc.lib.nosql as nosql
 from alarmlog import AlarmLog
@@ -16,7 +18,6 @@ from noc.main.models import User
 from noc.main.models.style import Style
 from noc.main.models.notification import Notification
 from noc.sa.models.managedobject import ManagedObject
-from translation import get_translated_template, get_translated_text
 from alarmseverity import AlarmSeverity
 from noc.lib.scheduler.utils import submit_job
 
@@ -157,11 +158,11 @@ class ActiveAlarm(nosql.Document):
         if not a.root and not self.reopens:
             a.managed_object.event(a.managed_object.EV_ALARM_CLEARED, {
                 "alarm": a,
-                "subject": a.get_translated_subject("en"),
-                "body": a.get_translated_body("en"),
-                "symptoms": a.get_translated_symptoms("en"),
-                "recommended_actions": a.get_translated_recommended_actions("en"),
-                "probable_causes": a.get_translated_probable_causes("en")
+                "subject": a.subject,
+                "body": a.body,
+                "symptoms": a.alarm_class.symptoms,
+                "recommended_actions": a.alarm_class.recommended_actions,
+                "probable_causes": a.alarm_class.probable_causes
             })
         elif ct:
             # Schedule delayed job
@@ -177,30 +178,19 @@ class ActiveAlarm(nosql.Document):
         vars.update({"alarm": self})
         return vars
 
-    def get_translated_subject(self, lang):
-        s = get_translated_template(lang, self.alarm_class.text,
-                                    "subject_template",
-                                    self.get_template_vars())
+    @property
+    def subject(self):
+        ctx = Context(self.get_template_vars())
+        s = Template(self.alarm_class.subject_template).render(ctx)
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
 
-    def get_translated_body(self, lang):
-        return get_translated_template(lang, self.alarm_class.text,
-                                       "body_template",
-                                       self.get_template_vars())
-
-    def get_translated_symptoms(self, lang):
-        return get_translated_text(
-            lang, self.alarm_class.text, "symptoms")
-
-    def get_translated_probable_causes(self, lang):
-        return get_translated_text(
-            lang, self.alarm_class.text, "probable_causes")
-
-    def get_translated_recommended_actions(self, lang):
-        return get_translated_text(
-            lang, self.alarm_class.text, "recommended_actions")
+    @property
+    def body(self):
+        ctx = Context(self.get_template_vars())
+        s = Template(self.alarm_class.body_template).render(ctx)
+        return s
 
     def change_owner(self, user):
         """

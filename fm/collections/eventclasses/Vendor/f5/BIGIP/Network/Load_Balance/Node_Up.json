@@ -1,6 +1,8 @@
 {
     "name": "Vendor | f5 | BIGIP | Network | Load Balance | Node Up",
+    "$collection": "fm.eventclasses",
     "uuid": "4999f3c3-74f5-4886-bb00-421c3b947cd9",
+    "description": "Node Up",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Node up: {{node}}",
-            "body_template": "Node up: {{node}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Node up: {{node}}",
+    "body_template": "Node up: {{node}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

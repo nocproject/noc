@@ -1,5 +1,6 @@
 {
     "name": "Chassis | Hardware | Module | Invalid Module",
+    "$collection": "fm.alarmclasses",
     "uuid": "578c1375-6759-4123-86c2-8427de40ff92",
     "is_unique": true,
     "discriminator": ["module"],
@@ -19,13 +20,9 @@
             "description": "Reason"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Invalid module {{module}}{% if interface %} in interface {{interface}}{% endif %}",
-            "body_template": "Invalid module {{module}}{% if interface %} in interface {{interface}}{% endif %}{% if reason %}\nReason: {{reason}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Invalid module {{module}}{% if interface %} in interface {{interface}}{% endif %}",
+    "body_template": "Invalid module {{module}}{% if interface %} in interface {{interface}}{% endif %}{% if reason %}\nReason: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

@@ -1,6 +1,8 @@
 {
     "name": "Network | MAC | MAC Flap",
+    "$collection": "fm.eventclasses",
     "uuid": "fa9cc838-9ec4-4080-907a-13390b5b1285",
+    "description": "MAC Flap detected",
     "action": "A",
     "vars": [
         {
@@ -28,15 +30,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
-            "body_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
-            "symptoms": "",
-            "probable_causes": "The system found the specified host moving between the specified ports.",
-            "recommended_actions": "Examine the network for possible loops."
-        }
-    },
+    "subject_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
+    "body_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
+    "symptoms": "",
+    "probable_causes": "The system found the specified host moving between the specified ports.",
+    "recommended_actions": "Examine the network for possible loops.",
     "disposition": [
         {
             "name": "dispose",

@@ -1,6 +1,8 @@
 {
     "name": "Network | Storm Control | Unicast Storm Cleared",
+    "$collection": "fm.eventclasses",
     "uuid": "25af81b8-2cdf-48b6-b753-2e1485d606e6",
+    "description": "Unicast (DLF) Storm Cleared",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Unicast (DLF) Storm Cleared on port {{interface}}",
-            "body_template": "Unicast (DLF) Storm Cleared on port {{interface}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Unicast (DLF) Storm Cleared on port {{interface}}",
+    "body_template": "Unicast (DLF) Storm Cleared on port {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

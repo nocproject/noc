@@ -1,6 +1,8 @@
 {
     "name": "Chassis | CPU | CPU Usage Drops Below Threshold",
+    "$collection": "fm.eventclasses",
     "uuid": "c960077c-c65d-4842-b88b-1b8e21e8d2b3",
+    "description": "CPU Usage Drops Below Threshold",
     "action": "A",
     "vars": [
         {
@@ -10,13 +12,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "{% if cpu %}{{cpu}} {% endif %} CPU Usage drops below threshold",
-            "body_template": "{% if cpu %}{{cpu}} {% endif %} CPU Usage drops below threshold",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "{% if cpu %}{{cpu}} {% endif %} CPU Usage drops below threshold",
+    "body_template": "{% if cpu %}{{cpu}} {% endif %} CPU Usage drops below threshold",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

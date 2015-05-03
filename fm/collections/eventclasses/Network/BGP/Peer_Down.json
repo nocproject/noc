@@ -1,6 +1,8 @@
 {
     "name": "Network | BGP | Peer Down",
+    "$collection": "fm.eventclasses",
     "uuid": "eeffb1d4-7ce3-4967-917c-fd8cdd949a23",
+    "description": "BGP Peer Down",
     "action": "A",
     "vars": [
         {
@@ -28,15 +30,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "BGP Session down {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{%if reason %} - {{reason}}{% endif %}",
-            "body_template": "BGP Session down {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{%if reason %} - {{reason}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "BGP Session down {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{%if reason %} - {{reason}}{% endif %}",
+    "body_template": "BGP Session down {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{%if reason %} - {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

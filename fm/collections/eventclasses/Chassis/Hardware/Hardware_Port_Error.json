@@ -1,6 +1,8 @@
 {
     "name": "Chassis | Hardware | Hardware Port Error",
+    "$collection": "fm.eventclasses",
     "uuid": "618bb86b-c606-4e00-a675-b659ca5930a5",
+    "description": "Hardware port or slot error occured",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Hardware port error occured: {{interface}}",
-            "body_template": "Hardware port or slot error occured: {{interface}}",
-            "symptoms": "Link becomes unstable or is not responding",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Hardware port error occured: {{interface}}",
+    "body_template": "Hardware port or slot error occured: {{interface}}",
+    "symptoms": "Link becomes unstable or is not responding",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "ignore",

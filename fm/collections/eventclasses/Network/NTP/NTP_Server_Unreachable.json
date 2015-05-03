@@ -1,6 +1,8 @@
 {
     "name": "Network | NTP | NTP Server Unreachable",
+    "$collection": "fm.eventclasses",
     "uuid": "0a70a416-e65d-42ef-bd4f-d601d9dc17fc",
+    "description": "NTP Server unreachable",
     "action": "L",
     "vars": [
         {
@@ -16,13 +18,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "NTP Server Unreachable{% if server_name %}: {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
-            "body_template": "NTP Server Unreachable{% if server_name %}: {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "NTP Server Unreachable{% if server_name %}: {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
+    "body_template": "NTP Server Unreachable{% if server_name %}: {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

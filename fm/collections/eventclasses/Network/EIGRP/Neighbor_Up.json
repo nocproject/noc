@@ -1,6 +1,8 @@
 {
     "name": "Network | EIGRP | Neighbor Up",
+    "$collection": "fm.eventclasses",
     "uuid": "ae8f0855-4d07-407d-9443-c29dee762288",
+    "description": "EIGRP neighbor up",
     "action": "A",
     "vars": [
         {
@@ -34,15 +36,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "EIGRP{% if as %} {{as}} {% endif %}neighbor {{neighbor}} change state -> {{to_state}}. Reason: {{reason}}",
-            "body_template": "EIGRP{% if as %} {{as}} {% endif %}\nNeighbor {{neighbor}}\nInterface: {{interface}}\nChange state -> {{to_state}}\nReason: {{reason}}",
-            "symptoms": "Routing table changes",
-            "probable_causes": "An EIGRP adjacency was established with the indicated neighboring router. The local router can now exchange information with it.",
-            "recommended_actions": "No specific actions needed"
-        }
-    },
+    "subject_template": "EIGRP{% if as %} {{as}} {% endif %}neighbor {{neighbor}} change state -> {{to_state}}. Reason: {{reason}}",
+    "body_template": "EIGRP{% if as %} {{as}} {% endif %}\nNeighbor {{neighbor}}\nInterface: {{interface}}\nChange state -> {{to_state}}\nReason: {{reason}}",
+    "symptoms": "Routing table changes",
+    "probable_causes": "An EIGRP adjacency was established with the indicated neighboring router. The local router can now exchange information with it.",
+    "recommended_actions": "No specific actions needed",
     "disposition": [
         {
             "name": "dispose",

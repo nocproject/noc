@@ -1,5 +1,6 @@
 {
     "name": "Config | Config Download Failed",
+    "$collection": "fm.alarmclasses",
     "uuid": "43445211-53db-4d0f-b559-f299151fdcaa",
     "is_unique": true,
     "user_clearable": true,
@@ -18,13 +19,9 @@
             "description": "User name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-            "body_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+    "body_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

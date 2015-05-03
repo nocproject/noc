@@ -1,5 +1,6 @@
 {
     "name": "NOC | SA | Leave Activator Pool",
+    "$collection": "fm.eventclasses",
     "uuid": "49b06b2f-4060-4a34-9b85-e34a9f425889",
     "action": "A",
     "vars": [
@@ -46,15 +47,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Instance {{instance}} leaves activator pool {{name}}",
-            "body_template": "Pool currently has {{pool_members}} with overall limit to {{pool_sessions}} script sessions.\nConfigured lower thresholds are {{min_members}} members and {{min_sessions}} sessions",
-            "symptoms": "SA performance decreased",
-            "probable_causes": "noc-activator process been stopped",
-            "recommended_actions": "Check appropriative process"
-        }
-    },
+    "subject_template": "Instance {{instance}} leaves activator pool {{name}}",
+    "body_template": "Pool currently has {{pool_members}} with overall limit to {{pool_sessions}} script sessions.\nConfigured lower thresholds are {{min_members}} members and {{min_sessions}} sessions",
+    "symptoms": "SA performance decreased",
+    "probable_causes": "noc-activator process been stopped",
+    "recommended_actions": "Check appropriative process",
     "disposition": [
         {
             "name": "clear",

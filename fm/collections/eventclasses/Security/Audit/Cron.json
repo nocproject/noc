@@ -1,6 +1,8 @@
 {
     "name": "Security | Audit | Cron",
+    "$collection": "fm.eventclasses",
     "uuid": "1e575996-02d8-4e57-ba20-223067fcd705",
+    "description": "Scheduled Command Executed",
     "action": "A",
     "vars": [
         {
@@ -16,13 +18,9 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Scheduled command executed{% if user %} by {{user}}{% endif %}: {{command}}",
-            "body_template": "Scheduled command executed{% if user %} by {{user}}{% endif %}: {{command}}",
-            "symptoms": "No specific symptoms",
-            "probable_causes": "Command executed by cron",
-            "recommended_actions": "No reaction needed"
-        }
-    }
+    "subject_template": "Scheduled command executed{% if user %} by {{user}}{% endif %}: {{command}}",
+    "body_template": "Scheduled command executed{% if user %} by {{user}}{% endif %}: {{command}}",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "Command executed by cron",
+    "recommended_actions": "No reaction needed"
 }

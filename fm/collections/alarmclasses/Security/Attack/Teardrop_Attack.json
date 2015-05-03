@@ -1,5 +1,6 @@
 {
     "name": "Security | Attack | Teardrop Attack",
+    "$collection": "fm.alarmclasses",
     "uuid": "a0f6d92d-9988-434d-8e3e-f07d6622a5f7",
     "is_unique": true,
     "discriminator": ["src_ip", "interface"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -34,13 +35,9 @@
             "default": "=InterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Teardrop attack detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
-            "body_template": "Teardrop attack detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Teardrop attack detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+    "body_template": "Teardrop attack detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

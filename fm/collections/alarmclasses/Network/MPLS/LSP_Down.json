@@ -1,5 +1,6 @@
 {
     "name": "Network | MPLS | LSP Down",
+    "$collection": "fm.alarmclasses",
     "uuid": "7f0f26b3-00e9-4def-b968-05a3509d6c76",
     "is_unique": true,
     "discriminator": ["name"],
@@ -11,13 +12,9 @@
             "description": "LSP name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "MPLS LSP Down: {{name}}",
-            "body_template": "MPLS LSP Down: {{name}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "MPLS LSP Down: {{name}}",
+    "body_template": "MPLS LSP Down: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

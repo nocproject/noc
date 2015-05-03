@@ -1,5 +1,6 @@
 {
     "name": "Chassis | Supervisor | Supervisor Down",
+    "$collection": "fm.alarmclasses",
     "uuid": "e4faaa3f-e50c-4eb2-a420-5ec5143e6512",
     "is_unique": true,
     "discriminator": ["name"],
@@ -15,13 +16,9 @@
             "description": "Reason"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
-            "body_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
+    "body_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

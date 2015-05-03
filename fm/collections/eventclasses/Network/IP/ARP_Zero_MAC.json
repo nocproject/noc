@@ -1,6 +1,8 @@
 {
     "name": "Network | IP | ARP Zero MAC",
+    "$collection": "fm.eventclasses",
     "uuid": "3ee0c0ea-e0db-4048-8315-2379cfb88ca0",
+    "description": "ARP Zero MAC",
     "action": "L",
     "vars": [
         {
@@ -16,13 +18,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Zero MAC address for {{ip}}{% if interface %} on {{interface}}{% endif %}",
-            "body_template": "Zero MAC addres for {{ip}}{% if interface %} on {{interface}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Zero MAC address for {{ip}}{% if interface %} on {{interface}}{% endif %}",
+    "body_template": "Zero MAC addres for {{ip}}{% if interface %} on {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

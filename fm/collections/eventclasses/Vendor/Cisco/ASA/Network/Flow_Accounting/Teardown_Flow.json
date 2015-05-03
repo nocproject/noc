@@ -1,6 +1,8 @@
 {
     "name": "Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow",
+    "$collection": "fm.eventclasses",
     "uuid": "3b96cf7a-392a-4ce4-92e1-f5d5d6cfb1a4",
+    "description": "Teardown Flow",
     "action": "L",
     "vars": [
         {
@@ -58,13 +60,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Teardown flow {{user}}: {{proto}} {{src_interface}}:{{src_ip}}:{{src_port}} -> {{dst_interface}}:{{dst_ip}}:{{dst_port}}. Bytes {{bytes}}",
-            "body_template": "Teardown flow {{user}}: {{proto}} {{src_interface}}:{{src_ip}}:{{src_port}} -> {{dst_interface}}:{{dst_ip}}:{{dst_port}}. Bytes {{bytes}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Teardown flow {{user}}: {{proto}} {{src_interface}}:{{src_ip}}:{{src_port}} -> {{dst_interface}}:{{dst_ip}}:{{dst_port}}. Bytes {{bytes}}",
+    "body_template": "Teardown flow {{user}}: {{proto}} {{src_interface}}:{{src_ip}}:{{src_port}} -> {{dst_interface}}:{{dst_ip}}:{{dst_port}}. Bytes {{bytes}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

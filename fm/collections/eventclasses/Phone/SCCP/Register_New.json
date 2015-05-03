@@ -1,6 +1,8 @@
 {
     "name": "Phone | SCCP | Register New",
+    "$collection": "fm.eventclasses",
     "uuid": "fc9a4f06-5d8d-412b-b182-cbc060a14138",
+    "description": "New SCCP phone registered",
     "action": "A",
     "vars": [
         {
@@ -34,13 +36,9 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "New SCCP {{type}} registered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
-            "body_template": "New SCCP {{type}} registered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "New SCCP {{type}} registered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
+    "body_template": "New SCCP {{type}} registered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

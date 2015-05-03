@@ -1,6 +1,8 @@
 {
     "name": "Network | Storm Control | Storm Detected",
+    "$collection": "fm.eventclasses",
     "uuid": "52989e79-7862-4fd4-9d23-bd5ed200f7d6",
+    "description": "Storm Detected",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Storm Detected on port {{interface}}",
-            "body_template": "Storm Detected on port {{interface}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Storm Detected on port {{interface}}",
+    "body_template": "Storm Detected on port {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

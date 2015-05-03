@@ -1,6 +1,8 @@
 {
     "name": "Network | RSVP | Neighbor Down",
+    "$collection": "fm.eventclasses",
     "uuid": "34f10707-7cf1-4e15-8262-47c4e25954d6",
+    "description": "RSVP Neighbor down",
     "action": "A",
     "vars": [
         {
@@ -22,15 +24,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "RSVP neighbor {{neighbor}} lost on {{interface}}. Reason: {{reason}}",
-            "body_template": "RSVP neighbor {{neighbor}} lost on {{interface}}. Reason: {{reason}}",
-            "symptoms": "Routing table changes and possible lost of connectivity",
-            "probable_causes": "RSVP protocol configuration problem or link failure",
-            "recommended_actions": "Check links and local and neighbor's router configuration"
-        }
-    },
+    "subject_template": "RSVP neighbor {{neighbor}} lost on {{interface}}. Reason: {{reason}}",
+    "body_template": "RSVP neighbor {{neighbor}} lost on {{interface}}. Reason: {{reason}}",
+    "symptoms": "Routing table changes and possible lost of connectivity",
+    "probable_causes": "RSVP protocol configuration problem or link failure",
+    "recommended_actions": "Check links and local and neighbor's router configuration",
     "disposition": [
         {
             "name": "dispose",

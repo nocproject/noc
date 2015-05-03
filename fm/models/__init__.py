@@ -170,7 +170,6 @@ from enumeration import Enumeration
 ##
 ## Event/Alarm text decoder
 ##
-from translation import get_translated_template, get_translated_text
 from utils import get_alarm, get_event
 
 

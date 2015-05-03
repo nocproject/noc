@@ -1,6 +1,8 @@
 {
     "name": "Chassis | CPU | CoPP Drop",
+    "$collection": "fm.eventclasses",
     "uuid": "402a3e7f-ea3a-430b-ad69-af2d34bcca28",
+    "description": "CoPP drops exceeded threshold",
     "action": "A",
     "vars": [
         {
@@ -22,13 +24,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}{% if count %}, dropped {{count}} packets{% endif %}{% if proto %}, protocol {{proto}}{% endif %}",
-            "body_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}{% if count %}, dropped {{count}} packets{% endif %}{% if proto %}, protocol {{proto}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "CoPP protects control plane by dropping traffic exceeding thresholds",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}{% if count %}, dropped {{count}} packets{% endif %}{% if proto %}, protocol {{proto}}{% endif %}",
+    "body_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}{% if count %}, dropped {{count}} packets{% endif %}{% if proto %}, protocol {{proto}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "CoPP protects control plane by dropping traffic exceeding thresholds",
+    "recommended_actions": ""
 }

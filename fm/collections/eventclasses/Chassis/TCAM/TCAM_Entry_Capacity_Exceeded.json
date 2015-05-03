@@ -1,6 +1,8 @@
 {
     "name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
+    "$collection": "fm.eventclasses",
     "uuid": "4f2e674b-0c1d-473c-aa67-4369635f512d",
+    "description": "TCAM entry capacity exceeded",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "TCAM entry capacity exceeded{% if reason %}: {{reason}}{% endif %}",
-            "body_template": "TCAM entry capacity exceeded{% if reason %}: {{reason}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "TCAM entry capacity exceeded{% if reason %}: {{reason}}{% endif %}",
+    "body_template": "TCAM entry capacity exceeded{% if reason %}: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

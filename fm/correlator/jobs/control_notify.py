@@ -22,11 +22,11 @@ class ControlNotifyJob(Job):
                 self.object.managed_object.EV_ALARM_CLEARED,
                 {
                     "alarm": self.object,
-                    "subject": self.object.get_translated_subject("en"),
-                    "body": self.object.get_translated_body("en"),
-                    "symptoms": self.object.get_translated_symptoms("en"),
-                    "recommended_actions": self.object.get_translated_recommended_actions("en"),
-                    "probable_causes": self.object.get_translated_probable_causes("en")
+                    "subject": self.object.subject,
+                    "body": self.object.body,
+                    "symptoms": self.object.alarm_class.symptoms,
+                    "recommended_actions": self.object.alarm_class.recommended_actions,
+                    "probable_causes": self.object.probable_causes
                 }
             )
         return True

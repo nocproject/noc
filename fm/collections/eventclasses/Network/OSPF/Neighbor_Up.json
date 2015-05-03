@@ -1,6 +1,8 @@
 {
     "name": "Network | OSPF | Neighbor Up",
+    "$collection": "fm.eventclasses",
     "uuid": "f319d6f6-bd45-4e18-b232-45b270fd1c29",
+    "description": "OSPF neighbor up",
     "action": "A",
     "vars": [
         {
@@ -46,15 +48,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "OSPF {% if area %}area {{area}} {% endif %}neighbor {{neighbor}} state changed {{from_state}} -> {{to_state}}. Reason: {{reason}}",
-            "body_template": "OSPF {% if area %}area {{area}} {% endif %}{% if vrf %}VRF {{vrf}} {% endif %}neighbor {{neighbor}} state changed {{from_state}} -> {{to_state}}. Reason: {{reason}}",
-            "symptoms": "Routing table changes",
-            "probable_causes": "An OSPF adjacency was established with the indicated neighboring router. The local router can now exchange information with it.",
-            "recommended_actions": "No specific actions needed"
-        }
-    },
+    "subject_template": "OSPF {% if area %}area {{area}} {% endif %}neighbor {{neighbor}} state changed {{from_state}} -> {{to_state}}. Reason: {{reason}}",
+    "body_template": "OSPF {% if area %}area {{area}} {% endif %}{% if vrf %}VRF {{vrf}} {% endif %}neighbor {{neighbor}} state changed {{from_state}} -> {{to_state}}. Reason: {{reason}}",
+    "symptoms": "Routing table changes",
+    "probable_causes": "An OSPF adjacency was established with the indicated neighboring router. The local router can now exchange information with it.",
+    "recommended_actions": "No specific actions needed",
     "disposition": [
         {
             "name": "dispose",

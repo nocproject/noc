@@ -1,5 +1,6 @@
 {
     "name": "Vendor | f5 | BIGIP | Network | Load Balance | Service Down",
+    "$collection": "fm.alarmclasses",
     "uuid": "94244c8a-d185-4c50-adaa-09fe27a39f92",
     "is_unique": true,
     "discriminator": ["node", "port"],
@@ -15,15 +16,11 @@
             "description": "Service port"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Service down: {{node}}:{{port}}",
-            "body_template": "Service down: {{node}}:{{port}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Service down: {{node}}:{{port}}",
+    "body_template": "Service down: {{node}}:{{port}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "root_cause": [
         {
             "name": "Node down",

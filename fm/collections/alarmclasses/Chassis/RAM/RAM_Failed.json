@@ -1,5 +1,6 @@
 {
     "name": "Chassis | RAM | RAM Failed",
+    "$collection": "fm.alarmclasses",
     "uuid": "f93e491e-3d31-4c8d-827b-a4432503128b",
     "is_unique": true,
     "discriminator": ["bank"],
@@ -11,13 +12,9 @@
             "description": "Bank Name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
-            "body_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
-            "symptoms": "From random instability to complete operation failure",
-            "probable_causes": "",
-            "recommended_actions": "Replace faulty RAM module"
-        }
-    }
+    "subject_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
+    "body_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
+    "symptoms": "From random instability to complete operation failure",
+    "probable_causes": "",
+    "recommended_actions": "Replace faulty RAM module"
 }

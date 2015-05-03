@@ -1,5 +1,6 @@
 {
     "name": "Network | PIM | DR Change",
+    "$collection": "fm.alarmclasses",
     "uuid": "bd8fa1b4-9bd9-4bef-a557-756255ccad1e",
     "is_unique": true,
     "discriminator": ["interface"],
@@ -23,13 +24,9 @@
             "description": "VRF"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "PIM DR change from neighbor {{from_dr}} to {{to_dr}} on interface {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}",
-            "body_template": "PIM Designated Router change from neighbor {{from_dr}} to {{to_dr}} on interface {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}",
-            "symptoms": "Some multicast flows lost",
-            "probable_causes": "Link failure or protocol misconfiguration",
-            "recommended_actions": "Check links and local and neighbor router configuration"
-        }
-    }
+    "subject_template": "PIM DR change from neighbor {{from_dr}} to {{to_dr}} on interface {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}",
+    "body_template": "PIM Designated Router change from neighbor {{from_dr}} to {{to_dr}} on interface {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}",
+    "symptoms": "Some multicast flows lost",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check links and local and neighbor router configuration"
 }

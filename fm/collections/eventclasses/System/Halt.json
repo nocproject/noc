@@ -1,6 +1,8 @@
 {
     "name": "System | Halt",
+    "$collection": "fm.eventclasses",
     "uuid": "4d17166c-9c01-4b63-be45-ce6c8b693c9f",
+    "description": "System halted",
     "action": "A",
     "vars": [
         {
@@ -13,13 +15,9 @@
     "handlers": [
         "noc.fm.handlers.event.audit.log_halted"
     ],
-    "text": {
-        "en": {
-            "subject_template": "Halt{% if user %} requested by {{user}}{% endif %}",
-            "body_template": "Halt{% if user %} requested by {{user}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Halt{% if user %} requested by {{user}}{% endif %}",
+    "body_template": "Halt{% if user %} requested by {{user}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

@@ -1,6 +1,8 @@
 {
     "name": "Network | NTP | System Clock Adjusted",
+    "$collection": "fm.eventclasses",
     "uuid": "1d7e89f7-b77f-470e-b8d4-250ead2848b9",
+    "description": "System clock was adjusted",
     "action": "L",
     "vars": [
         {
@@ -22,13 +24,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "System clock adjusted {% if adjustment_ms %}{{adjustment_ms}}ms{% endif %} from NTP server{% if server_name %} {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
-            "body_template": "System clock adjusted {% if adjustment_ms %}{{adjustment_ms}}ms{% endif %} from NTP server{% if server_name %} {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "System clock adjusted {% if adjustment_ms %}{{adjustment_ms}}ms{% endif %} from NTP server{% if server_name %} {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
+    "body_template": "System clock adjusted {% if adjustment_ms %}{{adjustment_ms}}ms{% endif %} from NTP server{% if server_name %} {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

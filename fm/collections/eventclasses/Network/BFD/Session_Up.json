@@ -1,6 +1,8 @@
 {
     "name": "Network | BFD | Session Up",
+    "$collection": "fm.eventclasses",
     "uuid": "c81f31b9-f8a6-425a-a5b4-d4d3653f62f8",
+    "description": "BFD Session Up",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "BFD Session Up: {{peer}} on {{interface}}",
-            "body_template": "BFD Session Up: {{peer}} on {{interface}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "BFD Session Up: {{peer}} on {{interface}}",
+    "body_template": "BFD Session Up: {{peer}} on {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

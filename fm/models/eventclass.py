@@ -217,14 +217,12 @@ class EventClass(Document):
     )
     vars = fields.ListField(fields.EmbeddedDocumentField(EventClassVar))
     # Text messages
-    # alarm_class.text -> locale -> {
-    #     "subject_template" -> <template>
-    #     "body_template" -> <template>
-    #     "symptoms" -> <text>
-    #     "probable_causes" -> <text>
-    #     "recommended_actions" -> <text>
-    # }
     text = fields.DictField(required=True)
+    subject_template = fields.StringField()
+    body_template = fields.StringField()
+    symptoms = fields.StringField()
+    probable_causes = fields.StringField()
+    recommended_actions = fields.StringField()
 
     disposition = fields.ListField(
         fields.EmbeddedDocumentField(EventDispositionRule))
@@ -294,23 +292,14 @@ class EventClass(Document):
             r += ["    \"handlers\": ["]
             r += [",\n\n".join(hh)]
             r += ["    ],"]
-        # text
-        r += ["    \"text\": {"]
-        t = []
-        for lang in c.text:
-            l = ["        \"%s\": {" % lang]
-            ll = []
-            for v in ["subject_template", "body_template", "symptoms",
-                      "probable_causes", "recommended_actions"]:
-                if v in c.text[lang]:
-                    ll += ["            \"%s\": \"%s\"" % (v, q(c.text[lang][v]))]
-            l += [",\n".join(ll)]
-            l += ["        }"]
-            t += ["\n".join(l)]
-        r += [",\n\n".join(t)]
+        # Text
+        r += ["    \"subject_template\": \"%s\"," % q(c.subject_template)]
+        r += ["    \"body_template\": \"%s\"," % q(c.body_template)]
+        r += ["    \"symptoms\": \"%s\"," % q(c.symptoms)]
+        r += ["    \"probable_causes\": \"%s\"," % q(c.probable_causes)]
+        r += ["    \"recommended_actions\": \"%s\"," % q(c.recommended_actions)]
         # Disposition rules
         if c.disposition:
-            r += ["    },"]
             r += ["    \"disposition\": ["]
             l = []
             for d in c.disposition:
@@ -327,11 +316,10 @@ class EventClass(Document):
                 l += ["\n".join(ll)]
             r += [",\n".join(l)]
             r += ["    ]"]
-        else:
-            r += ["    }"]
         #
         if c.repeat_suppression:
-            r[-1] += ","
+            if not r[-1].endswith(","):
+                r[-1] += ","
             r += ["    \"repeat_suppression\": ["]
             l = []
             for rs in c.repeat_suppression:
@@ -353,7 +341,8 @@ class EventClass(Document):
             r += ["    ]"]
         # Plugins
         if self.plugins:
-            r[-1] += ","
+            if not r[-1].endswith(","):
+                r[-1] += ","
             plugins = []
             for p in self.plugins:
                 pd = ["        {"]
@@ -372,6 +361,8 @@ class EventClass(Document):
             r += [",\n".join(plugins)]
             r += ["    ]"]
         # Close
+        if r[-1].endswith(","):
+            r[-1] = r[-1][:-1]
         r += ["}", ""]
         return "\n".join(r)
 

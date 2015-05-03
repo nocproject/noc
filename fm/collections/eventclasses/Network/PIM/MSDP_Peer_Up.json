@@ -1,6 +1,8 @@
 {
     "name": "Network | PIM | MSDP Peer Up",
+    "$collection": "fm.eventclasses",
     "uuid": "9f18d201-55fd-4020-b32f-94532bb8e2cb",
+    "description": "MSDP peer up",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
-            "body_template": "MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
-            "symptoms": "Multicast flows send successfully",
-            "probable_causes": "MSDP successfully established connect with peer",
-            "recommended_actions": "No reaction needed"
-        }
-    },
+    "subject_template": "MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
+    "body_template": "MSDP peer {{peer}} UP.{% if vrf %} VRF {{vrf}}.{% endif %}",
+    "symptoms": "Multicast flows send successfully",
+    "probable_causes": "MSDP successfully established connect with peer",
+    "recommended_actions": "No reaction needed",
     "disposition": [
         {
             "name": "dispose",

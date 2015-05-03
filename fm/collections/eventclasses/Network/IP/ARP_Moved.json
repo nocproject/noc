@@ -1,6 +1,8 @@
 {
     "name": "Network | IP | ARP Moved",
+    "$collection": "fm.eventclasses",
     "uuid": "c7b07703-98e0-42e7-b43e-afdfd3492cef",
+    "description": "ARP Moved",
     "action": "L",
     "vars": [
         {
@@ -28,15 +30,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
-            "body_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
+    "body_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

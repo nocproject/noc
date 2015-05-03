@@ -1,5 +1,6 @@
 {
     "name": "Chassis | Hardware | Module | Invalid Module",
+    "$collection": "fm.eventclasses",
     "uuid": "6cbad313-b948-440c-9271-750375b6a116",
     "action": "A",
     "vars": [
@@ -22,15 +23,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Invalid {{module}}{% if interface %} in interface {{interface}}{% endif %}",
-            "body_template": "Invalid {{module}}{% if interface %} in interface {{interface}}{% endif %}{% if reason %}\nReason: {{reason}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Invalid {{module}}{% if interface %} in interface {{interface}}{% endif %}",
+    "body_template": "Invalid {{module}}{% if interface %} in interface {{interface}}{% endif %}{% if reason %}\nReason: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

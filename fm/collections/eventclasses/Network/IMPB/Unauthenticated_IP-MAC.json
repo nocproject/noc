@@ -1,6 +1,8 @@
 {
     "name": "Network | IMPB | Unauthenticated IP-MAC",
+    "$collection": "fm.eventclasses",
     "uuid": "9ef43611-4a64-4e61-9e96-dd0f4cc8caa1",
+    "description": "Unauthenticated IP-MAC",
     "action": "A",
     "vars": [
         {
@@ -22,15 +24,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
-            "body_template": "Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
-            "symptoms": "Discard user connection attempts",
-            "probable_causes": "",
-            "recommended_actions": "Check user IP and MAC, check IMPB entry, check topology"
-        }
-    },
+    "subject_template": "Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
+    "body_template": "Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
+    "symptoms": "Discard user connection attempts",
+    "probable_causes": "",
+    "recommended_actions": "Check user IP and MAC, check IMPB entry, check topology",
     "disposition": [
         {
             "name": "dispose",

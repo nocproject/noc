@@ -1,6 +1,8 @@
 {
     "name": "Config | Config Download Failed",
+    "$collection": "fm.eventclasses",
     "uuid": "956dc864-cc0b-4598-8f8d-abfd05f82477",
+    "description": "Config Download Failed",
     "action": "A",
     "vars": [
         {
@@ -22,15 +24,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-            "body_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+    "body_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

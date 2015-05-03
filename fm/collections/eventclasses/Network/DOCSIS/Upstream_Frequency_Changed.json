@@ -1,6 +1,8 @@
 {
     "name": "Network | DOCSIS | Upstream Frequency Changed",
+    "$collection": "fm.eventclasses",
     "uuid": "d997c32e-27e6-43da-87be-13253e6fd4b6",
+    "description": "The upstream channel frequency has been changed.",
     "action": "A",
     "vars": [
         {
@@ -22,13 +24,9 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} frequency changed to {{frequency}} MHz",
-            "body_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} frequency changed to {{frequency}} MHz",
-            "symptoms": "",
-            "probable_causes": "The upstream channel frequency has been changed.",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} frequency changed to {{frequency}} MHz",
+    "body_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} frequency changed to {{frequency}} MHz",
+    "symptoms": "",
+    "probable_causes": "The upstream channel frequency has been changed.",
+    "recommended_actions": ""
 }

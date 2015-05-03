@@ -1,6 +1,8 @@
 {
     "name": "Environment | UPS | Self-Test Started",
+    "$collection": "fm.eventclasses",
     "uuid": "55fdfa39-53ed-4cf0-ab85-f3fbe4e2d759",
+    "description": "Self-Test Started",
     "action": "A",
     "vars": [
         {
@@ -10,13 +12,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "The Self-Test {% if name %}{{name}} {% endif %}started",
-            "body_template": "The Self-Test {% if name %}{{name}} {% endif %}started",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "The Self-Test {% if name %}{{name}} {% endif %}started",
+    "body_template": "The Self-Test {% if name %}{{name}} {% endif %}started",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

@@ -1,5 +1,6 @@
 {
     "name": "Chassis | Hardware | Hardware Error",
+    "$collection": "fm.alarmclasses",
     "uuid": "4999ae4c-107a-4ba9-8fcc-5302f4a2378e",
     "is_unique": true,
     "user_clearable": true,
@@ -7,13 +8,9 @@
     "vars": [
 
     ],
-    "text": {
-        "en": {
-            "subject_template": "Hardware error occured",
-            "body_template": "Hardware error occured",
-            "symptoms": "Device becomes unstable or is not responding",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Hardware error occured",
+    "body_template": "Hardware error occured",
+    "symptoms": "Device becomes unstable or is not responding",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

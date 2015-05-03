@@ -1,5 +1,6 @@
 {
     "name": "Network | DOCSIS | Maximum SIDs",
+    "$collection": "fm.alarmclasses",
     "uuid": "83c0b63d-df46-4704-a5b9-b769e880802b",
     "is_unique": true,
     "discriminator": ["interface"],
@@ -11,13 +12,9 @@
             "description": "Cable interface"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Maximum number of SIDS have been allocated for interface {{interface}}",
-            "body_template": "Maximum number of SIDS have been allocated for interface",
-            "symptoms": "",
-            "probable_causes": "The maximum number of SIDs has been allocated to the specified line card.",
-            "recommended_actions": "Assign the cable modem to another line card."
-        }
-    }
+    "subject_template": "Maximum number of SIDS have been allocated for interface {{interface}}",
+    "body_template": "Maximum number of SIDS have been allocated for interface",
+    "symptoms": "",
+    "probable_causes": "The maximum number of SIDs has been allocated to the specified line card.",
+    "recommended_actions": "Assign the cable modem to another line card."
 }

@@ -1,6 +1,8 @@
 {
     "name": "Chassis | Linecard | LC Up",
+    "$collection": "fm.eventclasses",
     "uuid": "e9fbf27a-4153-45e6-86e9-aa006b069419",
+    "description": "Linecard Up",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Linecard {{number}} Up",
-            "body_template": "Linecard {{number}} Up",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Linecard {{number}} Up",
+    "body_template": "Linecard {{number}} Up",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

@@ -1,6 +1,8 @@
 {
     "name": "Security | Authentication | TACACS+ server failed",
+    "$collection": "fm.eventclasses",
     "uuid": "d4500ab1-1b8c-46b8-b0c5-4348465569f0",
+    "description": "TACACS+ server failed",
     "action": "L",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is not responding",
-            "body_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is not responding",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is not responding",
+    "body_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is not responding",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

@@ -1,6 +1,8 @@
 {
     "name": "Security | Access | Case Open",
+    "$collection": "fm.eventclasses",
     "uuid": "e1f7d295-8b53-4643-81cd-1f1380029db1",
+    "description": "Case or cover is open",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Case {{name}} is open",
-            "body_template": "Case {{name}} is open",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Case {{name}} is open",
+    "body_template": "Case {{name}} is open",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

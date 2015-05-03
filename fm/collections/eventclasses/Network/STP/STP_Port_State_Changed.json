@@ -1,6 +1,8 @@
 {
     "name": "Network | STP | STP Port State Changed",
+    "$collection": "fm.eventclasses",
     "uuid": "d714bd19-7877-4c6b-8d75-985415d43078",
+    "description": "STP Port state changed",
     "action": "A",
     "vars": [
         {
@@ -28,13 +30,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "STP state of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{state}}{% if instance %}, MST Instance {{instance}}{% endif %}",
-            "body_template": "STP state of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{state}}{% if instance %}, MST Instance {{instance}}{% endif %}",
-            "symptoms": "possible start of spanning tree rebuilding or interface oper status change",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "STP state of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{state}}{% if instance %}, MST Instance {{instance}}{% endif %}",
+    "body_template": "STP state of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{state}}{% if instance %}, MST Instance {{instance}}{% endif %}",
+    "symptoms": "possible start of spanning tree rebuilding or interface oper status change",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

@@ -1,6 +1,8 @@
 {
     "name": "System | Process Started",
+    "$collection": "fm.eventclasses",
     "uuid": "33fe3b20-a71d-4265-9c19-2d98bbf17b43",
+    "description": "Process started",
     "action": "L",
     "vars": [
         {
@@ -16,13 +18,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Process started: {{name}}{% if pid %}[{{pid}}]{% endif %}",
-            "body_template": "Process started: {{name}}{% if pid %}[{{pid}}]{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Process started: {{name}}{% if pid %}[{{pid}}]{% endif %}",
+    "body_template": "Process started: {{name}}{% if pid %}[{{pid}}]{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

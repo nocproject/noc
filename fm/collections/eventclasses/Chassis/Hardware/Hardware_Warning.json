@@ -1,19 +1,17 @@
 {
     "name": "Chassis | Hardware | Hardware Warning",
+    "$collection": "fm.eventclasses",
     "uuid": "d299572a-1369-4c46-8b88-9b40de992682",
+    "description": "Hardware warning occured",
     "action": "A",
     "vars": [
 
     ],
-    "text": {
-        "en": {
-            "subject_template": "Hardware warning occured",
-            "body_template": "Hardware warning occured",
-            "symptoms": "Device becomes unstable or is not responding",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Hardware warning occured",
+    "body_template": "Hardware warning occured",
+    "symptoms": "Device becomes unstable or is not responding",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

@@ -1,6 +1,8 @@
 {
     "name": "NOC | Unhandled Exception",
+    "$collection": "fm.eventclasses",
     "uuid": "1d279004-cd09-4382-a405-acea050775be",
+    "description": "Unhandled Exception in NOC",
     "action": "A",
     "vars": [
         {
@@ -28,15 +30,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Unhandled exception in {{component}}",
-            "body_template": "Unhandled exception in {{component}}\nFile: {{file}}, Line: {{line}}\nTraceback:\n{{traceback}}",
-            "symptoms": "Unexpected behavior of NOC",
-            "probable_causes": "Bug in NOC",
-            "recommended_actions": "Grab this event, clear valuable data and submit an issue at http://nocproject.org/"
-        }
-    },
+    "subject_template": "Unhandled exception in {{component}}",
+    "body_template": "Unhandled exception in {{component}}\nFile: {{file}}, Line: {{line}}\nTraceback:\n{{traceback}}",
+    "symptoms": "Unexpected behavior of NOC",
+    "probable_causes": "Bug in NOC",
+    "recommended_actions": "Grab this event, clear valuable data and submit an issue at http://nocproject.org/",
     "plugins": [
         {
             "name": "traceback"

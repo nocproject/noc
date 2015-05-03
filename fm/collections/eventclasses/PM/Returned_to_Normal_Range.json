@@ -1,5 +1,6 @@
 {
     "name": "PM | Returned to Normal Range",
+    "$collection": "fm.eventclasses",
     "uuid": "fd3e8b36-161b-41bf-a57c-4ad5d6207987",
     "action": "L",
     "vars": [
@@ -34,13 +35,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Value of {{metric}} returned to normal range",
-            "body_template": "Value {% if value %}{{value}} {% endif %}of {{metric}}{% if metric_type %} ({{metric_type}}){% endif %} returned to normal range.\nState changed from {{old_state}} to {{new_state}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Value of {{metric}} returned to normal range",
+    "body_template": "Value {% if value %}{{value}} {% endif %}of {{metric}}{% if metric_type %} ({{metric_type}}){% endif %} returned to normal range.\nState changed from {{old_state}} to {{new_state}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

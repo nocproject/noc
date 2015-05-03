@@ -1,5 +1,6 @@
 {
     "name": "Network | PIM | MSDP Peer Down",
+    "$collection": "fm.alarmclasses",
     "uuid": "4b308283-0654-4568-99ff-07f4c4ef37e8",
     "is_unique": true,
     "discriminator": ["peer"],
@@ -19,13 +20,9 @@
             "description": "Reason"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}",
-            "body_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %}\n Reason: {{reason}}.{% endif %}",
-            "symptoms": "Multicast flows lost",
-            "probable_causes": "Link failure or protocol misconfiguration",
-            "recommended_actions": "Check links and local and neighbor router configuration"
-        }
-    }
+    "subject_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}",
+    "body_template": "MSDP peer {{peer}} DOWN.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %}\n Reason: {{reason}}.{% endif %}",
+    "symptoms": "Multicast flows lost",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check links and local and neighbor router configuration"
 }

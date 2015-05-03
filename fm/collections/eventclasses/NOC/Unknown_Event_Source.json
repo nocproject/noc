@@ -1,6 +1,8 @@
 {
     "name": "NOC | Unknown Event Source",
+    "$collection": "fm.eventclasses",
     "uuid": "764bd643-9c5a-41bc-bf9b-89a1e44abe70",
+    "description": "Unknown Event Source",
     "action": "L",
     "vars": [
         {
@@ -28,13 +30,9 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Unknown Event Source: {{ip}}",
-            "body_template": "Event has been received from unknown source {{ip}} by collector {{collector}} (Activator pool {{activator}})",
-            "symptoms": "Events from particular device are ignored by Fault Management",
-            "probable_causes": "Event's source address does not belong to any Managed Object's trap_source",
-            "recommended_actions": "Add appropriative Managed Object or fix trap_source"
-        }
-    }
+    "subject_template": "Unknown Event Source: {{ip}}",
+    "body_template": "Event has been received from unknown source {{ip}} by collector {{collector}} (Activator pool {{activator}})",
+    "symptoms": "Events from particular device are ignored by Fault Management",
+    "probable_causes": "Event's source address does not belong to any Managed Object's trap_source",
+    "recommended_actions": "Add appropriative Managed Object or fix trap_source"
 }

@@ -1,6 +1,8 @@
 {
     "name": "Security | ACL | ACL Permit",
+    "$collection": "fm.eventclasses",
     "uuid": "025058a2-881d-4a53-b572-f07dd37c0772",
+    "description": "Packet permitted by ACL",
     "action": "L",
     "vars": [
         {
@@ -64,13 +66,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "ACL Permit {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}",
-            "body_template": "ACL Permit {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}. Count {{count}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "ACL Permit {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}",
+    "body_template": "ACL Permit {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}. Count {{count}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

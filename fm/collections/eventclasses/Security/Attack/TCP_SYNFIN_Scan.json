@@ -1,6 +1,8 @@
 {
     "name": "Security | Attack | TCP SYNFIN Scan",
+    "$collection": "fm.eventclasses",
     "uuid": "c5f6fc10-61d2-400a-a95f-58c0d1597426",
+    "description": "TCP SYNFIN Scan detected",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "TCP SYNFIN Scan detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-            "body_template": "TCP SYNFIN Scan detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "TCP SYNFIN Scan detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+    "body_template": "TCP SYNFIN Scan detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

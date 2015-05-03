@@ -1,5 +1,6 @@
 {
     "name": "Config | Config Sync Failed",
+    "$collection": "fm.alarmclasses",
     "uuid": "16c2b30a-4378-40ae-889f-c78e09f5c335",
     "is_unique": true,
     "user_clearable": true,
@@ -10,15 +11,11 @@
             "description": "Config type"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Configuration Synchronization Failed",
-            "body_template": "Configuration synchronization failed{% if service %}: {{config}} config{% endif %}.",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Configuration Synchronization Failed",
+    "body_template": "Configuration synchronization failed{% if service %}: {{config}} config{% endif %}.",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "root_cause": [
         {
             "name": "Stack Degraded",

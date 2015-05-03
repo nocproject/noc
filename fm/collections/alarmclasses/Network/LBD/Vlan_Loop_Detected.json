@@ -1,5 +1,6 @@
 {
     "name": "Network | LBD | Vlan Loop Detected",
+    "$collection": "fm.alarmclasses",
     "uuid": "c3a089e3-16b8-42aa-a4d2-801049177a22",
     "is_unique": true,
     "discriminator": ["interface", "vlan"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
-            },
+            }
+        },
 
         {
             "name": "VCDS",
@@ -21,8 +22,8 @@
             "search": {
                 "l1": "vlan",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -54,13 +55,9 @@
             "default": "=VCDS.vc_domain"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}",
-            "body_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}{% if vlan_vc_domain %}\nVC Domain: {{vlan_vc_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
-            "symptoms": "Lost traffic on specific vlan",
-            "probable_causes": "",
-            "recommended_actions": "Check topology or use STP to avoid loops"
-        }
-    }
+    "subject_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}",
+    "body_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}{% if vlan_vc_domain %}\nVC Domain: {{vlan_vc_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
+    "symptoms": "Lost traffic on specific vlan",
+    "probable_causes": "",
+    "recommended_actions": "Check topology or use STP to avoid loops"
 }

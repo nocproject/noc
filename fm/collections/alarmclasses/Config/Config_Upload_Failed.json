@@ -1,5 +1,6 @@
 {
     "name": "Config | Config Upload Failed",
+    "$collection": "fm.alarmclasses",
     "uuid": "0d2c70a7-27c6-4027-8ee2-5e44c378f0f6",
     "is_unique": true,
     "user_clearable": true,
@@ -18,13 +19,9 @@
             "description": "User name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-            "body_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+    "body_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

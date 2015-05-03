@@ -1,6 +1,8 @@
 {
     "name": "Network | DHCP | Untrusted Server",
+    "$collection": "fm.eventclasses",
     "uuid": "7884729e-f04a-4fc2-8ed9-05ebcefa20a0",
+    "description": "Untrusted DHCP server detected",
     "action": "L",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Detected untrusted DHCP server {{ip}}{% if interface %}, port {{interface}}{% endif %}",
-            "body_template": "Detected untrusted DHCP server {{ip}}{% if interface %}, port {{interface}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Detected untrusted DHCP server {{ip}}{% if interface %}, port {{interface}}{% endif %}",
+    "body_template": "Detected untrusted DHCP server {{ip}}{% if interface %}, port {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

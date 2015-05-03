@@ -1,5 +1,6 @@
 {
     "name": "Security | Access | Case Open",
+    "$collection": "fm.alarmclasses",
     "uuid": "bd40639b-5e81-4805-864d-29de2c6de60c",
     "is_unique": true,
     "discriminator": ["name"],
@@ -11,13 +12,9 @@
             "description": "Name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Case {{name}} is open",
-            "body_template": "Case {{name}} is open",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Case {{name}} is open",
+    "body_template": "Case {{name}} is open",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

@@ -122,7 +122,7 @@ class AlarmApplication(ExtApplication):
             "alarm_class": str(o.alarm_class.id),
             "alarm_class__label": o.alarm_class.name,
             "timestamp": self.to_json(o.timestamp),
-            "subject": o.get_translated_subject(lang),
+            "subject": o.subject,
             "events": n_events,
             "duration": o.duration,
             "row_class": s.style.css_class_name
@@ -154,10 +154,10 @@ class AlarmApplication(ExtApplication):
         user = request.user
         lang = "en"
         d = self.instance_to_dict(alarm)
-        d["body"] = alarm.get_translated_body(lang)
-        d["symptoms"] = alarm.get_translated_symptoms(lang)
-        d["probable_causes"] = alarm.get_translated_probable_causes(lang)
-        d["recommended_actions"] = alarm.get_translated_recommended_actions(lang)
+        d["body"] = alarm.body
+        d["symptoms"] = alarm.alarm_class.symptoms
+        d["probable_causes"] = alarm.alarm_class.probable_causes
+        d["recommended_actions"] = alarm.alarm_class.recommended_actions
         d["vars"] = sorted(alarm.vars.items())
         d["status"] = alarm.status
         d["status__label"] = {
@@ -192,7 +192,7 @@ class AlarmApplication(ExtApplication):
                     "status": e.status,
                     "managed_object": e.managed_object.id,
                     "managed_object__label": e.managed_object.name,
-                    "subject": e.get_translated_subject(lang)
+                    "subject": e.subject
                 }]
         if events:
             d["events"] = events
@@ -253,7 +253,7 @@ class AlarmApplication(ExtApplication):
                 s = AlarmSeverity.get_severity(a.severity)
                 c = {
                     "id": str(a.id),
-                    "subject": a.get_translated_subject("en"),
+                    "subject": a.subject,
                     "alarm_class": str(a.alarm_class.id),
                     "alarm_class__label": a.alarm_class.name,
                     "managed_object": a.managed_object.id,

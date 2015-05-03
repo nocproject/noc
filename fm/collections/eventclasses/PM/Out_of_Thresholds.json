@@ -1,5 +1,6 @@
 {
     "name": "PM | Out of Thresholds",
+    "$collection": "fm.eventclasses",
     "uuid": "3d7aa62a-4464-457f-b7fc-c308bd332698",
     "action": "L",
     "vars": [
@@ -34,13 +35,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Value of {{metric}} is out of thresholds",
-            "body_template": "Value {% if value %}{{value}} {% endif %}of {{metric}}{% if metric_type %} ({{metric_type}}){% endif %} is out of thresholds.\nState changed from {{old_state}} to {{new_state}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Value of {{metric}} is out of thresholds",
+    "body_template": "Value {% if value %}{{value}} {% endif %}of {{metric}}{% if metric_type %} ({{metric_type}}){% endif %} is out of thresholds.\nState changed from {{old_state}} to {{new_state}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

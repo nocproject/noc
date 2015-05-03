@@ -1,5 +1,6 @@
 {
     "name": "Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter",
+    "$collection": "fm.alarmclasses",
     "uuid": "9c73f93b-9249-4296-b386-4ee1f1cb7e83",
     "is_unique": true,
     "user_clearable": true,
@@ -10,13 +11,9 @@
             "description": "Reason"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Failed to connect to vCenter",
-            "body_template": "Failed to connect to vCenter: {{reason}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Failed to connect to vCenter",
+    "body_template": "Failed to connect to vCenter: {{reason}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

@@ -1,6 +1,8 @@
 {
     "name": "Config | Config Uploaded Successfully",
+    "$collection": "fm.eventclasses",
     "uuid": "e338914f-afc1-4e2c-8511-877c4ba67ad9",
+    "description": "Config Uploaded Successfully",
     "action": "L",
     "vars": [
         {
@@ -22,13 +24,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Config upload {% if service %}to {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-            "body_template": "Config upload {% if service %}to {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Config upload {% if service %}to {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+    "body_template": "Config upload {% if service %}to {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

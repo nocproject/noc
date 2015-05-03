@@ -1,5 +1,6 @@
 {
     "name": "Chassis | Fan | Fan Failed",
+    "$collection": "fm.alarmclasses",
     "uuid": "9fb6ce01-29e1-4ef4-9bc6-71f12f3bf83d",
     "is_unique": true,
     "discriminator": ["name"],
@@ -11,13 +12,9 @@
             "description": "Fan Name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Fan Failed: {{name}}",
-            "body_template": "Fan Failed: {{name}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Fan Failed: {{name}}",
+    "body_template": "Fan Failed: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

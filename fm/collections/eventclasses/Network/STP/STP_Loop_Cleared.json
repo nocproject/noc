@@ -1,6 +1,8 @@
 {
     "name": "Network | STP | STP Loop Cleared",
+    "$collection": "fm.eventclasses",
     "uuid": "92261078-fe4b-42f7-8d41-216fe05c124b",
+    "description": "STP Loop Cleared",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "STP Loop Cleared on {{interface}}",
-            "body_template": "STP Loop Cleared on {{interface}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "STP Loop Cleared on {{interface}}",
+    "body_template": "STP Loop Cleared on {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

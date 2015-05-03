@@ -1,5 +1,6 @@
 {
     "name": "Network | BFD | Session Down",
+    "$collection": "fm.alarmclasses",
     "uuid": "6b3a8cff-44fa-461a-8cb2-454ea2d7b2c6",
     "is_unique": true,
     "discriminator": ["interface", "peer"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -30,15 +31,11 @@
             "default": "=InterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "BFD Session Down: {{peer}} on {{interface}}{% if description %} ({{description}}){% endif %}",
-            "body_template": "BFD Session Down: {{peer}} on {{interface}}{% if description %} ({{description}}){% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "BFD Session Down: {{peer}} on {{interface}}{% if description %} ({{description}}){% endif %}",
+    "body_template": "BFD Session Down: {{peer}} on {{interface}}{% if description %} ({{description}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "root_cause": [
         {
             "name": "Link Down",

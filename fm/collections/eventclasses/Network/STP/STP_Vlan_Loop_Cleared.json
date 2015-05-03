@@ -1,6 +1,8 @@
 {
     "name": "Network | STP | STP Vlan Loop Cleared",
+    "$collection": "fm.eventclasses",
     "uuid": "0e4f62a1-36a2-4e42-9907-ad5f8614084e",
+    "description": "STP Vlan Loop Cleared",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "STP Vlan Loop Cleared on {{interface}} vlan {{vlan}}",
-            "body_template": "STP Vlan Loop Cleared on {{interface}} vlan {{vlan}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "STP Vlan Loop Cleared on {{interface}} vlan {{vlan}}",
+    "body_template": "STP Vlan Loop Cleared on {{interface}} vlan {{vlan}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

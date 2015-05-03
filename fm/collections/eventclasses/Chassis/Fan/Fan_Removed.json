@@ -1,6 +1,8 @@
 {
     "name": "Chassis | Fan | Fan Removed",
+    "$collection": "fm.eventclasses",
     "uuid": "ace93730-0292-4e01-91ad-48f1c64474c5",
+    "description": "Fan removed",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Fan Removed: {{name}}",
-            "body_template": "Fan Unit Inserted: {{name}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Fan Removed: {{name}}",
+    "body_template": "Fan Unit Inserted: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

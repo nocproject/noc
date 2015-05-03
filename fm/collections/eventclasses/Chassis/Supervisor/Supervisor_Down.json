@@ -1,6 +1,8 @@
 {
     "name": "Chassis | Supervisor | Supervisor Down",
+    "$collection": "fm.eventclasses",
     "uuid": "3a8fb640-c871-4eae-8247-9abf230b28d0",
+    "description": "Supervisor Down",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
-            "body_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
+    "body_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

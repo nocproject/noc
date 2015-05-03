@@ -1,5 +1,6 @@
 {
     "name": "Chassis | RAM | Insufficient Memory",
+    "$collection": "fm.alarmclasses",
     "uuid": "e02309ba-800f-4da8-94a4-5bbb060457a6",
     "is_unique": true,
     "user_clearable": true,
@@ -10,13 +11,9 @@
             "description": "Reason"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
-            "body_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
+    "body_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

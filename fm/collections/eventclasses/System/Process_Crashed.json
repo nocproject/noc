@@ -1,5 +1,6 @@
 {
     "name": "System | Process Crashed",
+    "$collection": "fm.eventclasses",
     "uuid": "60740366-04b9-41e0-b9b9-33f083276c89",
     "action": "L",
     "vars": [
@@ -22,15 +23,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Process crashed: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
-            "body_template": "Process crashed: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Process crashed: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
+    "body_template": "Process crashed: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

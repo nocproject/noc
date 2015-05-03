@@ -1,6 +1,8 @@
 {
     "name": "Network | STP | STP Port Role Changed",
+    "$collection": "fm.eventclasses",
     "uuid": "c614673d-99a0-4901-96ab-ea7b50f36ea2",
+    "description": "STP Port role changed",
     "action": "A",
     "vars": [
         {
@@ -28,13 +30,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "STP role of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{role}}{% if instance %}, MST Instance {{instance}}{% endif %}",
-            "body_template": "STP role of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{role}}{% if instance %}, MST Instance {{instance}}{% endif %}",
-            "symptoms": "possible start of spanning tree rebuilding or interface oper status change",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "STP role of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{role}}{% if instance %}, MST Instance {{instance}}{% endif %}",
+    "body_template": "STP role of port {{interface}}{% if vlan %}, VLAN {{vlan}}{%endif %} changed to {{role}}{% if instance %}, MST Instance {{instance}}{% endif %}",
+    "symptoms": "possible start of spanning tree rebuilding or interface oper status change",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

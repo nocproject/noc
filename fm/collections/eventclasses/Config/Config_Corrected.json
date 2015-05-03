@@ -1,19 +1,17 @@
 {
     "name": "Config | Config Corrected",
+    "$collection": "fm.eventclasses",
     "uuid": "f44a3f99-6c43-4a43-a73c-aff70f5b3611",
+    "description": "Correct invalid config",
     "action": "A",
     "vars": [
 
     ],
-    "text": {
-        "en": {
-            "subject_template": "Invalid config corrected",
-            "body_template": "Invalid config corrected",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Invalid config corrected",
+    "body_template": "Invalid config corrected",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

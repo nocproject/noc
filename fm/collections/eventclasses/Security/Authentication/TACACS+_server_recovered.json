@@ -1,6 +1,8 @@
 {
     "name": "Security | Authentication | TACACS+ server recovered",
+    "$collection": "fm.eventclasses",
     "uuid": "46e7f27a-caea-41db-87b3-fc2e7ac766db",
+    "description": "TACACS+ server recovered",
     "action": "L",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is being marked alive",
-            "body_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is being marked alive",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is being marked alive",
+    "body_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is being marked alive",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

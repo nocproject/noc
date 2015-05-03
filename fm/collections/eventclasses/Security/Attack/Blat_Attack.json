@@ -1,6 +1,8 @@
 {
     "name": "Security | Attack | Blat Attack",
+    "$collection": "fm.eventclasses",
     "uuid": "d0dc220c-6d55-4189-a42a-ba5a1f4b8947",
+    "description": "Blat Attack detected",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Blat Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-            "body_template": "Blat Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Blat Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+    "body_template": "Blat Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

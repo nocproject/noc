@@ -1,6 +1,8 @@
 {
     "name": "Security | Authentication | Privilege Level Changed",
+    "$collection": "fm.eventclasses",
     "uuid": "601bc6a1-e7a4-4652-998e-a42a214967d8",
+    "description": "User privilege level changed",
     "action": "L",
     "vars": [
         {
@@ -28,13 +30,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "User{% if user %} {{user}}{% endif %} privilege level changed{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
-            "body_template": "User{% if user %} {{user}}{% endif %} privilege level changed{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
-            "symptoms": "No specific symptoms",
-            "probable_causes": "User privilege level changed",
-            "recommended_actions": "No reaction needed"
-        }
-    }
+    "subject_template": "User{% if user %} {{user}}{% endif %} privilege level changed{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
+    "body_template": "User{% if user %} {{user}}{% endif %} privilege level changed{% if from_priv %} from {{from_priv}}){% endif %}{% if to_priv %} to {{to_priv}}{% endif %}",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "User privilege level changed",
+    "recommended_actions": "No reaction needed"
 }

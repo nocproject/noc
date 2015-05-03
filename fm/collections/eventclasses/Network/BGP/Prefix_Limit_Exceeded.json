@@ -1,6 +1,8 @@
 {
     "name": "Network | BGP | Prefix Limit Exceeded",
+    "$collection": "fm.eventclasses",
     "uuid": "d028a97e-8501-4633-a043-09c0f25819bd",
+    "description": "BGP Prefix Limit Exceeded",
     "action": "A",
     "vars": [
         {
@@ -22,15 +24,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} prefix limit exceeded",
-            "body_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} prefix limit exceeded",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} prefix limit exceeded",
+    "body_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} prefix limit exceeded",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

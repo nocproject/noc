@@ -40,8 +40,8 @@ class Trigger(object):
             subject = {}
             body = {}
             for lang in self.notification_group.languages:
-                s = event.get_translated_subject(lang)
-                b = event.get_translated_body(lang)
+                s = event.subject
+                b = event.body
                 subject[lang] = self.template.render_subject(LANG=lang,
                                                 event=event, subject=s, body=b)
                 body[lang] = self.template.render_body(LANG=lang,

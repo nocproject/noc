@@ -1,6 +1,8 @@
 {
     "name": "Network | Link | DOM | Warning: Out of Threshold",
+    "$collection": "fm.eventclasses",
     "uuid": "71faba70-4890-455b-af5b-295215979359",
+    "description": "DOM above or below threshold exceeded",
     "action": "A",
     "vars": [
         {
@@ -34,15 +36,12 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}",
-            "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}{% if ovalue %}, Operating value {{ovalue}}{% endif %}{% if tvalue %}, Threshold value {{tvalue}}{% endif %}",
-            "symptoms": "Connection lost",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "link_event": true,
+    "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}",
+    "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}{% if ovalue %}, Operating value {{ovalue}}{% endif %}{% if tvalue %}, Threshold value {{tvalue}}{% endif %}",
+    "symptoms": "Connection lost",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

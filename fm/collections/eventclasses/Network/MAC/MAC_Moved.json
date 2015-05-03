@@ -1,6 +1,8 @@
 {
     "name": "Network | MAC | MAC Moved",
+    "$collection": "fm.eventclasses",
     "uuid": "69b2b776-1f65-4289-9b42-6e975679ba23",
+    "description": "MAC address moved",
     "action": "A",
     "vars": [
         {
@@ -22,13 +24,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
-            "body_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+    "body_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

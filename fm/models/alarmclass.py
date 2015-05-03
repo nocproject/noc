@@ -51,14 +51,12 @@ class AlarmClass(nosql.Document):
     datasources = fields.ListField(fields.EmbeddedDocumentField(DataSource))
     vars = fields.ListField(fields.EmbeddedDocumentField(AlarmClassVar))
     # Text messages
-    # alarm_class.text -> locale -> {
-    #     "subject_template" -> <template>
-    #     "body_template" -> <template>
-    #     "symptoms" -> <text>
-    #     "probable_causes" -> <text>
-    #     "recommended_actions" -> <text>
-    # }
-    text = fields.DictField(required=True)
+    subject_template = fields.StringField()
+    body_template = fields.StringField()
+    symptoms = fields.StringField()
+    probable_causes = fields.StringField()
+    recommended_actions = fields.StringField()
+
     # Flap detection
     flap_condition = fields.StringField(
         required=False,
@@ -135,8 +133,8 @@ class AlarmClass(nosql.Document):
                 ss = []
                 for k in sorted(ds.search):
                     ss += ["                \"%s\": \"%s\"" % (q(k), q(ds.search[k]))]
-                x += ["            \"search\": {\n%s\n                }" % (",\n".join(ss))]
-                jds += ["        {\n%s\n            }" % ",\n".join(x)]
+                x += ["            \"search\": {\n%s\n            }" % (",\n".join(ss))]
+                jds += ["        {\n%s\n        }" % ",\n".join(x)]
             r += [",\n\n".join(jds)]
             r += ["    ],"]
         # vars
@@ -159,21 +157,12 @@ class AlarmClass(nosql.Document):
             r += ["    \"handlers\": ["]
             r += [",\n\n".join(hh)]
             r += ["    ],"]
-        # text
-        r += ["    \"text\": {"]
-        t = []
-        for lang in c.text:
-            l = ["        \"%s\": {" % lang]
-            ll = []
-            for v in ["subject_template", "body_template", "symptoms",
-                      "probable_causes", "recommended_actions"]:
-                if v in c.text[lang]:
-                    ll += ["            \"%s\": \"%s\"" % (v, q(c.text[lang][v]))]
-            l += [",\n".join(ll)]
-            l += ["        }"]
-            t += ["\n".join(l)]
-        r += [",\n\n".join(t)]
-        r += ["    }"]
+        # Text
+        r += ["    \"subject_template\": \"%s\"," % q(c.subject_template)]
+        r += ["    \"body_template\": \"%s\"," % q(c.body_template)]
+        r += ["    \"symptoms\": \"%s\"," % q(c.symptoms)]
+        r += ["    \"probable_causes\": \"%s\"," % q(c.probable_causes)]
+        r += ["    \"recommended_actions\": \"%s\"," % q(c.recommended_actions)]
         # Root cause
         if self.root_cause:
             rc = []
@@ -192,7 +181,8 @@ class AlarmClass(nosql.Document):
                 rcd += ["            }"]
                 rcd += ["        }"]
                 rc += ["\n".join(rcd)]
-            r[-1] += ","
+            if r[-1][-1] != ",":
+                r[-1] += ","
             r += ["    \"root_cause\": ["]
             r += [",\n".join(rc)]
             r += ["    ]"]
@@ -211,13 +201,15 @@ class AlarmClass(nosql.Document):
                 jd += ["            }"]
                 jd += ["        }"]
                 jobs += ["\n".join(jd)]
-            r[-1] += ","
+            if r[-1][-1] != ",":
+                r[-1] += ","
             r += ["    \"jobs\": ["]
             r += [",\n".join(jobs)]
             r += ["    ]"]
         # Plugins
         if self.plugins:
-            r[-1] += ","
+            if r[-1][-1] != ",":
+                r[-1] += ","
             plugins = []
             for p in self.plugins:
                 pd = ["        {"]
@@ -236,10 +228,12 @@ class AlarmClass(nosql.Document):
             r += [",\n".join(plugins)]
             r += ["    ]"]
         if self.notification_delay:
-            r[-1] += ","
+            if r[-1][-1] != ",":
+                r[-1] += ","
             r += ["    \"notification_delay\": %d" % self.notification_delay]
         if self.control_time0:
-            r[-1] += ","
+            if r[-1][-1] != ",":
+                r[-1] += ","
             r += ["    \"control_time0\": %d" % self.control_time0]
             if self.control_time1:
                 r[-1] += ","
@@ -248,6 +242,8 @@ class AlarmClass(nosql.Document):
                     r[-1] += ","
                     r += ["    \"control_timeN\": %d" % self.control_timeN]
         # Close
+        if r[-1].endswith(","):
+            r[-1] = r[-1][:-1]
         r += ["}", ""]
         return "\n".join(r)
 
