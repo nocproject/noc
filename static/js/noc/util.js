@@ -223,6 +223,10 @@ Ext.apply(NOC.render, {
             r.push("</table>");
             return r.join("");
         }
+    },
+
+    JSON: function(v) {
+        return Ext.encode(v);
     }
 });
 
@@ -450,7 +454,18 @@ Ext.apply(Ext.form.field.VTypes, {
         }
         return true;
     },
-    passwordText: "Passwords do not match"
+    passwordText: "Passwords do not match",
+
+    json: function(val, field) {
+        try {
+            Ext.decode(val);
+            return true
+        }
+        catch(err) {
+            return false;
+        }
+    },
+    jsonText: "Invalid JSON"
 });
 
 //
