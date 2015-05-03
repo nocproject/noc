@@ -1,6 +1,8 @@
 {
     "name": "Config | Config Downloaded Successfully",
+    "$collection": "fm.eventclasses",
     "uuid": "fae009cd-a805-4b8b-bcf8-96d40d2d0c37",
+    "description": "Config Downloaded Successfully",
     "action": "L",
     "vars": [
         {
@@ -22,13 +24,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Config download {% if service %}from {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-            "body_template": "Config download {% if service %}from {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Config download {% if service %}from {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+    "body_template": "Config download {% if service %}from {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

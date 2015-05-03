@@ -1,5 +1,6 @@
 {
     "name": "Network | LBD | Loop Detected",
+    "$collection": "fm.alarmclasses",
     "uuid": "aadd3309-c0d4-4f52-9a93-b6231eb25111",
     "is_unique": true,
     "discriminator": ["interface"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -26,13 +27,9 @@
             "default": "=InterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %}",
-            "body_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": "Check hardware link and topology"
-        }
-    }
+    "subject_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %}",
+    "body_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "Check hardware link and topology"
 }

@@ -1,6 +1,8 @@
 {
     "name": "Network | IS-IS | Adjacency Up",
+    "$collection": "fm.eventclasses",
     "uuid": "a4af4dd8-4139-4577-85e6-236d85e4d838",
+    "description": "ISIS adjacency up",
     "action": "A",
     "vars": [
         {
@@ -22,15 +24,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "New{% if level %} {{level}}{% endif %} IS-IS adjacency to {{neighbor}} on {{interface}}",
-            "body_template": "{% if level %}{{level}}{% endif %} IS-IS adjancency to {{neighbor}} established on {{interface}}",
-            "symptoms": "Routing table changes",
-            "probable_causes": "IS-IS successfully established adjacency with neighbor",
-            "recommended_actions": "No reaction needed"
-        }
-    },
+    "subject_template": "New{% if level %} {{level}}{% endif %} IS-IS adjacency to {{neighbor}} on {{interface}}",
+    "body_template": "{% if level %}{{level}}{% endif %} IS-IS adjancency to {{neighbor}} established on {{interface}}",
+    "symptoms": "Routing table changes",
+    "probable_causes": "IS-IS successfully established adjacency with neighbor",
+    "recommended_actions": "No reaction needed",
     "disposition": [
         {
             "name": "dispose",

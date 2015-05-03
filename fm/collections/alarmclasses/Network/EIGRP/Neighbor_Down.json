@@ -1,5 +1,6 @@
 {
     "name": "Network | EIGRP | Neighbor Down",
+    "$collection": "fm.alarmclasses",
     "uuid": "51ce8295-470a-4fde-b721-9a5271adeb9b",
     "is_unique": true,
     "discriminator": ["interface", "neighbor"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -38,15 +39,11 @@
             "default": "=InterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "EIGRP {% if as %} as {{as}} {% endif %} {{neighbor}} down on {{interface}}{% if description %} ({{description}}){% endif %}. {% if reason %} Reason: {{reason}}{% endif %}",
-            "body_template": "EIGRP {% if as %} as {{as}} {% endif %} {{neighbor}} down on {{interface}}{% if description %} ({{description}}){% endif %}. {% if reason %} Reason: {{reason}}{% endif %}",
-            "symptoms": "Routing table changes and possible lost of connectivity",
-            "probable_causes": "Link failure or protocol misconfiguration",
-            "recommended_actions": "Check links and local and neighbor router configuration"
-        }
-    },
+    "subject_template": "EIGRP {% if as %} as {{as}} {% endif %} {{neighbor}} down on {{interface}}{% if description %} ({{description}}){% endif %}. {% if reason %} Reason: {{reason}}{% endif %}",
+    "body_template": "EIGRP {% if as %} as {{as}} {% endif %} {{neighbor}} down on {{interface}}{% if description %} ({{description}}){% endif %}. {% if reason %} Reason: {{reason}}{% endif %}",
+    "symptoms": "Routing table changes and possible lost of connectivity",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check links and local and neighbor router configuration",
     "root_cause": [
         {
             "name": "Link Down",

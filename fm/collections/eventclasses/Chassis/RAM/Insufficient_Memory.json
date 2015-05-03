@@ -1,6 +1,8 @@
 {
     "name": "Chassis | RAM | Insufficient Memory",
+    "$collection": "fm.eventclasses",
     "uuid": "8860b0f1-4ffd-4602-b109-8454c6867a26",
+    "description": "Insufficient Memory",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
-            "body_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
+    "body_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

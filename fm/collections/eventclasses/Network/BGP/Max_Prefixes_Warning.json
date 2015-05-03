@@ -1,6 +1,8 @@
 {
     "name": "Network | BGP | Max Prefixes Warning",
+    "$collection": "fm.eventclasses",
     "uuid": "65556dfa-77c5-4840-9306-30dd8d3d0164",
+    "description": "Max prefixes warning",
     "action": "A",
     "vars": [
         {
@@ -34,13 +36,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Number of prefixes received from {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} reaches {{recv}}{% if max %}, max {{max}}{% endif %}",
-            "body_template": "Number of prefixes received from {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} reaches {{recv}}{% if max %}, max {{max}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Number of prefixes received from {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} reaches {{recv}}{% if max %}, max {{max}}{% endif %}",
+    "body_template": "Number of prefixes received from {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} reaches {{recv}}{% if max %}, max {{max}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

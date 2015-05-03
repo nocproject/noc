@@ -1,5 +1,6 @@
 {
     "name": "Network | IP | IP Flap",
+    "$collection": "fm.alarmclasses",
     "uuid": "7a98aeaf-a2d3-473f-80f5-44040d4f0e1e",
     "is_unique": true,
     "discriminator": ["ip", "from_interface", "to_interface"],
@@ -23,13 +24,9 @@
             "description": "MAC"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "IP {{ip}} moved from {{from_interface}} to{% if mac %} {{mac}} on {% endif %}{{to_interface}}",
-            "body_template": "IP {{ip}} moved from {{from_interface}} to{% if mac %} {{mac}} on {% endif %}{{to_interface}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "IP {{ip}} moved from {{from_interface}} to{% if mac %} {{mac}} on {% endif %}{{to_interface}}",
+    "body_template": "IP {{ip}} moved from {{from_interface}} to{% if mac %} {{mac}} on {% endif %}{{to_interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

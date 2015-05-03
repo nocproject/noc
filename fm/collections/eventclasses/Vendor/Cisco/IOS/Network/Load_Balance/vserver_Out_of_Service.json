@@ -1,6 +1,8 @@
 {
     "name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
+    "$collection": "fm.eventclasses",
     "uuid": "ec40d5c8-d161-4ac0-b8ea-7b63e13181a6",
+    "description": "vserver out of service",
     "action": "A",
     "vars": [
         {
@@ -22,15 +24,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
-            "body_template": "vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
+    "body_template": "vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

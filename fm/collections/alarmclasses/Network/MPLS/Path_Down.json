@@ -1,5 +1,6 @@
 {
     "name": "Network | MPLS | Path Down",
+    "$collection": "fm.alarmclasses",
     "uuid": "f9c4c5bb-b584-4586-a188-533130d7a40c",
     "is_unique": true,
     "discriminator": ["name"],
@@ -11,13 +12,9 @@
             "description": "Path name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "MPLS Path Down: {{name}}",
-            "body_template": "MPLS Path Down: {{name}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "MPLS Path Down: {{name}}",
+    "body_template": "MPLS Path Down: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

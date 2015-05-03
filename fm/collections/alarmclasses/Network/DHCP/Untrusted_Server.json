@@ -1,5 +1,6 @@
 {
     "name": "Network | DHCP | Untrusted Server",
+    "$collection": "fm.alarmclasses",
     "uuid": "86a5bbc4-803e-4eb9-906a-fb358e27d7ac",
     "is_unique": true,
     "discriminator": ["ip"],
@@ -15,13 +16,9 @@
             "description": "Source interface"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Detected untrusted DHCP server {{ip}}{% if interface %}, port {{interface}}{% endif %}",
-            "body_template": "Detected untrusted DHCP server {{ip}}{% if interface %}, port {{interface}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Detected untrusted DHCP server {{ip}}{% if interface %}, port {{interface}}{% endif %}",
+    "body_template": "Detected untrusted DHCP server {{ip}}{% if interface %}, port {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

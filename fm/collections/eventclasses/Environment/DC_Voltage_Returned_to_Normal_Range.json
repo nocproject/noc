@@ -1,6 +1,8 @@
 {
     "name": "Environment | DC Voltage Returned to Normal Range",
+    "$collection": "fm.eventclasses",
     "uuid": "21b954d8-cbd7-4cb5-8a77-2f5cd0f2132c",
+    "description": "DC voltage returned to normal range",
     "action": "A",
     "vars": [
         {
@@ -34,15 +36,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "The DC voltage measured at {{name}}, returned to the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
-            "body_template": "The DC voltage measured at {{name}}, returned to the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "The DC voltage measured at {{name}}, returned to the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+    "body_template": "The DC voltage measured at {{name}}, returned to the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

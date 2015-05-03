@@ -1,6 +1,8 @@
 {
     "name": "Security | Attack | Smurf Attack",
+    "$collection": "fm.eventclasses",
     "uuid": "7edc00c7-fafc-4eef-9144-ef6f08a2b1da",
+    "description": "Smurf Attack detected",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Smurf Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-            "body_template": "Smurf Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Smurf Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+    "body_template": "Smurf Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

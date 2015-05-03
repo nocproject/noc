@@ -1,5 +1,6 @@
 {
     "name": "Chassis | Hardware | Hardware Port Warning",
+    "$collection": "fm.alarmclasses",
     "uuid": "875a2377-53a3-4a0d-b14f-1d9c34fb6d3c",
     "is_unique": true,
     "discriminator": ["interface"],
@@ -11,13 +12,9 @@
             "description": "Hardware port or slot"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Hardware port or slot warning occured: {{interface}}",
-            "body_template": "Hardware port or slot warning occured: {{interface}}",
-            "symptoms": "Link becomes unstable or is not responding",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Hardware port or slot warning occured: {{interface}}",
+    "body_template": "Hardware port or slot warning occured: {{interface}}",
+    "symptoms": "Link becomes unstable or is not responding",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

@@ -1,6 +1,8 @@
 {
     "name": "Network | MAC | Invalid MAC",
+    "$collection": "fm.eventclasses",
     "uuid": "66a6a42d-8511-47b5-a738-f28ff359cc6d",
+    "description": "Invalid MAC detected",
     "action": "A",
     "vars": [
         {
@@ -22,15 +24,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if vlan %}, vlan {{vlan}}{% endif %}",
-            "body_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if vlan %}, vlan {{vlan}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if vlan %}, vlan {{vlan}}{% endif %}",
+    "body_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if vlan %}, vlan {{vlan}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

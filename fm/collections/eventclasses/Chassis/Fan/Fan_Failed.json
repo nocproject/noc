@@ -1,6 +1,8 @@
 {
     "name": "Chassis | Fan | Fan Failed",
+    "$collection": "fm.eventclasses",
     "uuid": "c606a185-2ace-43c5-8a4d-58f0cbf0e4b8",
+    "description": "Fan failed",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Fan Failed: {{name}}",
-            "body_template": "Fan Unit Failed: {{name}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Fan Failed: {{name}}",
+    "body_template": "Fan Unit Failed: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

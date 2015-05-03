@@ -1,6 +1,8 @@
 {
     "name": "Network | IMPB | Dynamic IMPB entry is conflicting with static",
+    "$collection": "fm.eventclasses",
     "uuid": "ea244bae-6d36-40ec-bc24-e69a2c03a23b",
+    "description": "Dynamic IMPB entry is conflicting with static",
     "action": "L",
     "vars": [
         {
@@ -22,13 +24,9 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Dynamic IMPB entry is conflicting with static IMPB(IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
-            "body_template": "Dynamic IMPB entry is conflicting with static IMPB(IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
-            "symptoms": "Discard user connection attemps",
-            "probable_causes": "",
-            "recommended_actions": "Check user IP and MAC, check DHCP database"
-        }
-    }
+    "subject_template": "Dynamic IMPB entry is conflicting with static IMPB(IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
+    "body_template": "Dynamic IMPB entry is conflicting with static IMPB(IP: {{ip}}, MAC: {{mac}}, Port: {{interface}})",
+    "symptoms": "Discard user connection attemps",
+    "probable_causes": "",
+    "recommended_actions": "Check user IP and MAC, check DHCP database"
 }

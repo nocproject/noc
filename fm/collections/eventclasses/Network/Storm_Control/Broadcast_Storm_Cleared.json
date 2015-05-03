@@ -1,6 +1,8 @@
 {
     "name": "Network | Storm Control | Broadcast Storm Cleared",
+    "$collection": "fm.eventclasses",
     "uuid": "704b51e6-54e0-4c95-b997-f7f3916101e3",
+    "description": "Broadcast Storm Cleared",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Broadcast Storm Cleared on port {{interface}}",
-            "body_template": "Broadcast Storm Cleared on port {{interface}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Broadcast Storm Cleared on port {{interface}}",
+    "body_template": "Broadcast Storm Cleared on port {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

@@ -1,5 +1,6 @@
 {
     "name": "Network | MAC | Duplicate MAC",
+    "$collection": "fm.alarmclasses",
     "uuid": "c7ecc87a-070b-469a-9434-ffe3e924a76b",
     "is_unique": true,
     "discriminator": ["mac"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "one_interface",
                 "managed_object": "managed_object"
-                }
-            },
+            }
+        },
 
         {
             "name": "twoInterfaceDS",
@@ -21,8 +22,8 @@
             "search": {
                 "interface": "two_interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -48,13 +49,9 @@
             "default": "=twoInterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}}{% if one_description %} ({{one_description}}){% endif %} and {{two_interface}}{% if two_description %} ({{two_description}}){% endif %}",
-            "body_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}}{% if one_description %} ({{one_description}}){% endif %} and {{two_interface}}{% if two_description %} ({{two_description}}){% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}}{% if one_description %} ({{one_description}}){% endif %} and {{two_interface}}{% if two_description %} ({{two_description}}){% endif %}",
+    "body_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}}{% if one_description %} ({{one_description}}){% endif %} and {{two_interface}}{% if two_description %} ({{two_description}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

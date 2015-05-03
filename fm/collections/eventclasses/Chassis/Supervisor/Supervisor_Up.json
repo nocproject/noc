@@ -1,6 +1,8 @@
 {
     "name": "Chassis | Supervisor | Supervisor Up",
+    "$collection": "fm.eventclasses",
     "uuid": "e1a830c8-6e89-4ca9-8ff5-f6ee36c6254f",
+    "description": "Supervisor Up",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Supervisor {{name}} Up{% if reason %}: {{reason}}{% endif %}",
-            "body_template": "Supervisor {{name}} Up{% if reason %}: {{reason}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Supervisor {{name}} Up{% if reason %}: {{reason}}{% endif %}",
+    "body_template": "Supervisor {{name}} Up{% if reason %}: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

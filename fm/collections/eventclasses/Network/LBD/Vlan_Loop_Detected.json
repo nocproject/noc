@@ -1,6 +1,8 @@
 {
     "name": "Network | LBD | Vlan Loop Detected",
+    "$collection": "fm.eventclasses",
     "uuid": "654c492d-cb7f-46ce-b948-f4f8c718c36d",
+    "description": "LBD Vlan Loop Detected",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "LBD Loop detected on {{interface}} vlan {{vlan}}",
-            "body_template": "LBD Loop detected on {{interface}} vlan {{vlan}}",
-            "symptoms": "Connection lost on a specific vlan",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "LBD Loop detected on {{interface}} vlan {{vlan}}",
+    "body_template": "LBD Loop detected on {{interface}} vlan {{vlan}}",
+    "symptoms": "Connection lost on a specific vlan",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

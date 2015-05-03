@@ -1,6 +1,8 @@
 {
     "name": "Network | LBD | Loop Cleared",
+    "$collection": "fm.eventclasses",
     "uuid": "f0739e3d-12ee-4a12-98fe-290819163582",
+    "description": "LBD Loop Cleared",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "LBD Loop cleared on {{interface}}",
-            "body_template": "LBD Loop cleared on {{interface}}",
-            "symptoms": "Connection restored",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "LBD Loop cleared on {{interface}}",
+    "body_template": "LBD Loop cleared on {{interface}}",
+    "symptoms": "Connection restored",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

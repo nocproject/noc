@@ -1,6 +1,8 @@
 {
     "name": "Network | STP | STP instances exceeded",
+    "$collection": "fm.eventclasses",
     "uuid": "eb0110f6-b102-4adb-83a4-b30a7524ffb5",
+    "description": "Platform limit of STP instances exceeded",
     "action": "A",
     "vars": [
         {
@@ -10,13 +12,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Platform limit of {% if limit %}{{limit}} {%endif %}STP instances exceeded",
-            "body_template": "Platform limit of {% if limit %}{{limit}} {%endif %}STP instances exceeded",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Platform limit of {% if limit %}{{limit}} {%endif %}STP instances exceeded",
+    "body_template": "Platform limit of {% if limit %}{{limit}} {%endif %}STP instances exceeded",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

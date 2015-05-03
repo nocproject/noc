@@ -1,19 +1,17 @@
 {
     "name": "Environment | UPS | Input Power Low",
+    "$collection": "fm.eventclasses",
     "uuid": "bc0de552-d41b-4048-bf8d-a8df3eced719",
+    "description": "Input Power Low",
     "action": "A",
     "vars": [
 
     ],
-    "text": {
-        "en": {
-            "subject_template": "Input power low, going into on battery mode",
-            "body_template": "Input power low, going into on battery mode",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Input power low, going into on battery mode",
+    "body_template": "Input power low, going into on battery mode",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

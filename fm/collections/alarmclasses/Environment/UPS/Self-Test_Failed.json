@@ -1,5 +1,6 @@
 {
     "name": "Environment | UPS | Self-Test Failed",
+    "$collection": "fm.alarmclasses",
     "uuid": "cd8a2c67-969e-472a-a32e-624edda8e29a",
     "is_unique": true,
     "user_clearable": true,
@@ -10,13 +11,9 @@
             "description": "Test name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "The Self-Test {% if name %}{{name}} {% endif %}failed",
-            "body_template": "The Self-Test {% if name %}{{name}} {% endif %}failed",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "The Self-Test {% if name %}{{name}} {% endif %}failed",
+    "body_template": "The Self-Test {% if name %}{{name}} {% endif %}failed",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

@@ -1,6 +1,8 @@
 {
     "name": "Network | MAC | Duplicate MAC",
+    "$collection": "fm.eventclasses",
     "uuid": "81215d7f-71b8-491e-8492-7e5734660eb1",
+    "description": "Duplicate MAC detected",
     "action": "A",
     "vars": [
         {
@@ -22,15 +24,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}} and {{two_interface}}",
-            "body_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}} and {{two_interface}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}} and {{two_interface}}",
+    "body_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}} and {{two_interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

@@ -1,6 +1,8 @@
 {
     "name": "System | Reboot",
+    "$collection": "fm.eventclasses",
     "uuid": "757ec9c1-68cb-40d4-8cce-1524c971e51f",
+    "description": "System rebooting",
     "action": "A",
     "vars": [
         {
@@ -15,15 +17,11 @@
 
         "noc.fm.handlers.event.discovery.schedule_discovery"
     ],
-    "text": {
-        "en": {
-            "subject_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
-            "body_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+    "body_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

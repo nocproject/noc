@@ -1,6 +1,8 @@
 {
     "name": "Network | Link | Link Up",
+    "$collection": "fm.eventclasses",
     "uuid": "82d72502-974a-4c42-8fe4-c4d2aae71d5c",
+    "description": "Link Up",
     "action": "A",
     "vars": [
         {
@@ -26,15 +28,11 @@
     "handlers": [
         "noc.fm.handlers.event.link.oper_up"
     ],
-    "text": {
-        "en": {
-            "subject_template": "Link Up: {{interface}}{% if speed %}, Speed: {{speed}}{% endif %}{% if duplex %}, Duplex: {{duplex}}{% endif %}",
-            "body_template": "Link Up: {{interface}}{% if speed %}, Speed: {{speed}}{% endif %}{% if duplex %}, Duplex: {{duplex}}{% endif %}",
-            "symptoms": "Connection restored",
-            "probable_causes": "Administrative action, cable or hardware replacement",
-            "recommended_actions": "Check interfaces on both sides for possible errors"
-        }
-    },
+    "subject_template": "Link Up: {{interface}}{% if speed %}, Speed: {{speed}}{% endif %}{% if duplex %}, Duplex: {{duplex}}{% endif %}",
+    "body_template": "Link Up: {{interface}}{% if speed %}, Speed: {{speed}}{% endif %}{% if duplex %}, Duplex: {{duplex}}{% endif %}",
+    "symptoms": "Connection restored",
+    "probable_causes": "Administrative action, cable or hardware replacement",
+    "recommended_actions": "Check interfaces on both sides for possible errors",
     "disposition": [
         {
             "name": "Clear Link Down",

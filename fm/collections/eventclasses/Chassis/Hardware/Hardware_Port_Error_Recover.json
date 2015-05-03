@@ -1,6 +1,8 @@
 {
     "name": "Chassis | Hardware | Hardware Port Error Recover",
+    "$collection": "fm.eventclasses",
     "uuid": "2ad0d762-1003-4b15-b88a-ce1644e8be6e",
+    "description": "Hardware port or slot error recovered",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Hardware port error recovered: {{interface}}",
-            "body_template": "Hardware port or slot error recovered: {{interface}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Hardware port error recovered: {{interface}}",
+    "body_template": "Hardware port or slot error recovered: {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

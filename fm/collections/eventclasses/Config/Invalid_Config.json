@@ -1,19 +1,17 @@
 {
     "name": "Config | Invalid Config",
+    "$collection": "fm.eventclasses",
     "uuid": "3c36215e-1c06-457b-9c59-afd702beadb6",
+    "description": "Some lines in config are invalid",
     "action": "A",
     "vars": [
 
     ],
-    "text": {
-        "en": {
-            "subject_template": "Invalid config",
-            "body_template": "Invalid config",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Invalid config",
+    "body_template": "Invalid config",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

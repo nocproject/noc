@@ -1,6 +1,8 @@
 {
     "name": "Network | LBD | Vlan Loop Cleared",
+    "$collection": "fm.eventclasses",
     "uuid": "47a0fb97-5b04-406d-bc27-4f31c1df8399",
+    "description": "LBD Vlan Loop Cleared",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "LBD Loop cleared on {{interface}} vlan {{vlan}}",
-            "body_template": "LBD Loop cleared on {{interface}} vlan {{vlan}}",
-            "symptoms": "Connection restore on a specific vlan",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "LBD Loop cleared on {{interface}} vlan {{vlan}}",
+    "body_template": "LBD Loop cleared on {{interface}} vlan {{vlan}}",
+    "symptoms": "Connection restore on a specific vlan",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

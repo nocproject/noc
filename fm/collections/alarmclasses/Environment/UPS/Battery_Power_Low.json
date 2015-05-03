@@ -1,5 +1,6 @@
 {
     "name": "Environment | UPS | Battery Power Low",
+    "$collection": "fm.alarmclasses",
     "uuid": "1cc92f54-813d-4038-a8cc-8303538f026b",
     "is_unique": true,
     "user_clearable": true,
@@ -7,13 +8,9 @@
     "vars": [
 
     ],
-    "text": {
-        "en": {
-            "subject_template": "Battery power low",
-            "body_template": "Battery power low",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": "Change old battery"
-        }
-    }
+    "subject_template": "Battery power low",
+    "body_template": "Battery power low",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "Change old battery"
 }

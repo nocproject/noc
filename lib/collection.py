@@ -48,6 +48,7 @@ class Collection(object):
         self.logger = PrefixLoggerAdapter(logger, name)
         m, c = name.split(".", 1)
         self.module = m
+        self.cname = name
         self.name = c
         self.local = local
         self.doc = doc
@@ -422,9 +423,9 @@ class Collection(object):
                 pass
 
     def install_item(self, data, load=False):
-        if "$collection" in data and data["$collection"] != self.name:
-            self.die("Installing to invalid collection: %s instead of %s",
-                     data["$collection"], self.name)
+        if "$collection" in data and data["$collection"] != self.cname:
+            self.die("Installing to invalid collection: %s instead of %s" % (
+                     data["$collection"], self.cname))
         o = self.doc(**self.dereference(self.doc, data))
         self.logger.info("Installing %s", unicode(o))
         if not o.uuid:

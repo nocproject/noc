@@ -1,6 +1,8 @@
 {
     "name": "Network | BGP | Backward Transition",
+    "$collection": "fm.eventclasses",
     "uuid": "df53d877-2473-4074-a9a0-0a7352731784",
+    "description": "BGP Backward Transition",
     "action": "A",
     "vars": [
         {
@@ -28,15 +30,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "BGP Backward transition {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
-            "body_template": "BGP Backward transition {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "BGP Backward transition {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
+    "body_template": "BGP Backward transition {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

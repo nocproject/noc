@@ -1,6 +1,8 @@
 {
     "name": "Network | EIGRP | Neighbor Down",
+    "$collection": "fm.eventclasses",
     "uuid": "c720e355-84dd-44a2-b7fd-5cb4f6ca5f0e",
+    "description": "EIGRP adjacency down",
     "action": "A",
     "vars": [
         {
@@ -34,15 +36,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "EIGRP {% if as %} {{as}} {% endif %} neighbor {{neighbor}} change state to {{to_state}}. Reason: {{reason}}",
-            "body_template": "EIGRP{% if as %} {{as}} {% endif %}\nNeighbor {{neighbor}}\nInterface: {{interface}}\nChange state -> {{to_state}}\nReason: {{reason}}",
-            "symptoms": "Routing table changes and possible lost of connectivity",
-            "probable_causes": "Link failure or protocol misconfiguration",
-            "recommended_actions": "Check links and local and neighbor router configuration"
-        }
-    },
+    "subject_template": "EIGRP {% if as %} {{as}} {% endif %} neighbor {{neighbor}} change state to {{to_state}}. Reason: {{reason}}",
+    "body_template": "EIGRP{% if as %} {{as}} {% endif %}\nNeighbor {{neighbor}}\nInterface: {{interface}}\nChange state -> {{to_state}}\nReason: {{reason}}",
+    "symptoms": "Routing table changes and possible lost of connectivity",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check links and local and neighbor router configuration",
     "disposition": [
         {
             "name": "dispose",

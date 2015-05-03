@@ -1,6 +1,8 @@
 {
     "name": "Security | Attack | Ping Of Death",
+    "$collection": "fm.eventclasses",
     "uuid": "c4d6aa0c-03e2-4e44-9784-ebc597e3dbce",
+    "description": "Ping Of Death detected",
     "action": "A",
     "vars": [
         {
@@ -22,15 +24,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Ping Of Death detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
-            "body_template": "Ping Of Death detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Ping Of Death detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+    "body_template": "Ping Of Death detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

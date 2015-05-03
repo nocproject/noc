@@ -1,6 +1,8 @@
 {
     "name": "System | Started",
+    "$collection": "fm.eventclasses",
     "uuid": "6bd08fbf-e09c-4472-a99d-c24176a47201",
+    "description": "System started",
     "action": "A",
     "vars": [
 
@@ -10,15 +12,11 @@
 
         "noc.fm.handlers.event.discovery.schedule_discovery"
     ],
-    "text": {
-        "en": {
-            "subject_template": "System started",
-            "body_template": "System started",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "System started",
+    "body_template": "System started",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

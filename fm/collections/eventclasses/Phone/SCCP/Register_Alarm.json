@@ -1,6 +1,8 @@
 {
     "name": "Phone | SCCP | Register Alarm",
+    "$collection": "fm.eventclasses",
     "uuid": "0739ec2b-ac9d-4bd4-9565-0bdae96b062c",
+    "description": "SCCP phone registration alarm",
     "action": "A",
     "vars": [
         {
@@ -28,13 +30,9 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "SCCP register alarm: {{sn}} load {{image}}: {{reason}}",
-            "body_template": "SCCP register alarm: {{sn}} load {{image}}: {{reason}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "SCCP register alarm: {{sn}} load {{image}}: {{reason}}",
+    "body_template": "SCCP register alarm: {{sn}} load {{image}}: {{reason}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

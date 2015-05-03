@@ -8,6 +8,8 @@
 
 ## Python modules
 import re
+## Django modules
+from django.template import Template, Context
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models.eventclassificationrule import EventClassificationRule, EventClassificationRuleCategory
@@ -15,7 +17,6 @@ from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.lib.validators import is_objectid, is_oid
 from noc.fm.models import get_event
-from noc.fm.models.translation import get_translated_template
 
 
 class EventClassificationRuleApplication(ExtDocApplication):
@@ -171,10 +172,9 @@ class EventClassificationRuleApplication(ExtDocApplication):
         # Fill event class template
         if event_class:
             lang = "en"
-            subject = get_translated_template(
-                lang, event_class.text, "subject_template", vars)
-            body = get_translated_template(
-                lang, event_class.text, "body_template", vars)
+            ctx = Context(vars)
+            subject = Template(event_class.subject_template).render(ctx)
+            body = Template(event_class.body_template).render(ctx)
         # Check expression
         r = {
             "result": result

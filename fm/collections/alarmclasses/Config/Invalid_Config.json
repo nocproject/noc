@@ -1,5 +1,6 @@
 {
     "name": "Config | Invalid Config",
+    "$collection": "fm.alarmclasses",
     "uuid": "55475472-e013-4c73-94da-15a7b1380991",
     "is_unique": true,
     "user_clearable": true,
@@ -7,13 +8,9 @@
     "vars": [
 
     ],
-    "text": {
-        "en": {
-            "subject_template": "Invalid config",
-            "body_template": "Invalid config",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Invalid config",
+    "body_template": "Invalid config",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

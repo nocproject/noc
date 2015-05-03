@@ -1,6 +1,8 @@
 {
     "name": "Network | LLDP | Remote Tables Change",
+    "$collection": "fm.eventclasses",
     "uuid": "c0d11fbc-06e7-426e-8d69-b24f5b1fe249",
+    "description": "LLDP Remote Tables Change",
     "action": "L",
     "vars": [
         {
@@ -28,13 +30,9 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "LLDP Remote Tables Change: {{table_inserts}} inserts/{{table_deletes}} deletes",
-            "body_template": "LLDP Remote Tables Change:\ninserts: {{table_inserts}}\ndeletes: {{table_deletes}} ({{table_drops}} drops/{{table_ageouts}} ageouts)",
-            "symptoms": "Possible instability of network connectivity",
-            "probable_causes": "A lldpRemTablesChange notification is sent when the value of lldpStatsRemTableLastChangeTime changes.\nIt can beutilized by an NMS to trigger LLDP remote systems table maintenance polls.\nNote that transmission of lldpRemTablesChange notifications are throttled by the agent, as specified by the 'lldpNotificationInterval' object",
-            "recommended_actions": "Large amount of deletes may indicate instable link"
-        }
-    }
+    "subject_template": "LLDP Remote Tables Change: {{table_inserts}} inserts/{{table_deletes}} deletes",
+    "body_template": "LLDP Remote Tables Change:\ninserts: {{table_inserts}}\ndeletes: {{table_deletes}} ({{table_drops}} drops/{{table_ageouts}} ageouts)",
+    "symptoms": "Possible instability of network connectivity",
+    "probable_causes": "A lldpRemTablesChange notification is sent when the value of lldpStatsRemTableLastChangeTime changes.\nIt can beutilized by an NMS to trigger LLDP remote systems table maintenance polls.\nNote that transmission of lldpRemTablesChange notifications are throttled by the agent, as specified by the 'lldpNotificationInterval' object",
+    "recommended_actions": "Large amount of deletes may indicate instable link"
 }

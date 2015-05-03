@@ -1,6 +1,8 @@
 {
     "name": "Network | BGP | Peer State Changed",
+    "$collection": "fm.eventclasses",
     "uuid": "b4ab69c1-15d3-4dd9-a6c8-aecb25c249b0",
+    "description": "BGP Peer State Changed",
     "action": "A",
     "vars": [
         {
@@ -34,15 +36,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} state changed: {% if from_state %}{{from_state}} -> {% else %} to {% endif %}{{to_state}}",
-            "body_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} state changed: {% if from_state %}{{from_state}} -> {% else %} to {% endif %}{{to_state}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} state changed: {% if from_state %}{{from_state}} -> {% else %} to {% endif %}{{to_state}}",
+    "body_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}){% endif %} state changed: {% if from_state %}{{from_state}} -> {% else %} to {% endif %}{{to_state}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "raise",

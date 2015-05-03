@@ -1,6 +1,8 @@
 {
     "name": "Network | MPLS | Path Up",
+    "$collection": "fm.eventclasses",
     "uuid": "aa523bd6-e5d1-4676-9665-e97c4a5054e6",
+    "description": "MPLS Path Up",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "MPLS Path Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){%endif%}",
-            "body_template": "MPLS Path Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){%endif%}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "MPLS Path Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){%endif%}",
+    "body_template": "MPLS Path Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){%endif%}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

@@ -1,5 +1,6 @@
 {
     "name": "Security | Access | Door Open",
+    "$collection": "fm.alarmclasses",
     "uuid": "cceea535-e9b4-4bce-a419-9bdf1f0c3ffb",
     "is_unique": true,
     "discriminator": ["name"],
@@ -11,13 +12,9 @@
             "description": "Name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Door {{name}} is open",
-            "body_template": "Door {{name}} is open",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Door {{name}} is open",
+    "body_template": "Door {{name}} is open",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

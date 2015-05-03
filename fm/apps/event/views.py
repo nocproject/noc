@@ -99,7 +99,7 @@ class EventApplication(ExtApplication):
     def instance_to_dict(self, o, fields=None):
         row_class = None
         if o.status in ("A", "S"):
-            subject = o.get_translated_subject("en")
+            subject = o.subject
             repeats = o.repeats
             duration = o.duration
             n_alarms = len(o.alarms)
@@ -164,10 +164,10 @@ class EventApplication(ExtApplication):
             "vars", "resolved_vars", "raw_vars"
         ))
         if event.status in ("A", "S"):
-            dd["body"] = event.get_translated_body(lang)
-            dd["symptoms"] = event.get_translated_symptoms(lang)
-            dd["probable_causes"] = event.get_translated_probable_causes(lang)
-            dd["recommended_actions"] = event.get_translated_recommended_actions(lang)
+            dd["body"] = event.body
+            dd["symptoms"] = event.event_class.symptoms
+            dd["probable_causes"] = event.event_class.probable_causes
+            dd["recommended_actions"] = event.event_class.recommended_actions
             # Fill vars
             left = set(event.vars)
             vars = []
@@ -223,7 +223,7 @@ class EventApplication(ExtApplication):
                     "status": a.status,
                     "alarm_class": str(a.alarm_class.id),
                     "alarm_class__label": a.alarm_class.name,
-                    "subject": a.get_translated_subject(lang),
+                    "subject": a.subject,
                     "role": role,
                     "timestamp": self.to_json(a.timestamp)
                 }]

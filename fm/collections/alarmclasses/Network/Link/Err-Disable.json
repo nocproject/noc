@@ -1,5 +1,6 @@
 {
     "name": "Network | Link | Err-Disable",
+    "$collection": "fm.alarmclasses",
     "uuid": "a567754e-8be6-498b-a790-97f34aa4d52b",
     "is_unique": true,
     "discriminator": ["interface"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -30,15 +31,11 @@
             "default": "=InterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Link err-disable: {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
-            "body_template": "Link err-disable: {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Link err-disable: {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
+    "body_template": "Link err-disable: {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "root_cause": [
         {
             "name": "UDLD",

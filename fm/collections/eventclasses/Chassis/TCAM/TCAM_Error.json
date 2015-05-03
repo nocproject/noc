@@ -1,6 +1,8 @@
 {
     "name": "Chassis | TCAM | TCAM Error",
+    "$collection": "fm.eventclasses",
     "uuid": "3fd835ce-35dc-4a3c-8004-7abe4e5e9f15",
+    "description": "TCAM Error",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "TCAM error{% if reason %}: {{reason}}{% endif %}",
-            "body_template": "TCAM error{% if reason %}: {{reason}}{% endif %}",
-            "symptoms": "From random instability to complete operation failure",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "TCAM error{% if reason %}: {{reason}}{% endif %}",
+    "body_template": "TCAM error{% if reason %}: {{reason}}{% endif %}",
+    "symptoms": "From random instability to complete operation failure",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

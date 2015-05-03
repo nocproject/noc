@@ -1,6 +1,8 @@
 {
     "name": "Config | Config Sync Failed",
+    "$collection": "fm.eventclasses",
     "uuid": "8cf52937-88e5-4850-8470-8c5f42d309c9",
+    "description": "Configuration synchronization failed with redundant module",
     "action": "L",
     "vars": [
         {
@@ -10,13 +12,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Configuration Synchronization Failed",
-            "body_template": "Configuration synchronization failed{% if config %}: {{config}} config{% endif %}.",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Configuration Synchronization Failed",
+    "body_template": "Configuration synchronization failed{% if config %}: {{config}} config{% endif %}.",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

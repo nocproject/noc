@@ -1,5 +1,6 @@
 {
     "name": "Network | IMPB | Unauthenticated IP-MAC",
+    "$collection": "fm.alarmclasses",
     "uuid": "951053ed-a46f-41aa-ae4b-05931c63d425",
     "is_unique": true,
     "discriminator": ["interface"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -34,13 +35,9 @@
             "default": "=InterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: {{ip}}, MAC: {{mac}}, Port: {{interface}}{% if description %} ({{description}}){% endif %})",
-            "body_template": "Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: {{ip}}, MAC: {{mac}}, Port: {{interface}}{% if description %} ({{description}}){% endif %})",
-            "symptoms": "Discard user connection attempts",
-            "probable_causes": "",
-            "recommended_actions": "Check user IP and MAC, check IMPB entry, check topology"
-        }
-    }
+    "subject_template": "Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: {{ip}}, MAC: {{mac}}, Port: {{interface}}{% if description %} ({{description}}){% endif %})",
+    "body_template": "Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: {{ip}}, MAC: {{mac}}, Port: {{interface}}{% if description %} ({{description}}){% endif %})",
+    "symptoms": "Discard user connection attempts",
+    "probable_causes": "",
+    "recommended_actions": "Check user IP and MAC, check IMPB entry, check topology"
 }

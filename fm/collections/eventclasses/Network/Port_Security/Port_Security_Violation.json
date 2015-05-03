@@ -1,6 +1,8 @@
 {
     "name": "Network | Port Security | Port Security Violation",
+    "$collection": "fm.eventclasses",
     "uuid": "c0e272fd-7a5d-4f32-950d-86bfe75c53c4",
+    "description": "Port Security Violation",
     "action": "L",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Port Security violation on port {{interface}}{% if mac %}, MAC {{mac}} {% endif %}",
-            "body_template": "Port Security violation on port {{interface}}{% if mac %}, MAC {{mac}} {% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Port Security violation on port {{interface}}{% if mac %}, MAC {{mac}} {% endif %}",
+    "body_template": "Port Security violation on port {{interface}}{% if mac %}, MAC {{mac}} {% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

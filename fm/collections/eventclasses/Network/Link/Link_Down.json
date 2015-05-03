@@ -1,6 +1,8 @@
 {
     "name": "Network | Link | Link Down",
+    "$collection": "fm.eventclasses",
     "uuid": "358bf8ed-81ce-4e92-8d05-adc3817edbda",
+    "description": "Link Down",
     "action": "A",
     "vars": [
         {
@@ -14,15 +16,11 @@
     "handlers": [
         "noc.fm.handlers.event.link.oper_down"
     ],
-    "text": {
-        "en": {
-            "subject_template": "Link Down: {{interface}}",
-            "body_template": "Link Down: {{interface}}",
-            "symptoms": "Connection lost",
-            "probable_causes": "Administrative action, cable damage, hardware or software error either from this or from another side",
-            "recommended_actions": "Check configuration, both sides of links and hardware"
-        }
-    },
+    "subject_template": "Link Down: {{interface}}",
+    "body_template": "Link Down: {{interface}}",
+    "symptoms": "Connection lost",
+    "probable_causes": "Administrative action, cable damage, hardware or software error either from this or from another side",
+    "recommended_actions": "Check configuration, both sides of links and hardware",
     "disposition": [
         {
             "name": "dispose",

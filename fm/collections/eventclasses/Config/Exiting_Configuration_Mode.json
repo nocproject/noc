@@ -1,6 +1,8 @@
 {
     "name": "Config | Exiting Configuration Mode",
+    "$collection": "fm.eventclasses",
     "uuid": "f053aeb1-af41-427c-b92e-8d5d2609a900",
+    "description": "Exitin configuration mode",
     "action": "L",
     "vars": [
         {
@@ -10,13 +12,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "{% if user %}User {{user}} exited{% else %}Exiting{% endif %} configuration mode",
-            "body_template": "{% if user %}User {{user}} exited{% else %}Exiting{% endif %} configuration mode",
-            "symptoms": "Behavior of the network can be changed",
-            "probable_causes": "User switched off configuration mode",
-            "recommended_actions": "No specific action needed"
-        }
-    }
+    "subject_template": "{% if user %}User {{user}} exited{% else %}Exiting{% endif %} configuration mode",
+    "body_template": "{% if user %}User {{user}} exited{% else %}Exiting{% endif %} configuration mode",
+    "symptoms": "Behavior of the network can be changed",
+    "probable_causes": "User switched off configuration mode",
+    "recommended_actions": "No specific action needed"
 }

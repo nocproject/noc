@@ -1,6 +1,8 @@
 {
     "name": "Security | Access | Door Close",
+    "$collection": "fm.eventclasses",
     "uuid": "16615d0e-17f1-43aa-a896-353b4436588c",
+    "description": "Door is closed",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Door {{name}} is closed",
-            "body_template": "Door {{name}} is closed",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Door {{name}} is closed",
+    "body_template": "Door {{name}} is closed",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

@@ -1,6 +1,8 @@
 {
     "name": "Network | STP | STP Vlan Loop Detected",
+    "$collection": "fm.eventclasses",
     "uuid": "f7fa2d23-5b30-4497-bd00-1d792bcb2b70",
+    "description": "STP Vlan Loop Detected",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "STP Vlan Loop Detected on {{interface}} vlan {{vlan}}",
-            "body_template": "STP Vlan Loop Detected on {{interface}} vlan {{vlan}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "STP Vlan Loop Detected on {{interface}} vlan {{vlan}}",
+    "body_template": "STP Vlan Loop Detected on {{interface}} vlan {{vlan}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

@@ -1,6 +1,8 @@
 {
     "name": "Network | NTP | NTP Server Reachable",
+    "$collection": "fm.eventclasses",
     "uuid": "38891d3a-6ab1-4bc5-a161-394f2096c7d3",
+    "description": "NTP Server reachable",
     "action": "L",
     "vars": [
         {
@@ -16,13 +18,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "NTP Server Reachable{% if server_name %}: {{server_name}}{% endif %}{% if server_address %} ({{server_address}}){% endif %}",
-            "body_template": "NTP Server Reachable{% if server_name %}: {{server_name}}{% endif %}{% if server_address %} ({{server_address}}){% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "NTP Server Reachable{% if server_name %}: {{server_name}}{% endif %}{% if server_address %} ({{server_address}}){% endif %}",
+    "body_template": "NTP Server Reachable{% if server_name %}: {{server_name}}{% endif %}{% if server_address %} ({{server_address}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

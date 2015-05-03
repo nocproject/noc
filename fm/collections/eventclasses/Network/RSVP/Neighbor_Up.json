@@ -1,6 +1,8 @@
 {
     "name": "Network | RSVP | Neighbor Up",
+    "$collection": "fm.eventclasses",
     "uuid": "cba69e5c-275b-4d39-a773-bd210802f86a",
+    "description": "RSVP Neighbor up",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "New RSVP neighbor {{neighbor}} on {{interface}}",
-            "body_template": "New RSVP neighbor {{neighbor}} on {{interface}}",
-            "symptoms": "Routing table changes",
-            "probable_causes": "RSVP successfully established Neighbor with neighbor",
-            "recommended_actions": "No reaction needed"
-        }
-    },
+    "subject_template": "New RSVP neighbor {{neighbor}} on {{interface}}",
+    "body_template": "New RSVP neighbor {{neighbor}} on {{interface}}",
+    "symptoms": "Routing table changes",
+    "probable_causes": "RSVP successfully established Neighbor with neighbor",
+    "recommended_actions": "No reaction needed",
     "disposition": [
         {
             "name": "dispose",

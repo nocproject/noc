@@ -1,6 +1,8 @@
 {
     "name": "Security | Authentication | Login",
+    "$collection": "fm.eventclasses",
     "uuid": "e2a34691-21e7-4585-a8e7-fc006dd131ed",
+    "description": "Successful Login",
     "action": "L",
     "vars": [
         {
@@ -19,13 +21,9 @@
     "handlers": [
         "noc.fm.handlers.event.audit.log_login"
     ],
-    "text": {
-        "en": {
-            "subject_template": "Login successful:{% if user %} {{user}}{% endif %}{% if ip %} ({{ip}}){% endif %}",
-            "body_template": "Login successful!\n{% if user %}User: {{user}}{% endif %}{% if ip %}\nIP: {{ip}}{% endif %}",
-            "symptoms": "No specific symptoms",
-            "probable_causes": "User successfully logged in",
-            "recommended_actions": "No reaction needed"
-        }
-    }
+    "subject_template": "Login successful:{% if user %} {{user}}{% endif %}{% if ip %} ({{ip}}){% endif %}",
+    "body_template": "Login successful!\n{% if user %}User: {{user}}{% endif %}{% if ip %}\nIP: {{ip}}{% endif %}",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "User successfully logged in",
+    "recommended_actions": "No reaction needed"
 }

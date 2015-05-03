@@ -1,6 +1,8 @@
 {
     "name": "Network | NTP | System Clock Synchronized",
+    "$collection": "fm.eventclasses",
     "uuid": "65f839bd-2c81-45df-83fe-2aa4d788a203",
+    "description": "System clock synchronized",
     "action": "L",
     "vars": [
         {
@@ -22,13 +24,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "System clock synchronized with {% if server_name %}{{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}{% if stratum %} stratum={{stratum}}{% endif %}",
-            "body_template": "System clock synchronized with {% if server_name %}{{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}{% if stratum %} stratum={{stratum}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "System clock synchronized with {% if server_name %}{{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}{% if stratum %} stratum={{stratum}}{% endif %}",
+    "body_template": "System clock synchronized with {% if server_name %}{{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}{% if stratum %} stratum={{stratum}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

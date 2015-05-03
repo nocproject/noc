@@ -1,5 +1,6 @@
 {
     "name": "Network | DOCSIS | Maximum Capacity Reached",
+    "$collection": "fm.alarmclasses",
     "uuid": "b1fea1e4-8b4c-4116-af4d-850ce41a79fe",
     "is_unique": true,
     "discriminator": ["interface"],
@@ -23,13 +24,9 @@
             "description": "Reserved bps"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Current total reservation{% if cur_bps %} {{cur_bps}} bps{% endif %} on iterface {{interface}}{% if upstream %} U {{upstream}}{% endif %} exceeds its maximum configured reservation limit{% if res_bps %} of {{res_bps}} bps{% endif %}",
-            "body_template": "Current total reservation{% if cur_bps %} {{cur_bps}} bps{% endif %} on iterface {{interface}}{% if upstream %} U {{upstream}}{% endif %} exceeds its maximum configured reservation limit{% if res_bps %} of {{res_bps}} bps{% endif %}",
-            "symptoms": "",
-            "probable_causes": "The currently reserved capacity on the upstream channel already exceeds its virtual reservation capacity, based on the configured subscription level limit. Increasing the subscription level limit on the current upstream channel will place you at risk of being unable to guarantee the individual reserved rates for modems since this upstream channel is already oversubscribed.",
-            "recommended_actions": "Load-balance the modems that are requesting the reserved upstream rate on another upstream channel."
-        }
-    }
+    "subject_template": "Current total reservation{% if cur_bps %} {{cur_bps}} bps{% endif %} on iterface {{interface}}{% if upstream %} U {{upstream}}{% endif %} exceeds its maximum configured reservation limit{% if res_bps %} of {{res_bps}} bps{% endif %}",
+    "body_template": "Current total reservation{% if cur_bps %} {{cur_bps}} bps{% endif %} on iterface {{interface}}{% if upstream %} U {{upstream}}{% endif %} exceeds its maximum configured reservation limit{% if res_bps %} of {{res_bps}} bps{% endif %}",
+    "symptoms": "",
+    "probable_causes": "The currently reserved capacity on the upstream channel already exceeds its virtual reservation capacity, based on the configured subscription level limit. Increasing the subscription level limit on the current upstream channel will place you at risk of being unable to guarantee the individual reserved rates for modems since this upstream channel is already oversubscribed.",
+    "recommended_actions": "Load-balance the modems that are requesting the reserved upstream rate on another upstream channel."
 }

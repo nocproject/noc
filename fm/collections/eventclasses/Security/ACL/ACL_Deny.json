@@ -1,6 +1,8 @@
 {
     "name": "Security | ACL | ACL Deny",
+    "$collection": "fm.eventclasses",
     "uuid": "ec6f4a1c-6efa-496b-93a7-e591496053e6",
+    "description": "Packet denied by ACL",
     "action": "L",
     "vars": [
         {
@@ -64,13 +66,9 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "ACL Deny {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}",
-            "body_template": "ACL Deny {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}. Count {{count}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "ACL Deny {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}",
+    "body_template": "ACL Deny {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}. Count {{count}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

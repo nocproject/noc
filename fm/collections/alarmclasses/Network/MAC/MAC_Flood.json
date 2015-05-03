@@ -1,5 +1,6 @@
 {
     "name": "Network | MAC | MAC Flood",
+    "$collection": "fm.alarmclasses",
     "uuid": "b761d498-a29f-41e0-9e8d-20ce696394a2",
     "is_unique": true,
     "discriminator": ["mac"],
@@ -12,8 +13,8 @@
             "search": {
                 "l1": "vlan",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -44,13 +45,9 @@
             "default": "=VCDS.vc_domain"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "The flooding MAC is detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
-            "body_template": "The flooding MAC is detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "The flooding MAC is detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
+    "body_template": "The flooding MAC is detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

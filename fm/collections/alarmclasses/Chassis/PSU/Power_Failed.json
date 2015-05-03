@@ -1,5 +1,6 @@
 {
     "name": "Chassis | PSU | Power Failed",
+    "$collection": "fm.alarmclasses",
     "uuid": "58a480a0-97bc-4f7c-919c-43a2093475b9",
     "is_unique": true,
     "user_clearable": true,
@@ -10,13 +11,9 @@
             "description": "Condition"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Power failed{% if condition %} due to {{condition}}{% endif %}",
-            "body_template": "Power failed{% if condition %} due to {{condition}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Power failed{% if condition %} due to {{condition}}{% endif %}",
+    "body_template": "Power failed{% if condition %} due to {{condition}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

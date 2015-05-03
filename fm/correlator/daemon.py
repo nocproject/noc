@@ -320,11 +320,11 @@ class Correlator(Daemon):
         if not a.root:
             a.managed_object.event(a.managed_object.EV_ALARM_RISEN, {
                 "alarm": a,
-                "subject": a.get_translated_subject("en"),
-                "body": a.get_translated_body("en"),
-                "symptoms": a.get_translated_symptoms("en"),
-                "recommended_actions": a.get_translated_recommended_actions("en"),
-                "probable_causes": a.get_translated_probable_causes("en")
+                "subject": a.subject,
+                "body": a.body,
+                "symptoms": a.alarm_class.symptoms,
+                "recommended_actions": a.alarm_class.recommended_actions,
+                "probable_causes": a.alarm_class.probable_causes
             }, delay=a.alarm_class.get_notification_delay())
 
     def clear_alarm(self, r, e):

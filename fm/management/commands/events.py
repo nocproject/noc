@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Reclassify events
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 from optparse import OptionParser, make_option
 import re
@@ -150,7 +149,7 @@ class Command(BaseCommand):
         else:
             print "ID, Object, Class, Subject"
         for e in events:
-            subject = unescape(e.get_translated_subject("en"))
+            subject = unescape(e.subject)
             if to_suppress:
                 # Replace volatile parts
                 s = self.rx_volatile_date.sub("", subject)

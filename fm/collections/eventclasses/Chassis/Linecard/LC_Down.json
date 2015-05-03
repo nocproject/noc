@@ -1,6 +1,8 @@
 {
     "name": "Chassis | Linecard | LC Down",
+    "$collection": "fm.eventclasses",
     "uuid": "cea6abfb-7327-49b3-8525-de42e5e6809a",
+    "description": "Linecard Down",
     "action": "A",
     "vars": [
         {
@@ -16,15 +18,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Linecard {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
-            "body_template": "Linecard {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Linecard {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
+    "body_template": "Linecard {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

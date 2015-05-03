@@ -1,6 +1,8 @@
 {
     "name": "Chassis | PSU | PSU Failed",
+    "$collection": "fm.eventclasses",
     "uuid": "1f118a19-3fd3-4de2-9092-284c102ba051",
+    "description": "Power Suppply Unit failed",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Power Supply Unit Failed: {{name}}",
-            "body_template": "Power Supply Unit Failed: {{name}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "Power Supply Unit Failed: {{name}}",
+    "body_template": "Power Supply Unit Failed: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

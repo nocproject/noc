@@ -1,6 +1,8 @@
 {
     "name": "Vendor | Cisco | IOS | Network | Load Balance | vserver In Service",
+    "$collection": "fm.eventclasses",
     "uuid": "05ecce37-99c6-4eee-b181-1bba2a026fa4",
+    "description": "vserver in service",
     "action": "A",
     "vars": [
         {
@@ -22,15 +24,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "vserver {{name}} is in service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
-            "body_template": "vserver {{name}} is in service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "vserver {{name}} is in service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
+    "body_template": "vserver {{name}} is in service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

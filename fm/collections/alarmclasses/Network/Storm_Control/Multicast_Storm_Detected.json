@@ -1,5 +1,6 @@
 {
     "name": "Network | Storm Control | Multicast Storm Detected",
+    "$collection": "fm.alarmclasses",
     "uuid": "94845065-483a-4366-9222-6be7d09426cf",
     "is_unique": true,
     "discriminator": ["interface"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -26,13 +27,9 @@
             "default": "=InterfaceDS.description"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Multicast Storm detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
-            "body_template": "Multicast Storm detected port on {{interface}}{% if description %} ({{description}}){% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Multicast Storm detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
+    "body_template": "Multicast Storm detected port on {{interface}}{% if description %} ({{description}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

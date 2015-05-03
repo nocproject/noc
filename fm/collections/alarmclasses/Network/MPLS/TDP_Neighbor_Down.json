@@ -1,5 +1,6 @@
 {
     "name": "Network | MPLS | TDP Neighbor Down",
+    "$collection": "fm.alarmclasses",
     "uuid": "9345af7a-41d8-48d7-b6d5-e216b3fbda20",
     "is_unique": true,
     "discriminator": ["neighbor"],
@@ -15,13 +16,9 @@
             "description": "Reason"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "MPLS TDP Neighbor Down: {{neighbor}}{% if reson %} ({{reson}}){% endif %}",
-            "body_template": "MPLS TDP Neighbor Down: {{neighbor}}{% if reson %} ({{reson}}){% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "MPLS TDP Neighbor Down: {{neighbor}}{% if reson %} ({{reson}}){% endif %}",
+    "body_template": "MPLS TDP Neighbor Down: {{neighbor}}{% if reson %} ({{reson}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

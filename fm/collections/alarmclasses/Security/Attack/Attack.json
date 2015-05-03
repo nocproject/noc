@@ -1,5 +1,6 @@
 {
     "name": "Security | Attack | Attack",
+    "$collection": "fm.alarmclasses",
     "uuid": "b1187763-a252-491f-8683-d791a09ae95f",
     "is_unique": true,
     "user_clearable": true,
@@ -11,8 +12,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
-            },
+            }
+        },
 
         {
             "name": "VCDS",
@@ -20,8 +21,8 @@
             "search": {
                 "l1": "vlan",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -55,13 +56,9 @@
             "default": "=VCDS.name"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "{{name}} attack detected{% if interface %} at interface {{interface}}{% endif %}{% if description %} ({{description}}){% endif %}{% if src_ip %} from {{src_ip}}{% endif %}",
-            "body_template": "{{name}} attack detected.{% if interface %}\nInterface: {{interface}}{% endif %}{% if description %} ({{description}}){% endif %}{% if src_ip %}\nSource IP: {{src_ip}}{% endif %}{% if src_mac %}\nSource MAC: {{src_mac}}{% endif %}{% if vlan %}\nVlan: {{vlan}}{% endif %}{% if vlan_name %} ({{vlan_name}}){% endif %}",
-            "symptoms": "Unsolicitized traffic from source",
-            "probable_causes": "Virus/Botnet activity or malicious actions",
-            "recommended_actions": "Negotiate the source if it is your customer, or ignore"
-        }
-    }
+    "subject_template": "{{name}} attack detected{% if interface %} at interface {{interface}}{% endif %}{% if description %} ({{description}}){% endif %}{% if src_ip %} from {{src_ip}}{% endif %}",
+    "body_template": "{{name}} attack detected.{% if interface %}\nInterface: {{interface}}{% endif %}{% if description %} ({{description}}){% endif %}{% if src_ip %}\nSource IP: {{src_ip}}{% endif %}{% if src_mac %}\nSource MAC: {{src_mac}}{% endif %}{% if vlan %}\nVlan: {{vlan}}{% endif %}{% if vlan_name %} ({{vlan_name}}){% endif %}",
+    "symptoms": "Unsolicitized traffic from source",
+    "probable_causes": "Virus/Botnet activity or malicious actions",
+    "recommended_actions": "Negotiate the source if it is your customer, or ignore"
 }

@@ -1,5 +1,6 @@
 {
     "name": "Network | DOCSIS | BPI Unautorized",
+    "$collection": "fm.alarmclasses",
     "uuid": "7b5bc42b-a8f9-4388-bf8e-08de73b625fb",
     "is_unique": true,
     "discriminator": ["mac"],
@@ -19,13 +20,9 @@
             "description": "Cable interface"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "BPI authorization failed for Cable Modem {{mac}}{% if sid %} SID {{sid}}{% endif %}{% if interface %} on interface {{interface}}{% endif %}",
-            "body_template": "BPI authorization failed for Cable Modem {{mac}}{% if sid %} SID {{sid}}{% endif %}{% if interface %} on interface {{interface}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "An unauthorized cable modem has been deleted to enforce BPI authorization for the specified cable modem. The specified cable modem was not performing BPI negotiation.",
-            "recommended_actions": "Check the modem interface configuration for privacy mandatory, or check for errors in the TFTP configuration file."
-        }
-    }
+    "subject_template": "BPI authorization failed for Cable Modem {{mac}}{% if sid %} SID {{sid}}{% endif %}{% if interface %} on interface {{interface}}{% endif %}",
+    "body_template": "BPI authorization failed for Cable Modem {{mac}}{% if sid %} SID {{sid}}{% endif %}{% if interface %} on interface {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "An unauthorized cable modem has been deleted to enforce BPI authorization for the specified cable modem. The specified cable modem was not performing BPI negotiation.",
+    "recommended_actions": "Check the modem interface configuration for privacy mandatory, or check for errors in the TFTP configuration file."
 }

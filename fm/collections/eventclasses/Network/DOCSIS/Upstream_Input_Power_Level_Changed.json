@@ -1,6 +1,8 @@
 {
     "name": "Network | DOCSIS | Upstream Input Power Level Changed",
+    "$collection": "fm.eventclasses",
     "uuid": "ab798ce8-7a72-4470-a8bb-ed87deee357b",
+    "description": "The upstream channel input power level has been changed.",
     "action": "A",
     "vars": [
         {
@@ -22,13 +24,9 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} power level changed to {{power}} dBmV",
-            "body_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} power level changed to {{power}} dBmV",
-            "symptoms": "",
-            "probable_causes": "The upstream channel input power level has been changed.",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} power level changed to {{power}} dBmV",
+    "body_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} power level changed to {{power}} dBmV",
+    "symptoms": "",
+    "probable_causes": "The upstream channel input power level has been changed.",
+    "recommended_actions": ""
 }

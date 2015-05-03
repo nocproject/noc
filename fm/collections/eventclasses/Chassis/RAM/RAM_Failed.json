@@ -1,6 +1,8 @@
 {
     "name": "Chassis | RAM | RAM Failed",
+    "$collection": "fm.eventclasses",
     "uuid": "e9b3e884-e0cd-4f3d-a00a-324f6df951e9",
+    "description": "Failed RAM module",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": true
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
-            "body_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
-            "symptoms": "From random instability to complete operation failure",
-            "probable_causes": "",
-            "recommended_actions": "Replace faulty RAM module"
-        }
-    },
+    "subject_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
+    "body_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
+    "symptoms": "From random instability to complete operation failure",
+    "probable_causes": "",
+    "recommended_actions": "Replace faulty RAM module",
     "disposition": [
         {
             "name": "dispose",

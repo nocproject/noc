@@ -1,5 +1,6 @@
 {
     "name": "Network | STP | STP Vlan Loop Detected",
+    "$collection": "fm.alarmclasses",
     "uuid": "4841c76c-8b00-4a70-bfd0-adafc80800f4",
     "is_unique": true,
     "discriminator": ["interface", "vlan"],
@@ -12,8 +13,8 @@
             "search": {
                 "interface": "interface",
                 "managed_object": "managed_object"
-                }
-            },
+            }
+        },
 
         {
             "name": "VCDS",
@@ -21,8 +22,8 @@
             "search": {
                 "l1": "vlan",
                 "managed_object": "managed_object"
-                }
             }
+        }
     ],
     "vars": [
         {
@@ -54,13 +55,9 @@
             "default": "=VCDS.vc_domain"
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}",
-            "body_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}{% if vlan_vc_domain %}\nVC Domain: {{vlan_vc_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    }
+    "subject_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}",
+    "body_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}{% if vlan_vc_domain %}\nVC Domain: {{vlan_vc_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
 }

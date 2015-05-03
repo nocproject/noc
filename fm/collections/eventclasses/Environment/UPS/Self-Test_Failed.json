@@ -1,6 +1,8 @@
 {
     "name": "Environment | UPS | Self-Test Failed",
+    "$collection": "fm.eventclasses",
     "uuid": "5cab11d8-df89-483b-9fab-6477ccdf93c1",
+    "description": "Self-Test Failed",
     "action": "A",
     "vars": [
         {
@@ -10,15 +12,11 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "The Self-Test {% if name %}{{name}} {% endif %}failed",
-            "body_template": "The Self-Test {% if name %}{{name}} {% endif %}failed",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "subject_template": "The Self-Test {% if name %}{{name}} {% endif %}failed",
+    "body_template": "The Self-Test {% if name %}{{name}} {% endif %}failed",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",

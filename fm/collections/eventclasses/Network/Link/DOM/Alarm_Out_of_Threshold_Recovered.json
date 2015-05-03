@@ -1,6 +1,8 @@
 {
     "name": "Network | Link | DOM | Alarm: Out of Threshold Recovered",
+    "$collection": "fm.eventclasses",
     "uuid": "2d32e8fd-1ebd-4b54-9533-40e035f197db",
+    "description": "DOM above or below threshold recovered",
     "action": "A",
     "vars": [
         {
@@ -22,15 +24,12 @@
             "required": false
         }
     ],
-    "text": {
-        "en": {
-            "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}",
-            "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}",
-            "symptoms": "",
-            "probable_causes": "",
-            "recommended_actions": ""
-        }
-    },
+    "link_event": true,
+    "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}",
+    "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
     "disposition": [
         {
             "name": "dispose",
