@@ -12,6 +12,7 @@ import geojson
 ## NOC modules
 from noc.gis.models.layer import Layer
 from noc.gis.models.geodata import GeoData
+from noc.lib.geo import distance
 
 
 class Map(object):
@@ -181,5 +182,41 @@ class Map(object):
                 geometry=ls
             )]
         return geojson.FeatureCollection(features=features, crs=srid)
+
+    def find_nearest(self, point, layers):
+        """
+        Find and return nearest object
+        :param point: GeoJSON Point or tuple of (x, y) or (x, y, srid)
+        :param layers: List of layer instances or layer names
+        """
+        # Normalize point
+        if isinstance(point, tuple):
+            point = geojson.Point(coordinates=[point[0], point[1]])
+            if len(point) == 3:
+                point = self.transform(point, point[2], self.db_proj)
+        q = {
+            "data__near": point
+        }
+        if isinstance(layers, list):
+            q["layer__in"] = layers
+        else:
+            q["layer"] = layers
+        for gd in GeoData.objects.filter(**q)[:1]:
+            return gd
+        return None
+
+    def find_nearest_d(self, point, layers):
+        """
+        Like find_nearest but return a tuple of (GeoData, distance)
+        """
+        if isinstance(point, tuple):
+            point = geojson.Point(coordinates=[point[0], point[1]])
+            if len(point) == 3:
+                point = self.transform(point, point[2], self.db_proj)
+        gd = self.find_nearest(point, layers)
+        if gd:
+            return gd, distance(point, gd.data)
+        else:
+            return None, None
 
 map = Map()

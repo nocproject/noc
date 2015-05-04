@@ -9,6 +9,7 @@
 ## Python modules
 import math
 ## Third-party modules
+import geojson
 from geopy.point import Point as GPoint
 from geopy.distance import vincenty, great_circle, ELLIPSOIDS
 ## NOC settings
@@ -21,24 +22,41 @@ ELLIPSOIDS["ПЗ-90"] = (6378.1365, 6356.751758, 1 / 298.2564151)
 ELLIPSOID = config.get("gis", "ellipsoid")
 
 
+def _get_point(p):
+    """
+    Convert to geopy Point
+    """
+    if isinstance(p, GPoint):
+        return p
+    elif isinstance(p, geojson.Point):
+        return GPoint(p.coordinates[1], p.coordinates[1])
+    elif isinstance(p, dict) and "coordinates" in p:
+        return GPoint(p["coordinates"][1], p["coordinates"][1])
+    else:
+        return GPoint(p.y, p.x)
+
+
 def distance(p1, p2, ellipsoid=ELLIPSOID):
     """
     Distance between two points in meters
     """
-    gp1 = GPoint(p1.y, p1.x)
-    gp2 = GPoint(p2.y, p2.x)
-    return vincenty(gp1, gp2, ellipsoid=ellipsoid).meters
+    return vincenty(
+        _get_point(p1),
+        _get_point(p2),
+        ellipsoid=ellipsoid).meters
 
 
 def bearing(p1, p2):
     """
     Bearing from p1 to p2, in degrees, clockwise from north
     """
+    p1 = _get_point(p1)
+    p2 = _get_point(p2)
     sin = math.sin
     cos = math.cos
-    lat1 = math.radians(p1.y)
-    lat2 = math.radians(p2.y)
-    dlon = math.radians(p2.x - p1.x)
+    lat1 = math.radians(p1.latitude)
+    lat2 = math.radians(p2.latitude)
+    dlon = math.radians(p2.longitude - p1.longitude)
     y = sin(dlon) * cos(lat2)
     x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dlon)
     return (math.degrees(math.atan2(y, x)) + 360) % 360
