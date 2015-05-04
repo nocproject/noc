@@ -6,15 +6,11 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.contrib.gis.geos import Polygon, LineString, Point
-from django.contrib.gis.gdal.srs import SpatialReference, CoordTransform
 ## NOC modules
 from base import InvPlugin
 from noc.gis.map import map
 from noc.gis.models.layer import Layer
 from noc.gis.models.layerusersettings import LayerUserSettings
-from noc.gis.models.geodata import GeoData
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import (StringParameter, FloatParameter,
@@ -212,48 +208,47 @@ class MapPlugin(InvPlugin):
 
     def api_create(self, request, model=None, name=None,
                    srid=None, x=None, y=None):
-        # Find container
-        container = None
-        p = Point(x, y, srid=srid)
-        np = None
-        if model.name == "Ducts | Cable Entry":
+        # Find suitable container
+        to_pop = model.name == "Ducts | Cable Entry"
+        p = (x, y, srid)
+        if to_pop:
             # Cable entries are attached to nearest PoP
-            pop_layers = [
-                str(lid) for lid in
-                Layer.objects.filter(code__startswith="pop_").values_list("id")
-            ]
-            nps = list(GeoData.objects.filter(layer__in=pop_layers).distance(p).order_by("distance")[:1])
-            if nps:
-                np = nps[0]
+            pop_layers = list(Layer.objects.filter(code__startswith="pop_"))
+            np, npd = map.find_nearest_d(p, pop_layers)
         else:
             # Or to the objects on same layer
-            layer = Layer.objects.get(code=model.get_data("geopoint", "layer"))
-            nps = list(GeoData.objects.filter(layer=str(layer.id)).distance(p).order_by("distance")[:1])
-            if nps:
-                np = nps[0]
+            layer = Layer.objects.get(
+                code=model.get_data("geopoint", "layer")
+            )
+            np, npd = map.find_nearest_d(p, layer)
         # Check nearest area
         layer = Layer.objects.get(code="areas")
-        nps = list(GeoData.objects.filter(layer=str(layer.id)).distance(p).order_by("distance")[:1])
-        if nps:
-            ap = nps[0]
-            if not np or ap.distance < np.distance:
-                np = ap
+        ap, apd = map.find_nearest_d(p, layer)
+        if ap and (not np or apd < npd):
+            np, npd = ap, apd
         # Check nearest city
         layer = Layer.objects.get(code="cities")
-        nps = list(GeoData.objects.filter(layer=str(layer.id)).distance(p).order_by("distance")[:1])
-        if nps:
-            ap = nps[0]
-            if not np or ap.distance < np.distance:
-                np = ap
+        ap, apd = map.find_nearest_d(p, layer)
+        if ap and (not np or apd < npd):
+            np, npd = ap, apd
         # Get best nearest container
-        co = Object.objects.get(id=np.object)
-        container = co.container
+        if to_pop and np.layer.code.startswith("pop_"):
+            container = np.object.id
+        else:
+            container = np.object.container
         # Create object
-        o = Object(name=name, model=model, container=container)
-        o.save()
-        o.set_data("geopoint", "srid", srid)
-        o.set_data("geopoint", "x", x)
-        o.set_data("geopoint", "y", y)
+        o = Object(
+            name=name,
+            model=model,
+            container=container,
+            data={
+                "geopoint": {
+                    "srid": srid,
+                    "x": x,
+                    "y": y
+                }
+            }
+        )
         o.save()
         return {
             "id": str(o.id)
