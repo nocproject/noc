@@ -217,7 +217,6 @@ class EventClass(Document):
     )
     vars = fields.ListField(fields.EmbeddedDocumentField(EventClassVar))
     # Text messages
-    text = fields.DictField(required=True)
     subject_template = fields.StringField()
     body_template = fields.StringField()
     symptoms = fields.StringField()
