@@ -317,9 +317,9 @@ info "Looking for hanging .pyc files"
 ##
 info "Running the rest of upgrade process with user $NOC_USER credentials"
 if [ "$NOC_USER" = `id -n -u` ]; then
-    ./scripts/upgrade-user
+    ./scripts/upgrade-user || error_exit "$LINENO: Failed to upgrade user part"
 else
-    su $NOC_USER -c "./scripts/upgrade-user"
+    su $NOC_USER -c "./scripts/upgrade-user" || error_exit "$LINENO: Failed to upgrade user part"
 fi
 ## Run post-upgrade local script
 if [ -x ./local/bin/post-upgrade ]; then
