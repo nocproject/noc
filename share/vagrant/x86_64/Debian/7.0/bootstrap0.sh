@@ -86,6 +86,7 @@ aptinstall mercurial
 aptinstall smitools
 aptinstall sudo
 aptinstall quilt
+aptinstall gcc
 ##
 ## Set up Postgresql database
 ##
