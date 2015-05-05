@@ -79,7 +79,7 @@ class Script(NOCScript):
                                       for si in subs[iface]]
                 }
                 if ifaces[iface].get("description"):
-                    i["description"] = ifaces["iface"]["description"]
+                    i["description"] = ifaces[iface]["description"]
             elif "@" not in iface:
                 i = {
                     "name": iface.split(".")[0],
@@ -89,7 +89,7 @@ class Script(NOCScript):
                     "subinterfaces": [self.get_si(ifaces[iface])]
                 }
                 if ifaces[iface].get("description"):
-                    i["description"] = ifaces["iface"]["description"]
+                    i["description"] = ifaces[iface]["description"]
             else:
                 continue  # Already processed
             r += [i]
