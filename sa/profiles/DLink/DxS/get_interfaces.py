@@ -72,6 +72,12 @@ class Script(NOCScript):
     r"Link Status\s+:\s+(?P<oper_status>Link\s*UP|Link\s*Down)\s*\n",
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
+    rx_ipswitch = re.compile(r"MAC Address\s+:\s*(?P<mac_address>\S+)\s*\n"
+    r"IP Address\s+:\s*(?P<ip_address>\S+)\s*\n"
+    r"VLAN Name\s+:\s*(?P<vlan_name>\S+)\s*\n"
+    r"Subnet Mask\s+:\s*(?P<ip_subnet>\S+)\s*\n",
+    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+
     rx_link_up = re.compile(r"Link\s*UP", re.IGNORECASE)
 
     rx_rip_gs = re.compile(r"RIP Global State : Enabled")
@@ -151,6 +157,7 @@ class Script(NOCScript):
             return None
 
     def execute(self):
+        ipif_found = False
         if self.match_version(DxS_L2):
             L2_Switch = True
         else:
@@ -396,6 +403,7 @@ class Script(NOCScript):
                             break
                     break
             interfaces += [i]
+            ipif_found = True
 
         for match in self.rx_ipif2.finditer(ipif):
             enabled_afi = []
@@ -473,6 +481,8 @@ class Script(NOCScript):
                     enabled_protocols += ["IGMP"]
                 i['subinterfaces'][0]["enabled_protocols"] = enabled_protocols
             interfaces += [i]
+            ipif_found = True
+
         if self.match_version(DGS3620):
             match = self.rx_ipmgmt.search(ipif)
             if match:
@@ -493,8 +503,42 @@ class Script(NOCScript):
                 }
                 ip_address = match.group("ip_address")
                 ip_subnet = match.group("ip_subnet")
-                ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
+                ip_address = "%s/%s" % (
+                    ip_address, IPv4.netmask_to_len(ip_subnet))
                 i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+                interfaces += [i]
+
+        if not ipif_found:
+            c = self.cli("show switch", cached=True)
+            match = self.rx_ipswitch.search(c)
+            if match:
+                i = {
+                    "name": "System",
+                    "type": "SVI",
+                    "admin_status": True,
+                    "oper_status": True,
+                    "subinterfaces": [{
+                        "name": "System",
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": ["IPv4"]
+                    }]
+                }
+                mac_address = match.group("mac_address")
+                ip_address = match.group("ip_address")
+                ip_subnet = match.group("ip_subnet")
+                vlan_name = match.group("vlan_name")
+                ip_address = "%s/%s" % (
+                    ip_address, IPv4.netmask_to_len(ip_subnet))
+                i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+                for v in vlans:
+                    if vlan_name == v['vlan_name']:
+                        i['subinterfaces'][0].update(
+                            {"vlan_ids": [v['vlan_id']]}
+                        )
+                        break
+                i.update({"mac": mac_address})
+                i['subinterfaces'][0].update({"mac": mac_address})
                 interfaces += [i]
 
         return [{"interfaces": interfaces}]
