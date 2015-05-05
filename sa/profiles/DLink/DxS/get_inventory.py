@@ -19,12 +19,12 @@ class Script(NOCScript):
     implements = [IGetInventory]
 
     rx_dev = re.compile(
-        r"Device Type\s+:\s+(?P<part_no>\S+).+"
-        r"[Hh]ardware [Vv]ersion\s+:\s+(?P<revision>\S+)",
+        r"Device Type\s+:\s*(?P<part_no>\S+).+"
+        r"[Hh]ardware [Vv]ersion\s+:\s*(?P<revision>\S+)",
         re.MULTILINE | re.DOTALL)
-    rx_des = re.compile(r"Device Type\s+:\s+(?P<descr>.+?)\n")
+    rx_des = re.compile(r"Device Type\s+:\s*(?P<descr>.+?)\n")
     rx_ser = re.compile(
-        r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s+(?P<serial>\S+)\s*\n",
+        r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
     rx_mod = re.compile(
         r"Module Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
