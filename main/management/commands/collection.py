@@ -239,6 +239,7 @@ class Command(BaseCommand):
                     yield f
 
         dcs = {}  # name -> collection
+        files = list(files)
         if files[0] in self.cdict:
             # Get collection name hints
             current_name = files.pop(0)
