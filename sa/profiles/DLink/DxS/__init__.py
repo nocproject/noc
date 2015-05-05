@@ -263,7 +263,6 @@ class Profile(NOCProfile):
                     "tagged_ports": tagged_ports,
                     "untagged_ports": untagged_ports
                 }]
-        print "============\n%s\n===============\n" % vlans
         return vlans
 
 
