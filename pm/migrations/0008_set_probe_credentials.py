@@ -5,6 +5,10 @@ from noc.lib.nosql import get_db
 
 
 class Migration:
+    depends_on = [
+        ("main", "0021_permission")
+    ]
+
     def forwards(self):
         PROBEUSER = "noc-probe"
         mdb = get_db()
@@ -33,7 +37,7 @@ class Migration:
             "./scripts/set-conf.py etc/noc-probe.conf autoconf passwd $PW" % PROBEUSER
         )
         uid = db.execute("SELECT id FROM auth_user WHERE username=%s", [PROBEUSER])[0][0]
-        sid = mdb.noc.storage.find_one({})["_id"]
+        sid = mdb.noc.pm.storages.find_one({})["_id"]
         mdb.noc.pm.probe.update({}, {
             "$set": {
                 "storage": sid,
