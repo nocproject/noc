@@ -133,9 +133,12 @@ chkconfig nginx on
 ## Get NOC
 ##
 cd /opt || error_exit "cd /opt failed"
-info "Fetching NOC"
-hg clone https://bitbucket.org/nocproject/noc noc || error_exit "Unable to pull NOC distribution"
-virtualenv  --no-site-packages /opt/noc
+if [ -z "$NOC_BRANCH" ]; then
+    NOC_BRANCH=default
+    export NOC_BRANCH
+fi
+info "Fetching NOC branch $NOC_BRANCH"
+hg clone -b $NOC_BRANCH -u $NOC_BRANCH https://bitbucket.org/nocproject/noc noc || error_exit "Unable to pull NOC distribution"
 if [ "$1" != "--no-bootstrap" ]; then
     info "Running bootstrap.sh"
     /opt/noc/share/vagrant/x86_64/CentOS/6.4/bootstrap.sh || error_exit "Failed to complete bootstrap"
