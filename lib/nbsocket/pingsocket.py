@@ -256,7 +256,7 @@ class PingSession(object):
         """
         self.seq += 1
         self.expire = None
-        if self.to_stop or self.seq >= self.count:
+        if self.to_stop or self.seq == self.count:
             self.ping_socket.close_session(self)
             if self.callback:
                 self.callback(self.address, self.result)
