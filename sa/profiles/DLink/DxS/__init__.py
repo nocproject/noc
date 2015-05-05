@@ -219,7 +219,7 @@ class Profile(NOCProfile):
 
     rx_vlan1 = re.compile(r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
     r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
-    r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
+    r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.*?"
     r"^Member Ports\s+:\s*(?P<member_ports>\S*?)\s*\n"
     r"(Static ports\s+:\s*\S+\s*\n)?"
     r"^(Current )?Untagged ports\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
@@ -243,11 +243,16 @@ class Profile(NOCProfile):
         if vlans == []:
             for match in self.rx_vlan1.finditer(c):
                 tagged_ports = []
-                member_ports = \
-                    script.expand_interface_range(match.group("member_ports"))
-                untagged_ports = \
-                    script.expand_interface_range(
-                    match.group("untagged_ports"))
+                untagged_ports = []
+                member_ports = []
+                if match.group("member_ports"):
+                    member_ports = \
+                        script.expand_interface_range(
+                        match.group("member_ports"))
+                if match.group("untagged_ports"):
+                    untagged_ports = \
+                        script.expand_interface_range(
+                        match.group("untagged_ports"))
                 for port in member_ports:
                     if port not in untagged_ports:
                         tagged_ports +=[port]
