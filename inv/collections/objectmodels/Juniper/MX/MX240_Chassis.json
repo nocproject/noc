@@ -1,0 +1,89 @@
+{
+    "name": "Juniper | MX | MX240 Chassis",
+    "$collection": "inv.objectmodels",
+    "uuid": "c74eeba4-3373-43fb-a7d1-ca069a3fb5b8",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper MX240 chassis",
+    "connection_rule__name": "Juniper | MX",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Fan Slot #0",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan0",
+            "type__name": "Juniper | MX | MX240 Fan"
+        },
+        {
+            "description": "SCB Slot #0",
+            "direction": "i",
+            "gender": "f",
+            "name": "scb0",
+            "type__name": "Juniper | MX | SCB"
+        },
+        {
+            "description": "SCB/DPC Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "scb1",
+            "type__name": "Juniper | MX | FPC/SCB"
+        },
+        {
+            "description": "DPC Slot#2",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc2",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "DPC Slot#1",
+            "direction": "i",
+            "gender": "f",
+            "name": "fpc1",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "PEM Slot #0",
+            "direction": "i",
+            "gender": "f",
+            "name": "pem0",
+            "type__name": "Juniper | MX | MX480 PEM"
+        },
+        {
+            "description": "PEM Slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "pem1",
+            "type__name": "Juniper | MX | MX480 PEM"
+        },
+        {
+            "description": "PEM Slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "pem2",
+            "type__name": "Juniper | MX | MX480 PEM"
+        },
+        {
+            "description": "PEM Slot #3",
+            "direction": "i",
+            "gender": "f",
+            "name": "pem3",
+            "type__name": "Juniper | MX | MX480 PEM"
+        }
+    ],
+    "data": {
+        "airflow": {
+            "exhaust": "l",
+            "intake": "r"
+        },
+        "asset": {
+            "order_part_no0": "MX240"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 5.0
+        }
+    }
+}

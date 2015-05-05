@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | MX240 Fan",
+    "$collection": "inv.connectiontypes",
     "uuid": "165e896e-537a-4e89-ad6f-e5711b9decc8",
     "description": "Juniper MX240 Fan Tray Slot",
     "c_group": [],

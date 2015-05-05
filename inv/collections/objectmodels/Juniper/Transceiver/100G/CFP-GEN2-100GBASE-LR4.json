@@ -1,0 +1,38 @@
+{
+    "name": "Juniper | Transceiver | 100G | CFP-GEN2-100GBASE-LR4",
+    "$collection": "inv.objectmodels",
+    "uuid": "41f95e40-e211-47b6-a3ca-e2fd06f5550a",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper 100-Gigabit Ethernet CFP transceivers",
+    "connection_rule__name": "Juniper | MX",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Transceiver | CFP | Juniper"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "CFP-GEN2-100GBASE-LR4",
+            "part_no0": "740-047682"
+        }
+    }
+}

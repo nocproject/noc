@@ -1,0 +1,37 @@
+{
+    "name": "Juniper | MX | MX-MPC2E-3D",
+    "$collection": "inv.objectmodels",
+    "uuid": "7392f81e-984d-4a3e-866c-959f99efd52f",
+    "vendor__code": "JUNIPER",
+    "description": "MPCE Type 2 3D (Two slots for MICs)",
+    "cr_context": "FPC",
+    "connections": [
+        {
+            "description": "MPC0 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic0",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "MPC1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic1",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "Inner connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | FPC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "MX-MPC2E-3D",
+            "part_no0": "750-038491"
+        }
+    }
+}
