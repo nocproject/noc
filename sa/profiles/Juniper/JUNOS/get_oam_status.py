@@ -52,21 +52,17 @@ class Script(NOCScript):
             mac = match.group("mac")
             caps = []
             match = self.rx_capsR.search(s)
-            if match:
-                if match.group("caps_R") == "supported":
-                    caps += ["R"]
+            if match and match.group("caps_R") == "supported":
+                caps += ["R"]
             match = self.rx_capsU.search(s)
-            if match:
-                if match.group("caps_U") == "supported":
-                    caps += ["U"]
+            if match and match.group("caps_U") == "supported":
+                caps += ["U"]
             match = self.rx_capsL.search(s)
-            if match:
-                if match.group("caps_L") == "supported":
-                    caps += ["L"]
+            if match and match.group("caps_L") == "supported":
+                caps += ["L"]
             match = self.rx_capsV.search(s)
-            if match:
-                if match.group("caps_V") == "supported":
-                    caps += ["V"]
+            if match and match.group("caps_V") == "supported":
+                caps += ["V"]
             r += [{
                 "interface": iface,
                 "remote_mac": mac,
