@@ -103,6 +103,10 @@ class Command(BaseCommand):
         u.set_password(passwd)
         u.save()
         for p in permissions:
-            perm = Permission.objects.get(name=p)
+            try:
+                perm = Permission.objects.get(name=p)
+            except Permission.DoesNotExist:
+                perm = Permission(name=p)
+                perm.save()
             perm.users.add(u)
         print passwd
