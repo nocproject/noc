@@ -59,21 +59,24 @@ class Uptime(Document):
             while r_uptime >= cls.WRAP:
                 r_uptime -= cls.WRAP
             if r_uptime - delta > cls.EPSILON:
-                logger.debug("[%s] Reboot registered",
-                             managed_object.name)
                 # Reboot registered
+                # Closing existing uptime
                 ts = now - delta
+                logger.debug("[%s] Closing uptime (%s - %s, delta %s)",
+                             managed_object.name,
+                             d["start"], ts - cls.SEC,
+                             r_uptime - delta)
                 c.update(
                     {"_id": d["_id"]},
                     {
                         "$set": {
-                            "stop": ts - cls.SEC,
-                            "last": now
+                            "stop": ts - cls.SEC
                         }
                     }
                 )
-                logger.debug("[%s] Starting new uptime",
-                             managed_object.name)
+                # Start new uptime
+                logger.debug("[%s] Starting new uptime from %s",
+                             managed_object.name, ts)
                 c.insert({
                     "object": oid,
                     "start": ts,
@@ -83,6 +86,11 @@ class Uptime(Document):
                 #
                 Reboot.register(managed_object, ts, d["last"])
             else:
+                logger.debug(
+                    "[%s] Refreshing existing uptime (%s - %s)",
+                    managed_object.name,
+                    d["start"], now
+                )
                 c.update(
                     {"_id": d["_id"]},
                     {
@@ -93,7 +101,8 @@ class Uptime(Document):
                 )
         else:
             # First uptime
-            logger.debug("[%s] First uptime", managed_object.name)
+            logger.debug("[%s] First uptime from %s",
+                         managed_object.name, now)
             c.insert({
                 "object": oid,
                 "start": now - delta,
