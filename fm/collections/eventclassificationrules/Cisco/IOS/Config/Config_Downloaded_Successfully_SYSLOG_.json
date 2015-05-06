@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Config | Config Downloaded Successfully (SYSLOG)",
+    "uuid": "a9f90176-9b12-4bd5-a7d8-42d347ccf53f",
+    "description": "%SYS-5-CONFIG_I: Configured from tftp://10.20.30.40/201108041053RNQOzn.hb by rancid on vty0 (10.0.0.253)",
+    "event_class__name": "Config | Config Downloaded Successfully",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-5-CONFIG_I: Configured from (?P<service>tftp|ftp)://(?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)/\\S+ by (?P<user>.+) on\\s*vty\\d+"
+        }
+    ]
+}

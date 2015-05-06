@@ -1,0 +1,84 @@
+{
+    "name": "Juniper | EX | EX8200-8XS",
+    "uuid": "3bcd0afb-5352-44e3-b47f-ac1679c6090f",
+    "vendor__code": "JUNIPER",
+    "description": "8-port 10GbE SFP+ line card",
+    "connections": [
+        {
+            "description": "xe-X/0/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
+        },
+        {
+            "description": "xe-X/0/1",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
+        },
+        {
+            "description": "xe-X/0/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
+        },
+        {
+            "description": "xe-X/0/3",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/3",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
+        },
+        {
+            "description": "xe-X/0/4",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/4",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
+        },
+        {
+            "description": "xe-X/0/5",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/5",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
+        },
+        {
+            "description": "xe-X/0/6",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/6",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
+        },
+        {
+            "description": "xe-X/0/7",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/7",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 8200 FPC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "710-016837"
+        }
+    }
+}

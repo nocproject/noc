@@ -1,0 +1,6 @@
+{
+    "name": "Process | Memory | Page Faults",
+    "uuid": "543516fc-c478-447a-b9aa-9cf42d48c8d0",
+    "description": "Process page faults",
+    "measure": "faults/sec"
+}

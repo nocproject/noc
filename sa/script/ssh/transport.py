@@ -9,7 +9,8 @@
 
 ## Python modules
 import re
-from hashlib import sha1, md5
+from hashlib import sha1, sha256, md5
+import zlib
 ## NOC modules
 from noc.lib.nbsocket import ConnectedTCPSocket
 from noc.sa.script.cli import CLI
@@ -29,7 +30,7 @@ SSH_STATES = {
     "SSH_KEY_EXCHANGE": {
         "FAILURE": "FAILURE",
         "SSH_AUTH": "SSH_AUTH",
-        },
+    },
     "SSH_AUTH": {
         "SSH_AUTH_PASSWORD": "SSH_AUTH_PASSWORD",
         "FAILURE": "FAILURE"
@@ -127,14 +128,28 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     CLIENT_VERSION = "SSH_v2.0@nocproject.org"
     SUPPORTED_VERSIONS = ("1.99", "2.0")
     SSH_VERSION_STRING = "SSH-%s-%s" % (PROTOCOL_VERSION, CLIENT_VERSION)
-    SSH_KEY_EXCHANGES = ["diffie-hellman-group-exchange-sha1",
-                         "diffie-hellman-group1-sha1"]
-    SSH_CYPHERS = ["aes256-ctr", "aes256-cbc", "aes192-ctr", "aes192-cbc",
-                   "aes128-ctr", "aes128-cbc",
-                   "cast128-ctr", "cast128-cbc", "blowfish-ctr",
-                   "blowfish-cbc", "3des-ctr", "3des-cbc"]
-    SSH_PUBLIC_KEYS = ["ssh-rsa", "ssh-dss"]
-    SSH_COMPRESSIONS = ["none", "zlib"]
+    SSH_KEY_EXCHANGES = [
+        "diffie-hellman-group14-sha1",
+        "diffie-hellman-group1-sha1",
+        "diffie-hellman-group-exchange-sha256",
+        "diffie-hellman-group-exchange-sha1"
+    ]
+    SSH_CYPHERS = [
+        "aes256-ctr", "aes256-cbc",
+        "aes192-ctr", "aes192-cbc",
+        "aes128-ctr", "aes128-cbc",
+        "cast128-ctr", "cast128-cbc",
+        "blowfish-ctr", "blowfish-cbc",
+        "3des-ctr", "3des-cbc"
+    ]
+    SSH_PUBLIC_KEYS = [
+        "ecdsa-sha2-nistp256",
+        "ecdsa-sha2-nistp384",
+        "ecdsa-sha2-nistp521",
+        "ssh-rsa",
+        "ssh-dss"
+    ]
+    SSH_COMPRESSIONS = ["zlib@openssh.com", "none", "zlib"]
     SSH_MACS = ["hmac-sha1", "hmac-md5"]
     SSH_LANGUAGES = []
     # SSH_AUTH_METHODS = ["publickey", "password", "keyboard-interactive", "none"]
@@ -153,6 +168,10 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.out_seq = 0
         self.out_compression = None
         self.in_compression = None
+        # zlib@openssh.com, must be delayed until MSG_USERAUTH_SUCCESS
+        self.delayed_out_compression = None
+        self.delayed_in_compression = None
+        self.kex_hash = sha1  # KEX has function
         self.buffer = ""
         self.d_buffer = ""
         self.session_id = None
@@ -201,7 +220,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
                     self.send_uniplemented()
                     continue
                 if msg_type not in quiet_message_types:
-                    self.debug("Receiving message type %s (%d)" % (
+                    self.logger.debug("Receiving message type %s (%d)" % (
                         msg_names[msg_type], msg_type))
                 h(self, p[1:])
 
@@ -251,15 +270,6 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             self.async_check_fsm()
         return ConnectedTCPSocket.is_stale(self)
 
-    def log_label(self):
-        return self._log_label
-
-    def debug(self, msg):
-        logging.debug("[%s] %s" % (self.log_label(), msg))
-
-    def error(self, msg):
-        logging.error("[%s] %s" % (self.log_label(), msg))
-
     def on_close(self):
         state = self.get_state()
         if state == "SSH_START":
@@ -267,6 +277,11 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             self.set_state("FAILURE")
         elif self.stale:
             self.queue.put(None)  # Signal stale socket timeout
+
+    def on_conn_refused(self):
+        self.logger.debug("Connection refused")
+        self.motd = "Connection refused"
+        self.set_state("FAILURE")
 
     def generate_private_x(self, bits):
         def get_random(bits):
@@ -288,7 +303,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         :param payload:
         :return:
         """
-        self.debug("Sending message type %s (%d)" % (
+        self.logger.debug("Sending message type %s (%d)" % (
         msg_names[message_type], message_type))
         payload = chr(message_type) + payload
         if self.out_compression:
@@ -391,7 +406,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
 
     def request_service(self, name):
         self.requested_service_name = name
-        self.debug("Requesting service %s" % name)
+        self.logger.debug("Requesting service %s" % name)
         self.send_packet(MSG_SERVICE_REQUEST, NS(name))
 
     def open_channel(self, name, extra=""):
@@ -424,7 +439,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         m = self.get_next_auth_method(preferred_methods)
         if m:
             # Request authentication method
-            self.debug("Authenticating with '%s' method" % m)
+            self.logger.debug("Authenticating with '%s' method" % m)
             getattr(self, "request_auth_%s" % m.replace("-", "_"))()
         else:
             self.send_disconnect(DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE,
@@ -488,7 +503,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
 
     def key_setup(self, shared_secret, exchange_hash):
         def get_key(c, shared_secret, exchange_hash):
-            k1 = sha1(shared_secret + exchange_hash + c + self.session_id)
+            k1 = self.kex_hash(shared_secret + exchange_hash + c + self.session_id)
             k1 = k1.digest()
             k2 = sha1(shared_secret + exchange_hash + k1).digest()
             return k1 + k2
@@ -524,9 +539,13 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             return self.ssh_failure(
                 "Unsupported SSH protocol version: %s" % s_version)
         remote_soft = match.group("soft")
-        self.debug("Remote protocol version %s, remote software version %s" % (s_version, remote_soft))
+        self.logger.debug(
+            "Remote protocol version %s, remote software version %s",
+            s_version, remote_soft
+        )
+        has_next_packet = bool(self.buffer)
         # Send our version
-        if remote_soft.startswith("FreSSH"):
+        if remote_soft.startswith("FreSSH") or remote_soft.startswith("OpenSSH_3.4"):
             # FreSSH.0.8 requires version negotiation
             # to be in separate packet
             self.socket.send(self.SSH_VERSION_STRING + "\r\n")
@@ -552,6 +571,9 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
 
         self.send_packet(MSG_KEXINIT, self.our_kex_init_payload[1:])
         self.event("SSH_KEY_EXCHANGE")
+        if has_next_packet:
+            self.logger.debug("Early start detected")
+            self.on_read("")
 
     def on_SSH_AUTH_enter(self):
         self.request_service("ssh-userauth")
@@ -563,7 +585,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.open_channel("session")
 
     def on_SSH_PTY_enter(self):
-        self.debug("Requesting PTY")
+        self.logger.debug("Requesting PTY")
         self.send_packet(MSG_CHANNEL_REQUEST, (
             struct.pack(">L", self.current_remote_channel) +
             NS("pty-req") +
@@ -574,7 +596,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             ))
 
     def on_SSH_SHELL_enter(self):
-        self.debug("Requesting shell")
+        self.logger.debug("Requesting shell")
         self.send_packet(MSG_CHANNEL_REQUEST, (
             struct.pack(">L", self.current_remote_channel) +
             NS("shell") +
@@ -622,7 +644,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         """
         # always_display = bool(packet[0])
         message, lang, rest = get_NS(packet[1:], 2)
-        self.debug("Remote debug message received: %s" % message)
+        self.logger.debug("Remote debug message received: %s" % message)
 
     def ssh_UNIMPLEMENTED(self, packet):
         """
@@ -633,7 +655,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         :return:
         """
         seq_num, = struct.unpack(">L", packet)
-        self.debug("Received unimplemented for packet no %d" % seq_num)
+        self.logger.debug("Received unimplemented for packet no %d" % seq_num)
 
     def ssh_KEXINIT(self, packet):
         """
@@ -665,7 +687,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
          comp_sc, lang_cs, lang_sc, rest) = [s.split(",") for s in
                                              get_NS(packet[16:], 10)]
 
-        self.debug(
+        self.logger.debug(
             "Receiving server proposals: kex=%s key=%s enc_cs=%s enc_sc=%s mac_cs=%s mac_sc=%s comp_cs=%s comp_sc%s" % (
             kex_algs,
             key_algs, enc_cs, enc_sc, mac_cs, mac_sc, comp_cs, comp_sc))
@@ -686,18 +708,24 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             self.send_disconnect(DISCONNECT_KEY_EXCHANGE_FAILED,
                                  "Couldn't match proposals")
             return
-        self.debug("Selecting %s %s, in=(%s %s %s) out=(%s %s %s)" % (
-        self.kex_alg, self.key_alg,
-        self.next_transform.in_cipher_type, self.next_transform.in_mac_type,
-        self.in_compression_type,
-        self.next_transform.out_cipher_type, self.next_transform.out_mac_type,
-        self.out_compression_type))
+        self.logger.debug("Selecting %s %s, in=(%s %s %s) out=(%s %s %s)" % (
+            self.kex_alg, self.key_alg,
+            self.next_transform.in_cipher_type,
+            self.next_transform.in_mac_type,
+            self.in_compression_type,
+            self.next_transform.out_cipher_type,
+            self.next_transform.out_mac_type,
+            self.out_compression_type)
+        )
 
-        if self.kex_alg == "diffie-hellman-group1-sha1":
+        if self.kex_alg.endswith("-sha256"):
+            self.kex_hash = sha256
+        if self.kex_alg in DH_GROUPS:
+            dh_prime, dh_generator = DH_GROUPS[self.kex_alg]
             self.x = self.generate_private_x(512)
-            self.e = MPpow(DH_GENERATOR, self.x, DH_PRIME)
+            self.e = MPpow(dh_generator, self.x, dh_prime)
             self.send_packet(MSG_KEXDH_INIT, self.e)
-        elif self.kex_alg == "diffie-hellman-group-exchange-sha1":
+        elif self.kex_alg in ("diffie-hellman-group-exchange-sha1", "diffie-hellman-group-exchange-sha256"):
             self.send_packet(MSG_KEX_DH_GEX_REQUEST_OLD, "\x00\x00\x08\x00")
         else:
             raise Exception("Unknown KEX alg")
@@ -715,16 +743,18 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         :param packet:
         :return:
         """
-        if self.kex_alg == "diffie-hellman-group1-sha1":
+        if self.kex_alg in DH_GROUPS:
+            # diffie-hellman-groupX-sha1
             # actually MSG_KEXDH_REPLY
+            dh_prime, dh_generator = DH_GROUPS[self.kex_alg]
             pub_key, packet = get_NS(packet, 1)
             f, packet = get_MP(packet)
             signature, packet = get_NS(packet, 1)
-            self.debug("Server PK fingerprint: %s" % ":".join(
+            self.logger.debug("Server PK fingerprint: %s" % ":".join(
                 [ch.encode("hex") for ch in md5(pub_key).digest()]))
             # Generate keys
             server_key = Key.from_string(pub_key)
-            shared_secret = MPpow(f, self.x, DH_PRIME)
+            shared_secret = MPpow(f, self.x, dh_prime)
             h = sha1((NS(self.SSH_VERSION_STRING) +
                       NS(self.other_version_string) +
                       NS(self.our_kex_init_payload) +
@@ -740,6 +770,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
                 return
             self.key_setup(shared_secret, exchange_hash)
         else:
+            # diffie-hellman-group-exchange-shaX
             self.p, rest = get_MP(packet)
             self.g, rest = get_MP(rest)
             self.x = self.generate_private_x(320)
@@ -759,13 +790,17 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             return
         if not self.next_transform.enc_block_size:
             return
-        self.debug("Using new keys")
+        self.logger.debug("Using new keys")
         self.transform = self.next_transform
         self.next_transform = None
         if self.out_compression_type == "zlib":
             self.out_compression = zlib.compressobj(6)
+        elif self.out_compression_type == "zlib@openssh.com":
+            self.delayed_out_compression = zlib.compressobj(6)
         if self.in_compression_type == "zlib":
             self.in_compression = zlib.decompressobj()
+        elif self.in_compression_type == "zlib@openssh.com":
+            self.delayed_in_compression = zlib.decompressobj()
         if self.get_state() == "SSH_KEY_EXCHANGE":
             self.event("SSH_AUTH")
 
@@ -781,7 +816,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         if name != self.requested_service_name:
             self.send_disconnect(DISCONNECT_PROTOCOL_ERROR,
                                  "received accept for service we did not request")
-        self.debug("Starting service %s" % name)
+        self.logger.debug("Starting service %s" % name)
         if self.get_state() == "SSH_AUTH":
             self.event("SSH_AUTH_PASSWORD")
 
@@ -797,11 +832,11 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         pub_key, packet = get_NS(packet)
         f, packet = get_MP(packet)
         signature, packet = get_NS(packet)
-        self.debug("Server PK fingerprint: %s" % ":".join(
+        self.logger.debug("Server PK fingerprint: %s" % ":".join(
             [ch.encode("hex") for ch in md5(pub_key).digest()]))
         server_key = Key.from_string(pub_key)
         shared_secret = MPpow(f, self.x, self.p)
-        h = sha1((
+        h = self.kex_hash((
             NS(self.SSH_VERSION_STRING) +
             NS(self.other_version_string) +
             NS(self.our_kex_init_payload) +
@@ -832,15 +867,15 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         methods, partial = get_NS(packet)
         partial = bool(ord(partial))
         if partial:
-            self.debug(
+            self.logger.debug(
                 "Authetication method '%s' has partial success. Trying next method (%s)" % (
                 self.last_auth, methods))
         else:
-            self.debug(
+            self.logger.debug(
                 "Authentication method '%s' has been failed. Trying next method (%s)" % (
                 self.last_auth, methods))
 
-        self.debug(
+        self.logger.debug(
             "Partially authenticated with '%s'. Trying next method" % self.last_auth)
         self.authenticated_with.add(self.last_auth)
         methods_left = [x for x in [x.strip() for x in methods.split(",")] if
@@ -857,6 +892,14 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         :param packet:
         :return:
         """
+        if self.delayed_out_compression:
+            self.logger.debug("Enabling delayed out compression %s" % self.out_compression_type)
+            self.out_compression = self.delayed_out_compression
+            self.delayed_out_compression = None
+        if self.delayed_in_compression:
+            self.logger.debug("Enabling delayed in compression %s" % self.in_compression_type)
+            self.in_compression = self.delayed_in_compression
+            self.delayed_in_compression = None
         self.event("SSH_CHANNEL")
 
     def ssh_USERAUTH_BANNER(self, packet):
@@ -920,8 +963,8 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             s, data = get_NS(data, 1)
             prompts += [(s, bool(ord(data[0])))]
             data = data[1:]
-        self.debug("keyboard-interactive instruction: %s" % instruction)
-        self.debug("keyboard-interactive prompts: %s" % str(prompts))
+        self.logger.debug("keyboard-interactive instruction: %s" % instruction)
+        self.logger.debug("keyboard-interactive prompts: %s" % str(prompts))
         if prompts:
             responses = [self.access_profile.password]
         else:
@@ -950,7 +993,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.remote_window_left = remote_window
         self.remote_max_packet = remote_max_packet
         self.current_remote_channel = remote_channel
-        self.debug("Opening channel. local=%d remote=%d" % (
+        self.logger.debug("Opening channel. local=%d remote=%d" % (
         local_channel, remote_channel))
         self.event("SSH_PTY")
 
@@ -1066,7 +1109,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         channel_id, data_type = struct.unpack(">2L", packet[
                                                      :4])
         packet, rest = get_NS(packet[8:])
-        self.debug("Read extended: %r" % packet)
+        self.logger.debug("Read extended: %r" % packet)
         self.feed(packet, cleanup=self.profile.cleaned_input)
         #self.__flush_submitted_data()
 
@@ -1100,12 +1143,33 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         MSG_CHANNEL_CLOSE: ssh_MSG_CHANNEL_CLOSE,
         MSG_CHANNEL_REQUEST: ssh_CHANNEL_REQUEST,
         MSG_CHANNEL_SUCCESS: ssh_CHANNEL_SUCCESS,
-        }
+    }
 
-# Diffie-Hellman primes from Oakley Group 2 [RFC 2409]
-DH_PRIME = long("17976931348623159077083915679378745319786029604875601170644"
-                "442368419718021615851936894783379586492554150218056548598050364644054819923"
-                "910005079287700335581663922955313623907650873575991482257486257500742530207"
-                "744771258955095793777842444242661733472762929938766870920560605027081084290"
-                "7692932019128194467627007L")
-DH_GENERATOR = 2L
+# name -> (DH Prime, DH Generator)
+DH_GROUPS = {
+    "diffie-hellman-group1-sha1": (
+        long(
+            "179769313486231590770839156793787453197860296048756011706444"
+            "423684197180216158519368947833795864925541502180565485980503"
+            "646440548199239100050792877003355816639229553136239076508735"
+            "759914822574862575007425302077447712589550957937778424442426"
+            "617334727629299387668709205606050270810842907692932019128194"
+            "467627007L"
+        ), 2
+    ),
+    "diffie-hellman-group14-sha1": (
+        long(
+            "323170060713110073003389139264238282488179412411402391128420"
+            "097514007417066343542226196894173635693471179017379097041917"
+            "546058732091950288537589861856221532121754125149017745202702"
+            "357960782362488842461894775876411059286460994117232454266225"
+            "221932305409190376805242355191256797158701170010580558776510"
+            "388618472802579760549035697325615261670813393617995413364765"
+            "591603683178967290731783845896806396719009772021941686472258"
+            "710314113364293195361934716365332097170774482279885885653692"
+            "086452966360772502689555059283627511211740969729980684105543"
+            "595848665832916421362182310789909994486524682624169720359118"
+            "52507045361090559L"
+        ), 2
+    )
+}

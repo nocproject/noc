@@ -1,0 +1,21 @@
+{
+    "name": "Brocade | IronWare | Security | Authentication | SNMP Authentication Failure (SYSLOG)",
+    "uuid": "1fad4dbf-b468-445c-9a1d-4ef9729cec4e",
+    "description": "Aug 7 09:01:28 Foudry-Core SNMP: Auth. failure, intruder IP: 10.31.20.132",
+    "event_class__name": "Security | Authentication | SNMP Authentication Failure",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Brocade\\.IronWare$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* SNMP: Auth\\. failure, intruder IP: (?P<ip>\\S+)$"
+        }
+    ]
+}

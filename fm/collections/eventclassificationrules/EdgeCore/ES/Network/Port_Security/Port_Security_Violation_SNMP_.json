@@ -1,0 +1,29 @@
+{
+    "name": "EdgeCore | ES | Network | Port Security | Port Security Violation (SNMP)",
+    "uuid": "c755c843-26ea-4a30-8365-bd18d9149de4",
+    "description": "ES3528MO-MIB::swPortSecurityTrap",
+    "event_class__name": "Network | Port Security | Port Security Violation",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^ES3528MO-MIB::swPortSecurityTrap$"
+        },
+        {
+            "key_re": "^IF-MIB::ifIndex\\.\\d+$",
+            "value_re": "^(?P<interface__ifindex>\\d+)$"
+        },
+        {
+            "key_re": "^ES3528MO-MIB::trapPortSecurityIntrusionMac\\.0$",
+            "value_re": "^(?P<mac__bin_to_mac>.+)$"
+        }
+    ]
+}

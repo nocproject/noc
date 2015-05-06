@@ -21,17 +21,21 @@ Ext.define("NOC.fm.event.Application", {
     pollingInterval: 30000,
     //
     initComponent: function() {
-        var me = this;
+        var me = this,
+            bs = Math.ceil(screen.height / 24);
         me.currentQuery = {status: "A"};
         me.pollingTaskHandler = Ext.bind(me.pollingTask, me);
         me.store = Ext.create("NOC.core.ModelStore", {
             model: "NOC.fm.event.Model",
             autoLoad: false,
-            pageSize: 1,
             customFields: [],
             filterParams: {
                 status: "A"
-            }
+            },
+            pageSize: bs,
+            leadingBufferZone: bs,
+            numFromEdge: Math.ceil(bs / 2),
+            trailingBufferZone: bs
         });
 
         me.typeCombo = Ext.create("Ext.form.ComboBox", {
@@ -61,6 +65,28 @@ Ext.define("NOC.fm.event.Application", {
 
         me.objectCombo = Ext.create("NOC.sa.managedobject.LookupField", {
             fieldLabel: "Object",
+            labelWidth: 40,
+            width: 200,
+            listeners: {
+                scope: me,
+                select: me.onChangeFilter,
+                clear: me.onChangeFilter
+            }
+        });
+
+        me.selectorCombo = Ext.create("NOC.sa.managedobjectselector.LookupField", {
+            fieldLabel: "Selector",
+            labelWidth: 40,
+            width: 200,
+            listeners: {
+                scope: me,
+                select: me.onChangeFilter,
+                clear: me.onChangeFilter
+            }
+        });
+
+        me.admdomCombo = Ext.create("NOC.sa.administrativedomain.LookupField", {
+            fieldLabel: "Adm. Domain",
             labelWidth: 40,
             width: 200,
             listeners: {
@@ -108,24 +134,29 @@ Ext.define("NOC.fm.event.Application", {
             border: false,
             stateful: true,
             stateId: "fm.event-grid",
-            plugins: [Ext.create("Ext.ux.grid.AutoSize")],
+            plugins: [
+                {
+                    ptype: "bufferedrenderer"
+                    //trailingBufferZone: 50,
+                    //leadingBufferZone: 50
+                }
+            ],
             dockedItems: [
                 {
                     xtype: "toolbar",
                     dock: "top",
+                    layout: {
+                        overflowHandler: "Menu"
+                    },
                     items: [
                         me.typeCombo,
+                        me.admdomCombo,
+                        me.selectorCombo,
                         me.objectCombo,
                         me.eventClassCombo,
                         me.fromDateField,
                         me.toDateField
                     ]
-                },
-                {
-                    xtype: "pagingtoolbar",
-                    store: me.store,
-                    dock: "bottom",
-                    displayInfo: true
                 }
             ],
             columns: [
@@ -146,6 +177,12 @@ Ext.define("NOC.fm.event.Application", {
                     dataIndex: "timestamp",
                     width: 100,
                     renderer: NOC.render.DateTime
+                },
+                {
+                    text: "Administrative Domain",
+                    dataIndex: "administrative_domain",
+                    width: 200,
+                    renderer: NOC.render.Lookup("administrative_domain")
                 },
                 {
                     text: "Object",
@@ -219,6 +256,10 @@ Ext.define("NOC.fm.event.Application", {
         me.callParent();
         //
         me.startPolling();
+        if(me.getCmd() === "history") {
+            me.showEvent(me.noc.cmd.args[0]);
+        }
+
     },
     //
     reloadStore: function() {
@@ -239,6 +280,10 @@ Ext.define("NOC.fm.event.Application", {
 
         // Status
         q.status = me.typeCombo.getValue();
+        // Selector
+        setIf("managedobjectselector", me.selectorCombo.getValue());
+        // Adm Domain
+        setIf("administrative_domain", me.admdomCombo.getValue());
         // Object
         setIf("managed_object", me.objectCombo.getValue());
         // Class
@@ -297,5 +342,16 @@ Ext.define("NOC.fm.event.Application", {
     showForm: function() {
         var me = this;
         me.showItem(me.ITEM_FORM);
+    },
+    //
+    showEvent: function(id) {
+        var me = this,
+            panel = me.showItem(me.ITEM_FORM);
+        panel.showEvent(id);
+    },
+    //
+    onCloseApp: function() {
+        var me = this;
+        me.stopPolling();
     }
 });

@@ -2,15 +2,18 @@
 ##----------------------------------------------------------------------
 ## WhoisASSetMembers model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## NOC modules
-from noc.lib import nosql
+## Python modules
+import logging
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField, ListField
 
 
-class WhoisASSetMembers(nosql.Document):
+class WhoisASSetMembers(Document):
     """
     as-set -> members lookup
     """
@@ -19,8 +22,8 @@ class WhoisASSetMembers(nosql.Document):
         "allow_inheritance": False
     }
 
-    as_set = nosql.StringField(unique=True)
-    members = nosql.ListField(nosql.StringField())
+    as_set = StringField(primary_key=True, unique=True)
+    members = ListField(StringField())
 
     def __unicode__(self):
         return self.as_set
@@ -38,12 +41,12 @@ class WhoisASSetMembers(nosql.Document):
         """
         Replace cache with the new data
         :param cls:
-        :param data: List of {as_set:, members:}
+        :param data: Dict of asset -> [members]
         :return: Number of inserted records
         """
         c = cls._get_collection()
         c.drop()
-        c.insert(data, manipulate=False, check_keys=False)
-        # Reindex
-        c.ensure_index("as_set")
-        return c.count()
+        c.insert([{"_id": k.upper(), "members": data[k]} for k in data],
+                 manipulate=False, check_keys=False)
+        # Implicit reindex
+        return cls.objects.count()

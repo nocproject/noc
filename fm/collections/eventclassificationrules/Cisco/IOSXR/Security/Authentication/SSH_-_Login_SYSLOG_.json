@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Security | Authentication | SSH - Login (SYSLOG)",
+    "uuid": "2d103480-b15c-4a0a-b651-6d5daf9adc50",
+    "description": "%SECURITY-SSHD-6-INFO_SUCCESS : Successfully authenticated user 'cisco' from '1.1.1.1' on 'vty3'(cipher 'aes128-cbc', mac 'hmac-md5')",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SECURITY-SSHD-6-INFO_SUCCESS : Successfully authenticated user '(?P<user>.+)' from '(?P<ip>.+)' on '(?P<line>.+)'\\s*\\(.+\\)"
+        }
+    ]
+}

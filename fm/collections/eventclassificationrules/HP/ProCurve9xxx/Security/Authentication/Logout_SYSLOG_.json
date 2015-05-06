@@ -1,0 +1,21 @@
+{
+    "name": "HP | ProCurve9xxx | Security | Authentication | Logout (SYSLOG)",
+    "uuid": "6b75ee1f-8acb-4cd5-947c-6458996107c2",
+    "description": "hp93_1, Security: SSH logout by manager from src IP 10.0.7.15, src MAC 0014.2274.bcef",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.ProCurve9xxx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^\\S+ Security: SSH logout by (?P<user>\\S+) from src IP (?P<ip>\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}), src MAC (?P<mac>\\w{4}\\.\\w{4}\\.\\w{4})$"
+        }
+    ]
+}

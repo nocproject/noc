@@ -11,6 +11,10 @@ Ext.define("NOC.inv.interface.LAGStore", {
     model: null,
     fields: [
         {
+            name: "id",
+            type: "auto"
+        },
+        {
             name: "name",
             type: "string"
         },
@@ -27,6 +31,42 @@ Ext.define("NOC.inv.interface.LAGStore", {
             convert: function(value, record) {
                 return record.get("members").length;
             }
+        },
+        {
+            name: "profile",
+            type: "string"
+        },
+        {
+            name: "profile__label",
+            type: "string"
+        },
+        {
+            name: "project",
+            type: "int"
+        },
+        {
+            name: "project__label",
+            type: "string"
+        },
+        {
+            name: "vc_domain",
+            type: "int"
+        },
+        {
+            name: "vc_domain__label",
+            type: "string"
+        },
+        {
+            name: "state",
+            type: "int"
+        },
+        {
+            name: "state__label",
+            type: "string"
+        },
+        {
+            name: "row_class",
+            type: "string"
         }
     ],
     data: []

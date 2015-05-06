@@ -19,10 +19,6 @@ class REPLinkDiscoveryJob(LinkDiscoveryJob):
     map_task = "get_rep_topology"
     method = "rep"
     ignored = not config.getboolean("rep_discovery", "enabled")
-    initial_submit_interval = config.getint("rep_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("rep_discovery",
-        "initial_submit_concurrency")
 
     def process_result(self, object, result):
         for segment in result:

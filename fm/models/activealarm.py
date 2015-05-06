@@ -8,22 +8,29 @@
 
 ## Python modules
 import datetime
+## Django modules
+from django.template import Template, Context
 ## NOC modules
 import noc.lib.nosql as nosql
 from alarmlog import AlarmLog
 from alarmclass import AlarmClass
 from noc.main.models import User
 from noc.main.models.style import Style
+from noc.main.models.notification import Notification
 from noc.sa.models.managedobject import ManagedObject
-from translation import get_translated_template, get_translated_text
 from alarmseverity import AlarmSeverity
+from noc.lib.scheduler.utils import submit_job
 
 
 class ActiveAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.active",
         "allow_inheritance": False,
-        "indexes": ["timestamp", "discriminator", "root", "-severity"]
+        "indexes": [
+            "timestamp", "discriminator", "root", "-severity",
+            "alarm_class",
+            ("timestamp", "managed_object")
+        ]
     }
     status = "A"
 
@@ -48,6 +55,8 @@ class ActiveAlarm(nosql.Document):
     #
     custom_subject = nosql.StringField(required=False)
     custom_style = nosql.ForeignKeyField(Style, required=False)
+    #
+    reopens = nosql.IntField(required=False)
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = nosql.ObjectIdField(required=False)
@@ -104,21 +113,22 @@ class ActiveAlarm(nosql.Document):
             self.save()
 
     def contribute_event(self, e, open=False, close=False):
+        # Set opening event when necessary
+        if open:
+            self.opening_event = e.id
+        # Set closing event when necessary
+        if close:
+            self.closing_event = e.id
         # Update timestamp
         if e.timestamp < self.timestamp:
             self.timestamp = e.timestamp
         else:
             self.last_update = max(self.last_update, e.timestamp)
         self.save()
+        # Update event's list of alarms
         if self.id not in e.alarms:
-            e.alarms += [self.id]
+            e.alarms.append(self.id)
             e.save()
-        if open:
-            self.opening_event = e.id
-        if close:
-            self.closing_event = e.id
-        if open or close:
-            self.save()
 
     def clear_alarm(self, message):
         ts = datetime.datetime.now()
@@ -134,21 +144,30 @@ class ActiveAlarm(nosql.Document):
                           log=log,
                           root=self.root,
                           opening_event=self.opening_event,
-                          closing_event=self.closing_event
+                          closing_event=self.closing_event,
+                          discriminator=self.discriminator,
+                          reopens=self.reopens
                           )
+        ct = self.alarm_class.get_control_time(self.reopens)
+        if ct:
+            a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
         a.save()
         # @todo: Clear related correlator jobs
         self.delete()
         # Send notifications
-        if not a.root:
+        if not a.root and not self.reopens:
             a.managed_object.event(a.managed_object.EV_ALARM_CLEARED, {
                 "alarm": a,
-                "subject": a.get_translated_subject("en"),
-                "body": a.get_translated_body("en"),
-                "symptoms": a.get_translated_symptoms("en"),
-                "recommended_actions": a.get_translated_recommended_actions("en"),
-                "probable_causes": a.get_translated_probable_causes("en")
+                "subject": a.subject,
+                "body": a.body,
+                "symptoms": a.alarm_class.symptoms,
+                "recommended_actions": a.alarm_class.recommended_actions,
+                "probable_causes": a.alarm_class.probable_causes
             })
+        elif ct:
+            # Schedule delayed job
+            submit_job("fm.correlator", "control_notify",
+                       key=a.id, ts=a.control_time)
         return a
 
     def get_template_vars(self):
@@ -159,30 +178,19 @@ class ActiveAlarm(nosql.Document):
         vars.update({"alarm": self})
         return vars
 
-    def get_translated_subject(self, lang):
-        s = get_translated_template(lang, self.alarm_class.text,
-                                    "subject_template",
-                                    self.get_template_vars())
+    @property
+    def subject(self):
+        ctx = Context(self.get_template_vars())
+        s = Template(self.alarm_class.subject_template).render(ctx)
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
 
-    def get_translated_body(self, lang):
-        return get_translated_template(lang, self.alarm_class.text,
-                                       "body_template",
-                                       self.get_template_vars())
-
-    def get_translated_symptoms(self, lang):
-        return get_translated_text(
-            lang, self.alarm_class.text, "symptoms")
-
-    def get_translated_probable_causes(self, lang):
-        return get_translated_text(
-            lang, self.alarm_class.text, "probable_causes")
-
-    def get_translated_recommended_actions(self, lang):
-        return get_translated_text(
-            lang, self.alarm_class.text, "recommended_actions")
+    @property
+    def body(self):
+        ctx = Context(self.get_template_vars())
+        s = Template(self.alarm_class.body_template).render(ctx)
+        return s
 
     def change_owner(self, user):
         """
@@ -270,6 +278,12 @@ class ActiveAlarm(nosql.Document):
         root_alarm.log_message(
             "Alarm %s has been marked as child" % self.id)
         self._change_root_severity()
+        # Clear pending notifications
+        Notification.purge_delayed("alarm:%s" % self.id)
+
+    @classmethod
+    def enable_caching(cls, ttl=600):
+        cls._fields["alarm_class"].set_cache(ttl)
 
 ## Avoid circular references
 from archivedalarm import ArchivedAlarm

@@ -7,12 +7,18 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
-import socket
 import time
 import logging
+import warnings
+import errno
 ## NOC modules
 from noc.lib.nbsocket.exceptions import *
+from noc.lib.log import PrefixLoggerAdapter
+from noc.lib.debug import error_report
+
+logger = logging.getLogger(__name__)
+
+IGNORABLE_CLOSE_ERRORS = set([errno.EBADF, errno.EINTR])
 
 
 class Socket(object):
@@ -24,6 +30,7 @@ class Socket(object):
     CLOSE_ON_ERROR = True  # Call .close() from .on_error()
 
     def __init__(self, factory, socket=None):
+        self.logger = PrefixLoggerAdapter(logger, self.get_label())
         self.factory = factory
         self.socket = socket
         self.start_time = time.time()
@@ -41,6 +48,9 @@ class Socket(object):
         return "<%s(0x%x, %s)>" % (
             self.__class__.__name__, id(self),
             ", ".join(self.get_flags()))
+
+    def get_label(self):
+        return self.__class__.__name__
 
     def get_flags(self):
         """
@@ -75,7 +85,7 @@ class Socket(object):
         :type ttl: int
         """
         if ttl and ttl != self.ttl:
-            self.debug("Set timeout to %s secs" % ttl)
+            self.logger.debug("Set timeout to %s secs" % ttl)
             self.ttl = ttl
 
     def socket_is_ready(self):
@@ -93,7 +103,7 @@ class Socket(object):
         :return: file id or None
         :rtype: int or None
         """
-        return self.socket.fileno()
+        return self.socket.fileno() if self.socket else None
 
     def handle_read(self):
         """
@@ -122,7 +132,7 @@ class Socket(object):
 
         :param exc: SocketException
         """
-        self.error(exc.message)
+        self.logger.error(exc.message)
         if self.CLOSE_ON_ERROR:
             self.close()
 
@@ -132,15 +142,16 @@ class Socket(object):
         """
         if self.closing:
             return
-        self.debug("Closing socket")
+        self.logger.debug("Closing socket")
         self.closing = True
         if self.socket:
             self.factory.unregister_socket(self)
-            try:
-                if self.socket:
-                    self.socket.close()  # Can raise EBADF/EINTR
-            except socket.error, why:
-                pass
+            if self.socket:
+                try:
+                    self.socket.close()
+                except socket.error, why:
+                    if why[0] not in IGNORABLE_CLOSE_ERRORS:
+                        error_report(logger=self.logger)
             self.socket = None
             self.on_close()
 
@@ -151,7 +162,9 @@ class Socket(object):
         :param msg: Message
         :type msg: str
         """
-        logging.debug("[%r] %s" % (self, msg))
+        warnings.warn("Using deprecated Socket.debug() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.debug(msg)
 
     def info(self, msg):
         """
@@ -160,7 +173,9 @@ class Socket(object):
         :param msg: Message
         :type msg: str
         """
-        logging.info("[%r] %s" % (self, msg))
+        warnings.warn("Using deprecated Socket.info() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.info(msg)
 
     def error(self, msg):
         """
@@ -169,8 +184,9 @@ class Socket(object):
         :param msg: Message
         :type msg: str
         """
-
-        logging.error("[%r] %s" % (self, msg))
+        warnings.warn("Using deprecated Socket.error() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.error(msg)
 
     def set_name(self, name):
         """
@@ -201,3 +217,12 @@ class Socket(object):
         """
         return (self.socket_is_ready() and self.ttl
                 and time.time() - self.last_read >= self.ttl)
+
+    def get_af(self, address):
+        """
+        Returns socket address family
+        """
+        if ":" in address:
+            return socket.AF_INET6
+        else:
+            return socket.AF_INET

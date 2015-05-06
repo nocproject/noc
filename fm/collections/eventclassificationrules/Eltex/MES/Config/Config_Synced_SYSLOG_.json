@@ -1,0 +1,21 @@
+{
+    "name": "Eltex | MES | Config | Config Synced (SYSLOG)",
+    "uuid": "98604f38-ef70-4a09-810e-d1e2453a2b8e",
+    "description": "%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config",
+    "event_class__name": "Config | Config Synced",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config$"
+        }
+    ]
+}

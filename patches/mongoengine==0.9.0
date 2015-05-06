@@ -1,0 +1,58 @@
+Index: noc/lib/python/site-packages/mongoengine/base/metaclasses.py
+===================================================================
+--- noc.orig/lib/python/site-packages/mongoengine/base/metaclasses.py
++++ noc/lib/python/site-packages/mongoengine/base/metaclasses.py
+@@ -11,6 +11,8 @@ from mongoengine.queryset import (DO_NOT
+ 
+ from mongoengine.base.common import _document_registry, ALLOW_INHERITANCE
+ from mongoengine.base.fields import BaseField, ComplexBaseField, ObjectIdField
++from mongoengine import signals
++
+ 
+ __all__ = ('DocumentMetaclass', 'TopLevelDocumentMetaclass')
+ 
+@@ -218,6 +220,7 @@ class DocumentMetaclass(type):
+                        "field name" % field.name)
+                 raise InvalidDocumentError(msg)
+ 
++        signals.class_prepared.send(new_class)
+         return new_class
+ 
+     def add_to_class(self, name, value):
+Index: noc/lib/python/site-packages/mongoengine/signals.py
+===================================================================
+--- noc.orig/lib/python/site-packages/mongoengine/signals.py
++++ noc/lib/python/site-packages/mongoengine/signals.py
+@@ -36,6 +36,7 @@ except ImportError:
+ # not put signals in here.  Create your own namespace instead.
+ _signals = Namespace()
+ 
++class_prepared = _signals.signal('class_prepared')
+ pre_init = _signals.signal('pre_init')
+ post_init = _signals.signal('post_init')
+ pre_save = _signals.signal('pre_save')
+Index: noc/lib/python/site-packages/mongoengine/base/document.py
+===================================================================
+--- noc.orig/lib/python/site-packages/mongoengine/base/document.py
++++ noc/lib/python/site-packages/mongoengine/base/document.py
+@@ -72,13 +72,13 @@ class BaseDocument(object):
+ 
+         # Check if there are undefined fields supplied, if so raise an
+         # Exception.
+-        if not self._dynamic:
+-            for var in values.keys():
+-                if var not in self._fields.keys() + ['id', 'pk', '_cls', '_text_score']:
+-                    msg = (
+-                        "The field '{0}' does not exist on the document '{1}'"
+-                    ).format(var, self._class_name)
+-                    raise FieldDoesNotExist(msg)
++        # if not self._dynamic:
++        #     for var in values.keys():
++        #         if var not in self._fields.keys() + ['id', 'pk', '_cls', '_text_score']:
++        #             msg = (
++        #                 "The field '{0}' does not exist on the document '{1}'"
++        #             ).format(var, self._class_name)
++        #             raise FieldDoesNotExist(msg)
+ 
+         if self.STRICT and not self._dynamic:
+             self._data = StrictDict.create(allowed_keys=self._fields_ordered)()

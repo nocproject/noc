@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Environment | UPS | Input Power Failed (SYSLOG)",
+    "uuid": "63386044-c254-4902-9b8f-c99b8c4d6740",
+    "description": "UPS: On battery power in response to an input power problem. 0x0109",
+    "event_class__name": "Environment | UPS | Input Power Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: On battery power in response to an input power problem. 0x0109"
+        }
+    ]
+}

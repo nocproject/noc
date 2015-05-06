@@ -20,7 +20,6 @@ class Script(NOCScript):
         r"(?P<interface>.+)\s*$", re.MULTILINE)
 
     def execute(self):
-        s = self.cli("show arp")
         r = []
         for match in self.rx_line.finditer(self.cli("show arp")):
             r += [{

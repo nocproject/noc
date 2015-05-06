@@ -16,8 +16,10 @@ Ext.define("NOC.main.desktop.About", {
     modal: true,
     version: null,
     installation: null,
-    width: 400,
+    width: 500,
     height: 132,
+    app: null,
+    aboutCfg: null,
 
     initComponent: function() {
         var me = this;
@@ -25,40 +27,7 @@ Ext.define("NOC.main.desktop.About", {
             items: [
                 {
                     xtype: "container",
-                    layout: "hbox",
-                    items: [
-                        Ext.create("Ext.Img", {
-                            src: "/static/img/logo_black.svg",
-                            width: 100,
-                            height: 100,
-                            padding: 8
-                        }),
-                        {
-                            xtype: "container",
-                            layout: "vbox",
-                            padding: "8 8 8 0",
-                            items: [
-                                {
-                                    xtype: "container",
-                                    html: "NOC " + me.version,
-                                    style: "font-size: 16pt; font-weight: bold"
-                                },
-                                {
-                                    xtype: "container",
-                                    html: me.installation,
-                                    style: "font-size: 12pt; font-style: italic"
-                                },
-                                {
-                                    xtype: "container",
-                                    html: "Copyright &copy; 2007-2013, The NOC Project"
-                                },
-                                {
-                                    xtype: "container",
-                                    html: "<a href='http://nocproject.org/' target='_'>nocproject.org</a>"
-                                }
-                            ]
-                        }
-                    ]
+                    html: me.app.templates.About(me.aboutCfg)
                 }
             ]
         });

@@ -1,0 +1,7 @@
+{
+    "name": "INFO",
+    "uuid": "4fbb7e35-394f-4dc5-bbf5-6f4b7fd7901d",
+    "description": "Alarm is rased for information reasons only and safely can be ignored. No services affected",
+    "severity": 1000,
+    "style__name": "FM INFO"
+}

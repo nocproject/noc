@@ -1,0 +1,7 @@
+{
+    "name": "WARNING",
+    "uuid": "676f77e3-cfac-4f6d-b4a0-2a15756eacf9",
+    "description": "Some services can be affected. Overall impact on network operation is small",
+    "severity": 2000,
+    "style__name": "FM WARNING"
+}

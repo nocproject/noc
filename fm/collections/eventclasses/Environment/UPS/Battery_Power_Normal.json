@@ -1,0 +1,23 @@
+{
+    "name": "Environment | UPS | Battery Power Normal",
+    "$collection": "fm.eventclasses",
+    "uuid": "e641ac4d-d3c6-4970-8253-0854d8b539c2",
+    "description": "Battery Power Normal",
+    "action": "A",
+    "vars": [
+
+    ],
+    "subject_template": "Battery power normal",
+    "body_template": "Battery power normal",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Environment | UPS | Battery Power Low"
+        }
+    ]
+}

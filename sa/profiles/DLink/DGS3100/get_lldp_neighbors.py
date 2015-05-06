@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## DLink.DGS3100.get_mac_address_table
+## DLink.DGS3100.get_lldp_neighbors
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -25,15 +25,24 @@ class Script(NOCScript):
 
     rx_line = re.compile(r"\n\nPort ID\s+:\s+", re.MULTILINE)
     rx_id = re.compile(r"^(?P<port_id>\S+)", re.MULTILINE)
-    rx_re_ent = re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)", re.MULTILINE | re.IGNORECASE)
+    rx_re_ent = re.compile(
+        r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)", re.IGNORECASE)
     rx_line1 = re.compile(r"\s*Entity\s+\d+")
-    rx_remote_chassis_id_subtype = re.compile(r"Chassis ID Subtype\s+: (?P<subtype>.+)", re.MULTILINE | re.IGNORECASE)
-    rx_remote_chassis_id = re.compile(r"Chassis ID\s+: (?P<id>.+)", re.MULTILINE | re.IGNORECASE)
-    rx_remote_port_id_subtype = re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)", re.MULTILINE | re.IGNORECASE)
-    rx_remote_port_id = re.compile(r"Port ID\s+:\s+(\d+[/])?(?P<port>.+)", re.MULTILINE | re.IGNORECASE)
-    rx_remote_port_id2 = re.compile(r"RMON Port (.*[:/])*(?P<port>\d+)", re.IGNORECASE)
-    rx_remote_system_name = re.compile(r"System Name\s+: (?P<name>.+)", re.MULTILINE | re.IGNORECASE)
-    rx_remote_capabilities = re.compile(r"System Capabilities\s+: (?P<capabilities>.+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_chassis_id_subtype = re.compile(
+        r"Chassis ID Subtype\s+: (?P<subtype>.+)", re.IGNORECASE)
+    rx_remote_chassis_id = re.compile(
+        r"Chassis ID\s+: (?P<id>.+)", re.IGNORECASE)
+    rx_remote_port_id_subtype = re.compile(
+        r"Port ID Subtype\s+: (?P<subtype>.+)", re.IGNORECASE)
+    rx_remote_port_id = re.compile(
+        r"Port ID\s+: (?P<port>.+)", re.IGNORECASE)
+    rx_remote_port_id2 = re.compile(
+        r"RMON Port (?P<port>\d+([/:]\d+)?)", re.IGNORECASE)
+    rx_remote_system_name = re.compile(
+        r"System Name\s+: (?P<name>.+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_capabilities = re.compile(
+        r"System Capabilities\s+: (?P<capabilities>.+)",
+        re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
         r = []
@@ -57,7 +66,7 @@ class Script(NOCScript):
                 match = self.rx_remote_chassis_id_subtype.search(s1)
                 if not match:
                     # Debug string
-                    print "\n\n\n\n\nremote_chassis_id_subtype\n\n\n\n\n"
+                    self.debug('remote_chassis_id_subtype is empty!')
                     continue
                 remote_chassis_id_subtype = match.group("subtype").strip()
                 # TODO: Find other subtypes
@@ -84,7 +93,7 @@ class Script(NOCScript):
                 match = self.rx_remote_chassis_id.search(s1)
                 if not match:
                     # Debug string
-                    print "\n\n\n\n\nremote_chassis_id\n\n\n\n\n"
+                    self.debug('remote_chassis_id is empty!')
                     continue
                 n["remote_chassis_id"] = match.group("id").strip()
 
@@ -92,7 +101,7 @@ class Script(NOCScript):
                 match = self.rx_remote_port_id_subtype.search(s1)
                 if not match:
                     # Debug string
-                    print "\n\n\n\n\nremote_port_id_subtype\n\n\n\n\n"
+                    self.debug('remote_port_id_subtype is empty!')
                     continue
                 remote_port_subtype = match.group("subtype").strip()
                 # TODO: Find other subtypes
@@ -117,7 +126,7 @@ class Script(NOCScript):
                 match = self.rx_remote_port_id.search(s1)
                 if not match:
                     # Debug string
-                    print "\n\n\n\n\nremote_port_id\n\n\n\n\n"
+                    self.debug('remote_port_id is empty!')
                     continue
                 n["remote_port"] = match.group("port").strip()
                 '''
@@ -137,7 +146,7 @@ class Script(NOCScript):
                     match = self.rx_remote_port_id2.search(n["remote_port"])
                     if not match:
                         # Debug string
-                        print "\n\n\n\n\nInvalid remote_port_id\n\n\n\n\n"
+                        self.debug('Invalid remote_port_id!')
                         continue
                     n["remote_port"] = match.group("port")
 

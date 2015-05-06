@@ -18,6 +18,8 @@ import Queue
 import cPickle
 import ctypes
 import datetime
+import warnings
+from ConfigParser import SafeConfigParser
 ## NOC modules
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.registry import Registry
@@ -115,6 +117,23 @@ class ScriptRegistry(Registry):
         """Register all scripts and generic scripts"""
         super(ScriptRegistry, self).register_all()
         self.register_generics()
+        # Set timeouts
+        config = SafeConfigParser()
+        config.optionxform = str
+        config.read("etc/noc.defaults")
+        config.read("etc/noc.conf")
+        self.default_timeout = 120
+        self.timeouts = {}
+        SECTION = "script_timeout"
+        if config.has_section(SECTION):
+            for opt in config.options(SECTION):
+                if opt == "default":
+                    self.default_timeout = config.getint(SECTION, "default")
+                elif opt in self.classes:
+                    self.timeouts[opt] = config.getint(SECTION, opt)
+
+    def get_timeout(self, name):
+        return self.timeouts.get(name, self.default_timeout)
 
 
 script_registry = ScriptRegistry()
@@ -159,7 +178,6 @@ class Script(threading.Thread):
     TELNET = TELNET
     SSH = SSH
     HTTP = HTTP
-    TIMEOUT = 120  # 2min by default
     CLI_TIMEOUT = None  # Optional timeout for telnet/ssh providers
     #
     LoginError = LoginError
@@ -172,6 +190,7 @@ class Script(threading.Thread):
     UnexpectedResultError = UnexpectedResultError
     #
     _execute_chain = []
+    logger = logging.getLogger(name or "script")
 
     def __init__(self, profile, _activator, object_name, access_profile,
                  timeout=0, parent=None, **kwargs):
@@ -180,7 +199,7 @@ class Script(threading.Thread):
         self.object_name = object_name
         self.access_profile = access_profile
         self.attrs = {}
-        self._timeout = timeout if timeout else self.TIMEOUT
+        self._timeout = timeout if timeout else self.get_timeout()
         if self.access_profile.address:
             p = self.access_profile.address
         elif self.access_profile.path:
@@ -198,9 +217,22 @@ class Script(threading.Thread):
                 try:
                     u"test".encode(v)
                     self.encoding = v
-                    self.debug("Using '%s' encoding" % v)
+                    self.logger.debug("Using '%s' encoding", v)
                 except LookupError:
-                    self.error("Unknown encoding: '%s'" % v)
+                    self.logger.error("Unknown encoding: '%s'", v)
+        # Capabilities
+        self.caps = {}
+        for cap in access_profile.caps:
+            if cap.str_value:
+                self.caps[cap.capability] = cap.str_value
+            elif cap.int_value:
+                self.caps[cap.capability] = cap.int_value
+            elif cap.float_value:
+                self.caps[cap.capability] = cap.float_value
+            elif cap.bool_value:
+                self.caps[cap.capability] = cap.bool_value
+        self.logger.debug("Capabilities: %s", self.caps)
+        #
         super(Script, self).__init__(kwargs=kwargs)
         self.activator = _activator
         self.servers = _activator.servers
@@ -373,11 +405,15 @@ class Script(threading.Thread):
         """Debug log message"""
         if self.activator.use_canned_session:
             return
-        logging.debug(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
+        warnings.warn("Using deprecated Script.debug() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.debug(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
 
     def error(self, msg):
         """Error log message"""
-        logging.error(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
+        warnings.warn("Using deprecated Script.error() method",
+                      DeprecationWarning, stacklevel=2)
+        self.logger.error(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
 
     @property
     def root(self):
@@ -406,16 +442,21 @@ class Script(threading.Thread):
         # Enforce interface type checking
         for i in self.implements:
             self.kwargs = i.script_clean_input(self.profile, **self.kwargs)
-        self.debug("Running script: %s (%r)" % (self.name, self.kwargs))
+        t0 = time.time()
+        self.logger.debug("Running script: %s (%r), timeout %ss",
+                          self.name, self.kwargs, self._timeout)
         # Use cached result when available
         if self.cache and self.parent is not None:
             try:
                 result = self.get_cache(self.name, self.kwargs)
-                self.debug("Script returns with cached result: %r" % result)
+                self.logger.debug(
+                    "Script returns with cached result: %r (%.2fms)",
+                    result, (time.time() - t0) * 1000
+                )
                 return result
             except KeyError:
-                self.debug("Not in call cache: %r, %r" % (self.name,
-                                                          self.kwargs))
+                self.logger.debug("Not in call cache: %r, %r",
+                                  self.name, self.kwargs)
                 pass
             # Calling script body
         self._thread_id = thread.get_ident()
@@ -425,11 +466,15 @@ class Script(threading.Thread):
             result = i.script_clean_result(self.profile, result)
         # Cache result when required
         if self.cache and self.parent is not None:
-            self.debug("Write to call cache: %s, %s, %r" % (self.name,
-                                                            self.kwargs,
-                                                            result))
+            self.logger.debug(
+                "Write to call cache: %s, %s, %r",
+                self.name, self.kwargs, result
+            )
             self.set_cache(self.name, self.kwargs, result)
-        self.debug("Script returns with result: %r" % result)
+        self.logger.debug(
+            "Script returns with result: %r (%.2fms)",
+            result, (time.time() - t0) * 1000
+        )
         return result
 
     def serialize_result(self, result):
@@ -477,7 +522,8 @@ class Script(threading.Thread):
                     self.activator.save_result(self.error_traceback)
         else:
             # Shutdown session
-            if self.profile.shutdown_session and not self.activator.use_canned_session:
+            if (self.cli_provider and self.profile.shutdown_session and
+                    not self.activator.use_canned_session):
                 self.debug("Shutting down session")
                 self.profile.shutdown_session(self)
                 # Serialize result
@@ -581,7 +627,7 @@ class Script(threading.Thread):
         return self.cli_provider
 
     def cli(self, cmd, command_submit=None, bulk_lines=None, list_re=None,
-            cached=False, file=None, ignore_errors=False):
+            cached=False, file=None, ignore_errors=False, nowait=False):
         """
         Execute CLI command and return a result.
         if list_re is None, return a string
@@ -620,7 +666,10 @@ class Script(threading.Thread):
                     bulk_lines=bulk_lines)
                 if self.cli_provider.is_broken_pipe:
                     raise self.CLIDisconnectedError()
-                data = self.cli_queue_get()
+                if nowait:
+                    data = ""
+                else:
+                    data = self.cli_queue_get()
                 if data is None:
                     if self.cli_provider.error_traceback:
                         # Transport-level CLI error occured
@@ -721,6 +770,14 @@ class Script(threading.Thread):
         nr = 0
         stop_sent = False
         for data in stream:
+            # Check for syntax error
+            if (self.profile.rx_pattern_syntax_error and
+                    self.profile.rx_pattern_syntax_error.search(data)):
+                raise self.CLISyntaxError(data)
+            # Then check for operaion error
+            if (self.profile.rx_pattern_operation_error and
+                    self.profile.rx_pattern_operation_error.search(data)):
+                raise self.CLIOperationError(data)
             input += data
             while input:
                 r = parser(input)
@@ -974,6 +1031,30 @@ class Script(threading.Thread):
             raise self.UnexpectedResultError()
         return match
 
+    _match_lines_cache = {}
+
+    @classmethod
+    def match_lines(cls, rx, s):
+        k = id(rx)
+        if k not in cls._match_lines_cache:
+            _rx = [re.compile(l, re.IGNORECASE) for l in rx]
+            cls._match_lines_cache[k] = _rx
+        else:
+            _rx = cls._match_lines_cache[k]
+        ctx = {}
+        idx = 0
+        r = _rx[0]
+        for l in s.splitlines():
+            l = l.strip()
+            match = r.search(l)
+            if match:
+                ctx.update(match.groupdict())
+                idx += 1
+                if idx == len(_rx):
+                    return ctx
+                r = _rx[idx]
+        return None
+
     def find_re(self, iter, s):
         """
         Find first matching regular expression
@@ -1008,3 +1089,24 @@ class Script(threading.Thread):
                 }[scheme]
         except KeyError:
             raise UnknownAccessScheme(scheme)
+
+    def push_prompt_pattern(self, pattern):
+        self.request_cli_provider()
+        self.cli_provider.push_prompt_pattern(pattern)
+
+    def pop_prompt_pattern(self):
+        self.cli_provider.pop_prompt_pattern()
+
+    def has_oid(self, oid):
+        """
+        Check object responses to oid
+        """
+        try:
+            n = self.snmp.get(oid)
+        except self.snmp.TimeOutError:
+            return
+        return n is not None and n != ""
+
+    @classmethod
+    def get_timeout(cls):
+        return script_registry.get_timeout(cls.name)

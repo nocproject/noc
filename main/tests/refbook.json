@@ -8,7 +8,7 @@
             "name": "ISO 3166 Country Codes", 
             "language": 38, 
             "downloader": "CSV", 
-            "download_url": "http://update.nocproject.org/db/iso3166_1.csv", 
+            "download_url": "https://cdn.nocproject.org/refbook/iso3166_1.csv",
             "is_builtin": true, 
             "refresh_interval": 90, 
             "next_update": "2010-07-21 16:19:50", 

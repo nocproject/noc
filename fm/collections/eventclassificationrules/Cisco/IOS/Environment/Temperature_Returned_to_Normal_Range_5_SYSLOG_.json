@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #5 (SYSLOG)",
+    "uuid": "a1272730-b3a8-4e34-845c-0f7d67f4a356",
+    "description": "%SYS-2-SYS_TEMPOK: Chassis temperature OK",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-2-SYS_TEMPOK:\\s*(?P<name>Chassis) temperature OK"
+        }
+    ]
+}

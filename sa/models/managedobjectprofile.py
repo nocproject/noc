@@ -14,6 +14,7 @@ from django.template import Template, Context
 from noc.main.models.style import Style
 from noc.lib.validators import is_fqdn
 from noc.lib.stencil import stencil_registry
+from noc.lib.solutions import get_probe_config
 
 
 class ManagedObjectProfile(models.Model):
@@ -28,6 +29,7 @@ class ManagedObjectProfile(models.Model):
     name = models.CharField(_("Name"), max_length=64, unique=True)
     description = models.TextField(
         _("Description"), blank=True, null=True)
+    level = models.IntegerField(_("Level"), default=25)
     style = models.ForeignKey(
         Style, verbose_name=_("Style"), blank=True, null=True)
     # Stencils
@@ -50,12 +52,20 @@ class ManagedObjectProfile(models.Model):
     # Default impact is MAJOR/4000
     down_severity = models.IntegerField(
         _("Down severity"), default=4000)
+    # check_link alarm job interval settings
+    # Either None or T0,I0,T1,I1,...,Tn-1,In-1,,In
+    # See MultiIntervalJob settings for details
+    check_link_interval = models.CharField(
+        _("check_link interval"),
+        max_length=256, blank=True, null=True,
+        default=",60"
+    )
     ## Config polling
-    enable_config_polling  = models.BooleanField(
+    enable_config_discovery  = models.BooleanField(
         _("Enable config polling"), default=True)
-    config_polling_min_interval = models.IntegerField(
+    config_discovery_min_interval = models.IntegerField(
         _("Min. config polling interval"), default=600)
-    config_polling_max_interval = models.IntegerField(
+    config_discovery_max_interval = models.IntegerField(
         _("Max. config polling interval"), default=86400)
     ## Discovery settings
     # Version inventory
@@ -65,6 +75,20 @@ class ManagedObjectProfile(models.Model):
         _("Min. version inventory interval"), default=600)
     version_inventory_max_interval = models.IntegerField(
         _("Max. version inventory interval"), default=86400)
+    # Caps discovery
+    enable_caps_discovery = models.BooleanField(
+        _("Enable caps discovery"), default=True)
+    caps_discovery_min_interval = models.IntegerField(
+        _("Min. caps discovery interval"), default=600)
+    caps_discovery_max_interval = models.IntegerField(
+        _("Max. caps discovery interval"), default=86400)
+    # Uptime discovery
+    enable_uptime_discovery = models.BooleanField(
+        _("Enable uptime discovery"), default=True)
+    uptime_discovery_min_interval = models.IntegerField(
+        _("Min. uptime discovery interval"), default=60)
+    uptime_discovery_max_interval = models.IntegerField(
+        _("Max. uptime discovery interval"), default=300)
     # Interface discovery
     enable_interface_discovery = models.BooleanField(
         _("Enable interface discovery"), default=True)
@@ -158,11 +182,18 @@ class ManagedObjectProfile(models.Model):
         _("Max. UDLD discovery interval"), default=86400)
     # OAM Topology discovery
     enable_oam_discovery = models.BooleanField(
-            _("Enable UDLD discovery"), default=True)
+            _("Enable OAM discovery"), default=True)
     oam_discovery_min_interval = models.IntegerField(
         _("Min. OAM discovery interval"), default=600)
     oam_discovery_max_interval = models.IntegerField(
         _("Max. OAM discovery interval"), default=86400)
+    # Asset discovery
+    enable_asset_discovery = models.BooleanField(
+            _("Enable asset discovery"), default=True)
+    asset_discovery_min_interval = models.IntegerField(
+        _("Min. asset discovery interval"), default=600)
+    asset_discovery_max_interval = models.IntegerField(
+        _("Max. asset discovery interval"), default=86400)
 
     def __unicode__(self):
         return self.name
@@ -180,3 +211,11 @@ class ManagedObjectProfile(models.Model):
         if not is_fqdn(f):
             raise ValueError("Invalid FQDN: %s" % f)
         return f
+
+    def get_probe_config(self, config):
+        # Get via solutions
+        try:
+            return get_probe_config(self, config)
+        except ValueError:
+            pass
+        raise ValueError("Invalid config parameter '%s'" % config)

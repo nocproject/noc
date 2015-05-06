@@ -11,12 +11,11 @@ Ext.define("NOC.fm.classificationrule.Application", {
     requires: [
         "NOC.fm.classificationrule.Model",
         "NOC.fm.eventclass.LookupField",
-        "Ext.ux.form.GridField",
         "NOC.fm.classificationrule.templates.TestResult"
     ],
     model: "NOC.fm.classificationrule.Model",
     search: true,
-
+    treeFilter: "category",
     columns: [
         {
             text: "Name",
@@ -42,11 +41,6 @@ Ext.define("NOC.fm.classificationrule.Application", {
         }
     ],
     filters: [
-        {
-            title: "Builtin",
-            name: "is_builtin",
-            ftype: "boolean"
-        },
         {
             title: "By Event Class",
             name: "event_class",
@@ -86,6 +80,11 @@ Ext.define("NOC.fm.classificationrule.Application", {
                     allowBlank: false
                 },
                 {
+                    xtype: "displayfield",
+                    name: "uuid",
+                    fieldLabel: "UUID"
+                },
+                {
                     xtype: "textarea",
                     name: "description",
                     fieldLabel: "Description",
@@ -123,14 +122,36 @@ Ext.define("NOC.fm.classificationrule.Application", {
                             dataIndex: "key_re",
                             flex: 1,
                             editor: "textfield",
-                            renderer: "htmlEncode"
+                            renderer: NOC.render.htmlEncode
                         },
                         {
                             text: "Value RE",
                             dataIndex: "value_re",
                             flex: 1,
                             editor: "textfield",
-                            renderer: "htmlEncode"
+                            renderer: NOC.render.htmlEncode
+                        }
+                    ]
+                },
+                {
+                    xtype: "gridfield",
+                    name: "vars",
+                    fieldLabel: "Vars",
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: "Name",
+                            dataIndex: "name",
+                            width: 100,
+                            editor: "textfield",
+                            renderer: NOC.render.htmlEncode
+                        },
+                        {
+                            text: "Value",
+                            dataIndex: "value",
+                            flex: 1,
+                            editor: "textfield",
+                            renderer: NOC.render.htmlEncode
                         }
                     ]
                 }
@@ -146,7 +167,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
                 },
                 {
                     text: "Test",
-                    glyph: NOC.glyph.question_sign,
+                    glyph: NOC.glyph.question_circle,
                     tooltip: "Test rule",
                     hasAccess: NOC.hasPermission("test"),
                     scope: me,
@@ -172,6 +193,10 @@ Ext.define("NOC.fm.classificationrule.Application", {
         var me = this;
         return me.form.getFieldValues().patterns;
     },
+    getVars: function() {
+        var me = this;
+        return me.form.getFieldValues().vars;
+    },
     //
     onCmd_from_event: function(data) {
         var me = this;
@@ -193,7 +218,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
     onSelectEventClass: function(combo, records, opts) {
         var me = this;
         if(!me.currentRecord) {
-            var name = records[0].get("label"),
+            var name = records.get("label"),
                 f = me.form.findField("name"),
                 v = f.getValue();
             if(v.match(/<name>/)) {

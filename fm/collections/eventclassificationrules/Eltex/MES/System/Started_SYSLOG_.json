@@ -1,0 +1,21 @@
+{
+    "name": "Eltex | MES | System | Started (SYSLOG)",
+    "uuid": "342b957f-732e-4e80-8b80-f11059502798",
+    "description": "%INIT-I-Startup: Warm Startup",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%INIT-I-Startup: (Warm|Cold) Startup$"
+        }
+    ]
+}

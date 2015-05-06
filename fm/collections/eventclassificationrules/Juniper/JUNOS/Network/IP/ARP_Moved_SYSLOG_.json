@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | IP | ARP Moved (SYSLOG)",
+    "uuid": "82b07a1e-ae4a-4fb6-b862-6f0ad159220b",
+    "description": "Jul 14 10:01:21 /kernel: KERN_ARP_ADDR_CHANGE: arp info overwritten for 192.168.14.207 from d8:30:62:61:1b:e5 to 10:9a:dd:69:ad:2d",
+    "event_class__name": "Network | IP | ARP Moved",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "KERN_ARP_ADDR_CHANGE: arp info overwritten for (?P<ip>\\S+) from (?P<from_mac>\\S+) to (?P<to_mac>\\S+)$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        }
+    ]
+}

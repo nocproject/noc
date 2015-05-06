@@ -1,0 +1,10 @@
+{
+    "name": "Cisco | IOS | set_description",
+    "uuid": "248f86b8-9576-4ce8-b30b-d1b398f6f882",
+    "action__name": "set_interface_description",
+    "description": "",
+    "profile": "Cisco.IOS",
+    "config_mode": true,
+    "match": [],
+    "commands": "interface {{interface}}\n    description \"{{description}}\""
+}

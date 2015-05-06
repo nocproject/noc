@@ -25,7 +25,8 @@ from django.core.management.base import BaseCommand, CommandError
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry, Script
 from noc.sa.script.ssh.keys import Key
-from noc.sa.activator import Service, ServersHub
+from noc.sa.activator.service import Service
+from noc.sa.activator.servers import ServersHub
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.rpc import TransactionFactory
 from noc.lib.url import URL
@@ -33,6 +34,9 @@ from noc.lib.nbsocket import SocketFactory, UDPSocket
 from noc.lib.validators import is_int
 from noc.lib.fileutils import read_file
 from noc.lib.test.beeftestcase import BeefTestCase
+from noc.lib.perf import log_metrics
+
+logger = logging.getLogger(__name__)
 
 
 class Controller(object):
@@ -135,9 +139,9 @@ class ActivatorStub(object):
         private_path = self.config.get("ssh", "key")
         public_path = private_path + ".pub"
         # Load keys
-        logging.debug("Loading private ssh key from '%s'" % private_path)
+        logger.debug("Loading private ssh key from '%s'" % private_path)
         s_priv = read_file(private_path)
-        logging.debug("Loading public ssh key from '%s'" % public_path)
+        logger.debug("Loading public ssh key from '%s'" % public_path)
         s_pub = read_file(public_path)
         # Check all keys presend
         if s_priv is None or s_pub is None:
@@ -147,25 +151,25 @@ class ActivatorStub(object):
         self.ssh_private_key = Key.from_string_private_noc(s_priv)
 
     def reset_wait_ticks(self):
-        logging.debug("Resetting wait ticks")
+        logger.debug("Resetting wait ticks")
         self.wait_ticks = self.WAIT_TICKS
 
     def tick(self):
-        logging.debug("Tick")
+        logger.debug("Tick")
         while not self.script_call_queue.empty():
             try:
                 f, args, kwargs = self.script_call_queue.get_nowait()
             except:
                 break
-            logging.debug("Calling delayed %s(*%s, **%s)" % (f, args, kwargs))
+            logger.debug("Calling delayed %s(*%s, **%s)" % (f, args, kwargs))
             apply(f, args, kwargs)
         if not self.factory.sockets:
             self.wait_ticks -= 1
             if not self.wait_ticks:
-                logging.debug("EXIT")
+                logger.debug("EXIT")
                 if self.to_save_output:
                     p = self.session_can.dump(self.output)
-                    logging.debug("Writing session test to %s" % p)
+                    logger.debug("Writing session test to %s" % p)
                 # Finally dump results
                 for s in self.scripts:
                     if s.result:
@@ -175,9 +179,10 @@ class ActivatorStub(object):
                             r = unicode(str(r), "utf8")
                         else:
                             r = pprint.pformat(r)
-                        logging.debug(u"SCRIPT RESULT: %s\n%s" % (s.debug_name, r))
+                        logger.debug(u"SCRIPT RESULT: %s\n%s" % (s.debug_name, r))
                 self.factory.shutdown()
-            logging.debug("%d TICKS TO EXIT" % self.wait_ticks)
+                log_metrics()
+            logger.debug("%d TICKS TO EXIT" % self.wait_ticks)
         else:
             # Sockets left
             self.reset_wait_ticks()
@@ -212,7 +217,7 @@ class ActivatorStub(object):
         script.start()
 
     def request_call(self, f, *args, **kwargs):
-        logging.debug("Requesting call: %s(*%s, **%s)" % (f, args, kwargs))
+        logger.debug("Requesting call: %s(*%s, **%s)" % (f, args, kwargs))
         self.script_call_queue.put((f, args, kwargs))
 
     def can_run_script(self):
@@ -236,7 +241,7 @@ class ActivatorStub(object):
         self.session_can.save_http_get(path, result)
 
     def error(self, msg):
-        logging.error(msg)
+        logger.error(msg)
 
 
 class Command(BaseCommand):
@@ -253,7 +258,7 @@ class Command(BaseCommand):
 
     def SIGINT(self, signo, frame):
         """Gentler SIGINT handler"""
-        logging.info("SIGINT")
+        logger.info("SIGINT")
         os._exit(0)
 
     def _usage(self):
@@ -308,27 +313,43 @@ class Command(BaseCommand):
         except ManagedObject.DoesNotExist:
             raise CommandError("Object not found: %s" % obj)
         # Fill access profile
+        credentials = o.credentials
         access_profile.profile = o.profile_name
         access_profile.scheme = o.scheme
         access_profile.address = o.address
         if o.port:
             access_profile.port = o.port
-        access_profile.user = o.user
-        access_profile.password = o.password
-        if o.super_password:
-            access_profile.super_password = o.super_password
+        access_profile.user = credentials.user or ""
+        access_profile.password = credentials.password
+        if credentials.super_password:
+            access_profile.super_password = credentials.super_password
         if snmp_ro_community:
             if snmp_ro_community != "-":
                 access_profile.snmp_ro = snmp_ro_community
-            elif o.snmp_ro:
-                access_profile.snmp_ro = o.snmp_ro
+            elif credentials.snmp_ro:
+                access_profile.snmp_ro = credentials.snmp_ro
         if o.remote_path:
             access_profile.path = o.remote_path
+        # Attributes
         attrs = [(a.key, a.value) for a in o.managedobjectattribute_set.all()]
         for k, v in attrs:
             a = access_profile.attrs.add()
             a.key = str(k)
             a.value = v
+        # Capabilities
+        caps = o.get_caps()
+        for c in sorted(caps):
+            a = access_profile.caps.add()
+            a.capability = c
+            v = caps[c]
+            if isinstance(v, float):
+                a.float_value = v
+            elif isinstance(v, bool):
+                a.bool_value = v
+            elif isinstance(v, (int, long)):
+                a.int_value = v
+            else:
+                a.str_value = str(v)
 
     def get_request(self, script, obj, snmp_ro_community, values):
         """Prepare script request"""
@@ -355,6 +376,7 @@ class Command(BaseCommand):
             a = r.kwargs.add()
             a.key = k
             a.value = v
+        r.timeout = script_registry.get_timeout(r.script)
         return r
 
     def expand_selectors(self, objects):
@@ -382,12 +404,12 @@ class Command(BaseCommand):
     def run_script(self, service, request):
         def handle_callback(controller, response=None, error=None):
             if error:
-                logging.debug("Error: %s" % error.text)
+                logger.debug("Error: %s" % error.text)
             if response:
-                logging.debug("Script completed")
-                logging.debug(response.config)
+                logger.debug("Script completed")
+                logger.debug(response.config)
 
-        logging.debug("Running script thread")
+        logger.debug("Running script thread")
         controller = Controller()
         controller.transaction = self.tf.begin()
         service.script(controller=controller, request=request, done=handle_callback)
@@ -440,7 +462,7 @@ class Command(BaseCommand):
             service.activator.factory.run(run_forever=True)
 
         if options.get("profile", True):
-            logging.debug("Enabling python profiler")
+            logger.debug("Enabling python profiler")
             import cProfile
 
             cProfile.runctx("run()", globals(), locals())

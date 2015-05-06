@@ -37,11 +37,19 @@ class ObjectStatus(Document):
     @classmethod
     def set_status(cls, object, status):
         from noc.fm.models.outage import Outage
+        from noc.inv.models.discoveryjob import DiscoveryJob
+
         s = cls.objects.filter(object=object.id).first()
         if s:
             if s.status != status:
                 s.status = status
                 s.save()
+                if status:
+                    # False -> True transition
+                    DiscoveryJob.reset_deferred(object)
+                else:
+                    # True -> False transition
+                    DiscoveryJob.set_deferred(object)
         else:
             cls(object=object.id, status=status).save()
         Outage.register_outage(object, not status)

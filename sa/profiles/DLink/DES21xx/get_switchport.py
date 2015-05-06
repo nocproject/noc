@@ -17,8 +17,9 @@ from noc.sa.interfaces import IGetSwitchport
 class Script(NOCScript):
     name = "DLink.DES21xx.get_switchport"
     implements = [IGetSwitchport]
-    rx_vlan_ports = re.compile(r"VLAN_ID:(?P<vid>\d+).+?TAG PORT:(?P<tagged>[0-9 ]*).+?UNTAG PORT:(?P<untagged>[0-9 ]*)\s*", \
-                                re.MULTILINE | re.DOTALL)
+    rx_vlan_ports = re.compile(
+        r"VLAN_ID:(?P<vid>\d+).+?TAG PORT:(?P<tagged>[0-9 ]*).+?"
+        r"UNTAG PORT:(?P<untagged>[0-9 ]*)\s*", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         # Get interafces status
@@ -28,7 +29,7 @@ class Script(NOCScript):
 
         # Get ports in vlans
         vlan_ports = []
-        for match in self.rx_vlan_ports.finditer(self.cli("show vlan")):
+        for match in self.rx_vlan_ports.finditer(self.cli("show vlan", cached=True)):
             vlan_ports += [{
                 "vid": match.group("vid"),
                 "tagged": self.expand_rangelist(match.group("tagged").replace(" ", ",")),
@@ -39,7 +40,7 @@ class Script(NOCScript):
         port_tags = {}
         for port in interface_status:
             tags = []
-            untag = []
+            untag = 1
             for vlan in vlan_ports:
                 if int(port) in vlan["tagged"]:
                     tags += [vlan["vid"]]

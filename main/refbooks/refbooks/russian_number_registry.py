@@ -15,7 +15,7 @@ class RussianNumberPlan(RefBook):
     description="Выписка из реестра Российской системы нумерации (коды ABC/DEF)"
     language="Russian"
     downloader="CSV"
-    download_url="http://update.nocproject.org/db/russian_number_registry.csv.gz"
+    download_url="https://cdn.nocproject.org/refbook/russian_number_registry.csv.gz"
     refresh_interval=90
     fields=[
         Field(name="От (E.164)",search_method="starting"),

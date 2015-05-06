@@ -9,5 +9,6 @@ console.debug("Defining NOC.main.prefixtable.LookupField");
 Ext.define("NOC.main.prefixtable.LookupField", {
     extend: "NOC.core.LookupField",
     alias: "widget.main.prefixtable.LookupField",
-    requires: ["NOC.main.prefixtable.Lookup"]
+    requires: ["NOC.main.prefixtable.Lookup"],
+    uiStyle: "medium"
 });

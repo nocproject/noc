@@ -35,7 +35,7 @@ Ext.define("NOC.fm.classificationrule.TestForm", {
                         },
                         {
                             text: "Test",
-                            glyph: NOC.glyph.question_sign,
+                            glyph: NOC.glyph.question_circle,
                             scope: me,
                             handler: me.onTest
                         }
@@ -56,7 +56,8 @@ Ext.define("NOC.fm.classificationrule.TestForm", {
     //
     onTest: function() {
         var me = this,
-            data = me.dataField.getValue();
+            data = me.dataField.getValue(),
+            fd = me.app.getFormData();
         // @todo: Validation
         Ext.Ajax.request({
             url: "/fm/classificationrule/test/",
@@ -65,7 +66,8 @@ Ext.define("NOC.fm.classificationrule.TestForm", {
             jsonData: {
                 data: data,
                 patterns: me.app.getPatterns(),
-                event_class: me.app.currentRecord.get("event_class")
+                vars: me.app.getVars(),
+                event_class: fd.event_class
             },
             success: function(response) {
                 var me = this;

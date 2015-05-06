@@ -36,23 +36,31 @@ class IntervalJob(Job):
         :return:
         """
         data = data or {}
+        # Get effective interval
+        if isinstance(interval, list):
+            # MultiIntervalJob
+            effective_interval = interval[0][1] if interval else 0
+        else:
+            # IntervalJob
+            effective_interval = interval
         if randomize:
             offset = random.random()
-        elif keep_offset:
-            offset = time.time() % interval / interval
+        elif keep_offset and effective_interval:
+            offset = time.time() % effective_interval / effective_interval
         else:
             offset = 0
         schedule = {
             "interval": interval,
             "offset": offset,
-            "randomize": randomize
+            "randomize": randomize,
+            "scheduled": datetime.datetime.now()
         }
         if failed_interval:
             schedule["failed_interval"] = failed_interval
         if not ts:
-            ts=cls.get_next_aligned(interval, offset=offset)
+            ts = cls.get_next_aligned(effective_interval, offset=offset)
         scheduler.submit(cls.name, key=key, data=data,
-            schedule=schedule, ts=ts)
+                         schedule=schedule, ts=ts)
 
     @classmethod
     def get_next_aligned(cls, interval, next=False, offset=0):
@@ -74,20 +82,21 @@ class IntervalJob(Job):
 
     def get_failed_interval(self):
         return self.schedule.get("failed_interval",
-            self.get_interval())
+                                 self.get_interval())
 
     def get_schedule(self, status):
         if status == self.S_SUCCESS:
             i = self.get_interval()
+            if not i:
+                return None  # Zero interval means disabled job
             offset = self.schedule["offset"] % i
             return self.get_next_aligned(i, next=True, offset=offset)
-        elif status == self.S_DEFERRED:
-            return None  # Left until next initial submit
         elif status == self.S_LATE and self.delay_interval:
             return (datetime.datetime.now() +
                     datetime.timedelta(
                         seconds=random.random() * self.delay_interval))
         else:
+            # FAIL and DEFERRED
             fi = self.get_failed_interval()
             if self.schedule.get("randomize"):
                 fi *= (0.5 + random.random())

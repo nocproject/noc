@@ -1,0 +1,22 @@
+{
+    "name": "Juniper | MX | MS-MIC-16G",
+    "uuid": "42b19590-c194-4873-bded-b417f34aea8c",
+    "vendor__code": "JUNIPER",
+    "description": "Multiservices MIC for MX",
+    "cr_context": "MIC",
+    "connections": [
+        {
+            "description": "MPC connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MIC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "MS-MIC-16G",
+            "part_no0": "750-043688"
+        }
+    }
+}

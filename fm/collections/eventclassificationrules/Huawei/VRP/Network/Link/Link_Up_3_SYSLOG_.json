@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Network | Link | Link Up #3 (SYSLOG)",
+    "uuid": "016c3f78-52f1-4d8f-95bd-2242d73cdcd4",
+    "description": "Aug  2 2012 12:04:25 od-agg-3-vilyamsa73d1 %%01DRV/6/LINKUP(l): Port GigabitEthernet0/0/9 is up because the link layer is up.",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "DRV/\\d+/LINKUP.+[Pp]ort (?P<interface>\\S+) is up because the link layer is up"
+        }
+    ]
+}

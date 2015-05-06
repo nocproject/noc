@@ -1,0 +1,25 @@
+{
+    "name": "Cisco | IOS | Network | VLAN | VLAN Created (SNMP)",
+    "uuid": "fcca2a1d-3446-4d31-9489-223af2ab4ba0",
+    "description": "CISCO-VTP-MIB::vtpVlanCreated",
+    "event_class__name": "Network | VLAN | VLAN Created",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^CISCO-VTP-MIB::vtpVlanName\\.1\\.(?P<vlan>\\d+)$",
+            "value_re": "^(?P<name>.*)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-VTP-MIB::vtpVlanCreated$"
+        }
+    ]
+}

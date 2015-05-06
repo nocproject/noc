@@ -1,0 +1,17 @@
+{
+    "name": "Ducts | Conduits",
+    "uuid": "bedc97be-259d-4928-9217-ffe88aebdb27",
+    "vendor__code": "NONAME",
+    "description": "Ducts conduits",
+    "plugins": ["-inventory"],
+    "connections": [
+        {
+            "description": "Conduits",
+            "direction": "s",
+            "gender": "s",
+            "name": "conduits",
+            "type__name": "Conduits"
+        }
+    ],
+    "data": {}
+}

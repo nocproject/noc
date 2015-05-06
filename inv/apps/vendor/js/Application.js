@@ -15,18 +15,25 @@ Ext.define("NOC.inv.vendor.Application", {
     columns: [
         {
             text: "Name",
-            dataIndex: "name"
+            dataIndex: "name",
+            width: 200
+        },
+        {
+            text: "Code",
+            dataIndex: "code",
+            width: 100
         },
         {
             text: "Builtin",
             dataIndex: "is_builtin",
+            width: 30,
             renderer: NOC.render.Bool,
-            width: 50
+            sortable: false
         },
         {
             text: "Site",
             dataIndex: "site",
-            flex: true,
+            flex: 1,
             renderer: NOC.render.URL
         }
     ],
@@ -38,15 +45,52 @@ Ext.define("NOC.inv.vendor.Application", {
             allowBlank: false
         },
         {
-            name: "is_builtin",
-            xtype: "checkboxfield",
-            boxLabel: "Is Builtin"
+            name: "uuid",
+            xtype: "displayfield",
+            fieldLabel: "UUID"
+        },
+        {
+            name: "code",
+            xtype: "textfield",
+            fieldLabel: "Code",
+            allowBlank: false
         },
         {
             name: "site",
             xtype: "textfield",
             fieldLabel: "Site",
-            allowBlank: true
+            allowBlank: false
         }
-    ]
+    ],
+    //
+    initComponent: function() {
+        var me = this;
+
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: "/inv/vendor/{{id}}/json/",
+            previewName: "Vendor: {{name}}"
+        });
+
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+        Ext.apply(me, {
+            formToolbar: [
+                {
+                    text: "JSON",
+                    glyph: NOC.glyph.file,
+                    tooltip: "Show JSON",
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
+            ]
+        });
+        me.callParent();
+    },
+    //
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
+    }
 });

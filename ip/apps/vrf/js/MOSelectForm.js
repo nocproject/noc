@@ -39,7 +39,7 @@ Ext.define("NOC.ip.vrf.MOSelectForm", {
                 {
                     text: "Import",
                     itemId: "import",
-                    iconCls: "icon_door_in",
+                    glyph: NOC.hlyph.level_down,
                     /* formBind: true,
                     disabled: true, */
                     scope: me,

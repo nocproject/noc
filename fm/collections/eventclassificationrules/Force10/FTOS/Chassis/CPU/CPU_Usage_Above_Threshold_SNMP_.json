@@ -1,0 +1,25 @@
+{
+    "name": "Force10 | FTOS | Chassis | CPU | CPU Usage Above Threshold (SNMP)",
+    "uuid": "07b7abe8-0437-4ccd-a889-6097b32f5372",
+    "description": "F10-CHASSIS-MIB::chAlarmExdCpuThreshold",
+    "event_class__name": "Chassis | CPU | CPU Usage Above Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Force10\\.FTOS$"
+        },
+        {
+            "key_re": "^F10-CHASSIS-MIB::chAlarmVarString$",
+            "value_re": "^CPU_THRESHOLD: Overall (?P<cpu>\\S+) cpu usage above threshold\\."
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^F10-CHASSIS-MIB::chAlarmExdCpuThreshold$"
+        }
+    ]
+}

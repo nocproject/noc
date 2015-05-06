@@ -1,0 +1,388 @@
+{
+    "name": "Juniper | EX | EX8200-2XS-40T",
+    "uuid": "26efceec-891a-4568-8e4d-8a377a82a364",
+    "vendor__code": "JUNIPER",
+    "description": "40-port 10/100/1000BASE-T RJ-45, 4 port SFP, 2 port SFP+ line card",
+    "connections": [
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/16",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/19",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/20",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/21",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/22",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/23",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/24",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/25",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/26",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/27",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/28",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/29",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/30",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/31",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/32",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/33",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/34",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/35",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/36",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/37",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/38",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "s",
+            "gender": "f",
+            "name": "0/39",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/40",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/41",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/42",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/43",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "xe-X/0/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/44",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
+        },
+        {
+            "description": "xe-X/0/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/45",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 8200 FPC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "711-035032"
+        }
+    }
+}

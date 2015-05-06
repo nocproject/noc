@@ -1,0 +1,21 @@
+{
+    "name": "Eltex | MES | Network | Link | Link Down (SYSLOG)",
+    "uuid": "60c12db1-5cae-410d-8f36-a6f90226aba5",
+    "description": "%LINK-W-Down:  gi0/3",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%LINK-W-Down:  ?(?P<interface>.+)$"
+        }
+    ]
+}

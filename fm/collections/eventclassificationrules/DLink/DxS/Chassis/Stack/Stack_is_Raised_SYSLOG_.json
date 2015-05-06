@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Chassis | Stack | Stack is Raised (SYSLOG)",
+    "uuid": "1d58ca1f-ff02-4cdf-95aa-cc0ea65d5fd9",
+    "description": "INFO(6) Unit 4,MAC:00-1c-f0-1f-3c-80 Hot insertion",
+    "event_class__name": "Chassis | Stack | Stack is Raised",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Unit (?P<unit>\\d+),\\s*MAC:\\s*\\S+\\s+Hot insertion"
+        }
+    ]
+}

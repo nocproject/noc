@@ -1,0 +1,23 @@
+{
+    "name": "Juniper | MX | FFANTRAY-MX240",
+    "$collection": "inv.objectmodels",
+    "uuid": "d34336f2-8699-42ad-ab7f-a44b4bcccd77",
+    "vendor__code": "JUNIPER",
+    "description": "MX240 Enhanced Fan Tray",
+    "connection_rule__name": "Juniper | MX",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX240 Fan"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "710-030216"
+        }
+    }
+}

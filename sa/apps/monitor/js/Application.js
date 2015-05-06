@@ -52,6 +52,7 @@ Ext.define("NOC.sa.monitor.Application", {
         NOC.mrt({
             url: "/sa/monitor/mrt/get_activator_info/",
             selector: "SAE",
+            loadMask: me,
             scope: me,
             success: me.updateData
         });

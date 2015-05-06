@@ -32,18 +32,18 @@ Ext.define("NOC.wf.workflow.WFInspector", {
         });
 
         me.applyButton = Ext.create("Ext.button.Button", {
-            iconCls: "icon_disk",
             text: "Apply",
             tooltip: "Apply changes",
+            glyph: NOC.glyph.save,
             disabled: true,
             scope: me,
             handler: me.onApply
         });
 
         me.resetButton = Ext.create("Ext.button.Button", {
-            iconCls: "icon_arrow_undo",
             text: "Reset",
             tooltip: "Reset changes",
+            glyph: NOC.glyph.refresh,
             disabled: true,
             scope: me,
             handler: me.onResetChanges

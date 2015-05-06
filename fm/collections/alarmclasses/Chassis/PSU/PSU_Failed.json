@@ -1,0 +1,20 @@
+{
+    "name": "Chassis | PSU | PSU Failed",
+    "$collection": "fm.alarmclasses",
+    "uuid": "d18d5446-7559-4600-a51a-44fba150f135",
+    "is_unique": true,
+    "discriminator": ["name"],
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars": [
+        {
+            "name": "name",
+            "description": "PSU Name"
+        }
+    ],
+    "subject_template": "Power Supply Unit Failed: {{name}}",
+    "body_template": "Power Supply Unit Failed: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

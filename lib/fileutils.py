@@ -32,6 +32,8 @@ def safe_rewrite(path, text, mode=None):
     """
     Create new file filled with "text" safely
     """
+    if isinstance(text, unicode):
+        text = text.encode("utf-8")
     d = os.path.dirname(path)
     if d and not os.path.exists(d):
         os.makedirs(d)
@@ -46,6 +48,19 @@ def safe_rewrite(path, text, mode=None):
     os.unlink(p)
     if mode:
         os.chmod(path, mode)
+
+
+def safe_append(path, text):
+    """
+    Append the text to the end of the file
+    """
+    if isinstance(text, unicode):
+        text = text.encode("utf-8")
+    d = os.path.dirname(path)
+    if d and not os.path.exists(d):
+        os.makedirs(d)
+    with open(path, "a") as f:
+        f.write(text)
 
 
 def is_differ(path, content):

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | ACL | ACL Permit #3 (SYSLOG)",
+    "uuid": "24e6bfd7-d361-4be9-9472-74d2041d7530",
+    "description": "%SEC-6-IPACCESSLOGRP: list IGMP-COUNT permitted igmp 192.168.100.58 -> 224.0.0.1, 20 packets",
+    "event_class__name": "Security | ACL | ACL Permit",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "SEC-\\d+-IPACCESSLOG.+list (?P<name>\\S+) permitted (?P<proto>\\S+) (?P<src_ip>\\S+) -> (?P<dst_ip>\\S+), (?P<count>\\d+) packet"
+        }
+    ]
+}

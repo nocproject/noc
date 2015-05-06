@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Chassis | PSU | PSU Recovered #2 (SYSLOG)",
+    "uuid": "26cd8ce7-1e91-4e41-b2f3-9f7265bd0210",
+    "description": "UPS: A logic power supply fault no longer exists. 0x016A",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: (?P<name>A logic power supply) fault no longer exists. 0x16A"
+        }
+    ]
+}

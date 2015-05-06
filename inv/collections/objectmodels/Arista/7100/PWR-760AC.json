@@ -1,0 +1,28 @@
+{
+    "name": "Arista | 7100 | PWR-760AC",
+    "uuid": "6b7391b2-7b43-40ff-a565-55ccb4e3994a",
+    "vendor__code": "ARISTA",
+    "description": "760 Watt AC power supply for Arista 7100 Switches",
+    "connections": [
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Arista | 7100 | PWR"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "PWR-760AC"
+        }
+    }
+}

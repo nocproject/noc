@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | PWR | PWR-C49-300AC",
+    "uuid": "cee6a0e0-ac7c-4f3e-8bf6-ca7346ae95e7",
+    "vendor__code": "CISCO",
+    "description": "300 Watt AC PSU",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "group": "0",
+            "name": "in",
+            "type__name": "Cisco | PWR-C49-300"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "PWR-C49-300AC"
+        }
+    }
+}

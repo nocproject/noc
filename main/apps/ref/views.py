@@ -2,20 +2,26 @@
 ##----------------------------------------------------------------------
 ## main.ref application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
 ## Django modules
 from django.db import models
+## Third-party modules
+from mongoengine.base.common import _document_registry
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces import interface_registry
 from noc.sa.models import profile_registry
 from noc.lib.stencil import stencil_registry
-from noc.pm.pmprobe.checks.base import check_registry
 from noc import settings
 from noc.main.models.notification import USER_NOTIFICATION_METHOD_CHOICES
+from noc.pm.probes.base import probe_registry
+from noc.pm.models.metrictype import MetricType
+from noc.cm.validators.base import validator_registry
 
 
 class RefAppplication(ExtApplication):
@@ -72,13 +78,26 @@ class RefAppplication(ExtApplication):
             for m in models.get_models()),
             key=lambda x: x["label"])
 
-    def build_check(self):
+    def build_modcol(self):
         """
-        PM Checks
-        :return:
+        Models and collections
         """
-        return sorted(({"id": s[0], "label": s[1]} for s in check_registry.choices),
-            key=lambda x: x["label"])
+        r = []
+        # Models
+        r += [{
+            "id": m._meta.db_table,
+            "label": "%s.%s" % (m._meta.app_label, m.__name__),
+            "table": m._meta.db_table
+        } for m in models.get_models()]
+        # Collections
+        r += [
+            {
+                "id": c._get_collection_name(),
+                "label": "%s.%s" % (c.__module__.split(".")[1], n),
+                "collection": c._get_collection_name()
+            } for n, c in _document_registry.iteritems()
+            if c._get_collection_name()]
+        return sorted(r, key=lambda x: x["label"])
 
     def build_ulanguage(self):
         """
@@ -107,10 +126,102 @@ class RefAppplication(ExtApplication):
             key=lambda x: x["label"].lower()
         )
 
+    def build_cmtheme(self):
+        """
+        CodeMirror themes
+        """
+        r = [{
+            "id": "default",
+            "label": "default"
+        }]
+        for f in os.listdir("static/pkg/codemirror/theme"):
+            if f.endswith(".css"):
+                t = f[:-4]
+                r += [{
+                    "id": t,
+                    "label": t
+                }]
+        return r
+
     def build_unotificationmethod(self):
         return sorted(({"id": s[0], "label": s[1]}
                        for s in USER_NOTIFICATION_METHOD_CHOICES),
                       key=lambda x: x["label"])
+
+    def build_probehandler(self):
+        def f(k, v):
+            solution = None
+            if k.startswith("noc.solutions."):
+                p = k.split(".")
+                solution = "%s.%s" % (p[2], p[3])
+            metrics = sorted(
+                (
+                    {
+                        "id": mtc[m],
+                        "label": m
+                    } for m in v._METRICS if m in mtc
+                ), key=lambda x: x["label"]
+            )
+
+            r = {
+                "id": k,
+                "label": v.TITLE if v.TITLE else k,
+                "description": v.DESCRIPTION if v.DESCRIPTION else None,
+                "form": v.CONFIG_FORM if v.CONFIG_FORM else None,
+                "solution": solution,
+                "metrics": metrics,
+                "tags": v.TAGS
+            }
+            return r
+
+        # Metric type cache
+        mtc = dict(
+            (n, str(i))
+            for i, n in MetricType.objects.values_list("id", "name")
+        )
+        #
+        return sorted(
+            (
+                f(k, v)
+                for k, v in probe_registry.probe_classes.iteritems()
+                if v.TITLE
+            ),
+            key=lambda x: x["label"]
+        )
+
+    def build_validator(self):
+        def f(k, v):
+            solution = None
+            if k.startswith("noc.solutions."):
+                p = k.split(".")
+                solution = "%s.%s" % (p[2], p[3])
+            tags = []
+            if v.is_object():
+                tags += ["OBJECT"]
+            if v.is_interface():
+                tags += ["INTERFACE"]
+            if v.is_subinterface():
+                tags += ["SUBINTERFACE"]
+            if v.TAGS:
+                tags += v.TAGS
+            r = {
+                "id": k,
+                "label": v.TITLE if v.TITLE else k,
+                "description": v.DESCRIPTION if v.DESCRIPTION else None,
+                "form": v.CONFIG_FORM if v.CONFIG_FORM else None,
+                "solution": solution,
+                "tags": tags
+            }
+            return r
+
+        return sorted(
+            (
+                f(k, v)
+                for k, v in validator_registry.validators.items()
+                if v.TITLE
+            ),
+            key=lambda x: x["label"]
+        )
 
     @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
@@ -133,11 +244,12 @@ class RefAppplication(ExtApplication):
                     if ql in x["label"].lower()]
         else:
             data = [x for x in self.refs[ref]]
+        total = len(data)
         if start is not None and limit is not None:
             data = data[int(start):int(start) + int(limit)]
         if format == "ext":
             return {
-                "total": len(data),
+                "total": total,
                 "success": True,
                 "data": data
             }

@@ -1,0 +1,27 @@
+{
+    "name": "PoP | Access",
+    "uuid": "fa4c228d-b99c-48ae-b241-0ef7a2cc6ec6",
+    "vendor__code": "NOC",
+    "description": "Access level Point of Presence.",
+    "plugins": ["-inventory"],
+    "connections": [
+        {
+            "description": "Inter-PoP logical links",
+            "direction": "s",
+            "gender": "s",
+            "name": "links",
+            "type__name": "Inter-PoP Logical Links"
+        }
+    ],
+    "data": {
+        "container": {
+            "container": true
+        },
+        "geopoint": {
+            "layer": "pop_access"
+        },
+        "pop": {
+            "level": 20
+        }
+    }
+}

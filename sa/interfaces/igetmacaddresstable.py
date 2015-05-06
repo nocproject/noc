@@ -16,6 +16,10 @@ class IGetMACAddressTable(Interface):
         "vlan_id": VLANIDParameter(),
         "mac": MACAddressParameter(),
         "interfaces": ListOfParameter(element=InterfaceNameParameter()),
-        "type": StringParameter()  # choices=["D","S"]
+        "type": StringParameter(choices=[
+            "D",  # Dynamic
+            "S",  # Static
+            "C"   # CPU
+        ])
     }))
-    template = "interfaces/igetmacaddresstable.html"
+    preview = "NOC.sa.managedobject.scripts.ShowMAC"

@@ -1,0 +1,38 @@
+{
+    "name": "MergeOptics | Transceiver | 10G | 10119467-3030LF",
+    "uuid": "733f1b42-ce82-4d73-abcc-5cb99b1576de",
+    "vendor__code": "MERGEOPTICS",
+    "description": "MergeOptics 10GBASE-CR twinax copper cable with SFP+ connectors on both ends (3m)\n",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "10119467-3030LF"
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}

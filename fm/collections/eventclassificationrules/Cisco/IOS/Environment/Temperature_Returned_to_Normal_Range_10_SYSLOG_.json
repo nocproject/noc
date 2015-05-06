@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #10 (SYSLOG)",
+    "uuid": "874cdf72-8205-4473-ba5a-e92100404311",
+    "description": "%C6KENV-SP-4-MINORTEMPALARMRECOVER: RP 1/0 inlet temperature crossed threshold #1(=50C). It has returned to normal operating temperature range.",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C6KENV-SP-4-(?:MINOR|MAJOR)TEMPALARMRECOVER: (?P<name>.+) temperature crossed threshold #1\\(=(?P<threshold>\\d+)C\\). It has returned to normal operating temperature range."
+        }
+    ]
+}

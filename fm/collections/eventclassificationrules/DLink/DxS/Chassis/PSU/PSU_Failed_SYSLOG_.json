@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Chassis | PSU | PSU Failed (SYSLOG)",
+    "uuid": "29680163-a6bb-4df4-9a46-32937b6ba248",
+    "description": "WARN: Internal Power failed",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)|CRIT:|CRIT\\(2\\)) (?P<name>Internal|Redundant) Power failed"
+        }
+    ]
+}

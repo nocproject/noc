@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | Link | Link Down (SYSLOG)",
+    "uuid": "6f6ac845-90dd-4863-9aed-9e30e1f2acd3",
+    "description": "INFO: Port 17 link down",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) link down$"
+        }
+    ]
+}

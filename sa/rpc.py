@@ -23,10 +23,17 @@ from noc.sa.protocols.sae_pb2 import *
 from noc.lib.nbsocket import Protocol
 from noc.lib.debug import error_report
 from noc.sa.script.ssh.util import secure_random, bytes_to_long, long_to_bytes
-from noc.sa.script.ssh.transport import DH_GENERATOR, DH_PRIME
 
 PROTOCOL_NAME = "NOC SAE PROTOCOL (http://nocproject.org/)"
 PROTOCOL_VERSION = "1.0"
+
+# Oakley group 2
+DH_PRIME = long("17976931348623159077083915679378745319786029604875601170644"
+                "442368419718021615851936894783379586492554150218056548598050364644054819923"
+                "910005079287700335581663922955313623907650873575991482257486257500742530207"
+                "744771258955095793777842444242661733472762929938766870920560605027081084290"
+                "7692932019128194467627007L")
+DH_GENERATOR = 2L
 
 ## Crypto sessions
 KEY_EXCHANGES = ["diffie-hellman-group1-sha1"]

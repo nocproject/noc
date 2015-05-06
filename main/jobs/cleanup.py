@@ -22,15 +22,6 @@ class CleanupJob(AutoIntervalJob):
     interval = 3600
     randomize = True
 
-    def cleanup_expired_sessions(self):
-        """
-        Delete expired sessions
-        """
-        self.info("Cleaning expired sessions")
-        MongoSession.objects.filter(
-            expire_date__lt=datetime.datetime.now()).delete()
-        self.info("Expired sessions are cleaned")
-
     def cleanup_mrt(self):
         """
         Remove old map/reduce tasks
@@ -38,6 +29,7 @@ class CleanupJob(AutoIntervalJob):
         self.info("Cleanup map/reduce tasks")
         watermark = datetime.datetime.now() - datetime.timedelta(days=1)
         for t in ReduceTask.objects.filter(stop_time__lt=watermark):
+            MapTask.objects.filter(task=t).delete()
             t.delete()
         self.info("Map/Reduce tasks are cleaned")
         self.info("Compacting MRT tables")
@@ -70,15 +62,7 @@ class CleanupJob(AutoIntervalJob):
                 cat.delete()
         self.info("Empty categories are cleaned")
 
-    def cleanup_failed_script_log(self):
-        d = datetime.datetime.now() - datetime.timedelta(days=7)
-        self.info("Cleaning failed scripts log")
-        FailedScriptLog.objects.filter(timestamp__lte=d).delete()
-        self.info("Failed scripts logs are cleaned")
-
     def handler(self, *args, **kwargs):
-        self.cleanup_expired_sessions()
         self.cleanup_mrt()
         self.cleanup_empty_categories()
-        self.cleanup_failed_script_log()
         return True

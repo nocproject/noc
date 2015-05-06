@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Security | Audit | Command #1 (SYSLOG)",
+    "uuid": "45709247-77ef-4854-bbe7-313f986b8a03",
+    "description": "0000001586: Jan  7 16:55:24: torgovaja_4: %CMDLINE-6-COMMAND: (1) admin: lldp rxtx",
+    "event_class__name": "Security | Audit | Command",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CMDLINE-6-COMMAND: \\(\\d+\\) (?P<user>\\S+): (?P<command>.+)$"
+        }
+    ]
+}

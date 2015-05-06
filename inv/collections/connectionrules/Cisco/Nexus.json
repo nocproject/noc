@@ -1,0 +1,72 @@
+{
+    "name": "Cisco | Nexus",
+    "uuid": "fd4110ad-1ca1-436f-8384-13371645f58a",
+    "description": "Cisco Nexus connection rules",
+    "context": [
+        {
+            "reset_scopes": ["sup", "gem"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "sup",
+            "type": "SUP"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "gem",
+            "type": "GEM"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "SUP",
+            "scope": "chassis",
+            "target_connection": "sup{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "GEM",
+            "scope": "sup",
+            "target_connection": "gem{N}",
+            "target_number": "",
+            "target_type": "SUP"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "sup",
+            "target_connection": "Eth1/{N}",
+            "target_number": "",
+            "target_type": "SUP"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "gem",
+            "target_connection": "Eth1/{N}",
+            "target_number": "",
+            "target_type": "GEM"
+        }
+    ]
+}

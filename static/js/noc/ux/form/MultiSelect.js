@@ -5,10 +5,10 @@ Ext.define('Ext.ux.form.MultiSelect', {
     
     extend: 'Ext.form.FieldContainer',
     
-    mixins: {
-        bindable: 'Ext.util.Bindable',
-        field: 'Ext.form.field.Field'    
-    },
+    mixins: [
+        'Ext.util.StoreHolder',
+        'Ext.form.field.Field'
+    ],
     
     alternateClassName: 'Ext.ux.Multiselect',
     alias: ['widget.multiselectfield', 'widget.multiselect'],
@@ -130,6 +130,8 @@ Ext.define('Ext.ux.form.MultiSelect', {
      * Any configuration that is valid for BoundList can be included.
      */
 
+    //TODO - doc me.addEvents('drop');
+
     initComponent: function(){
         var me = this;
 
@@ -149,7 +151,6 @@ Ext.define('Ext.ux.form.MultiSelect', {
         
         me.callParent();
         me.initField();
-        me.addEvents('drop');    
     },
     
     setupItems: function() {
@@ -157,7 +158,6 @@ Ext.define('Ext.ux.form.MultiSelect', {
 
         me.boundList = Ext.create('Ext.view.BoundList', Ext.apply({
             anchor: 'none 100%',
-            deferInitialRefresh: false,
             border: 1,
             multiSelect: true,
             store: me.store,
@@ -421,7 +421,9 @@ Ext.define('Ext.ux.form.MultiSelect', {
         if (me.rendered) {
             ++me.ignoreSelectChange;
             selModel.deselectAll();
-            selModel.select(me.getRecordsForValue(value));
+            if (value.length) {
+                selModel.select(me.getRecordsForValue(value));
+            }
             --me.ignoreSelectChange;
         } else {
             me.selectOnRender = true;

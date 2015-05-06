@@ -22,10 +22,6 @@ class OAMLinkDiscoveryJob(LinkDiscoveryJob):
     map_task = "get_oam_status"
     method = "oam"
     ignored = not config.getboolean("oam_discovery", "enabled")
-    initial_submit_interval = config.getint("oam_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("oam_discovery",
-        "initial_submit_concurrency")
 
     def process_result(self, object, result):
         # Build mac to interfaces map
@@ -38,7 +34,7 @@ class OAMLinkDiscoveryJob(LinkDiscoveryJob):
             if len(remote_macs[rmac]) == 1:
                 local_interface = remote_macs[rmac][0]
                 # Try to find interface by mac
-                il = list(Interface.objects.filter(mac=rmac))
+                il = list(Interface.objects.filter(mac=rmac, type="physical"))
                 if len(il) == 1:
                     # Exact match by mac found
                     remote_interface = il[0]

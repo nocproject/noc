@@ -140,7 +140,7 @@ class InterfaceReport(Report):
                 "aggregated_interface": aggregated_interface,
                 "enabled_protocols": enabled_protocols,
                 "ifindex": ifindex
-            })
+            }, ignore_empty=["ifindex"])
             self.log_changes("Interface '%s' has been changed" % name,
                 changes)
         else:
@@ -164,7 +164,7 @@ class InterfaceReport(Report):
                             vlan_ids=None,
                             enabled_afi=[],
                             ipv4_addresses=[], ipv6_addresses=[],
-                            iso_addresses=[],
+                            iso_addresses=[], vpi=None, vci=None,
                             enabled_protocols=[],
                             untagged_vlan=None, tagged_vlans=[],
                             ifindex=None):
@@ -181,12 +181,14 @@ class InterfaceReport(Report):
                 "ipv4_addresses": ipv4_addresses,
                 "ipv6_addresses": ipv6_addresses,
                 "iso_addresses": iso_addresses,
+                "vpi": vpi,
+                "vci": vci,
                 "enabled_protocols": enabled_protocols,
                 "untagged_vlan": untagged_vlan,
                 "tagged_vlans": tagged_vlans,
                 # ip_unnumbered_subinterface
                 "ifindex": ifindex
-            })
+            }, ignore_empty=["ifindex"])
             self.log_changes(
                 "Subinterface '%s' has been changed" % name,
                 changes)
@@ -204,6 +206,8 @@ class InterfaceReport(Report):
                 ipv4_addresses=ipv4_addresses,
                 ipv6_addresses=ipv6_addresses,
                 iso_addresses=iso_addresses,
+                vpi=None,
+                vci=None,
                 enabled_protocols=enabled_protocols,
                 untagged_vlan=untagged_vlan,
                 tagged_vlans=tagged_vlans,
@@ -240,6 +244,34 @@ class InterfaceReport(Report):
                     for ipv4, ipv6 in zip(ipv4_addresses, ipv6_addresses):
                         self.prefix_report.submit_dual_stack(vrf, ipv4, ipv6)
         return si
+
+    def refine_ifindexes(self):
+        missed_ifindexes = [
+            x["name"] for x in
+            Interface._get_collection().find({
+                "managed_object": self.object.id,
+                "ifindex": None
+            }, {"name": 1})
+        ]
+        if not missed_ifindexes:
+            return
+        self.logger.info("Missed ifindexes for: %s", ", ".join(missed_ifindexes))
+        r = self.object.scripts.get_ifindexes()
+        if not r:
+            return
+        updates = {}
+        for n in missed_ifindexes:
+            if n in r:
+                updates[n] = r[n]
+        if not updates:
+            return
+        for n, i in updates.iteritems():
+            iface = Interface.objects.filter(
+                managed_object=self.object.id, name=n).first()
+            if iface:
+                self.logger.info("Set infindex for %s: %s", n, i)
+                iface.ifindex = i
+                iface.save()  # Signals will be sent
 
     def send(self):
         self.prefix_report.send()

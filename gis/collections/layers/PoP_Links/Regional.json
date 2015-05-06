@@ -1,0 +1,17 @@
+{
+    "name": "PoP Links | Regional",
+    "uuid": "d64309e4-ec70-4672-8a93-f8770a33401a",
+    "description": "Links between regional level points of presence",
+    "code": "pop_links5",
+    "default_zoom": 6,
+    "fill_color": 10682368,
+    "max_zoom": 19,
+    "min_zoom": 5,
+    "point_graphic": "circle",
+    "point_radius": 5,
+    "show_labels": false,
+    "stroke_color": 13369344,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 390
+}

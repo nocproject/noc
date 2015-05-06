@@ -206,8 +206,8 @@ class PrefixNode(Node):
             if v is None or v == "":
                 continue
             if f.type == "bool":
-                t = "tick" if f else "cross"
-                icon = "<img src='/static/img/fam/silk/%s.png' />" % t
+                t = "check" if f else "times"
+                icon = "<i class='fa fa-%s'></i>" % t
                 r += ["<br/>%s: %s" % (f.label, icon)]
             else:
                 r += ["<br/>%s: %s" % (f.label, v)]

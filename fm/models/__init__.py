@@ -62,25 +62,8 @@ from eventclassificationrule import (
     EventClassificationRuleCategory, EventClassificationRule)
 
 
-class CloneClassificationRule(nosql.Document):
-    """
-    Classification rules cloning
-    """
-    meta = {
-        "collection": "noc.cloneclassificationrules",
-        "allow_inheritance": False
-    }
-
-    name = nosql.StringField(unique=True)
-    re = nosql.StringField(default="^.*$")
-    key_re = nosql.StringField(default="^.*$")
-    value_re = nosql.StringField(default="^.*$")
-    is_builtin = nosql.BooleanField(default=False)
-    rewrite_from = nosql.StringField()
-    rewrite_to = nosql.StringField()
-
-    def __unicode__(self):
-        return self.name
+from cloneclassificationrule import CloneClassificationRule
+from ignorepattern import IgnorePattern
 
 ##
 ## Events.
@@ -187,7 +170,6 @@ from enumeration import Enumeration
 ##
 ## Event/Alarm text decoder
 ##
-from translation import get_translated_template, get_translated_text
 from utils import get_alarm, get_event
 
 

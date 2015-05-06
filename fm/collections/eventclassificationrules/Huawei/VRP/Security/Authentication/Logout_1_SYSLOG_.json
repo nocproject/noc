@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Security | Authentication | Logout # 1(SYSLOG)",
+    "uuid": "4664b575-f27c-4350-a202-22a835a2cea1",
+    "description": "Feb  3 2012 05:46:47 switch-test %%01SHELL/5/LOGOUT(l)[413]:VTY logout from 192.168.220.252.",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "VTY logout from (?P<ip>\\S+)\\."
+        }
+    ]
+}

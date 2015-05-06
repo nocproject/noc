@@ -10,6 +10,7 @@ Ext.define("NOC.dns.dnszoneprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.dns.dnszoneprofile.Model",
+        "NOC.dns.dnsserver.LookupField",
         "NOC.dns.dnsserver.M2MField",
         "NOC.main.notificationgroup.LookupField"
     ],
@@ -53,19 +54,13 @@ Ext.define("NOC.dns.dnszoneprofile.Application", {
         {
             xtype: "dns.dnsserver.M2MField",
             name: "masters",
-            height: 220,
-            width: 600,
             fieldLabel: "Masters",
-            buttons: ['add', 'remove'],
             allowBlank: true
         },
         {
             xtype: "dns.dnsserver.M2MField",
             name: "slaves",
-            height: 220,
-            width: 600,
             fieldLabel: "Slaves",
-            buttons: ['add', 'remove'],
             allowBlank: true
         },
         {

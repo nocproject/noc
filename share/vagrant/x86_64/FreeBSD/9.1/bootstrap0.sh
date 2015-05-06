@@ -53,7 +53,6 @@ fi
 ##
 info "Installing system packages"
 install_port databases/postgresql93-server
-install_port databases/postgis20
 install_port databases/mongodb
 install_port devel/py-virtualenv
 install_port devel/mercurial

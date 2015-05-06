@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | System | Started #2 (SYSLOG)",
+    "uuid": "89a96f26-bac5-46b8-80ca-2248fd375c1e",
+    "description": "CRIT: System started up",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|CRIT:|CRIT\\(2\\))( Unit (?P<unit>\\d+),)? System started up$"
+        }
+    ]
+}

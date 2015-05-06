@@ -14,4 +14,3 @@ class IGetSNMPGet(Interface):
     oid = OIDParameter()
     community_suffix = StringParameter(required=False)
     returns = NoneParameter() | StringParameter()
-    template = "interfaces/igetsnmpget.html"

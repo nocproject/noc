@@ -16,7 +16,9 @@ Ext.define("NOC.main.welcome.Application", {
     initComponent: function() {
         var me = this;
         Ext.apply(me, {
-            html: me.templates.Welcome({})
+            html: me.templates.Welcome({
+                systemId: NOC.settings.systemId
+            })
         });
         me.callParent();
     }

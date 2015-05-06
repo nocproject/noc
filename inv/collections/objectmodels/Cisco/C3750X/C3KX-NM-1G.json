@@ -1,0 +1,53 @@
+{
+    "name": "Cisco | C3750X | C3KX-NM-1G",
+    "uuid": "213e22d3-14df-463b-99f4-70e15e935441",
+    "vendor__code": "CISCO",
+    "description": "Four GbE port network module",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "description": "port 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi4_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "port 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi3_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 3750X | NM"
+        },
+        {
+            "description": "port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "C3KX-NM-1G"
+        }
+    }
+}

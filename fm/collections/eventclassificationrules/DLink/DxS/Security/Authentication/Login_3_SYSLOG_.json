@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Login #3 (SYSLOG)",
+    "uuid": "c7b504f9-29a9-4254-907c-536b556d9245",
+    "description": "INFO: Successful login through Telnet from 10.116.0.211 authenticated by AAA local method (Username: mitya, MAC: 00-e0-81-40-8d-56)",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Successful login through (?:Web|Telnet|SSH) from (?P<ip>\\S+) authenticated by AAA \\S+ \\S+ \\(Username: (?P<user>\\S+?)(?:, MAC: \\S+)?\\)"
+        }
+    ]
+}

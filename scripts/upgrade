@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Initialize and upgrade NOC
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##---------------------------------------------------------------------
 
@@ -10,8 +10,16 @@
 ## Helper functions definitions
 ##
 error_exit ( ) {
-    echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
+    printf "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m\n" 1>&2
     echo "Terminating" 1>&2
+    # Report status
+    if [ ! -z "${UPGRADE_LOG}" ]; then
+        if [ -x ./scripts/cptool ]; then
+            info "Reporting upgrade status"
+            ./scripts/cptool --quiet --upgrade --failure --log=${UPGRADE_LOG}
+        fi
+        save_upgrade_log
+    fi
     exit 1
 }
 
@@ -39,6 +47,24 @@ ensure_prog ( ) {
     ./scripts/set-conf.py ./etc/noc.conf $2 $3 $prog || error_exit "Unable to set etc/noc.conf:[$2]/$3"
 }
 
+save_upgrade_log ( ) {
+    log_dst=""
+    if [ ! -z "${LOG}" ]; then
+        if [ -d "${LOG}" ]; then
+            log_dst="${LOG}/upgrade.log"
+        fi
+    else
+        if [ -d "local" ]; then
+            log_dst="local/upgrade.log"
+        fi
+    fi
+    if [ -z "${log_dst}" ]; then
+        log_dst="$HOME/noc-upgrade.log"
+    fi
+    info "Saving upgrade log to ${log_dst}"
+    mv "${UPGRADE_LOG}" "${log_dst}"
+}
+
 ##
 cd `dirname $0`/../
 PROGNAME=`basename $0`
@@ -47,11 +73,21 @@ PREFIX=$PWD
 ## Check, if NOC is already running
 ##
 if [ -f "./etc/noc-launcher.conf" ]; then
-    PIDFILE=`cat ./etc/noc-launcher.conf | grep pidfile | cut -d ' ' -f3`
+    PIDFILE=`grep pidfile ./etc/noc-launcher.conf | cut -d '=' -f2 | sed 's/[ \t]*//'`
     if [ -f "$PIDFILE" ]; then
         error_exit "NOC is running now. Shutdown it first."
     fi
 fi
+##
+## Setup logging
+##
+UPGRADE_LOG=`mktemp /tmp/noc-upgrade.log.XXXXXX`
+UPGRADE_PIPE=${UPGRADE_LOG}.pipe
+mkfifo $UPGRADE_PIPE || error_exit "Cannot create logging pipe"
+tee < $UPGRADE_PIPE $UPGRADE_LOG &
+exec &> $UPGRADE_PIPE
+rm $UPGRADE_PIPE
+echo "Logging to ${UPGRADE_LOG}"
 ##
 ## Include configs
 ##
@@ -63,6 +99,24 @@ fi
 if [ "$ENABLED" != "yes" ]; then
     error_exit "Upgrade is disabled. Please edit etc/upgrade.conf and run $0 again"
 fi
+##
+## Check etc/support.conf
+##
+if [ ! -f "etc/support.conf" ]; then
+    info "Creating empty etc/support.conf"
+    touch etc/support.conf
+fi
+chown $NOC_USER:$NOC_GROUP etc/support.conf
+chmod 600 etc/support.conf
+##
+## Apply OS-depended settings
+##
+OSNAME=`uname -s`
+OSSETTINGS="./scripts/os/$OSNAME/upgrade"
+if [ -f $OSSETTINGS ]; then
+    . $OSSETTINGS
+fi
+
 ## Run pre-upgrade local script
 if [ -x ./local/bin/pre-upgrade ]; then
     info "Running ./local/bin/pre-upgrade"
@@ -76,6 +130,25 @@ fi
 if [ -z "$NOC_GROUP" ]; then
     NOC_GROUP=`id -n -g`
 fi
+##
+## Check virtualenv is enabled and set up
+##
+info "Checking virtualenv"
+if [ ! -x ./bin/python ]; then
+    info "vitualenv is not configured. Trying to set up"
+    # Check virtualenv is available
+    which virtualenv
+    if [ $? -ne 0 ]; then
+        error_exit "$LINENO: virtualenv is not installed.\nPlease install virtualenv:\n > pip install virtualenv\nand run $0 again"
+    fi
+    # Initialize virtualenv
+    info "Setting up virtualenv"
+    virtualenv $PWD --no-site-packages
+    if [ $? -ne 0 ]; then
+        error_exit "$LINENO: Cannot setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
+    fi
+fi
+
 ## Check upgrade.conf
 [ -z "$LOCAL_REPO" ] && error_exit "$LINENO: LOCAL_REPO is not set"
 [ -z "$BACKUP" ] && error_exit "$LINENO: BACKUP is not set"
@@ -102,7 +175,6 @@ for d in ./etc/noc*.defaults; do
         ./scripts/set-conf.py $conf main pidfile $PIDDIR || error_exit "$LINENO: Unable to set $conf:[main]/pidfile"
         if [ $conf = "./etc/noc.conf" ]; then
             # Set up paths
-            ensure_prog ssh path ssh
             ensure_prog pg_dump path pg_dump
             ensure_prog tar path tar
             ensure_prog gzip path gzip
@@ -118,7 +190,7 @@ for d in ./etc/noc*.defaults; do
             ./scripts/set-conf.py ./etc/noc.conf database password $PG_PASSWORD || error_exit "$LINENO: Unable to set etc/noc.conf:[database]/password"
             ./scripts/set-conf.py ./etc/noc.conf database host $PG_HOST || error_exit "$LINENO: Unable to set etc/noc.conf:[database]/host"
             ./scripts/set-conf.py ./etc/noc.conf database port $PG_PORT || error_exit "$LINENO: Unable to set etc/noc.conf:[database]/port"
-            # Set up PostgreSQL database
+            # Set up MongoDB database
             ./scripts/set-conf.py ./etc/noc.conf nosql_database name $MONGO_DB || error_exit "$LINENO: Unable to set etc/noc.conf:[nosql_database]/name"
             ./scripts/set-conf.py ./etc/noc.conf nosql_database user $MONGO_USER || error_exit "$LINENO: Unable to set etc/noc.conf:[nosql_database]/user"
             ./scripts/set-conf.py ./etc/noc.conf nosql_database password $MONGO_PASSWORD || error_exit "$LINENO: Unable to set etc/noc.conf:[nosql_database]/password"
@@ -137,27 +209,34 @@ ensure_dir etc/ssh 700
 [ -z "$BACKUP" ] || ensure_dir $BACKUP 750
 [ -z "$LOG" ] || ensure_dir $LOG 750
 ##
-## Check virtualenv is enabled and set up
+## Uninstall legacy patches
 ##
-info "Checking virtualenv"
-if [ ! -x ./bin/python ]; then
-    info "vitualenv is not configured. Trying to set up"
-    # Check virtualenv is available
-    which virtualenv
-    if [ $? -ne 0 ]; then
-        error_exit "$LINENO: virtualenv is not installed.\nPlease install virtualenv:\n > pip install virtualenv\nand run $0 again"
+PATCH_FLAG="local/.patch"
+if [ ! -f $PATCH_FLAG ]; then
+    if [ ! -h lib/python ]; then
+        info "Creating lib/python symlink"
+        if [ -d lib/python2.7 ]; then
+            (cd lib && ln -s python2.7 python)
+        else
+            (cd lib && ln -s python2.6 python)
+        fi
     fi
-    # Initialize virtualenv
-    info "Setting up virtualenv"
-    virtualenv $PWD --no-site-packages
-    if [ $? -ne 0 ]; then
-        error_exit "$LINENO: Cannot setup virtualenv.\nPlease run:\n > virtualenv $PWD --no-site-packages\nmanually and run $0 again"
-    fi
+    info "Reverting legacy patches"
+    ./scripts/apply-patches --fix || error_exit "$LINENO: Failed to revert legacy patches"
+    touch $PATCH_FLAG
 fi
+
+##
+## Revert applied patches
+##
+QUILT=`which quilt`
+[ -z "$QUILT" ] && error_exit "$LINENO: quilt not found. Please install quilt from OS packages"
+info "Reverting local patches"
+./scripts/apply-patches --revert || error_exit "$LINENO: Failed to revert local patches"
 ##
 ## Pull repo
 ##
-info "Pulling repo $REPO"
+info "Pulling branch $BRANCH from repo $REPO"
 if [ -x ./bin/hg ]; then
     HG=./bin/hg
 else
@@ -170,7 +249,7 @@ fi
 if [ $BRANCH != "none" ]; then
     UPGRADETS=./local/upgrade-time
     touch $UPGRADETS
-    $HG pull -u $REPO || error_exit "$LINENO: Failed to pull repo $REPO"
+    $HG pull -b "$BRANCH" -u $REPO || error_exit "$LINENO: Failed to pull branch $BRANCH out of repo $REPO"
     if [ `$HG branch` = "$BRANCH" ]; then
         $HG update || error_exit "$LINENO: Failed to update repo"
     else
@@ -190,9 +269,10 @@ fi
 info "Upgrading PIP"
 ./bin/pip install pip --upgrade || error_exit "$LINENO: Failed to update PIP"
 info "Updating python libraries"
-PIP_REQUIREMENTS=etc/requirements/noc.txt
+PIP_REQUIREMENTS_COMMON=etc/requirements/common.txt
+PIP_REQUIREMENTS_NOC=etc/requirements/noc.txt
 PIP_FLAG=local/.pip
-PIP_ARGS="-r etc/requirements/noc.txt"
+PIP_ARGS="-r $PIP_REQUIREMENTS_COMMON -r $PIP_REQUIREMENTS_NOC --trusted-host cdn.nocproject.org"
 if [ "$INSTALL_DEBUG" = "yes" ]; then
     PIP_ARGS="$PIP_ARGS -r etc/requirements/debug.txt"
 fi
@@ -200,17 +280,19 @@ if [ -f "etc/requirements/local.txt" ]; then
     PIP_ARGS="$PIP_ARGS -r etc/requirements/local.txt"
 fi
 if [ ! -z "$PIP_FIND_LINKS" ]; then
-    if [ "$PIP_FIND_LINKS" = "http://cdn.nocproject.org/pkg/simple/" ]; then
-        PIP_FIND_LINKS=https://bitbucket.org/nocproject/noc/downloads
-    fi
     PIP_ARGS="$PIP_ARGS --find-links $PIP_FIND_LINKS --allow-all-external"
 fi
-if [ $PIP_REQUIREMENTS -nt $PIP_FLAG ]; then
+if [ $PIP_REQUIREMENTS_NOC -nt $PIP_FLAG -o $PIP_REQUIREMENTS_COMMON -nt $PIP_FLAG ]; then
     PIP_ARGS="$PIP_ARGS --upgrade"
 fi
 
 ./bin/pip install $PIP_ARGS || error_exit "$LINENO: Cannot update python libraries"
 touch $PIP_FLAG
+##
+## Apply local patches
+##
+info "Apply local patches"
+./scripts/apply-patches || error_exit "$LINENO: Cannot apply patches"
 ##
 ## Install noc.pth
 ##
@@ -221,11 +303,6 @@ info "Installing noc.pth"
 ##
 info "Customizing Python site settings"
 ./scripts/check-sitecustomize.py || error_exit "$LINENO: Cannot install check-sitecustomize.py"
-##
-## Apply local patches
-##
-info "Apply local patches"
-./scripts/apply-patches || error_exit "$LINENO: Cannot apply patches"
 ##
 ## Compile bytecode
 ##
@@ -240,9 +317,9 @@ info "Looking for hanging .pyc files"
 ##
 info "Running the rest of upgrade process with user $NOC_USER credentials"
 if [ "$NOC_USER" = `id -n -u` ]; then
-    ./scripts/upgrade-user
+    ./scripts/upgrade-user || error_exit "$LINENO: Failed to upgrade user part"
 else
-    su $NOC_USER -c "./scripts/upgrade-user"
+    su $NOC_USER -c "./scripts/upgrade-user" || error_exit "$LINENO: Failed to upgrade user part"
 fi
 ## Run post-upgrade local script
 if [ -x ./local/bin/post-upgrade ]; then
@@ -250,4 +327,7 @@ if [ -x ./local/bin/post-upgrade ]; then
     ./local/bin/post-upgrade
 fi
 # Done
+info "Reporting upgrade status"
+./scripts/cptool --quiet --upgrade --success
 info "$PROGNAME complete"
+save_upgrade_log

@@ -10,6 +10,8 @@
 import logging
 import inspect
 import os
+## Django modules
+from django.utils.timezone import get_current_timezone
 ## NOC modules
 from noc.lib.debug import error_report
 
@@ -24,6 +26,7 @@ class NotificationChannel(object):
     instances = <N>
     """
     name = None
+    TZ = get_current_timezone()
 
     def __init__(self, daemon, instance, queue):
         self.daemon = daemon

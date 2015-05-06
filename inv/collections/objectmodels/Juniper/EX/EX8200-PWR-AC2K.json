@@ -1,0 +1,28 @@
+{
+    "name": "Juniper | EX | EX8200-PWR-AC2K",
+    "uuid": "b26bfa34-e11c-4b58-ac87-4eeb7acab44c",
+    "vendor__code": "JUNIPER",
+    "description": "AC Power Supply, 2000W at 220V (1200W at 110V)",
+    "connections": [
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 8200 PWR"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "740-021466"
+        }
+    }
+}

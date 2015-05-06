@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Config | Config Synced #2 (SYSLOG)",
+    "uuid": "a5d7437c-08a6-4926-b3df-96a0cbe1e897",
+    "description": "%PFINIT-SP-5-CONFIG_SYNC: Sync'ing the startup configuration to the standby Router.",
+    "event_class__name": "Config | Config Synced",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PFINIT-SP-5-CONFIG_SYNC: Sync'ing the (?:startup|private) configuration to the standby Router."
+        }
+    ]
+}

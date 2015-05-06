@@ -2,10 +2,12 @@
 ##----------------------------------------------------------------------
 ## EventClassificationRule model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
 ## Third-party modules
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
@@ -14,6 +16,7 @@ from eventclass import EventClass
 from datasource import DataSource
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.escape import json_escape as jq
+from noc.lib.text import quote_safe_path
 
 
 class EventClassificationRuleVar(EmbeddedDocument):
@@ -75,10 +78,11 @@ class EventClassificationRule(Document):
     """
     meta = {
         "collection": "noc.eventclassificationrules",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "json_collection": "fm.eventclassificationrules"
     }
     name = fields.StringField(required=True, unique=True)
-    is_builtin = fields.BooleanField(required=True)
+    uuid = fields.UUIDField(binary=True)
     description = fields.StringField(required=False)
     event_class = PlainReferenceField(EventClass, required=True)
     preference = fields.IntField(required=True, default=1000)
@@ -107,7 +111,10 @@ class EventClassificationRule(Document):
     def to_json(self):
         r = ["{"]
         r += ["    \"name\": \"%s\"," % jq(self.name)]
-        r += ["    \"description\": \"%s\"," % jq(self.description)]
+        r += ["    \"$collection\": \"%s\"," % jq(self._meta["json_collection"])]
+        r += ["    \"uuid\": \"%s\"," % self.uuid]
+        if self.description:
+            r += ["    \"description\": \"%s\"," % jq(self.description)]
         r += ["    \"event_class__name\": \"%s\"," % jq(self.event_class.name)]
         r += ["    \"preference\": %d," % self.preference]
         # Dump datasources
@@ -132,7 +139,7 @@ class EventClassificationRule(Document):
             vars = []
             for v in self.vars:
                 vd = ["        {"]
-                vd += ["            \"name\": \"%s\"" % jq(v.name)]
+                vd += ["            \"name\": \"%s\"," % jq(v.name)]
                 vd += ["            \"value\": \"%s\"" % jq(v.value)]
                 vd += ["        }"]
                 vars += ["\n".join(vd)]
@@ -152,3 +159,7 @@ class EventClassificationRule(Document):
         r += ["    ]"]
         r += ["}"]
         return "\n".join(r)
+
+    def get_json_path(self):
+        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        return os.path.join(*p) + ".json"

@@ -3,7 +3,7 @@
 ## Syslog Collector
 ## (RFC3164)
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -23,17 +23,19 @@ class SyslogCollector(ListenUDPSocket, EventCollector):
     name = "SyslogCollector"
 
     def __init__(self, activator, address, port):
-        self.info("Initializing at %s:%s" % (address, port))
         self.collector_signature = "%s:%s" % (address, port)
         ListenUDPSocket.__init__(self, activator.factory, address, port)
         EventCollector.__init__(self, activator)
+        self.logger.info("Initializing")
 
     def on_read(self, msg, address, port):
-        self.debug(msg)
+        self.logger.debug("Incoming message: %s", msg)
         object = self.map_event(address)
         if not object:
             # Ignore events from unknown sources
             return
+        # Convert msg to valid UTF8
+        msg = unicode(msg, "utf8", "ignore").encode("utf8")
         # Parse priority
         priority = 0
         if msg.startswith("<"):
@@ -49,10 +51,10 @@ class SyslogCollector(ListenUDPSocket, EventCollector):
         ts = int(time.time())
         #
         body = {
-            "source"   : "syslog",
+            "source": "syslog",
             "collector": self.collector_signature,
-            "facility" : priority >> 3,
-            "severity" : priority & 7,
-            "message"  : msg
+            "facility": priority >> 3,
+            "severity": priority & 7,
+            "message": msg
         }
         self.process_event(ts, object, body)

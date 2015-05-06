@@ -9,6 +9,7 @@
 ## NOC modules
 from noc.lib.nosql import Document, StringField, ForeignKeyField, BooleanField
 from noc.main.models import Style
+from noc.lib.solutions import get_probe_config
 
 
 class InterfaceProfile(Document):
@@ -34,6 +35,10 @@ class InterfaceProfile(Document):
     )
     # Discovery settings
     mac_discovery = BooleanField(default=False)
+    # check_link alarm job interval settings
+    # Either None or T0,I0,T1,I1,...,Tn-1,In-1,,In
+    # See MultiIntervalJob settings for details
+    check_link_interval = StringField(default=",60")
 
     def __unicode__(self):
         return self.name
@@ -46,3 +51,10 @@ class InterfaceProfile(Document):
             cls._default_profile = cls.objects.filter(
                 name="default").first()
             return cls._default_profile
+
+    def get_probe_config(self, config):
+        try:
+            return get_probe_config(self, config)
+        except ValueError:
+            pass
+        raise ValueError("Invalid config '%s'" % config)

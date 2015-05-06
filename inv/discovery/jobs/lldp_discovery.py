@@ -23,10 +23,6 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
     map_task = "get_lldp_neighbors"
     method = "lldp"
     ignored = not config.getboolean("lldp_discovery", "enabled")
-    initial_submit_interval = config.getint("lldp_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("lldp_discovery",
-        "initial_submit_concurrency")
 
     def process_result(self, object, result):
         self.n_cache = {}  # (chassis_id, chassis_subtype) -> object
@@ -38,7 +34,8 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
             ni = n["neighbors"][0]
             remote_object = self.get_neighbor(
                 ni["remote_chassis_id"], ni["remote_chassis_id_subtype"])
-            self.debug("get_neighbor(%s, %s) -> %s" % (ni["remote_chassis_id"], ni["remote_chassis_id_subtype"], remote_object))
+            self.debug("get_neighbor(%s, %s) -> %s" % (ni["remote_chassis_id"],
+                ni["remote_chassis_id_subtype"], remote_object))
             if not remote_object:
                 # Object not found
                 continue
@@ -66,7 +63,7 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
             7: self.get_neighbor_by_local  # local(7)
         }.get(chassis_subtype)
         if f:
-           n = f(chassis_id)
+            n = f(chassis_id)
         else:
             n = None
         self.n_cache[(chassis_id, chassis_subtype)] = n
@@ -84,9 +81,11 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
 
     def get_remote_port(self, object, remote_port, remote_port_subtype):
         f = {
-            3: self.get_remote_port_by_mac,   # macAddress(3)
-            5: self.get_remote_port_by_name,  # interfaceName(5)
-            7: self.get_remote_port_by_local   # local(7)
+            1: self.get_remote_port_by_description,  # interfaceAlias(1)
+            3: self.get_remote_port_by_mac,          # macAddress(3)
+            5: self.get_remote_port_by_name,         # interfaceName(5)
+            7: self.get_remote_port_by_local,        # local(7)
+            128: self.get_remote_port_unspecified    # undetermined
         }.get(remote_port_subtype)
         if f:
             return f(object, remote_port)
@@ -98,7 +97,26 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
             return None
 
     def get_remote_port_by_name(self, object, port):
+        self.debug("Remote port name: %s" % port)
         return object.profile.convert_interface_name(port)
+
+    def get_remote_port_by_description(self, object, port):
+        """
+        Find remote port by interface description.
+        :param object:
+        :param port:
+        :return: port name if found, None otherwise.
+        """
+        self.debug("Remote port description: %s" % port)
+        try:
+            i = Interface.objects.filter(
+                managed_object=object.id, description=port).first()
+            if i:
+                return i.name
+            else:
+                return None
+        except:
+            return None
 
     def get_remote_port_by_local(self, object, port):
         """
@@ -107,6 +125,7 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
         :param port:
         :return:
         """
+        self.debug("Remote port local: %s" % port)
         # Try ifindex
         if is_int(port):
             i = Interface.objects.filter(
@@ -120,6 +139,11 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
                 managed_object=object.id, name=n_port).first()
             if i:
                 return n_port
+            for p in object.profile.get_interface_names(n_port):
+                i = Interface.objects.filter(
+                    managed_object=object.id, name=p).first()
+                if i:
+                    return p
         except InterfaceTypeError:
             pass
         # Unable to decode
@@ -128,9 +152,46 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
         return port
 
     def get_remote_port_by_mac(self, object, mac):
+        self.debug("Remote port mac: %s" % mac)
         i = Interface.objects.filter(managed_object=object.id,
             mac=mac).first()
         if i:
             return i.name
         else:
             return None
+
+    def get_remote_port_unspecified(self, object, port):
+        """
+        Try to guess remote port from description of undetermined subtype.
+        :param object:
+        :param port:
+        :return:
+        """
+        self.debug("Remote port unspecified: %s" % port)
+        # Try to find interface with given name.
+        try:
+            n_port = self.get_remote_port_by_name(object, port)
+        except:
+            n_port = None
+        iface = None
+        # Check whether returned port name exists. Return it if yes.
+        if n_port:
+            i = Interface.objects.filter(
+                managed_object=object.id, name=n_port).first()
+            if i:
+                iface = n_port
+        if iface:
+            return iface
+        # Try to find interface with given MAC address. TODO: clean MAC.
+        try:
+            iface = self.get_remote_port_by_mac(object, port)
+        except:
+            iface = None
+        if iface:
+            return iface
+        # Try to find interface with given description.
+        iface = self.get_remote_port_by_description(object, port)
+        if iface:
+            return iface
+        # Use algorithms from get_remote_port_by_local as last resort.
+        return self.get_remote_port_by_local(object, port)

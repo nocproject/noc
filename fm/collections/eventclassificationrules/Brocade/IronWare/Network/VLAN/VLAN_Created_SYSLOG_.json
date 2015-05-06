@@ -1,0 +1,21 @@
+{
+    "name": "Brocade | IronWare | Network | VLAN | VLAN Created (SYSLOG)",
+    "uuid": "9b46c9db-3aa0-42ba-ac81-93daac279561",
+    "description": "Aug 8 12:56:07 Foudry-Core VLAN: Id 1945 added from telnet session.",
+    "event_class__name": "Network | VLAN | VLAN Created",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Brocade\\.IronWare$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* VLAN: Id (?P<vlan>\\d+) added from \\S+ session\\.$"
+        }
+    ]
+}

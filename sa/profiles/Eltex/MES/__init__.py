@@ -21,7 +21,7 @@ class Profile(NOCProfile):
         (r"^More: <space>,  Quit: q, One line: <return>$", " "),
         (r"\[Yes/press any key for no\]", "Y")
         ]
-    pattern_unpriveleged_prompt = r"^\S+> "
+    pattern_unpriveleged_prompt = r"^\S+>"
     pattern_syntax_error = r"^% (Unrecognized command|Incomplete command|Wrong number of parameters or invalid range, size or characters entered)$"
     command_disable_pager = "terminal datadump"
     command_super = "enable"

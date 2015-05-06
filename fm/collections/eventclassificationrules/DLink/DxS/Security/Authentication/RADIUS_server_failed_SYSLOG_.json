@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | RADIUS server failed (SYSLOG)",
+    "uuid": "dbbb5de4-78b7-4809-ae8f-0efe61b12de1",
+    "description": "WARN: AAA server 172.16.35.2 (Protocol: RADIUS) connection failed",
+    "event_class__name": "Security | Authentication | RADIUS server failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) AAA server (?P<ip>\\S+) \\(Protocol: RADIUS\\) connection failed"
+        }
+    ]
+}

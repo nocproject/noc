@@ -9,5 +9,5 @@
 
 if __name__ == "__main__":
     # Run activator
-    from noc.sa.activator import Activator
+    from noc.sa.activator.activator import Activator
     Activator().process_command()

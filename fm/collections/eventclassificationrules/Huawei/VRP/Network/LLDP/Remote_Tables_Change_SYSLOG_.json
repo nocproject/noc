@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Network | LLDP | Remote Tables Change (SYSLOG)",
+    "uuid": "cfe9cac3-c8d4-44ce-881e-c5ace4937c77",
+    "description": "Jul 31 2012 10:38:54 kie-kie-f3-r16-t5-asw0 LLDP/4/NBRCHGTRAP:OID: 1.0.8802.1.1.2.0.0.1 Neighbor information is changed. (LldpStatsRemTablesInserts=1, LldpStatsRemTablesDeletes=2, LldpStatsRemTablesDrops=3, LldpStatsRemTablesAgeouts=4)",
+    "event_class__name": "Network | LLDP | Remote Tables Change",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "LLDP/\\d+/NBRCHGTRAP.+[Nn]eighbor information is changed.+LldpStatsRemTablesInserts=(?P<table_inserts>\\S+), LldpStatsRemTablesDeletes=(?P<table_deletes>\\S+), LldpStatsRemTablesDrops=(?P<table_drops>\\S+), LldpStatsRemTablesAgeouts=(?P<table_ageouts>\\S+)\\)"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | Attack | IP Spoofing #1 (SYSLOG)",
+    "uuid": "566d7efb-60a9-49a0-aa01-0a71d77488d5",
+    "description": "%UBR7100-3-OVERLAPIP: Interface Cable1/0, IP address 10.100.1.122 from MAC 0016.c7dd.4d2c is already in use on Cable1/0.  SID = 2218",
+    "event_class__name": "Security | Attack | IP Spoofing",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%UBR\\S+00-3-OVERLAPIP: Interface (?P<interface>\\S+), IP address (?P<src_ip>\\S+) from MAC (?P<src_mac>\\S+) is already in use on .+.  SID = \\d+"
+        }
+    ]
+}

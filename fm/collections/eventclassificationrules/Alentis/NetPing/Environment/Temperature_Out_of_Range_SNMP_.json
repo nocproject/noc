@@ -1,0 +1,33 @@
+{
+    "name": "Alentis | NetPing | Environment | Temperature Out of Range (SNMP)",
+    "uuid": "0491100e-061a-4a17-82c9-7354fbd5b916",
+    "description": "Alentis  NetPing Bad Temperature (SNMP)",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Alentis\\.NetPing$"
+        },
+        {
+            "key_re": "^DKSF-50-8-1-A-X::npThermoMemo\\.\\d$",
+            "value_re": "^(?P<name>.+)$"
+        },
+        {
+            "key_re": "^DKSF-50-8-1-A-X::npThermoStatus\\.\\d$",
+            "value_re": "^(?P<threshold>high|low)$"
+        },
+        {
+            "key_re": "^DKSF-50-8-1-A-X::npThermoValue\\.\\d$",
+            "value_re": "^(?P<measure>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^DKSF-50-8-1-A-X::npThermoEntry$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | Link | DOM | Alarm: Out of Threshold (SYSLOG)",
+    "uuid": "f4ad86c2-b3a8-426b-992d-e65d86297cf6",
+    "description": "%PLATFORM-SFP-3-HIGH_VOLTAGE_ALARM : Set|envmon_lc[168024]|SFP(0x1029011)|Port_0/17",
+    "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PLATFORM-SFP-3-(?P<threshold>HIGH|LOW)_(?P<sensor>LASER_BIAS|RX_POWER|TEMP|TX_POWER|VOLTAGE)_ALARM : Set\\|envmon_lc\\[\\d+\\]\\|SFP\\(0x\\d+\\)\\|(?P<interface>.+)"
+        }
+    ]
+}

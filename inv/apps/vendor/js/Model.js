@@ -20,13 +20,22 @@ Ext.define("NOC.inv.vendor.Model", {
             type: "string"
         },
         {
-            name: "is_builtin",
-            type: "boolean",
-            defaultValue: false
+            name: "code",
+            type: "string"
+        },
+        {
+            name: "uuid",
+            type: "string",
+            persist: false
         },
         {
             name: "site",
             type: "string"
+        },
+        {
+            name: "is_builtin",
+            type: "boolean",
+            persist: false
         }
     ]
 });

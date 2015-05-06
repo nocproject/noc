@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Abstract script interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -15,13 +15,6 @@ from noc.lib.text import list_to_ranges, ranges_to_list
 from noc.lib.ip import IPv6
 from noc.lib.mac import MAC
 from noc.lib.validators import *
-
-try:
-    from django import forms
-    from noc.lib.forms import NOCForm
-except ImportError:
-    # No django. Interface.get_form() is meaningless
-    pass
 
 
 class InterfaceTypeError(Exception):
@@ -37,14 +30,14 @@ class Parameter(object):
         self.default = default
         if default is not None:
             self.default = self.clean(default)
-    
+
     def __or__(self, other):
         """ORParameter syntax sugar"""
         return ORParameter(self, other)
-    
+
     def raise_error(self, value, msg=""):
         """Raise InterfaceTypeError
-        
+
         :param value: Value where error detected
         :type value: Arbitrary python type
         :param msg: Optional message
@@ -53,17 +46,17 @@ class Parameter(object):
         """
         raise InterfaceTypeError("%s: %s. %s" % (self.__class__.__name__,
                                                  repr(value), msg))
-    
+
     def clean(self, value):
         """
         Input parameter normalization
-        
+
         :param value: Input parameter
         :type value: Arbitrary python type
         :return: Normalized value
         """
         return value
-    
+
     def script_clean_input(self, profile, value):
         """
         Clean up script input parameters. Can be overloaded to
@@ -76,12 +69,12 @@ class Parameter(object):
         :return: Normalized value
         """
         return self.clean(value)
-    
+
     def script_clean_result(self, profile, value):
         """
         Clean up script result parameters. Can be overloaded to
         handle profile specific.
-        
+
         :param profile: Profile
         :type profile: Profile instance
         :param value: Input parameter
@@ -89,11 +82,11 @@ class Parameter(object):
         :return: Normalized value
         """
         return self.clean(value)
-    
+
     def form_clean(self, value):
         """
         Clean up form field
-        
+
         :param value: Input parameter
         :type value: Arbitrary python type
         :return: Normalized value
@@ -104,18 +97,19 @@ class Parameter(object):
             return self.clean(value)
         except InterfaceTypeError, why:
             raise forms.ValidationError(why)
-    
+
     def get_form_field(self, label=None):
         """
         Get appropriative form field
         """
-        return forms.CharField(required=self.required,
-                               initial=self.default, label=label)
-    
+        return {
+            "xtype": "textfield",
+            "name": label,
+            "fieldLabel": label,
+            "allowBlank": not self.required
+        }
 
-##
-##
-##
+
 class ORParameter(Parameter):
     """
     >>> ORParameter(IntParameter(),IPv4Parameter()).clean(10)
@@ -149,7 +143,7 @@ class ORParameter(Parameter):
         self.left = left
         self.right = right
         self.required = self.left.required or self.right.required
-        
+
     def clean(self, value):
         if value is None and self.required == False:
             return None
@@ -157,13 +151,13 @@ class ORParameter(Parameter):
             return self.left.clean(value)
         except InterfaceTypeError:
             return self.right.clean(value)
-        
+
     def script_clean_input(self, profile, value):
         try:
             return self.left.script_clean_input(profile, value)
         except InterfaceTypeError:
             return self.right.script_clean_input(profile, value)
-        
+
     def script_clean_result(self, profile, value):
         try:
             return self.left.script_clean_result(profile, value)
@@ -211,7 +205,7 @@ class StringParameter(Parameter):
         self.choices = choices
         super(StringParameter, self).__init__(required=required,
                                               default=default)
-    
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -236,9 +230,7 @@ class UnicodeParameter(StringParameter):
             self.raise_error(value)
         return value
 
-##
-##
-##
+
 class REStringParameter(StringParameter):
     """
     >>> REStringParameter("ex+p").clean("exp")
@@ -260,7 +252,7 @@ class REStringParameter(StringParameter):
         self.rx = re.compile(regexp)  # Compile before calling the constructor
         super(REStringParameter, self).__init__(required=required,
                                                 default=default)
-    
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -339,14 +331,15 @@ class BooleanParameter(Parameter):
         if type(value) in (types.StringType, types.UnicodeType):
             return value.lower() in ("true", "t", "yes", "y")
         self.raise_error(value)
-    ##
+
     def get_form_field(self, label=None):
-        return forms.BooleanField(required=self.required,
-                                  initial=self.default, label=label)
-    
-##
-##
-##
+        return {
+            "xtype": "checkboxfield",
+            "name": label,
+            "boxLabel": label
+        }
+
+
 class IntParameter(Parameter):
     """
     >>> IntParameter().clean(1)
@@ -384,7 +377,7 @@ class IntParameter(Parameter):
         self.min_value = min_value
         self.max_value = max_value
         super(IntParameter, self).__init__(required=required, default=default)
-        
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -441,10 +434,9 @@ class FloatParameter(Parameter):
         if ((self.min_value is not None and i < self.min_value)
                 or (self.max_value is not None and i > self.max_value)):
             self.raise_error(value)
-        return i   
-##
-##
-##
+        return i
+
+
 class ListParameter(Parameter):
     def clean(self, value):
         if value is None and self.default is not None:
@@ -453,15 +445,14 @@ class ListParameter(Parameter):
             return list(value)
         except:
             self.raise_error(value)
-    
+
     def form_clean(self, value):
         try:
             return self.clean(eval(value, {}, {}))
         except:
             self.raise_error(value)
-##
-##
-##
+
+
 class InstanceOfParameter(Parameter):
     """
     >>> class C: pass
@@ -490,14 +481,14 @@ class InstanceOfParameter(Parameter):
             self.is_valid = self.is_valid_classname
         else:
             self.is_valid = self.is_valid_instance
-    
+
     def is_valid_instance(self, value):
         return isinstance(value, self.cls)
-    
+
     def is_valid_classname(self, value):
         return (hasattr(value, "__class__")
                 and value.__class__.__name__ == self.cls)
-    
+
     def clean(self, value):
         if value is None:
             if self.default is not None:
@@ -510,11 +501,8 @@ class InstanceOfParameter(Parameter):
         except:
             pass
         self.raise_error(value)
-    
 
-##
-##
-##
+
 class SubclassOfParameter(Parameter):
     """
     >>> class C: pass
@@ -547,7 +535,7 @@ class SubclassOfParameter(Parameter):
             self.is_valid = self.is_valid_classname
         else:
             self.is_valid = self.is_valid_class
-    
+
     def is_valid_classname(self, value):
         def check_name(c, name):
             # Check class name
@@ -559,12 +547,12 @@ class SubclassOfParameter(Parameter):
                     return True
             #
             return False
-        
+
         return check_name(value, self.cls)
-    
+
     def is_valid_class(self, value):
         return issubclass(value, self.cls)
-    
+
     def clean(self, value):
         if value is None:
             if self.default is not None:
@@ -577,11 +565,8 @@ class SubclassOfParameter(Parameter):
         except:
             pass
         self.raise_error(value)
-    
 
-##
-##
-##
+
 class ListOfParameter(ListParameter):
     """
     >>> ListOfParameter(element=IntParameter()).clean([1,2,3])
@@ -611,7 +596,7 @@ class ListOfParameter(ListParameter):
         self.convert = convert
         super(ListOfParameter, self).__init__(required=required,
                                               default=default)
-    
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -622,7 +607,7 @@ class ListOfParameter(ListParameter):
             return [[e.clean(vv) for e, vv in zip(self.element, v)] for v in value]
         else:
             return [self.element.clean(x) for x in v]
-    
+
     def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
             return self.default
@@ -631,7 +616,7 @@ class ListOfParameter(ListParameter):
             return [[e.script_clean_input(profile, vv) for e, vv in zip(self.element, v)] for v in value]
         else:
             return [self.element.script_clean_input(profile, x) for x in v]
-    
+
     def script_clean_result(self, profile, value):
         if value is None and self.default is not None:
             return self.default
@@ -640,11 +625,8 @@ class ListOfParameter(ListParameter):
             return [[e.script_clean_result(profile, vv) for e, vv in zip(self.element, v)] for v in value]
         else:
             return [self.element.script_clean_result(profile, x) for x in v]
-    
 
-##
-##
-##
+
 class StringListParameter(ListOfParameter):
     """
     >>> StringListParameter().clean(["1","2","3"])
@@ -652,14 +634,12 @@ class StringListParameter(ListOfParameter):
     >>> StringListParameter().clean(["1",2,"3"])
     ['1', '2', '3']
     """
-    def __init__(self, required=True, default=None):
-        super(StringListParameter, self).__init__(element=StringParameter(),
-                                           required=required, default=default)
-    
+    def __init__(self, required=True, default=None, convert=False):
+        super(StringListParameter, self).__init__(
+            element=StringParameter(), required=required,
+            default=default, convert=convert)
 
-##
-##
-##
+
 class DictParameter(Parameter):
     """
     >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":10,"s":"ten"})
@@ -672,7 +652,7 @@ class DictParameter(Parameter):
     def __init__(self, required=True, default=None, attrs=None):
         super(DictParameter, self).__init__(required=required, default=default)
         self.attrs = attrs
-    
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -706,7 +686,7 @@ class DictParameter(Parameter):
         for k, v in in_value.items():
             out_value[k] = v
         return out_value
-    
+
     def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
             return self.default
@@ -728,7 +708,7 @@ class DictParameter(Parameter):
         for k, v in in_value.items():
             out_value[k] = v
         return out_value
-    
+
     def script_clean_result(self, profile, value):
         if value is None and self.default is not None:
             return self.default
@@ -752,9 +732,7 @@ class DictParameter(Parameter):
             out_value[k] = v
         return out_value
 
-##
-##
-##
+
 class DictListParameter(ListOfParameter):
     """
     >>> DictListParameter().clean([{"1": 2},{"2":3, "4":1}])
@@ -802,9 +780,7 @@ class DateTimeParameter(StringParameter):
         else:
             self.raise_error(value)
 
-##
-##
-##
+
 class IPv4Parameter(StringParameter):
     """
     >>> IPv4Parameter().clean("192.168.0.1")
@@ -817,6 +793,9 @@ class IPv4Parameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
+        if len(value) == 4:
+            # IP address in binary form
+            value = ".".join(["%02X" % ord(c) for c in value])
         v = super(IPv4Parameter, self).clean(value)
         X = v.split(".")
         if len(X) != 4:
@@ -827,11 +806,8 @@ class IPv4Parameter(StringParameter):
         except:
             self.raise_error(value)
         return v
-    
 
-##
-##
-##
+
 class IPv4PrefixParameter(StringParameter):
     """
     >>> IPv4PrefixParameter().clean("192.168.0.0/16")
@@ -871,7 +847,7 @@ class IPv4PrefixParameter(StringParameter):
         except:
             self.raise_error(value)
         return v
-    
+
 
 ##
 ## IPv6 Parameter
@@ -906,11 +882,8 @@ class IPv6Parameter(StringParameter):
         if not is_ipv6(v):
             self.raise_error(value)
         return IPv6(v).normalized.address
-    
 
-##
-##
-##
+
 class IPv6PrefixParameter(StringParameter):
     """
     >>> IPv6PrefixParameter().clean("::/128")
@@ -945,7 +918,7 @@ class IPv6PrefixParameter(StringParameter):
             self.raise_error(value)
         n = IPv6Parameter().clean(n)
         return "%s/%d" % (n, m)
-    
+
 
 ##
 ## IPv4/IPv6 parameter
@@ -963,6 +936,7 @@ class IPParameter(StringParameter):
         else:
             return IPv4Parameter().clean(value)
 
+
 ##
 ## Prefix parameter
 ##
@@ -976,6 +950,7 @@ class PrefixParameter(StringParameter):
             return IPv6PrefixParameter().clean(value)
         else:
             return IPv4PrefixParameter().clean(value)
+
 
 ##
 ##
@@ -996,7 +971,32 @@ class VLANIDParameter(IntParameter):
     def __init__(self, required=True, default=None):
         super(VLANIDParameter, self).__init__(required=required, default=default,
                                               min_value=1, max_value=4095)
-    
+
+
+class VLANStackParameter(ListOfParameter):
+    """
+    >>> VLANStackParameter().clean(10)
+    [10]
+    >>> VLANStackParameter().clean([10])
+    [10]
+    >>> VLANStackParameter().clean([10, "20"])
+    [10, 20]
+    >>> VLANStackParameter().clean([10, 0])
+    [10, 0]
+    """
+    def __init__(self, required=True, default=None):
+        super(VLANStackParameter, self).__init__(element=IntParameter(),
+                                           required=required,
+                                           default=default, convert=True)
+
+    def clean(self, value):
+        value = super(VLANStackParameter, self).clean(value)
+        if len(value) > 0:
+            value[0] = VLANIDParameter().clean(value[0])
+        for i in range(1, len(value)):
+            value[i] = IntParameter(min_value=0, max_value=4095).clean(value[i])
+        return value
+
 
 ##
 ##
@@ -1012,6 +1012,7 @@ class VLANIDListParameter(ListOfParameter):
         super(VLANIDListParameter, self).__init__(element=VLANIDParameter(),
                                            required=required, default=default)
 
+
 ##
 ##
 ##
@@ -1020,7 +1021,11 @@ class VLANIDMapParameter(StringParameter):
         """
         >>> VLANIDMapParameter().clean("1,2,5-10")
         '1-2,5-10'
+        >>> VLANIDMapParameter().clean("")
+        ''
         """
+        if isinstance(value, basestring) and not value.strip():
+            return ""
         vp = VLANIDParameter()
         try:
             return list_to_ranges([vp.clean(v) for v in ranges_to_list(value)])
@@ -1090,10 +1095,10 @@ class MACAddressParameter(StringParameter):
 class InterfaceNameParameter(StringParameter):
     def script_clean_input(self, profile, value):
         return profile.convert_interface_name(value)
-    
+
     def script_clean_result(self, profile, value):
         return self.script_clean_input(profile, value)
-    
+
 
 class OIDParameter(Parameter):
     """
@@ -1109,11 +1114,11 @@ class OIDParameter(Parameter):
     def clean(self, value):
         def is_false(v):
             try:
-                v=int(v)
+                v = int(v)
             except ValueError:
                 return True
-            return v<0
-        
+            return v < 0
+
         if value is None and self.default is not None:
             return self.default
         if bool([v for v in value.split(".") if is_false(v)]):
@@ -1128,11 +1133,17 @@ class RDParameter(Parameter):
         '100:4294967295'
         >>> RDParameter().clean("10.10.10.10:10")
         '10.10.10.10:10'
+        >>> RDParameter().clean("100000:500")
+        '100000:500'
+        >>> RDParameter().clean("100000L:100")
+        '100000:100'
         """
         try:
             l, r = value.split(":")
             r = long(r)
         except ValueError:
+            self.raise_error(value)
+        if r < 0:
             self.raise_error(value)
         if "." in l:
             # IP:N
@@ -1140,17 +1151,25 @@ class RDParameter(Parameter):
                 l = IPv4Parameter().clean(l)
             except InterfaceTypeError:
                 self.raise_error(value)
-            if r < 0 or r > 65535:
+            if r > 65535:
                 self.raise_error(value)
         else:
             # ASN:N
             try:
+                if l.endswith("L") or l.endswith("l"):
+                    l = l[:-1]
                 l = int(l)
             except ValueError:
                 self.raise_error(value)
-            if l < 0 or l > 65535 or r < 0 or r > 0xFFFFFFFFL:
+            if l < 0:
                 self.raise_error(value)
-        return "%s:%s" % (l,r)
+            if l > 65535:
+                if r > 65535:  # 4-byte ASN
+                    self.raise_error(value)
+            else:
+                if r > 0xFFFFFFFFL:  # 2-byte ASN
+                    self.raise_error(value)
+        return "%s:%s" % (l, r)
 
 
 class GeoPointParameter(Parameter):
@@ -1212,6 +1231,11 @@ class ModelParameter(Parameter):
             self.raise_error("Not found: %d" % value)
 
 
+DocFieldMap = {
+    "FloatField": FloatParameter()
+}
+
+
 class DocumentParameter(Parameter):
     """
     Document reference parameter
@@ -1246,6 +1270,11 @@ class EmbeddedDocumentParameter(Parameter):
                 return None
         if not isinstance(value, dict):
             self.raise_error(value, "Value must be list dict")
+        for k, v in self.document._fields.iteritems():
+            if k in value and value[k] is not None:
+                p = DocFieldMap.get(v.__class__.__name__)
+                if p:
+                    value[k] = p.clean(value[k])
         return self.document(**value)
 
 
@@ -1288,6 +1317,13 @@ class ColorParameter(Parameter):
         self.raise_error(value)
 
 
+class ObjectIdParameter(REStringParameter):
+    def __init__(self, required=True, default=None):
+        super(ObjectIdParameter, self).__init__(
+            "^[0-9a-f]{24}$", required=required, default=default
+        )
+
+
 ## Stub for interface registry
 interface_registry = {}
 
@@ -1297,23 +1333,27 @@ class InterfaceBase(type):
         m = type.__new__(cls, name, bases, attrs)
         interface_registry[name] = m
         return m
-    
 
-##
-##
-##
+
 class Interface(object):
     __metaclass__ = InterfaceBase
-    
+
     template = None  # Relative template path in sa/templates/
-    
-    ##
-    ## Generator returning (parameter name, parameter instance) pairs
-    ##
+    form = None
+    preview = None
+    RESERVED_NAMES = ("returns", "template", "form", "preview")
+
     def gen_parameters(self):
+        """
+        Generator yielding (parameter name, parameter instance) pairs
+        """
         for n, p in self.__class__.__dict__.items():
-            if issubclass(p.__class__, Parameter) and n not in ("returns", "template"):
+            if issubclass(p.__class__, Parameter) and n not in self.RESERVED_NAMES:
                 yield (n, p)
+
+    @property
+    def has_required_params(self):
+        return any(p for n, p in self.gen_parameters() if p.required)
 
     def clean(self, __profile=None, **kwargs):
         """
@@ -1343,11 +1383,11 @@ class Interface(object):
             if k != "__profile":
                 out_kwargs[k] = v
         return out_kwargs
-    
-    ##
-    ## Clean up returned result
-    ##
+
     def clean_result(self, result):
+        """
+        Clean up returned result
+        """
         try:
             rp = self.returns
         except AttributeError:
@@ -1356,38 +1396,29 @@ class Interface(object):
 
     def script_clean_input(self, __profile, **kwargs):
         return self.clean(__profile, **kwargs)
-    
+
     def script_clean_result(self, __profile, result):
         try:
             rp = self.returns
         except AttributeError:
             return result
         return rp.script_clean_result(__profile, result)
-    
+
     def template_clean_result(self, __profile, result):
         return result
-    
+
     def requires_input(self):
         for n, p in self.gen_parameters():
             return True
         return False
-    
-    def get_form(self, data=None):
-        def get_clean_field_wrapper(form, name, param):
-            def clean_field_wrapper(form, name, param):
-                data = form.cleaned_data[name]
-                if not param.required and not data:
-                    return None
-                try:
-                    return param.form_clean(data)
-                except InterfaceTypeError:
-                    raise forms.ValidationError("Invalid value")
-            return lambda: clean_field_wrapper(form, name, param)
-        f = NOCForm(data)
+
+    def get_form(self):
+        if self.form:
+            return self.form
+        r = []
         for n, p in self.gen_parameters():
-            f.fields[n] = p.get_form_field(n)
-            setattr(f, "clean_%s" % n, get_clean_field_wrapper(f, n, p))
-        return f
+            r += [p.get_form_field(n)]
+        return r
 
 
 def iparam(**params):

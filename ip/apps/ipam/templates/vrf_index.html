@@ -141,7 +141,8 @@ function on_mynetworks(n)
                     <th class="status">State</th>
                     <th class="project">Project</th>
                     <th class="vc">VC</th>
-                    <th class"description">Description</th>
+                    <th class="description">Description</th>
+                    <th class="usage">Usage</th>
                     <th class="tt">TT</th>
                     <th>Tags</th>
                 </tr>
@@ -154,7 +155,8 @@ function on_mynetworks(n)
                         <td>{{ p.state }}</td>
                         <td>{% if p.project %}{{ p.project.code }}{% endif %}</td>
                         <td>{% if p.vc %}{{p.vc}}{% endif %}</td>
-                        <td>{{p.short_description}}</td>
+                        <td title="{{p.description}}">{{p.short_description}}</td>
+                        <td>{{p.usage_percent}}</td>
                         <td>{% if p.tt %}{{p.tt}}{% endif %}</td>
                         <td>{% tags p %}</td>
                     </tr>
@@ -218,6 +220,7 @@ function on_mynetworks(n)
             free_shown=false;
             
             function install_spotted() {
+                var i;
                 if(spotted)
                     return;
                 
@@ -225,7 +228,6 @@ function on_mynetworks(n)
                 var $ce=addresses.shift();
                 var ca=$(".address a",$ce).html(); /* Current address */
                 var $cp=$("#at-start"); /* Current insertion point */
-                
                 /* Walk through all spotted addresses */
                 $.each(SPOT,function(index,spot){
                     var value=spot[0];
@@ -240,8 +242,9 @@ function on_mynetworks(n)
                         var s="";
                         for(i=0;i<slots.length;i++) {
                             var v=slots[i];
-                            if(v==null)
-                                v="none"
+                            if(v==null) {
+                                v = "none";
+                            }
                             s+="<td class='noc-ri-"+v+"'></td"
                         }
                         /* Insert row */
@@ -366,8 +369,8 @@ function on_mynetworks(n)
                     <td style="width: auto">{{a.fqdn}}</td>
                     <td>{% if a.mac %}{{a.mac}}{% endif %}</td>
                     <td>{% if a.managed_object %}{{a.managed_object.name}}{% endif %}</td>
-                    <td>{% if a.managed_object and a.managed_object.is_router %}<img src="/media/admin/img/icon-yes.gif" title="yes" />{% endif %}</td>
-                    <td >{{a.short_description}}</td>
+                    <td>{% if a.managed_object and a.managed_object.is_router %}<i class='noc-yes fa fa-check'></i>{% endif %}</td>
+                    <td title="{{a.description}}">{{a.short_description}}</td>
                     <td>{%if a.tt %}#{{a.tt}}{%endif%}</td>
                     <td>{% tags a %}</td>
                 </tr>
@@ -386,7 +389,8 @@ function on_mynetworks(n)
                         <th class="name">Name</th>
                         <th class="address">From Address</th>
                         <th class="address">To Address</th>
-                        <th>Description</th></tr>
+                        <th>Description</th>
+                    </tr>
                 </thead>
                 {% for r in ranges %}
                     <tr class="{% cycle 'row1' 'row2' %}">
@@ -403,6 +407,35 @@ function on_mynetworks(n)
     <!-- End ranges -->
 {% endif %}
 <!-- end addresses -->
+<!-- ip pools -->
+{% if ippools %}
+    <div class="module">
+        <table width="100%" id="ippools">
+            <caption>IP Pools</caption>
+            <thead>
+                <tr>
+                    <th class="ippool-tg">Termination Group</th>
+                    <th class="ippool-name">Pool Name</th>
+                    <th class="ippool-type">Type</th>
+                    <th class="ippool-from">From</th>
+                    <th class="ippool-to">To</th>
+                    <th class="ippool-tech">Technologies</th>
+                </tr>
+            </thead>
+            {% for p in ippools %}
+                <tr class="{% cycle 'row1' 'row2' %}">
+                    <td>{{ p.termination_group.name }}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{% if p.type == 'D' %}Dynamic{% else %}Static{% endif %}</td>
+                    <td>{{ p.from_address }}</td>
+                    <td>{{ p.to_address }}</td>
+                    <td>{{ p.technologies|join:", " }}</td>
+                </tr>
+            {%  endfor %}
+        </table>
+    </div>
+{% endif %}
+<!-- end ip pools -->
 <!-- block info -->
 <div class="module">
     <table width="100%">

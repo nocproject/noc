@@ -70,6 +70,7 @@ class UserAdmin(DjangoUserAdmin):
 class UserApplication(ModelApplication):
     model = User
     model_admin = UserAdmin
+    glyph = "user"
     menu = "Setup | Users"
     icon = "icon_user"
     title = "Users"

@@ -1,0 +1,30 @@
+{
+    "name": "Opticin | Transceiver | 1G | SFP-WDM5.40",
+    "uuid": "e587a0c8-c43c-4c77-9f37-52d7eedbf76e",
+    "vendor__code": "OPTICIN",
+    "description": "Opticin SFP WDM transceiver, 1550 tx, 1310 rx, SC, 40km",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-WDM5.40"
+        }
+    }
+}

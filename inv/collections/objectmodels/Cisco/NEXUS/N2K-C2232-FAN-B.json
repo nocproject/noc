@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | NEXUS | N2K-C2232-FAN-B",
+    "uuid": "ef7f7c81-6350-4e4f-adfc-71491c266f38",
+    "vendor__code": "CISCO",
+    "description": "Cisco Nexus 2232PP and 2232TM FEX Fan Module, Back-to-front airflow (Reversed airflow, port side intake)",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "FAN connection to switch",
+            "direction": "o",
+            "gender": "m",
+            "group": "0",
+            "name": "in",
+            "type__name": "Cisco | Nexus 2k | 2232PP/TM FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "N2K-C2232-FAN-B"
+        }
+    }
+}

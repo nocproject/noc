@@ -109,7 +109,8 @@ class NotificationGroup(models.Model):
             ).save()
 
     @classmethod
-    def group_notify(cls, groups, subject, body, link=None):
+    def group_notify(cls, groups, subject, body, link=None, delay=None,
+                     tag=None):
         """
         Send notification to a list of groups
         Prevent duplicated messages
@@ -132,13 +133,18 @@ class NotificationGroup(models.Model):
                 lang[(method, params)] = l
         for method, params in ngs:
             l = lang[(method, params)]
-            Notification(
+            n = Notification(
                 notification_method=method,
                 notification_params=params,
                 subject=cls.get_effective_message(subject, l),
                 body=cls.get_effective_message(body, l),
                 link=link
-            ).save()
+            )
+            if delay:
+                n.next_try = datetime.datetime.now() + datetime.timedelta(seconds=delay)
+            if tag:
+                n.tag = tag
+            n.save()
 
 
 class NotificationGroupUser(models.Model):

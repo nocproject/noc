@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | MPLS | Path Up (SYSLOG)",
+    "uuid": "47852ff0-d2b7-48a3-b635-be0230e191ac",
+    "description": "Jul 25 00:30:02 rpd[1261]: RPD_MPLS_PATH_UP: MPLS path  up on LSP r1-r2 path bandwidth 100000000 bps",
+    "event_class__name": "Network | MPLS | Path Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "RPD_MPLS_PATH_UP: MPLS path  up on LSP (?P<name>.+?) path bandwidth (?P<bandwidth>\\d+) bps$"
+        }
+    ]
+}

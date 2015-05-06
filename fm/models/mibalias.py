@@ -2,25 +2,30 @@
 ##----------------------------------------------------------------------
 ## MIBAlias model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField, UUIDField
 ## NOC modules
-import noc.lib.nosql as nosql
+from noc.lib.prettyjson import to_json
 
 
-class MIBAlias(nosql.Document):
+
+class MIBAlias(Document):
     """
     MIB Aliases
     """
     meta = {
         "collection": "noc.mibaliases",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "json_collection": "fm.mibaliases"
     }
-    rewrite_mib = nosql.StringField(unique=True)
-    to_mib = nosql.StringField()
-    is_builtin = nosql.BooleanField(default=False)
+    rewrite_mib = StringField(unique=True)
+    to_mib = StringField()
+    uuid = UUIDField(binary=True)
 
     ## Lookup cache
     cache = None
@@ -42,3 +47,14 @@ class MIBAlias(nosql.Document):
             mib, rest = name.split("::", 1)
             return "%s::%s" % (cls.cache.get(mib, mib), rest)
         return cls.cache.get(name, name)
+
+    def get_json_path(self):
+        return "%s.json" % self.rewrite_mib.replace(":", "_")
+
+    def to_json(self):
+        return to_json({
+            "$collection": self._meta["json_collection"],
+            "rewrite_mib": self.rewrite_mib,
+            "to_mib": self.to_mib,
+            "uuid": self.uuid
+        }, order=["$collection", "rewrite_mib", "to_mib", "uuid"])

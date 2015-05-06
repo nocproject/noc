@@ -1,0 +1,158 @@
+{
+    "name": "Cisco | 3800 | 3845 Motherboard",
+    "uuid": "05b0cad5-3e34-4562-a35b-36079e55af3c",
+    "vendor__code": "CISCO",
+    "description": "Cisco 3845 Motherboard",
+    "connection_rule__name": "Cisco | 3800",
+    "cr_context": "MOTHERBOARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 3800 | MOTHERBOARD"
+        },
+        {
+            "description": "Compact Flash slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk0",
+            "type__name": "Flash | CF"
+        },
+        {
+            "description": "GigabitEthernet 0/0 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0 sfp port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0_sfp",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "DaughterCard Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs0",
+            "type__name": "Cisco | 3800 | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs1",
+            "type__name": "Cisco | 3800 | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs2",
+            "type__name": "Cisco | 3800 | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs3",
+            "type__name": "Cisco | 3800 | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs4",
+            "type__name": "Cisco | 3800 | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs5",
+            "type__name": "Cisco | 3800 | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs6",
+            "type__name": "Cisco | 3800 | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs7",
+            "type__name": "Cisco | 3800 | DCS"
+        },
+        {
+            "description": "AIM Container Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "aim0",
+            "type__name": "Cisco | 3800 | AIM"
+        },
+        {
+            "description": "AIM Container Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "aim1",
+            "type__name": "Cisco | 3800 | AIM"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Aux port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["USB10", "USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb1",
+            "protocols": ["USB10", "USB11"],
+            "type__name": "Electrical | USB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "CISCO3845-MB"
+        }
+    }
+}

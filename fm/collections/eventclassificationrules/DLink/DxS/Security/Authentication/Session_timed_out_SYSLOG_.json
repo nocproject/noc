@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Session timed out (SYSLOG)",
+    "uuid": "3b70a896-d50f-43f2-96c5-19cb1b7759e9",
+    "description": "INFO: Web session timed out (Username: grant, IP: 172.16.0.4)",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) (?:Web|Telnet|SSH) session timed out \\(Username: (?P<user>.+?),\\s*IP: (?P<ip>\\S+)(?:, MAC: \\S+)?\\)$"
+        }
+    ]
+}

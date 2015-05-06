@@ -10,7 +10,7 @@ Ext.define("NOC.main.customfield.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.main.customfield.Model",
-        "NOC.main.ref.model.LookupField",
+        "NOC.main.ref.modcol.LookupField",
         "NOC.main.customfieldenumgroup.LookupField"
     ],
     model: "NOC.main.customfield.Model",
@@ -66,7 +66,7 @@ Ext.define("NOC.main.customfield.Application", {
     fields: [
         {
             name: "table",
-            xtype: "main.ref.model.LookupField",
+            xtype: "main.ref.modcol.LookupField",
             fieldLabel: "Table",
             allowBlank: false
         },

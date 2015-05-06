@@ -1,0 +1,16 @@
+{
+    "name": "Area",
+    "uuid": "ad5a0f8a-12d3-453f-8763-3782b7b0ddd6",
+    "description": "Areas center",
+    "code": "areas",
+    "default_zoom": 14,
+    "fill_color": 12632256,
+    "max_zoom": 19,
+    "min_zoom": 4,
+    "point_radius": 5,
+    "show_labels": true,
+    "stroke_color": 9868950,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 0
+}

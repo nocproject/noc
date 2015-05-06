@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Failed #4 (SYSLOG)",
+    "uuid": "18fcc1dc-d59f-45b4-b266-320d49be0236",
+    "description": "%ENVM-2-FAN: Blower has failed, shutdown in 2 minutes",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ENVM-2-FAN: (?P<name>Blower) has failed, shutdown in 2 minutes"
+        }
+    ]
+}

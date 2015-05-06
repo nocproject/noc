@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | Authentication | Login Failed (SYSLOG)",
+    "uuid": "2451c716-6f4c-4086-8ffb-0ccfc76ff119",
+    "description": "%SEC_LOGIN-4-LOGIN_FAILED: Login failed [user: ] [Source: 172.16.0.22] [localport: 22] [Reason: Login Authentication Failed]",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SEC_LOGIN-4-LOGIN_FAILED: Login failed \\[user: (?P<user>.*)\\] \\[Source: (?P<ip>\\S+)\\] \\[localport: (?P<lport>.+)\\] \\[Reason: Login Authentication Failed\\]"
+        }
+    ]
+}

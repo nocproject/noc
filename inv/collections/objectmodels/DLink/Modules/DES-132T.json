@@ -1,0 +1,37 @@
+{
+    "name": "DLink | Modules | DES-132T",
+    "uuid": "f18a9707-72be-4c35-aca6-6a74df1f9d18",
+    "vendor__code": "DLINK",
+    "description": "2-port 1000BASE-T Gigabit Ethernet Module",
+    "cr_context": "MODULE",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "DLink | DES32-33 | Module"
+        },
+        {
+            "description": "port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "port 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "DES-132T"
+        }
+    }
+}

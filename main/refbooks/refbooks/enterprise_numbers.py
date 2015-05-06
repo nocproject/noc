@@ -12,7 +12,7 @@ class ISO3166(RefBook):
     name = "SMI Network Management Private Enterprise Codes"
     description = "iso.org.dod.internet.private.enterprise (1.3.6.1.4.1)"
     downloader = "CSV"
-    download_url = "http://update.nocproject.org/db/enterprise-numbers.csv"
+    download_url = "https://cdn.nocproject.org/refbook/enterprise-numbers.csv"
     refresh_interval = 90
     fields = [
         Field(name="Number", search_method="string"),

@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | System | Started #1 (SYSLOG)",
+    "uuid": "f4428e8e-10a4-4d3f-9b5a-d6bec073c10d",
+    "description": "CRIT: System cold start",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|CRIT:|CRIT\\(2\\))( Unit (?P<unit>\\d+),)? System (cold|warm) start$"
+        }
+    ]
+}

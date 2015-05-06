@@ -31,7 +31,6 @@ rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
 rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 
 
-
 class MIB(nosql.Document):
     meta = {
         "collection": "noc.mibs",
@@ -46,8 +45,22 @@ class MIB(nosql.Document):
     # Compiled MIB version
     version = nosql.IntField(required=False, default=0)
 
+    MIBRequiredException = MIBRequiredException
+
     def __unicode__(self):
         return self.name
+
+    def get_text(self):
+        """
+        Returns MIB text
+        :return:
+        """
+        for d in ["local/share/mibs", "share/mibs"]:
+            path = os.path.join(d, self.name + ".mib")
+            if os.path.isfile(path):
+                with open(path) as f:
+                    return f.read()
+        return ""
 
     @classmethod
     def parse_syntax(cls, syntax):
@@ -227,6 +240,9 @@ class MIB(nosql.Document):
                     # Same oid, same name: duplicated declaration.
                     # Silently skip
                     continue
+                # For same MIB - leave first entry
+                if oid_name.split("::", 1)[0] == o.name.split("::", 1)[0]:
+                    continue
                 # Try to resolve collision
                 if not mib_preference:
                     # No preference for target MIB
@@ -328,6 +344,24 @@ class MIB(nosql.Document):
             else:
                 rest += [l_oid.pop()]
         return oid, None
+
+    @classmethod
+    def get_description(cls, name):
+        """
+        Get longest match description by name
+        """
+        match = rx_tailing_numbers.match(name)
+        if match:
+            name, _ = match.groups()
+        # Search by primary name
+        d = MIBData.objects.filter(name=name).first()
+        if not d:
+            # Search by aliases
+            d = MIBData.objects.filter(aliases=name).first()
+        if d:
+            return d.description
+        else:
+            return None
 
     @property
     def depended_by(self):

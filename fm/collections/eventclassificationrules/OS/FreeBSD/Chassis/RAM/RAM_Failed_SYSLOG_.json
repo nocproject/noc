@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Chassis | RAM | RAM Failed (SYSLOG)",
+    "uuid": "aa1c090f-a818-4224-a1ac-b289ad226282",
+    "description": "kernel: MCA: Bank 0, Status 0xcc00000120040189",
+    "event_class__name": "Chassis | RAM | RAM Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "kernel: MCA: Bank (?P<bank>\\d+), Status 0x\\S+$"
+        }
+    ]
+}

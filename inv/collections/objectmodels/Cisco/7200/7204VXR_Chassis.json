@@ -1,0 +1,70 @@
+{
+    "name": "Cisco | 7200 | 7204VXR Chassis",
+    "uuid": "c2dfa7f6-8d46-4f17-84ca-76f678b00a1a",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7204VXR, 4-slot chassis",
+    "connection_rule__name": "Cisco | 7200",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Supervisor slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "sup",
+            "type__name": "Cisco | 7200 | Supervisor"
+        },
+        {
+            "description": "Linecard 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard1",
+            "type__name": "Cisco | 7200 | Linecard"
+        },
+        {
+            "description": "Linecard 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard2",
+            "type__name": "Cisco | 7200 | Linecard"
+        },
+        {
+            "description": "Linecard 3 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard3",
+            "type__name": "Cisco | 7200 | Linecard"
+        },
+        {
+            "description": "Linecard 4 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard4",
+            "type__name": "Cisco | 7200 | Linecard"
+        },
+        {
+            "description": "PSU0",
+            "direction": "i",
+            "gender": "f",
+            "name": "pwr0",
+            "type__name": "Cisco | 7200 | PWR-7200"
+        },
+        {
+            "description": "PSU1",
+            "direction": "i",
+            "gender": "f",
+            "name": "pwr1",
+            "type__name": "Cisco | 7200 | PWR-7200"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "CISCO7204VXR"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 3
+        }
+    }
+}

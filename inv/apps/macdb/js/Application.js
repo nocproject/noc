@@ -30,9 +30,7 @@ Ext.define("NOC.inv.macdb.Application", {
                 {
                     text: "Mac Address",
                     dataIndex: "mac",
-                    width: 110,
-                    renderer: NOC.render.Clickable,
-                    onClick: me.onMACCellClick
+                    width: 110
                 },
                 {
                     text: "VC Domain",
@@ -79,35 +77,14 @@ Ext.define("NOC.inv.macdb.Application", {
         me.callParent();
     },
 
-    // Show mac log window
-    showMACLog: function(record) {
+    createForm: function() {
         var me = this;
-        me.currentMAC = record.get("mac");
-        Ext.Ajax.request({
-            url: "/inv/macdb/" + record.get("mac") + "/",
-            method: "GET",
-            scope: me,
-            success: function(response) {
-                var r = Ext.decode(response.responseText);
-                if(!r) {
-                    NOC.info("No MAC history found");
-                } else {
-                    Ext.create("NOC.inv.macdb.MACLogForm", {
-                        data: r,
-                        title: Ext.String.format(" MAC {0} history",
-                               me.currentMAC)
-                    });
-                }
-            },
-            failure: function() {
-                NOC.error("Failed to get MAC history");
-            }
-        });
+        me.form = Ext.create("NOC.inv.macdb.MACLogForm", {app: me});
+        return me.form;
     },
 
-    //
-    onMACCellClick: function(record) {
+    onEditRecord: function(record) {
         var me = this;
-        me.showMACLog(record);
+        me.showItem(me.ITEM_FORM).preview(record);
     }
 });

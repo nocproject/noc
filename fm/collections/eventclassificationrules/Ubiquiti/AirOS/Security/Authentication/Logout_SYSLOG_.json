@@ -1,0 +1,21 @@
+{
+    "name": "Ubiquiti | AirOS | Security | Authentication | Logout (SYSLOG)",
+    "uuid": "9a29e865-a001-40f1-a751-52ef7688e320",
+    "description": "Jan 12 03:19:28 dropbear[13418]: exit after auth (Admin): Exited normally",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Ubiquiti\\.AirOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* dropbear\\[\\d+\\]: exit after auth \\((?P<user>\\w+)\\): Exited normally$"
+        }
+    ]
+}

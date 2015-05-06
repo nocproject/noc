@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | BGP | Peer Down #3 (SYSLOG)",
+    "uuid": "0112087b-c89d-4df2-b0dc-ea1f8743ed5d",
+    "description": "WARN(4) [BGP(3):] BGP connection is closed due to error (Code:<2> Subcode:<7> Field:<Open Opt: Strict, Err-Data present> Peer:<192.168.1.1>).",
+    "event_class__name": "Network | BGP | Peer Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) \\[BGP(\\(3\\))?:\\] BGP connection is closed due to error \\(.+ Peer:<(?P<peer>\\S+)>\\)\\."
+        }
+    ]
+}

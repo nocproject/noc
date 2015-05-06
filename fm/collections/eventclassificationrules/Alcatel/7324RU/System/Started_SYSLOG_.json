@@ -1,0 +1,21 @@
+{
+    "name": "Alcatel | 7324RU | System | Started (SYSLOG)",
+    "uuid": "b06df8c6-b62b-412f-adaf-3478651a3107",
+    "description": "Sep 25 09:19:55 ATS DSLAM:INFO,+WARM_START:System warm-starts",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Alcatel\\.7324RU$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".*DSLAM:INFO,\\+WARM_START:System warm-starts"
+        }
+    ]
+}

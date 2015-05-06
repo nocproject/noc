@@ -1,0 +1,197 @@
+{
+    "name": "Cisco | 7600 | 7600-ES+40C",
+    "uuid": "b7132e0c-cc1c-43a6-aba5-056142d95d0d",
+    "vendor__code": "CISCO",
+    "description": "7600-ES+40C ES+ 2xTGE XFP 20xGE SFP",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "GigabitEthernet 0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/3 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi3",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/4 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi4",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/5 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi5",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/6 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi6",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/7 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi7",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/8 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi8",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/9 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi9",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/10 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi10",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/11 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi11",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/12 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi12",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/13 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi13",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/14 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi14",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/15 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi15",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/16 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi16",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/17 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi17",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/18 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi18",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/19 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi19",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "GigabitEthernet 0/20 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi20",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "TeX/1 XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te1_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "TeX/2 XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te2_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "7600-ES+40C"
+        }
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "name": "Power | CEE 7/4 Type F",
+    "uuid": "e4ce4d6c-cb53-4841-87aa-2ad4f30caddb",
+    "description": "German 'Schuko' Grounded/European",
+    "c_group": ["power_cee_7_4"],
+    "genders": "mf"
+}

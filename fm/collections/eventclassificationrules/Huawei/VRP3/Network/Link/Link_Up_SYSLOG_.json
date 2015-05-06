@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP3 | Network | Link | Link Up (SYSLOG)",
+    "uuid": "c5ab4444-3baf-46ad-b715-5387142a0eca",
+    "description": "L2INF/5/PORT LINK STATUS CHANGE: Ethernet0/1: turns into UP state",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP3$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "LINK STATUS CHANGE:\\s*(?P<interface>\\S+): turns into UP state"
+        }
+    ]
+}

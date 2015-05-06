@@ -26,6 +26,7 @@ class Report(object):
         self.enabled = enabled
         self.to_save = to_save
         self.set_object_context()
+        self.logger = self.job.logger
 
     def die(self, msg):
         self.job.scheduler.daemon.die(msg)
@@ -33,21 +34,31 @@ class Report(object):
     def info(self, msg):
         self.job.info(msg)
 
-    def update_if_changed(self, obj, values):
+    def error(self, msg):
+        self.job.error(msg)
+
+    def debug(self, msg):
+        self.job.debug(msg)
+
+    def update_if_changed(self, obj, values, ignore_empty=None):
         """
         Update fields if changed.
         :param obj: Document instance
         :type obj: Document
         :param values: New values
         :type values: dict
+        :param ignore_empty: List of fields which may be ignored if empty
         :returns: List of changed (key, value)
         :rtype: list
         """
         changes = []
+        ignore_empty = ignore_empty or []
         for k, v in values.items():
             vv = getattr(obj, k)
             if v != vv:
                 if type(v) != int or not hasattr(vv, "id") or v != vv.id:
+                    if k in ignore_empty and (v is None or v == ""):
+                        continue
                     setattr(obj, k, v)
                     changes += [(k, v)]
         if changes:

@@ -79,13 +79,23 @@ class TextArrayField(models.Field):
 
     def to_python(self,value):
         def to_unicode(s):
-            if type(s)==types.UnicodeType:
+            if isinstance(s, unicode):
                 return s
             else:
-                return unicode(s,"utf-8")
+                return unicode(s, "utf-8")
+
         if value is None:
             return None
         return [to_unicode(x) for x in value]
+
+    def get_default(self):
+        if self.has_default():
+            r = []
+            for v in self.default:
+                r += ["\"%s\"" % v.replace("\\", "\\\\").replace("\"", "\"\"")]
+            return "{%s}" % ",".join(r)
+        return ""
+
 ##
 ## Two-dimensioned text array field maps to PostgreSQL TEXT[][]
 ##
@@ -290,6 +300,30 @@ class ColorField(models.Field):
         else:
             return value
 
+
+class DocumentReferenceField(models.Field):
+    __metaclass__ = models.SubfieldBase
+
+    def __init__(self, document, *args, **kwargs):
+        self.document = document
+        super(DocumentReferenceField, self).__init__(*args, **kwargs)
+
+    def db_type(self, connection):
+        return "CHAR(24)"
+
+    def to_python(self, value):
+        if value is None:
+            return None
+        else:
+            return self.document.objects.get(id=value)
+
+    def get_prep_value(self, value):
+        if value is None:
+            return None
+        elif isinstance(value, basestring):
+            return value
+        else:
+            return str(value.id)
 
 ##
 add_introspection_rules([],["^noc\.lib\.fields\."])

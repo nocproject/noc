@@ -1,0 +1,21 @@
+{
+    "name": "Eltex | MES | Security | Authentication | Login #1 (SYSLOG)",
+    "uuid": "68541cd5-aff7-4318-89f8-25a095a832ec",
+    "description": "SYSLOG: %AAA-I-CONNECT: New http connection for user admin, source 10.8.4.19 destination 10.8.2.13 ACCEPTED",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%AAA-I-CONNECT: New http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+ ACCEPTED$"
+        }
+    ]
+}

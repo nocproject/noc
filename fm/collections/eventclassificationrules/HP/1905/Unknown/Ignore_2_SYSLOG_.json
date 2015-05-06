@@ -1,0 +1,21 @@
+{
+    "name": "HP | 1905 | Unknown | Ignore #2 (SYSLOG)",
+    "uuid": "d5f9defc-3167-4e7c-a9f2-216fb43f352c",
+    "description": "Mar 19 15:44:40 2013 Podval [LLDP]/5/REMCHG RemInserts : 7,RemDeletes : 2,RemDrops : 0,RemAgeouts : 2",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1905$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "\\[LLDP\\]/5/REMCHG RemInserts : \\d+,RemDeletes : \\d+,RemDrops : \\d+,RemAgeouts : \\d+$"
+        }
+    ]
+}

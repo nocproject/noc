@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | OAM | Exiting Master Loopback Mode (SYSLOG)",
+    "uuid": "228650a4-b485-4d49-b7c5-85a0a7704c6f",
+    "description": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has exited the master loopback mode.",
+    "event_class__name": "Network | OAM | Exiting Master Loopback Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has exited the master loopback mode"
+        }
+    ]
+}

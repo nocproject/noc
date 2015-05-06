@@ -1,0 +1,7 @@
+{
+    "name": "Validator | Internal Error",
+    "uuid": "20852593-d198-486b-8f0e-ea0da8b17002",
+    "description": "Validator raised internal error",
+    "subject_template": "Internal Error",
+    "body_template": "Validator raised internal error: {{msg}}"
+}

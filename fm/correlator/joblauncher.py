@@ -36,6 +36,15 @@ class JobLauncher(object):
         })
 
     def submit(self, alarm):
-        vars = self.get_vars(alarm)
-        self.job.submit(self.scheduler, key=alarm.id, data=vars,
-            interval=self.interval, keep_offset=True)
+        cfg = {
+            "data": self.get_vars(alarm),
+            "interval": self.interval,
+            "failed_interval": None,
+            "keep_offset": True
+        }
+        cfg.update(self.job.get_job_config(alarm, cfg))
+        self.job.submit(
+            self.scheduler,
+            key=alarm.id,
+            **cfg
+        )

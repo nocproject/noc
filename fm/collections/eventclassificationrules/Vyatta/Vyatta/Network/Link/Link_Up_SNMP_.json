@@ -1,0 +1,25 @@
+{
+    "name": "Vyatta | Vyatta | Network | Link | Link Up (SNMP)",
+    "uuid": "8ecd8a4a-dc20-4051-87aa-a3a3a3f4aef3",
+    "description": "IF-MIB::linkUp",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Vyatta\\.Vyatta$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^IF-MIB::linkUp$"
+        },
+        {
+            "key_re": "^IF-MIB::ifDescr\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        }
+    ]
+}

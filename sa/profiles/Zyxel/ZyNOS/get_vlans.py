@@ -41,10 +41,14 @@ class Script(NOCScript):
             vid = int(match.group("vlan_id"))
             vn = self.cli("show vlan %d" % vid)
             match_name = self.re_search(self.rx_vlan_name, vn)
-            r += [{
-                "vlan_id": vid,
-                "name": match_name.group("name") \
-                    if match_name.group("name") != ""
-                        else ("vlan%s" % vid)
-            }]
+            name = match_name.group("name")
+            if name != "":
+                r += [{
+                    "vlan_id": vid,
+                    "name": name
+                }]
+            else:
+                r += [{
+                    "vlan_id": vid
+                }]
         return r

@@ -24,7 +24,8 @@ class Script(NOCScript):
         r"(GigabitEthernet|TenGigabitEthernet|AggregatePort)", re.MULTILINE)
     rx_line_vlan = re.compile(r"\w*==========================\s+VLAN",
                               re.MULTILINE)
-    rx_name = re.compile(r"(?P<name>.+) is (?P<status>.\S+)(|\s+),",
+    rx_ifindex = re.compile(r"Index\(dec\):(?P<ifindex>\d+) \(hex\):\d+")
+    rx_name = re.compile(r"^(?P<name>\S+.+) is (?P<status>.\S+)(|\s+),",
                          re.MULTILINE)
     rx_descr = re.compile(
         r"\s+interface's description:(\"\"|\"(?P<description>.+)\")",
@@ -35,11 +36,19 @@ class Script(NOCScript):
     rx_ip_iface = re.compile(r"(?P<vlan_name>.+)",
                              re.MULTILINE | re.IGNORECASE)
     rx_vlan = re.compile(r"VLAN\s+(?P<vlan>\d+)", re.MULTILINE | re.IGNORECASE)
+    rx_des = re.compile(r"Description:\s+(?P<des>.+)",
+                       re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Interface address is:\s+(?P<ip>.+)",
                        re.MULTILINE | re.IGNORECASE)
     rx_ospf_gs = re.compile(r"Routing Protocol is \"ospf \d+\"")
     rx_ospf = re.compile(r"^(?P<if_ospf>.+)\s+is up, line protocol is up",
                          re.IGNORECASE)
+    rx_igmp = re.compile(
+        r"^Interface (?P<if_igmp>.+?)\s+\(Index \d+\)\s*\n IGMP Active",
+        re.MULTILINE | re.IGNORECASE)
+    rx_pim = re.compile(
+        r"^\d+\S+\s+(?P<if_pim>.+?)\s+\d+\s+v\S+\s+\d+\s+\d+",
+        re.MULTILINE | re.IGNORECASE)
     rx_lldp_gs = re.compile(r"Global\s+status\s+of\s+LLDP\s+:\s+Enable")
     rx_lldp = re.compile(r"Port\s+\[(?P<port>.+)\]\nPort status of LLDP\s+:\s+Enable",
                          re.IGNORECASE)
@@ -75,7 +84,6 @@ class Script(NOCScript):
 
         ospf = []
         ospf_enable = self.rx_ospf_gs.search(c_proto) is not None
-        print ospf_enable
         if ospf_enable:
             try:
                 c = self.cli("show ip ospf interface")
@@ -85,7 +93,26 @@ class Script(NOCScript):
                 if_ospf = match.group("if_ospf")
                 iface_ospf = self.profile.convert_interface_name(if_ospf)
                 ospf += [if_ospf]
-            print ospf
+
+        igmp = []
+        try:
+            c = self.cli("show ip igmp interface")
+        except self.CLISyntaxError:
+            c = ""
+        for match in self.rx_igmp.finditer(c):
+            if_igmp = match.group("if_igmp")
+            iface_igmp = self.profile.convert_interface_name(if_igmp)
+            igmp += [if_igmp]
+
+        pim = []
+        try:
+            c = self.cli("show ip pim sparse-mode interface")
+        except self.CLISyntaxError:
+            c = ""
+        for match in self.rx_pim.finditer(c):
+            if_pim = match.group("if_pim")
+            iface_pim = self.profile.convert_interface_name(if_pim)
+            pim += [if_pim]
 
         r = []
         try:
@@ -114,6 +141,10 @@ class Script(NOCScript):
         for s in self.rx_line.split(v)[1:]:
             n = {}
             enabled_protocols = []
+            ifindex = 0
+            match = self.rx_ifindex.search(s)
+            if match:
+                ifindex = int(match.group("ifindex"))
             match = self.rx_name.search(s)
             if not match:
                 continue
@@ -123,6 +154,8 @@ class Script(NOCScript):
 
             match = self.rx_descr.search(s)
             description = match.group("description")
+            if description:
+                description = description.decode("ascii","ignore")
             if iface in portchannel_members:
                 ai, is_lacp = portchannel_members[iface]
                 n["aggregated_interface"] = ai
@@ -138,6 +171,8 @@ class Script(NOCScript):
                 "oper_status": status,
                 "enabled_afi": ["BRIDGE"],
             }]
+            if ifindex != 0:
+                n["snmp_ifindex"] = ifindex
             if lldp_enable and iface in lldp:
                 enabled_protocols += ["LLDP"]
             n["enabled_protocols"] = enabled_protocols
@@ -151,6 +186,11 @@ class Script(NOCScript):
             r += [n]
         for s in self.rx_line_vlan.split(v)[1:]:
             n = {}
+            ifindex = 0
+            description = None
+            match = self.rx_ifindex.search(s)
+            if match:
+                ifindex = int(match.group("ifindex"))
             match = self.rx_name.search(s)
             if not match:
                 continue
@@ -166,23 +206,25 @@ class Script(NOCScript):
             ip_list = [ip]
             match = self.rx_mac_local.search(s)
             mac = match.group("mac")
+            match = self.rx_des.search(s)
+            if match:
+                description = match.group("des").decode("ascii","ignore")
 
-            description = iface
             enabled_protocols = []
-            print iface
             if ospf_enable and iface in ospf:
                 enabled_protocols += ["OSPF"]
-                print enabled_protocols
+            if iface in igmp:
+                enabled_protocols += ["IGMP"]
+            if iface in pim:
+                enabled_protocols += ["PIM"]
 
             iface = {"name": iface,
                      "type": "SVI",
                      "admin_status": True,
                      "oper_status": True,
                      "mac": mac,
-                     "description": description,
                      "subinterfaces": [{
                              "name": iface,
-                             "description": description,
                              "admin_status": True,
                              "oper_status": True,
                              "enabled_afi": ["IPv4"],
@@ -191,5 +233,11 @@ class Script(NOCScript):
                              "enabled_protocols": enabled_protocols,
                              "vlan_ids": vlan_ids,
                      }]}
+            if ifindex != 0:
+                iface["snmp_ifindex"] = ifindex
+            if description:
+                iface["description"] = description
+                iface["subinterfaces"][0]["description"] = description
             r += [iface]
+
         return [{"interfaces": r}]

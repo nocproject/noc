@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service #1 (SYSLOG)",
+    "uuid": "a572b7c3-e56e-42b1-85f3-7f79985c9935",
+    "description": "%CSM_SLB-6-INFO: Module 1 info: SLB-NETMGT: vserver VS1 out of service",
+    "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CSM_SLB-6-INFO: Module (?P<module>\\d+) info: SLB-NETMGT: vserver (?P<name>.+?) out of service$"
+        }
+    ]
+}

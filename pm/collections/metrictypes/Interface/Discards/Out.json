@@ -1,0 +1,6 @@
+{
+    "name": "Interface | Discards | Out",
+    "uuid": "4bdb1cea-c70c-45af-8bbc-05051216d9ca",
+    "description": "Output discards",
+    "measure": "discard/sec"
+}

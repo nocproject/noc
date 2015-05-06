@@ -12,8 +12,10 @@ from noc.lib.nosql import (Document, PlainReferenceField,
                            ListField, IntField)
 from forwardinginstance import ForwardingInstance
 from interface import Interface
-from noc.sa.models import ManagedObject
+from interfaceprofile import InterfaceProfile
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.project.models.project import Project
 
 
 SUBINTERFACE_AFI = (
@@ -43,6 +45,7 @@ class SubInterface(Document):
         "allow_inheritance": False,
         "indexes": [
             ("managed_object", "ifindex"),
+            ("managed_object", "vlan_ids"),
             "interface", "managed_object",
             "untagged_vlan", "tagged_vlans",
             "enabled_afi"
@@ -54,6 +57,8 @@ class SubInterface(Document):
         ForwardingInstance, required=False)
     name = StringField()
     description = StringField(required=False)
+    profile = PlainReferenceField(InterfaceProfile,
+        default=InterfaceProfile.get_default_profile)
     mtu = IntField(required=False)
     mac = StringField(required=False)
     vlan_ids = ListField(IntField(), default=[])
@@ -63,6 +68,8 @@ class SubInterface(Document):
     ipv4_addresses = ListField(StringField(), default=[])
     ipv6_addresses = ListField(StringField(), default=[])
     iso_addresses = ListField(StringField(), default=[])
+    vpi = IntField(required=False)
+    vci = IntField(required=False)
     enabled_protocols = ListField(StringField(
         choices=[(x, x) for x in SUBINTERFACE_PROTOCOLS]
     ), default=[])
@@ -75,6 +82,17 @@ class SubInterface(Document):
         choices=[(x, x) for x in TUNNEL_TYPES], required=False)
     tunnel_local_address = StringField(required=False)
     tunnel_remote_address = StringField(required=False)
+    project = ForeignKeyField(Project)
 
     def __unicode__(self):
         return "%s %s" % (self.interface.managed_object.name, self.name)
+
+    @property
+    def effective_vc_domain(self):
+        return self.interface.effective_vc_domain
+
+    def get_profile(self):
+        if self.profile:
+            return self.profile
+        else:
+            return self.interface.profile

@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Unknown | Ignore LLDP time out (SYSLOG)",
+    "uuid": "41414e45-1a58-40b6-8dde-0587f8aec9f4",
+    "description": "0000000128: Jan  8 04:15:13: perekreshenko_26_1_1: %LLDP-4-lldpNeignborEntryTimeout: 620126:53: Neignbor entry 1 of port 25 has been time out",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LLDP-4-lldpNeignborEntryTimeout: \\d+:\\d+: Neignbor entry \\d+ of port \\S+ has been time out$"
+        }
+    ]
+}

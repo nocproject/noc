@@ -1,0 +1,69 @@
+{
+    "name": "Network | PIM | Neighbor Down",
+    "$collection": "fm.alarmclasses",
+    "uuid": "3fe312b7-a381-455d-9d8e-50bd2cd1d173",
+    "is_unique": true,
+    "discriminator": ["interface", "neighbor"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+            }
+        }
+    ],
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Interface"
+        },
+        {
+            "name": "neighbor",
+            "description": "Neighbor's IP"
+        },
+        {
+            "name": "vrf",
+            "description": "VRF"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
+        },
+        {
+            "name": "description",
+            "description": "Interface description",
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "subject_template": "PIM neighbor {{neighbor}} DOWN on {{interface}}{% if description %} ({{description}}){% endif %}.{% if vrf %} VRF {{vrf}}.{% endif %}",
+    "body_template": "PIM neighbor {{neighbor}} DOWN on {{interface}}{% if description %} ({{description}}){% endif %}.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %} Reason: {{reason}}.{% endif %}",
+    "symptoms": "Multicast flows lost",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check links and local and neighbor router configuration",
+    "root_cause": [
+        {
+            "name": "Link Down",
+            "root__name": "Network | Link | Link Down",
+            "window": 10,
+            "condition": "True",
+            "match_condition": {
+                "vars__interface": "alarm.managed_object.profile.root_interface(alarm.vars['interface'])",
+                "managed_object": "alarm.managed_object.id"
+            }
+        },
+        {
+            "name": "Link Down",
+            "root__name": "Network | BFD | Session Down",
+            "window": 10,
+            "condition": "True",
+            "match_condition": {
+                "vars__interface": "alarm.managed_object.profile.root_interface(alarm.vars['interface'])",
+                "managed_object": "alarm.managed_object.id"
+            }
+        }
+    ]
+}

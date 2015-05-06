@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Unknown | Ignore IGMP_CGMP_MODE logging (SYSLOG)",
+    "uuid": "8c1679cd-db22-4ad3-8102-f6e46acbb5bf",
+    "description": "%MCAST-SP-6-IGMP_CGMP_MODE: IGMP snooping now is running in IGMP_CGMP mode on vlan 2120",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%MCAST-SP(?:-STDBY)?-6-IGMP_CGMP_MODE: IGMP snooping now is running in IGMP_CGMP mode on vlan \\d+"
+        }
+    ]
+}

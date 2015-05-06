@@ -31,7 +31,9 @@ class Script(noc.sa.script.Script):
                 bulk=True):  # dot1qVlanStaticName
                     o = oid.split(".")[-1]
                     result += [{"vlan_id": int(oids[o]), "name":v.strip()}]
-                return sorted(result, lambda x, y: cmp(x["vlan_id"], y["vlan_id"]))
+                return sorted(
+                    result, lambda x, y: cmp(x["vlan_id"], y["vlan_id"])
+                )
             except self.snmp.TimeOutError:
                 # SNMP failed, continue with CLI
                 pass

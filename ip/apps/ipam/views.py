@@ -68,7 +68,6 @@ class IPAMAppplication(Application):
             dist = self.MAX_IPv4_NET_SIZE
         else:
             dist = self.ADDRESS_SPOT_DIST
-        print "area_spot", [a.address for a in prefix.address_set.all()] + extra, dist, sep
         return p.area_spot([a.address for a in prefix.address_set.all()] + extra,
                            dist=dist, sep=sep)
 
@@ -214,6 +213,7 @@ class IPAMAppplication(Application):
                 ("Netmask", prefix.netmask),
                 ("Widlcard", prefix.wildcard),
                 ("Size", prefix.size),
+                ("Usage", prefix.usage_percent)
             ]
         if addresses:
             prefix_info += [("Used addresses", len(addresses))]
@@ -222,6 +222,15 @@ class IPAMAppplication(Application):
                 prefix_info += [
                     ("Free addresses", free - 2 if free >= 2 else free)
                 ]
+        t = {
+            "E": "Enabled",
+            "D": "Disabled"
+        }[prefix.effective_ip_discovery]
+        if prefix.enable_ip_discovery == "I":
+            t = "Inherit (%s)" % t
+        prefix_info += [("IP Discovery", t)]
+        #
+        ippools = prefix.ippools
         # Add custom fields
         for f in CustomField.table_fields("ip_prefix"):
             v = getattr(prefix, f.name)
@@ -332,6 +341,7 @@ class IPAMAppplication(Application):
                            short_description=short_description,
                            long_description=long_description,
                            prefixes=prefixes, addresses=addresses,
+                           ippools=ippools,
                            prefix_info=prefix_info,
                            display_empty_message=not addresses and not prefixes,
                            can_view=can_view, can_change=can_change,
@@ -467,6 +477,15 @@ class IPAMAppplication(Application):
                     required=False,
                     help_text=_("Appropriative dual-stack allocation")
                 )
+                enable_ip_discovery = forms.ChoiceField(
+                    label=_("Enable IP Discovery"),
+                    required=True,
+                    choices=[
+                        ("I", "Inherit"),
+                        ("E", "Enable"),
+                        ("D", "Disable")
+                    ]
+                )
 
                 def clean_prefix(self):
                     prefix = self.cleaned_data["prefix"]
@@ -528,15 +547,19 @@ class IPAMAppplication(Application):
             form = form_class(request.POST)
             if form.is_valid():
                 # Create prefix
-                p = Prefix(vrf=vrf, afi=afi,
-                           prefix=form.cleaned_data["prefix"].strip(),
-                           state=form.cleaned_data["state"],
-                           project=form.cleaned_data["project"],
-                           asn=form.cleaned_data["asn"],
-                           description=form.cleaned_data["description"],
-                           tags=form.cleaned_data["tags"],
-                           tt=form.cleaned_data["tt"],
-                           style=form.cleaned_data["style"])
+                p = Prefix(
+                    vrf=vrf,
+                    afi=afi,
+                    prefix=form.cleaned_data["prefix"].strip(),
+                    state=form.cleaned_data["state"],
+                    project=form.cleaned_data["project"],
+                    asn=form.cleaned_data["asn"],
+                    description=form.cleaned_data["description"],
+                    tags=form.cleaned_data["tags"],
+                    tt=form.cleaned_data["tt"],
+                    style=form.cleaned_data["style"],
+                    enable_ip_discovery=form.cleaned_data["enable_ip_discovery"]
+                )
                 self.apply_custom_fields(
                     p, form.cleaned_data, "ip_prefix")
                 with self.form_errors(form):
@@ -647,6 +670,15 @@ class IPAMAppplication(Application):
                     required=False,
                     help_text=_("Appropriative dual-stack allocation")
                 )
+                enable_ip_discovery = forms.ChoiceField(
+                    label=_("Enable IP Discovery"),
+                    required=True,
+                    choices=[
+                        ("I", "Inherit"),
+                        ("E", "Enable"),
+                        ("D", "Disable")
+                    ]
+                )
 
                 def clean_dual_stack_prefix(self):
                     ds_prefix = self.cleaned_data["dual_stack_prefix"]
@@ -714,7 +746,8 @@ class IPAMAppplication(Application):
                 "dual_stack_prefix": ds_prefix,
                 "tags": prefix.tags,
                 "tt": prefix.tt,
-                "style": prefix.style.id if prefix.style else None
+                "style": prefix.style.id if prefix.style else None,
+                "enable_ip_discovery": prefix.enable_ip_discovery
             }
             self.apply_custom_initial(prefix, initial, "ip_prefix")
             form = form_class(initial=initial)
@@ -787,10 +820,10 @@ class IPAMAppplication(Application):
                 label=_("Auto-update MAC"),
                 required=False,
                 help_text=_("Check to automatically fetch MAC from ARP cache"))
-            managed_object = forms.CharField(
+            managed_object = forms.ModelChoiceField(
                 label="Managed Object",
+                queryset=ManagedObject.objects.order_by("name"),
                 required=False,
-                widget=AutoCompleteTextInput("sa:managedobject:lookup1"),
                 help_text=_("Set if address belong to managed object's interface"))
             description = forms.CharField(
                 label=_("Description"),
@@ -1114,16 +1147,15 @@ class IPAMAppplication(Application):
         """
         Ping check task result
         """
-        vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        p = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         task = self.get_object_or_404(ReduceTask, id=int(task_id))
         try:
             result = task.get_result(block=False)
         except ReduceTask.NotReady:
             return self.render_json(None)  # Waiting
         r = {}
-        for s in result:
-            r[s["ip"]] = s["status"]
+        if result:
+            for s in result:
+                r[s["ip"]] = s["status"]
         return self.render_json(r)
 
     class RebaseForm(NOCForm):

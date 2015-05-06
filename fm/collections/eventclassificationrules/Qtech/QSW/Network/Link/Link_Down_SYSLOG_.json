@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Network | Link | Link Down (SYSLOG)",
+    "uuid": "bafada81-5526-4874-b9e3-1cb289aa1fa3",
+    "description": "0000000158: Jan 1 14:52:20: torgovaja_4: %DEVICE-3-LINKUPDOWN: e0/1 LinkDown.",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%DEVICE-3-LINKUPDOWN:\\s+(?P<interface>.+)\\s+LinkDown.$"
+        }
+    ]
+}

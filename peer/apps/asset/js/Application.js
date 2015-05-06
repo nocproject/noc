@@ -10,8 +10,7 @@ Ext.define("NOC.peer.asset.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.peer.asset.Model",
-        "Ext.ux.form.UCField",
-        "NOC.core.TagsField"
+        "Ext.ux.form.UCField"
     ],
     model: "NOC.peer.asset.Model",
     search: true,

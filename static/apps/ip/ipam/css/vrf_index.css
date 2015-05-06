@@ -21,12 +21,12 @@
 
 td[class=nav-label] {
     font-weight: bold;
-    vertical-align: center;
+    vertical-align: middle;
     width: 80px;
 }
 
 td[class=nav-form] {
-    vertical-align: center;
+    vertical-align: middle;
     width: 120px;
 }
 
@@ -51,6 +51,10 @@ th[class=fqdn] {
     width: 17em;
 }
 
+th[class=usage] {
+    width: 5em;
+}
+
 th[class=mac] {
     width: 7em;
 }
@@ -66,6 +70,20 @@ th[class=gw] {
 th[class=project] {
     width: 5em;
 }
+
+th[class=ippoll-tg] {
+    width: 12em;
+}
+th[class=ippool-name] {
+    width: 7em;
+}
+th[class=ippool-type] {
+    width: 5em;
+}
+th[class=ippool-from] {
+    width: 7em;
+}
+th[class=ippool-to]
 
 #ranges th[class=legend] {
     width: 1em;

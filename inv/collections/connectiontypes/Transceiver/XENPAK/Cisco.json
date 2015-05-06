@@ -1,0 +1,8 @@
+{
+    "name": "Transceiver | XENPAK | Cisco",
+    "uuid": "e7acafdd-79c0-43fe-9008-0a1d1e2c4f16",
+    "description": "Cisco-compatible XENPAK transceiver slot",
+    "c_group": [],
+    "extend__name": "Transceiver | XENPAK",
+    "genders": "mf"
+}

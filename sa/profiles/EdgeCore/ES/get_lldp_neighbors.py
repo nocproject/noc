@@ -60,6 +60,8 @@ class Script(NOCScript):
                 n["remote_port_subtype"] = {"MAC Address": 3, "Interface name": 5, "Inerface alias": 5, "Local": 7}[match.group("p_type")]
                 if n["remote_port_subtype"] == 3:
                     remote_port = MACAddressParameter().clean(match.group("p_id"))
+                elif n["remote_port_subtype"] == 5:
+                    remote_port = match.group("p_id").strip()
                 else:
                     # Removing bug
                     remote_port = binascii.unhexlify('' . join(match.group("p_id").split('-')))

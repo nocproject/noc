@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | 7600 | 7600-ES+3CXL-DFC",
+    "uuid": "38e28d7b-fba6-4bcf-968f-ae1f965eab73",
+    "vendor__code": "CISCO",
+    "description": "7600-ES+3CXL 7600 ES+ DFC XL",
+    "cr_context": "DFC",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | DFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": "7600-ES+3CXL"
+        }
+    }
+}

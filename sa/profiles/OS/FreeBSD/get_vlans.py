@@ -15,13 +15,12 @@ import re
 class Script(NOCScript):
     name = "OS.FreeBSD.get_vlans"
     implements = [IGetVlans]
-    rx_vlan = re.compile(r"vlan: (?P<vlanid>\d+) parent interface: (?P<iface>\S+)", re.MULTILINE)
+    rx_vlan = re.compile(
+        r"^\tvlan: (?P<vlanid>[1-9]\d*) parent interface: \S+", re.MULTILINE)
 
     def execute(self):
         r = []
-        for match in self.rx_vlan.finditer(self.cli("ifconfig", cached=True)):
-            r += [{
-                "vlan_id": int(match.group('vlanid')),
-                "name": match.group('iface') + "." + match.group('vlanid'),
-                }]
+        for match in self.rx_vlan.finditer(
+            self.cli("ifconfig -v", cached=True)):
+            r += [{"vlan_id": int(match.group('vlanid'))}]
         return r

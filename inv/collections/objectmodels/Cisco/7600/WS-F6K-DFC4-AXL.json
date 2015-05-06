@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | 7600 | WS-F6K-DFC4-AXL",
+    "uuid": "8b2dc759-c5e2-4d7c-bc2d-61556a34574d",
+    "vendor__code": "CISCO",
+    "description": "Cisco WS-F6K-DFC4-AXL Distributed Forwarding Card 4",
+    "cr_context": "DFC",
+    "connections": [
+        {
+            "description": "DFC slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | DFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-F6K-DFC4-AXL"
+        }
+    }
+}

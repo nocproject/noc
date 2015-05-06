@@ -1,0 +1,12 @@
+{
+    "name": "Juniper | JUNOS | reboot",
+    "uuid": "6e88b42f-3813-4424-9e0b-5822b799606d",
+    "action__name": "reboot",
+    "description": "",
+    "profile": "Juniper.JUNOS",
+    "config_mode": false,
+    "preference": 1000,
+    "match": [],
+    "commands": "request system reboot",
+    "timeout": 60
+}

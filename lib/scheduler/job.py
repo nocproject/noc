@@ -12,6 +12,9 @@ import datetime
 import random
 ## NOC modules
 from noc.main.models import SystemNotification
+from noc.lib.log import PrefixLoggerAdapter, TeeLoggerAdapter
+
+logger = logging.getLogger(__name__)
 
 
 class JobBase(type):
@@ -55,6 +58,7 @@ class Job(object):
     S_LATE = "L"
 
     group = None
+    beef = {}  # key -> result for MRT tasks
 
     def __init__(self, scheduler, key=None, data=None, schedule=None):
         self.scheduler = scheduler
@@ -66,6 +70,15 @@ class Job(object):
         self._log = []
         self.on_complete = []  # List of (job_name, key)
                                # to launch on complete
+        self.to_log = scheduler and scheduler.to_log_jobs
+        self.job_log = []
+        self.logger = PrefixLoggerAdapter(
+            logger,
+            "%s][%s][%s" % (self.scheduler.name, self.name,
+                            self.get_display_key())
+        )
+        if scheduler.to_log_jobs:
+            self.logger = TeeLoggerAdapter(self.logger, self.job_log)
 
     @classmethod
     def initialize(cls, scheduler):
@@ -77,23 +90,24 @@ class Job(object):
         """
         pass
 
+    @classmethod
+    def set_beef(cls, beef):
+        cls.beef = beef
+
     def get_display_key(self):
         return self.key
 
     def debug(self, msg):
-        logging.debug("[%s: %s(%s)] %s" % (
-            self.scheduler.name, self.name,
-            self.get_display_key(), msg))
+        self.logger.debug(msg)
 
     def info(self, msg):
-        logging.info("[%s: %s(%s)] %s" % (
-            self.scheduler.name, self.name,
-            self.get_display_key(), msg))
+        self.logger.info(msg)
 
     def error(self, msg):
-        logging.error("[%s: %s(%s)] %s" % (
-            self.scheduler.name, self.name,
-            self.get_display_key(), msg))
+        self.logger.error(msg)
+
+    def get_job_log(self):
+        return "\n".join(self.job_log)
 
     def handler(self, *args, **kwargs):
         """

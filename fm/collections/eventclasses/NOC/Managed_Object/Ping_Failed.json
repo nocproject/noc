@@ -1,0 +1,45 @@
+{
+    "name": "NOC | Managed Object | Ping Failed",
+    "$collection": "fm.eventclasses",
+    "uuid": "3cd44497-6f0e-4a27-b6fe-3ab001681236",
+    "description": "Failed to ping managed object",
+    "action": "L",
+    "vars": [
+
+    ],
+    "subject_template": "Ping Failed",
+    "body_template": "Failed to ping managed object {{event.managed_object.name}} (IP: {{event.managed_object.address}}). All SA tasks to this object are temporary suspended",
+    "symptoms": "Cannot execute SA tasks on the object",
+    "probable_causes": "The object is not responding to ICMP echo-requests",
+    "recommended_actions": "Check object is alive. Check routing to this object. Check firewalls",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "NOC | Managed Object | Ping Failed"
+        }
+    ],
+    "repeat_suppression": [
+        {
+            "name": "Do not suppress after Ping OK",
+            "condition": "True",
+            "event_class__name": "NOC | Managed Object | Ping OK",
+            "match_condition": {
+                "managed_object": "event.managed_object.id"
+            },
+            "window": 3600,
+            "suppress": false
+        },
+        {
+            "name": "Suppress after Ping Failed",
+            "condition": "True",
+            "event_class__name": "NOC | Managed Object | Ping Failed",
+            "match_condition": {
+                "managed_object": "event.managed_object.id"
+            },
+            "window": 3600,
+            "suppress": true
+        }
+    ]
+}

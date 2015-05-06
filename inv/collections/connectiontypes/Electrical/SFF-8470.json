@@ -1,0 +1,7 @@
+{
+    "name": "Electrical | SFF-8470",
+    "uuid": "e18c7653-7402-4abf-9105-e371e269b71d",
+    "description": "Infiniband/CX4 connector",
+    "c_group": [],
+    "genders": "mf"
+}

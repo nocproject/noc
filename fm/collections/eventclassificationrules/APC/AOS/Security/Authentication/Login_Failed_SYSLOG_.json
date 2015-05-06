@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Security | Authentication | Login Failed (SYSLOG)",
+    "uuid": "c02b186e-0a28-4eca-b9db-1c9ebab35395",
+    "description": "System: Detected an unauthorized user attempting to access the Web interface from 10.111.0.18. 0x0006",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "System: Detected an unauthorized user attempting to access the \\S+ interface from (?P<ip>\\S+)\\. 0x0006"
+        }
+    ]
+}

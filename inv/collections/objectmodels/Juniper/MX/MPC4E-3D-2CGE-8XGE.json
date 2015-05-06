@@ -1,0 +1,104 @@
+{
+    "name": "Juniper | MX | MPC4E-3D-2CGE-8XGE",
+    "$collection": "inv.objectmodels",
+    "uuid": "f12774d2-9f0d-4799-8b8b-b87e36112d78",
+    "vendor__code": "JUNIPER",
+    "description": "Fixed configuration MPC with two 100-Gigabit Ethernet ports and eight 10-Gigabit Ethernet ports",
+    "connection_rule__name": "Juniper | MX",
+    "cr_context": "FPC",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "Port 0/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 0/1",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 0/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 0/3",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/3",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 1/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "1/0",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | CFP | Juniper"
+        },
+        {
+            "description": "Port 2/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "2/0",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 2/1",
+            "direction": "i",
+            "gender": "f",
+            "name": "2/1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 2/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "2/2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 2/3",
+            "direction": "i",
+            "gender": "f",
+            "name": "2/3",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Port 3/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "3/0",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | CFP | Juniper"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "MPC4E-3D-2CGE-8XGE",
+            "part_no0": "750-037355"
+        }
+    }
+}

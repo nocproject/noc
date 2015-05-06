@@ -8,14 +8,15 @@
 
 ## Python modules
 import re
+## Django modules
+from django.template import Template, Context
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.fm.models import EventClassificationRule
+from noc.fm.models.eventclassificationrule import EventClassificationRule, EventClassificationRuleCategory
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.lib.validators import is_objectid, is_oid
 from noc.fm.models import get_event
-from noc.fm.models.translation import get_translated_template
 
 
 class EventClassificationRuleApplication(ExtDocApplication):
@@ -25,13 +26,9 @@ class EventClassificationRuleApplication(ExtDocApplication):
     title = "Classification Rule"
     menu = "Setup | Classification Rules"
     model = EventClassificationRule
+    parent_model = EventClassificationRuleCategory
+    parent_field = "parent"
     query_condition = "icontains"
-
-    @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True,
-          access="read")
-    def api_json(self, request, id):
-        rule = self.get_object_or_404(EventClassificationRule, id=id)
-        return rule.to_json()
 
     @view(url="^test/$", method=["POST"], access="test", api=True)
     def api_test(self, request):
@@ -40,7 +37,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
         patterns = []
         result = False
         # Get data
-        data = None
+        data = {}
         vars = {}
         required_vars = set()
         r_patterns = []
@@ -57,7 +54,11 @@ class EventClassificationRuleApplication(ExtDocApplication):
                     errors += ["Event not found: %s" % q["data"]]
             else:
                 # Decode json
-                e = self.deserialize(q["data"])
+                try:
+                    e = self.deserialize(q["data"])
+                except:
+                    errors += ["Cannot decode JSON"]
+                    e = None
                 if isinstance(e, list):
                     e = e[0]
                 if not isinstance(e, dict) or "raw_vars" not in e:
@@ -151,6 +152,19 @@ class EventClassificationRuleApplication(ExtDocApplication):
             if s_patterns and not i_patterns:
                 result = True
             r_patterns = s_patterns + i_patterns
+        # Calculate rule variables
+        if "vars" in q and q["vars"]:
+            for v in q["vars"]:
+                if v["value"].startswith("="):
+                    # Evaluate
+                    try:
+                        vars[v["name"]] = eval(v["value"][1:], {}, vars)
+                    except Exception, why:
+                        errors += [
+                            "Error when evaluating '%s': %s" % (v["name"], why)
+                        ]
+                else:
+                    vars[v["name"]] = v["value"]
         # Check required variables
         for rv in required_vars:
             if rv not in vars:
@@ -158,10 +172,9 @@ class EventClassificationRuleApplication(ExtDocApplication):
         # Fill event class template
         if event_class:
             lang = "en"
-            subject = get_translated_template(
-                lang, event_class.text, "subject_template", vars)
-            body = get_translated_template(
-                lang, event_class.text, "body_template", vars)
+            ctx = Context(vars)
+            subject = Template(event_class.subject_template).render(ctx)
+            body = Template(event_class.body_template).render(ctx)
         # Check expression
         r = {
             "result": result
@@ -216,8 +229,8 @@ class EventClassificationRuleApplication(ExtDocApplication):
                     patterns[k] = event.resolved_vars[k]
         data["patterns"] = [
             {
-                "key_re": k,
-                "value_re": patterns[k]
+                "key_re": "^%s$" % k,
+                "value_re": "^%s$" % patterns[k]
             } for k in patterns
         ]
         return data

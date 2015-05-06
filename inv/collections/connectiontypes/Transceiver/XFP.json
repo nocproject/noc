@@ -1,0 +1,7 @@
+{
+    "name": "Transceiver | XFP",
+    "uuid": "70ae7666-a616-4c6e-9597-b7bdefd8a01d",
+    "description": "XFP transceiver slot",
+    "c_group": [],
+    "genders": "mf"
+}

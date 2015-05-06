@@ -1,0 +1,7 @@
+{
+    "name": "Power | Dual M6 Lug",
+    "uuid": "d24cc8dc-50f3-4ad5-8307-22ee1af770eb",
+    "description": "Cable lug; dual hole, sized to fit 1/4-20 UNC terminal studs at 15.86-mm (0.625-in.) center line.",
+    "c_group": ["dual_m6"],
+    "genders": "f"
+}

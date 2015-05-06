@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | vserver In Service #1 (SYSLOG)",
+    "uuid": "f9c2265d-6aff-4542-b9e8-09d67881e6dc",
+    "description": "%CSM_SLB-6-INFO: Module 1 info: SLB-NETMGT: vserver VS1 inservice",
+    "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver In Service",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Module (?P<module>\\d+) info: SLB-NETMGT: vserver (?P<name>.+?) inservice$"
+        }
+    ]
+}

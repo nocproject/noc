@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ConnectedTCPSocket implementation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -39,12 +39,18 @@ class ConnectedTCPSocket(TCPSocket):
             self.__class__.__name__, id(self),
             self.address, self.port, ", ".join(self.get_flags()))
 
+    def get_label(self):
+        return "%s %s:%s" % (self.__class__.__name__,
+                             self.address, self.port)
+
     def create_socket(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = socket.socket(
+            self.get_af(self.address), socket.SOCK_STREAM
+        )
         super(ConnectedTCPSocket, self).create_socket()
         if self.local_address:
             self.socket.bind((self.local_address, 0))
-        self.debug("Connecting %s:%s" % (self.address, self.port))
+        self.logger.debug("Connecting %s:%s", self.address, self.port)
         e = self.socket.connect_ex((self.address, self.port))
         if e in (ETIMEDOUT, ECONNREFUSED, ENETUNREACH,
                  EHOSTUNREACH, ENETDOWN):
@@ -53,6 +59,11 @@ class ConnectedTCPSocket(TCPSocket):
             return
         elif e not in (0, EISCONN, EINPROGRESS, EALREADY, EWOULDBLOCK):
             raise socket.error, (e, errorcode[e])
+        elif e != 0:
+            self.logger.debug(
+                "create_socket returns non-zero code %s[%s]",
+                e, errorcode[e]
+            )
         self.set_status(r=self.is_connected, w=not self.is_connected)
 
     def handle_read(self):
@@ -63,18 +74,18 @@ class ConnectedTCPSocket(TCPSocket):
         try:
             data = self.socket.recv(self.READ_CHUNK)
         except socket.error, why:
-            if why[0] in (ECONNREFUSED, EHOSTUNREACH):
-                self.error("Connection refused (%s)" % why[0])
+            if why[0] in (EINTR, EAGAIN):
+                return  # Silently ignore
+            elif why[0] in (ECONNREFUSED, EHOSTUNREACH):
+                self.logger.error("Connection refused: %s (%s)",
+                                  why[1], why[0])
                 self.on_conn_refused()
                 self.close()
                 return
-            if why[0] in (ECONNRESET, ENOTCONN, ESHUTDOWN, ETIMEDOUT):
-                self.error("Connection lost (%s)" % why[0])
-                self.close()
+            else:
+                self.logger.error("Connection lost: %s (%s)",
+                                  why[1], why[0])
                 return
-            if why[0] in (EINTR, EAGAIN):
-                return
-            raise socket.error, why
         if not data:
             self.close()
             return
@@ -89,13 +100,11 @@ class ConnectedTCPSocket(TCPSocket):
             try:
                 self.socket.send("")
             except socket.error, why:
-                err_code = why[0]
-                if err_code in (EPIPE, ECONNREFUSED, ETIMEDOUT,
-                                EHOSTUNREACH, ENETUNREACH):
-                    self.on_conn_refused()
-                    self.close()
-                    return
-                raise socket.error, why
+                self.logger.error("Connection refused: %s (%s)",
+                                  why[1], why[0])
+                self.on_conn_refused()
+                self.close()
+                return
             self.handle_connect()
             return
         TCPSocket.handle_write(self)

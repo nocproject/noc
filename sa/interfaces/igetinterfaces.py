@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## IGetInterfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from base import *
@@ -11,7 +11,7 @@ from base import *
 class IGetInterfaces(Interface):
     """
     IGetInterfaces.
-    
+
     Common usage scenarios
 
     L3 IPv4/IPv6 port.
@@ -70,7 +70,7 @@ class IGetInterfaces(Interface):
                 name = interface name (same as physical name for most platforms)
                 enabled_afi = ["BRIDGE"]
                 tagged_vlans = VLANS (list)
-    
+
     L3-terminated 802.1Q trunk (in VLAN1 and VLAN2)
     -----------------------------------------------
     forwarding_instance:
@@ -85,12 +85,12 @@ class IGetInterfaces(Interface):
                 vlan_ids = [VLAN1]
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = [list of VLAN1 addresses]
-                
+
                 name = interface name.VLAN2 (for most platforms)
                 vlan_ids = [VLAN2]
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = [list of VLAN2 addresses]
-    
+
     L3 portchannel (if1 is aggregated interface of if2 and if3 with LACP)
     -----------------------------------------------------------
     forwarding_instance:
@@ -103,19 +103,17 @@ class IGetInterfaces(Interface):
                 name = interface name (same as parent for most platforms)
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = list of IPv4 addresses
-    
+
             name = if2
             type = "physical"
-            is_lacp = True  # @todo: Deprecated
             enabled_protoocols = ["LACP"]
             aggregated_interface = "if1"
-            
+
             name = if3
             type = "physical"
-            is_lacp = True  # @todo: Deprecated
             enabled_protoocols = ["LACP"]
             aggregated_interface = "if1"
-    
+
     L2 portchannel, tagged (if1 is aggregated interface of if2(LACP) and if3(static))
     ---------------------------------------------------------------------------------
     forwarding_instance:
@@ -128,17 +126,16 @@ class IGetInterfaces(Interface):
                 name = interface name (same as parent for most platforms)
                 enabled_afi = ["BRIDGE"]
                 tagged_vlans = list of tagged vlans
-    
+
             name = if2
-            type = "aggregate"
+            type = "physical"
             enabled_protocols = ["LACP"]
             aggregated_interface = "if1"
-            
+
             name = if3
-            type = "aggregate"
-            enabled_protocols = ["LACP"]
+            type = "physical"
             aggregated_interface = "if1"
-    
+
     802.1Q trunk. (VLAN1 is L3, VLAN2 in VRF1)
     -----------------------------------------
     forwarding_instance:
@@ -164,6 +161,39 @@ class IGetInterfaces(Interface):
                 vlan_ids = [VLAN2]
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = List of VLAN2 addresses in VRF1
+
+    DSLAM routed port
+    -----------------
+    forwarding_instance:
+    forwarding_instance = "default"
+    type = "ip"
+    interfaces:
+        name = physical port name
+        type = "physical"
+        subinterfaces:
+            name = interface name (same as physical name for most platforms)
+            enabled_afi = ["IPv4", "IPv6", "ATM"]
+            ipv4_addresses = list of IPv4 addresses
+            ipv6_addresses = list of IPv6 addresses
+            vpi = port vpi
+            vci = port vci
+
+    DSLAM bridge port
+    -----------------
+    forwarding_instance:
+    forwarding_instance = "default"
+    type = "ip"
+    interfaces:
+        name = physical port name
+        type = "physical"
+        subinterfaces:
+            name = interface name (same as physical name for most platforms)
+            enabled_afi = ["BRIDGE", "ATM"]
+            untagged_vlan = untagged vlan, if any
+            tagged_vlans = list of tagged vlans, if any
+            vpi = port vpi
+            vci = port vci
+
     """
     returns = ListOfParameter(element=DictParameter(attrs={
         # Name of the forwarding instance
@@ -174,9 +204,11 @@ class IGetInterfaces(Interface):
         "rd": RDParameter(required=False),
         "interfaces": ListOfParameter(element=DictParameter(attrs={
             "name": InterfaceNameParameter(),
-            "type": StringParameter(choices=["physical", "SVI", "aggregated",
-                                             "loopback", "management",
-                                             "null", "tunnel", "other", "unknown"]),
+            "type": StringParameter(choices=[
+                "physical", "SVI", "aggregated",
+                "loopback", "management",
+                "null", "tunnel", "other",
+                "template", "unknown"]),
             "admin_status": BooleanParameter(default=False),
             "oper_status": BooleanParameter(default=False),
             "aggregated_interface": InterfaceNameParameter(required=False), # Not empty for portchannel members
@@ -195,23 +227,25 @@ class IGetInterfaces(Interface):
                 "mtu": IntParameter(required=False),
                 "description": StringParameter(required=False),
                 "mac": MACAddressParameter(required=False),
-                "vlan_ids": ListOfParameter(element=VLANIDParameter(), required=False),
+                "vlan_ids": VLANStackParameter(required=False),
                 # Enabled address families
                 "enabled_afi": ListOfParameter(
                     element=StringParameter(choices=[
-                        "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE"
+                        "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE", "ATM"
                     ]), required=False  # #todo: make required
                 ),
                 "ipv4_addresses": ListOfParameter(element=IPv4PrefixParameter(), required=False),  # enabled_afi = [... IPv4 ...]
                 "ipv6_addresses": ListOfParameter(element=IPv6PrefixParameter(), required=False),  # enabled_afi = [... IPv6 ...]
                 "iso_addresses": ListOfParameter(element=StringParameter(), required=False),  #   # enabled_afi = [... ISO ...]
+                "vpi": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
+                "vci": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
                 # Enabled L3 protocols
                 "enabled_protocols": ListOfParameter(
                                 element=StringParameter(choices=[
-                                    "ISIS", "OSPF", "RIP", "EIGRP",
+                                    "ISIS", "OSPF", "RIP", "EIGRP", "OSPFv3",
                                     "BGP",
-                                    "LDP", "RSVP",
-                                    "PIM", "DVMRP", "IGMP", "VRRP"
+                                    "LDP", "RSVP", "NDP",
+                                    "PIM", "DVMRP", "IGMP", "VRRP", "SRRP"
                                 ]), required=False),
                 "untagged_vlan": VLANIDParameter(required=False),  # enabled_afi = [BRIDGE]
                 "tagged_vlans": ListOfParameter(element=VLANIDParameter(), required=False),  # enabled_afi = [BRIDGE]
@@ -220,7 +254,7 @@ class IGetInterfaces(Interface):
                 # Tunnel services
                 "tunnel": DictParameter(required=False, attrs={
                     "type": StringParameter(choices=[
-                        "GRE", "IPIP", "IPsec", "PPTP"
+                        "GRE", "IPIP", "IPsec", "PPTP", "L2TP", "PPPOE", "PPP"
                     ]),
                     "local_address": IPParameter(required=False),
                     "remote_address": IPParameter(required=False)

@@ -8,23 +8,33 @@ console.debug("Defining NOC.dns.dnsserver.Application");
 
 Ext.define("NOC.dns.dnsserver.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
-        "NOC.dns.dnsserver.Model"
+    requires: [
+        "NOC.dns.dnsserver.Model",
+        "NOC.main.sync.LookupField"
     ],
     model: "NOC.dns.dnsserver.Model",
     search: true,
     columns: [
         {
             text: "Name",
-            dataIndex: "name"
+            dataIndex: "name",
+            width: 100
         },
         {
             text: "IP",
-            dataIndex: "ip"
+            dataIndex: "ip",
+            width: 100
         },
         {
-            text: "Channel",
-            dataIndex: "sync_channel"
+            text: "Sync",
+            dataIndex: "sync",
+            renderer: NOC.render.Lookup("sync"),
+            width: 150
+        },
+        {
+            text: "Description",
+            dataIndex: "description",
+            flex: 1
         }
     ],
     fields: [
@@ -47,11 +57,10 @@ Ext.define("NOC.dns.dnsserver.Application", {
             allowBlank: true
         },
         {
-            name: "sync_channel",
-            xtype: "textfield",
+            name: "sync",
+            xtype: "main.sync.LookupField",
             fieldLabel: "Sync channel",
-            allowBlank: true,
-            regex: /^[a-zA-Z0-9]+$/
+            allowBlank: true
         }
     ]
 });

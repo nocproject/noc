@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.sa.managedobject.Lookup
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2013 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.LookupField");
@@ -9,7 +9,5 @@ console.debug("Defining NOC.sa.managedobject.LookupField");
 Ext.define("NOC.sa.managedobject.LookupField", {
     extend: "NOC.core.LookupField",
     alias: "widget.sa.managedobject.LookupField",
-    requires: ["NOC.sa.managedobject.Lookup"],
-    width: 260,
-    pageSize: true
+    requires: ["NOC.sa.managedobject.Lookup"]
 });

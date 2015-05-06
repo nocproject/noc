@@ -296,7 +296,7 @@ class Script(NOCScript):
                         }
                 if port_vlans[name]["untagged"]:
                     swp["untagged"] = port_vlans[name]["untagged"]
-                swp["interface"] = name
+                swp["interface"] = self.profile.convert_interface_name(name)
                 swp["members"] = members
                 r.append(swp)
                 write = False

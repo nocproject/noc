@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Unknown | Ignore PLATFORM-ENVMON-2-ENV_CONDITION #2 (SYSLOG)",
+    "uuid": "87dbc36b-555c-4620-bcf3-cd7a00cf7947",
+    "description": "%PLATFORM-ENVMON-2-ENV_CONDITION : Outstanding environmental condition exists in the chassis",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PLATFORM-ENVMON-2-ENV_CONDITION : Outstanding environmental condition (?:exists|cleared) in the chassis"
+        }
+    ]
+}

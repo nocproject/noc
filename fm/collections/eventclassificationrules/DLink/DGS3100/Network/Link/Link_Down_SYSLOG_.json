@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Network | Link | Link Down (SYSLOG)",
+    "uuid": "7d08d639-8cdf-4cd3-9989-245b20cd2d67",
+    "description": "%LINK-W-Down:  1:24",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LINK-W-Down:\\s+(?P<interface>(?:\\d:|ch)\\d+)$"
+        }
+    ]
+}

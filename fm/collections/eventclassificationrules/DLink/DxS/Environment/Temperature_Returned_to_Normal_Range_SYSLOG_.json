@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Environment | Temperature Returned to Normal Range (SYSLOG)",
+    "uuid": "03fb3260-d0b4-4fb2-8bc9-a52c2a3e6256",
+    "description": "Temperatrue Sensor:2 recovers to normal state.(current temperatrue:37)",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\))( Unit \\d+)? (?P<name>Temperat(?:ur|ru)e Sensor:\\s*\\d+) recovers to normal state.\\s*\\(current temperat(?:ur|ru)e:\\s*(?P<measure>\\d+)\\)"
+        }
+    ]
+}

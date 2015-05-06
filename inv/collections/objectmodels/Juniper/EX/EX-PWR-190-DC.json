@@ -1,0 +1,37 @@
+{
+    "name": "Juniper | EX | EX-PWR-190-DC",
+    "uuid": "e9111636-8a21-4b52-9d27-6a924f76d878",
+    "vendor__code": "JUNIPER",
+    "description": "190 W DC Power Supply Unit (PSU)",
+    "cr_context": "PEM",
+    "connections": [
+        {
+            "description": "Inner slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | EX4200 PSU"
+        },
+        {
+            "description": "-48V",
+            "direction": "s",
+            "gender": "m",
+            "name": "-48V",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "RTN (+)",
+            "direction": "s",
+            "gender": "m",
+            "name": "RTN",
+            "protocols": [">48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "740-023938"
+        }
+    }
+}

@@ -1,34 +1,33 @@
-[
-    {
-        "name": "NOC | Unknown Event Source",
-        "description": "NOC | Unknown Event Source",
-        "event_class__name": "NOC | Unknown Event Source",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^system$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^NOC\\.SAE$"
-            },
-            {
-                "key_re": "^activator$",
-                "value_re": "^(?P<activator>\\S+)$"
-            },
-            {
-                "key_re": "^ip$",
-                "value_re": "^(?P<ip>\\S+)$"
-            },
-            {
-                "key_re": "^type$",
-                "value_re": "^Invalid Event Source$"
-            },
-            {
-                "key_re": "^collector$",
-                "value_re": "^(?P<collector_ip>\\S+):(?P<collector_port>\\d+)$"
-            }
-        ]
-    }
-]
+{
+    "name": "NOC | Unknown Event Source",
+    "uuid": "5a26d15a-8263-4e54-9f35-75143b28bbe5",
+    "description": "NOC | Unknown Event Source",
+    "event_class__name": "NOC | Unknown Event Source",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^system$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^NOC\\.SAE$"
+        },
+        {
+            "key_re": "^activator$",
+            "value_re": "^(?P<activator>\\S+)$"
+        },
+        {
+            "key_re": "^ip$",
+            "value_re": "^(?P<ip>\\S+)$"
+        },
+        {
+            "key_re": "^type$",
+            "value_re": "^Invalid Event Source$"
+        },
+        {
+            "key_re": "^collector$",
+            "value_re": "^(?P<collector_ip>\\S+):(?P<collector_port>\\d+)$"
+        }
+    ]
+}

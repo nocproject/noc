@@ -30,7 +30,7 @@ class Profile(noc.sa.profiles.Profile):
     rogue_chars = ["\r"]
     command_submit = "\r"
     command_enter_config = "configure"
-    command_leave_config = "exit"
+    command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
     convert_mac = noc.sa.profiles.Profile.convert_mac_to_dashed
 

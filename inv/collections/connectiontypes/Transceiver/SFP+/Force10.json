@@ -1,0 +1,8 @@
+{
+    "name": "Transceiver | SFP+ | Force10",
+    "uuid": "127d3569-2df1-4584-b638-b18d9d67203c",
+    "description": "Force10-compatible SFP+ transceiver slot",
+    "c_group": [],
+    "extend__name": "Transceiver | SFP+",
+    "genders": "mf"
+}

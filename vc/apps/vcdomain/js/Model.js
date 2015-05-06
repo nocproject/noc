@@ -63,6 +63,11 @@ Ext.define("NOC.vc.vcdomain.Model", {
             name: "row_class",
             type: "string",
             persist: false
+        },
+        {
+            name: "object_count",
+            type: "int",
+            persist: false
         }
     ]
 });

@@ -13,7 +13,7 @@ import datetime
 ## Report Form
 ##
 class ReportForm(forms.Form):
-    repo=forms.ChoiceField(label="Type",choices=[("config","config"),("dns","dns"),("prefix-list","prefix-list")])
+    repo=forms.ChoiceField(label="Type",choices=[("prefix-list","prefix-list")])
     days=forms.IntegerField(label="In Days",min_value=1)
 ##
 ##

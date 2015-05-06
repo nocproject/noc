@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | Link | Link Up (SYSLOG)",
+    "uuid": "c803765b-0e6c-4d10-8ded-fe50cb6799e1",
+    "description": "%LINK-3-UPDOWN: Interface GigabitEthernet4/0/45, changed state to up",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:LINK-(?:SP-|.FC.-)?3|UBR\\d+00-5)-UPDOWN: Interface (?P<interface>.+), changed state to up$"
+        }
+    ]
+}

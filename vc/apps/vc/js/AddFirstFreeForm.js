@@ -47,7 +47,7 @@ Ext.define("NOC.vc.vc.AddFirstFreeForm", {
                 {
                     text: "Add First Free",
                     itemId: "add",
-                    iconCls: "icon_add",
+                    glyph: NOC.glyph.plus,
                     scope: me,
                     /*formBind: true,
                     disabled: true,*/
@@ -78,10 +78,10 @@ Ext.define("NOC.vc.vc.AddFirstFreeForm", {
                     return;
                 }
                 me.close();
-                me.app.onNewRecord({vc_domain: r.vc_domain, l1: vc});
+                me.app.newRecord({vc_domain: r.vc_domain, l1: vc});
             },
             failure: function() {
-                // @todo: Report Error
+                NOC.error("Failed to get first free VC");
                 me.close();
             }
         });

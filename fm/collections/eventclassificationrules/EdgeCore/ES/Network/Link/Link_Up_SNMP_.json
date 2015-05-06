@@ -1,0 +1,25 @@
+{
+    "name": "EdgeCore | ES | Network | Link | Link Up (SNMP)",
+    "uuid": "dcbcbff8-09d7-4546-94ac-673dedbca87f",
+    "description": "IF-MIB::linkUp",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^IF-MIB::ifIndex\\.\\d+$",
+            "value_re": "^(?P<interface__ifindex>\\d+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^IF-MIB::linkUp$"
+        }
+    ]
+}

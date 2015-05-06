@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Security | Authentication | Login Failed #2 (SYSLOG)",
+    "uuid": "4784720f-18b5-4407-8293-a582a4f5cbf9",
+    "description": "Aug  2 13:55:03 login: 1 LOGIN FAILURE FROM 10.0.0.4",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "LOGIN FAILURE FROM (?P<ip>\\S+)$"
+        }
+    ]
+}

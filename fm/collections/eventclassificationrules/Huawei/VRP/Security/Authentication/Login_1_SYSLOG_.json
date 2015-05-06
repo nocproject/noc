@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Security | Authentication | Login #1 (SYSLOG)",
+    "uuid": "64cb4859-8733-4834-9c7f-e3957ba867db",
+    "description": "Feb  3 2012 05:46:46 switch-test %%01SHELL/5/LOGIN(l)[410]:VTY login from 192.168.220.252.",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "VTY login from (?P<ip>\\S+)\\.$"
+        }
+    ]
+}

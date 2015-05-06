@@ -9,20 +9,18 @@
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.db.models import Q
 ## NOC modules
 from noc.project.models.project import Project
 from vrf import VRF
 from prefix import Prefix
 from afi import AFI_CHOICES
-from noc.main.models import Style, ResourceState, CustomField
-from noc.sa.models import ManagedObject
+from noc.main.models.style import Style
+from noc.main.models.resourcestate import ResourceState
+from noc.sa.models.managedobject import ManagedObject
 from noc.lib.fields import TagsField, INETField, MACField
 from noc.lib.app import site
-from noc.lib.search import SearchResult
 from noc.lib.validators import (
-    ValidationError, check_fqdn, check_ipv4, check_ipv6,
-    is_ipv4, is_ipv6)
+    ValidationError, check_fqdn, check_ipv4, check_ipv6)
 
 
 class Address(models.Model):
@@ -51,6 +49,7 @@ class Address(models.Model):
         validators=[check_fqdn])
     project = models.ForeignKey(
         Project, verbose_name="Project",
+        on_delete=models.SET_NULL,
         null=True, blank=True, related_name="address_set")
     mac = MACField(
         "MAC",
@@ -143,27 +142,7 @@ class Address(models.Model):
         self.afi = self.get_afi(self.address)
         # Set proper prefix
         self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
-        old = None
-        if self.pk:
-            old = Address.objects.get(pk=self.pk)
         super(Address, self).save(**kwargs)
-        # If address or fqdn changed, touch zones
-        if (not old or self.address != old.address or
-            self.fqdn != old.fqdn or self.vrf != old.vrf):
-            # Touch reverse zone
-            DNSZone.touch(self.address)
-            # Touch forward zone
-            DNSZone.touch(self.fqdn)
-            if old and old.fqdn and old.fqdn != self.fqdn:
-                # Touch old forward zone too
-                DNSZone.touch(old.fqdn)
-
-    def delete(self):
-        fqdn = self.fqdn
-        address = self.address
-        super(Address, self).delete()
-        DNSZone.touch(fqdn)
-        DNSZone.touch(address)
 
     def clean(self):
         """
@@ -178,53 +157,47 @@ class Address(models.Model):
         elif self.afi == "6":
             check_ipv6(self.address)
 
-    ##
-    ## First line of description
-    ##
     @property
     def short_description(self):
+        """
+        First line of description
+        """
         if self.description:
             return self.description.split("\n", 1)[0].strip()
         else:
             return ""
 
-    ##
-    ## Search engine plugin
-    ##
-    @classmethod
-    def search(cls, user, query, limit):
-        from noc.sa.interfaces import MACAddressParameter,\
-            InterfaceTypeError
-        q = Q(description__icontains=query) | Q(fqdn__icontains=query)
-        if is_ipv4(query):
-            q |= Q(afi="4", address=query)
-        elif is_ipv6(query):
-            q |= Q(afi="6", address=query)
-        else:
-            try:
-                mac = MACAddressParameter().clean(query)
-                q |= Q(mac=mac)
-            except InterfaceTypeError:
-                pass  # Not a MAC address
-        cq = CustomField.table_search_Q(cls._meta.db_table, query)
-        if cq:
-            q |= cq
-        for o in cls.objects.filter(q):
-            if query == o.address:
-                relevancy = 1.0
-            elif query in o.fqdn:
-                relevancy = float(len(query)) / float(len(o.fqdn))
-            elif o.description and query in o.description:
-                relevancy = float(len(query)) / float(len(o.description))
-            else:
-                relevancy = 0
-            yield SearchResult(
-                url=("ip:ipam:vrf_index", o.vrf.id, o.afi, o.prefix.prefix),
-                title="VRF %s (IPv%s): %s (%s)" % (
-                o.vrf.name, o.afi, o.address, o.description),
-                text=unicode(o),
-                relevancy=relevancy
-            )
+    def get_index(self):
+        """
+        Full-text search
+        """
+        content = [self.address, self.fqdn]
+        card = "Address %s, FQDN %s" % (self.address, self.fqdn)
+        if self.mac:
+            content += [self.mac]
+            card += ", MAC %s" % self.mac
+        if self.description:
+            content += [self.description]
+            card += " (%s)" % self.description
+        r = {
+            "id": "ip.address:%s" % self.id,
+            "title": self.address,
+            "content": "\n".join(content),
+            "card": card
+        }
+        if self.tags:
+            r["tags"] = self.tags
+        return r
 
-## Prevent import loop
-from noc.dns.models import DNSZone
+    def get_search_info(self, user):
+        # @todo: Check user access
+        return (
+            "iframe",
+            None,
+            {
+                "title": "Assigned addresses",
+                "url": "/ip/ipam/%s/%s/%s/change_address/" % (
+                    self.vrf.id, self.afi, self.address
+                )
+            }
+        )

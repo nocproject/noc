@@ -10,7 +10,6 @@ Ext.define("NOC.vc.vc.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.vc.vc.Model",
-        "NOC.core.TagsField",
         "NOC.main.style.LookupField",
         "NOC.main.resourcestate.LookupField",
         "NOC.project.project.LookupField",
@@ -187,7 +186,7 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     itemId: "create_first",
                     text: "Add First Free",
-                    glyph: NOC.glyph.plus_sign,
+                    glyph: NOC.glyph.plus_circle,
                     tooltip: "Add first free VC",
                     hasAccess: NOC.hasPermission("create"),
                     scope: me,
@@ -222,7 +221,7 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     itemId: "interfaces",
                     text: "VC Interfaces",
-                    iconCls: "icon_page_link",
+                    glyph: NOC.glyph.list,
                     tooltip: "Show VC interfaces",
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
@@ -231,7 +230,7 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     itemId: "add_interfaces",
                     text: "Add Interfaces",
-                    iconCls: "icon_page_add",
+                    glyph: NOC.glyph.plus_circle,
                     tooltip: "Add interfaces to VC",
                     hasAccess: NOC.hasPermission("set_untagged"),
                     scope: me,
@@ -275,6 +274,7 @@ Ext.define("NOC.vc.vc.Application", {
                 NOC.mrt({
                     url: "/vc/vc/mrt/get_vlans/",
                     selector: managed_object,
+                    loadMask: me,
                     scope: me,
                     success: me.processImportFromSwitch,
                     failure: function() {
@@ -291,7 +291,6 @@ Ext.define("NOC.vc.vc.Application", {
     processImportFromSwitch: function(result) {
         var me = this,
             r = result[0];
-        console.log("R", result, r);
         if(!Ext.isDefined(r)) {
             NOC.error("Failed to import VLANs.<br/>No result returned");
             return;

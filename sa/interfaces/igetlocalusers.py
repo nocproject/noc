@@ -21,3 +21,4 @@ class IGetLocalUsers(Interface):
         "class": StringParameter(),
         "is_active": BooleanParameter(default=True)
         }))
+    preview = "NOC.sa.managedobject.scripts.ShowLocalUsers"

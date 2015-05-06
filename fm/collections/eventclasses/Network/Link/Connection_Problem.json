@@ -1,0 +1,34 @@
+{
+    "name": "Network | Link | Connection Problem",
+    "$collection": "fm.eventclasses",
+    "uuid": "215f43d2-9abd-461b-9f8f-4332ce00740b",
+    "description": "Link or carrier problem",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "link_event": true,
+    "subject_template": "Connection problem: {{interface}}",
+    "body_template": "Connection problem: {{interface}}",
+    "symptoms": "Poor rate, connection interrupts",
+    "probable_causes": "Cable damage, hardware or software error either from this or from another side",
+    "recommended_actions": "Check configuration, both sides of links and hardware",
+    "repeat_suppression": [
+        {
+            "name": "Workaround for console flood on some Cisco routers",
+            "condition": "True",
+            "event_class__name": "Network | Link | Connection Problem",
+            "match_condition": {
+                "vars__interface": "vars['interface']",
+                "managed_object": "event.managed_object.id"
+            },
+            "window": 45,
+            "suppress": true
+        }
+    ]
+}

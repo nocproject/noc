@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Unknown | Syslog STP received BPDU (SYSLOG)",
+    "uuid": "d266cd53-dffb-4781-b55a-46638bd39f21",
+    "description": "0000000436: Jan 27 01:49:03: nekrasova_24a_4: %STP-4-: 2252956:38: edge port e0/12 received BPDU",
+    "event_class__name": "Unknown | Syslog",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%STP-4-: \\d+:\\d+: (?P<syslog_message>edge port \\S+ received BPDU)$"
+        }
+    ]
+}

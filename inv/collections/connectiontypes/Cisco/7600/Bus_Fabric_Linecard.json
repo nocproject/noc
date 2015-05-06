@@ -1,0 +1,7 @@
+{
+    "name": "Cisco | 7600 | Bus/Fabric Linecard",
+    "uuid": "c7387cf5-dd0d-46f8-a3d6-8ecc169de993",
+    "description": "Cisco 6500/7600 Linecard slot (either bus or switch fabric)",
+    "c_group": ["7600_bus", "7600_fabric"],
+    "genders": "f"
+}

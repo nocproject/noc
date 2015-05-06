@@ -1,0 +1,42 @@
+{
+    "name": "sector",
+    "uuid": "b20b514d-954b-4fcc-b783-19328277c289",
+    "description": "Antenna sector",
+    "attrs": [
+        {
+            "name": "bearing",
+            "type": "float",
+            "description": "Bearing angle",
+            "required": true,
+            "is_const": false
+        },
+        {
+            "name": "elevation",
+            "type": "float",
+            "description": "Elevation angle",
+            "required": true,
+            "is_const": false
+        },
+        {
+            "name": "height",
+            "type": "float",
+            "description": "Height above ground (in meters)",
+            "required": true,
+            "is_const": false
+        },
+        {
+            "name": "h_beamwidth",
+            "type": "float",
+            "description": "Horizontal beamwidth (in angles)",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "v_beamwidth",
+            "type": "float",
+            "description": "Vertical beamwidth (in angles)",
+            "required": true,
+            "is_const": true
+        }
+    ]
+}

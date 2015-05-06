@@ -1,0 +1,6 @@
+{
+    "name": "BRAS | L2TP",
+    "uuid": "83bb51cd-750e-4064-ae63-4e22149f7eaa",
+    "description": "L2TP-capable BRAS/VPN Concentrator",
+    "type": "bool"
+}

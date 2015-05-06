@@ -1,0 +1,58 @@
+{
+    "name": "Cisco | ASR9k | A9K-MODULEv",
+    "uuid": "bbba32f9-7ed0-4e92-96ea-7dafd08968f6",
+    "vendor__code": "CISCO",
+    "description": "ASR 9000 Virtual Module",
+    "cr_context": "MPA",
+    "connections": [
+        {
+            "description": "Te2/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te0_sfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Te2/1 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te1_sfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Te2/2 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te2_sfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Te2/3 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te3_sfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "group": "0",
+            "name": "in",
+            "type__name": "Cisco | ASR9k | MPA"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "A9K-MODULEv"
+        }
+    }
+}

@@ -36,6 +36,42 @@ def refresh_schedule(scheduler_name, job_class, key, ts=None, delta=None):
     })
 
 
+def start_schedule(scheduler_name, job_class, key):
+    """
+    :param scheduler_name:
+    :param job_class:
+    :param key:
+    :return:
+    """
+    c = get_db()["noc.schedules.%s" % scheduler_name]
+    c.update({
+        Scheduler.ATTR_CLASS: job_class,
+        Scheduler.ATTR_KEY: key,
+        Scheduler.ATTR_STATUS: {
+            "$in": [Scheduler.S_STOP, Scheduler.S_DISABLED]
+        }
+    }, {
+        "$set": {Scheduler.ATTR_STATUS: Scheduler.S_WAIT}
+    })
+
+
+def stop_schedule(scheduler_name, job_class, key):
+    """
+    :param scheduler_name:
+    :param job_class:
+    :param key:
+    :return:
+    """
+    c = get_db()["noc.schedules.%s" % scheduler_name]
+    c.update({
+        Scheduler.ATTR_CLASS: job_class,
+        Scheduler.ATTR_KEY: key,
+        Scheduler.ATTR_STATUS: Scheduler.S_WAIT
+    }, {
+        "$set": {Scheduler.ATTR_STATUS: Scheduler.S_STOP}
+    })
+
+
 def submit_job(scheduler_name, job_class, key=None,
                ts=None, delta=None, data=None):
     if ts is None:
@@ -50,6 +86,21 @@ def submit_job(scheduler_name, job_class, key=None,
         Scheduler.ATTR_TS: ts,
         Scheduler.ATTR_DATA: data,
         Scheduler.ATTR_SCHEDULE: None
+    })
+
+
+def remove_job(scheduler_name, job_class, key=None):
+    q = {Scheduler.ATTR_CLASS: job_class}
+    if key:
+        q[Scheduler.ATTR_KEY] = key
+    c = get_db()["noc.schedules.%s" % scheduler_name]
+    c.remove(q)
+
+
+def get_job(scheduler_name, job_class, key=None):
+    c = get_db()["noc.schedules.%s" % scheduler_name]
+    return c.find_one({
+        Scheduler.ATTR_CLASS: job_class, Scheduler.ATTR_KEY: key
     })
 
 

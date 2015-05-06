@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | Storm Control | Multicast Storm Cleared #2 (SYSLOG)",
+    "uuid": "3a2ab645-f0d4-471b-a509-4294515538df",
+    "description": "WARN: Multicast storm has cleared (port: 13)",
+    "event_class__name": "Network | Storm Control | Multicast Storm Cleared",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) Multicast storm has cleared \\(port: (?P<interface>\\S+)\\)"
+        }
+    ]
+}

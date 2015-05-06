@@ -19,7 +19,7 @@ class IGetBFDSessions(Interface):
         "remote_discriminator": IntParameter(),
         "state": StringParameter(choices=["UP"]),
         "clients": ListOfParameter(element=StringParameter(choices=[
-            "L2", "RSVP", "ISIS", "OSPF", "BGP"
+            "L2", "RSVP", "ISIS", "OSPF", "BGP", "EIGRP", "PIM"
         ])),
         # Transmit interval, microseconds
         "tx_interval": IntParameter(),
@@ -27,4 +27,3 @@ class IGetBFDSessions(Interface):
         # Detection time, microseconds
         "detect_time": IntParameter()
     })
-    template = "interfaces/igetbfdsessions.html"

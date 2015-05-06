@@ -1,0 +1,30 @@
+{
+    "name": "Opticin | Transceiver | 1G | SFP-WDM4.80",
+    "uuid": "b741474e-38f8-4ac3-97a7-b62147904ec2",
+    "vendor__code": "OPTICIN",
+    "description": "Opticin SFP WDM transceiver, CWDM-1490nm, SC, sm, 80km, DDM",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASEZX-1550", "<1000BASEZX-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-WDM4.80"
+        }
+    }
+}

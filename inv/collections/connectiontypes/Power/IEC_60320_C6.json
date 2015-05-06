@@ -1,0 +1,7 @@
+{
+    "name": "Power | IEC 60320 C6",
+    "uuid": "ad239325-ca07-49af-9182-391e0a7ae36b",
+    "description": "Cloveleaf inlet",
+    "c_group": ["power_c5"],
+    "genders": "f"
+}

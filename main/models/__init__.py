@@ -41,106 +41,20 @@ from noc.lib import nosql
 from noc.lib.validators import is_int
 ## Register periodics
 periodic_registry.register_all()
-##
-## A hash of Model.search classmethods.
-## Populated by "class_prepared" signal listener
-## Model.search is a generator taking parameters (user,query,limit)
-## And yielding a SearchResults (ordered by relevancy)
-##
-search_methods = set()
-search_models = set()
+from audittrail import AuditTrail
+from fts_queue import FTSQueue
+from noc.pm.models.probeconfig import ProbeConfig
 
+AuditTrail.install()
+FTSQueue.install()
+ProbeConfig.install()
 
-def on_new_model(sender, **kwargs):
-    """
-    Register new search handler if model has .search() classmethod
-    """
-    if hasattr(sender, "search"):
-        search_methods.add(getattr(sender, "search"))
-    if (hasattr(sender, "get_search_Q") and
-        hasattr(sender, "get_search_data")):
-        search_models.add(sender)
-
-##
-## Attach to the 'class_prepared' signal
-## and on_new_model on every new model
-##
-class_prepared.connect(on_new_model)
-##
-## Exclude tables from audit
-##
-AUDIT_TRAIL_EXCLUDE = set([
-    "django_admin_log",
-    "django_session",
-    "auth_message",
-    "main_audittrail",
-    "kb_kbentryhistory",
-    "kb_kbentrypreviewlog",
-    "fm_eventlog",
-    "sa_maptask",
-    "sa_reducetask",
-])
-
-
-def audit_trail_save(sender, instance, **kwargs):
-    """
-    Audit trail for INSERT and UPDATE operations
-    """
-    # Exclude tables
-    if sender._meta.db_table in AUDIT_TRAIL_EXCLUDE:
-        return
-    #
-    if instance.id:
-        # Update
-        try:
-            old = sender.objects.get(id=instance.id)
-        except sender.DoesNotExist:
-            # Protection for correct test fixtures loading
-            return
-        message = []
-        operation = "M"
-        for f in sender._meta.fields:
-            od = f.value_to_string(old)
-            nd = f.value_to_string(instance)
-            if f.name == "id":
-                message += ["id: %s" % nd]
-            elif nd != od:
-                message += ["%s: '%s' -> '%s'" % (f.name, od, nd)]
-        message = "\n".join(message)
-    else:
-        # New record
-        operation = "C"
-        message = "\n".join(["%s = %s" % (f.name, f.value_to_string(instance))
-                             for f in sender._meta.fields])
-    AuditTrail.log(sender, instance, operation, message)
-
-
-def audit_trail_delete(sender, instance, **kwargs):
-    """
-    Audit trail for DELETE operation
-    """
-    # Exclude tables
-    if sender._meta.db_table in AUDIT_TRAIL_EXCLUDE:
-        return
-    #
-    operation = "D"
-    message = "\n".join(["%s = %s" % (f.name, f.value_to_string(instance))
-                         for f in sender._meta.fields])
-    AuditTrail.log(sender, instance, operation, message)
-
-##
-## Set up audit trail handlers
-##
-if settings.IS_WEB:
-    pre_save.connect(audit_trail_save)
-    pre_delete.connect(audit_trail_delete)
 ##
 ## Initialize download registry
 ##
 downloader_registry.register_all()
 
 
-from audittrail import AuditTrail
 from customfieldenumgroup import CustomFieldEnumGroup
 from customfieldenumvalue import CustomFieldEnumValue
 from customfield import CustomField
@@ -201,26 +115,10 @@ class UserState(nosql.Document):
     value = nosql.StringField()
 
     def __unicode__(self):
-        return "%s: %s" % (self.user_id, name)
+        return "%s: %s" % (self.user_id, self.key)
 
 from style import Style
-
-
-class Language(models.Model):
-    """
-    Language
-    """
-    class Meta:
-        verbose_name = "Language"
-        verbose_name_plural = "Languages"
-        ordering = ["name"]
-
-    name = models.CharField("Name", max_length=32, unique=True)
-    native_name = models.CharField("Native Name", max_length=32)
-    is_active = models.BooleanField("Is Active", default=False)
-
-    def __unicode__(self):
-        return self.name
+from language import Language
 
 
 class DatabaseStorage(models.Model):
@@ -285,133 +183,14 @@ class MIMEType(models.Model):
         """
         r, ext = os.path.splitext(filename)
         try:
-            m = MIMEType.objects.get(extension=ext)
+            m = MIMEType.objects.get(extension=ext.lower())
             return m.mime_type
         except MIMEType.DoesNotExist:
             return "application/octet-stream"
 
 from resourcestate import ResourceState
+from pyrule import PyRule, NoPyRuleException
 
-
-class NoPyRuleException(Exception):
-    pass
-
-rx_coding = re.compile(r"^#\s*-\*-\s*coding:\s*\S+\s*-\*-\s*$", re.MULTILINE)
-
-
-class PyRule(models.Model):
-    class Meta:
-        verbose_name = "pyRule"
-        verbose_name_plural = "pyRules"
-        ordering = ["name"]
-
-    name = models.CharField("Name", max_length=64, unique=True)
-    interface = models.CharField("Interface", max_length=64,
-            choices=[(i, i) for i in sorted(interface_registry)])
-    description = models.TextField("Description")
-    text = models.TextField("Text")
-    is_builtin = models.BooleanField("Is Builtin", default=False)
-    changed = models.DateTimeField("Changed", auto_now=True, auto_now_add=True)
-    # Compiled pyRules cache
-    compiled_pyrules = {}
-    compiled_changed = {}
-    compiled_lock = threading.Lock()
-    NoPyRule = NoPyRuleException
-
-    alters_data = True   # Tell Django's template engine to not call PyRule
-
-    # Use special filter for interface
-    interface.existing_choices_filter = True
-
-    def __unicode__(self):
-        return self.name
-
-    def save(self, **kwargs):
-        """
-        Check syntax and save
-        """
-        self.compile_text(unicode(self.text))
-        super(PyRule, self).save(**kwargs)
-
-    @property
-    def interface_class(self):
-        """
-        Get interface class
-        """
-        return interface_registry[self.interface]
-
-    @classmethod
-    def compile_text(self, text):
-        """
-        Compile pyRule
-        """
-        # Built-in pyRule decorator
-        def pyrule(f):
-            f.is_pyrule = True
-            return f
-
-        # Inject @pyrule decorator into namespace
-        d = {"pyrule": pyrule}
-        # Remove coding declarations and \r
-        text = rx_coding.sub("", text.replace("\r\n", "\n"))
-        # Compile text
-        exec text in d
-        # Find marked pyrule
-        rules = [r for r in d.values()
-                 if hasattr(r, "is_pyrule") and r.is_pyrule]
-        if len(rules) < 1:
-            raise SyntaxError("No @pyrule decorated symbol found")
-        if len(rules) != 1:
-            raise SyntaxError("More than one @pyrule deorated symbols found")
-        rule = rules[0]
-        if not callable(rule):
-            raise SyntaxError("Rule is not callable")
-        return rule
-
-    @classmethod
-    def lookup(cls, name):
-        if name.startswith("noc_"):
-            l = [name]
-        else:
-            l = [name, "noc_%s" % name]
-        for n in l:
-            try:
-                return cls.objects.get(name=n)
-            except cls.DoesNotExist:
-                pass
-        raise cls.NoPyRule
-
-    ##
-    ## Call pyRule
-    ##
-    def __call__(self, **kwargs):
-        t = datetime.datetime.now()
-        # Try to get compiled rule from cache
-        with self.compiled_lock:
-            requires_recompile = (self.name not in self.compiled_changed or
-                                  self.compiled_changed[self.name] < self.changed)
-            if not requires_recompile:
-                f = self.compiled_pyrules[self.name]
-        # Recompile rule and place in cache when necessary
-        if requires_recompile:
-            f = self.compile_text(str(self.text))
-            with self.compiled_lock:
-                self.compiled_pyrules[self.name] = f
-                self.compiled_changed[self.name] = t
-        # Check interface
-        i = self.interface_class()
-        kwargs = i.clean(**kwargs)
-        # Evaluate pyRule
-        result = f(**kwargs)
-        # Check and result
-        return i.clean_result(result)
-
-    @classmethod
-    def call(cls, py_rule_name, **kwargs):
-        """
-        Call pyRule by name
-        """
-        return cls.lookup(py_rule_name)(**kwargs)
 
 ##
 ## Search patters
@@ -496,30 +275,6 @@ class RefBook(models.Model):
                 self.last_updated = datetime.datetime.now()
                 self.next_update = self.last_updated + datetime.timedelta(days=self.refresh_interval)
                 self.save()
-
-    @classmethod
-    def search(cls, user, search, limit):
-        """
-        Search engine plugin
-        """
-        from noc.lib.search import SearchResult  # Must be inside method to prevent import loops
-
-        for b in RefBook.objects.filter(is_enabled=True):
-            field_names = [f.name for f in b.refbookfield_set.order_by("order")]
-            for f in b.refbookfield_set.filter(search_method__isnull=False):
-                x = f.get_extra(search)
-                if not x:
-                    continue
-                q = RefBookData.objects.filter(ref_book=b).extra(**x)
-                for r in q:
-                    text = "\n".join(["%s = %s" % (k, v)
-                                      for k, v in zip(field_names, r.value)])
-                    yield SearchResult(
-                        url=("main:refbook:item", b.id, r.id),
-                        title=u"Reference Book: %s, column %s" % (b.name, f.name),
-                        text=text,
-                        relevancy=1.0,
-                    )
 
     @property
     def can_search(self):
@@ -683,126 +438,8 @@ class SystemNotification(models.Model):
 
 from userprofile import UserProfile, UserProfileManager
 from userprofilecontact import UserProfileContact
+from dbtrigger import DBTrigger, model_choices
 
-
-##
-## Triggers
-##
-def model_choices():
-    for m in models.get_models():
-        yield (m._meta.db_table, m._meta.db_table)
-
-
-class DBTrigger(models.Model):
-    class Meta:
-        verbose_name = "Database Trigger"
-        verbose_name_plural = "Database Triggers"
-        ordering = ("model", "order")
-
-    name = models.CharField("Name", max_length=64, unique=True)
-    model = models.CharField("Model", max_length=128, choices=model_choices())
-    is_active = models.BooleanField("Is Active", default=True)
-    order = models.IntegerField("Order", default=100)
-    description = models.TextField("Description", null=True, blank=True)
-    pre_save_rule = models.ForeignKey(PyRule,
-            verbose_name="Pre-Save Rule",
-            related_name="dbtrigger_presave_set",
-            limit_choices_to={"interface": "IDBPreSave"},
-            blank=True, null=True)
-    post_save_rule = models.ForeignKey(PyRule,
-            verbose_name="Post-Save Rule",
-            related_name="dbtrigger_postsave_set",
-            limit_choices_to={"interface": "IDBPostSave"},
-            blank=True, null=True)
-    pre_delete_rule = models.ForeignKey(PyRule,
-            verbose_name="Pre-Delete Rule",
-            related_name="dbtrigger_predelete_set",
-            limit_choices_to={"interface": "IDBPreDelete"},
-            blank=True, null=True)
-    post_delete_rule = models.ForeignKey(PyRule,
-            verbose_name="Post-Delete Rule",
-            related_name="dbtrigger_postdelete_set",
-            limit_choices_to={"interface": "IDBPostDelete"},
-            blank=True, null=True)
-    ## State cache
-    _pre_save_triggers = {}     # model.meta.db_table -> [rules]
-    _post_save_triggers = {}    # model.meta.db_table -> [rules]
-    _pre_delete_triggers = {}   # model.meta.db_table -> [rules]
-    _post_delete_triggers = {}  # model.meta.db_table -> [rules]
-
-    def __unicode__(self):
-        return u"%s: %s" % (self.model, self.name)
-
-    ##
-    ## Refresh triggers cache
-    ##
-    @classmethod
-    def refresh_cache(cls, *args, **kwargs):
-        # Clear cache
-        cls._pre_save_triggers = {}
-        cls._post_save_triggers = {}
-        cls._pre_delete_triggers = {}
-        cls._post_delete_triggers = {}
-        # Add all active triggers
-        for t in cls.objects.filter(is_active=True).order_by("order"):
-            for r in ["pre_save", "post_save", "pre_delete", "post_delete"]:
-                c = getattr(cls, "_%s_triggers" % r)
-                rule = getattr(t, "%s_rule" % r)
-                if rule:
-                    try:
-                        c[t.model] += [rule]
-                    except KeyError:
-                        c[t.model] = [rule]
-
-    ##
-    ## Dispatcher for pre-save
-    ##
-    @classmethod
-    def pre_save_dispatch(cls, **kwargs):
-        m = kwargs["sender"]._meta.db_table
-        if m in cls._pre_save_triggers:
-            for t in cls._pre_save_triggers[m]:
-                t(model=kwargs["sender"], instance=kwargs["instance"])
-
-    ##
-    ## Dispatcher for post-save
-    ##
-    @classmethod
-    def post_save_dispatch(cls, **kwargs):
-        m = kwargs["sender"]._meta.db_table
-        if m in cls._post_save_triggers:
-            for t in cls._post_save_triggers[m]:
-                t(model=kwargs["sender"], instance=kwargs["instance"],
-                  created=kwargs["created"])
-
-    ##
-    ## Dispatcher for pre-delete
-    ##
-    @classmethod
-    def pre_delete_dispatch(cls, **kwargs):
-        m = kwargs["sender"]._meta.db_table
-        if m in cls._pre_delete_triggers:
-            for t in cls._pre_delete_triggers[m]:
-                t(model=kwargs["sender"], instance=kwargs["instance"])
-
-    ##
-    ## Dispatcher for post-delete
-    ##
-    @classmethod
-    def post_delete_dispatch(cls, **kwargs):
-        m = kwargs["sender"]._meta.db_table
-        if m in cls._post_delete_triggers:
-            for t in cls._post_delete_triggers[m]:
-                t(model=kwargs["sender"], instance=kwargs["instance"])
-
-    ##
-    ## Called when all models are initialized
-    ##
-    @classmethod
-    def x(cls):
-        f = cls._meta.get_field_by_name("model")[0]
-        f.choices = [(m._meta.db_table, m._meta.db_table)
-            for m in models.get_models()]
 
 
 class Schedule(models.Model):
@@ -966,8 +603,8 @@ class Checkpoint(models.Model):
         return cp
 
 from favorites import Favorites
-from stompaccess import StompAccess
 from tag import Tag
+from sync import Sync
 
 ##
 ## Install triggers
@@ -989,44 +626,3 @@ if settings.IS_WEB and not settings.IS_TEST:
 User._meta.get_field("username").max_length = User._meta.get_field("email").max_length
 User._meta.get_field("username").validators = [MaxLengthValidator(User._meta.get_field("username").max_length)]
 User._meta.ordering = ["username"]
-
-
-def search_tags(user, query, limit):
-    """
-    Search by tags
-    """
-    from noc.lib.search import SearchResult  # Must be inside method to prevent import loops
-
-    # Find tags
-    tags = []
-    for p in query.split(","):
-        p = p.strip()
-        t = Tag.objects.filter(tag=p).first()
-        if t:
-            tags += [t]
-        else:
-            return []  # Tag not found
-    if not tags:
-        return []
-    # Intersect tags
-    r = None
-    for t in tags:
-        o = t.get_objects()
-        if r is None:
-            r = set(o)
-        else:
-            r &= set(o)
-    if not r:
-        return []
-    rr = []
-    for i in r:
-        if hasattr(i, "get_absolute_url"):
-            rr += [SearchResult(
-                    url=i.get_absolute_url(),
-                    title=unicode(i),
-                    text=i.tags,
-                    relevancy=1.0,
-                )]
-    return rr
-
-search_methods.add(search_tags)

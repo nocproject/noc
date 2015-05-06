@@ -67,21 +67,21 @@ Ext.define("NOC.inv.map.Application", {
         });
         me.zoomInButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom In",
-            glyph: NOC.glyph.zoom_in,
+            glyph: NOC.glyph.search_plus,
             scope: me,
             handler: me.onZoomIn,
             disabled: true
         });
         me.zoomOutButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom Out",
-            glyph: NOC.glyph.zoom_out,
+            glyph: NOC.glyph.search_minus,
             scope: me,
             handler: me.onZoomOut,
             disabled: true
         });
         me.zoomActualButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom Actual",
-            iconCls: "icon_magnifier",
+            glyph: NOC.glyph.search,
             scope: me,
             handler: me.onZoomActual,
             disabled: true
@@ -261,8 +261,14 @@ Ext.define("NOC.inv.map.Application", {
         mxLoadStylesheets = false;  // window scope
         mxImageBasePath = "/static/pkg/mxgraph/images/";
         mxLoadResources = false;
-        load_scripts(["/static/pkg/mxgraph/mxClient.js"], me,
-            me.onLoadJS);
+        Ext.Loader.loadScript({
+            url: "/static/pkg/mxgraph/mxClient.js",
+            scope: me,
+            onLoad: me.onLoadJS,
+            onError: function() {
+                NOC.error("Failed to load script");
+            }
+        });
     },
     //
     onLoadJS: function() {
@@ -272,7 +278,7 @@ Ext.define("NOC.inv.map.Application", {
     //
     onSelectChart: function(combo, records, opts) {
         var me = this;
-        me.mapId = records[0].get("id");
+        me.mapId = records.get("id");
         me.requestChart();
     },
     //

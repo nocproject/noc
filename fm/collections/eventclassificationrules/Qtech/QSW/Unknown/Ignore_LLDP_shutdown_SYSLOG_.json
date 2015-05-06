@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Unknown | Ignore LLDP shutdown (SYSLOG)",
+    "uuid": "d80c42c1-1342-4080-ba96-f6a4a186b10c",
+    "description": "0000000038: Jan  1 00:01:03: %LLDP-4-lldpTxShutDownFrame: 75:51: Port 22 send a shutdown LLDPDU",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LLDP-4-lldpTxShutDownFrame: \\d+:\\d+: Port \\S+ send a shutdown LLDPDU$"
+        }
+    ]
+}

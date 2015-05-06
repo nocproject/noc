@@ -16,7 +16,6 @@ class Script(NOCScript):
     name = "HP.1905.get_mac_address_table"
     implements = [IGetMACAddressTable]
     cached = True
-    TIMEOUT = 300
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []

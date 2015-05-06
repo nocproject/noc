@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | 802.11 | Roamed (SYSLOG)",
+    "uuid": "fd86ddf6-5d45-405b-b58b-8c25b953606f",
+    "description": "24462: Aug 11 11:52:16.452 UTC: %DOT11-6-ROAMED: Station 001f.5b51.ff62 Roamed to 0022.55d1.cd70",
+    "event_class__name": "Network | 802.11 | Roamed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%DOT11-6-ROAMED: Station (?P<mac>\\S+) Roamed to (?P<station>\\S+)$"
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "name": "Cisco | 6500-7600 | PFC",
+    "uuid": "7fe664ac-dc2c-4d5b-a259-a05bdededba9",
+    "description": "Cisco PFC 6500/7600 slot",
+    "c_group": [],
+    "genders": "mf"
+}

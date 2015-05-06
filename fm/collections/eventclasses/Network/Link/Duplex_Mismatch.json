@@ -1,0 +1,28 @@
+{
+    "name": "Network | Link | Duplex Mismatch",
+    "$collection": "fm.eventclasses",
+    "uuid": "05d1ce00-983a-4f90-8802-2a64e80d2742",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "interface name",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "link_event": true,
+    "subject_template": "Duplex mismatch on interface {{interface}}",
+    "body_template": "Duplex mismatch on interface {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | Link | Duplex Mismatch"
+        }
+    ]
+}

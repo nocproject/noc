@@ -1,15 +1,14 @@
-[
-   {
-       "name": "stp_state",
-       "values": {
-           "DISABLED": ["disabled"],
-           "BLOCKING": ["blocking", "discarding"],
-           "LISTENING": ["listening"],
-           "LEARNING": ["learning"],
-           "FORWARDING": ["forwarding"],
-           "BROKEN": ["broken"],
-           "NOSTP":  ["no-stp-enabled"],
-           "ERRDISBLED": ["err-disabled"]
-       }
-   }
-]
+{
+    "name": "stp_state",
+    "uuid": "2f358b97-2212-488a-b726-9f9d6227852d",
+    "values": {
+        "BLOCKING": ["blocking", "discarding"],
+        "BROKEN": ["broken"],
+        "DISABLED": ["disabled"],
+        "ERRDISBLED": ["err-disabled"],
+        "FORWARDING": ["forwarding"],
+        "LEARNING": ["learning"],
+        "LISTENING": ["listening"],
+        "NOSTP": ["no-stp-enabled"]
+    }
+}
