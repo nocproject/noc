@@ -3,12 +3,25 @@
 # Edit etc/noc.conf instead
 import ConfigParser
 import sys
+import os
 
+# Check when started from notebook
+if not os.path.isfile("etc/noc.defaults") and os.path.isfile("../etc/noc.defaults"):
+    os.chdir("..")
+
+# Load config
 config = ConfigParser.SafeConfigParser()
 config.read(["etc/noc.defaults", "etc/noc.conf"])
 if not config.sections():
     # Called from autodoc
+    # @todo: Remove?
     config.read(["../../../../etc/noc.defaults", "../../../../etc/noc.conf"])
+# Load solutions's config
+for sn in config.options("solutions"):
+    if config.getboolean("solutions", sn):
+        v, s = sn.split(".")
+        cfg = os.path.join("solutions", v, s, "etc", "noc.")
+        config.read([cfg + "defaults", cfg + "conf"])
 
 DEBUG = config.getboolean("main", "debug")
 TEMPLATE_DEBUG = DEBUG
@@ -31,7 +44,7 @@ SERVER_EMAIL = config.get("main", "server_email")
 DATABASE_ENGINE = config.get("database", "engine")
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends." + config.get("database", "engine"),
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": config.get("database", "name"),
         "USER": config.get("database", "user"),
         "PASSWORD": config.get("database", "password"),
@@ -48,6 +61,7 @@ NOSQL_DATABASE_USER = config.get("nosql_database", "user")
 NOSQL_DATABASE_PASSWORD = config.get("nosql_database", "password")
 NOSQL_DATABASE_HOST = config.get("nosql_database", "host")
 NOSQL_DATABASE_PORT = config.get("nosql_database", "port")
+NOSQL_DATABASE_REPLICA_SET = config.get("nosql_database", "replica_set")
 
 TIME_ZONE = config.get("main", "timezone")
 LANGUAGE_CODE = config.get("main", "language_code")
@@ -105,6 +119,7 @@ MIDDLEWARE_CLASSES = [
     "django.middleware.doc.XViewMiddleware",
     "django.middleware.transaction.TransactionMiddleware",
     "noc.lib.middleware.TLSMiddleware", # Thread local storage
+    "noc.lib.middleware.ExtFormatMiddleware"
 ]
 
 if config.get("authentication", "method") == "http":
@@ -123,7 +138,7 @@ TEMPLATE_DIRS = (
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache"
+        "BACKEND": "noc.lib.cache.MongoDBCache"
     }
 }
 
@@ -149,7 +164,8 @@ INSTALLED_APPS = [
     "noc.vc",
     "noc.dns",
     "noc.peer",
-    "noc.kb"
+    "noc.kb",
+    "noc.support"
 ]
 # Populate list of locally-installed apps
 apps = config.get("main", "installed_apps").strip()
@@ -174,7 +190,7 @@ AUTH_PROFILE_MODULE = "main.UserProfile"
 ## Determine WEB process
 ##
 IS_WEB = ((len(sys.argv) >= 2 and sys.argv[0] == "manage.py" and
-           sys.argv[1] in ["runserver", "test", "sync-perm"])
+           sys.argv[1] in ["runserver", "test", "sync-perm", "shell"])
           or sys.argv[0].endswith("noc-web.py"))
 IS_TEST = len(sys.argv) >= 2 and sys.argv[:2] == ["manage.py", "test"]
 
@@ -188,11 +204,33 @@ FORCE_LOWERCASE_TAGS = False
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 ## Store sessions in mongodb
 SESSION_ENGINE = "mongoengine.django.sessions"
+## X-Forwarded-Proto
+if config.get("main", "x_forwarded_proto"):
+    h = config.get("main", "x_forwarded_proto").upper().replace("-", "_")
+    SECURE_PROXY_SSL_HEADER = ("HTTP_%s" % h, "https")
 ## Set up crashinfo limit
 CRASHINFO_LIMIT = config.getint("main", "crashinfo_limit")
+## Traceback order
+TRACEBACK_REVERSE = config.get("main", "traceback_order") == "reverse"
 ## Fixed beefs directory
 ## Set up by test runner
 TEST_FIXED_BEEF_BASE = None
+
+LOG_MRT_COMMAND = None
+if config.get("audit", "log_mrt_commands"):
+    lmc = config.get("audit", "log_mrt_commands")
+    if os.access(lmc, os.W_OK):
+        LOG_MRT_COMMAND = lmc
+    else:
+        import sys
+        sys.stderr.write(
+            "Cannot write to '%s'. MRT command logging disabled\n" % lmc
+        )
+##
+## Graphite settings
+## @todo: Remove
+GRAPHTEMPLATES_CONF = ""
+LEGEND_MAX_ITEMS = 10
 ## Set up logging
 ## Disable SQL statement logging
 import logging
