@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | IP | Route Limit Warning (SYSLOG)",
+    "uuid": "4c0b5344-fa07-4463-99cf-24693dc7c535",
+    "description": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - 1010:6699",
+    "event_class__name": "Network | IP | Route Limit Warning",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - (?P<reason>\\.+)$"
+        }
+    ]
+}

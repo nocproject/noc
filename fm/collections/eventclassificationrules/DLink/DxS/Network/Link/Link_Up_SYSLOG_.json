@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | Link | Link Up (SYSLOG)",
+    "uuid": "ea3b96c5-cf6b-4dd4-88f8-4b16ed8dfab6",
+    "description": "INFO: Port 17 link up, 100Mbps  FULL duplex",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) link up, (?P<speed>\\S+)\\s+(?P<duplex>.+duplex)"
+        }
+    ]
+}

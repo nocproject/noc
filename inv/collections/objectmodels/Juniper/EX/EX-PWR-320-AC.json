@@ -1,0 +1,28 @@
+{
+    "name": "Juniper | EX | EX-PWR-320-AC",
+    "uuid": "54ecf30a-b209-4a2e-a853-9c52a771cde2",
+    "vendor__code": "JUNIPER",
+    "description": "320 W AC Power Supply Unit (PSU)",
+    "connections": [
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Inner slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | EX4200 PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "740-020957"
+        }
+    }
+}

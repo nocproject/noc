@@ -1,0 +1,62 @@
+#!./bin/python
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## CustomerPortal CLI tool
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+from optparse import OptionParser
+import sys
+## NOC modules
+from noc.support.cp import CPClient
+
+
+def die(msg=None, quiet=False):
+    if not quiet:
+        sys.stderr.write(msg + "\n")
+    sys.exit(1)
+
+
+def handle_upgrade(status, log, quiet=False):
+    cp = CPClient()
+    if not cp.has_system():
+        die("System is not registred", quiet)
+    if log:
+        with open(log) as f:
+            log = f.read()
+    try:
+        cp.upgrade(status, log)
+    except CPClient.Error, why:
+        die("RPC Error: %s" % why, quiet)
+
+
+def main():
+    parser = OptionParser()
+    parser.add_option("--upgrade", dest="cmd", action="store_const",
+                      const="upgrade")
+    parser.add_option("--success", dest="result", action="store_true")
+    parser.add_option("--failure", dest="result", action="store_false")
+    parser.add_option("--log", dest="log", action="store")
+    parser.add_option("-q", "--quiet", dest="quiet", action="store_true")
+    parser.add_option("-v", "--verbose", dest="verbose", action="store_true")
+    options, args = parser.parse_args()
+    if options.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    elif options.quiet:
+        logging.basicConfig(level=logging.CRITICAL)
+    else:
+        logging.basicConfig()
+    if options.cmd == "upgrade":
+        handle_upgrade(
+            bool(options.result),
+            options.log,
+            quiet=bool(options.quiet)
+        )
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.CRITICAL)
+    main()

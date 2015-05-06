@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Phone | SCCP | Register (SYSLOG)",
+    "uuid": "d54be467-5a90-43fe-83d5-282f6095d503",
+    "description": "4232: 004228: Aug 16 02:05:55.331: %IPPHONE-6-REGISTER: ephone-47:SEPC89C12D55AD8 IP:192.168.71.69 Socket:25 DeviceType:Phone has registered.",
+    "event_class__name": "Phone | SCCP | Register",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IPPHONE-6-REGISTER: (?P<name>\\S+?):(?P<sn>\\S+) IP:(?P<ip>\\S+) Socket:(?P<socket>\\d+) DeviceType:(?P<type>\\S+) has registered"
+        }
+    ]
+}

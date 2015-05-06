@@ -1,12 +1,29 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## managedobject Test
+## sa.managedobject unittes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase
-from django.utils import simplejson as json
 
-class managedobjectTestCase(ModelApplicationTestCase):
-    pass
+## NOC modules
+from noc.lib.test import RestModelTestCase, unittest
+
+
+@unittest.skip("Not ready")
+class ManagedObjectTestCase(RestModelTestCase):
+    app = "sa.managedobject"
+
+    scenario = [
+        {
+            "GET": {
+                # key: value
+            },
+            "POST": {
+                # key: value
+            },
+            "PUT": {
+                # key: value
+            }
+        }
+    ]

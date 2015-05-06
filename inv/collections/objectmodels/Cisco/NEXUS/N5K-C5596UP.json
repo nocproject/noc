@@ -1,0 +1,80 @@
+{
+    "name": "Cisco | NEXUS | N5K-C5596UP",
+    "uuid": "c830be04-2713-4d32-9468-474d34b38622",
+    "vendor__code": "CISCO",
+    "description": "Cisco Nexus 5596UP Switch Chassis. 2RU 1/10 Gigabit Ethernet and FCoE",
+    "connection_rule__name": "Cisco | Nexus",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "PSU 1 Slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "psu1",
+            "type__name": "Cisco | Nexus 5k | 5596 PSU"
+        },
+        {
+            "description": "PSU 2 Slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "psu2",
+            "type__name": "Cisco | Nexus 5k | 5596 PSU"
+        },
+        {
+            "description": "FAN 1 Slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "fan1",
+            "type__name": "Cisco | Nexus 5k | 5596 FAN"
+        },
+        {
+            "description": "FAN 2 Slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "fan2",
+            "type__name": "Cisco | Nexus 5k | 5596 FAN"
+        },
+        {
+            "description": "FAN 3 Slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "fan3",
+            "type__name": "Cisco | Nexus 5k | 5596 FAN"
+        },
+        {
+            "description": "FAN 4 Slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "fan4",
+            "type__name": "Cisco | Nexus 5k | 5596 FAN"
+        },
+        {
+            "description": "SUP 1 Slot",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "sup1",
+            "type__name": "Cisco | Nexus 5k | 5596UP SUP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "N5K-C5596UP"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2.0
+        },
+        "stack": {
+            "stackable": true
+        }
+    }
+}

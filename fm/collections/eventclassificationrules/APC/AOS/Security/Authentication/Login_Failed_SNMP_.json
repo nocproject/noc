@@ -1,0 +1,25 @@
+{
+    "name": "APC | AOS | Security | Authentication | Login Failed (SNMP)",
+    "uuid": "3f3a2532-3ada-4990-b0d4-6051b91c5a66",
+    "description": "PowerNet-MIB::apc",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^PowerNet-MIB::apc$"
+        },
+        {
+            "key_re": "^PowerNet-MIB::mtrapargsString\\.0$",
+            "value_re": "System: Detected an unauthorized user attempting to access the \\S+ interface from (?P<ip>\\S+)\\."
+        }
+    ]
+}

@@ -18,6 +18,8 @@ from noc.sa.rpc import (get_nonce, get_digest, PROTOCOL_NAME,
                         COMPRESSIONS, KEY_EXCHANGES)
 from noc.lib.ip import IP
 
+logger = logging.getLogger(__name__)
+
 
 class Service(SAEService):
     """
@@ -170,28 +172,19 @@ class Service(SAEService):
                  error=Error(code=ERR_AUTH_FAILED,
                  text="Authencication failed for activator '%s'" % request.name))
             return
-        r = AuthResponse()
-        controller.stream.is_authenticated = True
-        controller.stream.pool_name = request.name
-        self.sae.join_activator_pool(request.name, controller.stream)
-        done(controller, response=r)
-
-    def set_caps(self, controller, request, done):
-        """
-        Handle RPC set_caps request
-        """
-        if not controller.stream.is_authenticated:
-            done(controller,
-                 error=Error(code=ERR_AUTH_REQUIRED,
-                             text="Authentication required"))
-            return
-        logging.debug("Set capabilities: max_scripts=%d" % request.max_scripts)
+        # Setting caps
+        logging.debug("New activator in pool '%s': instance=%s, max_scripts=%d, can_ping=%s" % (
+            request.name, request.instance, request.max_scripts, request.can_ping))
         controller.stream.max_scripts = request.max_scripts
         controller.stream.current_scripts = 0
         controller.stream.instance = request.instance
         controller.stream.can_ping = request.can_ping
-        self.sae.update_activator_capabilities(controller.stream.pool_name)
-        r = SetCapsResponse()
+        # Joining activator pool
+        self.sae.join_activator_pool(request.name, controller.stream)
+        # Sending response
+        r = AuthResponse()
+        controller.stream.is_authenticated = True
+        controller.stream.pool_name = request.name
         done(controller, response=r)
 
     def object_mappings(self, controller, request, done):
@@ -208,7 +201,7 @@ class Service(SAEService):
         r.expire = self.sae.config.getint("sae", "refresh_event_filter")
         # Build source filter
         for c in ManagedObject.objects.filter(activator=activator,
-                    trap_source_ip__isnull=False).only("id", "trap_source_ip"):
+                    trap_source_ip__isnull=False, collector__isnull=True).only("id", "trap_source_ip"):
             if c.profile_name.startswith("NOC."):
                 continue
             s = r.mappings.add()
@@ -278,7 +271,8 @@ class Service(SAEService):
             try:
                 mo = ManagedObject.objects.get(id=int(s.object))
             except ManagedObject.DoesNotExist:
-                pass
+                logger.error("Missed managed object id: %s", s.object)
+                continue
             self.sae.object_status[mo.id] = s.status
             mo.set_status(s.status)
             # Save event to database

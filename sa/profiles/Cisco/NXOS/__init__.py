@@ -24,3 +24,10 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt = r"^\S+?#"
     requires_netmask_conversion = True
     convert_mac = noc.sa.profiles.Profile.convert_mac_to_cisco
+
+    def convert_interface_name(self, interface):
+        il = interface.lower()
+        if il.startswith("ethernet"):
+            return "Eth" + interface[8:]
+        else:
+            return interface

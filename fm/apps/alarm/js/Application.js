@@ -22,20 +22,23 @@ Ext.define("NOC.fm.alarm.Application", {
     pollingInterval: 30000,
     //
     initComponent: function() {
-        var me = this;
+        var me = this,
+            bs = Math.ceil(screen.height / 24);
         me.currentQuery = {status: "A"};
         me.pollingTaskHandler = Ext.bind(me.pollingTask, me);
         me.store = Ext.create("NOC.core.ModelStore", {
             model: "NOC.fm.alarm.Model",
             autoLoad: false,
-            pageSize: 1,
             customFields: [],
             filterParams: {
                 status: "A",
                 collapse: 1
-            }
+            },
+            pageSize: bs,
+            leadingBufferZone: bs,
+            numFromEdge: Math.ceil(bs / 2),
+            trailingBufferZone: bs
         });
-
         me.typeCombo = Ext.create("Ext.form.ComboBox", {
             fieldLabel: "State",
             labelWidth: 30,
@@ -59,6 +62,17 @@ Ext.define("NOC.fm.alarm.Application", {
             }
         });
 
+        me.admdomCombo = Ext.create("NOC.sa.administrativedomain.LookupField", {
+            fieldLabel: "Adm. Domain",
+            labelWidth: 40, 
+            width: 200,
+            listeners: {
+                scope: me, 
+                select: me.onChangeFilter,
+                clear: me.onChangeFilter
+            }   
+        }); 
+
         me.objectCombo = Ext.create("NOC.sa.managedobject.LookupField", {
             fieldLabel: "Object",
             labelWidth: 40,
@@ -69,6 +83,17 @@ Ext.define("NOC.fm.alarm.Application", {
                 clear: me.onChangeFilter
             }
         });
+
+        me.selectorCombo = Ext.create("NOC.sa.managedobjectselector.LookupField", {
+            fieldLabel: "Selector",
+            labelWidth: 40, 
+            width: 200,
+            listeners: {
+                scope: me, 
+                select: me.onChangeFilter,
+                clear: me.onChangeFilter
+            }   
+        }); 
 
         me.alarmClassCombo = Ext.create("NOC.fm.alarmclass.LookupField", {
             fieldLabel: "Class",
@@ -117,13 +142,24 @@ Ext.define("NOC.fm.alarm.Application", {
             border: false,
             stateful: true,
             stateId: "fm.alarm-grid",
-            plugins: [Ext.create("Ext.ux.grid.AutoSize")],
+            plugins: [
+                {
+                    ptype: "bufferedrenderer"
+                    //trailingBufferZone: 50,
+                    //leadingBufferZone: 50
+                }
+            ],
             dockedItems: [
                 {
                     xtype: "toolbar",
                     dock: "top",
+                    layout: {
+                        overflowHandler: "Menu"
+                    },
                     items: [
                         me.typeCombo,
+                        me.selectorCombo,
+                        me.admdomCombo,
                         me.objectCombo,
                         me.alarmClassCombo,
                         me.fromDateField,
@@ -222,6 +258,10 @@ Ext.define("NOC.fm.alarm.Application", {
         me.callParent();
         //
         me.startPolling();
+        //
+        if(me.getCmd() === "history") {
+            me.showAlarm(me.noc.cmd.args[0]);
+        }
     },
     //
     reloadStore: function() {
@@ -242,6 +282,10 @@ Ext.define("NOC.fm.alarm.Application", {
 
         // Status
         q.status = me.typeCombo.getValue();
+        // Selector
+        setIf("managedobjectselector", me.selectorCombo.getValue());
+        // Adm Domain
+        setIf("administrative_domain", me.admdomCombo.getValue());
         // Object
         setIf("managed_object", me.objectCombo.getValue());
         // Class
@@ -272,6 +316,7 @@ Ext.define("NOC.fm.alarm.Application", {
         me.getLayout().setActiveItem(0);
         me.reloadStore();
         me.startPolling();
+        me.setHistoryHash();
     },
     //
     onSelectAlarm: function(grid, record, item, index) {
@@ -302,5 +347,16 @@ Ext.define("NOC.fm.alarm.Application", {
     showForm: function() {
         var me = this;
         me.showItem(me.ITEM_FORM);
+    },
+    //
+    showAlarm: function(id) {
+        var me = this,
+            panel = me.showItem(me.ITEM_FORM);
+        panel.showAlarm(id);
+    },
+    //
+    onCloseApp: function() {
+        var me = this;
+        me.stopPolling();
     }
 });

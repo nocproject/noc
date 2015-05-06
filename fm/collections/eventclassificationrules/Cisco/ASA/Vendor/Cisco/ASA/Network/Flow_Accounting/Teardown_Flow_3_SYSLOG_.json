@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow #3 (SYSLOG)",
+    "uuid": "3b60f283-7efc-42b0-b6be-6497e4c6ba74",
+    "description": "Aug 08 2011 14:13:49: %ASA-6-302021: Teardown ICMP connection for faddr 194.221.190.20/52676 gaddr 194.221.190.3/0 laddr 194.221.190.3/0",
+    "event_class__name": "Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:ASA|PIX)-6-302021: Teardown ICMP connection for faddr (?P<src_ip>\\S+)/\\d+ gaddr (?P<dst_ip>\\S+)/\\d+"
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "name": "Brocade | FastIron SuperX | SFM Connector",
+    "uuid": "e25e43f7-64a0-4891-82cf-c6bd897d7a78",
+    "description": "Switchfabric module connector in SX chassis",
+    "c_group": [],
+    "genders": "mf"
+}

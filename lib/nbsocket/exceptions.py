@@ -53,10 +53,6 @@ class BrokenPipeError(SocketError):
     message = "Broken pipe"
 
 
-class AccessError(SocketError):
-    message = "Permission Denied"
-
-
 class SocketTimeoutError(SocketError):
     message = "Socket Timeout"
 

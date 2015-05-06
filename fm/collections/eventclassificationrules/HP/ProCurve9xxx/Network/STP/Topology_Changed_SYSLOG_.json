@@ -1,0 +1,21 @@
+{
+    "name": "HP | ProCurve9xxx | Network | STP | Topology Changed (SYSLOG)",
+    "uuid": "55263cf4-e0aa-499c-ae27-e7aefe1a5454",
+    "description": "hp93_2, VLAN 7 Port 2/8 Bridge TC Event (FwdDlyExpiry)",
+    "event_class__name": "Network | STP | Topology Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.ProCurve9xxx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^\\S+ VLAN (?P<vlan>\\d+) Port (?P<interface>[\\d\\/]+) Bridge TC Event \\(\\w+\\)$"
+        }
+    ]
+}

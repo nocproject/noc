@@ -2,17 +2,18 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOSXR.get_arp
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-import noc.sa.script
-from noc.sa.interfaces import IGetARP
+
+## Python modules
 import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetARP
 
 
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name = "Cisco.IOSXR.get_arp"
     implements = [IGetARP]
     rx_line = re.compile(r"(?P<ip>\S+)\s+\S+\s+"
@@ -23,7 +24,10 @@ class Script(noc.sa.script.Script):
 
     def execute(self, vrf=None):
         if vrf:
-            s = self.cli("show arp table %s" % vrf)
+            try:
+                s = self.cli("show arp vrf %s" % vrf)
+            except self.CLISyntaxError:
+                s = self.cli("show arp table %s" % vrf)
         else:
             s = self.cli("show arp")
         r = {}  # ip -> (mac, interface)
@@ -31,5 +35,7 @@ class Script(noc.sa.script.Script):
             match = self.rx_line.match(l.strip())
             if not match:
                 continue
-            r[match.group("ip")] = (match.group("mac"), match.group("interface"))
+            r[match.group("ip")] = (
+                match.group("mac"), match.group("interface")
+            )
         return [{"ip": k, "mac": r[k][0], "interface": r[k][1]} for k in r]

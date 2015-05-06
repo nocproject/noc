@@ -34,11 +34,11 @@ class TrapCollector(ListenUDPSocket, EventCollector):
     name = "TrapCollector"
 
     def __init__(self, activator, address, port, log_traps=False):
-        self.info("Initializing at %s:%s" % (address, port))
         self.collector_signature = "%s:%s" % (address, port)
         self.log_traps = log_traps
         ListenUDPSocket.__init__(self, activator.factory, address, port)
         EventCollector.__init__(self, activator)
+        self.logger.info("Initializing")
 
     def on_read(self, whole_msg, address, port):
         def oid_to_str(o):
@@ -70,14 +70,14 @@ class TrapCollector(ListenUDPSocket, EventCollector):
             # Skip events from unknown sources
             return
         if self.log_traps:
-            self.info("SNMP TRAP: %r" % whole_msg)
+            self.logger.debug("SNMP TRAP: %r", whole_msg)
         while whole_msg:
             msg_version = int(api.decodeMessageVersion(whole_msg))
             if api.protoModules.has_key(msg_version):
                 p_mod = api.protoModules[msg_version]
             else:
-                self.error('Unsupported SNMP version %s from %s' % (
-                    msg_version, address))
+                self.logger.error('Unsupported SNMP version %s from %s',
+                                  msg_version, address)
                 return
             req_msg, whole_msg = decoder.decode(whole_msg,
                                                 asn1Spec=p_mod.Message())
@@ -97,5 +97,5 @@ class TrapCollector(ListenUDPSocket, EventCollector):
                 for o, v in var_binds:
                     body[oid_to_str(o._value)] = extract(v)
                 if self.log_traps:
-                    self.info("DECODED SNMP TRAP: %r" % body)
+                    self.logger.debug("DECODED SNMP TRAP: %s", body)
                 self.process_event(ts, object, body)

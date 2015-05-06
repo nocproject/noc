@@ -44,6 +44,11 @@ Ext.define("NOC.sa.objectnotification.Model", {
             defaultValue: false
         },
         {
+            name: "alarm_reopened",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
             name: "alarm_cleared",
             type: "boolean",
             defaultValue: false

@@ -1,0 +1,275 @@
+{
+    "name": "Force10 | S | S25N",
+    "uuid": "439beb5a-b5b1-4295-8e69-62751143a2b7",
+    "vendor__code": "FORCE10",
+    "description": "24-port 10/100/1000Base-T chassis with 4 SFP ports, 2 modular slots, 2 AC power supplies, FTOS software",
+    "connections": [
+        {
+            "description": "Gi X/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/5 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/6 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/7 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/8 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/9 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/10 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/11 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/12 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/13 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/14 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/15 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/16 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/16",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/17 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/18 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/19 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/19",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/20 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/20",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/21 combo (TX)",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/21",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/21 combo (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi X/21 SFP",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Gi X/22 combo (TX)",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/22",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/22 combo (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi X/22 SFP",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Gi X/23 combo (TX)",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/23",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/23 combo (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi X/23 SFP",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Gi X/24 combo (TX)",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi X/24",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi X/24 combo (SFP)",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi X/24 SFP",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Extension slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "slot0",
+            "type__name": "Force10 | S | Module"
+        },
+        {
+            "description": "Extension slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "slot1",
+            "type__name": "Force10 | S | Module"
+        },
+        {
+            "description": "AC Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "ac power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "M4 ground",
+            "direction": "s",
+            "gender": "m",
+            "name": "ground",
+            "type__name": "Power | M4 Pin"
+        },
+        {
+            "description": "RJ45 console slot",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": "S25N",
+            "part_no0": "S25-01-GE-24T"
+        }
+    }
+}

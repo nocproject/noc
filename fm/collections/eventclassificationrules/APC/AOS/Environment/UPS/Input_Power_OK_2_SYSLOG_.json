@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Environment | UPS | Input Power OK #2 (SYSLOG)",
+    "uuid": "5372f617-a34b-4474-9d14-c20a1266bfd0",
+    "description": "UPS: No longer compensating for a low input voltage. 0x010C",
+    "event_class__name": "Environment | UPS | Input Power OK",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: No longer compensating for a low input voltage. 0x010C"
+        }
+    ]
+}

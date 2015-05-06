@@ -167,4 +167,5 @@ class GridVCS(object):
         src = self.get(object, rev1)
         dst = self.get(object, rev2)
         return "\n".join(
-            difflib.unified_diff(src.splitlines(), dst.splitlines()))
+            difflib.unified_diff(src.splitlines(), dst.splitlines(),
+                                 lineterm=""))

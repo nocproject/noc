@@ -1,0 +1,21 @@
+{
+    "name": "AlliedTelesis | AT9400 | Security | Authentication | Login Failed (SYSLOG)",
+    "uuid": "071b737c-983e-4d50-85ea-2b710808adf7",
+    "description": "system: Login failure for admin from serial port",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^AlliedTelesis\\.AT9400$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "system: Login failure for (?P<user>.+?) from serial port$"
+        }
+    ]
+}

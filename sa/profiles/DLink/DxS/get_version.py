@@ -17,10 +17,18 @@ class Script(NOCScript):
     name = "DLink.DxS.get_version"
     cache = True
     implements = [IGetVersion]
-    rx_ver = re.compile(r"Device Type\s+:\s+(?P<platform>\S+).+Boot PROM Version\s+:\s+(?:Build\s+)?(?P<bootprom>\S+).+Firmware Version\s+:\s+(?:Build\s+)?(?P<version>\S+).+Hardware Version\s+:\s+(?P<hardware>\S+)", re.MULTILINE | re.DOTALL)
-    rx_fwt = re.compile(r"Firmware Type\s+:\s+(?P<fwt>\S+)\s*\n",
+    rx_ver = re.compile(
+        r"Device Type\s+:\s*(?P<platform>\S+).+"
+        r"(?:Boot PROM|System [Bb]oot)\s+"
+        r"[Vv]ersion\s+:\s*(?:Build\s+)?(?P<bootprom>\S+).+"
+        r"[Ff]irmware [Vv]ersion\s+:\s*(?:Build\s+)?(?P<version>\S+).+"
+        r"[Hh]ardware [Vv]ersion\s+:\s*(?P<hardware>\S+)",
         re.MULTILINE | re.DOTALL)
-    rx_ser = re.compile(r"(?:Serial Number|Device S/N)\s+:\s+(?P<serial>\S+)\s*\n",
+    rx_fwt = re.compile(
+        r"(?:Firmware Type|System [Ff]irmware [Vv]ersion)\s+:\s*"
+        r"(?P<fwt>\S+)\s*\n", re.MULTILINE | re.DOTALL)
+    rx_ser = re.compile(
+        r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
 
     def execute(self):

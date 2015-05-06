@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | LBD | Vlan Loop Detected (SYSLOG)",
+    "uuid": "21de583b-8508-40c7-be4f-848ce5f3ce72",
+    "description": "CRIT(2) Port 25 VID 356 LBD loop occurred. Packet discard begun",
+    "event_class__name": "Network | LBD | Vlan Loop Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:CRIT:|CRIT\\(2\\)) Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD loop occurred. Packet discard begun"
+        }
+    ]
+}

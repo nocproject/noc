@@ -17,8 +17,11 @@ from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.mib import MIB
 from noc.fm.models import get_alarm, get_event
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models import AdministrativeDomain
+from noc.sa.models.selectorcache import SelectorCache
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter)
 from noc.lib.escape import json_escape
@@ -79,13 +82,24 @@ class EventApplication(ExtApplication):
         for p in q:
             qp = p.split("__")[0]
             if qp in self.clean_fields:
-                q[p] = self.clean_fields[qp].form_clean(q[p])
+                q[p] = self.clean_fields[qp].clean(q[p])
+        if "administrative_domain" in q:
+            a = AdministrativeDomain.objects.get(id = q["administrative_domain"])
+            q["managed_object__in"] = a.managedobject_set.values_list("id", flat = True)
+            q.pop("administrative_domain")
+        if "managedobjectselector" in q:
+            s = SelectorCache.objects.filter(selector = q["managedobjectselector"]).values_list("object")
+            if "managed_object__in" in q:
+                q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
+            else:
+                q["managed_object__in"] = s
+            q.pop("managedobjectselector")
         return q
 
     def instance_to_dict(self, o, fields=None):
         row_class = None
         if o.status in ("A", "S"):
-            subject = o.get_translated_subject("en")
+            subject = o.subject
             repeats = o.repeats
             duration = o.duration
             n_alarms = len(o.alarms)
@@ -102,11 +116,13 @@ class EventApplication(ExtApplication):
             repeats = None
             duration = None
             n_alarms = None
-        return {
+        d = {
             "id": str(o.id),
             "status": o.status,
             "managed_object": o.managed_object.id,
             "managed_object__label": o.managed_object.name,
+            "administrative_domain": o.managed_object.administrative_domain_id,
+            "administrative_domain__label": o.managed_object.administrative_domain.name,
             "event_class": str(o.event_class.id) if o.status in ("A", "S") else None,
             "event_class__label": o.event_class.name if o.status in ("A", "S") else None,
             "timestamp": self.to_json(o.timestamp),
@@ -116,6 +132,9 @@ class EventApplication(ExtApplication):
             "alarms": n_alarms,
             "row_class": row_class
         }
+        if fields:
+            d = dict((k, d[k]) for k in fields)
+        return d
 
     def queryset(self, request, query=None):
         """
@@ -145,12 +164,28 @@ class EventApplication(ExtApplication):
             "vars", "resolved_vars", "raw_vars"
         ))
         if event.status in ("A", "S"):
-            dd["body"] = event.get_translated_body(lang)
-            dd["symptoms"] = event.get_translated_symptoms(lang)
-            dd["probable_causes"] = event.get_translated_probable_causes(lang)
-            dd["recommended_actions"] = event.get_translated_recommended_actions(lang)
-            dd["vars"] = sorted(event.vars.items())
-            dd["resolved_vars"] = sorted(event.resolved_vars.items())
+            dd["body"] = event.body
+            dd["symptoms"] = event.event_class.symptoms
+            dd["probable_causes"] = event.event_class.probable_causes
+            dd["recommended_actions"] = event.event_class.recommended_actions
+            # Fill vars
+            left = set(event.vars)
+            vars = []
+            for ev in event.event_class.vars:
+                if ev.name in event.vars:
+                    vars += [(ev.name, event.vars[ev.name], ev.description)]
+                    left.remove(ev.name)
+            vars += [(v, event.vars[v], None) for v in sorted(left)]
+            dd["vars"] = vars
+            # Fill resolved vars
+            vars = []
+            is_trap = event.raw_vars.get("source") == "SNMP Trap"
+            for v in sorted(event.resolved_vars):
+                desc = None
+                if is_trap and "::" in v:
+                    desc = MIB.get_description(v)
+                vars += [(v, event.resolved_vars[v], desc)]
+            dd["resolved_vars"] = vars
         dd["raw_vars"] = sorted(event.raw_vars.items())
         # Managed object properties
         mo = event.managed_object
@@ -188,7 +223,7 @@ class EventApplication(ExtApplication):
                     "status": a.status,
                     "alarm_class": str(a.alarm_class.id),
                     "alarm_class__label": a.alarm_class.name,
-                    "subject": a.get_translated_subject(lang),
+                    "subject": a.subject,
                     "role": role,
                     "timestamp": self.to_json(a.timestamp)
                 }]
@@ -212,6 +247,7 @@ class EventApplication(ExtApplication):
             d["plugins"] = [
                 ("NOC.fm.event.plugins.Traceback", {})
             ]
+        print d
         return d
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/post/", method=["POST"], api=True,

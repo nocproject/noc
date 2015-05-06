@@ -20,16 +20,13 @@ class UDLDLinkDiscoveryJob(LinkDiscoveryJob):
     map_task = "get_udld_neighbors"
     method = "udld"
     ignored = not config.getboolean("udld_discovery", "enabled")
-    initial_submit_interval = config.getint("udld_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("udld_discovery",
-        "initial_submit_concurrency")
 
     def process_result(self, object, result):
         self.n_cache = {}  # device_id -> object
         local_id = None  # Local IDs
         for n in result:
             local_id = n["local_device"]
+            self.n_cache[local_id] = object
             remote_object = self.get_neighbor(n["remote_device"])
             if not remote_object:
                 continue

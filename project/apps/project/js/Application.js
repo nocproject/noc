@@ -16,12 +16,13 @@ Ext.define("NOC.project.project.Application", {
     search: true,
     initComponent: function() {
         var me = this;
+        me.ITEM_RESOURCES = me.registerItem("NOC.project.project.ProjectResources");
         Ext.apply(me, {
             formToolbar: [
                 {
                     itemId: "resources",
                     text: "Resources",
-                    iconCls: "icon_page_link",
+                    glyph: NOC.glyph.list,
                     tooltip: "Show Allocated resources",
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
@@ -68,32 +69,13 @@ Ext.define("NOC.project.project.Application", {
         });
         me.callParent();
     },
-    showProjectResources: function(record) {
-        var me = this;
-        Ext.Ajax.request({
-            url: "/project/project/" + record.get("id") + "/resources/",
-            method: "GET",
-            scope: me,
-            success: function(response) {
-                var data = Ext.decode(response.responseText);
-                Ext.create("NOC.project.project.ProjectResources", {
-                    app: me,
-                    data: data,
-                    project: record
-                });
-            },
-            failure: function() {
-                NOC.error("Failed to get resources");
-            }
-        })
-    },
     onProjectResources: function() {
         var me = this;
-        me.showProjectResources(me.currentRecord);
+        me.previewItem(me.ITEM_RESOURCES, me.currentRecord);
     },
     //
     onPreview: function(record) {
         var me = this;
-        me.showProjectResources(record);
+        me.previewItem(me.ITEM_RESOURCES, record);
     }
 });

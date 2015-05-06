@@ -16,10 +16,6 @@ class ConfigDiscoveryJob(MODiscoveryJob):
     map_task = "get_config"
 
     ignored = not config.getboolean("config_discovery", "enabled")
-    initial_submit_interval = config.getint("config_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("config_discovery",
-        "initial_submit_concurrency")
     to_save = config.getboolean("config_discovery", "save")
 
     def handler(self, object, result):
@@ -29,26 +25,14 @@ class ConfigDiscoveryJob(MODiscoveryJob):
         :return:
         """
         if self.to_save:
-            object.config.write(result)
+            object.save_config(result)
         return True
-
-    @classmethod
-    def initial_submit_queryset(cls):
-        return {
-            "object_profile__enable_config_polling": True,
-            "is_configuration_managed": True
-        }
 
     def can_run(self):
         return (
             super(ConfigDiscoveryJob, self).can_run()
-            and self.object.object_profile.enable_config_polling
-            and self.object.is_configuration_managed
+            and self.object.object_profile.enable_config_discovery
         )
 
-    @classmethod
-    def get_submit_interval(cls, object):
-        return object.object_profile.config_polling_max_interval
-
     def get_failed_interval(self):
-        return self.object.object_profile.config_polling_min_interval
+        return self.object.object_profile.config_discovery_min_interval

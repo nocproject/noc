@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | IP | Address Conflict (SYSLOG)",
+    "uuid": "94e2b67a-996f-4ef4-a8c1-d9d39ec92bf5",
+    "description": "%IP-ARP-6-INFO_DUPADDR : Duplicate IP address 192.168.1.128 on BVI5036, sourced by 0019.993d.b1fa",
+    "event_class__name": "Network | IP | Address Conflict",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IP-ARP-6-INFO_DUPADDR : Duplicate IP address (?P<ip>\\S+) on (?P<interface>\\S+), sourced by (?P<mac>\\S+)$"
+        }
+    ]
+}

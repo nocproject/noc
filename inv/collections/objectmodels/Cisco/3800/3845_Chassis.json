@@ -1,0 +1,70 @@
+{
+    "name": "Cisco | 3800 | 3845 Chassis",
+    "uuid": "68025509-80e4-4140-bfa0-6a01694f28d8",
+    "vendor__code": "CISCO",
+    "description": "Cisco 3800 Series Integrated Services Routers with 4 NME slots",
+    "connection_rule__name": "Cisco | 3800",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "3845 Motherboard",
+            "direction": "i",
+            "gender": "f",
+            "name": "mb",
+            "type__name": "Cisco | 3800 | MOTHERBOARD"
+        },
+        {
+            "description": "Network-module slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "nm1",
+            "type__name": "Cisco | 3800 | NM"
+        },
+        {
+            "description": "Network-module slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "nm2",
+            "type__name": "Cisco | 3800 | NM"
+        },
+        {
+            "description": "Network-module slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "nm3",
+            "type__name": "Cisco | 3800 | NM"
+        },
+        {
+            "description": "Network-module slot 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "nm4",
+            "type__name": "Cisco | 3800 | NM"
+        },
+        {
+            "description": "Power Supply slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Cisco | 3800 | PSU"
+        },
+        {
+            "description": "Power Supply slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Cisco | 3800 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "CISCO3845"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 3
+        }
+    }
+}

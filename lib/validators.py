@@ -18,7 +18,7 @@ rx_fqdn = re.compile(r"^([a-z0-9\-]+\.)+[a-z0-9\-]+$", re.IGNORECASE)
 rx_asset = re.compile(r"^AS-[A-Z0-9\-]+$")
 rx_extension = re.compile(r"^\.[a-zA-Z0-9]+$")
 rx_mimetype = re.compile(r"^[a-zA-Z0-9\-]+/[a-zA-Z0-9\-]+$")
-rx_email = re.compile(r"^[a-z0-9._\-]+@([a-z0-9\-]+\.)+[a-z0-9\-]+$",
+rx_email = re.compile(r"^[a-z0-9._\-+]+@([a-z0-9\-]+\.)+[a-z0-9\-]+$",
                       re.IGNORECASE)
 rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
 rx_objectid = re.compile(r"^[0-9a-f]{24}$")

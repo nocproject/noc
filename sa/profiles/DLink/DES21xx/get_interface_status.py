@@ -16,6 +16,7 @@ from noc.sa.interfaces import IGetInterfaceStatus
 
 class Script(NOCScript):
     name = "DLink.DES21xx.get_interface_status"
+    cache = True
     implements = [IGetInterfaceStatus]
     rx_link = re.compile(r"^(?P<interface>\d+)\s+([01M HFaulf]+|Auto)\s+" \
                           "\S+\s+\S+\s+(?P<status>([01M HFaulf]+|Down))$",
@@ -45,7 +46,7 @@ class Script(NOCScript):
         if interface is None:
             interface = ""
         try:
-            s = self.cli("show ports %s" % interface)
+            s = self.cli("show ports %s" % interface, cached=True)
         except self.CLISyntaxError:
             raise self.NotSupportedError()
 

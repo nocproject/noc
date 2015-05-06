@@ -40,6 +40,7 @@ class Command(BaseCommand):
     model_map = {
         "CharField": ("string", "textfield", None),
         "BooleanField": ("boolean", "checkboxfield", "NOC.render.Bool"),
+        "NullBooleanField": ("boolean", "checkboxfield", "NOC.render.Bool"),
         "IntegerField": ("int", "numberfield", None),
         "TextField": ("string", "textarea", None),
         "DateField": ("date", "datefield", None),
@@ -49,7 +50,8 @@ class Command(BaseCommand):
         "INETField": ("string", "textfield", None),
         "MACField": ("string", "textfield", None),
         "AutoCompleteTagsField": ("auto", "tagsfield", "NOC.render.Tags"),
-        "ColorField": ("int", "numberfield", None)
+        "ColorField": ("int", "numberfield", None),
+        "TagsField": ("auto", "textfield", None)
     }
 
     # Document -> Ext type maps
@@ -62,10 +64,13 @@ class Command(BaseCommand):
         "GeoPointField": "auto",
         "URLField": "string",
         "PlainReferenceField": "string",
+        "ReferenceField": "string",
         "DictField": "auto",
         "RawDictField": "auto",
         "ListField": "auto",
-        "ObjectIdField": "string"
+        "ObjectIdField": "string",
+        "UUIDField": "string",
+        "BinaryField": "string"
     }
     # Document -> Ext type widgets
     document_ext_widget = {
@@ -77,10 +82,12 @@ class Command(BaseCommand):
         "GeoPointField": "geofield",
         "URLField": "textfield",
         "PlainReferenceField": "textfield",
+        "ReferenceField": "textfield",
         "DictField": "textfield",
         "RawDictField": "textfield",
         "ListField": "textfield",
-        "ObjectIdField": "textfield"
+        "ObjectIdField": "textfield",
+        "UUIDField": "displayfield"
     }
 
     def compact(self, s):
@@ -186,8 +193,13 @@ class Command(BaseCommand):
             # Initialize model if necessary
             if tv["model"]:
                 tv["requires"] = ["NOC.%s.%s.Model" % (m, tv["model"].lower())]
-                models = __import__("noc.%s.models" % m, {}, {}, "*")
+                tv["modelimport"] = "noc.%s.models.%s" % (m, a)
+                models = __import__(tv["modelimport"], {}, {}, tv["model"])
                 model = getattr(models, tv["model"])
+                if model is None:
+                    tv["modelimport"] = "noc.%s.models" % m
+                    models = __import__(tv["modelimport"], {}, {}, "*")
+                    model = getattr(models, tv["model"])
                 if issubclass(model, Model):
                     # Model
                     fields = [{

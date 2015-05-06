@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Privilege Level Change Fail #2 (SYSLOG)",
+    "uuid": "3a31eab6-b2eb-4b85-9fca-508bb1a9f097",
+    "description": "WARN: Enable Admin failed through SSH from 192.168.5.232 due to AAA server timeout or improper configuration (Username: noc, MAC: 00-00-00-00-00-00)",
+    "event_class__name": "Security | Authentication | Privilege Level Change Fail",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) Enable (?P<to_priv>Admin) failed through (?:Web|Telnet|SSH) from (?P<ip>\\S+) \\S.+ \\(Username: (?P<user>.+?), MAC: (?P<mac>\\S+)\\)"
+        }
+    ]
+}

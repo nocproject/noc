@@ -1,0 +1,39 @@
+{
+    "name": "Tyco | Transceiver | 10G | SFP-H10GB-ACU10M",
+    "uuid": "e3969ae1-0524-40d4-90f6-6e133d1a04e2",
+    "vendor__code": "TYCO",
+    "description": "Tyco 10GBASE-CR twinax copper cable with SFP+ connectors on both ends (10m)\n",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-H10GB-ACU10M",
+            "part_no1": "2163675-2"
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}

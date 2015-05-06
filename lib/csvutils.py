@@ -88,7 +88,9 @@ def csv_export(model, queryset=None, first_row_only=False):
             v = getattr(r, f)
             if v is None:
                 v = ""
-            if rel is None or not v:
+            if f == "tags":
+                row += [",".join(v)]
+            elif rel is None or not v:
                 row += [v]
             else:
                 row += [getattr(v, rf)]
@@ -98,7 +100,7 @@ def csv_export(model, queryset=None, first_row_only=False):
     return io.getvalue()
 
 
-def csv_import(model, f, resolution=IR_FAIL):
+def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
     """
     Import from CSV
     :returns: (record_count,error_message).
@@ -108,7 +110,7 @@ def csv_import(model, f, resolution=IR_FAIL):
     if not f.read(3) == "\xef\xbb\xbf":
         # No BOM found, seek to start
         f.seek(0)
-    reader = csv.reader(f)
+    reader = csv.reader(f, delimiter=delimiter)
     # Process model fields
     field_names = set()
     required_fields = set()
@@ -187,6 +189,8 @@ def csv_import(model, f, resolution=IR_FAIL):
                         vars[h] = int(v)
                     except ValueError, why:
                         raise ValueError("Invalid integer: %s" % why)
+                elif h == "tags":
+                    vars[h] = [x.strip() for x in v.split(",") if x.strip()]
         # Find object
         o = None
         for f in u_fields:

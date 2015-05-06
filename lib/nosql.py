@@ -9,6 +9,7 @@
 ## Python modules
 import logging
 import sys
+import time
 ## Django modules
 from django.db.models import Model
 from django.db import IntegrityError
@@ -20,6 +21,8 @@ from mongoengine import *
 import mongoengine
 ## NOC modules
 from noc import settings
+
+logger = logging.getLogger(__name__)
 
 ##
 ## Create database connection
@@ -34,15 +37,40 @@ connection_args = {
     "password": settings.NOSQL_DATABASE_PASSWORD
 }
 if settings.NOSQL_DATABASE_HOST:
-    connection_args["host"] = settings.NOSQL_DATABASE_HOST
+    if "," in settings.NOSQL_DATABASE_HOST:
+        # Replica set connection
+        connection_args["host"] = "mongodb://%s" % settings.NOSQL_DATABASE_HOST
+        connection_args["replicaSet"] = True
+        connection_args["slave_okay"] = True
+    elif ":" in settings.NOSQL_DATABASE_HOST:
+        # host:port form
+        h, p = settings.NOSQL_DATABASE_HOST.rsplit(":", 1)
+        connection_args["host"] = h
+        connection_args["port"] = int(p)
+    else:
+        # Simple host settings
+        connection_args["host"] = settings.NOSQL_DATABASE_HOST
 if settings.NOSQL_DATABASE_PORT:
-    connection_args["port"] = int(settings.NOSQL_DATABASE_PORT)
+    if "port" in connection_args:
+        logger.info("Port is already specified in host setting. Ignoring")
+    else:
+        logger.info("Using deprecated [nosql_database]/port option. Consider using host option")
+        connection_args["port"] = int(settings.NOSQL_DATABASE_PORT)
+if settings.NOSQL_DATABASE_REPLICA_SET:
+    connection_args["replicaSet"] = settings.NOSQL_DATABASE_REPLICA_SET
+elif "," in settings.NOSQL_DATABASE_HOST:
+    logger.error("[nosql_database]/replica_set must be set for replicaset connection")
+    sys.exit(1)
 
 ## Connect to the database
 try:
+    ca = connection_args.copy()
+    if connection_args.get("password"):
+        ca["password"] = "********"
+    logger.info("Connecting to MongoDB %s", ca)
     connect(**connection_args)
 except mongoengine.connection.ConnectionError, why:
-    logging.error("Cannot connect to mongodb: %s" % why)
+    logger.error("Cannot connect to mongodb: %s" % why)
     sys.exit(1)
 
 ## Shortcut to ObjectId
@@ -69,12 +97,16 @@ class PlainReferenceField(BaseField):
     A reference to the document that will be automatically
     dereferenced on access (lazily). Maps to plain ObjectId
     """
+
+    _DEREF_CACHE = {}
+
     def __init__(self, document_type, *args, **kwargs):
         if not isinstance(document_type, basestring):
             if not issubclass(document_type, (Document, basestring)):
                 raise ValidationError("Argument to PlainReferenceField constructor "
                                       "must be a document class or a string")
         self.document_type_obj = document_type
+        self.ttl = None
         super(PlainReferenceField, self).__init__(*args, **kwargs)
 
     @property
@@ -94,8 +126,17 @@ class PlainReferenceField(BaseField):
         # Get value from document instance if available
         value = instance._data.get(self.name)
         # Dereference DBRefs
-        if isinstance(value, ObjectId):
-            v = self.document_type.objects(id=value).first()
+        if isinstance(value, ObjectId) or (isinstance(value, basestring) and len(value) == 24):
+            v = None
+            if self.ttl:
+                t = time.time()
+                expire, v = self._DEREF_CACHE.get(str(value), (0, None))
+                if expire < t:
+                    v = None
+            if v is None:
+                v = self.document_type.objects(id=value).first()
+                if v and self.ttl:
+                    self._DEREF_CACHE[str(value)] = (t + self.ttl, v)
             if v is not None:
                 instance._data[self.name] = v
             else:
@@ -111,7 +152,10 @@ class PlainReferenceField(BaseField):
                 raise ValidationError("You can only reference documents once "
                                       "they have been saved to the database")
         else:
-            id_ = document
+            if document:
+                id_ = document
+            else:
+                return None
         id_field_name = self.document_type._meta["id_field"]
         id_field = self.document_type._fields[id_field_name]
         return id_field.to_mongo(id_)
@@ -123,6 +167,9 @@ class PlainReferenceField(BaseField):
         if value is None:
             return None
         return self.to_mongo(value)
+
+    def set_cache(self, ttl=None):
+        self.ttl = ttl
 
 
 class PlainReferenceListField(PlainReferenceField):
@@ -217,6 +264,11 @@ class ForeignKeyField(BaseField):
             if value is not None:
                 instance._data[self.name] = value
         return super(ForeignKeyField, self).__get__(instance, owner)
+
+    def __set__(self, instance, value):
+        if not value:
+            value = None
+        super(ForeignKeyField, self).__set__(instance, value)
 
     def to_mongo(self, document):
         if isinstance(document, Model):

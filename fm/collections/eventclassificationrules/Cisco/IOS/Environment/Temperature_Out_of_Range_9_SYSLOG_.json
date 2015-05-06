@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Out of Range #9 (SYSLOG)",
+    "uuid": "0d0608cb-889f-4d21-8c26-4ad113070c5a",
+    "description": "%THERMAL-3-PS: System detected Power System 1 THERMAL FAIL condition.",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:THERMAL-3-PS|PS-3-THERMAL): System detected (?P<name>.+) THERMAL FAIL condition."
+        }
+    ]
+}

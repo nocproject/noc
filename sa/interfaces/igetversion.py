@@ -15,4 +15,3 @@ class IGetVersion(Interface):
         "version": StringParameter(),
         "attributes": DictParameter(required=False)
     })
-    template = "interfaces/igetversion.html"

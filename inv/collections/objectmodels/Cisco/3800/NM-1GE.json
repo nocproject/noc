@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | 3800 | NM-1GE",
+    "uuid": "b3420b5c-63f9-42d6-8b03-c730aebce7f9",
+    "vendor__code": "CISCO",
+    "description": "1 Port GBIC Module",
+    "cr_context": "NM",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 3800 | NM"
+        },
+        {
+            "description": "port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_gbic",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | GBIC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "NM-1GE"
+        }
+    }
+}

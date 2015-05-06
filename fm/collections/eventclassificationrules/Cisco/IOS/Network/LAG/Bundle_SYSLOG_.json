@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | LAG | Bundle (SYSLOG)",
+    "uuid": "58427f64-de1e-4b51-bbc8-9bc825d9f4b6",
+    "description": "%EC-5-BUNDLE: Interface Gi1/0/1 joined port-channel Po1.",
+    "event_class__name": "Network | LAG | Bundle",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%EC-5-BUNDLE: Interface (?P<interface>\\S+) joined port-channel (?P<lag_interface>\\S+)\\.$"
+        }
+    ]
+}

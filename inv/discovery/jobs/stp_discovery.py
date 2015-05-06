@@ -20,10 +20,6 @@ class STPLinkDiscoveryJob(LinkDiscoveryJob):
     map_task = "get_spanning_tree"
     method = "stp"
     ignored = not config.getboolean("stp_discovery", "enabled")
-    initial_submit_interval = config.getint("stp_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("stp_discovery",
-        "initial_submit_concurrency")
     strict_pending_candidates_check = False
 
     def convert_port_id(self, port_id):
@@ -66,3 +62,13 @@ class STPLinkDiscoveryJob(LinkDiscoveryJob):
                 else:
                     self.debug("Designated port %s is not found in %s" % (
                         local_port_id, ", ".join(self.desg_port_id.keys())))
+
+    def resolve_self_links(self, object):
+        if object in self.candidates:
+            sl = set()
+            for l, r in self.candidates[object]:
+                if (l and r and l != r and (l, r) not in sl
+                    and (r, l) not in sl):
+                    sl.add((l, r))
+            for l, r in sl:
+                self.submit_link(object, l, object, self.desg_port_id[r])

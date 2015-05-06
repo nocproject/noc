@@ -14,7 +14,7 @@ class IEEEOUI(RefBook):
     name="IEEE OUI"
     description="IEEE Assigned Organizational Units IDs. Used as first three octets of MAC Address"
     downloader="CSV"
-    download_url="http://update.nocproject.org/db/ieee_oui.csv"
+    download_url="https://cdn.nocproject.org/refbook/ieee_oui.csv"
     refresh_interval=90
     fields=[
         Field(name="OUI",search_method="mac_3_octets_upper"),

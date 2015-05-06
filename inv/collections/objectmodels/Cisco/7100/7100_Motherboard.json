@@ -1,0 +1,68 @@
+{
+    "name": "Cisco | 7100 | 7100 Motherboard",
+    "uuid": "8ef20aaf-0caa-4b19-9ff9-54af97b53b91",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7100 Motherboard",
+    "connection_rule__name": "Cisco | 7100",
+    "cr_context": "MOTHERBOARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7100 | MOTHERBOARD"
+        },
+        {
+            "description": "PCMCIA slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk0",
+            "type__name": "Flash | PCMCIA"
+        },
+        {
+            "description": "PCMCIA slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk1",
+            "type__name": "Flash | PCMCIA"
+        },
+        {
+            "description": "FastEthernet 0/0 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "FastEthernet 0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Aux port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "CISCO7100-MB"
+        }
+    }
+}

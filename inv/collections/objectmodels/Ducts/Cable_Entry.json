@@ -1,0 +1,38 @@
+{
+    "name": "Ducts | Cable Entry",
+    "uuid": "ae6a7aff-af07-489e-b222-8cf71b62b5b4",
+    "vendor__code": "NONAME",
+    "description": "Building's cable entry",
+    "plugins": ["-inventory", "conduits"],
+    "connections": [
+        {
+            "description": "Inter-manhole ducts",
+            "direction": "s",
+            "gender": "s",
+            "name": "ducts",
+            "type__name": "Ducts"
+        },
+        {
+            "description": "Conduits",
+            "direction": "s",
+            "gender": "s",
+            "name": "conduits",
+            "type__name": "Conduits"
+        },
+        {
+            "description": "Passing cables",
+            "direction": "s",
+            "gender": "s",
+            "name": "cables",
+            "type__name": "Cables"
+        }
+    ],
+    "data": {
+        "container": {
+            "container": true
+        },
+        "geopoint": {
+            "layer": "cableentries"
+        }
+    }
+}

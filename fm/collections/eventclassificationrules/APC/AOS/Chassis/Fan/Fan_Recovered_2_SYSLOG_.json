@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Chassis | Fan | Fan Recovered #2 (SYSLOG)",
+    "uuid": "baf81336-5852-44f2-8ee6-24cf83cb1e50",
+    "description": "UPS: An electronics unit fan fault no longer exists. 0x013C",
+    "event_class__name": "Chassis | Fan | Fan Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: (?P<name>An electronics unit fan) fault no longer exists. 0x013C"
+        }
+    ]
+}

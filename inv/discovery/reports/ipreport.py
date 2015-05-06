@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## IP Discovery Report
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,48 +11,72 @@ import datetime
 ## Django modules
 from django.template import Template, Context
 from django.db.models import Q
+from django.core.cache import cache
 ## NOC modules
 from base import Report
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
+from noc.ip.models.prefix import Prefix
 from noc.fm.models import NewEvent
 from noc.inv.models import NewAddressDiscoveryLog
-from noc.lib.ip import IP
 from noc.settings import config
+from noc.lib.solutions import get_solution
 
 
 class IPReport(Report):
     system_notification = "inv.prefix_discovery"
 
-    def __init__(self, job, enabled=True, to_save=False):
+    def __init__(self, job, enabled=True, to_save=False,
+                 allow_prefix_restrictions=False):
         super(IPReport, self).__init__(
             job, enabled=enabled, to_save=to_save)
         self.ip_state_map = self.get_state_map(
             config.get("ip_discovery", "change_state"))
-        t = config.get("ip_discovery", "fqdn_template")
-        self.fqdn_template = Template(t) if t else None
         self.new_addresses = []
         self.collisions = []
         self.locked_ranges = {}  # VRF -> [(from ip, to ip)]
+        self.allow_prefix_restrictions = allow_prefix_restrictions
+        # Initialize solutions
+        self.get_fqdn = get_solution(config.get("ip_discovery", "get_fqdn"))
+        self.get_description = get_solution(config.get("ip_discovery", "get_description"))
 
     def submit(self, vrf, address, interface=None, description=None,
                mac=None):
         if not self.enabled:
             return
+        afi = "6" if ":" in address else "4"
         # Skip ignored MACs
         if mac and self.is_ignored_mac(mac):
+            return
+        # Check ip discovery enabled by prefix settings
+        if (self.allow_prefix_restrictions and
+                not self.is_discovery_enabled(vrf, afi, address)):
             return
         # Check address not in locked range
         if self.is_locked_range(vrf, address):
             return
         # Check address in IPAM
-        afi = "6" if ":" in address else "4"
-        r = Address.objects.filter(vrf=vrf, afi=afi, address=address)
+        # Optimize by speed
+        try:
+            r = Address.objects.filter(vrf=vrf, afi=afi, address=address)[0]
+        except IndexError:
+            r = None
         if r:
-            self.change_address(r[0])  # Change existing address
+            self.change_address(r)  # Change existing address
         else:
             self.new_address(vrf, afi, address,
                 interface, description, mac)
+
+    @classmethod
+    def is_discovery_enabled(cls, vrf, afi, address):
+        prefix = Prefix.get_parent(vrf, afi, address)
+        k = "ip-discovery-enable-%s" % prefix.id
+        ds = cache.get(k)
+        if ds:
+            return ds == "E"
+        r = prefix.effective_ip_discovery
+        cache.set(k, r, 600)
+        return r == "E"
 
     def is_ignored_mac(self, mac):
         """
@@ -113,10 +137,9 @@ class IPReport(Report):
             }]
             if self.to_save:
                 if not description:
-                    description = "Seen at %s:%s" % (
-                        self.object.name, interface)
+                    description = self.get_description(self.object, interface)
                 Address(vrf=vrf, afi=afi,
-                    fqdn=self.get_fqdn(interface, vrf, address),
+                    fqdn=self.get_fqdn(interface, vrf, address, self.context),
                     mac=mac, address=address,
                     description=description
                 ).save()
@@ -181,27 +204,6 @@ class IPReport(Report):
             log=[]
         ).save()
         return False
-
-    def get_fqdn(self, interface, vrf, address):
-        """
-        Generate FQDN for address
-        :return:
-        """
-        afi = "6" if ":" in address else "4"
-        if afi == "4":
-            ip = [str(x) for x in IP.prefix(address)._get_parts()]
-        else:
-            ip = ["%x" % x for x in IP.prefix(address)._get_parts()]
-        rip = list(reversed(ip))
-        c = self.context.copy()
-        c.update({
-            "afi": afi,
-            "IP": ip,
-            "rIP": rip,
-            "interface": interface,
-            "vrf": vrf
-        })
-        return self.fqdn_template.render(Context(c))
 
     def send(self):
         if not (self.new_addresses or self.collisions):

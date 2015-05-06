@@ -43,6 +43,7 @@ class Script(NOCScript):
         "learned": "D",
         "learned-psec": "D",
         "permanent": "S",
+        "permanent-psec": "S",
         "dynamic": "D",
         "static": "S",
         "learn": "D",

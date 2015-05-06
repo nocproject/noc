@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Config | Config Synced #1 (SYSLOG)",
+    "uuid": "f914a6d6-9ab5-4304-bd72-66ed2f66c13b",
+    "description": "%C4K_REDUNDANCY-5-CONFIGSYNC: The startup-config has been successfully synchronized to the standby supervisor",
+    "event_class__name": "Config | Config Synced",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C4K_REDUNDANCY-5-CONFIGSYNC: The startup-config has been successfully synchronized to the standby supervisor"
+        }
+    ]
+}

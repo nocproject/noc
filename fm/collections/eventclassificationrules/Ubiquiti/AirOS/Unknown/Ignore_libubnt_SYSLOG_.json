@@ -1,0 +1,21 @@
+{
+    "name": "Ubiquiti | AirOS | Unknown | Ignore libubnt (SYSLOG)",
+    "uuid": "d54e7ad5-1610-4e58-98a9-9d387868e84f",
+    "description": "Jan 4 12:44:00 syslog: libubnt_exec.syswrapper_impl(): [EXEC] /usr/etc/syswrapper.sh kick-sta",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Ubiquiti\\.AirOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* syslog: libubnt.*"
+        }
+    ]
+}

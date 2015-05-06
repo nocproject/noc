@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Failed #10 (SYSLOG)",
+    "uuid": "144495c2-0a22-4977-9fac-3ad3a680c29e",
+    "description": "%IOSXE_PEM-3-PEMFAIL: The PEM in slot 1 is switched off or encountering a failure condition.",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IOSXE_PEM-3-PEMFAIL: The (?P<name>PEM in slot \\d+) is switched off or encountering a failure condition"
+        }
+    ]
+}

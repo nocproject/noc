@@ -1,0 +1,38 @@
+{
+    "name": "Juniper | MX | MX-MPC2E-3D-Q",
+    "$collection": "inv.objectmodels",
+    "uuid": "b30de1db-7ada-4c64-9fc3-1fd1141be263",
+    "vendor__code": "JUNIPER",
+    "description": "MX-MPC2E-3D -Q  Ð¿Ð¾Ð´Ð´ÐµÑÐ¶ÐºÐ¾Ð¹ Ð¾ÑÐµÑÐµÐ´ÐµÐ¹ HQoS per IFL 256k",
+    "connection_rule__name": "Juniper | MX",
+    "cr_context": "FPC",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | FPC"
+        },
+        {
+            "description": "MIC Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic0",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "MIC Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "mic1",
+            "type__name": "Juniper | MX | MIC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "MX-MPC2E-3D-Q",
+            "part_no0": "750-038493"
+        }
+    }
+}

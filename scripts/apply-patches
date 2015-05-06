@@ -10,10 +10,8 @@
 
 ## Python modules
 import os
-from distutils.sysconfig import get_python_lib
-import hashlib
-import shutil
-import py_compile
+import sys
+import subprocess
 ## Third-party packages
 try:
     from pip.util import get_installed_distributions  # Pip 1.5
@@ -21,45 +19,54 @@ except ImportError:
     from pip.utils import get_installed_distributions  # Pip 6
 
 PATCHES_ROOT = "patches"
-SITE_PACKAGES = get_python_lib()
 
-def scan_packages():
+
+def fix_patches():
     """
-    Scan installed packages and run apply_patches
+    Uninstall legacy patches
     """
+    print "Fixing patches"
+    uninstall = [d.project_name for d in get_installed_distributions()
+                 if d.project_name in ("Django", "mongoengine")]
+    for p in uninstall:
+        subprocess.check_call(["./bin/pip", "uninstall", "-y", p])
+
+
+def revert_patches():
+    r = subprocess.call(["quilt", "applied"])
+    if r == 0:
+        subprocess.check_call(["quilt", "pop", "-a"])
+
+
+def apply_dist_patches():
+    """
+    Apply distribution patches
+    """
+    # Get installed packages
+    pkgs = set()
     for d in get_installed_distributions():
-        p_root = os.path.join(PATCHES_ROOT, d.project_name, d.version)
-        if os.path.isdir(p_root):
-            apply_patches(project=d.project_name, version=d.version)
+        pkgs.add("%s==%s" % (d.project_name, d.version))
+    # Get available patches
+    patches = set()
+    for p in os.listdir(PATCHES_ROOT):
+        if "==" in p:
+            patches.add(p)
+    # Push all available patches
+    for p in patches.intersection(pkgs):
+        subprocess.check_call(["quilt", "push", p])
 
 
-def apply_patches(project, version):
-    print "Patching %s %s" % (project, version)
-    patch_root = os.path.join(PATCHES_ROOT, project, version)
-    for root, dirnames, files in os.walk(patch_root):
-        for f in files:
-            if f.endswith(".pyc"):
-                continue
-            rpath = root.split(os.sep)[3:]
-            patch = os.path.join(root, f)
-            t_root = os.sep.join([SITE_PACKAGES] + rpath)
-            target = os.path.join(t_root, f)
-            # Check file needs patching
-            if not os.path.exists(target):
-                print "   WARNING: File does not exists", target
-                continue
-            if file_hash(patch) != file_hash(target):
-                # Apply patch
-                print "   patching", target
-                shutil.copyfile(patch, target)
-                if target.endswith(".py"):
-                    py_compile.compile(target)
-
-
-def file_hash(path):
-    with open(path) as f:
-        return hashlib.sha1(f.read()).hexdigest()
+def apply_patches():
+    """
+    Apply all patches
+    """
+    apply_dist_patches()
 
 
 if __name__ == "__main__":
-    scan_packages()
+    if "--revert" in sys.argv:
+        revert_patches()
+    elif "--fix" in sys.argv:
+        fix_patches()
+    else:
+        apply_patches()

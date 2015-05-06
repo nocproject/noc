@@ -1,0 +1,7 @@
+{
+    "name": "Transceiver | GBIC",
+    "uuid": "1eb3aa41-ac7c-4ed3-a227-2c565b83e8ad",
+    "description": "GBIC transceiver slot",
+    "c_group": [],
+    "genders": "mf"
+}

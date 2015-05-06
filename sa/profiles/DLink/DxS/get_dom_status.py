@@ -40,8 +40,11 @@ class Script(NOCScript):
         cmd = "show ddm ports status"
         if interface is not None:
             cmd = "show ddm ports %s status" % interface
-        ports = self.cli_object_stream(
-            cmd, parser=self.parse_ports, cmd_next="n", cmd_stop="q")
+        try:
+            ports = self.cli_object_stream(
+                cmd, parser=self.parse_ports, cmd_next="n", cmd_stop="q")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
 
         r = []
         for i in ports:

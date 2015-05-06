@@ -30,7 +30,7 @@ class Script(NOCScript):
             except self.snmp.TimeOutError:
                 pass
         v = self.cli(
-            "show running-config | utility egrep 'hostname|domain name[ ]'"
+            'show running-config | include "hostname|domain name "'
         )
         fqdn = []
         match = self.rx_hostname.search(v)

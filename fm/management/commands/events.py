@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Reclassify events
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 from optparse import OptionParser, make_option
 import re
@@ -15,7 +14,8 @@ from htmlentitydefs import name2codepoint
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.fm.models import ActiveEvent, EventClass, MIB
 from noc.lib.nosql import ObjectId
 from noc.lib.validators import is_oid
@@ -149,7 +149,7 @@ class Command(BaseCommand):
         else:
             print "ID, Object, Class, Subject"
         for e in events:
-            subject = unescape(e.get_translated_subject("en"))
+            subject = unescape(e.subject)
             if to_suppress:
                 # Replace volatile parts
                 s = self.rx_volatile_date.sub("", subject)

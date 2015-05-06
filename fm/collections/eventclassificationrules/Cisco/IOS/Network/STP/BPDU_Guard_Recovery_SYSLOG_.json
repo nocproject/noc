@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | STP | BPDU Guard Recovery (SYSLOG)",
+    "uuid": "761b507c-1066-4f42-8a89-d101744227e1",
+    "description": "%PM-4-ERR_RECOVER: Attempting to recover from bpduguard err-disable state on Gi0/24",
+    "event_class__name": "Network | STP | BPDU Guard Recovery",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PM(-SP)?-4-ERR_RECOVER: Attempting to recover from bpduguard err-disable state on (?P<interface>\\S+)"
+        }
+    ]
+}

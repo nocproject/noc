@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded (SYSLOG)",
+    "uuid": "5fe65174-b777-4e21-9985-04455ee22368",
+    "description": "%SLB-6-REAL: Real 10.117.0.9 (VPNFARM) has changed state to MAXCONNS",
+    "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SLB-6-REAL: Real (?P<real>\\S+) \\((?P<farm>.+)\\) has changed state to (?P<state>MAXCONNS|FAILED)$"
+        }
+    ]
+}

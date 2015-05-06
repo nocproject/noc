@@ -1,0 +1,86 @@
+{
+    "name": "Brocade | JetCore | J-FIxGMR4",
+    "uuid": "cde738d1-187a-4738-be14-c7050d1eaea3",
+    "vendor__code": "BROCADE",
+    "description": "J-FIxGMR4 - 4 gen FastIron mgmt",
+    "connection_rule__name": "Brocade | JetCore",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "sfp port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp3",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp4",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp5",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp6",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp7",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "sfp port 8",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp8",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "backplane",
+            "direction": "o",
+            "gender": "f",
+            "name": "in",
+            "type__name": "Brocade | JetCore | Backplane Connector"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "J-FIxGMR4"
+        }
+    }
+}

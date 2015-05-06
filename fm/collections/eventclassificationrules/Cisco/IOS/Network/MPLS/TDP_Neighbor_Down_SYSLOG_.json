@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | MPLS | TDP Neighbor Down (SYSLOG)",
+    "uuid": "ea43aaa9-a461-4468-bdd3-710b5c173666",
+    "description": "%LDP-5-NBRCHG: TDP Neighbor 10.10.10:0 is DOWN (TCP connection closed by peer) ",
+    "event_class__name": "Network | MPLS | TDP Neighbor Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LDP-5-NBRCHG: TDP Neighbor (?P<neighbor>\\S+):.* is DOWN( \\((?P<reason>.+)\\))?"
+        }
+    ]
+}

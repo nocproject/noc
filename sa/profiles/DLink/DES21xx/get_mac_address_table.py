@@ -16,7 +16,10 @@ import re
 class Script(noc.sa.script.Script):
     name = "DLink.DES21xx.get_mac_address_table"
     implements = [IGetMACAddressTable]
-    rx_line = re.compile(r"^\d+\s+(?P<interfaces>\S+)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)$")
+    rx_line = re.compile(
+        r"^\d+\s+(?P<interfaces>\S+)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)$")
+    rx_line1 = re.compile(
+        r"^\d+\s+(?P<interfaces>\d+)\s+(?P<mac>\S+)$")
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show fdb port "
@@ -37,6 +40,15 @@ class Script(noc.sa.script.Script):
                     "interfaces": [match.group("interfaces")],
                     "type": "D"
                 })
+            else:
+                match = self.rx_line1.match(l.strip())
+                if match:
+                    r.append({
+                        "vlan_id": 1,
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interfaces")],
+                        "type": "D"
+                    })
         # Static MAC address table
         macs = self.cli("show smac")
         for l in macs.split("\n"):

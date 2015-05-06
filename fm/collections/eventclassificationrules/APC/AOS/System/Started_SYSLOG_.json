@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | System | Started (SYSLOG)",
+    "uuid": "7e136f0a-b171-4b92-a796-21a301a15c07",
+    "description": "System: Coldstart. 0x0001",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "System: (?:Coldstart. 0x0001|Warmstart. 0x0002)"
+        }
+    ]
+}

@@ -156,6 +156,8 @@ class Script(NOCScript):
         }
         iv = {}  # instance -> vlans
         for instance, vlans in self.rx_mstp_instance.findall(v):
+            if vlans == "none":
+                vlans = ""
             iv[instance] = vlans
         #
         interfaces = {}

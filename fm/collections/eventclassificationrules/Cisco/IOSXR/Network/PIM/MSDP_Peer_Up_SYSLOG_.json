@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | PIM | MSDP Peer Up (SYSLOG)",
+    "uuid": "d1303758-e6f6-41c3-8072-84c0fbd93232",
+    "description": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer up:  1.1.1.1",
+    "event_class__name": "Network | PIM | MSDP Peer Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "^Cisco.IOSXR$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer up:\\s+(?P<peer>\\S+)"
+        }
+    ]
+}

@@ -13,3 +13,4 @@ from address import Address
 from prefixaccess import PrefixAccess
 from prefixbookmark import PrefixBookmark
 from addressrange import AddressRange
+from ippool import IPPool

@@ -17,7 +17,6 @@ class Script(NOCScript):
     name = "NSN.hiX56xx.get_mac_address_table"
     implements = [IGetMACAddressTable]
     rx_line = re.compile("^(?P<interfaces>\d+/\d+(?:/\d+)?)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(\S+)\s+(?P<type>\S+)\s+", re.MULTILINE)
-    TIMEOUT = 600
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac"

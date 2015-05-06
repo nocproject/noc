@@ -1,0 +1,21 @@
+{
+    "name": "Brocade | IronWare | Chassis | PSU | PSU Recovered (SYSLOG)",
+    "uuid": "8a5ebba5-62df-4e0e-96bb-0ecced8d30e9",
+    "description": "Aug 8 23:30:19 AkrasRoot System: Power supply 1, left side power supply, normal",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Brocade\\.IronWare$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* System: (?P<name>Power supply \\d+),(\\s+\\S+)+, normal$"
+        }
+    ]
+}

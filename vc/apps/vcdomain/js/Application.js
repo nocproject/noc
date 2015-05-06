@@ -29,6 +29,14 @@ Ext.define("NOC.vc.vcdomain.Application", {
         },
 
         {
+            text: "Object Count",
+            dataIndex: "object_count",
+            align: "right",
+            sortable: false,
+            width: 50
+        },
+
+        {
             text: "Provisioning",
             dataIndex: "enable_provisioning",
             renderer: NOC.render.Bool

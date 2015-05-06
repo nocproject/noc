@@ -1,0 +1,34 @@
+{
+    "name": "Force10 | S | S50-01-12G-2S",
+    "uuid": "377926e1-b158-429d-90ea-e0de574dccfe",
+    "vendor__code": "FORCE10",
+    "description": "2-port 12 Gbps stacking module",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "i",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Force10 | S | Module"
+        },
+        {
+            "description": "Stack port 0",
+            "direction": "s",
+            "gender": "f",
+            "name": "port0",
+            "type__name": "Force10 | S | Stacking 12G"
+        },
+        {
+            "description": "Stack port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "port1",
+            "type__name": "Force10 | S | Stacking 12G"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "S50-01-12G-2S"
+        }
+    }
+}

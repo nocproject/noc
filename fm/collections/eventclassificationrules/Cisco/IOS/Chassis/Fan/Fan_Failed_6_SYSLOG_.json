@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Failed #6 (SYSLOG)",
+    "uuid": "28531736-1146-4169-a77d-de3e157a1db9",
+    "description": "System detected SYS PS 1 fan fail condition.",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "System detected (?P<name>SYS PS \\d+ fan) fail condition"
+        }
+    ]
+}

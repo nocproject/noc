@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASR9001 | ASR-9001-FAN",
+    "uuid": "3de22d30-cebb-47d0-a8da-b3c42207b28a",
+    "vendor__code": "CISCO",
+    "description": "ASR-9001 FAN tray",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR9001 | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "ASR-9001-FAN"
+        }
+    }
+}

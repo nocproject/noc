@@ -51,6 +51,8 @@ class MapTask(models.Model):
             ("F", _("Failed"))],
         default="W")
     script_result = PickledField(_("Result"), null=True, blank=True)
+    # Override script's default timeout
+    script_timeout = models.IntegerField(_("Script timeout"), null=True, blank=True)
 
     def __unicode__(self):
         if self.id:
@@ -84,9 +86,10 @@ class MapTask(models.Model):
         # Convert script name
         if "." not in script:
             script = "%s.%s" % (object.profile_name, script)
-        if (len(script.split(".")) != 3 or
+        sp = script.split(".")
+        if (len(sp) != 3 or
                 not script.startswith(object.profile_name + ".") or
-                script not in object.profile.scripts):
+                sp[-1] not in object.profile.scripts):
             status = "F"
             result = {
                 "code": ERR_INVALID_SCRIPT,
@@ -100,7 +103,8 @@ class MapTask(models.Model):
             script_params=params,
             next_try=datetime.datetime.now(),
             status=status,
-            script_result=result
+            script_result=result,
+            script_timeout=timeout
         )
         t.save()
         return t

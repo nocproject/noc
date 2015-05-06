@@ -34,7 +34,9 @@ class ListenUDPSocket(Socket):
 
     def create_socket(self):
         """Create and bind socket"""
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket = socket.socket(
+            self.get_af(self.address), socket.SOCK_DGRAM
+        )
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,
             self.socket.getsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR) | 1)
         self.socket.bind((self.address, self.port))

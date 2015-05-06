@@ -3,7 +3,7 @@
 ## Vendor: DLink
 ## OS:     DxS_Cisco_CLI
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -15,6 +15,8 @@ from noc.sa.profiles import Profile as NOCProfile
 class Profile(NOCProfile):
     name = "DLink.DxS_Cisco_CLI"
     supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
+    pattern_username = "([Uu]ser[Nn]ame|[Ll]ogin):"
+    pattern_password = "[Pp]ass[Ww]ord:"
     pattern_more = "^ --More--"
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at"

@@ -16,7 +16,6 @@ from django.contrib.auth.models import User
 ## NOC modules
 from noc.main.models import Language, database_storage
 from noc.kb.parsers import parser_registry
-from noc.lib.search import SearchResult
 from noc.lib.validators import is_int
 from noc.lib.app.site import site
 from noc.lib.fields import AutoCompleteTagsField
@@ -66,29 +65,6 @@ class KBEntry(models.Model):
         Returns parsed HTML
         """
         return self.parser.to_html(self)
-
-    @classmethod
-    def search(cls, user, query, limit):
-        """
-        Search engine
-        """
-        if user.has_perm("kb.change_kbentry"):
-            q = Q(subject__icontains=query) | Q(body__icontains=query)
-            if is_int(query):
-                q |= Q(id=int(query))
-            elif query.startswith("KB") and is_int(query[2:]):
-                q |= Q(id=int(query[2:]))
-            for r in KBEntry.objects.filter(q):
-                try:
-                    idx = r.body.index(query)
-                    text = r.body[idx - 100:idx + len(query) + 100]
-                except ValueError:
-                    text = r.body[:100]
-                yield SearchResult(
-                    url=("kb:view:view", r.id),
-                    title="KB%d: %s" % (r.id, r.subject),
-                    text=text,
-                    relevancy=1.0)
 
     @property
     def last_history(self):

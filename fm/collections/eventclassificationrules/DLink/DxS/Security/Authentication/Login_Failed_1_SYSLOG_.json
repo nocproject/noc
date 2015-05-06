@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Login Failed #1 (SYSLOG)",
+    "uuid": "952bca32-5e6f-4c29-8f79-ae7f2dcbecb2",
+    "description": "INFO: Login failed through Telnet (Username: Anonymous, IP: 10.116.0.2, MAC: 00-05-74-97-49-00)",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)|WARN:|WARN\\(4\\)) Login failed through (?:Web|Telnet|SSH) \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)(?:, MAC: \\S+)?\\)$"
+        }
+    ]
+}

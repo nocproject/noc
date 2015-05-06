@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## HP.ProCurve.get_switchport
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -58,7 +58,8 @@ class Script(NOCScript):
         return untag, tag
 
     def execute(self):
-        portsnum = int(self.cli("walkMIB dot1dBaseNumPorts").split('=')[1])
+        port = self.cli("walkMIB dot1dBaseNumPorts").split('=')[1]
+        portsnum = int(re.sub(r'[^\d-]+', '', port))
         untagged, tagged = self.getVlanPort()
         iface = {}
         sports = []

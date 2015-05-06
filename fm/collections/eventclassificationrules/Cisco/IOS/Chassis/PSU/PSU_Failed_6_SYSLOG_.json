@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Failed #6 (SYSLOG)",
+    "uuid": "c46f7329-0350-42f5-977b-7299ad030259",
+    "description": "%PS-3-DCOUTPUTVOLTFAIL: System detected Power System 1 DC FAIL condition.",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PS-3-DCOUTPUTVOLTFAIL: System detected (?P<name>Power System) \\d+ (?:AC|DC) FAIL condition\\.$"
+        }
+    ]
+}

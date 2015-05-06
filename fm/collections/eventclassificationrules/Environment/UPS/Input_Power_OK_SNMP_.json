@@ -1,0 +1,21 @@
+{
+    "name": "Environment | UPS | Input Power OK (SNMP)",
+    "uuid": "94000a66-e5bf-4f7c-a683-6d94cef0807e",
+    "description": "XPPC-MIB::ppc",
+    "event_class__name": "Environment | UPS | Input Power OK",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^XPPC-MIB::ppc$"
+        },
+        {
+            "key_re": "^XPPC-MIB::ppc$",
+            "value_re": "^Utility power has been restored.$"
+        }
+    ]
+}

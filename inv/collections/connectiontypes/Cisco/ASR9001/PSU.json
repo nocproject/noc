@@ -1,0 +1,7 @@
+{
+    "name": "Cisco | ASR9001 | PSU",
+    "uuid": "b781c93d-93e2-4c5b-8294-5ddec734a08c",
+    "description": "ASR9001 power supply connection",
+    "c_group": [],
+    "genders": "mf"
+}

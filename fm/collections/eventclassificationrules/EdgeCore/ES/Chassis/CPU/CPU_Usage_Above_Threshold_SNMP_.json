@@ -1,0 +1,21 @@
+{
+    "name": "EdgeCore | ES | Chassis | CPU | CPU Usage Above Threshold (SNMP)",
+    "uuid": "bbee539b-0355-4922-8236-03ea26c7499f",
+    "description": "ES3528MO-MIB::swCpuUtiRisingNotification",
+    "event_class__name": "Chassis | CPU | CPU Usage Above Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^ES3528MO-MIB::swCpuUtiRisingNotification$"
+        }
+    ]
+}

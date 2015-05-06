@@ -1,0 +1,22 @@
+{
+    "name": "Juniper | MX | FFANTRAY-MX960-HC",
+    "uuid": "6534c56e-b0f8-40e7-ad07-6082ad392c37",
+    "vendor__code": "JUNIPER",
+    "description": "MX960 High Capacity fantray (upper or lower)",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX960 Fan"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "FFANTRAY-MX960-HC",
+            "part_no0": "740-031521"
+        }
+    }
+}

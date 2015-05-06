@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Service Activation Engine Daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 from __future__ import with_statement
 import os
@@ -16,15 +15,17 @@ import threading
 import logging
 import random
 import cPickle
-import glob
 import sys
 import csv
+import itertools
+import struct
+from collections import defaultdict
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
 from noc.sa.sae.service import Service
 from noc.sa.sae.sae_socket import SAESocket
-from noc.sa.models import (Activator, ManagedObject, MapTask,
+from noc.sa.models import (Activator, ManagedObject, MapTask, ReduceTask,
                            script_registry, profile_registry,
                            ActivatorCapabilitiesCache, FailedScriptLog)
 from noc.fm.models import NewEvent
@@ -56,16 +57,18 @@ class SAE(Daemon):
         #
         self.mrt_log = False
         self.mrt_log_dir = None
+        #
+        self.event_seq = itertools.count()
         # Initialize daemon
         Daemon.__init__(self)
-        logging.info("Running SAE")
+        self.logger.info("Running SAE")
         #
         self.service = Service()
         self.service.sae = self
         #
         self.factory = SocketFactory(tick_callback=self.tick)
         self.factory.sae = self
-        self.activators = {}  # pool name -> list of activators
+        self.activators = defaultdict(set)  # pool name -> set of activators
         self.object_scripts = {}  # object.id -> # of current scripts
         self.object_status = {}  # object.id -> last ping check status
         #
@@ -86,6 +89,8 @@ class SAE(Daemon):
         self.script_lock = threading.Lock()
         #
         self.blocked_pools = set()  # Blocked activator names
+        #
+        self.default_managed_object = None
 
     def load_config(self):
         """
@@ -94,7 +99,7 @@ class SAE(Daemon):
         super(SAE, self).load_config()
         self.shards = [s.strip()
                        for s in self.config.get("sae", "shards", "").split(",")]
-        logging.info("Serving shards: %s" % ", ".join(self.shards))
+        self.logger.info("Serving shards: %s" % ", ".join(self.shards))
         self.force_plaintext = [IP.prefix(p) for p
                 in self.config.get("sae", "force_plaintext").strip().split(",")
                 if p]
@@ -130,7 +135,7 @@ class SAE(Daemon):
             self.sae_listener.close()
             self.sae_listener = None
         if self.sae_listener is None:
-            logging.info("Starting SAE listener at %s:%d" % (sae_listen, sae_port))
+            self.logger.info("Starting SAE listener at %s:%d" % (sae_listen, sae_port))
             self.sae_listener = self.factory.listen_tcp(sae_listen, sae_port, SAESocket)
 
     def update_activator_capabilities(self, pool):
@@ -144,45 +149,92 @@ class SAE(Daemon):
             if hasattr(s, "max_scripts"):
                 max_scripts += s.max_scripts
         a = Activator.objects.get(name=pool)
-        a.update_capabilities(members=members, max_scripts=max_scripts)
-        logging.info("Activator pool '%s' capability: %d script threads" % (
-            pool, max_scripts))
+        c = a.update_capabilities(members=members, max_scripts=max_scripts)
+        self.logger.info("Activator pool '%s' capability: members=%d, sessions=%d" % (
+            pool, c.members, c.max_scripts))
+        return c
 
     def join_activator_pool(self, name, stream):
         """
         Add registered activator stream to pool
         """
         stream.set_pool_name(name)
-        if name not in self.activators:
-            self.activators[name] = set()
-        logging.info("%s is joining activator pool '%s'" % (repr(stream), name))
+        self.logger.info("%s is joining activator pool '%s'" % (repr(stream), name))
         self.activators[name].add(stream)
+        c = self.update_activator_capabilities(name)
+        self.write_event({
+            "source": "system",
+            "event": "activator_join",
+            "name": name,
+            "instance": stream.instance,
+            "sessions": stream.max_scripts,
+            "pool_members": c.members,
+            "pool_sessions": c.max_scripts,
+            "min_members": c.activator.min_members,
+            "min_sessions": c.activator.min_sessions
+        })
 
     def leave_activator_pool(self, name, stream):
         """
         Remove activator stream from pool
         """
-        if name in self.activators and stream in self.activators[name]:
-            logging.info("%s is leaving activator pool '%s'" % (repr(stream), name))
-            self.activators[name].remove(stream)
-            self.update_activator_capabilities(name)
+        if stream not in self.activators[name]:
+            return
+        self.logger.info("%s is leaving activator pool '%s'" % (
+            repr(stream), name))
+        self.activators[name].remove(stream)
+        c = self.update_activator_capabilities(name)
+        self.write_event({
+            "source": "system",
+            "event": "activator_leave",
+            "name": name,
+            "instance": stream.instance,
+            "sessions": stream.max_scripts,
+            "pool_members": c.members,
+            "pool_sessions": c.max_scripts,
+            "min_members": c.activator.min_members,
+            "min_sessions": c.activator.min_sessions
+        })
 
     def get_pool_info(self, name):
         """
         Get activator pool information
         """
-        if name not in self.activators:
-            return {"status": False, "members": 0}
-        return {"status": True, "members": len(self.activators[name])}
+        members = len(self.activators["name"])
+        return {
+            "status": members > 0,
+            "members": members
+        }
 
     def run(self):
         """
         Run SAE daemon event loop
         """
-        logging.info("Cleaning activator capabilities cache")
+        self.logger.info("Cleaning activator capabilities cache")
         ActivatorCapabilitiesCache.reset_cache(self.shards)
+        self.check_activator_thresholds()
         self.start_listeners()
         self.factory.run(run_forever=True)
+
+    def check_activator_thresholds(self):
+        """
+        Check activator sessions thresholds
+        """
+        self.logger.info("Checking activator thresholds")
+        for a in Activator.objects.filter(is_active=True, shard__name__in=self.shards):
+            if a.min_sessions or a.min_members:
+                self.logger.info("   activator pool '%s' has lower thresholds" % a.name)
+                self.write_event({
+                    "source": "system",
+                    "event": "activator_join",
+                    "name": a.name,
+                    "instance": "0",
+                    "sessions": 0,
+                    "pool_members": 0,
+                    "pool_sessions": 0,
+                    "min_members": a.min_members,
+                    "min_sessions": a.min_sessions
+                })
 
     def tick(self):
         """
@@ -208,7 +260,11 @@ class SAE(Daemon):
         """
         if managed_object is None:
             # Set object to SAE, if not set
-            managed_object = ManagedObject.objects.get(name="SAE")
+            if not self.default_managed_object:
+                self.default_managed_object = ManagedObject.objects.get(name="SAE")
+            managed_object = self.default_managed_object
+        if timestamp is None:
+            timestamp = datetime.datetime.now()
         if type(data) == list:
             data = dict(data)
         elif type(data) != dict:
@@ -221,12 +277,22 @@ class SAE(Daemon):
         if (self.strip_syslog_severity and "source" in data
             and data["source"] == "syslog" and "severity" in data):
             del data["severity"]
+        # Normalize data
+        data = dict((k, str(data[k])) for k in data)
+        # Generate sequental number
+        seq = struct.pack(
+            "!II",
+            int(time.time()),
+            self.event_seq.next() & 0xFFFFFFFFL
+        )
+        # Write event
         NewEvent(
             timestamp=timestamp,
             managed_object=managed_object,
             raw_vars=data,
-            log=[]
-            ).save()
+            log=[],
+            seq=seq
+        ).save()
 
     def on_stream_close(self, stream):
         self.streams.unregister(stream)
@@ -262,7 +328,7 @@ class SAE(Daemon):
             raise Exception("All activators are busy in pool '%s'" % name)
         return a
 
-    def script(self, object, script_name, callback, **kwargs):
+    def script(self, object, script_name, callback, timeout=None, **kwargs):
         """
         Launch a script
         """
@@ -275,7 +341,7 @@ class SAE(Daemon):
                 except KeyError:
                     pass
             if error:
-                logging.error("script(%s,%s,**%s) failed: %s" % (
+                self.logger.error("script(%s,%s,**%s) failed: %s" % (
                                 script_name, object, kwargs, error.text))
                 callback(error=error)
                 return
@@ -283,14 +349,14 @@ class SAE(Daemon):
             result = cPickle.loads(str(result))  # De-serialize
             callback(result=result)
 
-        logging.info("script %s(%s)" % (script_name, object))
+        self.logger.info("script %s(%s)" % (script_name, object))
         stream = None
         if object.profile_name != "NOC.SAE":
             # Check object is not unreachable
             if not self.object_status.get(object.id, True):
                 # Object is unreachable. Report failure immediately
                 e = Error(code=ERR_DOWN, text="Host is down")
-                logging.error(e.text)
+                self.logger.error(e.text)
                 callback(error=e)
                 return
             # Validate activator is present
@@ -298,22 +364,21 @@ class SAE(Daemon):
                 stream = self.get_activator_stream(object.activator.name, True)
             except Exception, why:
                 e = Error(code=ERR_ACTIVATOR_NOT_AVAILABLE, text=str(why))
-                logging.error(e.text)
+                self.logger.error(e.text)
                 callback(error=e)
                 return
             # Check object's limits
-            if object.max_scripts:
-                try:
-                    o_scripts = self.object_scripts[object.id]
-                except KeyError:
-                    o_scripts = 0
-                if o_scripts >= object.max_scripts:
+            o_limits = object.scripts_limit
+            if o_limits:
+                o_scripts = self.object_scripts.get(object.id, 0)
+                if o_scripts >= o_limits:
                     e = Error(code=ERR_OBJ_OVERLOAD,
                               text="Object's script sessions limit exceeded")
-                    logging.error(e.text)
+                    self.logger.error(e.text)
                     callback(error=e)
                     return
-                self.object_scripts[object.id] = o_scripts + 1
+                else:
+                    self.object_scripts[object.id] = o_scripts + 1
             # Update counters
             stream.current_scripts += 1
         # Build request
@@ -323,20 +388,23 @@ class SAE(Daemon):
         r.access_profile.profile = object.profile_name
         r.access_profile.scheme = object.scheme
         r.access_profile.address = object.address
+        credentials = object.credentials
         if object.port:
             r.access_profile.port = object.port
-        if object.user:
-            r.access_profile.user = object.user
-        if object.password:
-            r.access_profile.password = object.password
-        if object.super_password:
-            r.access_profile.super_password = object.super_password
+        if credentials.user:
+            r.access_profile.user = credentials.user
+        if credentials.password:
+            r.access_profile.password = credentials.password
+        if credentials.super_password:
+            r.access_profile.super_password = credentials.super_password
         if object.remote_path:
             r.access_profile.path = object.remote_path
-        if object.snmp_ro:
-            r.access_profile.snmp_ro = object.snmp_ro
-        if object.snmp_rw:
-            r.access_profile.snmp_rw = object.snmp_rw
+        if credentials.snmp_ro:
+            r.access_profile.snmp_ro = credentials.snmp_ro
+        if credentials.snmp_rw:
+            r.access_profile.snmp_rw = credentials.snmp_rw
+        if timeout:
+            r.timeout = timeout
         attrs = [(a.key, a.value) for a in object.managedobjectattribute_set.all()]
         for k, v in attrs:
             a = r.access_profile.attrs.add()
@@ -346,6 +414,21 @@ class SAE(Daemon):
             a = r.kwargs.add()
             a.key = str(k)
             a.value = cPickle.dumps(v)
+        # Capabilities
+        caps = object.get_caps()
+        for c in sorted(caps):
+            a = r.access_profile.caps.add()
+            a.capability = c
+            v = caps[c]
+            if isinstance(v, float):
+                a.float_value = v
+            elif isinstance(v, bool):
+                a.bool_value = v
+            elif isinstance(v, (int, long)):
+                a.int_value = v
+            else:
+                a.str_value = str(v)
+        #
         if object.profile_name == "NOC.SAE":
             self.run_sae_script(r, script_callback)
         else:
@@ -356,8 +439,17 @@ class SAE(Daemon):
         Map/Reduce task logging
         """
         # Log into logfile
-        r = [u"MRT task=%d/%d object=%s(%s) script=%s status=%s" % (
-                task.task.id, task.id, task.managed_object.name,
+        rt = u"-"
+        has_task = False
+        try:
+            if task.task:
+                has_task = True
+                rt = u"%s" % task.task.id
+        except ReduceTask.DoesNotExist:
+            if has_task:
+                rt = u"?"
+        r = [u"MRT task=%s/%d object=%s(%s) script=%s status=%s" % (
+                rt, task.id, task.managed_object.name,
                 task.managed_object.address, task.map_script, status)]
         if args:
             a = repr(args)
@@ -368,15 +460,17 @@ class SAE(Daemon):
         if kwargs:
             for k in kwargs:
                 r += [u"%s=%s" % (k, kwargs[k])]
-        logging.log(level, u" ".join(r))
+        self.logger.log(level, u" ".join(r))
         if status == "failed":
+            now = datetime.datetime.now()
             FailedScriptLog(
-                timestamp=datetime.datetime.now(),
+                timestamp=now,
                 managed_object=task.managed_object.name,
                 address=task.managed_object.address,
                 script=task.map_script,
                 error_code=kwargs["code"] if "code" in kwargs else None,
-                error_text=kwargs["error"]
+                error_text=kwargs["error"],
+                expires=now + datetime.timedelta(days=7)
             ).save()
         # Log into mrt log
         # timestamp, map task id, object id, object name, object addres,
@@ -405,7 +499,7 @@ class SAE(Daemon):
             try:
                 mt = MapTask.objects.get(id=mt_id)
             except MapTask.DoesNotExist:
-                logging.error("Late answer for map task %d is ignored" % mt_id)
+                self.logger.error("Late answer for map task %d is ignored" % mt_id)
                 return
             if error:
                 # Process non-fatal reasons
@@ -427,7 +521,7 @@ class SAE(Daemon):
                         next_retries = mt.retries_left
                     else:
                         next_retries = mt.retries_left - 1
-                    if mt.retries_left and next_try < mt.task.stop_time:
+                    if mt.retries_left and (not mt.task or next_try < mt.task.stop_time):
                         # Check we're still in task time and have retries left
                         self.log_mrt(logging.INFO, task=mt, status="retry")
                         mt.next_try = next_try
@@ -453,33 +547,51 @@ class SAE(Daemon):
             self.log_mrt(logging.INFO, task=mt, status="running", args=kwargs)
             self.script(mt.managed_object, mt.map_script,
                     lambda result=None, error=None: map_callback(mt.id, result, error),
+                    timeout=mt.script_timeout,
                     **kwargs)
 
+        def fail_task(mt, code, text):
+            mt.status = "F"
+            mt.script_result = dict(code=code, text=text)
+            try:
+                mt.save()
+            except Exception:
+                pass  # Can raise integrity error if MRT is gone
+            self.log_mrt(logging.INFO, task=mt, status="failed",
+                code=code, error=text)
+
         t = datetime.datetime.now()
-        # logging.debug("Processing MRT schedules")
+        # self.logger.debug("Processing MRT schedules")
         # Reset rates
         sae_mrt_rate = 0
         shard_mrt_rate = {}  # shard_id -> count
         throttled_shards = set()  # shard_id
         self.blocked_pools = set()  # Reset block status
         # Run tasks
-        for mt in MapTask.objects.filter(status="W", next_try__lte=t,
-                    managed_object__activator__shard__is_active=True,
-                    managed_object__activator__shard__name__in=self.shards).select_related():
+        for mt in MapTask.objects.filter(
+                status="W",
+                next_try__lte=t,
+                managed_object__activator__shard__is_active=True,
+                managed_object__activator__shard__name__in=self.shards
+            ).order_by("next_try").select_related("activator", "managed_object").select_for_update():
+            # Check object is managed
+            if not mt.managed_object.is_managed:
+                fail_task(mt, ERR_OBJECT_NOT_MANAGED, "Object is not managed")
+                continue
+            # Check reduce task still valid
+            is_valid_reduce = True
+            try:
+                mt.task
+            except ReduceTask.DoesNotExist:
+                is_valid_reduce = False
             # Check for task timeouts
-            if mt.task.stop_time < t:
-                mt.status = "F"
-                mt.script_result = dict(code=ERR_TIMEOUT, text="Timed out")
-                try:
-                    mt.save()
-                except Exception:
-                    pass  # Can raise integrity error if MRT is gone
-                self.log_mrt(logging.INFO, task=mt, status="failed",
-                    code=ERR_TIMEOUT, error="timed out")
+            if not is_valid_reduce or (mt.task and mt.task.stop_time < t):
+                fail_task(mt, ERR_TIMEOUT, text="Timed out")
                 continue
             # Check blocked pools
             if mt.managed_object.activator.name in self.blocked_pools:
                 # Silently skip task until next round
+                self.logger.debug("Delaying task to the blocked pool '%s'" % mt.managed_object.activator.name)
                 continue
             # Check for global rate limit
             if self.max_mrt_rate_per_sae:
@@ -510,9 +622,9 @@ class SAE(Daemon):
             mt.save()
             exec_script(mt)
         dt = total_seconds(datetime.datetime.now() - t)
-        # logging.debug("MRT Schedules processed in %ss" % dt)
+        # self.logger.debug("MRT Schedules processed in %ss" % dt)
         if dt > self.mrt_schedule_interval:
-            logging.error("SAE is overloaded by MRT scheduling (took %ss)" % dt)
+            self.logger.error("SAE is overloaded by MRT scheduling (took %ss)" % dt)
             #  @todo: Generate FM event
 
     def run_sae_script(self, request, callback):
@@ -528,15 +640,15 @@ class SAE(Daemon):
         script.sae = self
         with self.script_lock:
             self.script_threads[script] = callback
-            logging.info("%d script threads" % (len(self.script_threads)))
+            self.logger.info("%d script threads" % (len(self.script_threads)))
         script.start()
 
     def on_script_exit(self, script):
-        logging.info("Script %s(%s) completed" % (script.name,
+        self.logger.info("Script %s(%s) completed" % (script.name,
                                                script.access_profile.address))
         with self.script_lock:
             cb = self.script_threads.pop(script)
-            logging.info("%d script threads left" % (len(self.script_threads)))
+            self.logger.info("%d script threads left" % (len(self.script_threads)))
         if script.result:
             r = ScriptResponse()
             r.result = script.result
@@ -603,7 +715,7 @@ class SAE(Daemon):
         stream.proxy.get_status(StatusRequest(), status_callback)
 
     def refresh_activator_status(self):
-        logging.debug("Refreshing activator status")
+        self.logger.debug("Refreshing activator status")
         for pool in self.activators:
             for stream in self.activators[pool]:
                 self.request_activator_status(stream)
@@ -627,13 +739,13 @@ class SAE(Daemon):
         s = [
             ["factory.sockets", len(self.factory)],
         ]
-        logging.info("STATS:")
+        self.logger.info("STATS:")
         for n, v in s:
-            logging.info("%s: %s" % (n, v))
+            self.logger.info("%s: %s" % (n, v))
         for sock in [s for s in self.factory.sockets.values() if issubclass(s.__class__, RPCSocket)]:
             try:
-                logging.info("Activator: %s" % self.factory.get_name_by_socket(sock))
+                self.logger.info("Activator: %s" % self.factory.get_name_by_socket(sock))
             except KeyError:
-                logging.info("Unregistred activator")
+                self.logger.info("Unregistred activator")
             for n, v in sock.stats:
-                logging.info("%s: %s" % (n, v))
+                self.logger.info("%s: %s" % (n, v))

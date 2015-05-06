@@ -14,7 +14,6 @@ from noc.sa.interfaces import IGetConfig
 class Script(NOCScript):
     name = "f5.BIGIP.get_config"
     implements = [IGetConfig]
-    TIMEOUT = 300
     CLI_TIMEOUT = 60
 
     def execute(self):

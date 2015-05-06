@@ -45,6 +45,8 @@ class Command(BaseCommand):
             with self.log("Wiping '%s':" % unicode(o), True):
                 try:
                     wiper(o)
+                except KeyboardInterrupt:
+                    raise CommandError("Interrupted. Wiping is not complete")
                 except:
                     error_report()
 
@@ -97,76 +99,8 @@ class Command(BaseCommand):
         :type o: Managed Object
         :return: None
         """
-        from noc.sa.models import ManagedObjectAttribute
-        from noc.sa.models.maptask import MapTask
-        from noc.inv.models import (ForwardingInstance,
-                                   Interface, SubInterface, Link,
-                                   MACDB)
-        from noc.inv.models.pendinglinkcheck import PendingLinkCheck
-        from noc.inv.models.discoveryid import DiscoveryID
-        from noc.fm.models import NewEvent, FailedEvent,\
-                                  ActiveEvent, ArchivedEvent,\
-                                  ActiveAlarm, ArchivedAlarm
-        from noc.ip.models import Address
-
-        if o.profile_name.startswith("NOC."):
-            raise CommandError("Cannot wipe internal object '%s'" % unicode(o))
-        # Wiping FM events
-        with self.log("Deleting new events"):
-            NewEvent.objects.filter(managed_object=o.id).delete()
-        with self.log("Deleting failed events"):
-            FailedEvent.objects.filter(managed_object=o.id).delete()
-        with self.log("Deleting active events"):
-            ActiveEvent.objects.filter(managed_object=o.id).delete()
-        with self.log("Deleting archived events"):
-            ArchivedEvent.objects.filter(managed_object=o.id).delete()
-        # Wiping alarms
-        with self.log("Deleting alarms"):
-            for ac in (ActiveAlarm, ArchivedAlarm):
-                for a in ac.objects.filter(managed_object=o.id):
-                    # Relink root causes
-                    my_root = a.root
-                    for iac in (ActiveAlarm, ArchivedAlarm):
-                        for ia in iac.objects.filter(root=a.id):
-                            ia.root = my_root
-                            ia.save()
-                    # Delete alarm
-                    a.delete()
-        # Wiping MAC DB
-        with self.log("Wiping MAC DB"):
-            MACDB._get_collection().remove({"managed_object": o.id})
-        # Wiping pending link check
-        with self.log("Wiping pending link checks"):
-            PendingLinkCheck._get_collection().remove({"local_object": o.id})
-            PendingLinkCheck._get_collection().remove({"remote_object": o.id})
-        # Wiping discovery id cache
-        with self.log("Wiping discovered ids"):
-            DiscoveryID._get_collection().remove({"object": o.id})
-        # Wiping interfaces, subs and links
-        with self.log("Deleting forwarding instances, "
-                      "interfaces, subinterfaces and links"):
-            # Wipe links
-            for i in Interface.objects.filter(managed_object=o.id):
-                # @todo: Remove aggregated links correctly
-                Link.objects.filter(interfaces=i.id).delete()
-            #
-            ForwardingInstance.objects.filter(managed_object=o.id).delete()
-            Interface.objects.filter(managed_object=o.id).delete()
-            SubInterface.objects.filter(managed_object=o.id).delete()
-        # Unbind from IPAM
-        with self.log("Unbinding from IPAM"):
-            for a in Address.objects.filter(managed_object=o):
-                a.managed_object = None
-                a.save()
-        # Delete active map tasks
-        with self.log("Deleting map tasks"):
-            MapTask.objects.filter(managed_object=o).delete()
-        # Delete Managed Object's attributes
-        with self.log("Deleting object's attributes"):
-            ManagedObjectAttribute.objects.filter(managed_object=o).delete()
-        # Finally delete object and config
-        with self.log("Deleting managed object and config"):
-            o.delete()
+        from noc.sa.wipe.managedobject import wipe
+        wipe(o)
 
     def get_user(self, u_id):
             """
@@ -207,7 +141,7 @@ class Command(BaseCommand):
             UserState.objects.filter(user_id=o.id).delete()
         # Clean NotificationGroupUser
         with self.log("Cleaning audit trail"):
-            AuditTrail.objects.filter(user=o).delete()
+            AuditTrail.objects.filter(user=o.username).delete()
         # Clean NotificationGroupUser
         with self.log("Cleaning notification groups"):
             NotificationGroupUser.objects.filter(user=o).delete()

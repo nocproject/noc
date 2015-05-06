@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Cisco.ASA.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 import re
 # NOC modules
@@ -19,7 +18,7 @@ class Script(NOCScript):
     name = "Cisco.ASA.get_interfaces"
     implements = [IGetInterfaces]
 
-    rx_int = re.compile(r"(?P<interface>\S+)\s\"(?P<alias>\w*)\"\,\sis(\sadministratively)?\s(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)", re.MULTILINE | re.IGNORECASE)
+    rx_int = re.compile(r"(?P<interface>\S+)\s\"(?P<alias>[\w-]*)\"\,\sis(\sadministratively)?\s(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)", re.MULTILINE | re.IGNORECASE)
     rx_mac = re.compile(r"MAC\saddress\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
         re.MULTILINE | re.IGNORECASE)
     rx_vlan = re.compile(r"VLAN\sIdentifier\s(?P<vlan>\w+)",
@@ -39,16 +38,16 @@ class Script(NOCScript):
 
     def execute(self):
         interfaces = []
-        subinterfaces = []
         ospfs = self.get_ospfint()
         types = {
                "L": 'loopback',
                "E": 'physical',
                "G": 'physical',
+               "T": 'physical',
                "M": 'management',
                "R": 'aggregated',
-               }
-        self.cli("terminal pager 0")
+               "P": 'aggregated'
+        }
         v = self.cli("show interface")
         for s in v.split("\nInterface "):
             match = self.rx_int.search(s)

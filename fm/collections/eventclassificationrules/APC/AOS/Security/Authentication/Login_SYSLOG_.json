@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Security | Authentication | Login (SYSLOG)",
+    "uuid": "905e00bb-435f-489f-b468-964cd70825aa",
+    "description": "System: Console user 'admin' logged in from 192.168.220.54. 0x0014",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "System: \\S+ user '(?P<user>.+?)' logged in from (?P<ip>\\S+). \\S+"
+        }
+    ]
+}

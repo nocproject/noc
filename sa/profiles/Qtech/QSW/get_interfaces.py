@@ -30,8 +30,6 @@ class Script(NOCScript):
     name = "Qtech.QSW.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 600
-
     rx_mac = re.compile(r"^The mac-address of interface is\s+(?P<mac>\S+)$",
         re.MULTILINE)
 
@@ -255,7 +253,7 @@ class Script(NOCScript):
             o_stat = match.group("oper_status").lower() == "up"
 
             iface = {
-                "name": ifname,
+                "name": self.profile.convert_interface_name(ifname),
                 "type": self.types[ifname[:1]],
                 "admin_status": a_stat,
                 "oper_status": o_stat,

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | Link | DOM | Alarm: Out of Threshold (SYSLOG)",
+    "uuid": "f61c2e46-13e3-4517-839b-e87cadd8c395",
+    "description": "%SFF8472-5-THRESHOLD_VIOLATION: Te1/29: Rx power low alarm; Operating value: -40.0 dBm, Threshold value: -18.4 dBm.",
+    "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%.+-THRESHOLD_VIOLATION: (?P<interface>\\S+): (?P<sensor>.+) (?P<threshold>high|low) alarm; Operating value: (?P<ovalue>.+), Threshold value: (?P<tvalue>.+)\\."
+        }
+    ]
+}

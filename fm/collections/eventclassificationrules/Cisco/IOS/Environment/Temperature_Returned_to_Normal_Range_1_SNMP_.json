@@ -1,0 +1,33 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #1 (SNMP)",
+    "uuid": "a862141e-19a5-4d10-8d05-c530a2aa8478",
+    "description": "CISCO-ENVMON-MIB::ciscoEnvMonTempStatusChangeNotif",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonTemperatureState\\.\\d+$",
+            "value_re": "normal"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonTemperatureStatusDescr\\.\\d+$",
+            "value_re": "(?P<name>.+) t\\S+"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonTemperatureStatusValue\\.\\d+$",
+            "value_re": "(?P<measure>.+)"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.\\d+$",
+            "value_re": "CISCO-ENVMON-MIB::(?:ciscoEnvMonTemperatureNotification|ciscoEnvMonTempStatusChangeNotif)"
+        }
+    ]
+}

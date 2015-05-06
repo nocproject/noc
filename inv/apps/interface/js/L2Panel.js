@@ -27,12 +27,12 @@ Ext.define("NOC.inv.interface.L2Panel", {
                     store: me.store,
                     columns: [
                         {
-                            xtype: "actioncolumn",
+                            xtype: "glyphactioncolumn",
                             width: 25,
                             items: [
                                 {
                                     tooltip: "Show MACs",
-                                    iconCls: "icon_script_go",
+                                    glyph: NOC.glyph.play,
                                     scope: me,
                                     handler: me.showMAC,
                                     disabled: !me.app.hasPermission("get_mac")
@@ -80,6 +80,7 @@ Ext.define("NOC.inv.interface.L2Panel", {
             mapParams: {
                 interface: r.get("name")
             },
+            loadMask: me,
             scope: me,
             success: me.showMACForm,
             failure: function() {

@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | IMPB | Dynamic IMPB entry is conflicting with static (SYSLOG)",
+    "uuid": "0fd68cdc-1cbc-4328-b58e-8d6a6813f908",
+    "description": "WARN: Dynamic IMPB entry is conflicting with static IMPB(IP: 172.16.0.8, MAC: 00-22-B0-DE-5E-0D, Port: 4)",
+    "event_class__name": "Network | IMPB | Dynamic IMPB entry is conflicting with static",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) Dynamic IMPB entry is conflicting with static IMPB\\s*\\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), [Pp]ort: (?P<interface>\\S+)\\)$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Chassis | CPU | CPU Usage Drops Below Threshold (SYSLOG)",
+    "uuid": "fb09df3e-198b-4261-a4d0-947cc1dea96d",
+    "description": "Jul 19 2012 18:12:46 kie-bro-smp-r3-t4-asw0 %%01CPUUSAGE/4/CPU_USAGE_RESUME(l)[1018]:CPU utilization recovered to the normal range.",
+    "event_class__name": "Chassis | CPU | CPU Usage Drops Below Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "CPU_USAGE_RESUME"
+        }
+    ]
+}

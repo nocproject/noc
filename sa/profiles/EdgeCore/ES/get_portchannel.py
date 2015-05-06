@@ -27,6 +27,7 @@ class Script(NOCScript):
     @NOCScript.match(platform__contains="2228N")
     @NOCScript.match(platform__contains="3528")
     @NOCScript.match(platform__contains="3552")
+    @NOCScript.match(platform__contains="ECS4210")
     def execute_3526(self):
         status = self.cli("show interface status")
         r = []

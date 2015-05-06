@@ -14,7 +14,7 @@ class Q931CC(RefBook):
     name="Q.931 Call Clearings"
     description="Q.931 ISDN Call Clearings"
     downloader="CSV"
-    download_url="http://update.nocproject.org/db/q931_call_clearing.csv"
+    download_url="https://cdn.nocproject.org/refbook/q931_call_clearing.csv"
     refresh_interval=90
     fields=[
         Field(name="DEC"),

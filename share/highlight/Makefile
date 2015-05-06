@@ -6,7 +6,7 @@
 ##----------------------------------------------------------------------
 
 contrib_languages = diff
-noc_languages = bind rpsl json
+noc_languages = bind rpsl json text
 
 languages = $(contrib_languages) $(noc_languages)
 

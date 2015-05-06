@@ -1,0 +1,16 @@
+{
+    "name": "Manholes",
+    "uuid": "e48fdaad-d1fa-4918-a0a3-54f83498080d",
+    "description": "Manholes",
+    "code": "manholes",
+    "default_zoom": 17,
+    "fill_color": 16776960,
+    "max_zoom": 19,
+    "min_zoom": 16,
+    "point_radius": 5,
+    "show_labels": true,
+    "stroke_color": 16750848,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 20
+}

@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Logout #2 (SYSLOG)",
+    "uuid": "67461f10-376a-4924-9f92-5a1ec550c5f6",
+    "description": "INFO: Logout through Console (Username: noc)",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Logout through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)$"
+        }
+    ]
+}

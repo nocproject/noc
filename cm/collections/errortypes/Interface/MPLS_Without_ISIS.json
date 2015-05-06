@@ -1,0 +1,7 @@
+{
+    "name": "Interface | MPLS Without ISIS",
+    "uuid": "825ca2df-3ebb-4bcb-b7d3-6ed8eff0ff73",
+    "description": "MPLS interface with disabled ISIS protocol",
+    "subject_template": "MPLS without ISIS on {{name}}",
+    "body_template": "Interface {{name}} has MPLS while ISIS protocol is not configured."
+}

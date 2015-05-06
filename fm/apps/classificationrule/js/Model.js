@@ -37,8 +37,13 @@ Ext.define("NOC.fm.classificationrule.Model", {
             defaultValue: 1000
         },
         {
+            name: "uuid",
+            type: "string"
+        },
+        {
             name: "is_builtin",
-            type: "boolean"
+            type: "boolean",
+            persist: false
         },
         {
             name: "event_class",

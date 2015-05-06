@@ -15,7 +15,6 @@ from noc.sa.profiles.DLink.DxS import DGS3600
 class Script(NOCScript):
     name = "DLink.DxS.get_config"
     implements = [IGetConfig]
-    TIMEOUT = 360
 
     ##
     ## DGS-3612, DGS-3612G, DGS-3627, DGS-3627G, DGS-3650
@@ -33,6 +32,15 @@ class Script(NOCScript):
     def execute_config_current(self):
         config = self.cli("show config current_config")
         config = self.strip_first_lines(config, 1)
+        return self.cleaned_config(config)
+
+    ##
+    ## DES-1210-28/ME/B2
+    ##
+    @NOCScript.match(platform__regex=r"DES-1210-28\/ME")
+    def execute_config_current(self):
+        config = self.cli("show config current_config")
+        config = self.strip_first_lines(config, 3)
         return self.cleaned_config(config)
 
     ##

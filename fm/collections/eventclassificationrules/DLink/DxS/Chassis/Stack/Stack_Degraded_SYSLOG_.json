@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Chassis | Stack | Stack Degraded (SYSLOG)",
+    "uuid": "dd1bfb6e-58d2-44d1-9088-2114e25b3362",
+    "description": "INFO(6) Unit 4,MAC:00-1c-f0-1f-3c-80 Hot removal",
+    "event_class__name": "Chassis | Stack | Stack Degraded",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Unit (?P<unit>\\d+),\\s*MAC:\\s*\\S+\\s+Hot removal"
+        }
+    ]
+}

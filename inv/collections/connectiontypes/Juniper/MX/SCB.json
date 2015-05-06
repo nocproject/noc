@@ -1,0 +1,7 @@
+{
+    "name": "Juniper | MX | SCB",
+    "uuid": "24bc8b77-61f1-4eb5-9c92-fa868c5c056d",
+    "description": "Juniper MX SCB Slot (Switchfabric/Routing engine)",
+    "c_group": ["juniper_mx_scb"],
+    "genders": "mf"
+}

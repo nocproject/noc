@@ -1,0 +1,21 @@
+{
+    "name": "NSN | hiX56xx | Security | Authentication | Login (SYSLOG)",
+    "uuid": "a05e62be-0f2a-43fb-9c96-18e82226781a",
+    "description": " root login  on",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^NSN\\.hiX56xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?P<user>\\S+) login  on `ttyp\\d' from `(?P<ip>\\S+)'$"
+        }
+    ]
+}

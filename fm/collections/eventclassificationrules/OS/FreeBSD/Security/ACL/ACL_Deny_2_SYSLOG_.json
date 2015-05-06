@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | ACL | ACL Deny #2 (SYSLOG)",
+    "uuid": "c7b9ae9a-02de-401c-950d-fc0390b9c9b5",
+    "description": "ipfw: 400 Deny TCP 78.189.188.92:2661 193.34.20.247:135 out via fxp0",
+    "event_class__name": "Security | ACL | ACL Deny",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "ipfw: (?P<name>\\d+) Deny (?P<proto>\\S+) (?P<src_ip>\\S+):(?P<src_port>\\d+) (?P<dst_ip>\\S+):(?P<dst_port>\\d+) out via (?P<dst_interface>\\S+)"
+        }
+    ]
+}

@@ -7,94 +7,47 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import os
-import sys
-import platform
-import subprocess
-## Third-party modules
-import pymongo
 ## NOC modules
 import settings
-from noc.lib.version import get_version
-
-if hasattr(subprocess, "check_output"):
-    check_output = subprocess.check_output
-else:
-    def check_output(args):
-        return subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
+from noc.lib.version import (get_version, get_branch, get_os_brand,
+                             get_os_version, get_mongo_version,
+                             get_pg_version, get_python_version,
+                             get_python_packages, get_solutions)
+from noc.lib.debug import error_report
 
 
-def get_branch():
-    from mercurial import ui, localrepo
-    repo = localrepo.localrepository(ui.ui(), path=".")
-    return repo.dirstate.branch()
-
-
-def get_pg_version():
-    with os.popen("pg_config --version") as f:
-        return f.read().strip().split(" ", 1)[1]
-
-
-def get_mongo_version():
-    connection_args = {}
-    if settings.NOSQL_DATABASE_HOST:
-        connection_args["host"] = settings.NOSQL_DATABASE_HOST
-    if settings.NOSQL_DATABASE_PORT:
-        connection_args["port"] = settings.NOSQL_DATABASE_PORT
-    c = pymongo.Connection(**connection_args)
-    i = c.server_info()
-    return "%s (%dbit)" % (i["version"], i["bits"])
-
-
-def get_brand():
-    """
-    Get OS brand
-    :return:
-    """
-    o = os.uname()[0].lower()
-    if o == "linux":
-        # First, try lsb_release -d
-        try:
-            b = check_output(["lsb_release", "-d"])
-            return b.split(":", 1)[1].strip()
-        except OSError:
-            pass
-        if os.path.exists("/etc/SuSE-release"):
-            # SuSE
-            with open("/etc/SuSE-release") as f:
-                return f.readline().strip()
-    elif o == "darwin":
-        # OS X
-        return "Mac OS X %s" % platform.mac_ver()[0]
-    return None
-
-
-def get_python_packages():
-    o = check_output(["./bin/pip", "freeze"])
-    r = []
-    for l in o.splitlines():
-        r += [l.split("==", 1)]
-    return r
+def get_system_uuid():
+    from noc.support.cp import CPClient
+    c = CPClient()
+    return c.system_uuid
 
 
 def about():
+    sid = get_system_uuid()
     versions = [
         ["NOC", get_version()],
+        ["System ID", sid if sid else "Not registred"],
         ["Branch", get_branch()],
-        ["OS", " ".join(os.uname())]
+        ["OS", get_os_version()]
     ]
-    os_brand = get_brand()
+    os_brand = get_os_brand()
     if os_brand:
         versions += [["OS Brand", os_brand]]
     versions += [
-        ["Python", sys.version.split()[0]],
+        ["Python", get_python_version()],
         ["PostgreSQL", get_pg_version()],
         ["MongoDB", get_mongo_version()]
     ]
-    versions += get_python_packages()
+    versions += [["Solutions", ""]]
+    versions += [["", sn[0]] for sn in get_solutions()]
+    pp = get_python_packages()
+    versions += [["Python packages", ""]]
+    versions +=[(p, pp[p]) for p in sorted(pp)]
     for c, v in versions:
         print "|%s|%s|" % (c, v.replace("\n", " "))
 
 if __name__ == "__main__":
-    about()
+    try:
+        about()
+    except:
+        error_report(reverse=True)

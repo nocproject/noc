@@ -11,7 +11,7 @@ import re
 from collections import defaultdict
 # NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(NOCScript):
@@ -72,36 +72,28 @@ class Script(NOCScript):
             if iface in subs:
                 i = {
                     "name": iface.split(".")[0],
-                    "type": self.type_by_name(iface),
+                    "type": self.profile.get_interface_type(iface),
                     "admin_status": True,
                     "oper_status": True,
                     "subinterfaces": [self.get_si(ifaces[si])
                                       for si in subs[iface]]
                 }
                 if ifaces[iface].get("description"):
-                    i["description"] = ifaces["iface"]["description"]
+                    i["description"] = ifaces[iface]["description"]
             elif "@" not in iface:
                 i = {
                     "name": iface.split(".")[0],
-                    "type": self.type_by_name(iface),
+                    "type": self.profile.get_interface_type(iface),
                     "admin_status": True,
                     "oper_status": True,
                     "subinterfaces": [self.get_si(ifaces[iface])]
                 }
                 if ifaces[iface].get("description"):
-                    i["description"] = ifaces["iface"]["description"]
+                    i["description"] = ifaces[iface]["description"]
             else:
                 continue  # Already processed
             r += [i]
         return [{"interfaces": r}]
-
-    def type_by_name(self, name):
-        if name.startswith("eth"):
-            return "physical"
-        elif name.startswith("lo"):
-            return "loopback"
-        else:
-            raise Exception("Cannot detect interface type for %s" % name)
 
     def get_si(self, si):
         if si["ipv4_addresses"]:

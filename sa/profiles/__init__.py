@@ -152,6 +152,12 @@ class Profile(object):
     # Does the equipment supports bitlength netmasks
     # or netmask should be converted to traditional formats
     requires_netmask_conversion = False
+    # Upper concurrent scripts limit, if set
+    max_scripts = None
+    # Default config parser name. Full path to BaseParser subclass
+    # i.e noc.cm.parsers.Cisco.IOS.switch.IOSSwitchParser
+    # Can be overriden in get_parser method
+    default_parser = None
     #
     # Converts ip prefix to the format acceptable by router
     #
@@ -196,7 +202,7 @@ class Profile(object):
         return s
 
     # Cisco-like translation
-    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?)$", re.IGNORECASE)
+    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$", re.IGNORECASE)
 
     def convert_interface_name_cisco(self, s):
         """
@@ -216,6 +222,8 @@ class Profile(object):
         'Se 0/1/0:0.10'
         >>> Profile().convert_interface_name_cisco("ATM1/1/ima0")
         'At 1/1/ima0'
+        >>> Profile().convert_interface_name_cisco("Port-channel5B")
+        'Po 5B'
         """
         match = self.rx_cisco_interface_name.match(s)
         if not match:
@@ -234,6 +242,13 @@ class Profile(object):
         name = name.split(".")[0]
         name = name.split(":")[0]
         return name
+
+    def get_interface_names(self, name):
+        """
+        Return possible alternative interface names,
+        i.e. for LLDP discovery *Local* method
+        """
+        return []
 
     def get_linecard(self, interface_name):
         """
@@ -353,3 +368,19 @@ class Profile(object):
             lexer = TextLexer
         # Return highlighted text
         return highlight(cfg, lexer(), NOCHtmlFormatter())
+
+    @classmethod
+    def get_parser(cls, vendor, platform, version):
+        """
+        Returns full path to BaseParser instance to be used
+        as config parser. None means no parser for particular platform
+        """
+        return cls.default_parser
+
+    @classmethod
+    def get_interface_type(cls, name):
+        """
+        Return IGetInterface-compatible interface type
+        :param Name: Normalized interface name
+        """
+        return None

@@ -7,10 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import Queue
+from threading import Lock, Event
 ## Third-party modules
-from pysnmp.carrier.asynsock.dispatch import AsynsockDispatcher
-from pysnmp.carrier.asynsock.dgram import udp
 from pyasn1.codec.ber import encoder, decoder
 from pysnmp.proto import api
 ## NOC modules
@@ -25,8 +23,6 @@ class SNMPProvider(object):
         self.script = script
         self.access_profile = self.script.access_profile
         self.factory = script.activator.factory
-        self.queue = Queue.Queue(maxsize=1)
-        self.getnext_socket = None
         self.community_suffix = None
         self.to_save_output = self.script.activator.to_save_output
 
@@ -43,27 +39,25 @@ class SNMPProvider(object):
             return cache[cc]
         self.community_suffix = community_suffix
         s = SNMPGetSocket(self, oid)
-        try:
-            r = self.queue.get(block=True)
-            if r is None:
-                if self.script.activator.to_save_output:
-                    self.script.activator.save_snmp_get(oid, None)
-                raise self.TimeOutError()
-        finally:
-            s.close()
+        r = s.get_result().next()
+        s.close()
         if self.to_save_output:
             self.script.activator.save_snmp_get(oid, r)
         if cached or self.script.root.is_cached:
             cache[cc] = r
+        if r is None:
+            raise self.TimeOutError()
         return r
 
-    def getnext(self, oid, community_suffix=None, bulk=False, min_index=None,
-                max_index=None, cached=False):
+    def getnext(self, oid, community_suffix=None, bulk=None, min_index=None,
+                max_index=None, cached=False, only_first=False):
         """
         SNMP GETNEXT generator. Usage:
         for oid, v in self.getnext("<oid>"):
             ....
         """
+        if bulk is None:
+            bulk = self.script.caps.get("SNMP | Bulk", False)
         if self.script.activator.use_canned_session:
             r = self.script.activator.snmp_getnext(oid)
             if r is None:
@@ -77,39 +71,24 @@ class SNMPProvider(object):
         if cached and cc in cache:
             for r in cache[cc]:
                 yield r
-        if self.to_save_output:
-            out = []
+        out = []
         self.community_suffix = community_suffix
-        if self.getnext_socket:
-            self.getnext_socket.close()
-        self.getnext_socket = SNMPGetNextSocket(self, oid, bulk=bulk, min_index=min_index, max_index=max_index)
-        # Flush queue
-        while not self.queue.empty():
-            self.queue.get()
-        while True:
-            r = self.queue.get(block=True)
+        sock = SNMPGetNextSocket(self, oid, bulk=bulk, min_index=min_index, max_index=max_index, only_first=only_first)
+        for r in sock.get_result():
+            if cached:
+                try:
+                    cache[cc] += [r]
+                except KeyError:
+                    cache[cc] = [r]
             if r is None:
-                if self.getnext_socket.is_failed:  # Stale socket killed
-                    if self.to_save_output:
-                        self.script.activator.save_snmp_getnext(oid, None)
-                    raise self.TimeOutError()
-                elif self.getnext_socket.got_result:  # Stop Iteration in case of success
-                    if self.to_save_output:
-                        self.script.activator.save_snmp_getnext(oid, out)
-                    raise StopIteration
-                else:  # Socket closed by Timeout
-                    if self.to_save_output:
-                        self.script.activator.save_snmp_getnext(oid, None)
-                    raise self.TimeOutError()
-            else:
                 if self.script.activator.to_save_output:
-                    out += [r]
-                if cached:
-                    try:
-                        cache[cc] += [r]
-                    except KeyError:
-                        cache[cc] = [r]
-                yield r
+                    self.script.activator.save_snmp_getnext(oid, None)
+                raise self.TimeOutError()
+            elif self.script.activator.to_save_output:
+                out += [r]
+            yield r
+        if self.script.activator.to_save_output:
+            self.script.activator.save_snmp_getnext(oid, out)
 
     def get_table(self, oid, community_suffix=None, bulk=False,
                   min_index=None, max_index=None, cached=False):
@@ -172,10 +151,7 @@ class SNMPProvider(object):
             yield [".".join([str(x) for x in i])] + [t.get(i) for t in tables]
 
     def close(self):
-        """Close all UDP sockets"""
-        if self.getnext_socket:
-            self.getnext_socket.close()
-            del self.getnext_socket
+        pass
 
 
 class SNMPGetSocket(UDPSocket):
@@ -183,10 +159,12 @@ class SNMPGetSocket(UDPSocket):
 
     def __init__(self, provider, oid):
         self.got_result = False
-        self.is_failed = False
         self.provider = provider
         self.oid = oid
         self.address = self.provider.access_profile.address
+        self.result = []
+        self.event = Event()
+        self.lock = Lock()
         super(SNMPGetSocket, self).__init__(provider.factory)
 
     def create_socket(self):
@@ -199,6 +177,30 @@ class SNMPGetSocket(UDPSocket):
         if self.provider.community_suffix:
             c += self.provider.community_suffix
         return c
+
+    def feed_result(self, r):
+        with self.lock:
+            self.result += [r]
+            self.got_result = True
+        self.event.set()
+
+    def get_result(self):
+        got_result = False
+        while not self.closing:
+            # Wait until data ready
+            self.event.wait()
+            # Copy collected data
+            with self.lock:
+                result, self.result = self.result, []
+            # Yield result
+            if result:
+                got_result = True
+                for r in result:
+                    yield r
+            self.event.clear()
+        if not got_result:
+             # Raise TimeOutError when closed without result
+            yield None
 
     def oid_to_tuple(self, oid):
         """Convert oid from string to a list of integers"""
@@ -240,35 +242,23 @@ class SNMPGetSocket(UDPSocket):
                         self.provider.script.debug('%s SNMP GET REPLY: %s %s' % (
                             self.address, oid.prettyPrint(),
                             BQ(val.prettyPrint())))
-                        self.got_result = True
-                        self.provider.queue.put(str(val))
+                        self.feed_result(str(val))
                         break
         self.close()
 
     def on_close(self):
-        if not self.got_result:
-            self.provider.script.debug("SNMP Timeout")
-            self.provider.queue.put(None)
-        elif self.is_failed:
-            self.provider.script.debug("Stale SNMP Operation")
-            self.provider.queue.put(None)
         super(SNMPGetSocket, self).on_close()
-
-    def is_stale(self):
-        """Raise timeout error when in stale state"""
-        r = super(SNMPGetSocket, self).is_stale()
-        if r:
-            self.is_failed = True
-        return r
+        self.event.set()
 
 
 class SNMPGetNextSocket(SNMPGetSocket):
     TTL = 5
 
-    def __init__(self, provider, oid, bulk=False, min_index=None, max_index=None):
+    def __init__(self, provider, oid, bulk=False, min_index=None, max_index=None, only_first=False):
         self.bulk = bulk
         self.min_index = min_index
         self.max_index = max_index
+        self.only_first = only_first
         super(SNMPGetNextSocket, self).__init__(provider, oid)
 
     def get_snmp_request(self):
@@ -303,8 +293,9 @@ class SNMPGetNextSocket(SNMPGetSocket):
                 # Check for SNMP errors reported
                 errorStatus = self.api_pdu.getErrorStatus(rsp_pdu)
                 if errorStatus and errorStatus != 2:
-                    raise errorStatus
-                    # Format var-binds table
+                    self.provider.script.error("%s SNMP GETNEXT ERROR: %s" % (self.address, errorStatus.prettyPrint()))
+                    break
+                # Format var-binds table
                 var_bind_table = self.api_pdu.getVarBindTable(self.req_PDU, rsp_pdu)
                 # Report SNMP table
                 for table_row in var_bind_table:
@@ -314,7 +305,6 @@ class SNMPGetNextSocket(SNMPGetSocket):
                         oid = name.prettyPrint()
                         if not oid.startswith(self.oid):
                             self.close()
-                            self.provider.queue.put(None)
                             return
                             # Check index range if given
                         if self.min_index is not None or self.max_index is not None:
@@ -325,16 +315,18 @@ class SNMPGetNextSocket(SNMPGetSocket):
                             if self.max_index and index > self.max_index:
                                 # Finish processing
                                 self.close()
-                                self.provider.queue.put(None)
                                 return
                         if self.bulk:
                             self.provider.script.debug("SNMP BULK DATA: %s %s" % (oid, BQ(val.prettyPrint())))
                         else:
                             self.provider.script.debug(
                                 '%s SNMP GETNEXT REPLY: %s %s' % (self.address, oid, BQ(val.prettyPrint())))
-                        self.provider.queue.put((oid, str(val)))
-                        self.got_result = True
-                    # Stop on EOM
+                        self.feed_result((oid, str(val)))
+                if self.only_first:
+                    self.provider.script.debug("Closing socket after first PDU")
+                    self.close()
+                    return
+                # Stop on EOM
                 for oid, val in var_bind_table[-1]:
                     if val is not None:
                         break

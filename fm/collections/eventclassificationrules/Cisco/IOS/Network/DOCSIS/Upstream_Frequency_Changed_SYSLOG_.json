@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | DOCSIS | Upstream Frequency Changed (SYSLOG)",
+    "uuid": "f63182d2-31aa-471d-9b5d-66ebd0ba1ab8",
+    "description": "%UBR7100-5-USFREQCHG: Interface Cable1/0 U3, changed to Freq 26.992 MHz",
+    "event_class__name": "Network | DOCSIS | Upstream Frequency Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%UBR\\d+00-5-(?:USFREQCHG|USCONTEND): Interface (?P<interface>\\S+) U(?P<upstream>\\d+), (?:frequency changed to|continuous frequency hop ended at|changed to Freq) (?P<frequency>\\S+) MHz"
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOS | Network | STP | Topology Changed MSTP (SNMP)",
+    "uuid": "04e291ce-12f0-4fa8-8174-bff500aa1d94",
+    "description": "BRIDGE-MIB::topologyChange",
+    "event_class__name": "Network | STP | Topology Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^CISCO-STP-EXTENSIONS-MIB::stpxMSTInstanceIndex\\.\\d+$",
+            "value_re": "^(?P<instance>\\d+)$"
+        },
+        {
+            "key_re": "^IF-MIB::ifName\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^BRIDGE-MIB::topologyChange$"
+        }
+    ]
+}

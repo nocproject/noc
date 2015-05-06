@@ -68,7 +68,7 @@ Ext.define("NOC.sa.monitor.ScriptsPanel", {
             tbar: [
                 {
                     text: "Refresh",
-                    iconCls: "icon_arrow_refresh",
+                    glyph: NOC.glyph.refresh,
                     scope: me.app,
                     handler: me.app.refreshData
                 }

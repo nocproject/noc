@@ -21,7 +21,12 @@ class Downloader(DownloaderBase):
     def download(cls,ref_book):
         out=[]
         # Fetch data into StringIO wrapper
-        f=urlopen(ref_book.download_url)
+        url = ref_book.download_url
+        url = url.replace(
+            "http://update.nocproject.org/db/",
+            "https://cdn.nocproject.org/refbook/"
+        )
+        f=urlopen(url)
         data=cStringIO.StringIO(f.read())
         f.close()
         # Wrap GzipFile for gzipped content

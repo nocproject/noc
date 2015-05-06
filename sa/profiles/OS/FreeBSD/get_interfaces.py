@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## OS.FreeBSD.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -17,7 +17,8 @@ class Script(NOCScript):
     name = "OS.FreeBSD.get_interfaces"
     implements = [IGetInterfaces]
     rx_if_name = re.compile(
-    r"^(?P<ifname>\S+): flags=[0-9a-f]+<(?P<flags>\S+)> metric \d+ mtu (?P<mtu>\d+)$")
+        r"^(?P<ifname>\S+): flags=[0-9a-f]+<(?P<flags>\S+)>( metric \d+)?"
+        r" mtu (?P<mtu>\d+)$")
     rx_if_descr = re.compile(r"^\tdescription: (?P<descr>.+)\s*$")
     rx_if_mac = re.compile(r"^\tether (?P<mac>\S+)\s*$")
     rx_if_inet = re.compile(
@@ -27,9 +28,13 @@ class Script(NOCScript):
     rx_if_status = re.compile(
         r"^\tstatus: (?P<status>active|associated|running|inserted)\s*$")
     rx_if_vlan = re.compile(
-        r"^\tvlan: (?P<vlan>\d+) parent interface: (?P<parent>\S+)$")
-    rx_if_lagg = re.compile(r"^\tlaggport: (?P<ifname>\S+) flags=\d+<.*>$")
+        r"^\tvlan: (?P<vlan>[1-9]\d*) parent interface: (?P<parent>\S+)$")
     rx_if_wlan = re.compile(r"^\tssid .+$")
+    rx_if_bridge = re.compile(r"^\tgroups:.+?bridge.*?$")
+    rx_if_bridge_m = re.compile(r"^\tmember: (?P<ifname>\S+) flags=\d+<.+>$")
+    rx_if_bridge_s = re.compile(r"cost \d+ proto r?stp$")
+    rx_if_bridge_i = re.compile(
+        r"\t\s+ifmaxaddr \d+ port (?P<ifindex>\d+) priority \d+")
 
     def add_iface(self):
         if "type" in self.iface:
@@ -54,13 +59,17 @@ class Script(NOCScript):
         self.parent = ""
 
     def execute(self):
+        self.portchannel = self.scripts.get_portchannel()
+        self.if_stp = []
         self.interfaces = []
         self.iface = {}
         self.subiface = {}
         self.parent = ""
-        for s in self.cli("ifconfig -v").splitlines():
+        self.snmp_ifindex = 0
+        for s in self.cli("ifconfig -v", cached=True).splitlines():
             match = self.rx_if_name.search(s)
             if match:
+                self.snmp_ifindex += 1
                 self.add_iface()
                 flags = match.group("flags")
                 self.iface["name"] = match.group("ifname")
@@ -69,6 +78,8 @@ class Script(NOCScript):
                 self.subiface["admin_status"] = flags.startswith("UP,")
                 self.subiface["enabled_afi"] = []
                 self.subiface["mtu"] = int(match.group("mtu"))
+                self.iface["snmp_ifindex"] = self.snmp_ifindex
+                self.iface["enabled_protocols"] = []
                 if "LOOPBACK" in flags:
                     self.iface["type"] = "loopback"
                     self.iface["oper_status"] = flags.startswith("UP,")
@@ -125,18 +136,48 @@ class Script(NOCScript):
                 })
                 self.parent = match.group("parent")
                 continue
-            match = self.rx_if_lagg.search(s)
-            if match:
-                ifname = match.group("ifname")
-                if "aggregated_interface" in self.iface:
-                    self.iface["aggregated_interface"] += [ifname]
-                else:
-                    self.iface["aggregated_interface"] = [ifname]
-                    self.iface["enabled_protocols"] = ["LACP"]
-                continue
+            for i in self.portchannel:
+                if self.iface["name"] == i["interface"]:
+                    self.iface["type"] = "aggregated"
+                    #self.subiface["enabled_afi"] = ["BRIDGE"]
+                if self.iface["name"] in i["members"]:
+                    if i["type"] == "L" and \
+                    not "LACP" in self.iface["enabled_protocols"]:
+                        self.iface["enabled_protocols"] += ["LACP"]
+                    self.iface["aggregated_interface"] = i["interface"]
             match = self.rx_if_wlan.search(s)
             if match:
                 self.parent = "IEEE 802.11"
                 continue
+            match = self.rx_if_bridge.search(s)
+            if match:
+                self.iface["type"] = "SVI"
+                if not "BRIDGE" in self.subiface["enabled_afi"]:
+                    self.subiface["enabled_afi"] += ["BRIDGE"]
+                continue
+            match = self.rx_if_bridge_m.search(s)
+            if match:
+                ifname = match.group("ifname")
+                continue
+            match = self.rx_if_bridge_i.search(s)
+            if match:
+                caps = {
+                    "name": ifname,
+                    "ifindex": match.group("ifindex"),
+                    "parent": self.iface["name"]
+                }
+                match = self.rx_if_bridge_s.search(s)
+                if match:
+                    caps["STP"] = True
+                self.if_stp += [caps]
         self.add_iface()
+        if len(self.if_stp) > 0:
+            for i in self.interfaces:
+                for s in self.if_stp:
+                    if i["name"] == s["name"]:
+                        # For verify
+                        i["snmp_ifindex"] = int(s["ifindex"])
+                        i["aggregated_interface"] = s["parent"]
+                    if "STP" in s:
+                        i["enabled_protocols"] += ["STP"]
         return [{"interfaces": self.interfaces}]

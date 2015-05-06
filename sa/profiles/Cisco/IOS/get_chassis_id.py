@@ -65,7 +65,7 @@ class Script(NOCScript):
         r"chassis MAC addresses:.+from\s+(?P<from_id>\S+)\s+to\s+(?P<to_id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    @NOCScript.match(version__regex=r"S[XR]")
+    @NOCScript.match(version__regex=r"S[YXR]")
     def execute_cat6000(self):
         v = self.cli("show catalyst6000 chassis-mac-addresses")
         match = self.re_search(self.rx_cat6000, v)

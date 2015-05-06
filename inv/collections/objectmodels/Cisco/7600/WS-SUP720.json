@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | 7600 | WS-SUP720",
+    "uuid": "fccd5cff-ad93-4638-aab3-ff27164e66ad",
+    "vendor__code": "CISCO",
+    "description": "Cisco WS-SUP720 MSFC3 Daughterboard",
+    "cr_context": "MSFC",
+    "connections": [
+        {
+            "description": "MSFC3 Daughterboard",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500-7600 | MSFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "WS-SUP720"
+        }
+    }
+}

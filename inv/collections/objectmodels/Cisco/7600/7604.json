@@ -1,0 +1,90 @@
+{
+    "name": "Cisco | 7600 | 7604",
+    "uuid": "5545654c-19d5-4a3d-93cf-2abb83ab55ca",
+    "vendor__code": "CISCO",
+    "description": "Cisco 7600 4-slot Chassis",
+    "connection_rule__name": "Cisco | 7600",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "CLK module slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "clk1",
+            "type__name": "Cisco | 7600 | CLK"
+        },
+        {
+            "description": "CLK module slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "clk2",
+            "type__name": "Cisco | 7600 | CLK"
+        },
+        {
+            "description": "Fan slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan1",
+            "type__name": "Cisco | 7600 | 7604 Fan"
+        },
+        {
+            "description": "Linecard slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard3",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "Linecard slot 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard4",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "Supervisor slot 1",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "sup1",
+            "name": "linecard1",
+            "type__name": "Cisco | 7600 | Supervisor"
+        },
+        {
+            "description": "Linecard 2/Supervisor slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard2",
+            "type__name": "Cisco | 7600 | Linecard/Supervisor"
+        },
+        {
+            "description": "Power Supply  slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Cisco | 7604 | PSU"
+        },
+        {
+            "description": "Power Supply slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Cisco | 7604 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "CISCO7604"
+        },
+        "dimensions": {
+            "depth": 552,
+            "height": 222,
+            "width": 445
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 5.0
+        }
+    }
+}

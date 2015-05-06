@@ -16,7 +16,10 @@ import re
 class Script(NOCScript):
     name = "DLink.DxS_Smart.ping"
     implements = [IPing]
-    rx_result = re.compile(r"^\s*(?P<count>\d+) Packets Transmitted, (?P<success>\d+) Packets Received, \d+% Packets Loss", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_result = re.compile(
+        r"^\s*(?P<count>\d+) Packets Transmitted, (?P<success>\d+) "
+        r"Packets Received, \d+% Packets Loss",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     @NOCScript.match(DES1210)
     def execute_ping(self, address):

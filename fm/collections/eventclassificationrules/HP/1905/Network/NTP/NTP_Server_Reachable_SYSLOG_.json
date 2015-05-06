@@ -1,0 +1,21 @@
+{
+    "name": "HP | 1905 | Network | NTP | NTP Server Reachable (SYSLOG)",
+    "uuid": "0fd4d9df-7515-4deb-a162-7083ee32a9f6",
+    "description": "Dec 25 17:30:32 2012 Office [NTP]/6/sync with 192.168.11.7",
+    "event_class__name": "Network | NTP | NTP Server Reachable",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1905$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "\\[NTP\\]/6/sync with (?P<server_address>\\S+)$"
+        }
+    ]
+}

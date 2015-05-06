@@ -11,46 +11,39 @@ Ext.define("NOC.core.modelfilter.AFI", {
     extend: "NOC.core.modelfilter.Base",
 
     initComponent: function() {
-        Ext.apply(this, {
+        var me = this;
+        Ext.apply(me, {
+            layout: "hbox",
             items: [
                 {
-                    xtype: "radiogroup",
-                    columns: 3,
-                    defaults: {
-                        name: this.name,
-                        scope: this,
-                        handler: function(radio, checked) {
-                            if(checked) {
-                                var v = radio.inputValue;
-                                if (v == "all")
-                                    this._value = null;
-                                else
-                                    this._value = v;
-                                this.onChange();
-                            }
-                        }
-                    },
-                    items: [
-                        {
-                            boxLabel: "All",
-                            inputValue: "all",
-                            checked: true
-                        },
-                        {
-                            boxLabel: "IPv4",
-                            inputValue: "4"
-                        },
-                        {
-                            boxLabel: "IPv6",
-                            inputValue: "6"
-                        }
-                    ]
+                    xtype: "button",
+                    text: "IPv4",
+                    toggleGroup: "afigroup",
+                    scope: me,
+                    handler: function(button, e) {
+                        me._value = button.pressed ? "4" : undefined;
+                        me.onChange();
+                    }
+                },
+                {
+                    xtype: "button",
+                    text: "IPv6",
+                    toggleGroup: "afigroup",
+                    scope: me,
+                    handler: function(button, e) {
+                        me._value = button.pressed ? "6" : undefined;
+                        me.onChange();
+                    }
+                },
+                {
+                    xtype: "container",
+                    html: Ext.util.Format.htmlEncode(me.title),
+                    padding: 4
                 }
             ]
         });
-        this.callParent();
-        this.radiogroup = this.items.items[0];
-        this._value = null;
+        me.callParent();
+        me._value = undefined;
     },
 
     getFilter: function() {

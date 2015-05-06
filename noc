@@ -5,13 +5,43 @@
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-if [ $1 = "runserver" ]; then
-    shift
-    if [ $# -ge 1 ]; then
-        exec ./scripts/noc-web.py -f start -l $1
-    else
-        exec ./scripts/noc-web.py -f start
-    fi
-else
-    exec ./bin/python manage.py "$@"
-fi
+
+cd `dirname $0`
+
+error_exit ( ) {
+    printf "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m\n" 1>&2
+    exit 1
+}
+
+case "$1" in
+    "generate-ssh-keys")
+        exec ./scripts/generate-ssh-keys.py "$@"
+        ;;
+    "get-uuid")
+        exec ./scripts/get-uuid.py
+        ;;
+    "paste")
+        shift
+        exec ./scripts/paste.py "$@"
+        ;;
+    "runserver")
+        shift
+        if [ $# -ge 1 ]; then
+            exec ./scripts/noc-web.py -f start -l $1
+        else
+            exec ./scripts/noc-web.py -f start
+        fi
+        ;;
+    "upgrade")
+        exec ./scripts/upgrade
+        ;;
+    "notebook")
+        if [ ! -d ".ipython" ]; then
+            mkdir .ipython || error_exit "Cannot create .ipython directory"
+        fi
+        exec ./bin/ipython notebook --notebook-dir=.ipython
+        ;;
+    *)
+        exec ./bin/python manage.py "$@"
+        ;;
+esac

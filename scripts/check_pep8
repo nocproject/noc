@@ -4,7 +4,7 @@ PEP8=`which pep8`
 MODULES="cm dns fm ip kb lib main peer pm sa vc"
 
 if [ -z $PEP8 ]; then
-    echo "ERROR: pep8 is not installed!"
+    printf "\033[1;31mERROR: pep8 is not installed!\033[0m\n" 1>&2
     echo "Please install pep8:"
     echo
     echo "    easy_install pep8"

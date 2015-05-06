@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | Authentication | SSH - Login (SYSLOG)",
+    "uuid": "18ef90ef-8f6d-4d25-9673-d5ef82462b86",
+    "description": "%SSH-5-SSH2_USERAUTH: User 'admin' authentication for SSH2 Session from 172.16.0.22 (tty = 1) using crypto cipher 'aes256-cbc', hmac 'hmac-sha1' Succeeded",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SSH-5-SSH2_USERAUTH: User '(?P<user>.*)' authentication for SSH2 Session from (?P<ip>\\S+) \\(tty = (?P<vty>\\d+)\\) using crypto cipher '\\S+', hmac '\\S+' Succeeded$"
+        }
+    ]
+}

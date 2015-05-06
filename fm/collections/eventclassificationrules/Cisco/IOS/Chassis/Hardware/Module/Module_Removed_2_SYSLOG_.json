@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Removed #2 (SYSLOG)",
+    "uuid": "ac5788a2-d0ad-44f5-a4d5-34ed16ee5c48",
+    "description": "%C4K_IOSINTF-5-TRANSCEIVERREMOVED: Slot=1 Port=3: Transceiver has been removed",
+    "event_class__name": "Chassis | Hardware | Module | Module Removed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C4K_IOSINTF-5-TRANSCEIVERREMOVED: Slot=(?P<module>\\d+) Port=(?P<interface>\\d+): Transceiver has been removed"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | ACL | ACL Deny #2 (SYSLOG)",
+    "uuid": "8787b6b4-a9c3-46eb-8113-b035ea90fe16",
+    "description": "%SEC-6-IPACCESSLOGP: list aclOUTSIDE_IN denied udp 54.11.18.121(5064) -> 194.221.181.5(5060), 1 packet",
+    "event_class__name": "Security | ACL | ACL Deny",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SEC-6-IPACCESSLOGP: list (?P<name>\\S+) denied (?P<proto>\\S+) (?P<src_ip>\\S+)\\((?P<src_port>\\d+)\\) -> (?P<dst_ip>\\S+)\\((?P<dst_port>\\d+)\\), (?P<count>\\d+) packets?$"
+        }
+    ]
+}

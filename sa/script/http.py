@@ -57,7 +57,7 @@ class HTTPResponse(object):
         l = h.splitlines()
         version, status, self.reason = l[0].split(" ", 2)
         self.status = int(status)
-        if version != "HTTP/1.1":
+        if version != "HTTP/1.0" and version != "HTTP/1.1":
             self.status = None
             self.reason = "Invalid HTTP version: %s" % version
             return False
@@ -100,6 +100,8 @@ class NOCHTTPSocket(ConnectedTCPSocket):
     """
     HTTP Connection
     """
+    TTL = 30
+
     def __init__(self, parent, address, port):
         self.buffer = ""
         self.queue = Queue.Queue()

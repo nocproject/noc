@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | Authentication | SSH - Did not receive identification string (SYSLOG)",
+    "uuid": "e8c640c2-5779-4136-a1dc-a5fd7f7fdaa6",
+    "description": "sshd[77952]: Did not receive identification string from 10.111.0.33",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "sshd\\[\\d+\\]: Did not receive identification string from (?P<ip>\\S+)$"
+        }
+    ]
+}

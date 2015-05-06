@@ -18,6 +18,8 @@ from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models import get_alarm, get_event
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models import AdministrativeDomain
+from noc.sa.models.selectorcache import SelectorCache
 from noc.main.models import User
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
@@ -29,7 +31,11 @@ class AlarmApplication(ExtApplication):
     """
     title = "Alarm"
     menu = "Alarms"
-    icon = "icon_error"
+    glyph = "exclamation-triangle"
+
+    implied_permissions = {
+        "launch": ["sa:managedobject:alarm"]
+    }
 
     model_map = {
         "A": ActiveAlarm,
@@ -78,7 +84,19 @@ class AlarmApplication(ExtApplication):
         for p in q:
             qp = p.split("__")[0]
             if qp in self.clean_fields:
-                q[p] = self.clean_fields[qp].form_clean(q[p])
+                q[p] = self.clean_fields[qp].clean(q[p])
+        if "administrative_domain" in q:
+            a = AdministrativeDomain.objects.get(id = q["administrative_domain"])
+            q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
+            q.pop("administrative_domain")
+        if "managedobjectselector" in q:
+            s = SelectorCache.objects.filter(selector = q["managedobjectselector"]).values_list("object")
+            if "managed_object__in" in q:
+                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
+            else:
+                q["managed_object__in"] = s
+            q.pop("managedobjectselector")
+
         #
         if "collapse" in q:
             c = q["collapse"]
@@ -92,21 +110,26 @@ class AlarmApplication(ExtApplication):
         s = AlarmSeverity.get_severity(o.severity)
         n_events = (ActiveEvent.objects.filter(alarms=o.id).count() +
                     ArchivedEvent.objects.filter(alarms=o.id).count())
-        return {
+        d = {
             "id": str(o.id),
             "status": o.status,
             "managed_object": o.managed_object.id,
             "managed_object__label": o.managed_object.name,
-            "severity": s.severity,
+            "administrative_domain": o.managed_object.administrative_domain_id,
+            "administrative_domain__label": o.managed_object.administrative_domain.name,
+            "severity": o.severity,
             "severity__label": s.name,
             "alarm_class": str(o.alarm_class.id),
             "alarm_class__label": o.alarm_class.name,
             "timestamp": self.to_json(o.timestamp),
-            "subject": o.get_translated_subject(lang),
+            "subject": o.subject,
             "events": n_events,
             "duration": o.duration,
             "row_class": s.style.css_class_name
         }
+        if fields:
+            d = dict((k, d[k]) for k in fields)
+        return d
 
     def queryset(self, request, query=None):
         """
@@ -131,10 +154,10 @@ class AlarmApplication(ExtApplication):
         user = request.user
         lang = "en"
         d = self.instance_to_dict(alarm)
-        d["body"] = alarm.get_translated_body(lang)
-        d["symptoms"] = alarm.get_translated_symptoms(lang)
-        d["probable_causes"] = alarm.get_translated_probable_causes(lang)
-        d["recommended_actions"] = alarm.get_translated_recommended_actions(lang)
+        d["body"] = alarm.body
+        d["symptoms"] = alarm.alarm_class.symptoms
+        d["probable_causes"] = alarm.alarm_class.probable_causes
+        d["recommended_actions"] = alarm.alarm_class.recommended_actions
         d["vars"] = sorted(alarm.vars.items())
         d["status"] = alarm.status
         d["status__label"] = {
@@ -169,7 +192,7 @@ class AlarmApplication(ExtApplication):
                     "status": e.status,
                     "managed_object": e.managed_object.id,
                     "managed_object__label": e.managed_object.name,
-                    "subject": e.get_translated_subject(lang)
+                    "subject": e.subject
                 }]
         if events:
             d["events"] = events
@@ -230,7 +253,7 @@ class AlarmApplication(ExtApplication):
                 s = AlarmSeverity.get_severity(a.severity)
                 c = {
                     "id": str(a.id),
-                    "subject": a.get_translated_subject("en"),
+                    "subject": a.subject,
                     "alarm_class": str(a.alarm_class.id),
                     "alarm_class__label": a.alarm_class.name,
                     "managed_object": a.managed_object.id,

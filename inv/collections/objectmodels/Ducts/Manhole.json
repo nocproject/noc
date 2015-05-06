@@ -1,0 +1,38 @@
+{
+    "name": "Ducts | Manhole",
+    "uuid": "edf46d3b-841c-4d2f-bc85-6301a4d0c6d8",
+    "vendor__code": "NONAME",
+    "description": "Manhole",
+    "plugins": ["-inventory", "conduits"],
+    "connections": [
+        {
+            "description": "Inter-manhole ducts",
+            "direction": "s",
+            "gender": "s",
+            "name": "ducts",
+            "type__name": "Ducts"
+        },
+        {
+            "description": "Ducts conduits",
+            "direction": "s",
+            "gender": "s",
+            "name": "conduits",
+            "type__name": "Conduits"
+        },
+        {
+            "description": "Passing cables",
+            "direction": "s",
+            "gender": "s",
+            "name": "cables",
+            "type__name": "Cables"
+        }
+    ],
+    "data": {
+        "container": {
+            "container": true
+        },
+        "geopoint": {
+            "layer": "manholes"
+        }
+    }
+}

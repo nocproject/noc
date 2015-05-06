@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Unknown | Ignore LLDP Link aggregation (SYSLOG)",
+    "uuid": "e52720f2-c7f3-41c8-a735-820edfe2955f",
+    "description": "0000000054: Jan 13 00:12:11: %LLDP-4-lldpSomthingChangedLoc: 1037545:10: Link aggregation of Port 23 has changed",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LLDP-4-lldpSomthingChangedLoc: \\d+:\\d+: Link aggregation of Port \\S+ has changed$"
+        }
+    ]
+}

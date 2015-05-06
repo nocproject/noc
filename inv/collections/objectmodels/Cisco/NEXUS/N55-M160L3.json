@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | NEXUS | N55-M160L3",
+    "uuid": "9a81ed9d-26b9-4851-bd1d-bf1d146aad76",
+    "vendor__code": "CISCO",
+    "description": "Nexus 5596 Layer 3 Expansion Module",
+    "cr_context": "GEM",
+    "connections": [
+        {
+            "description": "GEM2 connection to switch",
+            "direction": "o",
+            "gender": "m",
+            "group": "0",
+            "name": "in",
+            "type__name": "Cisco | GEM | GEM2"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "N55-M160L3"
+        }
+    }
+}

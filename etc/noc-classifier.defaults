@@ -11,7 +11,11 @@ logsize  = 0
 logfiles = 0
 syslog_host =
 pidfile  = /var/run/noc/noc-classifier.pid
-heartbeat= false
+
+[debug]
+enable_manhole = false
+enable_timing = false
+timing_base = local/timing
 
 [classifier]
 # Interface profile name to use as default, when
@@ -20,3 +24,25 @@ default_interface_profile =
 # Interval in seconds to find duplicated events
 # 0 - disable deduplication
 deduplication_window = 3
+# Rule lookup solution
+# * noc.fm.classifier.rulelookup.RuleLookup - default lookup
+# * noc.fm.classifier.xrulelookup.XRuleLookup - Accelerated (experimental)
+lookup_solution = noc.fm.classifier.rulelookup.RuleLookup
+
+[collector]
+# Enable distributed event collecting and classification
+enabled = false
+# Collector's name, must match with managed objects' settings
+name =
+
+[collector_database]
+# Distributed event collector database name
+name = noc
+user =
+password =
+host = 127.0.0.1
+port = 27017
+collection = noc.events.new
+object_map = noc.object_map
+ignore_map = noc.ignore_map
+

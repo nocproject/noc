@@ -2,6 +2,12 @@
 debug = false
 # Load non-minified versions of js libraries, if not false
 debug_js = false
+# Trace ExtJS events
+trace_extjs_events = false
+# Traceback order. One of
+# forward -- top of stack last
+# reverse -- top of stack first
+traceback_order = reverse
 # Comma-separated list of emails to send error reports
 admin_emails =
 # Local time zone for this installation. Choices can be found here:
@@ -44,11 +50,16 @@ server_email = root@localhost
 # * select - use select()
 # * poll   - use poll()
 # * kevent - use kevent/kqueue
+# * epoll  - use epoll
 polling_method = select
 # Comma-separated list of additionally installed applications
 installed_apps =
 # Maximum crashinfo size (in bytes)
 crashinfo_limit = 1000000
+# Header contining an original protocol, when changed by reverse proxy
+# usually:
+# x_forwarded_proto = X-Forwarded-Proxy
+x_forwarded_proto =
 # Log REST API calls and input parameters
 log_api_calls = false
 # Log SQL statements
@@ -56,6 +67,10 @@ log_sql_statements = false
 # If set, return "Request too large" if json request
 # is larger than limit (0 - unlimited)
 json_row_limit = 0
+
+[solutions]
+# Enable noc.default solution
+noc.default = true
 
 [database]
 # postgresql_psycopg2
@@ -78,10 +93,21 @@ name = noc
 user = noc
 # MongoDB database password
 password = noc
-#
+# MongoDB hosts.
+# Possible settings
+# Localhost:
+#   host =
+# Host myhost, port 21017
+#   host = myhost
+# Host myhost, port 21018
+#   host = myhost:21018
+# Replica set connection, two seed hosts myhost1:21018 and myhost2:21019
+#   host = myhost1:21018,myhost2:21019
 host =
-#
+# Deprecated, use host:port form instead
 port =
+# Mongo replica set name for HA configuration
+replica_set =
 
 #
 # NOC User Authentication
@@ -197,24 +223,19 @@ branding_color = #000
 #
 [themes]
 neptune.name = Neptune
-neptune.css = /static/pkg/extjs/resources/css/ext-all-neptune.css
 neptune.enabled = true
 
 blue.name = Blue
-blue.css = /static/pkg/extjs/resources/css/ext-all.css
 blue.enabled = true
 
 gray.name = Gray
-gray.css = /static/pkg/extjs/resources/css/ext-all-gray.css
 gray.enabled = true
 
 access.name = Access
-access.css = /static/pkg/extjs/resources/css/ext-all-access.css
 access.enabled = true
 
-scoped.name = Scoped
-scoped.css = /static/pkg/extjs/resources/css/ext-all-scoped.css
-scoped.enabled = true
+crisp.name = Crisp
+crisp.enabled = true
 
 #
 # cm module setup
@@ -239,6 +260,11 @@ timeout_error    = 300
 # If timeout is T and variation is N means
 # the final timeout will be random value in range of [T-T/N,T+T/N]
 timeout_variation = 10
+
+[gridvcs]
+# Mirror sa.managedobject.config to designated directory
+# Do not mirror when empty
+mirror.sa.managedobject.config =
 
 #
 # Peer module setup
@@ -299,8 +325,6 @@ url = http://example.com/ticket=%%(tt)s
 # Directory to store database and repo backups
 backup_dir = /var/backup
 # Paths to utilities
-ssh        = /usr/bin/ssh
-rsync      = /usr/bin/rsync
 pg_dump    = /usr/local/bin/pg_dump
 tar        = /usr/bin/tar
 gzip       = /usr/bin/gzip
@@ -319,6 +343,13 @@ keep_day_of_week   = 6
 keep_months        = 12
 keep_day_of_month  = 1
 #
+# Developers settings
+#
+[develop]
+# Enable <install collection> button
+install_collection = false
+
+#
 # PGP Settings
 #
 [pgp]
@@ -331,26 +362,34 @@ keyserver = keys.gnupg.net
 # Time to store active event in the noc.event.active collection
 # before moving to archive
 active_window = 86400
+# Archive settings:
+# Keep events without alarms in archive for X days
+# 0 - do not archive
+# -1 - keep forever
+keep_events_wo_alarm = 0
+# Archive settings:
+# Keep events with alarms in archive for X days
+# 0 - do not archive
+# -1 - keep forever
+keep_events_with_alarm = -1
+
 #
 # GIS Settings
 #
 [gis]
-# Minimal zoom level
-min_zoom_level = 0
-# Maximal zoom level
-max_zoom_level = 18
-# Render additional N tiles around area
-tilecache_padding = 0
-# Enable XYZ access to tile maps
-enable_xyz_maps = true
-# Enable TMS access to tile maps
-enable_tms_maps = true
-# Enable OpenStreetMap external tile maps
-enable_osm_maps = true
-# Enable Google Roadmap external maps
-enable_google_roadmap_maps = false
-# Enable Google Sattelite external maps
-enable_google_satellite_maps = false
+# Ellipsoids for distance calculations
+# Possible values:
+#     WGS-84
+#     Krass
+#     ПЗ-90
+ellipsoid = ПЗ-90
+# Enable OpenStreetMap base layer
+enable_osm = true
+# Enable Google Sattelite base layer
+enable_google_sat = false
+# Eanble Google Roadmap base layer
+enable_google_roadmap = false
+
 #
 # Proxy settings
 #
@@ -371,32 +410,35 @@ vc_vcprefixes = 3600
 enabled = true
 # Save result to database
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
+
+[caps_discovery]
+# Enable caps discovery process
+enabled = true
+# Save result to database
+save = true
+
+[uptime_discovery]
+# Enable caps discovery process
+enabled = true
 
 [config_discovery]
 # Enable config discovery process
 enabled = true
 # Save result to database
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [interface_discovery]
 enabled = true
 save = true
 success_retry = 86400
 failed_retry = 900
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 # IInterfaceClassification-interfaced pyRule
 # returning interface class name
+# Used by noc.solutions.noc.default.discovery.interface.get_interface_profile
 classification_pyrule =
+# Description generator
+get_interface_profile = noc.solutions.noc.default.discovery.interface.get_interface_profile
+
 
 [prefix_discovery]
 enabled = true
@@ -426,6 +468,7 @@ initial_submit_concurrency = 20
 change_state =
 #
 # Django template to generate discovered Address'es FQDN.
+# USed by noc.solutions.noc.default.discovery.ip.get_fqdn solution
 # Available context variables are:
 #   object - Managed object instance
 #   vrf - VRF instance
@@ -439,77 +482,213 @@ change_state =
 #   rIP - IP in reversed order
 #
 fqdn_template = ip-{{ IP|join:"-" }}.{%% if domain %%}{{ domain }}{%% else %%}example.com{%% endif %%}
+# Description generator
+get_description = noc.solutions.noc.default.discovery.ip.get_description
+# FQDN generator
+get_fqdn = noc.solutions.noc.default.discovery.ip.get_fqdn
 
 [vlan_discovery]
 enabled = true
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 # change_state = PLANNED -> ALLOCATED; RESERVED -> ALLOCATED
 change_state =
 
 [mac_discovery]
 enabled = true
 save = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [id_discovery]
 enabled = true
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
+
+[asset_discovery]
+enabled = true
+save = true
+# Object name generator
+get_name = noc.solutions.noc.default.discovery.asset.get_name
 
 [lldp_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [cdp_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [stp_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [rep_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [bfd_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [udld_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
 
 [oam_discovery]
 enabled = false
-# Inject new schedules every N seconds
-initial_submit_interval = 900
-# Upper limit of new schedule submitted at once
-initial_submit_concurrency = 20
+
+[audit]
+# Store commands audit log
+command_ttl = 1m
+# Store login/logout audit log
+login_ttl = 1m
+# Store reboot/started/halted log
+reboot_ttl = 0
+# Store config changed log
+config_changed_ttl = 1y
+# Database audit
+# Can be in form of
+#     ttl.db = <time> - default database audit log TTL
+#     ttl.db.<module> = <time> - default audit log TTL for module (sa, inv, etc)
+#     ttl.db.<module>.<model> - default autid log TTL for model (sa.ManagedObject)
+# 0 -- disable audit
+ttl.db = 5y
+# Path to directory to store MRT commands executed by user
+# Must be writable by NOC user
+log_mrt_commands =
+
+[pm]
+# Solution processing effective metric settings
+# and setting probes and graphite names
+metric_router = noc.solutions.noc.default.pm.router.DefaultRouter
+# Config expiration time in seconds
+# Each config will be validated and rebuilded each config_ttl seconds
+config_ttl = 3600
+# Random config ttl variation, relative to config_ttl
+# i.e. config_ttl = 3600, config_ttl_jitter = 0.01
+# means for each metrics ttl will be set randomly in [3564 .. 3636] seconds
+config_ttl_jitter = 0.01
+# Timeout to refresh expired configs
+# noc-web will refresh expired config by expired_refresh_chunk
+# portions up to expired_refresh_timeout seconds
+# Untouched expired configs will be left for other time
+expired_refresh_timeout = 10
+# Refresh expired configs batch
+expired_refresh_chunk = 100
+
+[pm_render]
+# Cache metric data and rendered graphs
+# Time in seconds
+cache_duration = 60
+# CarbonLinks for carbon cache access
+# ip:port, comma-separated
+carbonlink_hosts = 127.0.0.1:7002
+# CarbonLink connection timeout
+carbonlink_timeout = 1.0
+
+[pm_storage]
+# PM storage type
+# Available types are:
+#     * mongodb
+#     * bsddb
+#     * leveldb (experimental)
+#     * postgres
+#     * sqlite
+type = mongodb
+# Partitioning scheme
+# Available schemes are
+#     * daily - YYYY.MM.DD
+#     * weekly - YYYY.WWw
+#     * monthly - YYYY.MM
+#     * yearly - YYYY
+#     * none -- no partitioning
+partition = daily
+# Metric hash size (in octets).
+# Once selected cannot be changed without full database rebuild.
+# Recommended values:
+#     * 4 - < 10 000 metrics
+#     * 8 - < 1 000 000 000 metrics
+hash_width = 8
+# Do not fetch data and create partitions before epoch
+# Format: YYYY-MM-DD
+epoch = 2014-09-01
+
+[pm_router]
+# Model to graphite mapping metrics
+# Used by noc.default solution
+# Graphite metric mappings defines as
+# map.<model_id> = <django template>
+# Following variables are exposed to django template
+#     * object -- object instance
+#     * model_id -- model_id
+#     * metric_type -- name of the metric type
+# Additional filters are available
+#     {{object|dirhash:"<width>:<levels>"}} -- hashed directory tree up to
+#           <levels> depts. Each level consists of <width>-letter directory
+#           Examples:
+#               {{object|dirhash:"4.2"}}  -> 23F3.EE18
+#               {{object|dirhash:"4.4"}}  -> 23F3.EE18.AB23.2156
+#               {{object|dirhash:"2.2"}}  -> 23.F3
+#               {{object|dirhash:"2.4"}}  -> 23.F3.EE.18
+#     {{string|qm}} -- directory-safe quoting.
+#
+# object.XXXX.YYYY.<object name>.<metric type>
+map.sa.ManagedObject = object.{{object.name|qm}}.{{metric_type|qm}}
+# object.XXXX.YYYY.<object name>.interface.<name>.<metric type>
+map.inv.Interface = object.{{object.managed_object.name|qm}}.interface.{{object.name|qm}}.{{metric_type|qm}}
+# Additional metric control defined in form of rules
+# metric.<N> = <regular expression>
+# probe.<N> = <probe name>
+# active.<N> = true | false
+
+[sync]
+# Config expiration time in seconds
+# Each config will be validated and rebuilded each config_ttl seconds
+config_ttl = 86400
+# Random config ttl variation, relative to config_ttl
+# i.e. config_ttl = 3600, config_ttl_jitter = 0.01
+# means for each metrics ttl will be set randomly in [3564 .. 3636] seconds
+config_ttl_jitter = 0.01
+# Timeout to refresh expired configs
+# noc-web will refresh expired config by expired_refresh_chunk
+# portions up to expired_refresh_timeout seconds
+# Untouched expired configs will be left for other time
+expired_refresh_timeout = 25
+# Refresh expired configs batch
+expired_refresh_chunk = 100
+
+[script_timeout]
+# Script timeouts, in seconds
+# Default timeout
+default = 120
+# Custom timeouts in form:
+# <script name> = <timeout>
+Alcatel.7302.get_config = 1800
+Alcatel.TIMOS.get_arp = 240
+Alcatel.TIMOS.get_config = 850
+Alcatel.TIMOS.get_interfaces = 850
+Alentis.NetPing.get_config = 300
+Brocade.CER.get_interfaces = 900
+Brocade.CER-ADV.get_interfaces = 900
+Brocade.IronWare.get_interfaces = 900
+Cisco.IOS.get_interfaces = 240
+Cisco.IOSXR.get_interfaces = 240
+Cisco.SCOS.get_interfaces = 240
+DLink.DGS3100.get_config = 360
+DLink.DGS3100.get_interfaces = 300
+DLink.DxS.get_config = 360
+DLink.DxS.get_interfaces = 300
+DLink.DxS.get_inventory = 300
+EdgeCore.ES.get_interfaces = 240
+Eltex.MES.get_interfaces = 240
+f5.BIGIP.get_config = 300
+HP.1905.get_mac_address_table = 300
+Huawei.VRP.get_interfaces = 240
+Huawei.VRP3.get_mac_address_table = 600
+Juniper.JUNOS.sync_prefix_lists = 1800
+NSN.hiX56xx.get_arp = 600
+NSN.hiX56xx.get_mac_address_table = 600
+Opticin.OS.get_interfaces = 240
+Qtech.QSW.get_interfaces = 600
+
+[i18n]
+# Global translation settings
+# collections.global = ru, en
+collections.global = en
+# Collection-depended translations
+# collections.fm.eventclasses = ua, ru, en
+
+# Allow fuzzy translations
+collections.global.allow_fuzzy = true
+# Collection-depended fuzzy translations
+# collections.fm.eventclasses.allow_fuzzy = true

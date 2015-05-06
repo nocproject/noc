@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Logout #1 (SYSLOG)",
+    "uuid": "15a4fe10-b7da-415a-9883-1b6f21f1a363",
+    "description": "INFO: Logout through Telnet (Username: noc, IP: 172.16.7.56)",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Logout through (?:Web|Telnet|SSH) \\(Username: (?P<user>.+?),\\s*IP: (?P<ip>\\S+)(?:,\\s*MAC: \\S+)?\\)$"
+        }
+    ]
+}

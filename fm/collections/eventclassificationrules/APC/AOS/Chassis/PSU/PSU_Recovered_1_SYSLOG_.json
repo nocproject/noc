@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Chassis | PSU | PSU Recovered #1 (SYSLOG)",
+    "uuid": "738c30d7-41e3-4050-b5f1-e0cac2c5a905",
+    "description": "UPS: A power module fault no longer exists. 0x0202",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: (?P<name>A power module) fault no longer exists. 0x0202"
+        }
+    ]
+}

@@ -13,8 +13,7 @@ Ext.define("NOC.ip.vrf.Application", {
         "NOC.ip.vrfgroup.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.resourcestate.LookupField",
-        "NOC.project.project.LookupField",
-        "NOC.core.TagsField"
+        "NOC.project.project.LookupField"
     ],
     model: "NOC.ip.vrf.Model",
     search: true,
@@ -181,7 +180,7 @@ Ext.define("NOC.ip.vrf.Application", {
                 {
                     "itemId": "import",
                     text: "Import",
-                    iconCls: "icon_door_in",
+                    glyph: NOC.glyph.level_down,
                     tooltip: "Import VRFs",
                     checkAccess: NOC.hasPermission("import"),
                     menu: {
@@ -191,7 +190,7 @@ Ext.define("NOC.ip.vrf.Application", {
                             {
                                 text: "From Router",
                                 itemId: "from_router",
-                                iconCls: "icon_arrow_right"
+                                glyph: NOC.glyph.level_down
                             }
                         ],
                         listeners: {
@@ -217,6 +216,7 @@ Ext.define("NOC.ip.vrf.Application", {
         NOC.mrt({
             url: "/ip/vrf/mrt/get_vrfs/",
             selector: managed_object,
+            loadMask: me,
             scope: me,
             success: me.processImportFromRouter,
             failure: function() {

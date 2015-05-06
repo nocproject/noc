@@ -1,0 +1,7 @@
+{
+    "name": "Flash | PCMCIA",
+    "uuid": "3adc8cec-9df4-4d1d-ba60-e5f8166eb076",
+    "description": "PCMCIA slot",
+    "c_group": [],
+    "genders": "mf"
+}

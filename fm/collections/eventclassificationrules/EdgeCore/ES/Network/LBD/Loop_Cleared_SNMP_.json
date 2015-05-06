@@ -1,0 +1,25 @@
+{
+    "name": "EdgeCore | ES | Network | LBD | Loop Cleared (SNMP)",
+    "uuid": "3c7a7fbd-3cef-423d-939c-54e2854cdfb8",
+    "description": "ES3528MO-MIB::lbdRecoveryTrap",
+    "event_class__name": "Network | LBD | Loop Cleared",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^ES3528MO-MIB::trapIfIndex\\.0$",
+            "value_re": "^(?P<interface__ifindex>\\d+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^ES3528MO-MIB::lbdRecoveryTrap$"
+        }
+    ]
+}

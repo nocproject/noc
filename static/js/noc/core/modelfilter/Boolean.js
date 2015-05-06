@@ -11,52 +11,48 @@ Ext.define("NOC.core.modelfilter.Boolean", {
     extend: "NOC.core.modelfilter.Base",
 
     initComponent: function() {
-        Ext.apply(this, {
+        var me = this;
+        Ext.apply(me, {
+            layout: "hbox",
             items: [
                 {
-                    xtype: "radiogroup",
-                    columns: 3,
-                    defaults: {
-                        name: this.name,
-                        scope: this,
-                        handler: function(radio, checked) {
-                            if(checked) {
-                                this._value = {
-                                    "all": null,
-                                    "yes": true,
-                                    "no": false
-                                }[radio.inputValue];
-                                this.onChange();
-                            }
-                        }
-                    },
-                    items: [
-                        {
-                            boxLabel: "All",
-                            inputValue: "all",
-                            checked: true
-                        },
-                        {
-                            boxLabel: "Yes",
-                            inputValue: "yes"
-                        },
-                        {
-                            boxLabel: "No",
-                            inputValue: "no"
-                        }
-                    ]
+                    xtype: "button",
+                    glyph: NOC.glyph.check,
+                    cls: "noc-yes",
+                    toggleGroup: "boolgroup",
+                    scope: me,
+                    handler: function (button, e) {
+                        me._value = button.pressed ? true : undefined;
+                        me.onChange();
+                    }
+                },
+                {
+                    xtype: "button",
+                    glyph: NOC.glyph.times,
+                    cls: "noc-no",
+                    toggleGroup: "boolgroup",
+                    scope: me,
+                    handler: function (button, e) {
+                        me._value = button.pressed ? false : undefined;
+                        me.onChange();
+                    }
+                },
+                {
+                    xtype: "container",
+                    html: Ext.util.Format.htmlEncode(me.title),
+                    padding: 4
                 }
             ]
         });
-        this.callParent();
-        this.radiogroup = this.items.items[0];
-        this._value = null;
+        me.callParent();
+        me._value = undefined;
     },
 
     getFilter: function() {
-        var r = {};
-        if(this._value !== null)
-            r[this.name] = this._value;
+        var me = this,
+            r = {};
+        if(me._value !== undefined)
+            r[me.name] = me._value;
         return r;
     }
 });

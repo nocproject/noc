@@ -14,23 +14,23 @@ Ext.define("NOC.wf.workflow.VariablesModel", {
     fields: [
         {
             name: "id",
-            type: "str"
+            type: "string"
         },
         {
             name: "workflow",
-            type: "str"
+            type: "string"
         },
         {
             name: "name",
-            type: "str"
+            type: "string"
         },
         {
             name: "type",
-            type: "str"
+            type: "string"
         },
         {
             name: "default",
-            type: "str"
+            type: "string"
         },
         {
             name: "required",
@@ -38,7 +38,7 @@ Ext.define("NOC.wf.workflow.VariablesModel", {
         },
         {
             name: "description",
-            type: "str"
+            type: "string"
         }
     ]
 });

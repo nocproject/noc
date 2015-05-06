@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelApplication
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2014 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelApplication");
@@ -21,87 +21,127 @@ Ext.define("NOC.core.ModelApplication", {
     appTitle: null,
     createTitle: "Create {0}",
     changeTitle: "Change {0}",
+    groupChangeTitle: "Change {0} {1}",
     rowClassField: undefined,
     actions: undefined,
-    idField: "id",
     previewIcon: "icon_magnifier",
     preview: null,
+    treeFilter: null,
+    metricModelId: null,  // Add MetricSettings button
+    formLayout: "anchor",
     //
     initComponent: function() {
         var me = this;
         // set base_url
-        var n = this.self.getName().split("."),
-            app_name = n[1] + "." + n[2];
+        var n = me.self.getName().split(".");
         me.base_url = "/" + n[1] + "/" + n[2] + "/";
+        me.appName = n[1] + "." + n[2];
         // Variables
         me.currentQuery = {};
         // Create store
+        var bs = Math.ceil(screen.height / 24);
         me.store = Ext.create("NOC.core.ModelStore", {
             model: me.model,
             customFields: me.noc.cust_model_fields || [],
             autoLoad: false,
-            pageSize: 1  // Increased by AutoSize plugin
+            pageSize: bs,
+            leadingBufferZone: bs,
+            numFromEdge: Math.ceil(bs / 2),
+            trailingBufferZone: bs
         });
+        me.store.on("beforeload", me.onBeforeLoad, me);
+        me.store.on("load", me.onLoad, me);
+        me.store.on("exception", me.onLoadError, me);
+
         me.idField = me.store.idProperty;
+        // Generate persistent field names
+        me.persistentFields = {};
+        Ext.each(me.store.model.getFields(), function(f) {
+            if(f.persist) {
+                me.persistentFields[f.name] = true;
+            }
+        });
+        //
+        me.hasGroupEdit = me.checkGroupEdit();
+        // Create GRID card
+        me.ITEM_GRID = me.registerItem(me.createGrid());
+        // Create metrics editor card
+        if(me.metricModelId) {
+            me.ITEM_METRIC_SETTINGS = me.registerItem(
+                Ext.create("NOC.core.MetricSettingsPanel", {
+                    app: me,
+                    metricModelId: me.metricModelId
+                })
+            );
+        }
+        // Create FORM card
+        me.ITEM_FORM = me.registerItem(me.createForm());
+        // Create Group Edit form when necessary
+        if(me.hasGroupEdit) {
+            me.ITEM_GROUP_FORM = me.registerItem(me.createGroupForm())
+        }
+        //
+        Ext.apply(me, {
+            items: me.getRegisteredItems(),
+            activeItem: me.ITEM_GRID
+        });
+        // Initialize component
+        me.callParent();
+        me.currentRecord = null;
+        // Process commands
+        switch(me.getCmd()) {
+            case "open":
+                me.loadById(me.noc.cmd.id);
+                break;
+            case "history":
+                me.restoreHistory(me.noc.cmd.args);
+                return;
+                break;
+        }
+        // Finally, load the store
+        me.store.load();
+    },
+    //
+    createGrid: function() {
+        var me = this;
         // Setup Grid toolbar
         var gridToolbar = [];
-        gridToolbar = gridToolbar.concat([
-            {
-                xtype: "textfield",
-                name: "search_field",
-                itemId: "search_field",
-                emptyText: "Search...",
-                inputType: "search",
-                hideLabel: true,
-                width: 200,
-                hasAccess: function(app) { return app.search === true;},
-                listeners: {
-                    change: {
-                        fn: me.onSearch,
-                        scope: me,
-                        buffer: 200
-                    }
-                }
-            },
-            {
-                itemId: "create",
-                text: "Add",
-                glyph: NOC.glyph.plus,
-                tooltip: "Add new record",
-                hasAccess: NOC.hasPermission("create"),
-                scope: me,
-                handler: me.onNewRecord
-            }
-        ]);
+
+        me.searchField = Ext.create("Ext.ux.form.SearchField", {
+            name: "search_field",
+            hideLabel: true,
+            width: 200,
+            hasAccess: function(app) { return app.search === true;},
+            scope: me,
+            handler: me.onSearch
+        });
+
+        me.refreshButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.refresh,
+            tooltip: "Refresh",
+            scope: me,
+            handler: me.onRefresh
+        });
+
+        me.createButton = Ext.create("Ext.button.Button", {
+            itemId: "create",
+            text: "Add",
+            glyph: NOC.glyph.plus,
+            tooltip: "Add new record",
+            hasAccess: NOC.hasPermission("create"),
+            scope: me,
+            handler: me.onNewRecord
+        });
+
+        gridToolbar.push(me.searchField, me.refreshButton, me.createButton);
         // admin actions
-        if(me.actions) {
-            gridToolbar = gridToolbar.concat([{
-                glyph: NOC.glyph.download,
-                tooltip: "Group actions",
-                hasAccess: NOC.hasPermission("update"),
-                itemId: "action_menu",
-                disabled: true,
-                menu: {
-                    xtype: "menu",
-                    plain: true,
-                    items: me.actions.map(function(o) {
-                        return {
-                            text: o.title,
-                            itemId: o.action,
-                            form: o.form,
-                            resultTemplate: o.resultTemplate
-                        }
-                    }),
-                    listeners: {
-                        click: {
-                            scope: me,
-                            fn: me.onAction
-                        }
-                    }
-                }
-            }]);
+        if(me.actions || me.hasGroupEdit) {
+            gridToolbar.push(me.createActionMenu());
         }
         gridToolbar = gridToolbar.concat(me.gridToolbar);
+        gridToolbar.push("->");
+        me.totalField = Ext.create("Ext.form.field.Display");
+        gridToolbar.push(me.totalField);
         // Initialize panels
         // Filters
         var grid_rbar = null;
@@ -115,6 +155,7 @@ Ext.define("NOC.core.ModelApplication", {
                 }].concat(me.filters);
             grid_rbar = {
                 xtype: "form",
+                autoScroll: true,
                 itemId: "filters",
                 width: 208,
                 title: "Filter",
@@ -128,6 +169,7 @@ Ext.define("NOC.core.ModelApplication", {
                     }
                 ],
                 items: filters.map(function(f) {
+                    // @todo: Smarter solution using Ext.Class.alias
                     var ft = {
                         boolean: "NOC.core.modelfilter.Boolean",
                         lookup: "NOC.core.modelfilter.Lookup",
@@ -138,7 +180,7 @@ Ext.define("NOC.core.ModelApplication", {
                         favorites: "NOC.core.modelfilter.Favorites"
                     }[f.ftype];
                     var fc = Ext.Object.merge(f, {
-                        referrer: app_name
+                        referrer: me.appName
                     });
                     var fg = Ext.create(ft, fc);
                     fg.handler = fh;
@@ -156,29 +198,26 @@ Ext.define("NOC.core.ModelApplication", {
                 c.renderer = eval(c.renderer);
             }
         });
-        var selModel;
+        var selModel = Ext.create("Ext.selection.CheckboxModel", {
+            preventFocus: true
+        });
         if(me.actions) {
-            selModel = Ext.create("Ext.selection.CheckboxModel", {
-                listeners: {
-                    scope: me,
-                    selectionchange: me.onActionSelectionChange
-                }
-            });
-        } else {
-            selModel = Ext.create("Ext.selection.CheckboxModel");
+            selModel.on("selectionchange", me.onActionSelectionChange, me);
         }
 
         var rowItems = [
             {
+                glyph: NOC.glyph.star,
                 tooltip: "Mark/Unmark",
                 scope: me,
-                getClass: function(col, meta, r) {
-                    return r.get("fav_status") ? "icon_star" : "icon_star_grey";
+                getColor: function(cls, meta, r) {
+                    return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
                 },
                 handler: me.onFavItem
             },
             {
-                iconCls: "icon_page_edit",
+                glyph: NOC.glyph.edit,
+                color: NOC.colors.edit,
                 tooltip: "Edit",
                 scope: me,
                 handler: function(grid, rowIndex, colIndex) {
@@ -192,7 +231,8 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.onPreview) {
             rowItems = rowItems.concat([
                 {
-                    iconCls: me.previewIcon,
+                    glyph: NOC.glyph.search,
+                    color: NOC.colors.preview,
                     tooltip: "Preview",
                     scope: me,
                     handler: function(grid, rowIndex, colIndex) {
@@ -214,7 +254,8 @@ Ext.define("NOC.core.ModelApplication", {
             );
             rowItems = rowItems.concat([
                 {
-                    iconCls: me.previewIcon,
+                    glyph: NOC.glyph.search,
+                    color: NOC.colors.preview,
                     tooltip: "Preview",
                     scope: me,
                     handler: function(grid, rowIndex, colIndex) {
@@ -240,15 +281,36 @@ Ext.define("NOC.core.ModelApplication", {
                 });
             }
         });
-
-        var gridPanel = {
-            xtype: "gridpanel",
+        //
+        var gridToolbars = [
+            {
+                xtype: "toolbar",
+                items: me.applyPermissions(gridToolbar)
+            }
+        ];
+        //
+        if(me.treeFilter) {
+            var treeFilterToolbar = Ext.create("NOC.core.TreeFilterToolbar", {
+                field: me.treeFilter,
+                url: me.base_url + "tree_lookup/",
+                listeners: {
+                    scope: me,
+                    select: me.onFilter
+                }
+            });
+            gridToolbars.push(treeFilterToolbar);
+            me.filterGetters.push(
+                Ext.bind(treeFilterToolbar.getFilter, treeFilterToolbar)
+            );
+        }
+        //
+        var gridPanel = Ext.create("Ext.grid.Panel", {
             itemId: "grid",
             store: me.store,
             columns: [
                 {
-                    xtype: "actioncolumn",
-                    width: 40,
+                    xtype: "glyphactioncolumn",
+                    width: 20 * rowItems.length,
                     sortable: false,
                     items: rowItems,
                     stateId: "rowaction"
@@ -262,21 +324,16 @@ Ext.define("NOC.core.ModelApplication", {
             border: false,
             autoScroll: true,
             stateful: true,
-            stateId: app_name + "-grid",
-            plugins: [Ext.create("Ext.ux.grid.AutoSize")],
-            selModel: selModel,
-            dockedItems: [
+            stateId: me.appName + "-grid",
+            plugins: [
                 {
-                    xtype: "toolbar",
-                    items: me.applyPermissions(gridToolbar)
-                },
-                {
-                    xtype: "pagingtoolbar",
-                    store: me.store,
-                    dock: "bottom",
-                    displayInfo: true
+                    ptype: "bufferedrenderer"
+                    //trailingBufferZone: 50,
+                    //leadingBufferZone: 50
                 }
             ],
+            selModel: selModel,
+            dockedItems: gridToolbars,
             rbar: grid_rbar,
             viewConfig: {
                 enableTextSelection: true,
@@ -287,88 +344,126 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             },
             listeners: {
-                itemdblclick: {
-                    scope: me,
-                    fn: function(grid, record) {
-                        this.onEditRecord(record);
-                    }
+                scope: me,
+                itemdblclick: function(grid, record) {
+                    this.onEditRecord(record);
                 }
             }
-        };
-        me.ITEM_GRID = me.registerItem(gridPanel);
-        // Form
+        });
+        // Shortcuts
+        me.grid = gridPanel;
+        if(me.filters) {
+            me.filterPanel = me.grid.getComponent("filters");
+        }
+        return gridPanel;
+    },
+    //
+    createForm: function() {
+        var me = this,
+            focusField = null,
+            autoFocusFields;
+        //
+        me.saveButton = Ext.create("Ext.button.Button", {
+            itemId: "save",
+            text: "Save",
+            tooltip: "Save changes",
+            glyph: NOC.glyph.save,
+            formBind: true,
+            disabled: true,
+            scope: me,
+            // @todo: check access
+            handler: me.onSave
+        });
+        //
+        me.closeButton = Ext.create("Ext.button.Button", {
+            itemId: "close",
+            text: "Close",
+            tooltip: "Close without saving",
+            glyph: NOC.glyph.arrow_left,
+            scope: me,
+            handler: me.onClose
+        });
+        //
+        me.resetButton = Ext.create("Ext.button.Button", {
+            itemId: "reset",
+            text: "Reset",
+            tooltip: "Reset to default values",
+            glyph: NOC.glyph.undo,
+            disabled: true,
+            scope: me,
+            handler: me.onReset
+        });
+        //
+        me.deleteButton = Ext.create("Ext.button.Button", {
+            itemId: "delete",
+            text: "Delete",
+            tooltip: "Delete object",
+            glyph: NOC.glyph.times,
+            disabled: true,
+            hasAccess: NOC.hasPermission("delete"),
+            scope: me,
+            handler: me.onDelete
+        });
+        //
+        me.cloneButton = Ext.create("Ext.button.Button", {
+            itemId: "clone",
+            text: "Clone",
+            tooltip: "Copy existing values to a new object",
+            glyph: NOC.glyph.copy,
+            disabled: true,
+            hasAccess: NOC.hasPermission("create"),
+            scope: me,
+            handler: me.onClone
+        });
+        // Default toolbar items
         var formToolbar = [
-            {
-                itemId: "save",
-                text: "Save",
-                glyph: NOC.glyph.save,
-                // formBind: true,
-                // disabled: true,
-                scope: me,
-                // @todo: check access
-                handler: me.onSave
-            },
-            {
-                itemId: "close",
-                text: "Close",
-                glyph: NOC.glyph.arrow_left,
-                scope: me,
-                handler: me.onClose
-            },
+            me.saveButton,
+            me.closeButton,
             "-",
-            {
-               itemId: "reset",
-               text: "Reset",
-               glyph: NOC.glyph.undo,
-               disabled: true,
-               scope: me,
-               handler: me.onReset
-            },
-            {
-               itemId: "delete",
-               text: "Delete",
-               glyph: NOC.glyph.remove,
-               disabled: true,
-               hasAccess: NOC.hasPermission("delete"),
-               scope: me,
-               handler: me.onDelete
-            },
+            me.resetButton,
+            me.deleteButton,
             "-",
-            {
-                itemId: "clone",
-                text: "Clone",
-                glyph: NOC.glyph.copy,
-                disabled: true,
-                hasAccess: NOC.hasPermission("create"),
-                scope: me,
-                handler: me.onClone
-            }
+            me.cloneButton
         ];
         // Add View button
         if(me.onPreview) {
-            formToolbar = formToolbar.concat([
-                {
-                    text: "View",
-                    iconCls: "icon_magnifier",
-                    // hasAccess:
-                    scope: me,
-                    handler: function() {
-                        var me = this;
-                        me.onPreview(me.currentRecord)
-                    }
+            formToolbar.push({
+                text: "View",
+                tooltip: "Preview",
+                glyph: NOC.glyph.eye,
+                // hasAccess:
+                scope: me,
+                handler: function() {
+                    var me = this;
+                    me.onPreview(me.currentRecord)
                 }
-            ]);
+            });
         }
+        if(me.metricModelId) {
+            // Create *Show metrics* button
+            formToolbar.push({
+                text: "Metrics",
+                tooltip: "View metrics, attached to an object",
+                glyph: NOC.glyph.bar_chart_o,
+                scope: me,
+                handler: function() {
+                    var me = this;
+                    me.onMetrics(me.currentRecord);
+                }
+            });
+        }
+        if(me.formToolbar && me.formToolbar.length) {
+            formToolbar.push("-");
+        }
+        formToolbar = formToolbar.concat(me.formToolbar);
         me.toolbarIdField = Ext.create("Ext.form.field.Display", {
             fieldLabel: "ID",
             labelWidth: 15
-        })
-        formToolbar = formToolbar.concat(me.formToolbar);
+        });
         formToolbar = formToolbar.concat([
             "->",
             me.toolbarIdField
         ]);
-
         // Prepare inlines grid
         var formInlines = [];
         me.inlineStores = [];
@@ -396,6 +491,7 @@ Ext.define("NOC.core.ModelApplication", {
                                 clicksToEdit: 2,
                                 listeners: {
                                     scope: me,
+                                    beforeedit: me.onInlineBeforeEdit,
                                     edit: me.onInlineEdit
                                 }
                             })
@@ -414,7 +510,7 @@ Ext.define("NOC.core.ModelApplication", {
                             },
                             {
                                 text: "Delete",
-                                glyph: NOC.glyph.remove,
+                                glyph: NOC.glyph.times,
                                 handler: function() {
                                     var grid = this.up("panel"),
                                         sm = grid.getSelectionModel(),
@@ -442,24 +538,42 @@ Ext.define("NOC.core.ModelApplication", {
                                     });
                             }
                         }
-                    },
-                    r = {
-                        xtype: "fieldset",
-                        anchor: "100%",
-                        title: inline.title,
-                        collapsible: true,
-                        items: [gp]
-                    }
-                formInlines = formInlines.concat(r);
-                me.inlineStores = me.inlineStores.concat(istore);
+                    };
+                formInlines.push({
+                    xtype: "fieldset",
+                    anchor: "100%",
+                    title: inline.title,
+                    collapsible: true,
+                    items: [gp]
+                });
+                me.inlineStores.push(istore);
             }
         }
-        var formPanel = {
-            xtype: 'container',
+
+        me.formTitle = Ext.create("Ext.container.Container", {
+            html: "Title",
+            itemId: "form_title",
+            padding: 4,
+            style: {
+                fontWeight: "bold"
+            }
+        });
+        // Build form fields
+        var formFields = [me.formTitle];
+        // Append configured fields
+        formFields = formFields.concat(me.fields);
+        // Append custom fields
+        if(me.noc.cust_form_fields) {
+            formFields = formFields.concat(me.noc.cust_form_fields);
+        }
+        formFields = formFields.concat(formInlines);
+
+        me.formPanel = Ext.create("Ext.container.Container", {
             itemId: "form",
             layout: "fit",
             items: {
                 xtype: 'form',
+                layout: me.formLayout,
                 border: true,
                 padding: 4,
                 bodyPadding: 4,
@@ -474,133 +588,126 @@ Ext.define("NOC.core.ModelApplication", {
                         }
                     }
                 },
-                items: [
-                    {
-                        xtype: "container",
-
-                        html: "Title",
-                        itemId: "form_title",
-                        padding: 4,
-                        style: {
-                            fontWeight: "bold"
-                        }
+                items: formFields,
+                dockedItems: {
+                    xtype: "toolbar",
+                    dock: "top",
+                    layout: {
+                        overflowHandler: "Menu"
                     },
-                    {
-                        xtype: "hiddenfield",
-                        name: me.idField
-                    }].concat(me.fields).concat(me.noc.cust_form_fields || []).concat(formInlines),
-                tbar: me.applyPermissions(formToolbar),
-                listeners: {
-                    beforeadd: function(me, field) {
-                        // Change label style for required fields
-                        if(field.xtype == "fieldset") {
-                            for(var key in field.items.items) {
-                                if (!field.items.items[key].allowBlank) {
-                                    field.items.items[key].labelClsExtra = "noc-label-required";
-                                }
-                            }
-                        } else {
-                            if(!field.allowBlank) {
-                               field.labelClsExtra = "noc-label-required";
-                            }
-                        }
-                    }
+                    items: me.applyPermissions(formToolbar)
                 }
+            },
+            getDefaultFocus: function() {
+                return focusField;
             }
-        };
-        me.ITEM_FORM = me.registerItem(formPanel);
-        //
-        Ext.apply(me, {
-            items: me.getRegisteredItems(),
-            activeItem: me.ITEM_GRID
         });
-        // Initialize component
-        me.callParent(arguments);
-        me.currentRecord = null;
-        // Create shortcuts
-        var grid = me.getComponent("grid"),
-            form = me.getComponent("form").items.first(),
-            gt = grid.dockedItems.items[1],
-            ft = form.dockedItems.first();
-        me.grid = grid;
-        me.form = form.getForm();
-        me.search_field = gt.getComponent("search_field");
-        me.actionMenu = gt.getComponent("action_menu");
-        me.create_button = gt.getComponent("create");
-        me.saveButton = ft.getComponent("save");
-        me.closeButton = ft.getComponent("close");
-        me.resetButton = ft.getComponent("reset");
-        me.deleteButton = ft.getComponent("delete");
-        me.cloneButton = ft.getComponent("clone");
-        me.formTitle = form.getComponent("form_title");
-        if(me.filters) {
-            me.filterPanel = me.grid.getComponent("filters");
+        me.form = me.formPanel.items.first().getForm();
+        // detect autofocus field
+        autoFocusFields = Ext.ComponentQuery.query("[autoFocus=true]", me.formPanel);
+        if(autoFocusFields && autoFocusFields.length > 0) {
+            focusField = autoFocusFields[0];
+        } else {
+            focusField = me.form.getFields().items[1];
         }
-        // Process commands
-        if(me.noc.cmd && me.noc.cmd.cmd == "open") {
-            me.store.setFilterParams({id: me.noc.cmd.id});
-        }
-        // Finally, load the store
-        me.store.load();
+        return me.formPanel;
     },
     // Show grid
     showGrid: function() {
         var me = this;
         me.showItem(me.ITEM_GRID);
+        me.setHistoryHash();
     },
     // Show Form
     showForm: function() {
         var me = this;
         me.showItem(me.ITEM_FORM);
+        if(me.formPanel && me.formPanel.getDefaultFocus) {
+            me.formPanel.getDefaultFocus().focus();
+        }
     },
     //
     showPreview: function(record) {
         var me = this,
             item = me.showItem(me.ITEM_PREVIEW);
         if(item !== undefined) {
-            item.preview(record);
+            item.preview(record, me.ITEM_GRID);
         }
     },
     // Save changed data
     saveRecord: function(data) {
         var me = this,
-            mv = Ext.create(me.model, data).validate(),
-            record,
-            rIndex = null;
+            Model = me.store.getModel(),
+            record = new Model(data),
+            mv = record.validate(),
+            result = {},
+            pollProgress = function(url) {
+                Ext.Ajax.request({
+                    url: url,
+                    method: "GET",
+                    scope: me,
+                    success: onSuccess,
+                    failure: onFailure
+                });
+            },
+            onSuccess = function(response) {
+                if(response.status === 202) {
+                    // Future in progress
+                    Ext.Function.defer(
+                        pollProgress, 1000, me,
+                        [response.getResponseHeader("Location")]
+                    );
+                } else {
+                    // Process result
+                    var data = Ext.decode(response.responseText);
+                    // @todo: Update current record with data
+                    if(me.currentQuery[me.idField]) {
+                        delete me.currentQuery[me.idField];
+                    }
+                    me.showGrid();
+                    me.reloadStore();
+                    me.saveInlines(data[me.idField], me.inlineStores);
+                    me.unmask();
+                }
+            },
+            onFailure = function(response) {
+                var message = "Error saving record";
+                if(response.responseText) {
+                    try {
+                        message = Ext.decode(response.responseText).message;
+                    }
+                    catch(err) {
+                        console.log(response.responseText);
+                    }
+                }
+                NOC.error(message);
+                me.unmask();
+            };
+
         if(!mv.isValid()) {
             // @todo: Error report
             NOC.error("Invalid data!");
             return;
         }
-        if (me.currentRecord) {
-            // Change
-            record = me.currentRecord;
-            record.set(data);
-        } else {
-            // Create
-            record = me.store.add([data])[0];
-            rIndex = me.store.indexOf(record);
-        }
-        me.store.sync({
-            scope: me,
-            success: function() {
-                var me = this,
-                    parent = record.get(me.idField);
-                if(!parent && rIndex != null) {
-                    parent = me.store.getAt(rIndex).get(me.idField);
-                }
-                me.saveInlines(parent, me.inlineStores);
-            },
-            failure: function(response, op, status) {
-                var me = this;
-                if(record.phantom) {
-                    // Remove from store
-                    me.store.remove(record);
-                } else {
-                    record.setDirty();
-                }
-                me.showOpError("save", op, status);
+        // Normalize
+        data = record.getData();
+        for(var name in data) {
+            if(me.persistentFields[name]) {
+                result[name] = data[name];
             }
+        }
+        if(me.currentRecord) {
+            result[me.idField] = me.currentRecord.get(me.idField);
+        }
+        me.mask("Saving ...");
+        // Save data
+        Ext.Ajax.request({
+            url: me.base_url + (me.currentRecord ? result[me.idField] + "/" : ""),
+            method: me.currentRecord ? "PUT" : "POST",
+            scope: me,
+            jsonData: result,
+            success: onSuccess,
+            failure: onFailure
         });
     },
     //
@@ -623,9 +730,7 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             });
         } else {
-            // Save completed
             me.showGrid();
-            me.reloadStore();
         }
     },
     // Show Form
@@ -635,12 +740,6 @@ Ext.define("NOC.core.ModelApplication", {
         if (!me.hasPermission("read") && !me.hasPermission("update"))
             return;
         me.editRecord(record);
-    },
-    // Set focus to first non-hidden field
-    // @todo: check for hidden attribute
-    focusOnFirstField: function() {
-        var me = this;
-        me.form.getFields().items[1].focus(false, 100);
     },
     // New record. Hide grid and open form
     newRecord: function(defaults) {
@@ -655,10 +754,8 @@ Ext.define("NOC.core.ModelApplication", {
         me.currentRecord = null;
         me.resetInlines();
         me.setFormTitle(me.createTitle);
-        me.toolbarIdField.setValue("NEW");
+        me.setFormId("NEW");
         me.showForm();
-        // Focus on first field
-        me.focusOnFirstField();
         // Activate delete button
         me.deleteButton.setDisabled(true);
         me.saveButton.setDisabled(!me.hasPermission("create"));
@@ -674,17 +771,41 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // Edit record. Hide grid and open form
     editRecord: function(record) {
-        var me = this;
+        var me = this,
+            r = {},
+            mv,
+            field,
+            data,
+            isLookupValue = function(name) {
+                return name.indexOf("__label", name.length - 7) !== -1;
+            };
         me.currentRecord = record;
         me.setFormTitle(me.changeTitle);
-        me.toolbarIdField.setValue(me.currentRecord.get(me.idField));
+        me.setFormId(me.currentRecord.get(me.idField));
+        // Process lookup fields
+        data = record.getData();
+        Ext.iterate(data, function(v) {
+            if(isLookupValue(v)) {
+                return;
+            }
+            field = me.form.findField(v);
+            if(!field) {
+                return;
+            }
+            if(field.isLookupField && data[v]) {
+                mv = {};
+                mv[field.valueField] = data[v];
+                mv[field.displayField] = data[v + "__label"] || data[v];
+                r[v] = field.store.getModel().create(mv);
+            } else {
+                r[v] = data[v];
+            }
+        });
         // Show edit form
         me.showForm();
         // Load records
-        me.form.loadRecord(record);
+        me.form.setValues(r);
         me.loadInlines();
-        // Focus on first field
-        me.focusOnFirstField();
         // Activate delete button
         me.deleteButton.setDisabled(!me.hasPermission("delete"));
         me.saveButton.setDisabled(!me.hasPermission("update"));
@@ -692,30 +813,74 @@ Ext.define("NOC.core.ModelApplication", {
         me.cloneButton.setDisabled(!me.hasPermission("create"));
         // Enable custom form toolbar
         me.activateCustomFormToolbar(true);
+        //
+        me.setHistoryHash(me.currentRecord.get(me.idField));
     },
     // Delete record
     deleteRecord: function() {
         var me = this;
-        me.store.remove(me.currentRecord);
-        me.currentRecord = null;
-        me.store.sync();
-        me.showGrid();
+        pollProgress = function(url) {
+            Ext.Ajax.request({
+                url: url,
+                method: "GET",
+                scope: me,
+                success: onSuccess,
+                failure: onFailure
+            });
+        },
+        onSuccess = function(response) {
+            if(response.status === 202) {
+                // Future in progress
+                Ext.Function.defer(
+                    pollProgress, 1000, me,
+                    [response.getResponseHeader("Location")]
+                );
+            } else {
+                // Process result
+                me.currentRecord = null;
+                me.reloadStore();
+                me.showGrid();
+                me.unmask();
+            }
+        },
+        onFailure = function(response) {
+            var message;
+            try {
+                message = Ext.decode(response.responseText).message;
+            } catch(err) {
+                message = "Internal error";
+            }
+            NOC.error(message);
+            me.unmask();
+        };
+
+        me.mask("Deleting ...");
+        Ext.Ajax.request({
+            url: me.base_url + me.currentRecord.get(me.idField) + "/",
+            method: "DELETE",
+            scope: me,
+            success: onSuccess,
+            failure: onFailure
+        });
     },
     // Reload store with current query
     reloadStore: function() {
         var me = this;
-        if(me.currentQuery)
-            me.store.setFilterParams(me.currentQuery);
+        me.store.setFilterParams(me.currentQuery);
+        // Reload store
+        // ExtJS 5.0.0 WARNING:
+        // me.store.reload() sometimes leaves empty grid
+        // so we must use load() instead
         me.store.load();
     },
     // Search
-    onSearch: function() {
-        var me = this,
-            v = me.search_field.getValue();
-        if(v)
-            me.currentQuery["__query"] = v;
-        else
-            delete me.currentQuery["__query"];
+    onSearch: function(query) {
+        var me = this;
+        if(query && query.length > 0) {
+            me.currentQuery.__query = query;
+        } else {
+            delete me.currentQuery.__query;
+        }
         me.reloadStore();
     },
     // Filter
@@ -725,10 +890,39 @@ Ext.define("NOC.core.ModelApplication", {
         Ext.each(me.filterGetters, function(g) {
             fexp = Ext.Object.merge(fexp, g());
         });
-        if(me.currentQuery["__query"])
-            fexp["__query"] = me.currentQuery["__query"];
+        if(me.currentQuery.__query) {
+            fexp.__query = me.currentQuery.__query;
+        }
         me.currentQuery = fexp;
         me.reloadStore();
+    },
+    // Returns form data
+    getFormData: function() {
+        var me = this,
+            fields = me.form.getFields().items,
+            f, field, data, name,
+            fLen = fields.length,
+            values = {};
+        for(f = 0; f < fLen; f++) {
+            field = fields[f];
+            if(field.inEditor) {
+                // Skip grid inline editors
+                // WARNING: Will skip other inline editors
+                continue;
+            }
+            data = field.getModelData();
+            if(Ext.isObject(data)) {
+                name = field.getName();
+                if(data.hasOwnProperty(name)) {
+                    values[name] = data[name];
+                }
+            }
+        }
+        return values;
+    },
+    //
+    cleanData: function(v) {
+
     },
     // Save button pressed
     onSave: function() {
@@ -737,14 +931,17 @@ Ext.define("NOC.core.ModelApplication", {
             NOC.error("Error in data");
             return;
         }
-        var v = me.form.getFieldValues();
+        var v = me.getFormData();
         if(!me.currentRecord && v[me.idField] !== undefined) {
             delete v[me.idField];
         }
+        //
+        me.cleanData(v);
         // Fetch comboboxes labels
         me.form.getFields().each(function(field) {
-            if(Ext.isDefined(field.getLookupData))
+            if(Ext.isDefined(field.getLookupData)) {
                 v[field.name + "__label"] = field.getLookupData();
+            }
         });
         me.saveRecord(v);
     },
@@ -787,7 +984,16 @@ Ext.define("NOC.core.ModelApplication", {
     // Set form title
     setFormTitle: function(tpl) {
         var me = this;
-        me.formTitle.update(Ext.String.format(tpl, me.appTitle));
+        if(me.formTitle) {
+            me.formTitle.update(Ext.String.format(tpl, me.appTitle));
+        }
+    },
+    //
+    setFormId: function(id) {
+        var me = this;
+        if(me.toolbarIdField) {
+            me.toolbarIdField.setValue(id);
+        }
     },
     //
     activateCustomFormToolbar: function(status) {
@@ -816,22 +1022,45 @@ Ext.define("NOC.core.ModelApplication", {
     showOpError: function(action, op, status) {
         var text = Ext.String.format("Failed to {0}", action);
         if(status) {
+            var m = status.message;
+            if (status.status === 400) {
+                m = status.traceback;
+            }
             text = Ext.String.format("Failed to {0}!<br>{1}",
-                action, status.message);
+                action, m);
         }
         NOC.error(text);
     },
     // "close" button pressed
     onClose: function() {
-        var me = this;
+        var me = this,
+            toReload = me.idField in me.currentQuery;
+        if(toReload) {
+            // Remove filter set by loadById
+            delete me.currentQuery[me.idField];
+        }
+        // Apply updated filter
+        me.store.setFilterParams(me.currentQuery);
         me.showGrid();
-        me.reloadStore();
+        if(toReload) {
+            me.reloadStore();
+        }
     },
     // "clone" button pressed
     onClone: function() {
         var me = this;
+        // Reset UUID
+        if(me.currentRecord && me.currentRecord.get("uuid")) {
+            me.currentRecord.set("uuid", null);
+            me.form.setValues({uuid: null});
+        }
+        // Reset parents of inline stores
+        Ext.each(me.inlineStores, function(s) {
+            s.cloneData();
+        });
         me.currentRecord = null;  // Mark record as new
         me.setFormTitle(me.createTitle);
+        me.setFormId("CLONE");
         me.cloneButton.setDisabled(true);
     },
     // Return Grid's row classes
@@ -874,6 +1103,7 @@ Ext.define("NOC.core.ModelApplication", {
             success: function() {
                 // Invert current status
                 r.set("fav_status", !r.get("fav_status"));
+                grid.refresh();
             }
         });
     },
@@ -900,8 +1130,13 @@ Ext.define("NOC.core.ModelApplication", {
     onInlineEdit: function() {
         var me = this;
         if(me.currentRecord) {
-            me.currentRecord.setDirty();
+            // deprecated method
+            // me.currentRecord.setDirty();
         }
+    },
+    //
+    onInlineBeforeEdit: function(editor, context, eOpts) {
+        var me = this;
     },
     // Admin action selected
     onAction: function(menu, item, e) {
@@ -909,6 +1144,10 @@ Ext.define("NOC.core.ModelApplication", {
             records = me.grid.getSelectionModel().getSelection().map(function(o) {
                 return o.get(me.idField)
             });
+        if(me.hasGroupEdit && item.itemId === "group_edit") {
+            me.showGroupEditForm(records);
+            return;
+        }
         if(item.form) {
             me.showActionForm(item, records);
         } else {
@@ -931,6 +1170,9 @@ Ext.define("NOC.core.ModelApplication", {
                         html: d,
                         width: 600,
                         height: 400,
+                        autoScroll: true,
+                        layout: "fit",
+                        maximizable: true,
                         title: Ext.String.format("Result: {0}", action.text)
                     }).show();
                 } else {
@@ -958,7 +1200,7 @@ Ext.define("NOC.core.ModelApplication", {
                 records.length),
             buttons: [{
                 text: "Run",
-                iconCls: "icon_tick",
+                glyph: NOC.glyph.play,
                 handler: function() {
                     var form = w.items.first().getForm();
                     if(!form.isValid()) {
@@ -982,5 +1224,287 @@ Ext.define("NOC.core.ModelApplication", {
     // onPreview: function(record)
     // to create item preview
     //
-    onPreview: undefined
+    onPreview: undefined,
+    //
+    // Load record by id and call callback
+    // Callback is the function(record)
+    //
+    loadById: function(id, callback) {
+        var me = this,
+            fp = {};
+        fp[me.idField] = id;
+        me.currentQuery[me.idField] = id;
+        me.store.setFilterParams(fp);
+        me.store.load({
+            scope: me,
+            callback: function(records, operation, success) {
+                if(success && records.length === 1) {
+                    Ext.callback(callback, me, [records[0]]);
+                }
+            }
+        });
+    },
+    //
+    restoreHistory: function(args) {
+        var me = this;
+        if(args.length === 1) {
+            me.loadById(args[0], function(record) {
+                me.onEditRecord(record);
+            });
+        }
+    },
+    //
+    onBeforeLoad: function() {
+        var me = this;
+        if(me.rendered) {
+            me.refreshButton.setDisabled(true);
+        }
+    },
+    //
+    onLoad: function() {
+        var me = this,
+            total = me.store.getTotalCount();
+        me.totalField.setValue("Total: " + total);
+        if(me.rendered) {
+            me.refreshButton.setDisabled(false);
+        }
+    },
+    //
+    onLoadError: function() {
+        var me = this;
+        if(me.rendered) {
+            me.refreshButton.setDisabled(false);
+        }
+    },
+    //
+    onRefresh: function() {
+        var me = this;
+        me.reloadStore();
+    },
+    // Returns true if form has at least one groupEdit: true
+    checkGroupEdit: function() {
+        var me = this,
+            check = function(seq) {
+                if(!seq) {
+                    return false;
+                }
+                for(var i = 0; i < seq.length; i++) {
+                    var v = seq[i];
+                    if(!v) {
+                        continue;
+                    }
+                    if(v.groupEdit === true) {
+                        return true;
+                    }
+                    if(v.items && v.items.length && check(v.items)) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+        return NOC.hasPermission("update") && check(me.fields);
+    },
+    //
+    createGroupForm: function() {
+        var me = this,
+            form,
+            getFormItems = function(fields) {
+                var items = [];
+                Ext.each(fields, function(v) {
+                    var x;
+                    switch(v.xtype) {
+                        case "fieldset":
+                        case "container":
+                            x = {
+                                xtype: v.xtype,
+                                title: v.title,
+                                items: getFormItems(v.items)
+                            };
+                            if(v.layout) {
+                                x.layout = v.layout;
+                            }
+                            if(v.defaults) {
+                                x.defaults = v.defaults;
+                            }
+                            if(v.border || v.border === false) {
+                                x.border = v.border;
+                            }
+                            if(v.padding || v.padding === 0) {
+                                x.padding = v.padding;
+                            }
+                            items.push(x);
+                            break;
+                        case "checkbox":
+                        case "checkboxfield":
+                            if(v.groupEdit === true) {
+                                x = {
+                                    xtype: "combobox",
+                                    fieldLabel: v.boxLabel,
+                                    name: v.name,
+                                    store: [
+                                        [0, "Leave unchanged"],
+                                        [true, "Set"],
+                                        [false, "Reset"]
+                                    ],
+                                    value: 0
+                                }
+                            } else {
+                                x = v.cloneConfig ? v.cloneConfig() : v;
+                                if(x.setDisabled) {
+                                    x.setDisabled(true);
+                                } else {
+                                    x.disabled = true;
+                                }
+                            }
+                            items.push(x);
+                            me.groupCheckboxFields[v.name] = true;
+                            break;
+                        default:
+                            x = v.cloneConfig ? v.cloneConfig() : v;
+                            if(x.setDisabled) {
+                                x.setDisabled(x.groupEdit !== true);
+                            } else {
+                                x.disabled = x.groupEdit !== true;
+                            }
+                            items.push(x);
+                            break;
+                    }
+                });
+                return items;
+            };
+
+        me.groupCheckboxFields = {};
+
+        me.groupFormTitle = Ext.create("Ext.container.Container", {
+            html: "Title",
+            padding: 4,
+            style: {
+                fontWeight: "bold"
+            }
+        });
+
+        form = Ext.create("Ext.form.Panel", {
+            padding: 4,
+            bodyPadding: 4,
+            autoScroll: true,
+            items: [me.groupFormTitle].concat(getFormItems(me.fields)),
+            dockedItems: [
+                {
+                    xtype: "toolbar",
+                    dock: "top",
+                    items: [
+                        {
+                            text: "Save",
+                            glyph: NOC.glyph.save,
+                            // formBind: true,
+                            // disabled: true,
+                            scope: me,
+                            // @todo: check access
+                            handler: me.onGroupSave
+                        },
+                        {
+                            text: "Close",
+                            glyph: NOC.glyph.arrow_left,
+                            scope: me,
+                            handler: me.onGroupClose
+                        }
+                    ]
+                }
+            ]
+        });
+        me.groupForm = form.getForm();
+        return form;
+    },
+    //
+    createActionMenu: function() {
+        var me = this,
+            items = [];
+        // Group edit
+        if(me.hasGroupEdit) {
+            items.push({
+                text: "Group Edit",
+                itemId: "group_edit",
+                glyph: NOC.glyph.edit
+            });
+        }
+        // Other items
+        if(me.actions) {
+            items = items.concat(me.actions.map(function(o) {
+                return {
+                    text: o.title,
+                    itemId: o.action,
+                    form: o.form,
+                    glyph: o.glyph,
+                    resultTemplate: o.resultTemplate
+                }
+            }));
+        }
+
+        me.actionMenu = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.download,
+            tooltip: "Group actions",
+            hasAccess: NOC.hasPermission("update"),
+            itemId: "action_menu",
+            disabled: true,
+            menu: {
+                xtype: "menu",
+                plain: true,
+                items: items,
+                listeners: {
+                    click: {
+                        scope: me,
+                        fn: me.onAction
+                    }
+                }
+            }
+        });
+        return me.actionMenu;
+    },
+    //
+    showGroupEditForm: function(items) {
+        var me = this;
+        me.groupEditItems = items;
+        me.groupFormTitle.update(Ext.String.format(
+            me.groupChangeTitle, items.length, me.appTitle
+        ));
+        me.showItem(me.ITEM_GROUP_FORM);
+    },
+    //
+    onGroupClose: function() {
+        var me = this;
+        me.showGrid();
+    },
+    //
+    onGroupSave: function() {
+        var me = this,
+            values;
+        // @todo: Form validation
+        values = me.groupForm.getValues();
+        // Normalize checkboxes and fields
+        Ext.Object.each(values, function(v) {
+            if((me.groupCheckboxFields[v] && values[v] === 0) || values[v] === "") {
+                delete values[v];
+            }
+        });
+        values.ids = me.groupEditItems;
+        Ext.Ajax.request({
+            url: me.base_url + "actions/group_edit/",
+            method: "POST",
+            scope: me,
+            jsonData: values,
+            success: function(response) {
+                NOC.info("Records has been updated");
+                me.showGrid();
+                me.reloadStore();
+            },
+            failure: function() {
+                NOC.error("Failed");
+            }
+        });
+    },
+    //
+    onMetrics: function(record) {
+        var me = this;
+        me.showItem(me.ITEM_METRIC_SETTINGS).preview(record);
+    }
 });

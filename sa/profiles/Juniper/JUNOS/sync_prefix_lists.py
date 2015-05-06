@@ -18,7 +18,6 @@ rx_pl = re.compile(r"^set policy-options policy-statement \S+ term pass from rou
 class Script(noc.sa.script.Script):
     name = "Juniper.JUNOS.sync_prefix_lists"
     implements = [ISyncPrefixLists]
-    TIMEOUT = 1800
 
     def execute(self, changed_prefix_lists):
         actions = []

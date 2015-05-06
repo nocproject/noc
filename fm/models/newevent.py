@@ -18,12 +18,12 @@ from noc.lib import nosql
 
 class NewEvent(document.Document):
     """
-    Raw unclassified event as written by SAE
+    Raw unclassified event as written by SAE or collector
     """
     meta = {
         "collection": "noc.events.new",
         "allow_inheritance": False,
-        "indexes": ["timestamp"]
+        "indexes": ["seq"]
     }
     status = "N"
     # Fields
@@ -31,6 +31,7 @@ class NewEvent(document.Document):
     managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
     raw_vars = nosql.RawDictField(required=True)
     log = fields.ListField(fields.EmbeddedDocumentField(EventLog))
+    seq = fields.BinaryField(max_bytes=8, required=False)
 
     def __unicode__(self):
         return unicode(self.id)

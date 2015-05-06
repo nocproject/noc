@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## OS.FreeBSD.get_arp
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -26,6 +26,8 @@ class Script(NOCScript):
             s = self.cli("arp -an")
         r = []
         for match in self.rx_line.finditer(s):
+            if match.group("mac") == "FF:FF:FF:FF:FF:FF":
+                continue
             r += [{
                 "ip": match.group("ip"),
                 "mac": match.group("mac"),

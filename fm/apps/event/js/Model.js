@@ -40,7 +40,7 @@ Ext.define("NOC.fm.event.Model", {
         },
         {
             name: "subject",
-            type: "str"
+            type: "string"
         },
         {
             name: "repeats",
@@ -52,7 +52,7 @@ Ext.define("NOC.fm.event.Model", {
         },
         {
             name: "duration",
-            type: "float"
+            type: "int"
         },
         {
             name: "row_class",

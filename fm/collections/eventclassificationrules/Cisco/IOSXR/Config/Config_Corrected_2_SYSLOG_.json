@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Config | Config Corrected #2 (SYSLOG)",
+    "uuid": "f2e8fb19-db0d-40f7-9f19-b2708f1850cc",
+    "description": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface GigabitEthernet0/1/0/6 in Bundle-Ether5 is no longer incompatible with the bundle operational state",
+    "event_class__name": "Config | Config Corrected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "^Cisco.IOSXR$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface .+ is no longer incompatible with the .+ operational state"
+        }
+    ]
+}

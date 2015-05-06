@@ -1,0 +1,6 @@
+{
+    "name": "MikroTik | RouterOS | License | SoftwareID",
+    "uuid": "254db3ab-f94d-42ef-b991-16610412ff24",
+    "description": "RouterOS SoftwareID",
+    "type": "str"
+}

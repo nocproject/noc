@@ -24,6 +24,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
+            name: "level",
+            type: "int"
+        },
+        {
             name: "style",
             type: "int"
         },
@@ -65,17 +69,21 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 4000
         },
         {
-            name: "enable_config_polling",
+            name: "check_link_interval",
+            type: "string"
+        },
+        {
+            name: "enable_config_discovery",
             type: "boolean",
             defaultValue: true
         },
         {
-            name: "config_polling_min_interval",
+            name: "config_discovery_min_interval",
             type: "int",
             defaultValue: 600
         },
         {
-            name: "config_polling_max_interval",
+            name: "config_discovery_max_interval",
             type: "int",
             defaultValue: 86400
         },
@@ -93,6 +101,36 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "version_inventory_max_interval",
             type: "int",
             defaultValue: 86400
+        },
+        {
+            name: "enable_caps_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "caps_discovery_min_interval",
+            type: "int",
+            defaultValue: 600
+        },
+        {
+            name: "caps_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
+            name: "enable_uptime_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "uptime_discovery_min_interval",
+            type: "int",
+            defaultValue: 60
+        },
+        {
+            name: "uptime_discovery_max_interval",
+            type: "int",
+            defaultValue: 300
         },
         {
             name: "enable_interface_discovery",
@@ -286,6 +324,21 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "oam_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
+            name: "enable_asset_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "asset_discovery_min_interval",
+            type: "int",
+            defaultValue: 600
+        },
+        {
+            name: "asset_discovery_max_interval",
             type: "int",
             defaultValue: 86400
         },

@@ -1,0 +1,33 @@
+{
+    "name": "Juniper | ScreenOS | Network | BGP | Backward Transition (SNMP)",
+    "uuid": "1aa598b4-455e-4d45-89e4-76cd6864e004",
+    "description": "NETSCREEN-BGP4-MIB::nsBgpEstablished, bgp-backwardtransition",
+    "event_class__name": "Network | BGP | Backward Transition",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.ScreenOS$"
+        },
+        {
+            "key_re": "^NETSCREEN-TRAP-MIB::netscreenTrapType\\.0$",
+            "value_re": "^bgp-backwardtransition$"
+        },
+        {
+            "key_re": "^NETSCREEN-VR-BGP4-MIB::nsVrBgpPeerIdentifier$",
+            "value_re": "^(?P<peer__int_to_ip>\\S+)$"
+        },
+        {
+            "key_re": "^NETSCREEN-VR-BGP4-MIB::nsVrBgpPeerState$",
+            "value_re": "^(?P<state__enum__bgp_state>\\S+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^NETSCREEN-BGP4-MIB::nsBgpEstablished$"
+        }
+    ]
+}

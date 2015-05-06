@@ -1,0 +1,37 @@
+{
+    "name": "DLink | Modules | DEM-412CX",
+    "uuid": "9180351e-be76-4abc-ba28-6c0c48419910",
+    "vendor__code": "DLINK",
+    "description": "1 Port CX4 Module",
+    "cr_context": "MODULE",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "DLink | DGS3610 | Module"
+        },
+        {
+            "description": "CX4 port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "cx4_1",
+            "protocols": ["10GBASECX4"],
+            "type__name": "Electrical | SFF-8470"
+        },
+        {
+            "description": "CX4 port 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "cx4_2",
+            "protocols": ["10GBASECX4"],
+            "type__name": "Electrical | SFF-8470"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "DEM-412CX"
+        }
+    }
+}

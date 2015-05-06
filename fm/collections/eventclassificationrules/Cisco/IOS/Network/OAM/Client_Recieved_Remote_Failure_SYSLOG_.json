@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | OAM | Client Recieved Remote Failure (SYSLOG)",
+    "uuid": "8e3dbb73-8147-4dbf-b99c-a30f55946066",
+    "description": "%ETHERNET_OAM-6-RFI: The client on interface Gi0/1 has received a remote failure indication from its remote peer(failure reason = remote client down action = )",
+    "event_class__name": "Network | OAM | Client Recieved Remote Failure",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ETHERNET_OAM-6-RFI: The client on interface (?P<interface>\\S+) has received a remote failure indication from its remote peer\\s*\\(failure reason = (?P<reason>.+)\\)"
+        }
+    ]
+}

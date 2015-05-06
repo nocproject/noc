@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | PIM | Neighbor Down (SYSLOG)",
+    "uuid": "613cb93a-4d73-467e-b29e-e2edccaddd8b",
+    "description": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor 1.1.1.1 DOWN on BV2 - interface state changed",
+    "event_class__name": "Network | PIM | Neighbor Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "^Cisco.IOSXR$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor (?P<neighbor>\\S+) DOWN on (?P<interface>\\S+) - (?P<reason>.+)$"
+        }
+    ]
+}

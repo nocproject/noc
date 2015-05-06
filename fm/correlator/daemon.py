@@ -13,6 +13,7 @@ import datetime
 import time
 import logging
 import re
+from collections import defaultdict
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
@@ -25,9 +26,12 @@ from noc.fm.correlator.jobs.performance_report import PerformanceReportJob
 from noc.lib.daemon import Daemon
 from noc.fm.models import ActiveEvent, EventClass,\
                           ActiveAlarm, AlarmLog, AlarmTrigger, AlarmClass
+from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.main.models import PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
+from noc.lib.solutions import get_alarm_class_handlers, get_alarm_jobs
+import utils
 
 
 class Correlator(Daemon):
@@ -39,8 +43,9 @@ class Correlator(Daemon):
         self.back_rules = {}  # event_class -> [Rule]
         self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
-        self.rca_reverse = {}  # alarm_class -> set([alarm_class])
+        self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
         self.alarm_jobs = {}  # alarm_class -> [JobLauncher, ..]
+        self.handlers = {}  # alamr class id -> [<handler>]
         logging.info("Running noc-correlator")
         self.scheduler = CorrelatorScheduler(self,
             cleanup=reset_queries)
@@ -64,6 +69,7 @@ class Correlator(Daemon):
         self.load_triggers()
         self.load_rca_rules()
         self.load_alarm_jobs()
+        self.load_handlers()
 
     def load_rules(self):
         """
@@ -117,7 +123,7 @@ class Correlator(Daemon):
         logging.debug("Loading RCA Rules")
         n = 0
         self.rca_forward = {}
-        self.rca_reverse = {}
+        self.rca_reverse = defaultdict(set)
         for a in AlarmClass.objects.all():
             if not a.root_cause:
                 continue
@@ -125,10 +131,7 @@ class Correlator(Daemon):
             for c in a.root_cause:
                 rc = RCACondition(a, c)
                 self.rca_forward[a.id] += [rc]
-                try:
-                    self.rca_reverse[rc.root.id].add(a.id)
-                except KeyError:
-                    self.rca_reverse[rc.root.id] = set([a.id])
+                self.rca_reverse[rc.root.id].add(str(a.id))
                 n += 1
         logging.debug("%d RCA Rules have been loaded" % n)
 
@@ -137,16 +140,51 @@ class Correlator(Daemon):
         Load alarm jobs
         :return:
         """
+        logging.info("Loading alarm jobs")
         n = 0
         self.alarm_jobs = {}  # class id ->
-        for a in AlarmClass.objects.all():
-            if not a.jobs:
+        for ac in AlarmClass.objects.all():
+            jobs = get_alarm_jobs(ac)
+            if not jobs:
                 continue
-            self.alarm_jobs[a.id] = [
+            logging.debug("    <%s>: %s", ac.name, ", ".join(j.job for j in jobs))
+            self.alarm_jobs[ac.id] = [
                 JobLauncher(self.scheduler, j.job, j.interval, j.vars)
-                for j in a.jobs]
-            n += len(self.alarm_jobs[a.id])
+                for j in jobs]
+            n += len(jobs)
         logging.debug("%d alarm jobs have been loaded" % n)
+
+    def load_handlers(self):
+        logging.info("Loading handlers")
+        self.handlers = {}
+        for ac in AlarmClass.objects.filter():
+            handlers = get_alarm_class_handlers(ac)
+            if not handlers:
+                continue
+            logging.debug("    <%s>: %s", ac.name, ", ".join(handlers))
+            hl = []
+            for h in ac.handlers:
+                # Resolve handler
+                hh = self.resolve_handler(h)
+                if hh:
+                    hl += [hh]
+            if hl:
+                self.handlers[ac.id] = hl
+        logging.info("Handlers are loaded")
+
+    @classmethod
+    def resolve_handler(cls, h):
+        mn, s = h.rsplit(".", 1)
+        try:
+            m = __import__(mn, {}, {}, s)
+        except ImportError:
+            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            return None
+        try:
+            return getattr(m, s)
+        except AttributeError:
+            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            return None
 
     def mark_as_failed(self, event):
         """
@@ -185,13 +223,33 @@ class Correlator(Daemon):
         return False
 
     def raise_alarm(self, r, e):
+        managed_object = self.eval_expression(r.managed_object, event=e)
+        if not managed_object:
+            logging.debug("Empty managed object, ignoring")
+            return
+        if e.managed_object.id != managed_object.id:
+            logging.debug("Changing managed object to %s",
+                          managed_object.name)
         discriminator, vars = r.get_vars(e)
         if r.unique:
             assert discriminator is not None
             # @todo: unneeded SQL lookup here
             a = ActiveAlarm.objects.filter(
-                managed_object=e.managed_object_id,
+                managed_object=managed_object.id,
                 discriminator=discriminator).first()
+            if not a:
+                # Try to reopen alarm
+                a = ArchivedAlarm.objects.filter(
+                    managed_object=managed_object.id,
+                    discriminator=discriminator,
+                    control_time__gte=e.timestamp
+                ).first()
+                if a:
+                    # Reopen alarm
+                    logging.debug("%s: Event %s(%s) reopens alarm %s(%s)" % (
+                        r.u_name, str(e.id), e.event_class.name,
+                        str(a.id), a.alarm_class.name))
+                    a = a.reopen("Reopened by disposition rule '%s'" % r.u_name)
             if a:
                 # Active alarm found, refresh
                 logging.debug("%s: Contributing event %s(%s) to active alarm %s(%s)" % (
@@ -201,13 +259,13 @@ class Correlator(Daemon):
                 return
         # Create new alarm
         a = ActiveAlarm(
-            timestamp=e.timestamp, last_update=e.timestamp,
-            managed_object=e.managed_object,
+            timestamp=e.timestamp,
+            last_update=e.timestamp,
+            managed_object=managed_object.id,
             alarm_class=r.alarm_class,
             severity=r.severity,
             vars=vars,
             discriminator=discriminator,
-            events=[e],
             log=[
                 AlarmLog(
                     timestamp=datetime.datetime.now(),
@@ -220,9 +278,9 @@ class Correlator(Daemon):
         )
         a.save()
         a.contribute_event(e, open=True)
-        logging.debug("%s: Event %s(%s) raises alarm %s (%s): %r" % (
-            r.u_name, str(e.id), e.event_class.name,
-            str(a.id), r.alarm_class.name, a.vars))
+        logging.debug("%s: Event %s (%s) raises alarm %s (%s): %r",
+                      r.u_name, str(e.id), e.event_class.name,
+                      str(a.id), r.alarm_class.name, a.vars)
         # RCA
         if a.alarm_class.id in self.rca_forward:
             # Check alarm is a consequence of existing one
@@ -230,9 +288,16 @@ class Correlator(Daemon):
         # Check alarm is root cause for existing ones
         if a.alarm_class.id in self.rca_reverse:
             # @todo: Restrict to window
-            for aa in ActiveAlarm.objects.filter(alarm_class__in=self.rca_reverse):
+            for aa in ActiveAlarm.objects.filter(alarm_class__in=self.rca_reverse[a.alarm_class.id]):
                 if aa.alarm_class.id in self.rca_forward and a.id != aa.id:
                     self.set_root_cause(aa, a)
+        # Call handlers
+        if a.alarm_class.id in self.handlers:
+            for h in self.handlers[a.alarm_class.id]:
+                try:
+                    h(a)
+                except:
+                    error_report()
         # Call triggers if necessary
         if r.alarm_class.id in self.triggers:
             for t in self.triggers[r.alarm_class.id]:
@@ -240,6 +305,13 @@ class Correlator(Daemon):
                     t.call(a)
                 except:
                     error_report()
+        #
+        if not a.severity:
+            # Alarm severity has been reset to 0 by handlers
+            # Silently drop alarm
+            logging.debug("Alarm severity is 0, dropping")
+            a.delete()
+            return
         # Launch jobs when necessary
         if a.alarm_class.id in self.alarm_jobs:
             for job in self.alarm_jobs[r.alarm_class.id]:
@@ -248,19 +320,23 @@ class Correlator(Daemon):
         if not a.root:
             a.managed_object.event(a.managed_object.EV_ALARM_RISEN, {
                 "alarm": a,
-                "subject": a.get_translated_subject("en"),
-                "body": a.get_translated_body("en"),
-                "symptoms": a.get_translated_symptoms("en"),
-                "recommended_actions": a.get_translated_recommended_actions("en"),
-                "probable_causes": a.get_translated_probable_causes("en")
-            })
+                "subject": a.subject,
+                "body": a.body,
+                "symptoms": a.alarm_class.symptoms,
+                "recommended_actions": a.alarm_class.recommended_actions,
+                "probable_causes": a.alarm_class.probable_causes
+            }, delay=a.alarm_class.get_notification_delay())
 
     def clear_alarm(self, r, e):
+        managed_object = self.eval_expression(r.managed_object, event=e)
+        if not managed_object:
+            logging.debug("Empty managed object, ignoring")
+            return
         if r.unique:
             discriminator, vars = r.get_vars(e)
             assert discriminator is not None
             a = ActiveAlarm.objects.filter(
-                managed_object=e.managed_object_id,
+                managed_object=managed_object.id,
                 discriminator=discriminator).first()
             if a:
                 logging.debug("%s: Event %s(%s) clears alarm %s(%s)" % (
@@ -310,6 +386,18 @@ class Correlator(Daemon):
                 return de
         return None
 
+    def eval_expression(self, expression, **kwargs):
+        """
+        Evaluate expression in given context
+        """
+        env = {
+            "NOC_ACTIVATORS": self.NOC_ACTIVATORS,
+            "re": re,
+            "utils": utils
+        }
+        env.update(kwargs)
+        return eval(expression, {}, env)
+
     def dispose_event(self, e):
         """
         Dispose event according to disposition rule
@@ -318,16 +406,11 @@ class Correlator(Daemon):
         if not drc:
             return
         # Apply disposition rules
-        env = {
-            "event": e,
-            "NOC_ACTIVATORS": self.NOC_ACTIVATORS,
-            "re": re
-        }
         for r in drc:
             if r.conditional_pyrule:
                 cond = r.conditional_pyrule(rule_name=r.name, event=e)
             else:
-                cond = eval(r.condition, {}, env)
+                cond = self.eval_expression(r.condition, event=e)
             if cond:
                 # Process action
                 if r.action == "drop":
@@ -391,5 +474,6 @@ class Correlator(Daemon):
         """
         Main daemon loop
         """
+        ActiveAlarm.enable_caching(600)
         self.reset_stats()
         self.scheduler.run()

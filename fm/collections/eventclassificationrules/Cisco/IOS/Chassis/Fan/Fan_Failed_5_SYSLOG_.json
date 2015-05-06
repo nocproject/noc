@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Failed #5 (SYSLOG)",
+    "uuid": "c5e76189-3732-42b5-803f-bc56e39abf69",
+    "description": "%ENVMON-3-FAN_FAILED: Fan 1 not rotating.",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ENVMON-3-FAN_FAILED: (?P<name>Fan \\d+) not rotating"
+        }
+    ]
+}

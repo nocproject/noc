@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | Link | Link Down (SYSLOG)",
+    "uuid": "64eb36c8-c568-4afd-bb61-2b993091a1c9",
+    "description": "Aug  3 13:43:31 mib2d[1144]: SNMP_TRAP_LINK_DOWN: ifIndex 552, ifAdminStatus up(1), ifOperStatus down(2), ifName ae5",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "SNMP_TRAP_LINK_DOWN:.+ifName (?P<interface>\\S+)$"
+        }
+    ]
+}

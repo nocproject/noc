@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Alentis.NetPing.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -19,9 +19,15 @@ class Script(NOCScript):
     cache = True
 
     rx_snmp = re.compile(
-        r"^(?P<platform1>\S+) (?P<platform2>\S+), FW v(?P<version>\S+)$")
-    rx_http = re.compile(
-        r"^var devname='+(?P<platform1>\S+) (?P<platform2>\S+)+'; var fwver='v+(?P<version>\S+)+';")
+        r"^(?P<platform>\S+), FW v(?P<version>\S+)$")
+
+    rx_plat = re.compile(
+        r"^var devname='+(?P<platform>.+)+';$",
+        re.MULTILINE)
+
+    rx_ver = re.compile(
+        r"^var fwver='v+(?P<version>\S+)+';$",
+        re.MULTILINE)
 
     def execute(self):
         # Try SNMP first
@@ -30,8 +36,7 @@ class Script(NOCScript):
                 ver = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
                 match = self.rx_snmp.search(ver)
                 if match:
-                    platform = "%s-%s" % (match.group("platform1"),
-                                          match.group("platform2"))
+                    platform = match.group("platform")
                     version = match.group("version")
                 return {
                         "vendor": "Alentis",
@@ -42,19 +47,19 @@ class Script(NOCScript):
                 pass
 
         # Fallback to HTTP
-        ver = self.http.get("/devname.cgi")
-        match = self.rx_http.search(ver)
-        platform = "%s-%s" % (match.group("platform1"),
-                              match.group("platform2"))
+        data = self.http.get("/devname.cgi")
+        match = self.rx_plat.search(data)
+        platform = match.group("platform")
+        match = self.rx_ver.search(data)
         version = match.group("version")
-        serial = self.http.get("/setup_get.cgi")
-        serial = serial.split('serial:"SN:')[1]
-        serial = serial.split(' [')[0]
+
+        data = self.profile.var_data(self, "/setup_get.cgi")
+
         return {
                 "vendor": "Alentis",
                 "platform": platform,
                 "version": version,
                 "attributes": {
-                        "Serial Number": serial
+                        "Serial Number": data["serialnum"]
                     }
                 }

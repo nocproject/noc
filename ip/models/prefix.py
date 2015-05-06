@@ -17,12 +17,11 @@ from vrf import VRF
 from afi import AFI_CHOICES
 from noc.peer.models import AS
 from noc.vc.models.vc import VC
-from noc.main.models import Style, ResourceState, CustomField
+from noc.main.models import Style, ResourceState
 from noc.lib.fields import TagsField, CIDRField
 from noc.lib.app import site
-from noc.lib.search import SearchResult
-from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix,\
-    is_ipv4_prefix, is_ipv6_prefix, ValidationError
+from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
+                                ValidationError)
 from noc.lib.ip import IP, IPv4
 
 
@@ -60,6 +59,7 @@ class Prefix(models.Model):
     )
     project = models.ForeignKey(
         Project, verbose_name="Project",
+        on_delete=models.SET_NULL,
         null=True, blank=True, related_name="prefix_set")
     vc = models.ForeignKey(
         VC,
@@ -95,6 +95,18 @@ class Prefix(models.Model):
         null=True, blank=True,
         limit_choices_to={"afi": "6"},
         on_delete=models.SET_NULL)
+    enable_ip_discovery = models.CharField(
+        _("Enable IP Discovery"),
+        max_length=1,
+        choices=[
+            ("I", "Inherit"),
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="I",
+        blank=False,
+        null=False
+    )
 
     csv_ignored_fields = ["parent"]
 
@@ -240,39 +252,31 @@ class Prefix(models.Model):
         # Unlink dual-stack allocations
         self.clear_transition()
         # Recursive delete
-        c = connection.cursor()
+        # Get nested prefixes
+        ids = Prefix.objects.filter(
+            vrf=self.vrf,
+            afi=self.afi
+        ).extra(
+            where=["prefix <<= %s"],
+            params=[self.prefix]
+        ).values_list("id", flat=True)
+        #
+        zones = set()
+        for a in Address.objects.filter(prefix__in=ids):
+            zones.add(a.address)
+            zones.add(a.fqdn)
         # Delete nested addresses
-        c.execute("""
-            DELETE FROM %s
-            WHERE
-                prefix_id IN
-                    (
-                    SELECT id
-                    FROM %s
-                    WHERE
-                            vrf_id=%%s
-                        AND afi=%%s
-                        AND prefix <<= %%s
-                    )""" % (Address._meta.db_table,
-                            Prefix._meta.db_table),
-            [self.vrf.id, self.afi, self.prefix]
-        )
+        Address.objects.filter(prefix__in=ids).delete()
         # Delete nested prefixes
-        c.execute("""
-            DELETE FROM %s
-            WHERE
-                    vrf_id=%%s
-                AND afi=%%s
-                AND prefix <<= %%s
-        """ % Prefix._meta.db_table, [self.vrf.id, self.afi, self.prefix])
+        Prefix.objects.filter(id__in=ids).delete()
         # Delete permissions
-        c.execute("""
-            DELETE FROM %s
-            WHERE
-                    vrf_id=%%s
-                AND afi=%%s
-                AND prefix=%%s
-        """ % PrefixAccess._meta.db_table, [self.vrf.id, self.afi, self.prefix])
+        PrefixAccess.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+            where=["prefix <<= %s"],
+            params=[self.prefix]
+        )
+        # Touch dns zones
+        for z in zones:
+            DNSZone.touch(z)
 
     @property
     def maintainers(self):
@@ -387,33 +391,37 @@ class Prefix(models.Model):
             b.delete()
             return False
 
-    ##
-    ## Search engine plugin
-    ##
-    @classmethod
-    def search(cls, user, query, limit):
-        q = Q(description__icontains=query)
-        if is_ipv4_prefix(query):
-            q |= Q(afi="4", prefix=query)
-        elif is_ipv6_prefix(query):
-            q |= Q(afi="6", prefix=query)
-        cq = CustomField.table_search_Q(cls._meta.db_table, query)
-        if cq:
-            q |= cq
-        for o in cls.objects.filter(q):
-            if query == o.prefix:
-                relevancy = 1.0
-            elif query in o.description:
-                relevancy = float(len(query)) / float(len(o.description))
-            else:
-                relevancy = 0
-            yield SearchResult(
-                url=("ip:ipam:vrf_index", o.vrf.id, o.afi, o.prefix),
-                title="VRF %s (IPv%s): %s (%s)" % (
-                o.vrf.name, o.afi, o.prefix, o.description),
-                text=unicode(o),
-                relevancy=relevancy
-            )
+    def get_index(self):
+        """
+        Full-text search
+        """
+        content = [self.prefix]
+        card = "Prefix %s" % self.prefix
+        if self.description:
+            content += [self.description]
+            card += " (%s)" % self.description
+        r = {
+            "id": "ip.prefix:%s" % self.id,
+            "title": self.prefix,
+            "content": "\n".join(content),
+            "card": card
+        }
+        if self.tags:
+            r["tags"] = self.tags
+        return r
+
+    def get_search_info(self, user):
+        # @todo: Check user access
+        return (
+            "iframe",
+            None,
+            {
+                "title": "Assigned addresses",
+                "url": "/ip/ipam/%s/%s/%s/" % (
+                    self.vrf.id, self.afi, self.prefix
+                )
+            }
+        )
 
     ##
     ## All prefix-related address ranges
@@ -436,6 +444,35 @@ class Prefix(models.Model):
             ORDER BY from_address, to_address
             """,
             [self.vrf.id, self.afi, self.prefix, self.prefix, self.prefix]))
+
+    @property
+    def ippools(self):
+        """
+        All nested IP Pools
+        """
+        return list(IPPool.objects.raw("""
+            SELECT *
+            FROM ip_ippool i
+            WHERE
+                  vrf_id = %s
+              AND afi = %s
+              AND from_address << %s
+              AND to_address << %s
+              AND NOT EXISTS (
+                SELECT id
+                FROM ip_prefix p
+                WHERE
+                      vrf_id = i.vrf_id
+                  AND afi = i.afi
+                  AND prefix << %s
+                  AND
+                    (
+                      from_address << p.prefix
+                      OR to_address << p.prefix
+                    )
+              )
+            ORDER BY from_address
+        """, [self.vrf.id, self.afi, self.prefix, self.prefix, self.prefix]))
 
     def rebase(self, vrf, new_prefix):
         """
@@ -506,8 +543,46 @@ class Prefix(models.Model):
                 [p.prefix for p in self.children_set.all()]):
             yield str(fp)
 
+    @property
+    def effective_ip_discovery(self):
+        if self.enable_ip_discovery == "I":
+            if self.parent:
+                return self.parent.effective_ip_discovery
+            else:
+                return "E"
+        else:
+            return self.enable_ip_discovery
+
+    @property
+    def usage(self):
+        if self.afi == "4":
+            size = IPv4(self.prefix).size
+            if not size:
+                return 100.0
+            n_ips = Address.objects.filter(prefix=self).count()
+            n_pfx = sum(
+                IPv4(p).size
+                for p in Prefix.objects.filter(parent=self).only("prefix").values_list("prefix", flat=True)
+            )
+            if n_ips:
+                if size > 2:  # Not /31 or /32
+                    size -= 2  # Exclude broadcast and network
+            return float(n_ips + n_pfx) * 100.0 / float(size)
+        else:
+            return None
+
+    @property
+    def usage_percent(self):
+        u = self.usage
+        if u is None:
+            return ""
+        else:
+            return "%.2f%%" % u
+
 # Avoid circular references
 from address import Address
 from prefixaccess import PrefixAccess
 from prefixbookmark import PrefixBookmark
 from addressrange import AddressRange
+from ippool import IPPool
+from noc.dns.models import DNSZone

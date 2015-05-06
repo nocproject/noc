@@ -15,6 +15,8 @@ Ext.define("NOC.core.modelfilter.VCFilter", {
         var me = this,
             w = Ext.create("NOC.vc.vcfilter.LookupField", {
                 width: 180,
+                fieldLabel: me.title,
+                labelAlign: "top",
                 listeners: {
                     select: {
                         scope: me,

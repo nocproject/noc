@@ -9,5 +9,6 @@ console.debug("Defining NOC.vc.vcdomain.LookupField");
 Ext.define("NOC.vc.vcdomain.LookupField", {
     extend: "NOC.core.LookupField",
     alias: "widget.vc.vcdomain.LookupField",
-    requires: ["NOC.vc.vcdomain.Lookup"]
+    requires: ["NOC.vc.vcdomain.Lookup"],
+    uiStyle: "medium"
 });

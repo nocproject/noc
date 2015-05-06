@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | IMPB | Unauthenticated IP-MAC (SYSLOG)",
+    "uuid": "097f0b3f-c6f0-4f65-89d3-7e4f4293fca5",
+    "description": "WARN: Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: 172.16.1.49, MAC: 00-E0-52-85-91-56, Port: 12)",
+    "event_class__name": "Network | IMPB | Unauthenticated IP-MAC",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) Unauthenticated IP-MAC address and discarded by ip mac port binding \\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), [Pp]ort: (?P<interface>\\S+)\\)$"
+        }
+    ]
+}

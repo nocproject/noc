@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | PIM | Invalid RP #1 (SYSLOG)",
+    "uuid": "4a712c8a-8299-4627-bf6e-6dacb93fe9f0",
+    "description": "%PIM-1-INVALID_RP_REG: Received Register from router 150.1.13.3 for group 225.1.1.1, 150.1.4.4 not willing to be RP",
+    "event_class__name": "Network | PIM | Invalid RP",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PIM-1-INVALID_RP_REG: Received Register from router (?P<pim_router>\\S+) for group .+, (?P<invalid_rp>\\S+) not willing to be RP"
+        }
+    ]
+}

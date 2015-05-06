@@ -13,7 +13,6 @@ Ext.define("NOC.peer.peer.Application", {
         "NOC.peer.peeringpoint.LookupField",
         "NOC.peer.peergroup.LookupField",
         "NOC.project.project.LookupField",
-        "NOC.core.TagsField",
         "NOC.peer.as.LookupField"
     ],
     model: "NOC.peer.peer.Model",
@@ -245,15 +244,17 @@ Ext.define("NOC.peer.peer.Application", {
                     name: "import_filter",
                     xtype: "textfield",
                     width: 400,
-                    allowBlank: false,                    
-                    fieldLabel: "Import Filter"
+                    allowBlank: false,
+                    fieldLabel: "Import Filter",
+                    emptyText: "ANY"
                 },
                 {
                     name: "export_filter",
                     xtype: "textfield",
                     width: 400,
                     allowBlank: false,
-                    fieldLabel: "Export Filter"
+                    fieldLabel: "Export Filter",
+                    emptyText: "ANY"
                 },
                 {
                     name: "import_filter_name",

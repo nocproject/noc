@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Chassis | RAM | Insufficient Memory (SYSLOG)",
+    "uuid": "6c81a717-eb89-453c-8fc9-cd5a517a5386",
+    "description": "%BRG_IGMP-W-TABLE_OVERFLOW: IGMP Filter table overflow",
+    "event_class__name": "Chassis | RAM | Insufficient Memory",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%BRG_IGMP-W-TABLE_OVERFLOW: (?P<reason>.+)"
+        }
+    ]
+}

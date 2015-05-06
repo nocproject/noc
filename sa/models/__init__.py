@@ -21,7 +21,10 @@ script_registry.register_all()
 ## Import models
 from administrativedomain import AdministrativeDomain
 from activator import Activator
+from collector import Collector
 from managedobjectprofile import ManagedObjectProfile
+from authprofile import AuthProfile
+from terminationgroup import TerminationGroup
 from managedobject import ManagedObject, ManagedObjectAttribute
 from managedobjectselector import (ManagedObjectSelector,
                                    ManagedObjectSelectorByAttribute)
@@ -34,6 +37,8 @@ from commandsnippet import CommandSnippet
 from activatorcapabilitiescache import ActivatorCapabilitiesCache
 from mrtconfig import MRTConfig
 from failedscriptlog import FailedScriptLog
+from action import Action, ActionParameter
+from actioncommands import ActionCommands
 ##
 ## Post-initialization
 ##

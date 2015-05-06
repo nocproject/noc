@@ -1,0 +1,37 @@
+{
+    "name": "DLink | Modules | DEM-420CX",
+    "uuid": "8d44af10-0aff-49cf-9cc8-3d6ea8aa3a94",
+    "vendor__code": "DLINK",
+    "description": "2 Port CX4 Module",
+    "cr_context": "MODULE",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "DLink | DXS33 | Module"
+        },
+        {
+            "description": "CX4 port 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "cx4_1",
+            "protocols": ["10GBASECX4"],
+            "type__name": "Electrical | SFF-8470"
+        },
+        {
+            "description": "CX4 port 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "cx4_2",
+            "protocols": ["10GBASECX4"],
+            "type__name": "Electrical | SFF-8470"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "DEM-420CX"
+        }
+    }
+}

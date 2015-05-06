@@ -29,9 +29,7 @@ class Script(NOCScript):
     name = "Cisco.IOS.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 240
-
-    rx_sh_int = re.compile(r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)\s(?:\((?:connected|notconnect|disabled|monitoring)\)\s*)?\n\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?(?:\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n)?[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
+    rx_sh_int = re.compile(r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)\s(?:\((?:connected|notconnect|disabled|monitoring|err-disabled)\)\s*)?\n\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?(?:\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n)?[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
        re.MULTILINE | re.IGNORECASE)
     rx_sh_ip_int = re.compile(r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+",
            re.IGNORECASE)
@@ -46,47 +44,8 @@ class Script(NOCScript):
     rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$",
         re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
-    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?)$", re.IGNORECASE)
-
-    types = {
-           "As": "physical",    # Async
-           "AT": "physical",    # ATM
-           "At": "physical",    # ATM
-           "Br": "physical",  # ISDN Basic Rate Interface
-           "BV": "aggregated",  # BVI
-           "Bu": "aggregated",  # Bundle
-           "C": "physical",     # @todo: fix
-           "Ca": "physical",    # Cable
-           "CD": "physical",    # CDMA Ix
-           "Ce": "physical",    # Cellular
-           "Em": "physical",    # Embedded Service Engine
-           "Et": "physical",    # Ethernet
-           "Fa": "physical",    # FastEthernet
-           "Fd": "physical",    # Fddi
-           "Gi": "physical",    # GigabitEthernet
-           "Gm": "physical",    # GMPLS
-           "Gr": "physical",    # Group-Async
-           "Lo": "loopback",    # Loopback
-           "In": "physical",    # Integrated-service-engine
-           "M": "management",   # @todo: fix
-           "MF": "aggregated",  # Multilink Frame Relay
-           "Mf": "aggregated",  # Multilink Frame Relay
-           "Mu": "aggregated",  # Multilink-group interface
-           "PO": "physical",    # Packet OC-3 Port Adapter
-           "Po": "aggregated",  # Port-channel/Portgroup
-           "R": "aggregated",   # @todo: fix
-           "SR": "physical",    # Spatial Reuse Protocol
-           "Sr": "physical",    # Spatial Reuse Protocol
-           "Se": "physical",    # Serial
-           "Te": "physical",    # TenGigabitEthernet
-           "To": "physical",    # TokenRing
-           "Tu": "tunnel",      # Tunnel
-           "VL": "SVI",         # VLAN, found on C3500XL
-           "Vl": "SVI",         # Vlan
-           "Vo": "physical",    # Voice
-           "XT": "SVI"          # Extended Tag ATM
-           }
-
+    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$", re.IGNORECASE)
+    rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
     rx_lldp = re.compile("^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
         re.MULTILINE | re.DOTALL)
 
@@ -303,19 +262,28 @@ class Script(NOCScript):
                 sub["enabled_protocols"] += ["OSPF"]
 
             if full_ifname in ifindex:
-                sub["ifindex"] = ifindex[full_ifname]
+                sub["snmp_ifindex"] = ifindex[full_ifname]
 
             if "." not in ifname and ":" not in ifname:
+                iftype = self.profile.get_interface_type(ifname)
+                if not iftype:
+                    self.logger.info(
+                        "Ignoring unknown interface type: '%s", iftype
+                    )
+                    continue
                 iface = {
                     "name": ifname,
                     "admin_status": a_stat,
                     "oper_status": o_stat,
-                    "type": self.types[ifname[:2]],
+                    "type": iftype,
                     "enabled_protocols": [],
                     "subinterfaces": [sub]
                 }
                 if ifname in lldp:
                     iface["enabled_protocols"] += ["LLDP"]
+                match1 = self.rx_ctp.search(v)
+                if match1:
+                    iface["enabled_protocols"] += ["CTP"]
                 if match.group("desc"):
                     iface["description"] = match.group("desc")
                 if "mac" in sub:
@@ -332,7 +300,7 @@ class Script(NOCScript):
                     iface["enabled_protocols"] += ["LACP"]
                 # Ifindex
                 if full_ifname in ifindex:
-                    iface["ifindex"] = ifindex[full_ifname]
+                    iface["snmp_ifindex"] = ifindex[full_ifname]
                 interfaces += [iface]
             else:
                 # Append additional subinterface

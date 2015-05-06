@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | Port Security | Port Security Violation #2 (SYSLOG)",
+    "uuid": "19f80e68-0c6e-4d1b-b46a-8b85b953823e",
+    "description": "WARN: Port Security Violation (MAC: B4-82-FE-C2-A3-6A, Port: 8)",
+    "event_class__name": "Network | Port Security | Port Security Violation",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) Port [Ss]ecurity [Vv]iolation \\(MAC( address)?: (?P<mac>\\S+)(?:,| on) [Pp]ort: (?P<interface>\\S+)\\)$"
+        }
+    ]
+}

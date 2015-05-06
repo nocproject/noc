@@ -23,38 +23,46 @@ Ext.define("NOC.fm.alarmclass.Model", {
             name: "flap_threshold",
             type: "float"
         },
-        /*
         {
             name: "jobs",
             type: "auto",
-            defaultValue: <function <lambda> at 0x103e448c0>
         },
         {
             name: "datasources",
             type: "auto",
-            defaultValue: <function <lambda> at 0x103e446e0>
         },
         {
             name: "vars",
             type: "auto",
-            defaultValue: <function <lambda> at 0x103e44758>
         },
-        */
         {
             name: "flap_condition",
             type: "string"
         },
-        /*
         {
-            name: "text",
-            type: "auto",
-            defaultValue: <function <lambda> at 0x103e447d0>
+            name: "subject_template",
+            type: "string"
+        },
+        {
+            name: "body_template",
+            type: "string"
+        },
+        {
+            name: "symptoms",
+            type: "string"
+        },
+        {
+            name: "probable_causes",
+            type: "string"
+        },
+        {
+            name: "recommended_actions",
+            type: "string"
         },
         {
             name: "root_cause",
-            type: "auto",
-            defaultValue: <function <lambda> at 0x103e44848>
-        },*/
+            type: "auto"
+        },
         {
             name: "name",
             type: "string"
@@ -67,16 +75,19 @@ Ext.define("NOC.fm.alarmclass.Model", {
             name: "default_severity",
             type: "string"
         },
-        /*
         {
             name: "discriminator",
             type: "auto",
-            defaultValue: <function <lambda> at 0x103e44668>
         },
-        */
         {
             name: "is_builtin",
-            type: "boolean"
+            type: "boolean",
+            persist: false
+        },
+        {
+            name: "uuid",
+            type: "string",
+            persist: false
         },
         {
             name: "is_unique",
@@ -90,6 +101,11 @@ Ext.define("NOC.fm.alarmclass.Model", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });

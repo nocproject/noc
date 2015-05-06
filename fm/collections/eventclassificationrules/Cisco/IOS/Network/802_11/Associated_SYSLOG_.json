@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | 802.11 | Associated (SYSLOG)",
+    "uuid": "9f6a9d5a-e42d-4c85-83ef-d22d6fa375b2",
+    "description": "24353: Aug 10 16:00:40.628 UTC: %DOT11-6-ASSOC: Interface Dot11Radio0, Station   001f.515f.ff62 Associated KEY_MGMT[WPAv2]",
+    "event_class__name": "Network | 802.11 | Associated",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%DOT11-6-ASSOC: Interface (?P<interface>\\S+), Station\\s+(?P<mac>\\S+) Associated"
+        }
+    ]
+}

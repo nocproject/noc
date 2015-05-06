@@ -227,7 +227,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
 
         me.setRootButton = Ext.create("Ext.Button", {
             text: "Set Root Cause",
-            glyph: NOC.glyph.paper_clip,
+            glyph: NOC.glyph.paperclip,
             scope: me,
             handler: me.onSetRoot
         });
@@ -283,6 +283,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                 NOC.error("Failed to get alarm");
             }
         });
+        me.app.setHistoryHash(alarmId);
     },
     //
     updatePanel: function(panel, template, enabled, data) {

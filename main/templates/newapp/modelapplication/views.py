@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import {{base_class}}, view
-from noc.{{module}}.models import {{model}}
+from {{modelimport}} import {{model}}
 
 
 class {{model}}Application({{base_class}}):

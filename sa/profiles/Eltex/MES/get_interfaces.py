@@ -27,8 +27,6 @@ class Script(NOCScript):
     name = "Eltex.MES.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 240
-
     rx_sh_ip_int = re.compile(
            r"^(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})/\d+\s+(?P<interface>.+?)\s+(Static|Dinamic)\s+(disable|enable)\s+(No|Yes)\s+(Valid|Invalid)",
            re.IGNORECASE)

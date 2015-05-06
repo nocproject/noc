@@ -17,6 +17,7 @@ from noc.lib.fields import INETField, TagsField
 from noc.sa.profiles import profile_registry
 from noc.main.models import NotificationGroup
 from noc.lib.app.site import site
+from noc.lib.ip import IP
 from noc.peer.tree import optimize_prefix_list, optimize_prefix_list_maxlen
 from noc.lib import nosql
 
@@ -77,7 +78,7 @@ class WhoisCache(object):
                 # ASN Given
                 members.update([a.upper()])
             else:
-                o = collection.find_one({"as_set": a}, fields=["members"])
+                o = collection.find_one({"_id": a}, fields=["members"])
                 if o:
                     for m in [x for x in o["members"] if x not in seen]:
                         members.update(cls.resolve_as_set(m, seen, collection))
@@ -90,7 +91,7 @@ class WhoisCache(object):
         # Resolve
         prefixes = set()
         for a in cls.resolve_as_set(as_set):
-            o = collection.find_one({"origin": a}, fields=["routes"])
+            o = collection.find_one({"_id": a}, fields=["routes"])
             if o:
                 prefixes.update(o["routes"])
         return prefixes
@@ -139,41 +140,4 @@ class WhoisCache(object):
                 n += long(2 * (mask - m))
         return n
 
-
-class PrefixListCachePrefix(nosql.EmbeddedDocument):
-    meta = {
-        "allow_inheritance": False
-    }
-    
-    prefix = nosql.StringField(required=True)
-    min = nosql.IntField(required=True)
-    max = nosql.IntField(required=True)
-
-    def __unicode__(self):
-        return self.prefixes
-
-
-class PrefixListCache(nosql.Document):
-    """
-    Prepared prefix-list cache. Can hold IPv4/IPv6 prefixes at same time.
-    Prefixes are stored sorted
-    """
-    meta = {
-        "collection": "noc.prefix_list_cache",
-        "allow_inheritance": False
-    }
-    
-    peering_point = nosql.ForeignKeyField(PeeringPoint)
-    name = nosql.StringField()
-    prefixes = nosql.ListField(nosql.EmbeddedDocumentField(PrefixListCachePrefix))
-    changed = nosql.DateTimeField()
-    pushed = nosql.DateTimeField()
-
-    def __unicode__(self):
-        return u" %s/%s" % (self.peering_point.hostname, self.name)
-
-    def cmp_prefixes(self, prefixes):
-        """
-        Compare cached prefixes with a list of (prefix, min, max)
-        """
-        return [(c.prefix, c.min, c.max) for c in self.prefixes] == prefixes
+from prefixlistcache import PrefixListCache, PrefixListCachePrefix

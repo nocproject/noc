@@ -100,6 +100,7 @@ class SAApplication(Application):
                 objects = ManagedObject.objects.filter(
                     id__in=[int(n[4:]) for n in request.POST.keys() if
                             n.startswith("OBJ:")])
+                objects = [o for o in objects if o.has_access(request.user)]
                 task = ReduceTask.create_task(
                     object_selector=objects,
                     reduce_script=self.reduce_task,
@@ -117,6 +118,7 @@ class SAApplication(Application):
             objects = selector.objects_with_scripts(self.map_task)
         else:
             objects = selector.objects_with_scripts([self.map_task])
+        objects = [o for o in objects if o.has_access(request.user)]
         return self.render(request, "sa_app_form.html",
                 {"objects": sorted(objects, lambda x, y: cmp(x.name, y.name)),
                  "form": form})

@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | DHCP | Untrusted Server (SYSLOG)",
+    "uuid": "148030f6-5749-4b3d-b72e-d7f5c3b387b8",
+    "description": "INFO: Detected untrusted DHCP server(IP: 192.168.1.1, Port: 4)",
+    "event_class__name": "Network | DHCP | Untrusted Server",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:INFO:|INFO\\(6\\)) Detected untrusted DHCP server\\s*\\(IP: (?P<ip>\\S+), Port: (?P<interface>\\S+)\\)"
+        }
+    ]
+}

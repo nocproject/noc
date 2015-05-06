@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Unknown | Ignore IPsec debug (SYSLOG)",
+    "uuid": "4006c606-a936-4a73-9049-f4932365d8a4",
+    "description": "PIX-7-715xxx debug messages",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:PIX|ASA)-7-715"
+        }
+    ]
+}

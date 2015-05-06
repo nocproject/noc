@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | PIM | DR Change #1 (SYSLOG)",
+    "uuid": "5e98d484-94c4-421a-bfdb-47845f7fe798",
+    "description": "%PIM-5-DRCHG: DR change from neighbor 10.0.32.42 to 10.0.32.34 on interface Tunnel1 (vrf VPN_Wayside)",
+    "event_class__name": "Network | PIM | DR Change",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PIM-5-DRCHG: DR change from neighbor (?P<from_dr>\\S+) to (?P<to_dr>\\S+) on interface (?P<interface>\\S+)( \\(vrf (?P<vrf>\\S+)\\))?"
+        }
+    ]
+}

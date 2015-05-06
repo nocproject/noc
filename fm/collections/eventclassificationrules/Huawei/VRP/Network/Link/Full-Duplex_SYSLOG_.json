@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Network | Link | Full-Duplex (SYSLOG)",
+    "uuid": "aec75d97-9d27-4867-8956-8b8b997821c0",
+    "description": "Aug  2 2012 09:02:34 kie-bro-smp-r0-t6-asw0 SRM/4/PortPhysicalEthHalfDuplexClear:OID 1.3.6.1.4.1.2011.5.25.129.2.5.12 port work at full-duplex state.(EntityPhysicalIndex=28, BaseTrapSeverity=4, BaseTrapProbableCause=1024, BaseTrapEventType=0, EntPhysicalName=Ethernet0/0/23, RelativeResource=interface Ethernet0/0/23)",
+    "event_class__name": "Network | Link | Full-Duplex",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "SRM/\\d+/PortPhysicalEthHalfDuplexClear.+port work at full-duplex state.+EntPhysicalName=(?P<interface>.+),"
+        }
+    ]
+}

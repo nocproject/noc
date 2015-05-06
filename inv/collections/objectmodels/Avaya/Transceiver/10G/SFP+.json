@@ -1,0 +1,38 @@
+{
+    "name": "Avaya | Transceiver | 10G | SFP+",
+    "uuid": "a2b24709-78b3-4dd9-800e-87366b8e59a4",
+    "vendor__code": "AVAYA",
+    "description": "10GBASE-LR, SFP+, 10GB, LC, 10km",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASE-LR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASE-LR"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "AA1403011-E6"
+        }
+    }
+}

@@ -27,7 +27,13 @@ def check_mongo():
     except pymongo.errors.OperationFailure, why:
         sys.stderr.write("ERROR: %s\n" % why)
         sys.exit(1)
-
+    version = db.connection.server_info()["version"]
+    major, minor, rest = version.split(".", 2)
+    major = int(major)
+    minor = int(minor)
+    if major < 2 or (major == 2 and minor < 4):
+        sys.stderr.write("ERROR: MongoDB 2.4 or later required")
+        sys.exit(1)
 
 if __name__ == "__main__":
     if sys.argv[1] == "--pg":

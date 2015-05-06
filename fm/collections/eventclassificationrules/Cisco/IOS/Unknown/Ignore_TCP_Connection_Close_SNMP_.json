@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Unknown | Ignore TCP Connection Close (SNMP)",
+    "uuid": "9c7349de-83e0-401e-8747-b9e18c803bc6",
+    "description": "CISCOTRAP-MIB::tcpConnectionClose",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCOTRAP-MIB::tcpConnectionClose$"
+        }
+    ]
+}

@@ -30,7 +30,7 @@ class ReportStaleDiscoveryJob(SimpleReport):
         for r in s.find(
                 {"runs": {"$gt": 1},
                  "jcls": {'$regex': '_discovery$'},
-                 "st": {"$gte": old}}
+                 "st": {"$lte": old}}
         ).sort("jcls"):
             mo = ManagedObject.objects.get(id=r['key'])
             msg = ""
@@ -41,7 +41,7 @@ class ReportStaleDiscoveryJob(SimpleReport):
                         tb["text"] = "Job crashed"
                     msg = "(%s) %s" % (tb["text"], tb["code"])
 
-            if mo.name == "SAE":
+            if mo.name == "SAE" or not mo.is_managed:
                 continue
             data += [[
                          mo.administrative_domain.name,

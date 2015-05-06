@@ -2,13 +2,14 @@
 ##----------------------------------------------------------------------
 ## peer.update_whois_cache periodic task
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 from collections import defaultdict
+import urllib2
+import socket
 ## NOC modules
 from noc.lib.periodic import Task as NOCTask
 from noc.settings import config
@@ -93,7 +94,16 @@ class Task(NOCTask):
         else:
             u = lambda k, v: r[v].append(k)
         n = 0
-        f = self.urlopen(url)
+        try:
+            f = self.urlopen(url)
+        except urllib2.URLError, why:
+            self.error("Failed to download %s: %s" % (url, why))
+            self.download_status = False
+            return 0
+        except socket.error, why:
+            self.error("Failed to download %s: %s" % (url, why))
+            self.download_status = False
+            return 0
         for o in parser(f, [key_field, values_field]):
             if key_field in o and values_field in o:
                 k = o[key_field][0].upper()
@@ -131,9 +141,7 @@ class Task(NOCTask):
         if r:
             # Upload to database
             self.info("Updating noc.whois.asset.members collection")
-            count = WhoisASSetMembers.upload(
-                [{"as_set": k, "members": r[k]} for k in r]
-            )
+            count = WhoisASSetMembers.upload(r)
             self.info("%d records written into noc.whois.asset.members collection" % count)
 
     def process_origin_route(self):
@@ -162,13 +170,12 @@ class Task(NOCTask):
         if r:
             # Upload to database
             self.info("Updating noc.whois.origin.route collection")
-            count = WhoisOriginRoute.upload(
-                [{"origin": k, "routes": r[k]} for k in r]
-            )
+            count = WhoisOriginRoute.upload(r)
             self.info("%d records written into noc.whois.origin.route collection" % count)
 
     def execute(self):
         self._url_cache = {}  # URL -> data
+        self.download_status = True
         # Read config
         self.use_ripe = config.getboolean("peer", "use_ripe")
         self.use_arin = config.getboolean("peer", "use_arin")
@@ -176,4 +183,4 @@ class Task(NOCTask):
         # Process
         self.process_as_set_members()
         self.process_origin_route()
-        return True
+        return self.download_status

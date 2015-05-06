@@ -10,7 +10,8 @@
 from noc.sa.interfaces import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
-                               NoneParameter, InterfaceTypeError)
+                               NoneParameter, InterfaceTypeError,
+                               DocumentParameter)
 from noc.lib.validators import is_int
 from noc.lib.nosql import *
 
@@ -54,6 +55,10 @@ class DocInline(object):
         for name, f in self.model._fields.items():
             if isinstance(f, BooleanField):
                 self.clean_fields[name] = BooleanParameter()
+            elif isinstance(f, IntField):
+                self.clean_fields[name] = IntParameter()
+            elif isinstance(f, PlainReferenceField):
+                self.clean_fields[name] = DocumentParameter(f.document_type)
         #
         if not self.query_fields:
             self.query_fields = ["%s__%s" % (n, self.query_condition)
@@ -95,6 +100,7 @@ class DocInline(object):
 
     def set_app(self, app):
         self.app = app
+        self.logger = app.logger
         self.parent_model = self.app.model
         self.parent_rel = None
         for name in self.model._fields:
@@ -177,18 +183,10 @@ class DocInline(object):
         # Clean up fields
         for f in self.clean_fields:
             if f in data and f != self.parent_rel:
-                data[f] = self.clean_fields[f].clean(data[f])
-        # Dereference fields
-        refs = [f for f in data if "__" in f]
-        for r in refs:
-            l, x = r.split("__", 1)
-            if l in self.fk_fields:
-                try:
-                    data[l] = self.fk_fields[l].objects.get(**{x: data[r]})
-                except self.fk_fields[l].DoesNotExist:
-                    # Raise error
-                    data[l] = self.clean_fields[l].clean(0)
-                del data[r]  # Dereferenced
+                if data[f] == "":
+                    data[f] = None
+                else:
+                    data[f] = self.clean_fields[f].clean(data[f])
         # Clone data
         return dict((str(k), data[k]) for k in data)
 

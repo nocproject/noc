@@ -1,0 +1,22 @@
+{
+    "name": "APC | NetShelter SX | 42U AR3100",
+    "uuid": "dcb53f4c-7725-493d-b0d8-b054df22e1db",
+    "vendor__code": "APC",
+    "description": "NetShelter SX 42U 600mm Wide x 1070mm Deep Enclosure",
+    "connections": [],
+    "data": {
+        "asset": {
+            "part_no0": "AR3100"
+        },
+        "container": {
+            "container": true
+        },
+        "rack": {
+            "depth": 1050,
+            "front_door": "l",
+            "rear_door": "2",
+            "units": 42,
+            "width": 600
+        }
+    }
+}

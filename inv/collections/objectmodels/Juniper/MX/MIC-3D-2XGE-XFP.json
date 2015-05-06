@@ -1,0 +1,36 @@
+{
+    "name": "Juniper | MX | MIC-3D-2XGE-XFP",
+    "uuid": "e069556f-34e9-49f1-8b6c-53fefd140f66",
+    "vendor__code": "JUNIPER",
+    "description": "2x10G MIC for MX",
+    "cr_context": "MIC",
+    "connections": [
+        {
+            "description": "MPC connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MIC"
+        },
+        {
+            "description": "Port 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0",
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "Port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1/0",
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "3D 2x 10GE XFP",
+            "part_no0": "750-028380"
+        }
+    }
+}

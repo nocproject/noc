@@ -1,0 +1,269 @@
+{
+    "name": "Juniper | EX | EX4200-F",
+    "uuid": "51da70bf-e32b-4584-bcd5-ace0b7b58e6a",
+    "vendor__code": "JUNIPER",
+    "description": "24-port 10/100/1000BASE-F",
+    "connection_rule__name": "Juniper | EX4200",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/0",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/1 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/2 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/3",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/4",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/5",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/6",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/7",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/8",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/9",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/10",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/11",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/12",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/13",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/14",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/15",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/16",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/17",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/18",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/19",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/20",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/21",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/22",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "0/23",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Uplink module",
+            "direction": "i",
+            "gender": "f",
+            "group": "1",
+            "name": "pic1",
+            "type__name": "Juniper | EX | Uplink"
+        },
+        {
+            "description": "Power Supply 0",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "pem0",
+            "type__name": "Juniper | MX | EX4200 PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no0": "EX4200-24F",
+            "part_no0": "750-033075",
+            "part_no1": "750-025719",
+            "part_no2": "750-033067",
+            "part_no3": "750-021258"
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        }
+    }
+}

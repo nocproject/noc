@@ -46,11 +46,20 @@ class ListenTCPSocket(Socket):
         return "<%s(0x%x, %s:%s)>" % (
             self.__class__.__name__, id(self), self.address, self.port)
 
+    def get_label(self):
+        return "%s %s:%s" % (
+            self.__class__.__name__,
+            "*" if self.address == "0.0.0.0" else self.address,
+            self.port
+        )
+
     def create_socket(self):
         """Create socket, bind and listen"""
         if self.socket:  # Called twice
             return
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = socket.socket(
+            self.get_af(self.address), socket.SOCK_STREAM
+        )
         self.socket.setsockopt(
             socket.SOL_SOCKET,
             socket.SO_REUSEADDR,

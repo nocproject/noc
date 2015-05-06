@@ -1,0 +1,21 @@
+{
+    "name": "Eltex | MES | Chassis | Hardware | Module | Module not Present (SYSLOG)",
+    "uuid": "2236caa1-96e6-4410-954a-9bb7c369e299",
+    "description": "%Fiber-I-SFP-PRESENT-CHNG: gi0/12 SFP status is not present.",
+    "event_class__name": "Chassis | Hardware | Module | Module not Present",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%Fiber-I-SFP-PRESENT-CHNG: (?P<interface>\\S+) (?P<module>SFP) status is not present."
+        }
+    ]
+}

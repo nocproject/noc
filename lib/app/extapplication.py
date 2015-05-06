@@ -10,13 +10,13 @@
 from __future__ import with_statement
 import os
 ## Django modules
-from django.views.static import serve as serve_static
 from django.http import HttpResponse
 ## NOC modules
 from application import Application, view
 from access import HasPerm, PermitLogged
 from noc.lib.serialize import json_decode, json_encode
 from noc.main.models.favorites import Favorites
+from noc.main.models.slowop import SlowOp
 
 
 class ExtApplication(Application):
@@ -45,6 +45,7 @@ class ExtApplication(Application):
     query_param = "__query"
     only_param = "__only"
     fav_status = "fav_status"
+    default_ordering = []
 
     def __init__(self, *args, **kwargs):
         super(ExtApplication, self).__init__(*args, **kwargs)
@@ -108,13 +109,12 @@ class ExtApplication(Application):
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
-        format = q.get(self.format_param)
         query = q.get(self.query_param)
         only = q.get(self.only_param)
         if only:
             only = only.split(",")
         ordering = []
-        if format == "ext" and self.sort_param in q:
+        if request.is_extjs and self.sort_param in q:
             for r in self.deserialize(q[self.sort_param]):
                 if r["direction"] == "DESC":
                     ordering += ["-%s" % r["property"]]
@@ -150,9 +150,10 @@ class ExtApplication(Application):
         if hasattr(data, "_as_sql"):  # For Models only
             data = data.select_related()
         # Apply sorting
+        ordering = ordering or self.default_ordering
         if ordering:
             data = data.order_by(*ordering)
-        if format == "ext":
+        if request.is_extjs:
             total = data.count()  # Total unpaged count
         if start is not None and limit is not None:
             data = data[int(start):int(start) + int(limit)]
@@ -169,7 +170,7 @@ class ExtApplication(Application):
                 fav_items = self.get_favorite_items(request.user)
             for r in out:
                 r[self.fav_status] = r[self.pk] in fav_items
-        if format == "ext":
+        if request.is_extjs:
             out = {
                 "total": total,
                 "success": True,
@@ -183,7 +184,7 @@ class ExtApplication(Application):
         """
         Static file server
         """
-        return serve_static(request, path, document_root=self.document_root)
+        return self.render_static(request, path)
 
     @view(url="^favorites/app/(?P<action>set|reset)/$",
         method=["POST"],
@@ -213,22 +214,44 @@ class ExtApplication(Application):
         """
         v = action == "set"
         item = self.fav_convert(item)
-        fv = Favorites.objects.filter(
-            user=request.user.id, app=self.app_id).first()
-        if fv:
-            fi = fv.favorites
-            if v and item not in fi:
-                fv.favorites += [item]
-                fv.save()
-            elif not v and item in fi:
-                fi.remove(item)
-                fv.favorites = fi
-                fv.save()
-        elif v:
-            # Add single item
-            Favorites(user=request.user, app=self.app_id,
-                favorites=[item]).save()
+        if action == "set":
+            Favorites.add_item(request.user, self.app_id, item)
+        else:
+            Favorites.remove_item(request.user, self.app_id, item)
         return True
+
+    @view(url="^futures/(?P<f_id>[0-9a-f]{24})/$", method=["GET"],
+          access="launch", api=True)
+    def api_future_status(self, request, f_id):
+        op = self.get_object_or_404(SlowOp, id=f_id,
+                                    app_id=self.get_app_id(),
+                                    user=request.user.username)
+        if op.is_ready():
+            # Note: the slow operation will be purged by TTL index
+            result = op.result()
+            if isinstance(result, Exception):
+                return self.render_json({
+                    "success": False,
+                    "message": "Error",
+                    "traceback": str(result)
+                }, status=self.INTERNAL_ERROR)
+            else:
+                return result
+        else:
+            return self.response_accepted(request.path)
+
+    def submit_slow_op(self, request, fn, *args, **kwargs):
+        f = SlowOp.submit(
+            fn,
+            self.get_app_id(), request.user.username,
+            *args, **kwargs
+        )
+        if f.done():
+            return f.result()
+        else:
+            return self.response_accepted(
+                location="%sfutures/%s/" % (self.base_url, f.slow_op.id)
+            )
 
     @view(url="^templates/(?P<name>[0-9a-zA-Z_/]+)\.js$", access=True)
     def view_template(self, request, name):

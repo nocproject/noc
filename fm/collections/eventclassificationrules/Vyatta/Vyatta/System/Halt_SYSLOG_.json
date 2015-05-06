@@ -1,0 +1,21 @@
+{
+    "name": "Vyatta | Vyatta | System | Halt (SYSLOG)",
+    "uuid": "ba46f2a7-bb96-486f-be26-cebe9e476dc4",
+    "description": "Aug 11 20:25:33 vyatta shutdown[2919]: shutting down for system halt",
+    "event_class__name": "System | Halt",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Vyatta\\.Vyatta$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "shutdown\\[\\d+\\]: shutting down for system halt$"
+        }
+    ]
+}

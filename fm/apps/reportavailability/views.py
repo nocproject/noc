@@ -25,7 +25,7 @@ class ReportAvailabilityApplication(SimpleReport):
         d = datetime.timedelta(days=days)
         b = now - d
         outages = defaultdict(int)
-        q = Q(start__gte=b) | Q(stop__gte=b)
+        q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
         for o in Outage.objects.filter(q):
             start = max(o.start, b)
             stop = o.stop if o.stop else now
@@ -41,9 +41,11 @@ class ReportAvailabilityApplication(SimpleReport):
         r = []
         for o in ManagedObject.objects.filter(is_managed=True):
             r += [(
+                o.administrative_domain.name,
                 o.name,
                 o.profile_name,
                 o.platform,
+                o.address,
                 a1.get(o.id, 100),
                 a7.get(o.id, 100),
                 a30.get(o.id, 100)
@@ -51,7 +53,8 @@ class ReportAvailabilityApplication(SimpleReport):
         return self.from_dataset(
             title=self.title,
             columns=[
-                "Object", "Profile", "Platform",
+                "Adm. Domain",
+                "Object", "Profile", "Platform", "IP",
                 TableColumn("24h", align="right", format="percent"),
                 TableColumn("7d", align="right", format="percent"),
                 TableColumn("30d", align="right", format="percent")

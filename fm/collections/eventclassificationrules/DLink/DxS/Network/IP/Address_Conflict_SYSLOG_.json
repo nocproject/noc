@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | IP | Address Conflict (SYSLOG)",
+    "uuid": "031966f1-e9b8-4cde-a7df-4f8b128dc7d0",
+    "description": "WARN: Conflict IP was detected with this device (IP: 172.16.0.2, MAC: 00-26-5A-8A-7E-80, Port 7, Interface: System)",
+    "event_class__name": "Network | IP | Address Conflict",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?:WARN:|WARN\\(4\\)) Conflict IP was detected with (?:this|the) device(?:!)? \\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), Port \\S+, Interface: (?P<interface>\\S+?)\\)$"
+        }
+    ]
+}

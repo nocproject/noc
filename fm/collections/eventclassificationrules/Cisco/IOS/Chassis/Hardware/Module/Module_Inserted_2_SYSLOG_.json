@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Inserted #2 (SYSLOG)",
+    "uuid": "d2f73740-588f-42cb-b4a7-b248fd9d2392",
+    "description": "%C4K_IOSINTF-5-TRANSCEIVERINSERTED: Slot=1 Port=3: Transceiver has been inserted",
+    "event_class__name": "Chassis | Hardware | Module | Module Inserted",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C4K_IOSINTF-5-TRANSCEIVERINSERTED: Slot=(?P<module>\\d+) Port=(?P<interface>\\d+): Transceiver has been inserted"
+        }
+    ]
+}

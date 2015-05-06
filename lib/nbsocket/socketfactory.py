@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## nbsocket factory
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -19,6 +19,9 @@ from connectedtcpsocket import ConnectedTCPSocket
 from acceptedtcpsocket import AcceptedTCPSocket
 from pollers.detect import get_poller
 from pipesocket import PipeSocket
+from noc.lib.perf import MetricsHub
+
+logger = logging.getLogger(__name__)
 
 
 class SocketFactory(object):
@@ -28,7 +31,21 @@ class SocketFactory(object):
     """
     def __init__(self, tick_callback=None,
                  polling_method=None, controller=None,
-                 write_delay=True):
+                 write_delay=True, metrics_prefix=None):
+        if not metrics_prefix:
+            metrics_prefix = "noc."
+        metrics_prefix += "socketfactory"
+        self.metrics = MetricsHub(
+            metrics_prefix,
+            "sockets.count",
+            "sockets.register",
+            "sockets.unregister",
+            "loops",
+            "ticks",
+            "handle.reads",
+            "handle.closed_reads",
+            "handle.writes"
+        )
         self.sockets = {}      # fileno -> socket
         self.socket_name = {}  # socket -> name
         self.name_socket = {}  # name -> socket
@@ -55,23 +72,24 @@ class SocketFactory(object):
         """
         Shut down socket factory and exit next event loop
         """
-        logging.info("Shutting down the factory")
+        logger.info("Shutting down the factory")
         self.to_shutdown = True
 
     def register_socket(self, socket, name=None):
         """
         Register socket to a factory. Socket became a new socket
         """
-        logging.debug("register_socket(%s,%s)" % (socket, name))
+        logger.debug("Register socket %s (%s)", socket.get_label(), name)
         with self.register_lock:
             self.new_sockets += [(socket, name)]
+            self.metrics.sockets_register += 1
 
     def unregister_socket(self, socket):
         """
         Remove socket from factory
         """
         with self.register_lock:
-            logging.debug("unregister_socket(%s)" % socket)
+            logger.debug("Unregister socket %s", socket.get_label())
             self.set_status(socket, r=False, w=False)
             if socket not in self.socket_name:  # Not in factory yet
                 return
@@ -80,6 +98,7 @@ class SocketFactory(object):
             self.name_socket.pop(old_name, None)
             if socket in self.new_sockets:
                 self.new_sockets.remove(socket)
+                self.metrics.sockets_unregister -= 1
 
     def guarded_socket_call(self, socket, method):
         """
@@ -165,8 +184,8 @@ class SocketFactory(object):
     def close_stale(self):
         """Detect and close stale sockets"""
         with self.register_lock:
-            for s in [s for s in self.sockets.values() if s.is_stale()]:
-                logging.debug("Closing stale socket %s" % s)
+            for s in [s for s in self.sockets.itervalues() if s.is_stale()]:
+                logger.debug("Closing stale socket %s", s.get_label())
                 s.stale = True
                 s.close()
 
@@ -178,12 +197,6 @@ class SocketFactory(object):
                 self.init_socket(socket, name)
 
     def set_status(self, sock, r=None, w=None):
-        l = []
-        if r is not None:
-            l += ["+READ" if r else "-READ"]
-        if w is not None:
-            l += ["+WRITE" if w else "-WRITE"]
-        # logging.debug("%s set_status: %s" % (sock, " ".join(l)))
         with self.register_lock:
             if r is not None:
                 if r:
@@ -203,17 +216,25 @@ class SocketFactory(object):
         """
         Generic event loop
         """
+        self.metrics.loops += 1
         self.create_pending_sockets()
+        self.metrics.sockets_count = len(self.sockets)
         if self.sockets:
             r, w = self.poller.get_active(timeout)
             self.cnt_polls += 1
             # Process write events before read
             # to catch refused connections
             for s in w:
+                self.metrics.handle_writes += 1
                 self.guarded_socket_call(s, s.handle_write)
             # Process read events
             for s in r:
-                self.guarded_socket_call(s, s.handle_read)
+                if s.closing:
+                    logger.info("Trying to read from closed socked")
+                    self.metrics.handle_closed_reads += 1
+                else:
+                    self.metrics.handle_reads += 1
+                    self.guarded_socket_call(s, s.handle_read)
         else:
             # No socket initialized. Sleep to prevent CPU hogging
             time.sleep(timeout)
@@ -225,7 +246,7 @@ class SocketFactory(object):
         :param run_forever: Run event loop forever, when True, else shutdown
                             fabric when no sockets available
         """
-        logging.debug("Running socket factory (%s)" % self.poller.__class__.__name__)
+        logger.info("Running socket factory (%s)", self.poller.__class__.__name__)
         self.create_pending_sockets()
         if run_forever:
             cond = lambda: True
@@ -242,13 +263,14 @@ class SocketFactory(object):
             self.loop(1)
             t = time.time()
             if self.tick_callback and t - last_tick >= 1:
+                self.metrics.ticks += 1
                 try:
                     self.tick_callback()
                 except Exception:
                     error_report()
-                    logging.info("Restoring from tick() failure")
+                    logger.info("Restoring from tick() failure")
                 last_tick = t
             if t - last_stale >= 1:
                 self.close_stale()
                 last_stale = t
-        logging.debug("Stopping socket factory")
+        logger.info("Stopping socket factory")

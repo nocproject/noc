@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Interface Discovery Job
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,8 +11,7 @@ from base import MODiscoveryJob
 from noc.inv.discovery.reports.interfacereport import InterfaceReport
 from noc.settings import config
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
-from noc.main.models import PyRule
+from noc.lib.solutions import get_solution
 
 
 class InterfaceDiscoveryJob(MODiscoveryJob):
@@ -20,52 +19,24 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
     map_task = "get_interfaces"
 
     ignored = not config.getboolean("interface_discovery", "enabled")
-    initial_submit_interval = config.getint("interface_discovery",
-        "initial_submit_interval")
-    initial_submit_concurrency = config.getint("interface_discovery",
-        "initial_submit_concurrency")
     to_save = config.getboolean("interface_discovery", "save")  # @todo: Ignored
     # Related reports
     ip_discovery_enable = config.getboolean("ip_discovery", "enabled")
     ip_discovery_save = config.getboolean("ip_discovery", "save")
     prefix_discovery_enable = config.getboolean(
-        "prefix_discovery","enabled")
+        "prefix_discovery", "enabled")
     prefix_discovery_save = config.getboolean(
-            "prefix_discovery","save")
+            "prefix_discovery", "save")
 
     @classmethod
     def initialize(cls, scheduler):
         super(InterfaceDiscoveryJob, cls).initialize(scheduler)
+        cls.get_interface_profile = None
         if scheduler.daemon:
             # Compile classification rules
-            cls.compile_classification_rules(scheduler)
-
-    @classmethod
-    def compile_classification_rules(cls, scheduler):
-        """
-        Compile interface classification rules
-        :param scheduler:
-        :return:
-        """
-        cls.classification_pyrule = None
-        if not cls.ignored:
-            p = config.get("interface_discovery",
-                "classification_pyrule")
-            if p:
-                # Use pyRule
-                r = list(PyRule.objects.filter(name=p,
-                        interface="IInterfaceClassification"))
-                if r:
-                    scheduler.info("Enabling interface classification pyRule '%s'" % p)
-                    cls.classification_pyrule = r[0]
-                else:
-                    scheduler.error("Interface classification pyRule '%s' is not found. Ignoring" % p)
-            elif InterfaceClassificationRule.objects.filter(is_active=True).count():
-                # Load rules
-                scheduler.info("Compiling interface classification rules:\n"
-                               "-----[CODE]-----\n%s\n-----[END]-----" %\
-                               InterfaceClassificationRule.get_classificator_code())
-                cls.classification_pyrule = InterfaceClassificationRule.get_classificator()
+            sol = config.get("interface_discovery", "get_interface_profile")
+            if sol:
+                cls.get_interface_profile = staticmethod(get_solution(sol))
 
     def handler(self, object, result):
         """
@@ -122,6 +93,8 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                         ipv4_addresses=si.get("ipv4_addresses", []),
                         ipv6_addresses=si.get("ipv6_addresses", []),
                         iso_addresses=si.get("iso_addresses", []),
+                        vpi=si.get("vpi"),
+                        vci=si.get("vci"),
                         enabled_protocols=si.get("enabled_protocols", []),
                         untagged_vlan=si.get("untagged_vlan"),
                         tagged_vlans=si.get("tagged_vlans", []),
@@ -141,6 +114,7 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
         # Delete hanging forwarding instances
         self.report.submit_forwarding_instances(
             fi["forwarding_instance"] for fi in result)
+        self.report.refine_ifindexes()
         self.report.send()
         return True
 
@@ -150,9 +124,9 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
         :param iface: Interface instance
         :return:
         """
-        if not self.classification_pyrule or iface.profile_locked:
+        if not self.get_interface_profile or iface.profile_locked:
             return
-        p_name = self.classification_pyrule(interface=iface)
+        p_name = self.get_interface_profile(iface)
         if p_name and p_name != iface.profile.name:
             # Change profile
             p = self.profiles_cache.get(p_name)
@@ -171,17 +145,9 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                 iface.profile = p
                 iface.save()
 
-    @classmethod
-    def initial_submit_queryset(cls):
-        return {"object_profile__enable_interface_discovery": True}
-
     def can_run(self):
         return (super(InterfaceDiscoveryJob, self).can_run()
                 and self.object.object_profile.enable_interface_discovery)
-
-    @classmethod
-    def get_submit_interval(cls, object):
-        return object.object_profile.interface_discovery_max_interval
 
     def get_failed_interval(self):
         return self.object.object_profile.interface_discovery_min_interval

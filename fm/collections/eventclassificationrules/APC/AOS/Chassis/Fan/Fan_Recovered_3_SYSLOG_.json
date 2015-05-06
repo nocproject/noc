@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Chassis | Fan | Fan Recovered #3 (SYSLOG)",
+    "uuid": "d76e39ac-639a-47ed-b526-f4020dcbbca7",
+    "description": "UPS: System level fan fault no longer exists. 0x021E",
+    "event_class__name": "Chassis | Fan | Fan Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: (?P<name>System level fan) fault no longer exists. 0x021E"
+        }
+    ]
+}

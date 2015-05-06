@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Config | Exiting Configuration Mode #1 (SYSLOG)",
+    "uuid": "030fc768-818a-4023-8cb9-1818693bff36",
+    "description": "%SYS-5-CONFIG_I: Configured from console by vty0 (172.17.1.51)",
+    "event_class__name": "Config | Exiting Configuration Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-5-CONFIG_I: Configured from console by \\S+ \\(\\S+\\)$"
+        }
+    ]
+}

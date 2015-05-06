@@ -1,0 +1,51 @@
+{
+    "name": "NOC | Managed Object | Ping OK",
+    "$collection": "fm.eventclasses",
+    "uuid": "121098a0-ac8c-44e4-a856-2f4ed096f454",
+    "description": "Managed object has been pinged successfully",
+    "action": "L",
+    "vars": [
+
+    ],
+    "subject_template": "Ping OK",
+    "body_template": "Managed Object {{event.managed_object.name}} (IP: {{event.managed_object.address}}) has been pinged successfully. Object continues to process SA Tasks",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "The object is alive and responding to ICMP echo-requests",
+    "recommended_actions": "No reaction needed",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "NOC | Managed Object | Ping Failed"
+        },
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Chassis | PSU | Power Failed"
+        }
+    ],
+    "repeat_suppression": [
+        {
+            "name": "Do not suppress after Ping Failed",
+            "condition": "True",
+            "event_class__name": "NOC | Managed Object | Ping Failed",
+            "match_condition": {
+                "managed_object": "event.managed_object.id"
+            },
+            "window": 3600,
+            "suppress": false
+        },
+        {
+            "name": "Suppress after Ping OK",
+            "condition": "True",
+            "event_class__name": "NOC | Managed Object | Ping OK",
+            "match_condition": {
+                "managed_object": "event.managed_object.id"
+            },
+            "window": 3600,
+            "suppress": true
+        }
+    ]
+}

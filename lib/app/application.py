@@ -12,6 +12,7 @@ import logging
 import os
 import datetime
 import functools
+import types
 ## Django modules
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect,\
@@ -25,6 +26,8 @@ from django.template import loader
 from django import forms
 from django.utils.datastructures import SortedDict
 from django.utils.timezone import get_current_timezone
+from django.views.static import serve as serve_static
+from django.http import Http404
 ## NOC modules
 from access import HasPerm, Permit, Deny
 from site import site
@@ -32,8 +35,9 @@ from noc.lib.forms import NOCForm
 from noc import settings
 from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces import DictParameter
-
-TZ = get_current_timezone()
+from noc.lib.perf import MetricsHub
+from noc.lib.daemon.base import _daemon
+from noc.lib.fileutils import safe_append
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
@@ -117,11 +121,15 @@ class Application(object):
     __metaclass__ = ApplicationBase
     title = "APPLICATION TITLE"
     icon = "icon_application"
+    glyph = "file"
     extra_permissions = []  # List of additional permissions, not related with views
     implied_permissions = {}  # permission -> list of implied permissions
 
     Form = NOCForm  # Shortcut for form class
     config = settings.config
+
+    TZ = get_current_timezone()
+    METRICS = []
 
     def __init__(self, site):
         self.site = site
@@ -132,6 +140,12 @@ class Application(object):
             ["MODULE_NAME"]).MODULE_NAME
         self.app_id = "%s.%s" % (self.module, self.app)
         self.menu_url = None   # Set by site.autodiscover()
+        self.logger = logging.getLogger(self.app_id)
+        metrics = []
+        self.metrics = MetricsHub(
+            (_daemon.metrics if _daemon else "noc.")+ "apps.%s." % self.app_id,
+            *(metrics + self.METRICS)
+        )
 
     @classmethod
     def add_to_class(cls, name, value):
@@ -140,11 +154,16 @@ class Application(object):
         else:
             setattr(cls, name, value)
 
+    def set_app(self, app):
+        pass
+
     @classmethod
     def add_view(cls, name, func, url, access, url_name=None,
                  menu=None, method=None, validate=None, api=False):
         # Decorate function to clear attributes
         f = functools.partial(func)
+        f.im_self = func.im_self
+        f.__name__ = func.__name__
         # Add to class
         cls.add_to_class(name,
             view(url=url, access=access, url_name=url_name, menu=menu,
@@ -229,7 +248,7 @@ class Application(object):
             # Document
             r = args[0].objects.filter(**kwargs).first()
             if not r:
-                raise HttpResponseNotFound()
+                raise Http404("No %s matching given query" % args[0])
             return r
         else:
             # Django model
@@ -292,6 +311,10 @@ class Application(object):
         return self.site.views.main.message.wait(request, subject=subject,
                                                  text=text, timeout=timeout,
                                                  url=url, progress=progress)
+
+    def render_static(self, request, path, document_root=None):
+        document_root = document_root or self.document_root
+        return serve_static(request, path, document_root=document_root)
 
     def response_redirect(self, url, *args, **kwargs):
         """
@@ -363,10 +386,10 @@ class Application(object):
     ## Logging
     ##
     def debug(self, message):
-        logging.debug(message)
+        self.logger.debug(message)
 
     def error(self, message):
-        logging.error(message)
+        self.logger.error(message)
 
     def cursor(self):
         """
@@ -553,7 +576,7 @@ class Application(object):
         if v is None:
             return None
         elif isinstance(v, datetime.datetime):
-            return v.replace(tzinfo=TZ).isoformat()
+            return self.TZ.localize(v).isoformat()
         else:
             raise Exception("Invalid to_json type")
 
@@ -589,12 +612,32 @@ class Application(object):
         mc = self.mrt_config[name]
         map_params = data.get("map_params", {})
         map_params = dict((str(k), v) for k, v in map_params.iteritems())
+        objects = ManagedObjectSelector.resolve_expression(data["selector"])
         task = ReduceTask.create_task(
-            ManagedObjectSelector.resolve_expression(data["selector"]),
+            objects,
             "pyrule:mrt_result", {},
             mc["map_script"], map_params,
             mc.get("timeout", 0)
         )
+        if mc["map_script"] == "commands" and settings.LOG_MRT_COMMAND:
+            # Log commands
+            now = datetime.datetime.now()
+            safe_append(
+                os.path.join(
+                    settings.LOG_MRT_COMMAND,
+                    "commands",
+                    "%04d" % now.year,
+                    "%02d" % now.month,
+                    "%02d.log" % now.day
+                ),
+                "%s\nDate: %s\nObjects: %s\nUser: %s\nCommands:\n%s\n" % (
+                    "-" * 72,
+                    now.isoformat(),
+                    ",".join(str(o) for o in objects),
+                    request.user.username,
+                    "    " + "\n".join(map_params["commands"]).replace("\n", "\n    ")
+                )
+            )
         return task.id
 
     @view(url="^mrt/(?P<name>[^/]+)/(?P<task>\d+)/$", method=["GET"],

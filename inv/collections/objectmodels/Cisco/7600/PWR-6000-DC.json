@@ -1,0 +1,60 @@
+{
+    "name": "Cisco | 7600 | PWR-6000-DC",
+    "uuid": "c8f9f571-7d08-4217-8673-bc2187b9a8d5",
+    "vendor__code": "CISCO",
+    "description": "6000 Watt DC Power Supply for Cisco 7600",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": "DC 1 input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "DC 1 input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC1-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "DC 2 input Positive contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "DC 2 input Negative contact",
+            "direction": "i",
+            "gender": "m",
+            "name": "DC2-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Ground connection",
+            "direction": "i",
+            "gender": "m",
+            "name": "GND",
+            "type__name": "Power | Dual M6 Terminal Studs"
+        },
+        {
+            "description": "Internal Power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "PWR-6000-DC"
+        }
+    }
+}

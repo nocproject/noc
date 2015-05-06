@@ -251,6 +251,12 @@ Ext.define("NOC.fm.event.EventPanel", {
                             scope: me,
                             handler: me.onCreateRule
                         },
+                        {
+                            text: "Create Ignore Pattern",
+                            glyph: NOC.glyph.file_text,
+                            scope: me,
+                            handler: me.onCreateIgnorePattern
+                        },
                         "->",
                         me.eventIdField
                     ]
@@ -280,6 +286,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 NOC.error("Failed to get event");
             }
         });
+        me.app.setHistoryHash(eventId);
     },
     //
     updatePanel: function(panel, template, enabled, data) {
@@ -446,5 +453,10 @@ Ext.define("NOC.fm.event.EventPanel", {
     onCreateRule: function() {
         var me = this;
         NOC.launch("fm.classificationrule", "from_event", {id: me.data.id});
+    },
+
+    onCreateIgnorePattern: function() {
+        var me = this;
+        NOC.launch("fm.ignorepattern", "from_event", {id: me.data.id});
     }
 });

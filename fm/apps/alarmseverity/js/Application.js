@@ -22,30 +22,33 @@ Ext.define("NOC.fm.alarmseverity.Application", {
         {
             text: "Builtin",
             dataIndex: "is_builtin",
-            renderer: NOC.render.Bool
+            renderer: NOC.render.Bool,
+            sortable: false,
+            width: 50
         },
         {
             text: "Severity",
             dataIndex: "severity",
-            flex: 1
+            width: 50,
+            align: "right"
         },
         {
             text: "Description",
-            dataIndex: "description"
+            dataIndex: "description",
+            flex: 1
         }
     ],
     fields: [
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "name",
+            fieldLabel: "Name",
             allowBlank: false
         },
         {
-            name: "is_builtin",
-            xtype: "checkboxfield",
-            boxLabel: "Builtin",
-            allowBlank: false
+            name: "uuid",
+            xtype: "displayfield",
+            fieldLabel: "UUID"
         },
         {
             name: "description",
@@ -65,5 +68,37 @@ Ext.define("NOC.fm.alarmseverity.Application", {
             fieldLabel: "Style",
             allowBlank: false
         }
-    ]
+    ],
+
+    initComponent: function() {
+        var me = this;
+
+        // JSON Panel
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: "/fm/alarmseverity/{{id}}/json/",
+            previewName: "Alarm Severity: {{name}}"
+        });
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+        Ext.apply(me, {
+            formToolbar: [
+                {
+                    text: "JSON",
+                    glyph: NOC.glyph.file,
+                    tooltip: "Show JSON",
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
+            ]
+        });
+        me.callParent();
+    },
+    //
+        //
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
+    }
 });

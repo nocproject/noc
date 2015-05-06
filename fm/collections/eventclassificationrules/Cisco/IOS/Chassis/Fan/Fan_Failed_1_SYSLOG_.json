@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Failed #1 (SYSLOG)",
+    "uuid": "a2ebe6f1-7644-4666-97b2-fbec91820d08",
+    "description": "%FAN-3-FAN_FAILED: Fan 1 had a rotation error reported.",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%FAN-3-FAN_FAILED: (?P<name>Fan \\S+|Fans) had a rotation error reported"
+        }
+    ]
+}

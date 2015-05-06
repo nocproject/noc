@@ -33,16 +33,16 @@ class PeerApplication(ExtModelApplication):
             raise ValueError("Invalid 'Local IP Address', must be in x.x.x.x/x form or IPv6 prefix")
         if not is_prefix(data["remote_ip"]):         
             raise ValueError("Invalid 'Remote IP Address', must be in x.x.x.x/x form or IPv6 prefix")
-        if "local_backup_ip" in data and data["local_backup_ip"]!="":
+        if "local_backup_ip" in data and data["local_backup_ip"]:
             if not is_prefix(data["local_backup_ip"]):
                 raise ValueError("Invalid 'Local Backup IP Address', must be in x.x.x.x/x form or IPv6 prefix")
-        if "remote_backup_ip" in data and data["remote_backup_ip"]!="":
+        if "remote_backup_ip" in data and data["remote_backup_ip"]:
             if not is_prefix(data["remote_backup_ip"]):
                 raise ValueError("Invalid 'Remote Backup IP Address', must be in x.x.x.x/x form or IPv6 prefix")
 
         ## Check no or both backup addresses given
-        has_local_backup="local_backup_ip" in data and data["local_backup_ip"]!=""
-        has_remote_backup="remote_backup_ip" in data and data["remote_backup_ip"]!=""
+        has_local_backup="local_backup_ip" in data and data["local_backup_ip"]
+        has_remote_backup="remote_backup_ip" in data and data["remote_backup_ip"]
         if has_local_backup and not has_remote_backup:
             raise ValueError("One of backup addresses given. Set peer address")
         if not has_local_backup and has_remote_backup:

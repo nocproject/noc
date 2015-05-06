@@ -19,8 +19,6 @@ class Script(NOCScript):
     name = "Cisco.IOSXR.get_interfaces"
     implements = [IGetInterfaces]
 
-    TIMEOUT = 240
-
     types = {
         "packet over sonet/sdh": "physical",
         "gigabitethernet/ieee 802.3 interface(s)": "physical",
@@ -31,7 +29,8 @@ class Script(NOCScript):
         "loopback interface(s)": "loopback",
         "null interface": "null",
         "tunnel-te": "tunnel",
-        "vlan sub-interface(s)": None
+        "vlan sub-interface(s)": None,
+        "bridge-group virtual interface": "SVI"
     }
 
     rx_iface = re.compile(r"^(?P<name>\S+)\s+is\s+(?P<status>up|(?:administratively )?down),\s+"
@@ -49,6 +48,7 @@ class Script(NOCScript):
 
     def execute(self):
         ifaces = {}
+        ifindex = self.get_ifindex_map()
         current = None
         is_bundle = False
         ae_map = {}  # member -> bundle
@@ -56,7 +56,7 @@ class Script(NOCScript):
         for l in v.splitlines():
             match = self.rx_iface.match(l)
             if match:
-                current = match.group("name")
+                current = self.profile.convert_interface_name(match.group("name"))
                 status = match.group("status") == "up"
                 ifaces[current] = {
                     "name": current,
@@ -143,7 +143,7 @@ class Script(NOCScript):
                     continue
                 i = ifaces[iface]
                 p = {
-                    "name": iface,
+                    "name": self.profile.convert_interface_name(iface),
                     "type": i["type"],
                     "admin_status": i["status"],
                     "oper_status": i["status"],
@@ -153,6 +153,8 @@ class Script(NOCScript):
                     p["mac"] = i["mac"]
                 if i.get("description"):
                     p["description"] = i["description"]
+                if p["name"] in ifindex:
+                    p["snmp_ifindex"] = ifindex[p["name"]]
                 if iface in ae_map:
                     # Bundle member
                     p["aggregated_interface"] = ae_map[iface]
@@ -163,7 +165,7 @@ class Script(NOCScript):
                             continue
                         ii = ifaces[siface]
                         sp = {
-                            "name": siface,
+                            "name": self.profile.convert_interface_name(siface),
                             "admin_status": ii["status"],
                             "oper_status": ii["status"],
                             "enabled_afi": [],
@@ -173,6 +175,8 @@ class Script(NOCScript):
                             sp["mac"] = ii["mac"]
                         if ii.get("description"):
                             sp["description"] = ii["description"]
+                        if sp["name"] in ifindex:
+                            sp["snmp_ifindex"] = ifindex[sp["name"]]
                         if ii.get("vlan_ids"):
                             sp["vlan_ids"] = ii["vlan_ids"]
                         # Process addresses
@@ -190,3 +194,18 @@ class Script(NOCScript):
             r += [rr]
         # Return result
         return r
+
+    def get_ifindex_map(self):
+        """
+        Retrieve name -> ifindex map
+        """
+        m = {}
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                # IF-MIB::ifDescr
+                t = self.snmp.get_table("1.3.6.1.2.1.2.2.1.2", bulk=True)
+                for i in t:
+                    m[self.profile.convert_interface_name(t[i])] = i
+            except self.snmp.TimeOutError:
+                pass
+        return m

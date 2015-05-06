@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Security | ACL | ACL Deny #2 (SYSLOG)",
+    "uuid": "f64cc693-0aae-47c3-b6a0-6905b7540852",
+    "description": "Aug 08 2011 20:34:22: %ASA-6-106015: Deny TCP (no connection) from 10.15.106.76/49760 to 10.15.111.70/80 flags FIN ACK  on interface outside",
+    "event_class__name": "Security | ACL | ACL Deny",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:ASA|PIX)-6-106015: Deny (?P<proto>\\S+) .*?from (?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_ip>\\S+)/(?P<dst_port>\\d+).*?on interface (?P<src_interface>\\S+)$"
+        }
+    ]
+}

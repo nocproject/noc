@@ -1,0 +1,21 @@
+{
+    "name": "EdgeCore | ES | Network | Link | Link Down #2 (SYSLOG)",
+    "uuid": "f60fdc69-e4f9-4de3-b079-d4f67e26ab6a",
+    "description": "Aug 31 13:34:23 test snmp VLAN 1 link-down notification.",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "snmp (?P<interface>VLAN\\s+\\S+) link-down notification\\.$"
+        }
+    ]
+}

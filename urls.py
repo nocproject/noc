@@ -5,10 +5,13 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from noc.lib.app.site import site, patterns
 
+## NOC modules
+from noc.lib.app.site import site, patterns
+from noc.lib.solutions import init_solutions
+
+## Initialize custom fields and solutuins
+init_solutions()
 ##
 ## Discover all applications
 ##
@@ -20,6 +23,3 @@ urlpatterns = patterns("",
     (r"^jsi18n/$", "django.views.i18n.javascript_catalog",
         {"packages": "django.conf"})
 ) + site.urls
-
-from noc.main.models import CustomField
-CustomField.install_fields()

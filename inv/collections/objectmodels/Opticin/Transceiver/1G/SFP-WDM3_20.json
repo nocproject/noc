@@ -1,0 +1,30 @@
+{
+    "name": "Opticin | Transceiver | 1G | SFP-WDM3.20",
+    "uuid": "716300d8-3aa3-47ce-a829-9463add462e1",
+    "vendor__code": "OPTICIN",
+    "description": "Opticin SFP WDM transceiver, 1310 tx, 1550 rx, SC, sm, 20km",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no0": "SFP-WDM3.20"
+        }
+    }
+}

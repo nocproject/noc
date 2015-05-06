@@ -25,7 +25,13 @@ Ext.define("NOC.fm.mibpreference.Model", {
         },
         {
             name: "is_builtin",
-            type: "bool"
+            type: "boolean",
+            persist: false
+        },
+        {
+            name: "uuid",
+            type: "string",
+            persist: false
         }
     ]
 });

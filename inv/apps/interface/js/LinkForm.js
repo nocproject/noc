@@ -62,7 +62,7 @@ Ext.define("NOC.inv.interface.LinkForm", {
                     buttons: [
                         {
                             text: "Connect",
-                            iconCls: "icon_connect",
+                            glyph: NOC.glyph.link,
                             formBind: true,
                             scope: me,
                             handler: me.onLink
@@ -76,10 +76,9 @@ Ext.define("NOC.inv.interface.LinkForm", {
     },
     //
     onObjectSelect: function(field, value) {
-        var me = this,
-            v = value[0];
+        var me = this;
         Ext.Ajax.request({
-            url: "/inv/interface/unlinked/" + v.get("id") + "/",
+            url: "/inv/interface/unlinked/" + value.get("id") + "/",
             method: "GET",
             scope: me,
             success: function(response) {
@@ -113,5 +112,10 @@ Ext.define("NOC.inv.interface.LinkForm", {
                 NOC.error("Failed to connect interfaces");
             }
         });
+    },
+    //
+    getDefaultFocus: function() {
+        var me = this;
+        return me.form.findField("managed_object");
     }
 });

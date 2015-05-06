@@ -14,6 +14,7 @@ import random
 import time
 import types
 from collections import defaultdict
+import itertools
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -59,7 +60,13 @@ class ReduceTask(models.Model):
         elif self.script.startswith("pyrule:"):
             # Reference to existing pyrule
             r = PyRule.objects.get(name=self.script[7:], interface="IReduceTask")
-            self.script = r.text
+            if r.handler:
+                self.script = "from noc.lib.solutions import get_solution\n" \
+                              "@pyrule\n" \
+                              "def rule(*args, **kwargs):\n" \
+                              "    return get_solution(\"%s\")(*args, **kwargs)\n" % r.handler
+            else:
+                self.script = r.text
         # Check syntax
         PyRule.compile_text(self.script)
         # Save
@@ -105,6 +112,18 @@ class ReduceTask(models.Model):
         :return: Task
         :rtype: ReduceTask
         """
+        def get_timeout(ts, max_scripts):
+            ts = sorted(ts)
+            args = [iter(ts)] * max_scripts
+            t = 0
+            # Split to generations
+            for g in itertools.izip_longest(fillvalue=None, *args):
+                g = [x for x in g if x]
+                if g:
+                    # Count longest time
+                    t += g[-1]
+            return t
+
         # Normalize map scripts to a list
         if type(map_script) in (types.ListType, types.TupleType):
             # list of map scripts
@@ -160,7 +179,7 @@ class ReduceTask(models.Model):
                     if ms not in o.profile.scripts:
                         continue
                     s = o.profile.scripts[ms]
-                    ts += [s.TIMEOUT]
+                    ts += [s.get_timeout()]
                 pool_timeouts[pool] = ts
             # Calculate timeouts by pools
             for pool in pool_timeouts:
@@ -169,19 +188,9 @@ class ReduceTask(models.Model):
                 c = pc[pool]
                 if c["members"] > 0:
                     # Add timeouts by generations
-                    ms = c["max_scripts"]
-                    ts = sorted(pool_timeouts[pool])
-                    if not ts:
-                        continue
-                    lts = len(ts) - 1
-                    i = ms - 1
-                    while True:
-                        i = min(i, lts)
-                        t += ts[i]
-                        if i >= lts:
-                            break
-                        i += ms
-                elif pool_timeouts[pool]:
+                    if pool_timeouts[pool] and c["max_scripts"]:
+                        t = get_timeout(pool_timeouts[pool], c["max_scripts"])
+                if t == 0 and pool_timeouts[pool]:
                     # Give a try when cannot detect pool capabilities
                     t = max(pool_timeouts[pool])
                 timeout = max(timeout, t)
@@ -245,10 +254,13 @@ class ReduceTask(models.Model):
                 if status == "F":
                     if no_sessions:
                         m.script_result = dict(code=ERR_ACTIVATOR_NOT_AVAILABLE,
-                                               text="Activator pool is down")
+                            text="Activator pool '%s' is down" % o.activator.name)
                     else:
                         m.script_result = dict(code=ERR_INVALID_SCRIPT,
                                                text="Invalid script %s" % msn)
+                elif status == "W":
+                    # get effective timeout
+                    m.script_timeout = o.profile.scripts[ms].get_timeout()
                 m.save()
         return r_task
 
@@ -273,21 +285,34 @@ class ReduceTask(models.Model):
                 else:
                     raise ReduceTask.NotReady
 
-    ##
-    ## Wait untill all task complete
-    ##
     @classmethod
     def wait_for_tasks(cls, tasks):
+        """
+        Wait until all task complete
+        """
         while tasks:
-            time.sleep(3)
+            time.sleep(1)
             rest = []
             for t in tasks:
                 if t.complete:
-                    t.reduce() # delete task and trigger reduce task
+                    t.reduce()  # delete task and trigger reduce task
                     t.delete()
                 else:
                     rest += [t]
                 tasks = rest
+
+    @classmethod
+    def wait_any(cls, tasks):
+        """
+        Wait for any task to complete
+        """
+        while tasks:
+            time.sleep(1)
+            for t in tasks:
+                if t.complete:
+                    t.reduce()
+                    t.delete()
+                    return
 
 
 def reduce_object_script(task):

@@ -40,6 +40,12 @@ Ext.define("NOC.sa.objectnotification.Application", {
             renderer: NOC.render.Bool
         },
         {
+            text: "Alarm Reopened",
+            dataIndex: "alarm_reopened",
+            width: 50,
+            renderer: NOC.render.Bool
+        },
+        {
             text: "Alarm Cleared",
             dataIndex: "alarm_cleared",
             width: 50,
@@ -104,6 +110,11 @@ Ext.define("NOC.sa.objectnotification.Application", {
             name: "alarm_risen",
             xtype: "checkboxfield",
             boxLabel: "Alarm risen"
+        },
+        {
+            name: "alarm_reopened",
+            xtype: "checkboxfield",
+            boxLabel: "Alarm reopened"
         },
         {
             name: "alarm_cleared",

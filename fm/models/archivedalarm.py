@@ -8,20 +8,22 @@
 
 ## Python modules
 import datetime
+## Django modules
+from django.template import Template, Context
 ## NOC modules
 import noc.lib.nosql as nosql
 from noc.sa.models.managedobject import ManagedObject
 from alarmclass import AlarmClass
 from alarmlog import AlarmLog
 from alarmseverity import AlarmSeverity
-from translation import get_translated_template, get_translated_text
+from noc.lib.scheduler.utils import remove_job
 
 
 class ArchivedAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.archived",
         "allow_inheritance": False,
-        "indexes": ["root"]
+        "indexes": ["root", "control_time"]
     }
     status = "C"
 
@@ -35,6 +37,13 @@ class ArchivedAlarm(nosql.Document):
     #
     opening_event = nosql.ObjectIdField(required=False)
     closing_event = nosql.ObjectIdField(required=False)
+    # Number of reopens
+    reopens = nosql.IntField(required=False)
+    # Copied discriminator
+    discriminator = nosql.StringField(required=False)
+    # Control time within alarm will be reopen instead
+    # instead of creating the new alarm
+    control_time = nosql.DateTimeField(required=False)
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = nosql.ObjectIdField(required=False)
@@ -56,30 +65,19 @@ class ArchivedAlarm(nosql.Document):
         vars.update({"event": self})
         return vars
 
-    def get_translated_subject(self, lang):
-        s = get_translated_template(lang, self.alarm_class.text,
-                                    "subject_template",
-                                    self.get_template_vars())
+    @property
+    def subject(self):
+        ctx = Context(self.get_template_vars())
+        s = Template(self.alarm_class.subject_template).render(ctx)
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
 
-    def get_translated_body(self, lang):
-        return get_translated_template(lang, self.alarm_class.text,
-                                       "body_template",
-                                       self.get_template_vars())
-
-    def get_translated_symptoms(self, lang):
-        return get_translated_text(
-            lang, self.alarm_class.text, "symptoms")
-
-    def get_translated_probable_causes(self, lang):
-        return get_translated_text(
-            lang, self.alarm_class.text, "probable_causes")
-
-    def get_translated_recommended_actions(self, lang):
-        return get_translated_text(
-            lang, self.alarm_class.text, "recommended_actions")
+    @property
+    def body(self):
+        ctx = Context(self.get_template_vars())
+        s = Template(self.alarm_class.body_template).render(ctx)
+        return s
 
     @property
     def duration(self):
@@ -104,3 +102,47 @@ class ArchivedAlarm(nosql.Document):
 
     def set_root(self, root_alarm):
         pass
+
+    def reopen(self, message):
+        """
+        Reopen alarm back
+        """
+        reopens = self.reopens or 0
+        ts = datetime.datetime.now()
+        log = self.log + [AlarmLog(timestamp=ts, from_status="C",
+                                   to_status="A", message=message)]
+        a = ActiveAlarm(
+            id=self.id,
+            timestamp=self.timestamp,
+            last_update=ts,
+            managed_object=self.managed_object,
+            alarm_class=self.alarm_class,
+            severity=self.severity,
+            vars=self.vars,
+            log=log,
+            root=self.root,
+            opening_event=self.opening_event,
+            discriminator=self.discriminator,
+            reopens=reopens + 1
+        )
+        a.save()
+        # @todo: Clear related correlator jobs
+        self.delete()
+        # Remove pending control_notify job
+        remove_job("fm.correlator", "control_notify", key=a.id)
+        # Send notifications
+        # Do not set notifications for child and for previously reopened
+        # alarms
+        if not a.root and not reopens:
+            a.managed_object.event(a.managed_object.EV_ALARM_REOPENED, {
+                "alarm": a,
+                "subject": a.subject,
+                "body": a.body,
+                "symptoms": a.alarm_class.symptoms,
+                "recommended_actions": a.alarm_class.recommended_actions,
+                "probable_causes": a.alarm_class.probable_causes
+            })
+        return a
+
+## Avoid circular references
+from activealarm import ActiveAlarm

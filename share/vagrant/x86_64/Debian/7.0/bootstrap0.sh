@@ -39,12 +39,17 @@ if [ $? -eq 0 ]; then
     exit 1
 fi
 ##
+## Append additional repositories
+##
+apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10 || error_exit "Failed to install MongoDB Public GPG Key"
+echo 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen' > /etc/apt/sources.list.d/mongodb.list
+##
 ## Update base system
 ##
 info "Updating base system"
-apt-get update || die "Failed to run: apt-get: update"
-apt-get upgrade || die "Failed to run: apt-get upgrade"
-apt-get dist-upgrade || die "Failed to run: apt-get dist-upgrade"
+apt-get update -y || error_exit "Failed to run: apt-get: update"
+apt-get upgrade -y || error_exit "Failed to run: apt-get upgrade"
+apt-get dist-upgrade -y || error_exit "Failed to run: apt-get dist-upgrade"
 ##
 ## Create NOC user and group
 ##
@@ -76,19 +81,19 @@ aptinstall libgmp-dev
 aptinstall nginx
 aptinstall postgresql
 aptinstall libpq-dev
-aptinstall postgresql-9.1-postgis
-aptinstall postgis
-aptinstall mongodb
+aptinstall mongodb-org
 aptinstall mercurial
 aptinstall smitools
 aptinstall sudo
+aptinstall quilt
+aptinstall gcc
 ##
 ## Set up Postgresql database
 ##
 info "Create PostgreSQL 'noc' user and database"
 su - postgres -c psql << __EOF__
 CREATE USER noc SUPERUSER ENCRYPTED PASSWORD 'thenocproject';
-CREATE DATABASE noc WITH OWNER=noc ENCODING='UTF8';
+CREATE DATABASE noc WITH OWNER=noc ENCODING='UTF8' TEMPLATE template0;
 __EOF__
 [ $? -eq 0 ] || error_exit "Failed to initialize PostgreSQL database and user"
 ##
@@ -96,7 +101,7 @@ __EOF__
 ##
 info "Setting MongoDB authentication"
 mongo noc << __EOF__
-db.addUser("noc", "thenocproject")
+db.createUser({"user": "noc", "pwd": "thenocproject", "roles": ["readWrite", "dbAdmin"]})
 __EOF__
 ##
 ## Set up daemon autostart
@@ -108,9 +113,22 @@ update-rc.d nginx enable
 ## Get NOC
 ##
 cd /opt || error_exit "cd /opt failed"
-info "Fetching NOC"
-hg clone https://bitbucket.org/nocproject/noc noc || error_exit "Unable to pull NOC distribution"
+if [ -z "$NOC_BRANCH" ]; then
+    NOC_BRANCH=default
+    export NOC_BRANCH
+fi
+info "Fetching NOC branch $NOC_BRANCH"
+hg clone -b $NOC_BRANCH -u $NOC_BRANCH https://bitbucket.org/nocproject/noc noc || error_exit "Unable to pull NOC distribution"
 if [ "$1" != "--no-bootstrap" ]; then
     info "Running bootstrap.sh"
-    /opt/noc/share/vagrant/x86_64/Debian/7.0/bootstrap.sh
+    /opt/noc/share/vagrant/x86_64/Debian/7.0/bootstrap.sh || error_exit "Failed to complete bootstrap"
+    sleep 3
+    echo
+    info "NOC has been installed successfully"
+    # Get current IP address
+    IP=`ip addr show eth0 | grep "global eth0" | awk '{print $2}' | awk -F/ '{print $1}'`
+    info "Follow to the NOC web interface"
+    info "http://$IP/"
+    info "User: admin"
+    info "Password: admin"
 fi

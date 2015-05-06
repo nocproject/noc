@@ -46,7 +46,7 @@ class NOCAuthBackend(object):
             Update instance attr with value, if value is not None.
             Returns True if instance has been updated
             """
-            if value and getattr(instance, attr) != value:
+            if value is not None and getattr(instance, attr) != value:
                 setattr(instance, attr, value)
                 return True
             return False
@@ -75,7 +75,8 @@ class NOCAuthBackend(object):
                 "name": "username",
                 "fieldLabel": "Name",
                 "allowBlank": False,
-                "emptyText": "Enter username"
+                "emptyText": "Enter username",
+                "tabIndex": 1
             },
     
             {
@@ -83,7 +84,8 @@ class NOCAuthBackend(object):
                 "name": "password",
                 "fieldLabel": "Password",
                 "allowBlank": False,
-                "inputType": "password"
+                "inputType": "password",
+                "tabIndex": 2
             }
         ]
 
@@ -110,7 +112,9 @@ class NOCAuthBackend(object):
                 "name": "retype_password",
                 "fieldLabel": "Retype New Password",
                 "allowBlank": False,
-                "inputType": "password"
+                "inputType": "password",
+                "vtype": "password",
+                "peerField": "new_password"
             }
         ]
 
