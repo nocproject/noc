@@ -1,9 +1,9 @@
 {
-    "name": "NoName | Transceiver | 1G | SFP SX",
+    "name": "Finisar | Transceiver | 1G | SFP LH DOM",
     "$collection": "inv.objectmodels",
-    "uuid": "81e1867e-4297-4cd0-84f5-46931022868e",
-    "vendor__code": "NONAME",
-    "description": "NoName SFP SX transceiver",
+    "uuid": "eda16365-3e64-492f-9405-167022998ad4",
+    "vendor__code": "FINISAR",
+    "description": "LH/LX transceiver with DOM support",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -19,7 +19,7 @@
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1000BASESX"],
+            "protocols": [">1000BASELX-1310"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,9 +27,13 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1000BASESX"],
+            "protocols": ["<1000BASELX-1310"],
             "type__name": "Optical | LC"
         }
     ],
-    "data": {}
+    "data": {
+        "asset": {
+            "part_no0": "FTLF1318P2BCL-CS"
+        }
+    }
 }

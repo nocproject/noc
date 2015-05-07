@@ -279,6 +279,7 @@ Cisco | Transceiver | 1G | GLC-T,37b32d6b-90b5-4f69-ba1d-efecf3525565,Cisco/Tran
 Cisco | Transceiver | 1G | GLC-ZX-SM,7d32c63a-b351-4c03-8b76-8151f212925c,Cisco/Transceiver/1G/GLC-ZX-SM.json,d3312e997ce7f46b4886705e762849a4f84184cded6e5a5b61df712c49331c5d
 Cisco | Transceiver | 1G | GLC-ZX-SMD,98a134d5-3996-4433-850d-28e8a9f91a78,Cisco/Transceiver/1G/GLC-ZX-SMD.json,fe02dfd81d5fd754834633ae226f111a3357560303d673299f58de4160f0c052
 Cisco | Transceiver | 1G | SFP-GE-L,aa50f7d4-fb20-42d8-bdc6-e5c036d98e40,Cisco/Transceiver/1G/SFP-GE-L.json,1298871fde7c478abf81a119a68fca433297c2b46a8073307fd16eeb8caf2e36
+Cisco | Transceiver | 1G | SFP-GE-S,ef448862-574b-4706-bd14-d0b03b3bc8db,Cisco/Transceiver/1G/SFP-GE-S.json,7265f2a73f85dfbc540593ab8bdc549d1067d5026ae139725425142f89fb0b5d
 Cisco | Transceiver | 1G | WS-G5483,4c7d3dc0-b897-42f8-8dd9-6957b998802e,Cisco/Transceiver/1G/WS-G5483.json,3f6941c95c0904414d24a19e8b322980d664476737ae06df50d5583b1f7df5bd
 City,f75b9b29-702e-4525-b748-498aca1c8739,City.json,93c9f92d0d04e940c6921cc7cb52b911ea2ac782483f47845ef962c18b01a7f1
 Country,cf775661-9287-4f5a-ae13-86693c1a2a79,Country.json,e15469e7d3bf069d3ae07fde467f981ecda8d597a09ee602dbd962d4f06fda5e
@@ -377,6 +378,7 @@ Ericsson | SmartEdge | xcrp4-base,9a4f4e60-bfae-47eb-9d0f-bab0e9ed8810,Ericsson/
 Finisar | Transceiver | 10G | FTLX8570D3BCL-C1,9c4650be-8583-4702-b6eb-cebfd3a2ef81,Finisar/Transceiver/10G/FTLX8570D3BCL-C1.json,68e7bda242abe0e6b7f18c882f3256b85c1b92e755c534bb589d41a9897c7a10
 Finisar | Transceiver | 10G | FTLX8571D3BCL-C2,496fae23-e37d-45d4-86ab-a3f66c32084b,Finisar/Transceiver/10G/FTLX8571D3BCL-C2.json,df5af5e8d6f58bb01f12d54e0c6e801835f405eacab145c396b42d82b95f1185
 Finisar | Transceiver | 1G | SFP LH,bb81c014-4d71-451d-aa13-eadfaef53869,Finisar/Transceiver/1G/SFP_LH.json,f07c8d1346bd0a1ef2e9eafb315ee18100f544739b8a45747a0ca9ba26185375
+Finisar | Transceiver | 1G | SFP LH DOM,eda16365-3e64-492f-9405-167022998ad4,Finisar/Transceiver/1G/SFP_LH_DOM.json,736a37bbf773ea4c56319163a8e4abab7f6ee0d84a8e448a2ee2575732bc8326
 Floor,12538374-fd97-481d-83ed-d8ac5d5e0454,Floor.json,8305a323c23e8f59145fac3ff5cf5b4346c4c326b039a2b84049d9aa5b5badc8
 Force10 | S | S25N,439beb5a-b5b1-4295-8e69-62751143a2b7,Force10/S/S25N.json,106fbad6c23479f6fd8dfd8d82b5b6f35157dbbf90230e11bcffc14741d0fdbc
 Force10 | S | S50-01-10GE-2C,c4fd87c0-9fe6-4d4d-9ecb-ed2dfcfc8803,Force10/S/S50-01-10GE-2C.json,f7f2c0290459d682fca056d5f180e2d285a486ff43a67ec051b83a675a9bed1a
@@ -504,7 +506,7 @@ NoName | Transceiver | 1G | SFP BXU,4ea6557c-775c-4d60-9f71-ab8ca4cbf9f4,NoName/
 NoName | Transceiver | 1G | SFP EX,a9fbca81-48c0-4ed3-8175-5de081ec5020,NoName/Transceiver/1G/SFP_EX.json,45611190a822b6c62f8b002d3bcaac626a1144b0a615d4c22f405e93c53d7a07
 NoName | Transceiver | 1G | SFP LH,e053a183-d0d3-4624-853e-96119178edbc,NoName/Transceiver/1G/SFP_LH.json,f4b1ec19f1efbdce4902a9d56c6d1093012df1927fe90cf007968594439d1c13
 NoName | Transceiver | 1G | SFP LX,7c7fc083-3843-44bc-ab39-1ddce0966f49,NoName/Transceiver/1G/SFP_LX.json,06cebf33596975104951c8faab6933e9be53e0488f5b49b530e010def7f83fd8
-NoName | Transceiver | 1G | SFP SX,81e1867e-4297-4cd0-84f5-46931022868e,NoName/Transceiver/1G/SFP_SX.json,8bf1508c53d767ee1081408f5460411e1ad1d4e1c8e4e2e51a165d638997abf2
+NoName | Transceiver | 1G | SFP SX,81e1867e-4297-4cd0-84f5-46931022868e,NoName/Transceiver/1G/SFP_SX.json,613a6ce5152068afe77096bf4dd62a3c72bf0990257ae5cd5b0273a289f85ea6
 NoName | Transceiver | 1G | SFP T,b75fb86c-df34-4e60-b87e-59ebceaf215e,NoName/Transceiver/1G/SFP_T.json,cd90def16d8913ac39c63d57022bca4eae08c91bf22370ceb9b5ae27ecbabbeb
 NoName | Transceiver | 1G | SFP TX,fd39e350-47dd-482f-9b7f-31615e6795a6,NoName/Transceiver/1G/SFP_TX.json,3017fb6b7daf06cf3c982cf0f0fd505f64d4300aa5b8652bedd70dd1574c3212
 NoName | Transceiver | 1G | SFP ZX,f486bb38-71a8-4688-bac4-62fc9c3dd183,NoName/Transceiver/1G/SFP_ZX.json,963db2c242cb4afc1c3de6fefe6c0266d6c186c50461c1d076db984c21df77f2
