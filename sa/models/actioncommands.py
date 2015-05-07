@@ -36,7 +36,10 @@ class PlatformMatch(EmbeddedDocument):
 class ActionCommands(Document):
     meta = {
         "collection": "noc.actioncommands",
-        "json_collection": "sa.actioncommands"
+        "json_collection": "sa.actioncommands",
+        "json_depends_on": [
+            "sa.actions"
+        ]
     }
     name = StringField(unique=True)
     uuid = UUIDField(unique=True)

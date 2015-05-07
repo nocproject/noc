@@ -17,10 +17,10 @@ from operator import attrgetter
 import logging
 ## Third-party modules
 from mongoengine.fields import ListField, EmbeddedDocumentField
+import mongoengine.signals
 ## NOC modules
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.serialize import json_decode
-from noc.main.models.collectioncache import CollectionCache
 from noc.lib.log import PrefixLoggerAdapter
 
 logger = logging.getLogger(__name__)
@@ -43,15 +43,20 @@ class DereferenceError(Exception):
 class Collection(object):
     TRANSLATIONS = {}
     ALLOW_FUZZY = {}
+    COLLECTIONS = {}
+    COLLECTION_ORDER = []
 
-    def __init__(self, name, doc, local=False):
+    def __init__(self, name, local=False):
         self.logger = PrefixLoggerAdapter(logger, name)
+        if name not in self.COLLECTIONS:
+            self.logger.error("Invalid collection '%s'", name)
+            raise ValueError("Invalid collection '%s'" % name)
         m, c = name.split(".", 1)
         self.module = m
         self.cname = name
         self.name = c
         self.local = local
-        self.doc = doc
+        self.doc = self.COLLECTIONS[name]
         self.items = {}  # uuid -> CollectionItem
         self.changed = False
         self.ref_cache = {}
@@ -501,5 +506,49 @@ class Collection(object):
                         tr += ["en"]
                     cls.TRANSLATIONS[cn] = tr
 
+    @classmethod
+    def install(cls):
+        """
+        Install collections creation hooks
+        """
+        mongoengine.signals.class_prepared.connect(cls.on_new_document)
+
+    @classmethod
+    def on_new_document(cls, sender, *args, **kwargs):
+        if "json_collection" in sender._meta:
+            cls.COLLECTIONS[sender._meta["json_collection"]] = sender
+
+    @classmethod
+    def iter_collections(cls):
+        """
+        yield (collection name, collection class)
+        """
+        if not cls.COLLECTION_ORDER:
+            # Order collections on json_depends_on meta property
+            pending = []
+            for c in cls.COLLECTIONS:
+                d = cls.COLLECTIONS[c]
+                depends_on = d._meta.get("json_depends_on", [])
+                if depends_on:
+                    pending += [(c, depends_on)]
+                else:
+                    cls.COLLECTION_ORDER += [c]
+            while pending:
+                new_pending = []
+                for c, d in pending:
+                    if sum(1 for n in cls.COLLECTION_ORDER if n in d) == len(d):
+                        # All requirements match
+                        cls.COLLECTION_ORDER += [c]
+                    else:
+                        new_pending += [(c, d)]
+                if len(new_pending) == len(pending):
+                    raise RuntimeError("Cannot resolve collection dependencies")
+                else:
+                    pending = new_pending
+        for o in cls.COLLECTION_ORDER:
+            yield o
+
 
 Collection.setup()
+##
+from noc.main.models.collectioncache import CollectionCache
