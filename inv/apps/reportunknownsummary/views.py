@@ -30,7 +30,10 @@ class ReportUnknownModelsSummary(SimpleReport):
             title=self.title,
             columns=[
                 "Vendor", "Part No", "Description",
-                TableColumn("Count", format="numeric", align="right")
+                TableColumn(
+                    "Count",
+                    format="numeric", align="right", total="sum"
+                )
             ],
             data=data
         )
