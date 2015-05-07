@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | 7600-ES+3C-DFC-LITE",
+    "$collection": "inv.objectmodels",
     "uuid": "da74e010-f222-43a1-8c54-d08e4ddddce5",
     "vendor__code": "CISCO",
     "description": "7600-ES+3C 7600 ES+ DFC LITE",

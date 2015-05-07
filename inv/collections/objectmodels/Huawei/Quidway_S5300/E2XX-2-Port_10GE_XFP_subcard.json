@@ -1,5 +1,6 @@
 {
     "name": "Huawei | Quidway S5300 | E2XX-2-Port 10GE XFP subcard",
+    "$collection": "inv.objectmodels",
     "uuid": "fc15b762-6c94-4034-b760-9a06a99637b9",
     "vendor__code": "HUAWEI",
     "description": "Interface card with 2 10GE XFP ports",
@@ -30,7 +31,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "LS5D00E2XX00"
+            "part_no": ["LS5D00E2XX00"]
         },
         "dimensions": {
             "depth": "69",

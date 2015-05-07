@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3200-24",
+    "$collection": "inv.objectmodels",
     "uuid": "0c7eef2b-2d26-421e-a54c-047c3fd3793e",
     "vendor__code": "DLINK",
     "description": "DGS-3200-24 xStack L2 Managed Switch witch 20 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -251,7 +252,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3200-24"
+            "part_no": ["DGS-3200-24"]
         },
         "management": {
             "managed": true

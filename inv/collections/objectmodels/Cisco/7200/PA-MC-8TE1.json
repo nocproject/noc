@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7200 | PA-MC-8TE1",
+    "$collection": "inv.objectmodels",
     "uuid": "05440f7a-135a-4513-8077-f7ba17bd1fbb",
     "vendor__code": "CISCO",
     "description": "Single-wide port adapter with 8 T1 or E1 PRI RJ48c ports",
@@ -72,7 +73,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "PA-MC-8TE1+"
+            "part_no": ["PA-MC-8TE1+"]
         }
     }
 }

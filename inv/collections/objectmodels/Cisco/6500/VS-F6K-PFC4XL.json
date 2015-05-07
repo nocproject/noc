@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 6500 | VS-F6K-PFC4XL",
+    "$collection": "inv.objectmodels",
     "uuid": "ab345e3a-3ca8-4515-9969-10884e170ed3",
     "vendor__code": "CISCO",
     "description": "VS-F6K-PFC4XL Policy Feature Card",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "VS-F6K-PFC4XL"
+            "part_no": ["VS-F6K-PFC4XL"]
         }
     }
 }

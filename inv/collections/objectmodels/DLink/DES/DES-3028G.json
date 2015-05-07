@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3028G",
+    "$collection": "inv.objectmodels",
     "uuid": "025d0911-0f56-4cbe-a1b9-c34485e268a1",
     "vendor__code": "DLINK",
     "description": "DES-3028G L2 Managed Switch witch 24 ports 10/100BASE-TX, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -289,7 +290,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3028G"
+            "part_no": ["DES-3028G"]
         },
         "management": {
             "managed": true

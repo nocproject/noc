@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N2K-C2232-FAN",
+    "$collection": "inv.objectmodels",
     "uuid": "b6ef30a4-1c81-4354-adc6-0b0802132451",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 2232PP and 2232TM/TM-E FEX Fan Module (Std airflow, port side exhaust)",
@@ -16,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N2K-C2232-FAN"
+            "part_no": ["N2K-C2232-FAN"]
         }
     }
 }

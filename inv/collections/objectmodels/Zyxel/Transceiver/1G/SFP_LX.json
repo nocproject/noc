@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | Transceiver | 1G | SFP LX",
+    "$collection": "inv.objectmodels",
     "uuid": "360483a2-f3c4-472e-9580-d7a119b2f8e9",
     "vendor__code": "ZYXEL",
     "description": "Zyxel SFP LX transceiver",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-LX-10"
+            "part_no": ["SFP-LX-10"]
         }
     }
 }

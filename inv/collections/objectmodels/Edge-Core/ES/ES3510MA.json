@@ -1,5 +1,6 @@
 {
     "name": "Edge-Core | ES | ES3510MA",
+    "$collection": "inv.objectmodels",
     "uuid": "28f3c0d8-9cb8-4a78-a533-f40500002144",
     "vendor__code": "EDGECORE",
     "description": "ES3510MA",
@@ -122,7 +123,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ES3510MA"
+            "part_no": ["ES3510MA"]
         },
         "management": {
             "managed": true

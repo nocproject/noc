@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9k | A9K-2T20GE-L",
+    "$collection": "inv.objectmodels",
     "uuid": "4fc2dbd1-81fc-4129-9a47-0d39cee28952",
     "vendor__code": "CISCO",
     "description": "ASR9k 2-Port 10GE, 20-Port GE Low Queue LC Requires XFPs and SFPs",
@@ -191,7 +192,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "A9K-2T20GE-L"
+            "part_no": ["A9K-2T20GE-L"]
         }
     }
 }

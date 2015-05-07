@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3200-52",
+    "$collection": "inv.objectmodels",
     "uuid": "e8a8e4f9-c1fb-4543-a68b-5e641109d1ee",
     "vendor__code": "DLINK",
     "description": "DES-3200-52 xStackL2 Managed Switch witch 48 ports 10/100BASE-TX, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -481,7 +482,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3200-52"
+            "part_no": ["DES-3200-52"]
         },
         "management": {
             "managed": true

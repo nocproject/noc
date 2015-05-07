@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N2200-PDC-400W",
+    "$collection": "inv.objectmodels",
     "uuid": "d70306be-e4f1-4274-9fa7-7a6e440d2d16",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 2200 DC Power supply (Std airflow, port side exhaust)",
@@ -16,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N2200-PDC-400W"
+            "part_no": ["N2200-PDC-400W"]
         }
     }
 }

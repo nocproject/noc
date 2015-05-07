@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3620-28PC",
+    "$collection": "inv.objectmodels",
     "uuid": "88b89cf8-62fe-4200-b1e3-a29b97cc6b96",
     "vendor__code": "DLINK",
     "description": "DGS-3620-28PC xStack L3 Managed Switch witch 20 ports 10/100/1000BASE-T with PoE, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 4 SFP+",
@@ -298,7 +299,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3620-28PC"
+            "part_no": ["DGS-3620-28PC"]
         },
         "management": {
             "managed": true

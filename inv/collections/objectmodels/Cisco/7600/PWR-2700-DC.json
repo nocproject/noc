@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | PWR-2700-DC",
+    "$collection": "inv.objectmodels",
     "uuid": "5bc50667-95db-4a99-89ff-acc676c21ae8",
     "vendor__code": "CISCO",
     "description": "2700 Watt DC Power Supply for Cisco 7600",
@@ -54,8 +55,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "PWR-2700-DC",
-            "part_no1": "PWR-2700-DC/4"
+            "part_no": ["PWR-2700-DC/4", "PWR-2700-DC"]
         }
     }
 }

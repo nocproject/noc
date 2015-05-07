@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ME3400 | ME-3400G-2CS-A",
+    "$collection": "inv.objectmodels",
     "uuid": "df6cc784-bf66-4a5d-9310-e9705aefd7f6",
     "vendor__code": "CISCO",
     "description": "Cisco ME3400 Series Metro Ethernet access switch with AC power supply, 2 combo + 2 SFP ports",
@@ -81,7 +82,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ME-3400G-2CS-A"
+            "part_no": ["ME-3400G-2CS-A"]
         },
         "management": {
             "managed": true

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N5596UP-FAN",
+    "$collection": "inv.objectmodels",
     "uuid": "84d320e4-5794-4bd9-8129-a5369934da16",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 5596UP/5596T Fan Module, Front-to-Back Airflow",
@@ -16,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N5596UP-FAN"
+            "part_no": ["N5596UP-FAN"]
         }
     }
 }

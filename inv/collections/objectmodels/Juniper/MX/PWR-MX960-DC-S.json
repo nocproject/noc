@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | PWR-MX960-DC-S",
+    "$collection": "inv.objectmodels",
     "uuid": "3e2220ed-776f-4d09-9bd9-f6ab2d487f8e",
     "vendor__code": "JUNIPER",
     "description": "1600W DC Power Entry Module",
@@ -31,8 +32,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "PWR-MX960-DC-S",
-            "part_no0": "740-013683"
+            "order_part_no": ["PWR-MX960-DC-S"],
+            "part_no": ["740-013683"]
         }
     }
 }

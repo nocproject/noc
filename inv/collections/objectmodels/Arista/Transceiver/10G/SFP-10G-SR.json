@@ -1,5 +1,6 @@
 {
     "name": "Arista | Transceiver | 10G | SFP-10G-SR",
+    "$collection": "inv.objectmodels",
     "uuid": "945b77ec-1178-4741-8f0f-d9ce4ad0e2d9",
     "vendor__code": "ARISTA",
     "description": "10GBASE-SR 50u MMF / 300m SFP+ transceiver",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-10G-SR"
+            "part_no": ["SFP-10G-SR"]
         }
     }
 }

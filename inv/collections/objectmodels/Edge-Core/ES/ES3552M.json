@@ -1,5 +1,6 @@
 {
     "name": "Edge-Core | ES | ES3552M",
+    "$collection": "inv.objectmodels",
     "uuid": "4656d985-0faa-4b92-b81c-522e688968d1",
     "vendor__code": "EDGECORE",
     "description": "48 Ethernet 10/100 ports, 4 Combo Copper / SFP-based 10/100/1000 Ethernet ports",
@@ -481,7 +482,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ES3552M"
+            "part_no": ["ES3552M"]
         },
         "management": {
             "managed": true

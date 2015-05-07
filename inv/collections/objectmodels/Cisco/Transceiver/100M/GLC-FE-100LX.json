@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 100M | GLC-FE-100LX",
+    "$collection": "inv.objectmodels",
     "uuid": "18472601-fd06-48d9-8d98-5da8a821bac8",
     "vendor__code": "CISCO",
     "description": "100BaseLX-FE SFP",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "GLC-FE-100LX"
+            "part_no": ["GLC-FE-100LX"]
         }
     }
 }

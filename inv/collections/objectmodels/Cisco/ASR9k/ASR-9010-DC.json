@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9k | ASR-9010-DC",
+    "$collection": "inv.objectmodels",
     "uuid": "41705e5d-bd22-4586-bbc7-03a0e965e8fe",
     "vendor__code": "CISCO",
     "description": "Cisco ASR 9010 DC Chassis with PEM Version 1",
@@ -173,7 +174,7 @@
             "intake": "f"
         },
         "asset": {
-            "part_no0": "ASR-9010-DC"
+            "part_no": ["ASR-9010-DC"]
         },
         "management": {
             "managed": true

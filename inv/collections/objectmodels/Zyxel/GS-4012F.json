@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | GS-4012F",
+    "$collection": "inv.objectmodels",
     "uuid": "b12bc3d3-eb69-4386-8301-acc3766d82f7",
     "vendor__code": "ZYXEL",
     "description": "L3 switch with 8 ports 1000BaseX (SFP) and 4 combo ports 10/100/1000BaseTX / SFP",
@@ -168,7 +169,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "GS-4012F"
+            "part_no": ["GS-4012F"]
         },
         "dimensions": {
             "depth": 225,

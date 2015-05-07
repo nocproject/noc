@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ME3400 | ME-3400-24TS-D",
+    "$collection": "inv.objectmodels",
     "uuid": "5cb74c9b-df1f-4021-a47d-cdb24e4d3a98",
     "vendor__code": "CISCO",
     "description": "Cisco ME3400 Series Metro Ethernet access switch with DC power supply, 24 FastEthernet + 2 SFP ports",
@@ -265,7 +266,7 @@
             "intake": "f"
         },
         "asset": {
-            "part_no0": "ME-3400-24TS-D"
+            "part_no": ["ME-3400-24TS-D"]
         },
         "management": {
             "managed": true

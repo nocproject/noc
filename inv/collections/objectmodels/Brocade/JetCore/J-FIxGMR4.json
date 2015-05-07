@@ -1,5 +1,6 @@
 {
     "name": "Brocade | JetCore | J-FIxGMR4",
+    "$collection": "inv.objectmodels",
     "uuid": "cde738d1-187a-4738-be14-c7050d1eaea3",
     "vendor__code": "BROCADE",
     "description": "J-FIxGMR4 - 4 gen FastIron mgmt",
@@ -80,7 +81,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "J-FIxGMR4"
+            "part_no": ["J-FIxGMR4"]
         }
     }
 }

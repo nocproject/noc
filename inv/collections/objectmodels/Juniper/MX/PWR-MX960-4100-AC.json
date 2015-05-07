@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | PWR-MX960-4100-AC",
+    "$collection": "inv.objectmodels",
     "uuid": "336d4b77-338a-4389-82e0-edea14f68790",
     "vendor__code": "JUNIPER",
     "description": "4100W AC Power Supply",
@@ -23,9 +24,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "PWR-MX960-4100-AC-R",
-            "order_part_no1": "PWR-MX960-4100-AC-BB",
-            "part_no0": "740-029344"
+            "order_part_no": ["PWR-MX960-4100-AC-R", "PWR-MX960-4100-AC-BB"],
+            "part_no": ["740-029344"]
         }
     }
 }

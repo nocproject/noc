@@ -1,5 +1,6 @@
 {
     "name": "NoName | Patch | LC-LC SMF Duplex Patch Cord",
+    "$collection": "inv.objectmodels",
     "uuid": "c16eb516-bbb1-45b1-a3d4-a960c3109e2f",
     "vendor__code": "NONAME",
     "description": "2-fiber LC-LC SMF Patch",

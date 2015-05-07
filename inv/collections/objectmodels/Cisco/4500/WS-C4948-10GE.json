@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 4500 | WS-C4948-10GE",
+    "$collection": "inv.objectmodels",
     "uuid": "b068dc25-69ec-4db2-99bf-53c0f36a2a35",
     "vendor__code": "CISCO",
     "description": "Cisco WS-C4948-10GE Layer-3 ethernet aggregation switch, 10/100/1000BaseT (RJ45), 10GE (X2) Supervisor with 48 10/100/1000BaseT ports and 2 10GE X2 ports\n",
@@ -497,7 +498,7 @@
             "intake": "l"
         },
         "asset": {
-            "part_no0": "WS-C4948-10GE"
+            "part_no": ["WS-C4948-10GE"]
         },
         "management": {
             "managed": true

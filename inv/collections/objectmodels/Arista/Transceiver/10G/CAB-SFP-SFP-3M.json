@@ -1,5 +1,6 @@
 {
     "name": "Arista | Transceiver | 10G | CAB-SFP-SFP-3M",
+    "$collection": "inv.objectmodels",
     "uuid": "6b3a8475-cac0-4f86-8a7a-7204288e1ce9",
     "vendor__code": "ARISTA",
     "description": "Arista 10GBASE-CR twinax copper cable with SFP+ connectors on both ends (3m)",
@@ -26,7 +27,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CAB-SFP-SFP-3M"
+            "part_no": ["CAB-SFP-SFP-3M"]
         },
         "twinax": {
             "alias": "in",

@@ -1,5 +1,6 @@
 {
     "name": "Ericsson | SmartEdge | FANTRAY",
+    "$collection": "inv.objectmodels",
     "uuid": "fc2b08fc-edd4-4da1-b980-8d8c37a3869a",
     "vendor__code": "ERICSSON",
     "description": "FANTRAY",
@@ -16,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SE600-FAN"
+            "part_no": ["SE600-FAN"]
         }
     }
 }

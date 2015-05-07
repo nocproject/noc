@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | 7600-ES20-GE3C",
+    "$collection": "inv.objectmodels",
     "uuid": "d3929f44-849a-4dcc-88d9-57e8a477bbc5",
     "vendor__code": "CISCO",
     "description": "Cisco 7600 Series Ethernet Services 20 G Line Card, 20-port GE SFP and DFC-3C",
@@ -175,7 +176,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "7600-ES20-GE3C"
+            "part_no": ["7600-ES20-GE3C"]
         }
     }
 }

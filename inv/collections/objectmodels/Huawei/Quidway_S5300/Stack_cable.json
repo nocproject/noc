@@ -1,5 +1,6 @@
 {
     "name": "Huawei | Quidway S5300 | Stack cable",
+    "$collection": "inv.objectmodels",
     "uuid": "1f3e94f4-411f-4985-be44-fc7996e8bce9",
     "vendor__code": "HUAWEI",
     "description": "1m PCI-E 8x stack cable",

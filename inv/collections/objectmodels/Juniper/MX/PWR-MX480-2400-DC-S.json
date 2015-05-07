@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | PWR-MX480-2400-DC-S",
+    "$collection": "inv.objectmodels",
     "uuid": "6bcfa7ea-b3e2-4695-8738-542377ed8e92",
     "vendor__code": "JUNIPER",
     "description": "2400W DC Power Supply",
@@ -31,9 +32,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "PWR-MX480-2400-DC-BB",
-            "order_part_no1": "PWR-MX480-2400-DC-R",
-            "part_no0": "740-027736"
+            "order_part_no": ["PWR-MX480-2400-DC-BB", "PWR-MX480-2400-DC-R"],
+            "part_no": ["740-027736"]
         }
     }
 }

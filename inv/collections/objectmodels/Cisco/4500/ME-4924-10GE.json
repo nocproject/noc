@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 4500 | ME-4924-10GE",
+    "$collection": "inv.objectmodels",
     "uuid": "b271f13b-61a6-4149-add2-775cc8d9e6e2",
     "vendor__code": "CISCO",
     "description": "Cisco ME4924-10GE Layer-3 ethernet aggregation switch",
@@ -317,7 +318,7 @@
             "intake": "l"
         },
         "asset": {
-            "part_no0": "ME-4924-10GE"
+            "part_no": ["ME-4924-10GE"]
         },
         "management": {
             "managed": true

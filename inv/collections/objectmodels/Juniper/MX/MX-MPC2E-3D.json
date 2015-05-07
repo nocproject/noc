@@ -30,8 +30,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "MX-MPC2E-3D",
-            "part_no0": "750-038491"
+            "order_part_no": ["MX-MPC2E-3D"],
+            "part_no": ["750-038491"]
         }
     }
 }

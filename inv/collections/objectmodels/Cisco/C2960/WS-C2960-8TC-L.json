@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C2960 | WS-C2960-8TC-L",
+    "$collection": "inv.objectmodels",
     "uuid": "48ea6bbd-745b-49c4-a5fe-c5133fd43d35",
     "vendor__code": "CISCO",
     "description": "8 Ethernet 10/100 ports + 1 SFP port",
@@ -97,7 +98,7 @@
     ],
     "data": {
         "asset": {
-            "part_no1": "WS-C2960-8TC-L"
+            "part_no": ["WS-C2960-8TC-L"]
         },
         "management": {
             "managed": true

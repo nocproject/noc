@@ -103,7 +103,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: "Name",
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "large"
                 },
                 {
                     name: "uuid",
@@ -131,7 +132,8 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     name: "cr_context",
                     xtype: "textfield",
                     fieldLabel: "Connection Context",
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "medium"
                 },
                 {
                     name: "plugins",

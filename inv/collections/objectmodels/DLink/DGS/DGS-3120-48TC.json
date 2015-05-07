@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3120-48TC",
+    "$collection": "inv.objectmodels",
     "uuid": "5315279c-bca2-4250-9038-45f9140434e4",
     "vendor__code": "DLINK",
     "description": "DGS-3120-48TC L3 Managed Switch witch 44 ports 10/100/1000BASE-T and 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 10G CX4",
@@ -466,7 +467,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3120-48TC"
+            "part_no": ["DGS-3120-48TC"]
         },
         "management": {
             "managed": true

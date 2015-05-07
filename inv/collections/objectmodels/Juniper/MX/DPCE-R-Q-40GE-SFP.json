@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | DPCE-R-Q-40GE-SFP",
+    "$collection": "inv.objectmodels",
     "uuid": "b1c01a3f-6f55-4ec8-8856-45c25aeb7e71",
     "vendor__code": "JUNIPER",
     "description": "40x1G Enhanced Queuing DPC for MX with full L2/L3 features & VLAN-HQoS",
@@ -393,9 +394,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "DPCE-R-Q-40GE-SFP",
-            "part_no0": "710-016669",
-            "part_no1": "750-016670"
+            "order_part_no": ["DPCE-R-Q-40GE-SFP"],
+            "part_no": ["750-016670", "710-016669"]
         }
     }
 }

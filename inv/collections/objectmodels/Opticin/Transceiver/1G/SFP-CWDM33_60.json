@@ -1,5 +1,6 @@
 {
     "name": "Opticin | Transceiver | 1G | SFP-CWDM33.60",
+    "$collection": "inv.objectmodels",
     "uuid": "959b91a0-1de7-4279-90f5-ffabf664f761",
     "vendor__code": "OPTICIN",
     "description": "Opticin CWDM SFP, 1330nm, DDM, LC, 60km, ZX transceiver",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-CWDM33.60"
+            "part_no": ["SFP-CWDM33.60"]
         }
     }
 }

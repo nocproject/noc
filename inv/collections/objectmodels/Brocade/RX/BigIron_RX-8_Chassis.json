@@ -1,5 +1,6 @@
 {
     "name": "Brocade | RX | BigIron RX-8 Chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "7c6d03e9-9564-4cc7-a51b-01a2a8afaafc",
     "vendor__code": "BROCADE",
     "description": "BigIron RX-8 AC 8 slot chassis",
@@ -135,8 +136,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "31549-000B",
-            "part_no1": "35549-000B"
+            "part_no": ["35549-000B", "31549-000B"]
         },
         "management": {
             "managed": true

@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3326",
+    "$collection": "inv.objectmodels",
     "uuid": "30b3a8f1-06d3-4420-acf2-57f808a5d4f0",
     "vendor__code": "DLINK",
     "description": "DES-3326 L3 Managed Switch witch 24 ports 10/100BASE-TX and 1 expansion slots",
@@ -224,9 +225,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3326",
-            "part_no1": "DES-3326S",
-            "part_no2": "DES-3326SR"
+            "part_no": ["DES-3326S", "DES-3326", "DES-3326SR"]
         },
         "management": {
             "managed": true

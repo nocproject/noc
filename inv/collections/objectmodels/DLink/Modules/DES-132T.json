@@ -1,5 +1,6 @@
 {
     "name": "DLink | Modules | DES-132T",
+    "$collection": "inv.objectmodels",
     "uuid": "f18a9707-72be-4c35-aca6-6a74df1f9d18",
     "vendor__code": "DLINK",
     "description": "2-port 1000BASE-T Gigabit Ethernet Module",
@@ -31,7 +32,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-132T"
+            "part_no": ["DES-132T"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C2960 | WS-C2960X-24PD-L",
+    "$collection": "inv.objectmodels",
     "uuid": "65d38afc-c2ff-444b-9cfd-b295ca36e481",
     "vendor__code": "CISCO",
     "description": "24 PoE Ethernet 10/100/1000 ports and 2 SFP/SFP+",
@@ -257,7 +258,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C2960X-24PD-L"
+            "part_no": ["WS-C2960X-24PD-L"]
         },
         "management": {
             "managed": true

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | EX8200-48T",
+    "$collection": "inv.objectmodels",
     "uuid": "85b4d311-2bd3-4eab-8405-bbd85c1cce0f",
     "vendor__code": "JUNIPER",
     "description": "48-port 10/100/1000BASE-T RJ-45 line card",
@@ -398,7 +399,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "710-020680"
+            "part_no": ["710-020680"]
         }
     }
 }

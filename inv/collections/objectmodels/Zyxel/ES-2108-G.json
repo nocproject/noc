@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | ES-2108-G",
+    "$collection": "inv.objectmodels",
     "uuid": "a151ed35-0649-4cc3-8936-a2d200aa1d31",
     "vendor__code": "ZYXEL",
     "description": "L2+ switch with 8 ports 10/100Base-TX, 1 combo ports 10/100/1000Base-TX / SFP",
@@ -105,7 +106,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ES-2108-G"
+            "part_no": ["ES-2108-G"]
         },
         "dimensions": {
             "depth": 135,

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | 7600-PFC3CXL",
+    "$collection": "inv.objectmodels",
     "uuid": "2c26750c-f9a8-4b3e-a800-29bc9d062d2c",
     "vendor__code": "CISCO",
     "description": "7600-PFC3C Policy Feature Card",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "7600-PFC3CXL"
+            "part_no": ["7600-PFC3CXL"]
         }
     }
 }

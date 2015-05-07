@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3312SR",
+    "$collection": "inv.objectmodels",
     "uuid": "c7909259-b894-4051-bbc5-2af66f43efb6",
     "vendor__code": "DLINK",
     "description": "DGS-3312SR L3 Managed Switch witch 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 module slot",
@@ -105,7 +106,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3312SR"
+            "part_no": ["DGS-3312SR"]
         },
         "management": {
             "managed": true

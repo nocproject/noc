@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C2960 | WS-C2960S-48TS-L",
+    "$collection": "inv.objectmodels",
     "uuid": "10de479d-4944-4eef-a90b-e9a5a3594570",
     "vendor__code": "CISCO",
     "description": "48 Ethernet 10/100/1000 ports and 4 one gigabit SFP ports",
@@ -441,7 +442,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C2960S-48TS-L"
+            "part_no": ["WS-C2960S-48TS-L"]
         },
         "management": {
             "managed": true

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3750 | WS-C3750G-12S-S",
+    "$collection": "inv.objectmodels",
     "uuid": "9ffc1911-0997-455c-a5d1-3b6a7349f963",
     "vendor__code": "CISCO",
     "description": "12 SFP-based Gigabit Ethernet ports",
@@ -135,7 +136,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C3750G-12S-S"
+            "part_no": ["WS-C3750G-12S-S"]
         },
         "management": {
             "managed": true

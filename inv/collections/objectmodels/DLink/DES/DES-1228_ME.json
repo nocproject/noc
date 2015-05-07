@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-1228/ME",
+    "$collection": "inv.objectmodels",
     "uuid": "9b0b3929-c470-424b-90f3-8d64eb224f57",
     "vendor__code": "DLINK",
     "description": "DES-1228/ME 24 ports 10/100Base-TX + 2 ports SFP + 2 combo 1000Base-T/SFP",
@@ -297,7 +298,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-1228/ME"
+            "part_no": ["DES-1228/ME"]
         },
         "management": {
             "managed": true

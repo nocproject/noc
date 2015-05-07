@@ -1,5 +1,6 @@
 {
     "name": "Hillton | Transceiver | 1G | SFP-03-1550WDM",
+    "$collection": "inv.objectmodels",
     "uuid": "77d8d195-510f-4063-932b-b40a200b6cce",
     "vendor__code": "HILLTON",
     "description": "Hillton 3km SFP LX transceiver",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-03-1550WDM"
+            "part_no": ["SFP-03-1550WDM"]
         }
     }
 }

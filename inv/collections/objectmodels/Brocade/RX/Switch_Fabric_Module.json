@@ -1,5 +1,6 @@
 {
     "name": "Brocade | RX | Switch Fabric Module",
+    "$collection": "inv.objectmodels",
     "uuid": "bef27232-7085-450f-a5d1-02c5a84d93dc",
     "vendor__code": "BROCADE",
     "description": "RX-BI-SFM3 Switch Fabric Module",
@@ -16,10 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "31523-200B",
-            "part_no1": "35523-200B",
-            "part_no2": "35523-201E",
-            "part_no3": "35523-201B"
+            "part_no": ["35523-200B", "31523-200B", "35523-201B", "35523-201E"]
         }
     }
 }

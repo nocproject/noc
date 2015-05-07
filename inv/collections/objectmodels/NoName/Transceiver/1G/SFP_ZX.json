@@ -1,5 +1,6 @@
 {
     "name": "NoName | Transceiver | 1G | SFP ZX",
+    "$collection": "inv.objectmodels",
     "uuid": "f486bb38-71a8-4688-bac4-62fc9c3dd183",
     "vendor__code": "NONAME",
     "description": "NoName SFP ZX transceiver",

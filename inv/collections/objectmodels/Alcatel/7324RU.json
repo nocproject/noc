@@ -1,5 +1,6 @@
 {
     "name": "Alcatel | 7324RU",
+    "$collection": "inv.objectmodels",
     "uuid": "457eece4-4d51-41d2-bf60-c12d40ec841f",
     "vendor__code": "ALU",
     "description": "Alcatel 7324 RU IP-based DSLAM",
@@ -93,7 +94,7 @@
             "exhaust": "l"
         },
         "asset": {
-            "part_no0": "7324RU"
+            "part_no": ["7324RU"]
         },
         "management": {
             "managed": true

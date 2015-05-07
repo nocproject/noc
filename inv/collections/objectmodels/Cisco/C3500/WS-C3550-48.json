@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3500 | WS-C3550-48",
+    "$collection": "inv.objectmodels",
     "uuid": "246ed905-e4c4-4f7f-bdb6-105272f97c42",
     "vendor__code": "CISCO",
     "description": "Cisco Catalyst 3550 48 10/100 baseT ports + 2 Gig uplinks fixed configuration Layer 2/3 Ethernet Switch",
@@ -481,8 +482,7 @@
             "intake": "l"
         },
         "asset": {
-            "part_no0": "WS-C3550-48",
-            "part_no1": "WS-C3550-48-SMI"
+            "part_no": ["WS-C3550-48-SMI", "WS-C3550-48"]
         },
         "management": {
             "managed": true

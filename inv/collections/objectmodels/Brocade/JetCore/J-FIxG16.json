@@ -1,5 +1,6 @@
 {
     "name": "Brocade | JetCore | J-FIxG16",
+    "$collection": "inv.objectmodels",
     "uuid": "e76572d5-cf80-4666-abeb-11ce1c106317",
     "vendor__code": "BROCADE",
     "description": "16-sfp jetcore line card",
@@ -144,7 +145,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "J-FIxG16"
+            "part_no": ["J-FIxG16"]
         }
     }
 }

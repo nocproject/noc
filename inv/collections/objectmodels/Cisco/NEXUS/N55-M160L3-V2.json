@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N55-M160L3-V2",
+    "$collection": "inv.objectmodels",
     "uuid": "93224871-336e-49f2-a230-8cb04a2b1547",
     "vendor__code": "CISCO",
     "description": "Nexus 5596 Layer 3 Expansion Module, version 2",
@@ -16,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N55-M160L3-V2"
+            "part_no": ["N55-M160L3-V2"]
         }
     }
 }

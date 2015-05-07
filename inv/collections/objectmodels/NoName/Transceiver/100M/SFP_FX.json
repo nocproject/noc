@@ -1,5 +1,6 @@
 {
     "name": "NoName | Transceiver | 100M | SFP FX",
+    "$collection": "inv.objectmodels",
     "uuid": "fb502b5f-41ca-4f88-90fd-5c1f6b61cb3f",
     "vendor__code": "NONAME",
     "description": "NoName SFP FX transceiver",

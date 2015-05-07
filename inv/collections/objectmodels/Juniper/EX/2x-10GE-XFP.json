@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | 2x-10GE-XFP",
+    "$collection": "inv.objectmodels",
     "uuid": "0dded7f2-4a1f-4026-ba40-d504ae49ccb7",
     "vendor__code": "JUNIPER",
     "description": "2x10G Uplink module for EX",
@@ -29,8 +30,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "2x 10GE XFP",
-            "part_no0": "711-021271"
+            "order_part_no": ["2x 10GE XFP"],
+            "part_no": ["711-021271"]
         }
     }
 }

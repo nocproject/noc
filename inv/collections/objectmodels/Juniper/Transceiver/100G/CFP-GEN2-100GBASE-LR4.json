@@ -31,8 +31,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "CFP-GEN2-100GBASE-LR4",
-            "part_no0": "740-047682"
+            "order_part_no": ["CFP-GEN2-100GBASE-LR4"],
+            "part_no": ["740-047682"]
         }
     }
 }

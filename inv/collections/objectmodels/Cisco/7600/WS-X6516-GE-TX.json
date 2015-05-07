@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-X6516-GE-TX",
+    "$collection": "inv.objectmodels",
     "uuid": "79ff2372-dcfc-49c1-b86d-a9663c598eda",
     "vendor__code": "CISCO",
     "description": "Cisco WS-X6516-GE-TX SFM-capable 16 port 10/100/1000mb RJ45",
@@ -143,7 +144,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-X6516-GE-TX"
+            "part_no": ["WS-X6516-GE-TX"]
         }
     }
 }

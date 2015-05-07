@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9k | A9K-8T-L",
+    "$collection": "inv.objectmodels",
     "uuid": "d2a2b3ad-a2ab-45c6-99f4-16bfadfb0389",
     "vendor__code": "CISCO",
     "description": "ASR9k 8-Port 10GE Low Queue Line Card, Requires XFPs",
@@ -79,7 +80,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "A9K-8T-L"
+            "part_no": ["A9K-8T-L"]
         }
     }
 }

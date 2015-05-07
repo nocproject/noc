@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | RE-S-2000-4096-S",
+    "$collection": "inv.objectmodels",
     "uuid": "18fdb7b0-cf45-4562-b7de-361d759a527f",
     "vendor__code": "JUNIPER",
     "description": "Routing engine with 2000MHz processor and 4GB memory",
@@ -39,10 +40,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "RE-S-2000-4096-S",
-            "order_part_no1": "RE-S-2000-4096-BB",
-            "order_part_no2": "RE-S-1300-2048-WW-S",
-            "part_no0": "740-013063"
+            "order_part_no": ["RE-S-2000-4096-S", "RE-S-2000-4096-BB", "RE-S-1300-2048-WW-S"],
+            "part_no": ["740-013063"]
         }
     }
 }

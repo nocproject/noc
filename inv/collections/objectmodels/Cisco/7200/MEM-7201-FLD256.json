@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7200 | MEM-7201-FLD256",
+    "$collection": "inv.objectmodels",
     "uuid": "05e7d823-b995-411b-8d3f-5dbd2742331a",
     "vendor__code": "CISCO",
     "description": "256MB Compact Flash Disk for c7201",
@@ -14,7 +15,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "MEM-7201-FLD256"
+            "part_no": ["MEM-7201-FLD256"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Opticin | Transceiver | 1G | SFP-WDM5.10",
+    "$collection": "inv.objectmodels",
     "uuid": "d0b6ccb0-3ff8-4860-8f86-af99bda89a64",
     "vendor__code": "OPTICIN",
     "description": "Opticin SFP WDM transceiver, 1550 tx, 1310 rx, SC, sm, 10km",
@@ -24,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-WDM5.10"
+            "part_no": ["SFP-WDM5.10"]
         }
     }
 }

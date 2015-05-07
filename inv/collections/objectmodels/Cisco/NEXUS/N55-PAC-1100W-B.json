@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N55-PAC-1100W-B",
+    "$collection": "inv.objectmodels",
     "uuid": "913175d6-e5c7-4fe1-a85d-96968e8c8db7",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 5596UP/5596T PSU Back-to-Front Airflow module spare, A/C, 100-240V, 1100W",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N55-PAC-1100W-B"
+            "part_no": ["N55-PAC-1100W-B"]
         }
     }
 }

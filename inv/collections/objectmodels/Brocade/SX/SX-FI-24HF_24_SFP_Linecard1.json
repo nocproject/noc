@@ -1,5 +1,6 @@
 {
     "name": "Brocade | SX | SX-FI-24HF 24 SFP Linecard1",
+    "$collection": "inv.objectmodels",
     "uuid": "0d2895b7-1076-411b-8104-bd5d305465e2",
     "vendor__code": "BROCADE",
     "description": "SX-FI-24HF 25 SFP 100/1000M Linecard",
@@ -208,7 +209,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SX-FI-24HF"
+            "part_no": ["SX-FI-24HF"]
         }
     }
 }

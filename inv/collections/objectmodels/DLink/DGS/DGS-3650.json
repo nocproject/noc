@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3650",
+    "$collection": "inv.objectmodels",
     "uuid": "b505d15e-1388-4465-a6a7-4a1c6ed06cbe",
     "vendor__code": "DLINK",
     "description": "DGS-3650 xStack L3 Managed Switch witch 44 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 module slot",
@@ -457,7 +458,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3650"
+            "part_no": ["DGS-3650"]
         },
         "management": {
             "managed": true

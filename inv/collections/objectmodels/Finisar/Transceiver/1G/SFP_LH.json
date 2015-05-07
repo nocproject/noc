@@ -1,5 +1,6 @@
 {
     "name": "Finisar | Transceiver | 1G | SFP LH",
+    "$collection": "inv.objectmodels",
     "uuid": "bb81c014-4d71-451d-aa13-eadfaef53869",
     "vendor__code": "FINISAR",
     "description": "LH/LX transceiver without DOM support",
@@ -32,11 +33,13 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "FTRJ-1319-7D-CSC",
-            "part_no1": "FTLF1318P2BCL-C3",
-            "part_no2": "FTLF1318P2BCL-C2",
-            "part_no3": "FTRJ1319P1BTL-C7",
-            "part_no4": "FTRJ1319P1BTL-C2"
+            "part_no": [
+                "FTLF1318P2BCL-C2",
+                "FTLF1318P2BCL-C3",
+                "FTRJ-1319-7D-CSC",
+                "FTRJ1319P1BTL-C2",
+                "FTRJ1319P1BTL-C7"
+            ]
         }
     }
 }

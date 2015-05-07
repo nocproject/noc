@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-SUP720",
+    "$collection": "inv.objectmodels",
     "uuid": "fccd5cff-ad93-4638-aab3-ff27164e66ad",
     "vendor__code": "CISCO",
     "description": "Cisco WS-SUP720 MSFC3 Daughterboard",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-SUP720"
+            "part_no": ["WS-SUP720"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASA | ASA5520",
+    "$collection": "inv.objectmodels",
     "uuid": "1268022c-d600-45c5-9cc3-65e8e296f5c7",
     "vendor__code": "CISCO",
     "description": "Cisco ASA5520 chassis",
@@ -95,7 +96,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ASA5520"
+            "part_no": ["ASA5520"]
         },
         "management": {
             "managed": true

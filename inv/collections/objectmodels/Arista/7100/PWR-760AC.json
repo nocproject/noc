@@ -1,5 +1,6 @@
 {
     "name": "Arista | 7100 | PWR-760AC",
+    "$collection": "inv.objectmodels",
     "uuid": "6b7391b2-7b43-40ff-a565-55ccb4e3994a",
     "vendor__code": "ARISTA",
     "description": "760 Watt AC power supply for Arista 7100 Switches",
@@ -22,7 +23,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "PWR-760AC"
+            "part_no": ["PWR-760AC"]
         }
     }
 }

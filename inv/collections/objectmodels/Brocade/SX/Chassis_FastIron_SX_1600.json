@@ -1,5 +1,6 @@
 {
     "name": "Brocade | SX | Chassis FastIron SX 1600",
+    "$collection": "inv.objectmodels",
     "uuid": "03a9d952-d532-4bbc-a9ee-4e6e83dfcd24",
     "vendor__code": "BROCADE",
     "description": "Chassis FastIron SX 1600",
@@ -135,7 +136,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "Chassis FastIron SX 1600"
+            "part_no": ["Chassis FastIron SX 1600"]
         },
         "management": {
             "managed": true

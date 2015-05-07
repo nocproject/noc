@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N5K-C5596UP",
+    "$collection": "inv.objectmodels",
     "uuid": "c830be04-2713-4d32-9468-474d34b38622",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 5596UP Switch Chassis. 2RU 1/10 Gigabit Ethernet and FCoE",
@@ -65,7 +66,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N5K-C5596UP"
+            "part_no": ["N5K-C5596UP"]
         },
         "management": {
             "managed": true

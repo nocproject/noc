@@ -1,5 +1,6 @@
 {
     "name": "Opticin | Transceiver | 1G | SFP-SX.LC.05",
+    "$collection": "inv.objectmodels",
     "uuid": "e7234cc2-78e8-449a-803f-baaea5d6920d",
     "vendor__code": "OPTICIN",
     "description": "Opticin SFP, 850nm, LC, 500m, SX transceiver",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-SX.LC.05"
+            "part_no": ["SFP-SX.LC.05"]
         }
     }
 }

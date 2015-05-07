@@ -1,5 +1,6 @@
 {
     "name": "Juniper | Transceiver | 10G | XFP-10G-ZR",
+    "$collection": "inv.objectmodels",
     "uuid": "e34411bb-0a24-49f7-b22d-18123a7d7f76",
     "vendor__code": "JUNIPER",
     "description": "Juniper XFP ZR transceiver",
@@ -32,10 +33,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "XFP-10G-ZR",
-            "order_part_no1": "XFP-10G-ZR",
-            "part_no0": "740-014291",
-            "part_no1": "740-031832"
+            "order_part_no": ["XFP-10G-ZR", "XFP-10G-ZR"],
+            "part_no": ["740-031832", "740-014291"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 1G | WS-G5483",
+    "$collection": "inv.objectmodels",
     "uuid": "4c7d3dc0-b897-42f8-8dd9-6957b998802e",
     "vendor__code": "CISCO",
     "description": " Cisco 1000BASE-T GBIC Copper",
@@ -24,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-G5483"
+            "part_no": ["WS-G5483"]
         }
     }
 }

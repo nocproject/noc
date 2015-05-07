@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-X6704-10GE",
+    "$collection": "inv.objectmodels",
     "uuid": "e94b4c3f-80c7-4a77-bfcc-cc39ec24ac31",
     "vendor__code": "CISCO",
     "description": "WS-X6704-10GE CEF720 4 port 10-Gigabit Ethernet",
@@ -54,7 +55,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-X6704-10GE"
+            "part_no": ["WS-X6704-10GE"]
         }
     }
 }

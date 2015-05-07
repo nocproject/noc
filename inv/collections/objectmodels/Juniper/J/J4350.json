@@ -1,5 +1,6 @@
 {
     "name": "Juniper | J | J4350",
+    "$collection": "inv.objectmodels",
     "uuid": "56f5b8d7-6b28-4f89-b223-4fb286198b1a",
     "vendor__code": "JUNIPER",
     "description": "J4350, Hw Encryption, 4 PIM cards, 2 PIM/UPIM, AC PSU, w/JUNOS\n",
@@ -91,7 +92,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "J4350"
+            "part_no": ["J4350"]
         },
         "management": {
             "managed": true

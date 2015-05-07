@@ -1,5 +1,6 @@
 {
     "name": "DLink | Modules | DEM-412CX",
+    "$collection": "inv.objectmodels",
     "uuid": "9180351e-be76-4abc-ba28-6c0c48419910",
     "vendor__code": "DLINK",
     "description": "1 Port CX4 Module",
@@ -31,7 +32,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DEM-412CX"
+            "part_no": ["DEM-412CX"]
         }
     }
 }

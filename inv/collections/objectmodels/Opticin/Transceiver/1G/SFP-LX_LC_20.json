@@ -1,5 +1,6 @@
 {
     "name": "Opticin | Transceiver | 1G | SFP-LX.LC.20",
+    "$collection": "inv.objectmodels",
     "uuid": "b42e5ade-06c8-4729-8c86-d4eb348679fd",
     "vendor__code": "OPTICIN",
     "description": "Opticin SFP, 1310nm, LC, 20km, LX transceiver",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-LX.LC.20"
+            "part_no": ["SFP-LX.LC.20"]
         }
     }
 }

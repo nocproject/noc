@@ -1,5 +1,6 @@
 {
     "name": "Avaya | ERS | 4850GTS-PWR+",
+    "$collection": "inv.objectmodels",
     "uuid": "6abe8831-e7b5-4887-aa8d-daa81cc17e03",
     "vendor__code": "AVAYA",
     "description": "48 10/100/1000BASE-T ports supporting 802.3at PoE+, including 2 shared SFP Uplink ports, plus 2 additional SFP+ Uplink ports",
@@ -441,7 +442,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "4850GTS-PWR+"
+            "part_no": ["4850GTS-PWR+"]
         },
         "dimensions": {
             "depth": 430,

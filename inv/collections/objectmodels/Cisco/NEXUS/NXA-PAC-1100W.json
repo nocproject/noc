@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | NXA-PAC-1100W",
+    "$collection": "inv.objectmodels",
     "uuid": "bda7518b-ded3-4e5d-9fec-e3bd958ba950",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 5596T Platinum PSU Front-to-Back Airflow module spare, A/C, 100-240V, 1100W",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "NXA-PAC-1100W"
+            "part_no": ["NXA-PAC-1100W"]
         }
     }
 }

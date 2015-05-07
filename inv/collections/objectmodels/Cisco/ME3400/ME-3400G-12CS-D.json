@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ME3400 | ME-3400G-12CS-D",
+    "$collection": "inv.objectmodels",
     "uuid": "a6d544ba-df8b-48e0-8557-11223372ceb9",
     "vendor__code": "CISCO",
     "description": "Cisco ME3400 Series Metro Ethernet access switch with DC power supply, 12 combo + 4 SFP ports",
@@ -292,7 +293,7 @@
             "intake": "f"
         },
         "asset": {
-            "part_no0": "ME-3400G-12CS-D"
+            "part_no": ["ME-3400G-12CS-D"]
         },
         "management": {
             "managed": true

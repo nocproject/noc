@@ -1,5 +1,6 @@
 {
     "name": "PoP | Regional",
+    "$collection": "inv.objectmodels",
     "uuid": "c13e8435-29a2-47fe-a87a-b7ee982c9f5d",
     "vendor__code": "NOC",
     "description": "Regional level Point of Presence.",

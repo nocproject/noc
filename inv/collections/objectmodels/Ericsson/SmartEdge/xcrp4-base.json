@@ -1,5 +1,6 @@
 {
     "name": "Ericsson | SmartEdge | xcrp4-base",
+    "$collection": "inv.objectmodels",
     "uuid": "9a4f4e60-bfae-47eb-9d0f-bab0e9ed8810",
     "vendor__code": "ERICSSON",
     "description": "Management module",
@@ -16,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "xcrp4-base"
+            "part_no": ["xcrp4-base"]
         }
     }
 }
