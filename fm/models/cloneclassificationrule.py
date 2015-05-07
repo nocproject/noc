@@ -23,7 +23,10 @@ class CloneClassificationRule(Document):
     meta = {
         "collection": "noc.cloneclassificationrules",
         "allow_inheritance": False,
-        "json_collection": "fm.cloneclassificationrules"
+        "json_collection": "fm.cloneclassificationrules",
+        "json_depends_on": [
+            "fm.eventclassificationrules"
+        ]
     }
 
     name = fields.StringField(unique=True)

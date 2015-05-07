@@ -89,7 +89,11 @@ class ObjectModel(Document):
         "collection": "noc.objectmodels",
         "allow_inheritance": False,
         "indexes": [],
-        "json_collection": "inv.objectmodels"
+        "json_collection": "inv.objectmodels",
+        "json_depends_on": [
+            "inv.vendors",
+            "inv.connectionrules"
+        ]
     }
 
     name = StringField(unique=True)
