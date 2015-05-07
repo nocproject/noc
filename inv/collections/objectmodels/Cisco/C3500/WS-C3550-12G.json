@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3500 | WS-C3550-12G",
+    "$collection": "inv.objectmodels",
     "uuid": "ce28cc7f-d583-4fa9-ba47-48507bc178d3",
     "vendor__code": "CISCO",
     "description": "Cisco WS-C3550-12G Layer-3 ethernet switch",
@@ -139,7 +140,7 @@
             "intake": "l"
         },
         "asset": {
-            "part_no0": "WS-C3550-12G"
+            "part_no": ["WS-C3550-12G"]
         },
         "management": {
             "managed": true

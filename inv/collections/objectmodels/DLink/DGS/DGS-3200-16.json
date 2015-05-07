@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3200-16",
+    "$collection": "inv.objectmodels",
     "uuid": "566f07c9-cef2-4674-9c98-4bb1ebcae736",
     "vendor__code": "DLINK",
     "description": "DGS-3200-16 xStack L2 Managed Switch witch 14 ports 10/100/1000BASE-T, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -171,7 +172,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3200-16"
+            "part_no": ["DGS-3200-16"]
         },
         "management": {
             "managed": true

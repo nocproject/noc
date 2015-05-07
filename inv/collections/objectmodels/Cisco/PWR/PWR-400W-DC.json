@@ -1,5 +1,6 @@
 {
     "name": "Cisco | PWR | PWR-400W-DC",
+    "$collection": "inv.objectmodels",
     "uuid": "051f49cb-6710-4703-98c1-a58ff7bf9993",
     "vendor__code": "CISCO",
     "description": "400W DC supply for Catalyst 1.5 RU switches",

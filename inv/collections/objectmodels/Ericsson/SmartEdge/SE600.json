@@ -1,5 +1,6 @@
 {
     "name": "Ericsson | SmartEdge | SE600",
+    "$collection": "inv.objectmodels",
     "uuid": "b86525d4-3b4e-40d2-b48b-056810ad22d5",
     "vendor__code": "ERICSSON",
     "description": "6 slot chassis",
@@ -79,7 +80,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SE600"
+            "part_no": ["SE600"]
         },
         "management": {
             "managed": true

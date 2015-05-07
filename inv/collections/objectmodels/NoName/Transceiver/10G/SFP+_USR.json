@@ -1,5 +1,6 @@
 {
     "name": "NoName | Transceiver | 10G | SFP+ USR",
+    "$collection": "inv.objectmodels",
     "uuid": "70bfe3a1-2cb0-4a57-9cd9-127e11dbeaa9",
     "vendor__code": "NONAME",
     "description": "NoName SFP+ USR transceiver",

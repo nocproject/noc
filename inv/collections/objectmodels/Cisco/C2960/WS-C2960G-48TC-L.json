@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C2960 | WS-C2960G-48TC-L",
+    "$collection": "inv.objectmodels",
     "uuid": "35afed1e-46e3-4048-b9ea-9f931e3ed243",
     "vendor__code": "CISCO",
     "description": "44 Ethernet 10/100/1000 ports and 4 dual-purpose uplinks",
@@ -441,7 +442,7 @@
     ],
     "data": {
         "asset": {
-            "part_no1": "WS-C2960G-48TC-L"
+            "part_no": ["WS-C2960G-48TC-L"]
         },
         "management": {
             "managed": true

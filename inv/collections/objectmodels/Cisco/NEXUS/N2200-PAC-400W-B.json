@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N2200-PAC-400W-B",
+    "$collection": "inv.objectmodels",
     "uuid": "d898c062-6885-4050-ae12-f8cf90164f51",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 2200 AC Power supply, Back-to-front airflow (Reversed airflow, port side intake)",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N2200-PAC-400W-B"
+            "part_no": ["N2200-PAC-400W-B"]
         }
     }
 }

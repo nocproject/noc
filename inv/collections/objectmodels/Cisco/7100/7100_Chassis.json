@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7100 | 7100 Chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "9079b1d9-d724-463c-aebc-6a5f7c807293",
     "vendor__code": "CISCO",
     "description": "Cisco 7100 Series Integrated Services Routers",
@@ -59,7 +60,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CISCO7100"
+            "part_no": ["CISCO7100"]
         },
         "management": {
             "managed": true

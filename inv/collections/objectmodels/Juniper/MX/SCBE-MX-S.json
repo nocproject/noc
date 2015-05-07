@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | SCBE-MX-S",
+    "$collection": "inv.objectmodels",
     "uuid": "2c2b8b59-e5e6-4613-a10c-9ea31b4bd24a",
     "vendor__code": "JUNIPER",
     "description": "MX Enhanced Switch Control Board",
@@ -23,7 +24,7 @@
     "data": {
         "asset": {
             "order_part_no": "SCBE-MX-S",
-            "part_no0": "750-031391"
+            "part_no": ["750-031391"]
         }
     }
 }

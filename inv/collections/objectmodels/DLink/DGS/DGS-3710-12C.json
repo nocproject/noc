@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3710-12C",
+    "$collection": "inv.objectmodels",
     "uuid": "e9833246-16f9-4d38-bf36-db39f641f9bd",
     "vendor__code": "DLINK",
     "description": "DGS-3710-12C xStack L2 Managed Switch witch 12 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -217,7 +218,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3710-12C"
+            "part_no": ["DGS-3710-12C"]
         },
         "management": {
             "managed": true

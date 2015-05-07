@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3528",
+    "$collection": "inv.objectmodels",
     "uuid": "d5f79955-058a-4473-b38d-a350ff78262f",
     "vendor__code": "DLINK",
     "description": "DES-3528 xStack L2 Managed Switch witch 24 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP, 2 10/100/1000BASE-T",
@@ -269,7 +270,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3528"
+            "part_no": ["DES-3528"]
         },
         "management": {
             "managed": true

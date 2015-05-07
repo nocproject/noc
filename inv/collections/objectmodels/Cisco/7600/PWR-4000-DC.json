@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | PWR-4000-DC",
+    "$collection": "inv.objectmodels",
     "uuid": "24c22597-ac06-4edb-8605-8256e62716c0",
     "vendor__code": "CISCO",
     "description": "4000 Watt DC Power Supply for Cisco 7600",
@@ -54,7 +55,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "PWR-4000-DC"
+            "part_no": ["PWR-4000-DC"]
         }
     }
 }

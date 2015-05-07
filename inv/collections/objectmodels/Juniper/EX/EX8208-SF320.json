@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | EX8208-SF320",
+    "$collection": "inv.objectmodels",
     "uuid": "65cc21c3-bb5f-4271-969c-ae601a82402a",
     "vendor__code": "JUNIPER",
     "description": "Switch fabric module for EX8208",
@@ -14,7 +15,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "710-021502"
+            "part_no": ["710-021502"]
         }
     }
 }

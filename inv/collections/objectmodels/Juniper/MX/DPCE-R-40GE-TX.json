@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | DPCE-R-40GE-TX",
+    "$collection": "inv.objectmodels",
     "uuid": "7d293782-1d06-4a9b-a3cd-1be41c746951",
     "vendor__code": "JUNIPER",
     "description": "40 Port 10/100/1000 RJ-45 DPC with L2+L3 Features",
@@ -393,7 +394,7 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "DPCE-R-40GE-TX"
+            "order_part_no": ["DPCE-R-40GE-TX"]
         }
     }
 }

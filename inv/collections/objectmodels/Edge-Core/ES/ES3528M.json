@@ -1,5 +1,6 @@
 {
     "name": "Edge-Core | ES | ES3528M",
+    "$collection": "inv.objectmodels",
     "uuid": "320d4483-e8a9-42fd-8a4d-9c7d43edfbc8",
     "vendor__code": "EDGECORE",
     "description": "24 Ethernet 10/100 ports, 4 Combo Copper / SFP-based 10/100/1000 Ethernet ports",
@@ -289,7 +290,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ES3528M"
+            "part_no": ["ES3528M"]
         },
         "management": {
             "managed": true

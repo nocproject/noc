@@ -77,7 +77,7 @@
             "intake": "r"
         },
         "asset": {
-            "order_part_no0": "MX240"
+            "order_part_no": ["MX240"]
         },
         "management": {
             "managed": true

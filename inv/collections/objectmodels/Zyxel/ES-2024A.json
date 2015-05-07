@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | ES-2024A",
+    "$collection": "inv.objectmodels",
     "uuid": "dfdd4064-fb61-4e04-9333-c5f60a298878",
     "vendor__code": "ZYXEL",
     "description": "L2+ switch with 24 ports 10/100Base-TX, 2 combo ports 10/100/1000Base-TX / SFP",
@@ -249,7 +250,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ES-2024A"
+            "part_no": ["ES-2024A"]
         },
         "dimensions": {
             "depth": 75,

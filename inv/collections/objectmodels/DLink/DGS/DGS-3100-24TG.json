@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3100-24TG",
+    "$collection": "inv.objectmodels",
     "uuid": "d2ad0200-6da2-4921-845d-20b2c88fb020",
     "vendor__code": "DLINK",
     "description": "L2 Managed Switch with 8 x 10/100/1000BASE-T ports and 16 x 100/1000 sfp ports",
@@ -219,7 +220,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3100-24TG"
+            "part_no": ["DGS-3100-24TG"]
         },
         "management": {
             "managed": true

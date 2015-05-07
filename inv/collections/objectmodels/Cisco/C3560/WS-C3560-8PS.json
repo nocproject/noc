@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3560 | WS-C3560-8PS",
+    "$collection": "inv.objectmodels",
     "uuid": "95f6174f-70d5-45e1-a610-1cc5af8912e9",
     "vendor__code": "CISCO",
     "description": "8 Ethernet 10/100 ports with PoE 1 dual-purpose 10/100/1000 and SFP port",
@@ -106,8 +107,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C3560-8PS-S",
-            "part_no1": "WS-C3560-8PS"
+            "part_no": ["WS-C3560-8PS", "WS-C3560-8PS-S"]
         },
         "management": {
             "managed": true

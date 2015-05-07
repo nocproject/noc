@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 6500 | WS-C6K-VTT",
+    "$collection": "inv.objectmodels",
     "uuid": "30d290de-bf49-411a-b224-133ca3951259",
     "vendor__code": "CISCO",
     "description": "Voltage termination module Cisco Catalyst 6500",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C6K-VTT"
+            "part_no": ["WS-C6K-VTT"]
         }
     }
 }

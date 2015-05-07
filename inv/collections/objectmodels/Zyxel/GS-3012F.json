@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | GS-3012F",
+    "$collection": "inv.objectmodels",
     "uuid": "6b2fca62-6b11-4b19-a3b9-fbc08cc52456",
     "vendor__code": "ZYXEL",
     "description": "ZyXEL ES-3012F switch, 8 SFP, 4 Combo",
@@ -153,7 +154,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "GS-3012F"
+            "part_no": ["GS-3012F"]
         },
         "management": {
             "managed": true

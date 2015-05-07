@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3612G",
+    "$collection": "inv.objectmodels",
     "uuid": "a04f6086-ae2c-4d70-87e1-c33f8598a05b",
     "vendor__code": "DLINK",
     "description": "DGS-3612G xStack L3 Managed Switch witch 8 ports 100/1000 SFP, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -153,7 +154,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3612G"
+            "part_no": ["DGS-3612G"]
         },
         "management": {
             "managed": true

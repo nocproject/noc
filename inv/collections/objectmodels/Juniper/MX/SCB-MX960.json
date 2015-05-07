@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | SCB-MX960",
+    "$collection": "inv.objectmodels",
     "uuid": "d1ed4fcb-b38d-4d9b-9feb-6509314e4487",
     "vendor__code": "JUNIPER",
     "description": "MX Switch Control Board",
@@ -23,8 +24,7 @@
     "data": {
         "asset": {
             "order_part_no": "SCB-MX960-S",
-            "part_no0": "710-013385",
-            "part_no1": "710-021523"
+            "part_no": ["710-021523", "710-013385"]
         }
     }
 }

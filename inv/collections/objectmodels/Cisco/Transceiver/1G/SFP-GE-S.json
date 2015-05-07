@@ -33,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-GE-S"
+            "part_no": ["SFP-GE-S"]
         }
     }
 }

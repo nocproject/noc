@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C2950 | WS-C2950T-24",
+    "$collection": "inv.objectmodels",
     "uuid": "b76f0930-3d25-4f8b-8108-9fa11c7712e8",
     "vendor__code": "CISCO",
     "description": "Cisco Catalyst c2950 switch with 24 10/100 BaseTX ports and 2 10/100/1000 BaseT ports",
@@ -233,7 +234,7 @@
     ],
     "data": {
         "asset": {
-            "part_no1": "WS-C2950T-24"
+            "part_no": ["WS-C2950T-24"]
         },
         "management": {
             "managed": true

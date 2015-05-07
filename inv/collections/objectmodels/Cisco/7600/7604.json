@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | 7604",
+    "$collection": "inv.objectmodels",
     "uuid": "5545654c-19d5-4a3d-93cf-2abb83ab55ca",
     "vendor__code": "CISCO",
     "description": "Cisco 7600 4-slot Chassis",
@@ -73,7 +74,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CISCO7604"
+            "part_no": ["CISCO7604"]
         },
         "dimensions": {
             "depth": 552,

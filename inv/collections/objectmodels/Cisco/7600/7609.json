@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | 7609",
+    "$collection": "inv.objectmodels",
     "uuid": "9ca0a747-46e3-4c06-a3b7-81a6d5377599",
     "vendor__code": "CISCO",
     "description": "Cisco 7600 9-slot Chassis",
@@ -109,7 +110,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CISCO7609"
+            "part_no": ["CISCO7609"]
         },
         "dimensions": {
             "depth": 533,

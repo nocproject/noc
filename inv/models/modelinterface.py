@@ -17,16 +17,18 @@ from error import ModelDataError
 from noc.lib.utils import deep_copy
 from noc.lib.escape import json_escape as q
 from noc.sa.interfaces.base import (StringParameter, BooleanParameter,
-                                    FloatParameter, IntParameter)
+                                    FloatParameter, IntParameter,
+                                    StringListParameter)
 
 T_MAP = {
     "str": StringParameter(),
     "int": IntParameter(),
     "float": FloatParameter(),
-    "bool": BooleanParameter()
+    "bool": BooleanParameter(),
+    "strlist": StringListParameter()
 }
 
-A_TYPE = ["str", "int", "float", "bool", "objectid", "ref"]
+A_TYPE = ["str", "int", "float", "bool", "objectid", "ref", "strlist"]
 
 
 class ModelInterfaceAttr(EmbeddedDocument):
@@ -144,5 +146,13 @@ class ModelInterface(Document):
             v = d[i_name]
             for a in mi.attrs:
                 if a.name in v:
-                    v[a.name] = T_MAP[a.type].clean(v[a.name])
+                    vv = v[a.name]
+                    if a.type == "strlist":
+                        if isinstance(vv, basestring):
+                            vv = [vv]
+                        r = set()
+                        for x in vv:
+                            r.update(x.split(","))
+                        vv = [x.strip() for x in sorted(r) if x.strip()]
+                    v[a.name] = T_MAP[a.type].clean(vv)
         return d

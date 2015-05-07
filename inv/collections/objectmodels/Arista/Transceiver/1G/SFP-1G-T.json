@@ -1,5 +1,6 @@
 {
     "name": "Arista | Transceiver | 1G | SFP-1G-T",
+    "$collection": "inv.objectmodels",
     "uuid": "5bc911e4-1d42-4f90-b0a3-8f483d7d5e9f",
     "vendor__code": "ARISTA",
     "description": "1000Base-T",
@@ -24,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-1G-T"
+            "part_no": ["SFP-1G-T"]
         }
     }
 }

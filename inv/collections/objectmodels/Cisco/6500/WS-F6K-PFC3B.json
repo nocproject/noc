@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 6500 | WS-F6K-PFC3B",
+    "$collection": "inv.objectmodels",
     "uuid": "08bd8454-f61a-49bd-af33-c4be23dbabf2",
     "vendor__code": "CISCO",
     "description": "WS-F6K-PFC3B Policy Feature Card",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-F6K-PFC3B"
+            "part_no": ["WS-F6K-PFC3B"]
         }
     }
 }

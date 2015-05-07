@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9k | A9K-MODULEv",
+    "$collection": "inv.objectmodels",
     "uuid": "bbba32f9-7ed0-4e92-96ea-7dafd08968f6",
     "vendor__code": "CISCO",
     "description": "ASR 9000 Virtual Module",
@@ -52,7 +53,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "A9K-MODULEv"
+            "part_no": ["A9K-MODULEv"]
         }
     }
 }

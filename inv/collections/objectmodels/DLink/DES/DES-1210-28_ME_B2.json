@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-1210-28/ME/B2",
+    "$collection": "inv.objectmodels",
     "uuid": "cd892346-ebff-472d-b003-f81eadd2c124",
     "vendor__code": "DLINK",
     "description": "DES-1210-28/ME/B2  L2 Managed Switch witch 24 ports 10/100BASE-TX, 2 ports 100/1000 SFP, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -271,7 +272,7 @@
     ],
     "data": {
         "asset": {
-            "part_no1": "DES-1210-28/ME/B2"
+            "part_no": ["DES-1210-28/ME/B2"]
         },
         "management": {
             "managed": true

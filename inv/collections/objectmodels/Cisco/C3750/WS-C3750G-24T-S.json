@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3750 | WS-C3750G-24T-S",
+    "$collection": "inv.objectmodels",
     "uuid": "e8e763fc-fec7-4285-999c-3df71583e1e3",
     "vendor__code": "CISCO",
     "description": "24 Ethernet 10/100/1000 ports",
@@ -243,7 +244,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C3750G-24T-S"
+            "part_no": ["WS-C3750G-24T-S"]
         },
         "management": {
             "managed": true

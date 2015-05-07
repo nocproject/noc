@@ -1,5 +1,6 @@
 {
     "name": "Alcatel | OS | OS6850-U24X",
+    "$collection": "inv.objectmodels",
     "uuid": "21185ab6-f251-414c-96cd-f4417466f790",
     "vendor__code": "ALU",
     "description": "OS6850-U24X L3 Switch witch 24 G SFP + 2 10 G",
@@ -245,8 +246,8 @@
             "outlet": "r"
         },
         "asset": {
-            "order_part_no0": "902418-90",
-            "part_no0": "OS6850-U24X"
+            "order_part_no": ["902418-90"],
+            "part_no": ["OS6850-U24X"]
         },
         "dimensions": {
             "depth": 270,

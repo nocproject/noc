@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3000-26TC",
+    "$collection": "inv.objectmodels",
     "uuid": "b1eac26f-631e-4006-8fca-59801ad6fece",
     "vendor__code": "DLINK",
     "description": "DGS-3000-26TC xStack L2 Managed Switch witch 20 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP, 2 10G SFP+",
@@ -267,7 +268,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3000-26TC"
+            "part_no": ["DGS-3000-26TC"]
         },
         "management": {
             "managed": true

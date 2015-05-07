@@ -1,5 +1,6 @@
 {
     "name": "Vimcom | Transceiver | 1G | SFP-LX-LC-10",
+    "$collection": "inv.objectmodels",
     "uuid": "4ad05e3e-e88b-477b-a4e0-655d5d94293e",
     "vendor__code": "VIMCOM",
     "description": "Vimcom SFP LX transceiver",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-LX.LC.10"
+            "part_no": ["SFP-LX.LC.10"]
         }
     }
 }

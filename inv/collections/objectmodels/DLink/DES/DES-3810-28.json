@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3810-28",
+    "$collection": "inv.objectmodels",
     "uuid": "13eb5297-a42d-42b8-82fa-ec1fbd425ce1",
     "vendor__code": "DLINK",
     "description": "DES-3810-28 xStack L3 Managed Switch witch 24 ports 10/100BASE-TX, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -297,7 +298,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3810-28"
+            "part_no": ["DES-3810-28"]
         },
         "management": {
             "managed": true

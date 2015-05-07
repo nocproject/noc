@@ -1,5 +1,6 @@
 {
     "name": "Brocade | JetCore | J-BxGMR4",
+    "$collection": "inv.objectmodels",
     "uuid": "cf3cd4ac-4e7d-4d69-8dfc-30df613a6fab",
     "vendor__code": "BROCADE",
     "description": "J-BxGMR4 - 4 gen FastIron mgmt",
@@ -80,7 +81,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "J-BxGMR4"
+            "part_no": ["J-BxGMR4"]
         }
     }
 }

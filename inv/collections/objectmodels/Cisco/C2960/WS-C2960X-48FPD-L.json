@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C2960 | WS-C2960X-48FPD-L",
+    "$collection": "inv.objectmodels",
     "uuid": "98d20d2f-7879-47aa-8d32-399c091bb852",
     "vendor__code": "CISCO",
     "description": "48 PoE Ethernet 10/100/1000 ports and 2 SFP/SFP+ ",
@@ -449,7 +450,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C2960X-48FPD-L"
+            "part_no": ["WS-C2960X-48FPD-L"]
         },
         "management": {
             "managed": true

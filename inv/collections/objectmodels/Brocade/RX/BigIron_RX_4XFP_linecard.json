@@ -1,5 +1,6 @@
 {
     "name": "Brocade | RX | BigIron RX 4XFP linecard",
+    "$collection": "inv.objectmodels",
     "uuid": "16d91136-b5d8-42fb-89d8-6d4f7e34e2ad",
     "vendor__code": "BROCADE",
     "description": "4 XFP linecard\n",
@@ -44,9 +45,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "35519-005A",
-            "part_no1": "35519-004B",
-            "part_no2": "35519-004D"
+            "part_no": ["35519-004B", "35519-005A", "35519-004D"]
         }
     }
 }

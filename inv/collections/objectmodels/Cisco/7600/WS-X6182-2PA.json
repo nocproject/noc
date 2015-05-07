@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-X6182-2PA",
+    "$collection": "inv.objectmodels",
     "uuid": "5c52cc87-c2c0-4703-b4d5-ddc5c604ce18",
     "vendor__code": "CISCO",
     "description": "FlexWAN Module for the Cisco 7600 Series Router ",
@@ -30,7 +31,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-X6182-2PA"
+            "part_no": ["WS-X6182-2PA"]
         }
     }
 }

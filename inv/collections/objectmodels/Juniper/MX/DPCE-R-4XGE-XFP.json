@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | DPCE-R-4XGE-XFP",
+    "$collection": "inv.objectmodels",
     "uuid": "72c83ff8-1039-4d26-a142-a7bdee0230cf",
     "vendor__code": "JUNIPER",
     "description": "4x10GE Enhanced DPC for MX",
@@ -51,8 +52,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "DPCE-R-4XGE-XFP",
-            "part_no0": "750-021566"
+            "order_part_no": ["DPCE-R-4XGE-XFP"],
+            "part_no": ["750-021566"]
         }
     }
 }

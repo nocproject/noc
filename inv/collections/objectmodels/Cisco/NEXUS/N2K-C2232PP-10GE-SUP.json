@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N2K-C2232PP-10GE-SUP",
+    "$collection": "inv.objectmodels",
     "uuid": "f1b6783d-e132-4226-b563-e5627d3292cf",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus C2232PP Fabric Extender Module: 32x10GE, 8x10GE Supervisor",
@@ -271,7 +272,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N2K-C2232PP-10GE-SUP"
+            "part_no": ["N2K-C2232PP-10GE-SUP"]
         }
     }
 }

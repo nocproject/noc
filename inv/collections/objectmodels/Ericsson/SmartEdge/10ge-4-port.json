@@ -1,5 +1,6 @@
 {
     "name": "Ericsson | SmartEdge | 10ge-4-port",
+    "$collection": "inv.objectmodels",
     "uuid": "73cc796e-828d-4346-aa3d-75de2a7934b6",
     "vendor__code": "ERICSSON",
     "description": "4 XFP Linecard",
@@ -48,7 +49,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "10ge-4-port"
+            "part_no": ["10ge-4-port"]
         }
     }
 }

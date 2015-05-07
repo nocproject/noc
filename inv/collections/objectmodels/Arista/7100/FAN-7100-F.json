@@ -1,5 +1,6 @@
 {
     "name": "Arista | 7100 | FAN-7100-F",
+    "$collection": "inv.objectmodels",
     "uuid": "367c1a2a-5f9c-4bdd-815e-38a476708c57",
     "vendor__code": "ARISTA",
     "description": "7000 / 7100 Series Front-Rear Fan Module",
@@ -14,7 +15,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "FAN-7100-F"
+            "part_no": ["FAN-7100-F"]
         }
     }
 }

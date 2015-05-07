@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7200 | 7206VXR Chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "d303caaf-ffef-4220-9f9f-151ff68cdbeb",
     "vendor__code": "CISCO",
     "description": "Cisco 7206VXR, 6-slot chassis",
@@ -72,7 +73,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CISCO7206VXR"
+            "part_no": ["CISCO7206VXR"]
         },
         "management": {
             "managed": true

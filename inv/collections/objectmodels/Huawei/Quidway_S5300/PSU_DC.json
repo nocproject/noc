@@ -1,5 +1,6 @@
 {
     "name": "Huawei | Quidway S5300 | PSU DC",
+    "$collection": "inv.objectmodels",
     "uuid": "c64dee88-674b-4fd0-8df7-7746ac11033b",
     "vendor__code": "HUAWEI",
     "description": "Huawei Quidway S5300 DC Power Supply Unit",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "LS5M100PWD00"
+            "part_no": ["LS5M100PWD00"]
         }
     }
 }

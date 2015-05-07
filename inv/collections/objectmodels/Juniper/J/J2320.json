@@ -1,5 +1,6 @@
 {
     "name": "Juniper | J | J2320",
+    "$collection": "inv.objectmodels",
     "uuid": "10625c7f-c264-445e-ae78-2210cb6b31d0",
     "vendor__code": "JUNIPER",
     "description": "J2320, JUNOS, 3 PIM Slots, HW Encryption, AC Power Supply, 19\" Rack Mount\n",
@@ -70,7 +71,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "J2320"
+            "part_no": ["J2320"]
         },
         "management": {
             "managed": true

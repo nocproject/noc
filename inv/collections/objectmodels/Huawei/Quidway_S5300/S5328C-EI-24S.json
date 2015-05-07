@@ -1,5 +1,6 @@
 {
     "name": "Huawei | Quidway S5300 | S5328C-EI-24S",
+    "$collection": "inv.objectmodels",
     "uuid": "125fa50d-6d44-4858-9ef4-b5f400c008c3",
     "vendor__code": "HUAWEI",
     "description": "L3 switch with 20 ports 100/1000Base-X (SFP), 4 combo ports 10/100/1000Base-T/SFP, 2 extension slots",
@@ -290,7 +291,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "S5328C-EI"
+            "part_no": ["S5328C-EI"]
         },
         "dimensions": {
             "depth": 420,

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | RE-S-1800X4-8G-S",
+    "$collection": "inv.objectmodels",
     "uuid": "21225099-f0a9-46cb-926c-789480596528",
     "vendor__code": "JUNIPER",
     "description": "Routing Engine - Quad Core 1800Ghz with 8G Memory",
@@ -39,10 +40,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "RE-S-1800X4-8G-S",
-            "order_part_no1": "RE-S-1800X4-8G-BB",
-            "order_part_no2": "RE-S-1800X4-8G-WW-S",
-            "part_no0": "740-031118"
+            "order_part_no": ["RE-S-1800X4-8G-S", "RE-S-1800X4-8G-BB", "RE-S-1800X4-8G-WW-S"],
+            "part_no": ["740-031118"]
         }
     }
 }

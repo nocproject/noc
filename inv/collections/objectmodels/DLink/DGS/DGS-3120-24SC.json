@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3120-24SC",
+    "$collection": "inv.objectmodels",
     "uuid": "f07281d4-7183-4269-a545-b1299ad11d70",
     "vendor__code": "DLINK",
     "description": "DGS-3120-24SC L3 Managed Switch witch 16 ports 100/1000 SFP, 8 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 10G CX4",
@@ -306,8 +307,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3120-24SC",
-            "part_no1": "DGS-3120-24SC-DC"
+            "part_no": ["DGS-3120-24SC-DC", "DGS-3120-24SC"]
         },
         "management": {
             "managed": true

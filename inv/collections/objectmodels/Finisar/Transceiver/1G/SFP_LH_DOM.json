@@ -33,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "FTLF1318P2BCL-CS"
+            "part_no": ["FTLF1318P2BCL-CS"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | MIC-3D-2XGE-XFP",
+    "$collection": "inv.objectmodels",
     "uuid": "e069556f-34e9-49f1-8b6c-53fefd140f66",
     "vendor__code": "JUNIPER",
     "description": "2x10G MIC for MX",
@@ -29,8 +30,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "3D 2x 10GE XFP",
-            "part_no0": "750-028380"
+            "order_part_no": ["3D 2x 10GE XFP"],
+            "part_no": ["750-028380"]
         }
     }
 }

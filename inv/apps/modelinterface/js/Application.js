@@ -74,7 +74,8 @@ Ext.define("NOC.inv.modelinterface.Application", {
                             editor: {
                                 xtype: "combobox",
                                 store: [
-                                    "str", "int", "float", "bool",
+                                    "str", "strlist",
+                                    "int", "float", "bool",
                                     "objectid", "ref"
                                 ],
                                 forceSelection: true

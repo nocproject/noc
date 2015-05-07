@@ -1,5 +1,6 @@
 {
     "name": "Alcatel | OS | PS-126W-AC",
+    "$collection": "inv.objectmodels",
     "uuid": "fd1324c9-a517-4e94-8dc3-e5a8fa9786e8",
     "vendor__code": "ALU",
     "description": "Alcatel-Lucent PS-126W-AC - Power supply - hot-plug / redundant - 126 Watt - for OmniSwitch 6850E-P24, 6850E-P24X, 6850E-P48, 6850E-P48X",

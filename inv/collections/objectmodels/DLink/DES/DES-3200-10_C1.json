@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3200-10/C1",
+    "$collection": "inv.objectmodels",
     "uuid": "34960d08-719b-4fc9-a2ae-6e9dd0a59a1e",
     "vendor__code": "DLINK",
     "description": "DES-3200-10/C1 xStack L2 Managed Switch witch 8 ports 10/100BASE-TX, 1 combo 10/100/1000BASE-T/ 100/1000 SFP, 1 100/1000 SFP",
@@ -116,8 +117,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3200-10/C1",
-            "part_no1": "DES-3200-10/B1"
+            "part_no": ["DES-3200-10/B1", "DES-3200-10/C1"]
         },
         "management": {
             "managed": true

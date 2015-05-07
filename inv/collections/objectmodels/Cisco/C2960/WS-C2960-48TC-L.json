@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C2960 | WS-C2960-48TC-L",
+    "$collection": "inv.objectmodels",
     "uuid": "fb3ad246-9a77-4945-afa2-2d9e91de430f",
     "vendor__code": "CISCO",
     "description": "48 Ethernet 10/100 ports",
@@ -425,7 +426,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C2960-48TC-L"
+            "part_no": ["WS-C2960-48TC-L"]
         },
         "management": {
             "managed": true

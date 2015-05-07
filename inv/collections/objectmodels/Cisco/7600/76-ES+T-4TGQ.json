@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | 76-ES+T-4TGQ",
+    "$collection": "inv.objectmodels",
     "uuid": "7eaac57d-877e-4474-b269-98eafea6953b",
     "vendor__code": "CISCO",
     "description": "76-ES+T-4TGQ 7600 ES+T 4x10GE XFP ITU",

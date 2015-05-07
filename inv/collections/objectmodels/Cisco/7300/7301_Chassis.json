@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7300 | 7301 Chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "2eb2981b-f389-40c2-beb6-1448ef1b24d0",
     "vendor__code": "CISCO",
     "description": "Cisco 7301, 1-slot chassis",
@@ -7,8 +8,7 @@
     "connections": [],
     "data": {
         "asset": {
-            "part_no0": "CISCO7301",
-            "part_no1": "Cisco7301"
+            "part_no": ["Cisco7301", "CISCO7301"]
         },
         "management": {
             "managed": true

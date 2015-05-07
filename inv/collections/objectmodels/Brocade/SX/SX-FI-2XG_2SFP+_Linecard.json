@@ -1,5 +1,6 @@
 {
     "name": "Brocade | SX | SX-FI-2XG 2SFP+ Linecard",
+    "$collection": "inv.objectmodels",
     "uuid": "bcc931e4-58e6-45d0-926d-850db06186f0",
     "vendor__code": "BROCADE",
     "description": "SX-FI-2XG 2SFP+ Linecard",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SX-FI-2XG"
+            "part_no": ["SX-FI-2XG"]
         }
     }
 }

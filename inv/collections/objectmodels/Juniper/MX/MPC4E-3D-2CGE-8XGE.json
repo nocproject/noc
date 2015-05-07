@@ -97,8 +97,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "MPC4E-3D-2CGE-8XGE",
-            "part_no0": "750-037355"
+            "order_part_no": ["MPC4E-3D-2CGE-8XGE"],
+            "part_no": ["750-037355"]
         }
     }
 }

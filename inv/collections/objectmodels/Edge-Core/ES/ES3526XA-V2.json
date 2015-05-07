@@ -1,5 +1,6 @@
 {
     "name": "Edge-Core | ES | ES3526XA-V2",
+    "$collection": "inv.objectmodels",
     "uuid": "3dfd3732-8197-4577-8410-e3d7ff7c8f59",
     "vendor__code": "EDGECORE",
     "description": "24 Ethernet 10/100 ports, 2 Combo Copper / SFP-based 10/100/1000 Ethernet ports",
@@ -253,7 +254,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ES3526XA-V2"
+            "part_no": ["ES3526XA-V2"]
         },
         "management": {
             "managed": true

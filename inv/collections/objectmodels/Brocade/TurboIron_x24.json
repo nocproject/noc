@@ -1,5 +1,6 @@
 {
     "name": "Brocade | TurboIron x24",
+    "$collection": "inv.objectmodels",
     "uuid": "17edc5e8-15cf-4e58-8cbf-fa8fba6be867",
     "vendor__code": "BROCADE",
     "description": "24 SFP/SFP+ ports and 4 10/100/1000 Gigabit Ethernet ports",
@@ -249,7 +250,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "Stackable TurboIron"
+            "part_no": ["Stackable TurboIron"]
         },
         "management": {
             "managed": true

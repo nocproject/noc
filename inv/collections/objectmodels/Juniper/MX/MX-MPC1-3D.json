@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | MX-MPC1-3D",
+    "$collection": "inv.objectmodels",
     "uuid": "2a32d79b-0222-4b42-a319-f2d809de6935",
     "vendor__code": "JUNIPER",
     "description": "1xTrio Chipset MPC, port queuing",
@@ -29,8 +30,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "MX-MPC1-3D",
-            "part_no0": "750-031087"
+            "order_part_no": ["MX-MPC1-3D"],
+            "part_no": ["750-031087"]
         }
     }
 }

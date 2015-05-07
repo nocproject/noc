@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 1G | GLC-ZX-SMD",
+    "$collection": "inv.objectmodels",
     "uuid": "98a134d5-3996-4433-850d-28e8a9f91a78",
     "vendor__code": "CISCO",
     "description": "Cisco SFP ZX transceiver with DOM support",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "GLC-ZX-SMD"
+            "part_no": ["GLC-ZX-SMD"]
         }
     }
 }

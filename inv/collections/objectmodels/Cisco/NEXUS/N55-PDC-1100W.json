@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N55-PDC-1100W",
+    "$collection": "inv.objectmodels",
     "uuid": "7cc631a8-c465-4373-8d6e-d34be205ee83",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 5596UP/5596T PSU Front-to-Back Airflow module spare, D/C, - 40 to -72VDC, 1100W",
@@ -16,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N55-PDC-1100W"
+            "part_no": ["N55-PDC-1100W"]
         }
     }
 }

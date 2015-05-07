@@ -1,5 +1,6 @@
 {
     "name": "Avaya | ERS | 5650TD",
+    "$collection": "inv.objectmodels",
     "uuid": "7fc7d781-6b79-4bf9-be0c-1890f6f88e7e",
     "vendor__code": "AVAYA",
     "description": "ERS 5650TD with 48 x 10/100/1000Base-T ports, plus 2 x 10GBase-XFP Uplink ports, and 600W AC Integrated Power Supply",
@@ -425,7 +426,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "5650TD"
+            "part_no": ["5650TD"]
         },
         "dimensions": {
             "depth": 430,
