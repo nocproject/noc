@@ -48,7 +48,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": "7600-ES+4TG"
+            "part_no": ["7600-ES+4TG"]
         }
     }
 }

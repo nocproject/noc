@@ -23,8 +23,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": "SCB-MX960-S",
-            "part_no": ["710-021523", "710-013385"]
+            "order_part_no": ["SCB-MX960-S"],
+            "part_no": ["710-013385", "710-021523"]
         }
     }
 }

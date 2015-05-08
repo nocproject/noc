@@ -32,7 +32,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": "7600-ES+2TG3C"
+            "part_no": ["7600-ES+2TG3C"]
         }
     }
 }

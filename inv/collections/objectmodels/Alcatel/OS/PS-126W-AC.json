@@ -25,7 +25,7 @@
             "inlet": "r"
         },
         "asset": {
-            "order_part_no": "PS-126W-AC"
+            "order_part_no": ["PS-126W-AC"]
         },
         "power": {
             "power": 126.0

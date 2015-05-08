@@ -461,7 +461,7 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": "S50N",
+            "order_part_no": ["S50N"],
             "part_no": ["S50-01-GE-48T-AC-2"]
         }
     }

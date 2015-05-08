@@ -48,7 +48,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": "76-ES+T-4TGQ"
+            "part_no": ["76-ES+T-4TGQ"]
         }
     }
 }
