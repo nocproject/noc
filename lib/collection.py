@@ -255,6 +255,23 @@ class Collection(object):
         self.items[mi.uuid] = mi
         self.changed = True
 
+    def upload_data(self, data):
+        """
+        Upload data from deserialized JSON.
+        Do not create or update file or manifest
+        """
+        d = self.dereference(self.doc, data)
+        o = self.get_by_uuid(data["uuid"])
+        if o:
+            self.logger.info("Changing %s", o)
+            # Update fields
+            for k in d:
+                setattr(o, k, d[k])
+        else:
+            self.logger.info("Creating new %s", self.doc)
+            o = self.doc(**d)
+        o.save()
+
     def lookup(self, ref, field, key):
         field = str(field)
         if ref not in self.ref_cache:
