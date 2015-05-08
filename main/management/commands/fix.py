@@ -13,6 +13,7 @@ import uuid
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.lib.debug import error_report
+from noc.lib.collection import Collection
 from noc.main.management.commands.collection import Command as CollectionCommand
 
 
@@ -45,7 +46,8 @@ class Command(BaseCommand):
         Fix collection uuids to binary format
         """
         self.info("Checking collections UUID")
-        for n, c in CollectionCommand.collections:
+        for n in Collection.iter_collections():
+            c = Collection.COLLECTIONS[n]
             if ("uuid" in c._fields and
                     hasattr(c._fields["uuid"], "_binary") and
                     c._fields["uuid"]._binary
