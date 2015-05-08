@@ -53,5 +53,4 @@ class JSONImportApplication(ExtApplication):
         if not collection:
             raise ValueError("No $collection attribute")
         c = Collection(collection, local=True)  # Can raise ValueError
-        c.install_item(obj, load=True)
-        # Do not save
+        c.upload_data(obj)
