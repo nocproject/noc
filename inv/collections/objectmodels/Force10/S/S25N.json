@@ -269,7 +269,7 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": "S25N",
+            "order_part_no": ["S25N"],
             "part_no": ["S25-01-GE-24T"]
         }
     }

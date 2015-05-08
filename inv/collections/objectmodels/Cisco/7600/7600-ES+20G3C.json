@@ -176,7 +176,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": "7600-ES+20G3C"
+            "part_no": ["7600-ES+20G3C"]
         }
     }
 }

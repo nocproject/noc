@@ -39,7 +39,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": "7600-ES20-20GE"
+            "part_no": ["7600-ES20-20GE"]
         }
     }
 }

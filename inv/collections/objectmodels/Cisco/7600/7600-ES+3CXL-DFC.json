@@ -16,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": "7600-ES+3CXL"
+            "part_no": ["7600-ES+3CXL"]
         }
     }
 }
