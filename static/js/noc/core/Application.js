@@ -126,5 +126,10 @@ Ext.define("NOC.core.Application", {
             msg.push(arguments[i]);
         }
         console.log.apply(console, msg);
+    },
+    // Check application tab is active
+    isActiveApp: function() {
+        var me = this;
+        return me.ownerCt.isVisible();
     }
 });
