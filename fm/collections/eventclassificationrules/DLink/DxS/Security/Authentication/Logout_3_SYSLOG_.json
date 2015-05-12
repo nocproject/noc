@@ -1,0 +1,22 @@
+{
+    "name": "DLink | DxS | Security | Authentication | Logout #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "4d1be0ba-1dc6-4f43-bea8-4a4d0cce1d84",
+    "description": " Logout through Telnet(IP: 10.116.0.211)",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Logout through (?:Web|Telnet|SSH|Console)\\s*\\(IP: (?P<ip>\\S+)\\)$"
+        }
+    ]
+}
