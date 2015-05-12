@@ -2,5 +2,6 @@
     "name": "APC",
     "uuid": "393be551-8335-476d-b73d-f83aae285b37",
     "code": "APC",
-    "site": "http://www.apc.com/"
+    "site": "http://www.apc.com/",
+    "$collection": "inv.vendors"
 }
