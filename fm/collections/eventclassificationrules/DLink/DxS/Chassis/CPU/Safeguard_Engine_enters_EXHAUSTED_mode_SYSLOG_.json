@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "63892aff-03d7-4d1b-922d-ecafe4ad3353",
     "description": "WARN: Safeguard Engine enters EXHAUSTED mode",
     "event_class__name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode",
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "(?:WARN:|WARN\\(4\\))( Unit (?P<unit>\\d+),)? Safeguard Engine enters EXHAUSTED mode$"
+            "value_re": "( Unit (?P<unit>\\d+), )?Safeguard Engine enters EXHAUSTED mode$"
         }
     ]
 }

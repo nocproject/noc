@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | LBD | Loop Detected #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "4fa678b4-a022-41ce-99fe-5fab11c7ba58",
     "description": "CRIT: Port 4 LBD loop occurred. Port blocked",
     "event_class__name": "Network | LBD | Loop Detected",
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "(?:CRIT:|CRIT\\(2\\)) Port (?P<interface>.+) LBD loop occurred. Port blocked"
+            "value_re": "Port (?P<interface>.+) LBD loop occurred. Port blocked"
         }
     ]
 }

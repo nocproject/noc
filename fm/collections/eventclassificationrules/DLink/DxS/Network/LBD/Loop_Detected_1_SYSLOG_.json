@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | LBD | Loop Detected #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "cdbde953-e2b5-43de-a65a-770fd2a35c4f",
     "description": "WARN: Configuration Testing Protocol detects a loop in port 4",
     "event_class__name": "Network | LBD | Loop Detected",
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "(?:WARN:|WARN\\(4\\)|INFO:) Configuration Testing Protocol detects a loop in port (?P<interface>\\S+)"
+            "value_re": "Configuration Testing Protocol detects a loop in port (?P<interface>\\S+)"
         }
     ]
 }

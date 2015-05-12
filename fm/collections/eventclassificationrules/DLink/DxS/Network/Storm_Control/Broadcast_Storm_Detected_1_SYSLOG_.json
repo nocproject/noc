@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | Storm Control | Broadcast Storm Detected #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e54b4e79-277f-42a8-86f7-fdfc8c5345ca",
     "description": "WARN(4) Port 22 Broadcast storm is occurring",
     "event_class__name": "Network | Storm Control | Broadcast Storm Detected",
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "(?:WARN:|WARN\\(4\\)) Port (?P<interface>.+) Broadcast storm is occurring"
+            "value_re": "Port (?P<interface>.+) Broadcast storm is occurring"
         }
     ]
 }
