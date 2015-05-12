@@ -1,0 +1,8 @@
+{
+    "name": "Power | MSTB 2.5/6-GF-5.08",
+    "$collection": "inv.connectiontypes",
+    "uuid": "f00b647d-6841-49ea-8bd2-8395e905a81c",
+    "description": "Terminal block outlet, 6 pins",
+    "c_group": [],
+    "genders": "m"
+}

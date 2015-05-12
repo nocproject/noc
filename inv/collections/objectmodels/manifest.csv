@@ -556,6 +556,10 @@ Rack Row,1cf66a38-fa88-4ef9-b181-6e6a298c55cf,Rack_Row.json,df104bc475e26e864af8
 Room,c945e7dc-4c82-40c3-b8f9-65c62e85ed1d,Room.json,9c8a0f07311ad277e3b46d92084cf1189b08ca27f2c243f1236e2b4c091e7c93
 Root,0f1b7c90-c611-4046-9a83-b120377eb6e0,Root.json,583c4cb124c7e22e1922822c509f3f310d39758ba6ff270eeabf4b3094b808e9
 Sumitomo | Transceiver | 100M | SFP LX,98fa28dc-09de-46e7-9971-45f707ba9d08,Sumitomo/Transceiver/100M/SFP_LX.json,c0d1357b3362b7969b458140fef885fd64a3108c968dcffaa7815b48fbaae1d7
+Supertel | K2X | K21,45add20d-6aec-4cad-bab8-264626f83017,Supertel/K2X/K21.json,15594f81ae91bbf7a7fad2a7c2b822de83464260de04593875584d534b1ead6a
+Supertel | K2X | K21-1,f8ab3e1a-e054-4a77-ac47-af8a6305399d,Supertel/K2X/K21-1.json,aa8ada08ef2bbcb3f063c50b69bfec796da536e53501f2b2e54d5b2c60d5fd04
+Supertel | K2X | K23,9b91fce8-76dc-456d-ae11-e3a1bfab89fa,Supertel/K2X/K23.json,7cfeb4af384e47198f07b327946bddf7135e9412fdebeef5cf5e9a4214d3b0b8
+Supertel | K2X | K23-1,fd2dc7c2-1b86-4b8d-918c-01fb39fd0a5e,Supertel/K2X/K23-1.json,77528a638f6317c80af6957fc359a20208c35ef0725fbefb32ab753b88e76a82
 Tyco | Transceiver | 10G | SFP-H10GB-ACU10M,e3969ae1-0524-40d4-90f6-6e133d1a04e2,Tyco/Transceiver/10G/SFP-H10GB-ACU10M.json,bb8f648e7ff96e28ecc047baefec940b9ea11594167fd554d06a3fd4352bbf25
 Tyco | Transceiver | 10G | SFP-H10GB-CU3M,3d6b657d-1624-4cd4-aac5-eb3ba114087c,Tyco/Transceiver/10G/SFP-H10GB-CU3M.json,48283d0040cf640f1c2fdd8996699a10e001ec21825ca1e9c8e8acfc838d3bfb
 Vimcom | Transceiver | 1G | SFP-LX-LC-10,4ad05e3e-e88b-477b-a4e0-655d5d94293e,Vimcom/Transceiver/1G/SFP-LX-LC-10.json,fba839a9aa41723bc63a1102ccb73c3ccbef440d797ae33e4f0d6a8c9ee843f2
