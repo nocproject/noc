@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | Storm Control | Multicast Storm Cleared #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "fa35ebee-1ef7-4267-bfa1-1a0b80a836b4",
     "description": "INFO(6) Port 9 Multicast storm has cleared",
     "event_class__name": "Network | Storm Control | Multicast Storm Cleared",
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) Multicast storm has cleared"
+            "value_re": "Port (?P<interface>.+) Multicast storm has cleared"
         }
     ]
 }

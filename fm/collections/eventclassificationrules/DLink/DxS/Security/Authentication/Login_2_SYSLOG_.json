@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Security | Authentication | Login #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c2b334ab-403e-4429-a279-359dd7fb99b1",
     "description": "INFO: Successful login through Console (Username: noc)",
     "event_class__name": "Security | Authentication | Login",
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "(?:INFO:|INFO\\(6\\)) Successful login through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)"
+            "value_re": "Successful login through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)"
         }
     ]
 }

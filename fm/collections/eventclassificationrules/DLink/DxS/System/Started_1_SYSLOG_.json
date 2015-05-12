@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | System | Started #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f4428e8e-10a4-4d3f-9b5a-d6bec073c10d",
     "description": "CRIT: System cold start",
     "event_class__name": "System | Started",
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "(?:INFO:|CRIT:|CRIT\\(2\\))( Unit (?P<unit>\\d+),)? System (cold|warm) start$"
+            "value_re": "( Unit (?P<unit>\\d+), )?System (cold|warm) start$"
         }
     ]
 }

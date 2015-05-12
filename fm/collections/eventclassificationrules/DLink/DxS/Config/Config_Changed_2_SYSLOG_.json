@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Config | Config Changed #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "08e6da4b-b201-4a4e-8bcb-737ac81f2cde",
     "description": "INFO(6) Configuration and log saved to flash (Username: fenomen_krog)",
     "event_class__name": "Config | Config Changed",
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "(?:INFO:|INFO\\(6\\)) Configuration (and log )*saved to flash \\(Username: (?P<user>.+)\\)$"
+            "value_re": "Configuration (and log )*saved to flash \\(Username: (?P<user>.+)\\)$"
         }
     ]
 }
