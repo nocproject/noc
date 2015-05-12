@@ -1,0 +1,22 @@
+{
+    "name": "Supertel | K2X | Unknown | Ignore #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "1690d138-7ded-42a4-b1f1-2226f09e9ed6",
+    "description": "%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Supertel.K2X$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%COPY-I-FILECPY: Files Copy - source URL running-config destination URL flash://startup-config$"
+        }
+    ]
+}

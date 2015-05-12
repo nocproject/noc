@@ -1,4 +1,5 @@
 name,uuid,path,hash
+,0a60acb2-a4dd-461e-8e09-84a11ca3876e,Cisco/IOS/Network/Link/Half-Duplex_SYSLOG_.json,041789416d910cd5b8cedaaaed6ed4fed9d8565c179ff448e1e7ebe9da182997
 APC | AOS | Chassis | Fan | Fan Failed #1 (SYSLOG),168b25e8-d6b5-415f-aef5-3a26a2b09f5d,APC/AOS/Chassis/Fan/Fan_Failed_1_SYSLOG_.json,fb55003a88b579483260de5a178d16862545770206a7f9251dd75da5b1a4355b
 APC | AOS | Chassis | Fan | Fan Failed #2 (SYSLOG),16923701-cc63-4892-9d2c-f966fd9f4b38,APC/AOS/Chassis/Fan/Fan_Failed_2_SYSLOG_.json,ec7f5f14a2b0c1a2af1c6b5f676d32c400e91cf4f9a59e2bcd7c565c013ebf9b
 APC | AOS | Chassis | Fan | Fan Failed #3 (SYSLOG),628e2b60-bfa7-4c3d-a3be-c2210fd8e0f4,APC/AOS/Chassis/Fan/Fan_Failed_3_SYSLOG_.json,118b9dea2ad34d3a064fb9c6aa44c42b15580e61dbbc2ecee7b85bf1fc52a6ba
@@ -254,7 +255,6 @@ Cisco | IOS | Network | Link | Connection Problem (SYSLOG),f231b9d3-f9e7-44af-9b
 Cisco | IOS | Network | Link | DOM | Alarm: Out of Threshold (SYSLOG),f61c2e46-13e3-4517-839b-e87cadd8c395,Cisco/IOS/Network/Link/DOM/Alarm_Out_of_Threshold_SYSLOG_.json,632d65a8df3c08f565f6de8f4df3b2d8012221e2b8b30b04e84db65660c01f1f
 Cisco | IOS | Network | Link | DOM | Warning: Out of Threshold (SYSLOG),3b9f668e-53ca-4aff-9dcd-5b929e9b3cba,Cisco/IOS/Network/Link/DOM/Warning_Out_of_Threshold_SYSLOG_.json,03b8d98b6fd067404fffab3509f01826504088900bef1b5f756c6c8b7cd3b45c
 Cisco | IOS | Network | Link | Duplex Mismatch (SYSLOG),c67686f7-4387-4382-a8e2-1872690ebb59,Cisco/IOS/Network/Link/Duplex_Mismatch_SYSLOG_.json,9b813e8319fde2b88a20a4d2b7a5e7ad8e1a61973fdc84e6c10353f4b3e7a323
-,0a60acb2-a4dd-461e-8e09-84a11ca3876e,Cisco/IOS/Network/Link/Half-Duplex_SYSLOG_.json,041789416d910cd5b8cedaaaed6ed4fed9d8565c179ff448e1e7ebe9da182997
 Cisco | IOS | Network | Link | Link Down #1 (SNMP),281a5329-c290-428a-b522-47fb50fe8ee3,Cisco/IOS/Network/Link/Link_Down_1_SNMP_.json,8947b9a6170481d0848248783e7564daa0ac6ee37e8b6c3b510311a1932dd981
 Cisco | IOS | Network | Link | Link Down #2 (SNMP),6265ec7b-c62d-49e3-8f32-6b5fc159e99b,Cisco/IOS/Network/Link/Link_Down_2_SNMP_.json,3bf1f151546d2fec4867ff79a1bbbb2c6315dd0d645b0a4137fb818be3907914
 Cisco | IOS | Network | Link | Link Down #3 (SNMP),b2250a7c-3dad-4bc8-badb-e5983b7855f8,Cisco/IOS/Network/Link/Link_Down_3_SNMP_.json,fc9f47bfa271b2f8c2072ab7492fca5de61338d083de99b8600794ec8aa1ae8f
@@ -907,6 +907,27 @@ Qtech | QSW2800 | Security | Authentication | Login Failed (SYSLOG),8c74101d-0b6
 Qtech | QSW2800 | Security | Authentication | Logout (SYSLOG),37345a48-432a-435c-ac38-183a63272d4b,Qtech/QSW2800/Security/Authentication/Logout_SYSLOG_.json,5588eb25e205060fd322a02691a01331c8d766c6e6566fb6ef7295bdfb521185
 Qtech | QSW2800 | System | Started (SYSLOG),cc1d3425-2950-4331-bc18-2146e9723f49,Qtech/QSW2800/System/Started_SYSLOG_.json,06ea205d6a14ad09c4a710ec2ba3dfc6db4ce4c2567c746914510232924bb75c
 Security | Authentication | Authentication Failed (SNMP),cc2a3ca2-bfd6-471d-9ae9-51a20a2d0bad,Security/Authentication/Authentication_Failed_SNMP_.json,0531fe8bdb1d2eb7bb484e4e4a59b361dbedced846f1796275ca3b995527a021
+Supertel | K2X | Chassis | Fan | Fan Failed #1 (SYSLOG),331d0f23-55a3-431f-a432-cc7eeedcc174,Supertel/K2X/Chassis/Fan/Fan_Failed_1_SYSLOG_.json,d140bf539534f9ef23005f359bc26ea8aaa1fecdc7f9e50e3ed76014ca72a3af
+Supertel | K2X | Config | Config Synced #1 (SNMP),3671c27b-b472-4ab4-ab06-f4155e800f11,Supertel/K2X/Config/Config_Synced_1_SNMP_.json,425df70a419a1cc380869c142128cd74331e23817804e4e44418d7071694352b
+Supertel | K2X | Config | Config Synced #1 (SYSLOG),17407f4f-d306-41c1-b0c3-809804008f02,Supertel/K2X/Config/Config_Synced_1_SYSLOG_.json,62e231addbe3e27ea879398176f65f3253f8d84beed2bb95f2e9b993562baab8
+Supertel | K2X | Network | LAG | Bundle #1 (SNMP),9d724408-2f54-404b-bbb8-2b4b87b2e765,Supertel/K2X/Network/LAG/Bundle_1_SNMP_.json,5334777ff580f18e5b8232b7233ca41b9aeb866915135ac934bf66ce17b8af7c
+Supertel | K2X | Network | LAG | Bundle #1 (SYSLOG),065f9cb8-f4c2-47b1-b58c-a758eb76f7e4,Supertel/K2X/Network/LAG/Bundle_1_SYSLOG_.json,419fc0c4de0e0512868fe78df824cdc896cf07dc11073488f6d76639962f15bb
+Supertel | K2X | Network | LAG | Unbundle #1 (SNMP),60d23ac3-536a-4875-b3d2-4f351ec10865,Supertel/K2X/Network/LAG/Unbundle_1_SNMP_.json,bf47891f05c8263b06dfc79754779fffb7285640d65da092ea45c3e69ac061aa
+Supertel | K2X | Network | LAG | Unbundle #1 (SYSLOG),c71b0845-9c5e-449a-bd83-659827ad9fa8,Supertel/K2X/Network/LAG/Unbundle_1_SYSLOG_.json,4ff964509eb8545aff042737c046b267cbfd4b97c4d91568aa57c602dff701b6
+Supertel | K2X | Network | Link | Link Down #1 (SYSLOG),c9f2424c-58f9-4753-be4d-79ec43b32e16,Supertel/K2X/Network/Link/Link_Down_1_SYSLOG_.json,6c282519c6d6c0643bd7b7a38f4f348584d8e64d1f6b39a57907cc5de41c8b44
+Supertel | K2X | Network | Link | Link Down #2 (SYSLOG),e9ac7ff3-e7f9-40e3-a3d5-0b99678807c0,Supertel/K2X/Network/Link/Link_Down_2_SYSLOG_.json,f9494088fdf88c0c1896976fc603fb85d9d7fad9b4ff1bb197ef40da83c82c6e
+Supertel | K2X | Network | Link | Link Up #1 (SYSLOG),5afac00e-a263-4d22-8d0d-5f4253861128,Supertel/K2X/Network/Link/Link_Up_1_SYSLOG_.json,5b15a56f98ecb35051921836163a306c53797ab15c3e22d755cf00cb98884358
+Supertel | K2X | Network | STP | STP Port State Changed #1 (SNMP),05005003-4712-4fe6-8a32-117a776e98f4,Supertel/K2X/Network/STP/STP_Port_State_Changed_1_SNMP_.json,d6f33c573067d2cbe4773c6ca6f272b963ea237b79e7b3e281d378a75ebe126f
+Supertel | K2X | Network | STP | STP Port State Changed #1 (SYSLOG),8c570164-498e-435a-a2a2-f12e9d409ac4,Supertel/K2X/Network/STP/STP_Port_State_Changed_1_SYSLOG_.json,93192528a51f25002eb9ec95e2321331721c07aafbe6d71ac09e7a8d7758e2a6
+Supertel | K2X | Network | STP | STP Port State Changed #2 (SNMP),4aaa06fb-d065-4c58-97b3-0b7f5c4d78e1,Supertel/K2X/Network/STP/STP_Port_State_Changed_2_SNMP_.json,f9c36b1ce11e02c64a1123750f5c60d64e09f85ea7bde46dcf94d80cf1fd30b2
+Supertel | K2X | Network | STP | STP Port State Changed #2 (SYSLOG),f9dfb12d-f2ff-4d69-a01a-4d6881faff9b,Supertel/K2X/Network/STP/STP_Port_State_Changed_2_SYSLOG_.json,249a3b35f4a249fdf7bce72e7274a56d5d2baebe3c863d718461d33378afcc36
+Supertel | K2X | Security | ACL | ACL Deny #1 (SYSLOG),8cae04d7-af0d-4f9c-a06c-dead819753a9,Supertel/K2X/Security/ACL/ACL_Deny_1_SYSLOG_.json,6d3fbd102b7e186a975acfb998e678b32286e65a692aa6240ea533c1925fbbb2
+Supertel | K2X | Security | Authentication | Login #1 (SYSLOG),fac4b1e8-471a-45f5-9d47-5f2a4bc1b30a,Supertel/K2X/Security/Authentication/Login_1_SYSLOG_.json,06cb8b4fb4e8c31bb36a66ab1c77525ea9ba0087f44fe2a9009e2bf897a1f6b0
+Supertel | K2X | Security | Authentication | Login Failed #1 (SYSLOG),6b47188a-c7bb-4030-aac0-918b658d4c8d,Supertel/K2X/Security/Authentication/Login_Failed_1_SYSLOG_.json,8c324d982ed2d21422d38bab704a1f2b8acc8334800a56b3138c7e9f6ba4641b
+Supertel | K2X | Security | Authentication | Logout #2 (SYSLOG),79296898-ce4b-485e-9a72-f5e78188a503,Supertel/K2X/Security/Authentication/Logout_2_SYSLOG_.json,aa8b4ba2a8870297c8037bfe048838736e338b5e77b3f564c13b6a21f6dca4b5
+Supertel | K2X | System | Started #1 (SYSLOG),ebdbe4eb-1580-4a09-bedb-4705dff9bfb5,Supertel/K2X/System/Started_1_SYSLOG_.json,3d5f645943df00d08561d4ef7620313fef39e4e6535ecf52fd820e0addf0499b
+Supertel | K2X | Unknown | Ignore #1 (SYSLOG),1690d138-7ded-42a4-b1f1-2226f09e9ed6,Supertel/K2X/Unknown/Ignore_1_SYSLOG_.json,d4c9b0bad38deffecc5edaeec94788b00e49670622043d145f685cff5268a591
+Supertel | K2X | Unknown | Ignore #2 (SYSLOG),7edb289d-6eaf-444d-b4c3-71a1f0f629ac,Supertel/K2X/Unknown/Ignore_2_SYSLOG_.json,2ab431e0b4f5774b4e5c574283a48d7947a534b49afa5f83b4f5410a3c0387de
 System | Started #1 (SNMP),0d591533-5971-4068-bea2-7167b9c0d1bb,System/Started_1_SNMP_.json,d0bd208d61c7b9378893d2759293aaa71246815296986a0544b393073fc2d2a0
 System | Started #2 (SNMP),e6589c65-fff7-495a-ab15-6d8bd0a02005,System/Started_2_SNMP_.json,b58442fe1c8383c2b4b9f14425d826c803765ccba0b7d83e14e24a31a8c923d7
 Ubiquiti | AirOS |  Unknown | Ignore STA_JOIN (SYSLOG),95580aa1-7831-4b3d-96cc-8a4def6d5eb5,Ubiquiti/AirOS/Unknown/Ignore_STA_JOIN_SYSLOG_.json,c4814d425023df77fb4554aabb66261c45cba5eae1989f0f5f766744c082d4b3
