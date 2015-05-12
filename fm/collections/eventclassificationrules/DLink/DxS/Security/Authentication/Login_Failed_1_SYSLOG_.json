@@ -16,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "Login failed through (?:Web|Telnet|SSH) \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)(?:, MAC: \\S+)?\\)$"
+            "value_re": "Login failed through (?:Web|Telnet|SSH)\\s*\\(User(name)?: (?P<user>.+?), IP: (?P<ip>\\S+)(?:, MAC: \\S+)?\\)$"
         }
     ]
 }
