@@ -5,6 +5,8 @@ Interface | Admin Status Down,96b43e7a-2062-4de8-b6d4-bcac6fd26866,Interface/Adm
 Interface | Admin Status Up,bace145e-ce70-41b9-a7a0-8ecdcc83727f,Interface/Admin_Status_Up.json,56f47fa02575eba4b84bb4f8a2345abb28bed5e7605f04ac49ad60ae77c44e92
 Interface | CDP Disabled,792f0273-71db-4c38-8afd-316b82f20cb8,Interface/CDP_Disabled.json,8e201e2e0a183e7a146f04b35759e0c39cdc49a03bbaadd7736f1d9fc4e7f643
 Interface | CDP Enabled,c65aced9-ec4b-457d-b9a7-1c1e86860eff,Interface/CDP_Enabled.json,a2e92cc8b8de9c9770fb5807959fd2e7599b6e49fd3d4a8fefc3d256eda06af0
+Interface | IP Proxy ARP Enabled,d930ff12-acc0-41c9-8519-2091655a980f,Interface/IP_Proxy_ARP_Enabled.json,675a4c0abf52b95813fc72fbe40448f74c877785de684a27d88678bcffb47ba0
+Interface | IP Redirects Enabled,49108f66-7e99-4311-8e0b-17f5063a458f,Interface/IP_Redirects_Enabled.json,333b82d7f10d4d3f8a84a742cc0fe27b165c616a3f54d6b43d0051a7094de033
 Interface | ISIS Without ISO,288c64c1-1e4a-424f-8be4-a29888330710,Interface/ISIS_Without_ISO.json,baa8418c5d55905e3bf894d57493f8d5b8b84c0f66c2c8d529df7af7d87ddfe1
 Interface | Invalid Description,40f29d82-c855-4156-b0c3-77fb1e3e147e,Interface/Invalid_Description.json,725937bc20bbde4f085aa4937c42e7aa94015602370460b78c3e352532868a0a
 Interface | MPLS Without ISIS,825ca2df-3ebb-4bcb-b7d3-6ed8eff0ff73,Interface/MPLS_Without_ISIS.json,3ab0044a5199c5785d5d91a017e9d06dfa12cb0635f6306457be494a09c57e55
