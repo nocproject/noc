@@ -379,6 +379,9 @@ class AssetReport(Report):
         v = v.upper()
         if v in self.vendors:
             return self.vendors[v]
+        # Temporary fix
+        if v == "D-LINK":
+            v = "DLINK"
         o = Vendor.objects.filter(code=v).first()
         if o:
             self.vendors[v] = o
