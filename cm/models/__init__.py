@@ -34,3 +34,5 @@ from objectnotify import ObjectNotify, OBJECT_TYPE_CHOICES, OBJECT_TYPES
 from object import Object
 from prefixlist import PrefixList
 from rpsl import RPSL
+
+from errortype import ErrorType
