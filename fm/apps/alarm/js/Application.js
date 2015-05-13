@@ -167,12 +167,6 @@ Ext.define("NOC.fm.alarm.Application", {
                         me.toDateField,
                         me.expandButton
                     ]
-                },
-                {
-                    xtype: "pagingtoolbar",
-                    store: me.store,
-                    dock: "bottom",
-                    displayInfo: true
                 }
             ],
             columns: [
