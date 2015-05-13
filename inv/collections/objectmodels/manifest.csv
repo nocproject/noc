@@ -362,6 +362,10 @@ DLink | Modules | DEM-420X,3e4a7ec7-1b07-4437-ad6d-bd53df12fc7c,DLink/Modules/DE
 DLink | Modules | DEM-540,b42574e6-c536-4ac1-abe6-2bc716f63910,DLink/Modules/DEM-540.json,4890dbbdaf87122ab88d4a73b6b67609233200729cb585c167d591fb19e99b5d
 DLink | Modules | DES-132GB,ad2f4760-ac4a-45b0-a993-5c03f0ee921a,DLink/Modules/DES-132GB.json,1230d652ee421278402262ee6c543a1210ff5cc0ac03c865752beea6231ce1ef
 DLink | Modules | DES-132T,f18a9707-72be-4c35-aca6-6a74df1f9d18,DLink/Modules/DES-132T.json,d5154b0a6826f26912054b5b9ac7a4cdcd590fd0eca7a2ebba8caf7cea267cc8
+DLink | Transceiver | 1G | DEM-330R,b6425a8a-027c-45ca-8516-ad21ba66f251,DLink/Transceiver/1G/DEM-330R.json,a5548dcf319551d52278442d373bcdde1337f62242a14ea74b6ca2c1f1ed10b3
+DLink | Transceiver | 1G | DEM-330T,ac5cdef4-a1b9-4385-823a-efe63ef19de8,DLink/Transceiver/1G/DEM-330T.json,acb83761b993d644907947e7e7e4bbc9ce4705e63fa84a7d4ed8d5b062e5ed80
+DLink | Transceiver | 1G | DEM-331R,bfb0d7fd-fcfb-48d3-b0c3-adad71f7e977,DLink/Transceiver/1G/DEM-331R.json,23495cf879c27f906f5d2f66a67911bd79ff83cbf31447d4da9a8642c3705f2e
+DLink | Transceiver | 1G | DEM-331T,d4488fb2-0571-48c0-9eaa-84676546786f,DLink/Transceiver/1G/DEM-331T.json,73e2f427392336bbf1b9bf0a36a712fecdcc76709bbd504ba26b0bc32a43db81
 Ducts | Cable Entry,ae6a7aff-af07-489e-b222-8cf71b62b5b4,Ducts/Cable_Entry.json,a719f7425b2c95b61a259c325670514f8ff54b23e6ed70fa3aed7b3f9fcd2196
 Ducts | Conduits,bedc97be-259d-4928-9217-ffe88aebdb27,Ducts/Conduits.json,b9b10412467bc31fd854d11c02cdb2ee2be0109c95e368e7ff85c8a7c6a8ff70
 Ducts | Manhole,edf46d3b-841c-4d2f-bc85-6301a4d0c6d8,Ducts/Manhole.json,1ace91a640af8518443c99b4e291ed13ba68ac578c973cc87b53ee9c9b52e3a0

@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3200-28",
+    "$collection": "inv.objectmodels",
     "uuid": "4eb13303-622c-4bad-ba8d-048a7effa3c5",
     "vendor__code": "DLINK",
     "description": "DES-3200-28 xStack L2 Managed Switch witch 24 ports 10/100BASE-TX, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
