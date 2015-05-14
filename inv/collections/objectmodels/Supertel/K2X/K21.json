@@ -258,7 +258,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "K21"
+            "part_no": ["K21"]
         },
         "management": {
             "managed": true

@@ -290,9 +290,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3200-28F",
-            "part_no1": "DES-3200-28F/C1",
-            "part_no2": "DES-3200-28F/B1"
+            "part_no": ["DES-3200-28F", "DES-3200-28F/C1", "DES-3200-28F/B1"]
         },
         "management": {
             "managed": true
