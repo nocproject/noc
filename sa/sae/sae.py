@@ -25,6 +25,7 @@ from django.db import reset_queries
 ## NOC modules
 from noc.sa.sae.service import Service
 from noc.sa.sae.sae_socket import SAESocket
+from noc.main.models import Shard
 from noc.sa.models import (Activator, ManagedObject, MapTask, ReduceTask,
                            script_registry, profile_registry,
                            ActivatorCapabilitiesCache, FailedScriptLog)
@@ -45,6 +46,7 @@ class SAE(Daemon):
 
     def __init__(self):
         self.shards = []
+        self.single_shard = False
         self.force_plaintext = []
         #
         self.strip_syslog_facility = False
@@ -99,7 +101,12 @@ class SAE(Daemon):
         super(SAE, self).load_config()
         self.shards = [s.strip()
                        for s in self.config.get("sae", "shards", "").split(",")]
-        self.logger.info("Serving shards: %s" % ", ".join(self.shards))
+        self.single_shard = Shard.objects.filter(is_active=True).count() == 1 and len(self.shards) == 1
+        self.logger.info(
+            "Serving shards: %s%s",
+            ", ".join(self.shards),
+            " (single shard)" if self.single_shard else "(multi shard)"
+        )
         self.force_plaintext = [IP.prefix(p) for p
                 in self.config.get("sae", "force_plaintext").strip().split(",")
                 if p]
@@ -121,6 +128,7 @@ class SAE(Daemon):
         # Settings
         self.mrt_schedule_interval = 1
         self.activator_status_interval = 60
+        #
 
     def start_listeners(self):
         """
@@ -568,12 +576,17 @@ class SAE(Daemon):
         throttled_shards = set()  # shard_id
         self.blocked_pools = set()  # Reset block status
         # Run tasks
-        for mt in MapTask.objects.filter(
-                status="W",
-                next_try__lte=t,
-                managed_object__activator__shard__is_active=True,
-                managed_object__activator__shard__name__in=self.shards
-            ).order_by("next_try").select_related("activator", "managed_object").select_for_update():
+        qs = {
+            "status": "W",
+            "next_try__lte": t
+        }
+        if not self.single_shard:
+            qs["managed_object__activator__shard__is_active"] = True
+            qs["managed_object__activator__shard__name__in"] = self.shards
+        for mt in MapTask.objects.filter(**qs)\
+                .order_by("next_try")\
+                .select_related("activator", "managed_object")\
+                .select_for_update():
             # Check object is managed
             if not mt.managed_object.is_managed:
                 fail_task(mt, ERR_OBJECT_NOT_MANAGED, "Object is not managed")
