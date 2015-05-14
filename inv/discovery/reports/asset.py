@@ -46,6 +46,20 @@ class AssetReport(Report):
                vendor=None,
                revision=None, serial=None,
                description=None):
+        # Check the vendor and the serial are sane
+        # OEM transceivers return binary trash often
+        if vendor:
+            try:
+                vendor.encode("utf-8")
+            except UnicodeDecodeError:
+                self.info("Trash submited as vendor id: %s" % vendor.encode("hex"))
+                return
+        if serial:
+            try:
+                serial.encode("utf-8")
+            except UnicodeDecodeError:
+                self.info("Trash submited as serial: %s" % serial.encode("hex"))
+                return
         #
         is_unknown_xcvr = (not builtin and
                            part_no[0].startswith("Unknown | Transceiver | "))
