@@ -362,8 +362,8 @@ DLink | Modules | DEM-420X,3e4a7ec7-1b07-4437-ad6d-bd53df12fc7c,DLink/Modules/DE
 DLink | Modules | DEM-540,b42574e6-c536-4ac1-abe6-2bc716f63910,DLink/Modules/DEM-540.json,4890dbbdaf87122ab88d4a73b6b67609233200729cb585c167d591fb19e99b5d
 DLink | Modules | DES-132GB,ad2f4760-ac4a-45b0-a993-5c03f0ee921a,DLink/Modules/DES-132GB.json,1230d652ee421278402262ee6c543a1210ff5cc0ac03c865752beea6231ce1ef
 DLink | Modules | DES-132T,f18a9707-72be-4c35-aca6-6a74df1f9d18,DLink/Modules/DES-132T.json,d5154b0a6826f26912054b5b9ac7a4cdcd590fd0eca7a2ebba8caf7cea267cc8
-DLink | Transceiver | 100M | DEM-220R,55187e33-aff0-4bee-984f-39fc35efd634,DLink/Transceiver/100M/DEM-220R.json,e9aa4a5fb6b69025e8d44c260ef1af90066211fafa20efc92bf640ca81011db2
-DLink | Transceiver | 100M | DEM-220T,f8cd4d91-6498-47c6-879c-b4a4af69e155,DLink/Transceiver/100M/DEM-220T.json,db1ae2401bbb4bd9cffd3f469fe905edc889cd6b0f9f2a3d87e8de2dd915e342
+DLink | Transceiver | 100M | DEM-220R,55187e33-aff0-4bee-984f-39fc35efd634,DLink/Transceiver/100M/DEM-220R.json,e0ea5e804e377d804074a3c9387fa07c1ce75be30ed7a77228fe7cb77dd2a810
+DLink | Transceiver | 100M | DEM-220T,f8cd4d91-6498-47c6-879c-b4a4af69e155,DLink/Transceiver/100M/DEM-220T.json,d92a11cddfc94d13e55d4c883a277de4b08424ec37c557e1944e05a7f5acc902
 DLink | Transceiver | 1G | DEM-330R,b6425a8a-027c-45ca-8516-ad21ba66f251,DLink/Transceiver/1G/DEM-330R.json,a5548dcf319551d52278442d373bcdde1337f62242a14ea74b6ca2c1f1ed10b3
 DLink | Transceiver | 1G | DEM-330T,ac5cdef4-a1b9-4385-823a-efe63ef19de8,DLink/Transceiver/1G/DEM-330T.json,acb83761b993d644907947e7e7e4bbc9ce4705e63fa84a7d4ed8d5b062e5ed80
 DLink | Transceiver | 1G | DEM-331R,bfb0d7fd-fcfb-48d3-b0c3-adad71f7e977,DLink/Transceiver/1G/DEM-331R.json,23495cf879c27f906f5d2f66a67911bd79ff83cbf31447d4da9a8642c3705f2e
