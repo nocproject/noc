@@ -9,6 +9,8 @@
 ## Python modules
 import logging
 import datetime
+## Django modules
+from django.db import connection
 ## NOC modules
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import Activator, ManagedObject
@@ -196,33 +198,38 @@ class Service(SAEService):
                  error=Error(code=ERR_AUTH_REQUIRED,
                              text="Authentication required"))
             return
+        logger.info("Object mappings requested")
         activator = self.get_controller_activator(controller)
         r = ObjectMappingsResponse()
         r.expire = self.sae.config.getint("sae", "refresh_event_filter")
-        # Build source filter
-        for c in ManagedObject.objects.filter(activator=activator,
-                    trap_source_ip__isnull=False, collector__isnull=True).only("id", "trap_source_ip"):
-            if c.profile_name.startswith("NOC."):
-                continue
-            s = r.mappings.add()
-            s.source = c.trap_source_ip
-            s.object = str(c.id)
-        # Ping settings
-        for c in ManagedObject.objects.filter(activator=activator,
-            trap_source_ip__isnull=False,
-            object_profile__enable_ping=True,
-            object_profile__ping_interval__gt=0
-        ).only("trap_source_ip", "object_profile__ping_interval").select_related():
-            if c.profile_name.startswith("NOC."):
-                continue
-            p = r.ping.add()
-            p.address = c.trap_source_ip
-            p.interval = c.object_profile.ping_interval
+        # Build source filter and ping settings
+        cursor = connection.cursor()
+        cursor.execute("""
+        SELECT mo.id, mo.trap_source_ip, op.enable_ping,
+               op.ping_interval, mo.collector_id
+        FROM
+            sa_managedobject mo JOIN sa_managedobjectprofile op ON (mo.object_profile_id = op.id)
+        WHERE
+            mo.activator_id = %s
+            AND mo.trap_source_ip IS NOT NULL
+            AND mo.profile_name NOT LIKE 'NOC.%%'
+        """, [activator.id])
+        for mo_id, trap_source_ip, enable_ping, ping_interval, collector_id in cursor:
+            mo_id = str(mo_id)
+            if not collector_id:
+                s = r.mappings.add()
+                s.source = trap_source_ip
+                s.object = mo_id
+            if enable_ping and ping_interval > 0:
+                s = r.ping.add()
+                s.address = trap_source_ip
+                s.interval = ping_interval
         # Build event filter
         for ir in IgnoreEventRules.objects.filter(is_active=True):
             i = r.ignore_rules.add()
             i.left_re = ir.left_re
             i.right_re = ir.right_re
+        logger.info("Object mappings returned")
         done(controller, response=r)
 
     def event(self, controller, request, done):
