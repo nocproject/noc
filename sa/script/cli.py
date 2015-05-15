@@ -16,6 +16,7 @@ from noc.sa.script.exception import *
 from noc.lib.text import replace_re_group
 from noc.lib.debug import format_frames, get_traceback_frames
 from noc.lib.nbsocket.exceptions import BrokenPipeError
+from noc.lib.nbsocket.basesocket import Socket
 
 
 class CLI(StreamFSM):
@@ -121,6 +122,9 @@ class CLI(StreamFSM):
             self.error_traceback = "\n".join(r)
             self.debug("CLI traceback:\n%s" % self.error_traceback)
             self.queue.put(None)  # Signal transport-level exception
+
+    def set_socket_timeout(self, ttl):
+        Socket.set_timeout(self, ttl)
 
     def guarded_read(self, data):
         """
