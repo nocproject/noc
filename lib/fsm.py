@@ -94,7 +94,7 @@ class FSM(object):
         self.call_state_handler(state, "enter")
 
     def set_timeout(self, timeout):
-        self.debug("set_timeout(%s)" % timeout)
+        self.debug("Set FSM timeout to %s" % timeout)
         self._state_exit_time = time.time() + timeout
 
         ##

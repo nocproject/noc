@@ -489,18 +489,18 @@ class Script(threading.Thread):
             with self.cancelable():
                 result = self.guarded_run()
         except self.TimeOutError:
-            self.error("Timed out")
+            self.logger.error("Timed out")
             self.e_timeout = True
         except CancelledError:
-            self.error("Cancelled")
+            self.logger.error("Cancelled")
             self.e_cancel = True
         except self.NotSupportedError:
             self.e_not_supported = True
         except self.LoginError, why:
             self.login_error = why.args[0]
-            self.error("Login failed: %s" % self.login_error)
+            self.logger.error("Login failed: %s" % self.login_error)
         except self.http.HTTPError, e:
-            self.error(str(e))
+            self.logger.error(str(e))
             self.e_http_error = str(e)
         except self.CLITransportError, why:
             self.error_traceback = why
@@ -509,9 +509,9 @@ class Script(threading.Thread):
         except:
             if self.e_cancel:
                 # Race condition caught. Handle CancelledError
-                self.error("Cancelled")
+                self.logger.error("Cancelled")
             else:
-                self.error("Unhandled exception")
+                self.logger.error("Unhandled exception")
                 t, v, tb = sys.exc_info()
                 r = [str(t), str(v)]
                 r += [format_frames(get_traceback_frames(tb))]
@@ -574,7 +574,7 @@ class Script(threading.Thread):
             except thread.error:
                 # Bug in python's Queue module:
                 # Sometimes, tries to release unacquired lock
-                self.error("Trying to release unacquired lock")
+                self.logger.error("Trying to release unacquired lock")
                 time.sleep(1)
         self.cli_wait = False
         if isinstance(r, Exception):
@@ -606,6 +606,9 @@ class Script(threading.Thread):
             else:
                 raise UnknownAccessScheme(self.access_profile.scheme)
             self.cli_provider = s_class(self)
+            if self.CLI_TIMEOUT:
+                self.logger.debug("Setting CLI timeout to %s", self.CLI_TIMEOUT)
+                self.cli_provider.set_socket_timeout(self.CLI_TIMEOUT)
             self.cli_queue_get()
             # Check provider has no flagged errors
             if self.cli_provider.error_traceback:
@@ -613,9 +616,6 @@ class Script(threading.Thread):
                     self.cli_provider.error_traceback)
             if self.cli_provider.stale:
                 raise self.TimeOutError()
-            if self.CLI_TIMEOUT:
-                self.logger.debug("Setting CLI timeout to %s", self.CLI_TIMEOUT)
-                self.cli_provider.set_timeout(self.CLI_TIMEOUT)
             self.logger.debug("CLI Provider is ready")
             # Set up session when necessary
             if (self.profile.setup_session and
@@ -904,17 +904,17 @@ class Script(threading.Thread):
         """
         # Can cancel only inside guarded_run
         if not self.is_cancelable:
-            self.error("Cannot cancel non-cancelable script")
+            self.logger.error("Cannot cancel non-cancelable script")
             return
         if not self.isAlive():
-            self.error("Trying to kill already dead thread")
+            self.logger.error("Trying to kill already dead thread")
             return
         if not self._thread_id:
-            self.error("Cannot cancel the script without thread_id")
+            self.logger.error("Cannot cancel the script without thread_id")
             return
         # When stuck in CLI, send cancel message
         if self.cli_provider and self.cli_wait:
-            self.error("Stuck in CLI. Cancelling")
+            self.logger.error("Stuck in CLI. Cancelling")
             self.cli_provider.queue.put(CancelledError())
             return
         # As last resort
@@ -935,7 +935,7 @@ class Script(threading.Thread):
             # Revert back thread state
             ctypes.pythonapi.PyThreadState_SetAsyncExc(
                 ctypes.c_long(self._thread_id), None)
-            self.error("Failed to cancel script")
+            self.logger.error("Failed to cancel script")
 
     def hang(self):
         """
