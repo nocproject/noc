@@ -483,7 +483,7 @@ class Script(threading.Thread):
 
     def run(self):
         """Script thread worker method"""
-        self.debug("Running")
+        self.logger.debug("Running")
         result = None
         try:
             with self.cancelable():
@@ -516,7 +516,7 @@ class Script(threading.Thread):
                 r = [str(t), str(v)]
                 r += [format_frames(get_traceback_frames(tb))]
                 self.error_traceback = "\n".join(r)
-                self.debug("Script traceback:\n%s" % self.error_traceback)
+                self.logger.debug("Script traceback:\n%s" % self.error_traceback)
                 if self.activator.to_save_output:
                     # Save fake result
                     self.activator.save_result(self.error_traceback)
@@ -524,18 +524,18 @@ class Script(threading.Thread):
             # Shutdown session
             if (self.cli_provider and self.profile.shutdown_session and
                     not self.activator.use_canned_session):
-                self.debug("Shutting down session")
+                self.logger.debug("Shutting down session")
                 self.profile.shutdown_session(self)
                 # Serialize result
             self.result = self.serialize_result(result)
             if self.parent is None and self.need_to_save and self.profile.command_save_config:
-                self.debug("Saving config")
+                self.logger.debug("Saving config")
                 self.cli(self.profile.command_save_config)
                 # Exit sequence
             if self.parent is None and self.cli_provider is not None and self.profile.command_exit:
-                self.debug("Exiting")
+                self.logger.debug("Exiting")
                 self.cli_provider.submit(self.profile.command_exit)
-        self.debug("Closing")
+        self.logger.debug("Closing")
         if self.activator.to_save_output and result:
             self.activator.save_result(result, self.motd)
         if self.cli_provider:
@@ -598,7 +598,7 @@ class Script(threading.Thread):
         if self.parent:
             self.cli_provider = self.parent.request_cli_provider()
         elif self.cli_provider is None:
-            self.debug("Running new provider")
+            self.logger.debug("Running new provider")
             if self.access_profile.scheme == self.TELNET:
                 s_class = CLITelnetSocket
             elif self.access_profile.scheme == self.SSH:
@@ -613,15 +613,18 @@ class Script(threading.Thread):
                     self.cli_provider.error_traceback)
             if self.cli_provider.stale:
                 raise self.TimeOutError()
-            self.debug("CLI Provider is ready")
+            if self.CLI_TIMEOUT:
+                self.logger.debug("Setting CLI timeout to %s", self.CLI_TIMEOUT)
+                self.cli_provider.set_timeout(self.CLI_TIMEOUT)
+            self.logger.debug("CLI Provider is ready")
             # Set up session when necessary
             if (self.profile.setup_session and
                 not self.activator.use_canned_session):
-                self.debug("Setting up session")
+                self.logger.debug("Setting up session")
                 self.profile.setup_session(self)
             # Disable pager when necessary
             if self.to_disable_pager:
-                self.debug("Disable paging")
+                self.logger.debug("Disable paging")
                 self.to_disable_pager = False
                 self.cli(self.profile.command_disable_pager, ignore_errors=True)
         return self.cli_provider
@@ -634,7 +637,7 @@ class Script(threading.Thread):
         if list_re is regular expression object, return a list of dicts (group name -> value),
             one dict per matched line
         """
-        self.debug("cli(%s)" % cmd)
+        self.logger.debug("cli(%s)" % cmd)
         from_cache = False
         self.cli_debug(cmd, ">")
         # Submit command
@@ -720,12 +723,12 @@ class Script(threading.Thread):
         dm += [l + "=" * max(0, 72 - len(l))]
         dm += [repr(data)]
         dm += ["=" * 72]
-        self.debug("\n".join(dm))
+        self.logger.debug("\n".join(dm))
         self.cli_debug(data, "<")
         return data
 
     def cli_stream(self, cmd, command_submit=None):
-        self.debug("cli_stream(%s)" % cmd)
+        self.logger.debug("cli_stream(%s)" % cmd)
         if command_submit is None:
             command_submit = self.profile.command_submit
         # Check CLI provider is ready
@@ -796,7 +799,7 @@ class Script(threading.Thread):
                             if nr >= 3 and cmd_stop and not stop_sent:
                                 # Stop loop at final page
                                 # After 3 repeats
-                                self.debug("Stopping stream. Sending %r" % cmd_stop)
+                                self.logger.debug("Stopping stream. Sending %r" % cmd_stop)
                                 try:
                                     stream.send(cmd_stop)
                                     stop_sent = True
@@ -805,14 +808,14 @@ class Script(threading.Thread):
                     else:
                         r_key = key
                         if cmd_next:
-                            self.debug("Next screen. Sending %r" % cmd_next)
+                            self.logger.debug("Next screen. Sending %r" % cmd_next)
                             stream.send(cmd_next)
         dm = ["cli_object_stream(%s) returns:" % cmd]
         l = "===[ %s ]" % cmd
         dm += [l + "=" * max(0, 72 - len(l))]
         dm += [repr(objects)]
         dm += ["=" * 72]
-        self.debug("\n".join(dm))
+        self.logger.debug("\n".join(dm))
         return objects
 
     def cleaned_config(self, config):
@@ -921,7 +924,7 @@ class Script(threading.Thread):
             ctypes.c_long(self._thread_id),
             ctypes.py_object(CancelledError))
         if r == 1:
-            self.debug("Cancel event sent")
+            self.logger.debug("Cancel event sent")
             # Remote exception raised.
             if self.cli_provider:
                 # Awake script thread if waiting for CLI
