@@ -64,7 +64,8 @@ class ReportRebootsApplication(SimpleReport):
             title=self.title,
             columns=[
                 "Managed Object",
-                TableColumn("Reboots", align="right", format="numeric")
+                TableColumn("Reboots", align="right",
+                            format="numeric", total="sum")
             ],
             data=data,
             enumerate=True
