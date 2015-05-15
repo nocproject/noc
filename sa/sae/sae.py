@@ -93,6 +93,10 @@ class SAE(Daemon):
         self.blocked_pools = set()  # Blocked activator names
         #
         self.default_managed_object = None
+        #
+        self.event_batch = None
+        self.batched_events = 0
+        self.prepare_event_bulk()
 
     def load_config(self):
         """
@@ -251,6 +255,10 @@ class SAE(Daemon):
         """
         t = time.time()
         reset_queries()  # Clear debug SQL log
+        if self.batched_events:
+            self.logger.debug("Writing %d batched events", self.batched_events)
+            self.event_batch.execute({"w": 0})
+            self.prepare_event_bulk()
         if t - self.last_mrtask_check >= self.mrt_schedule_interval:
             # Check Map/Reduce task status
             self.process_mrtasks()
@@ -293,14 +301,15 @@ class SAE(Daemon):
             int(time.time()),
             self.event_seq.next() & 0xFFFFFFFFL
         )
-        # Write event
-        NewEvent(
-            timestamp=timestamp,
-            managed_object=managed_object,
-            raw_vars=data,
-            log=[],
-            seq=seq
-        ).save()
+        # Batch event
+        self.event_batch.insert({
+            "timestamp": timestamp,
+            "managed_object": managed_object.id,
+            "raw_vars": data,
+            "log": [],
+            "seq": seq
+        })
+        self.batched_events += 1
 
     def on_stream_close(self, stream):
         self.streams.unregister(stream)
@@ -741,6 +750,10 @@ class SAE(Daemon):
                 if hasattr(stream, "last_status"):
                     r += [stream.last_status]
         return r
+
+    def prepare_event_bulk(self):
+        self.event_batch = NewEvent._get_collection().initialize_ordered_bulk_op()
+        self.batched_events = 0
 
     ##
     ## Signal handlers

@@ -249,7 +249,7 @@ class Service(SAEService):
             mo = None
         # Write event to database
         self.sae.write_event(
-            data=[(b.key, b.value) for b in request.body],
+            data=dict((b.key, b.value) for b in request.body),
             timestamp=datetime.datetime.fromtimestamp(request.timestamp),
             managed_object=mo
         )
