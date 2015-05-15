@@ -22,6 +22,8 @@ import struct
 from collections import defaultdict
 ## Django modules
 from django.db import reset_queries
+# Third-party modules
+from bson import Binary
 ## NOC modules
 from noc.sa.sae.service import Service
 from noc.sa.sae.sae_socket import SAESocket
@@ -296,11 +298,11 @@ class SAE(Daemon):
         # Normalize data
         data = dict((k, str(data[k])) for k in data)
         # Generate sequental number
-        seq = struct.pack(
+        seq = Binary(struct.pack(
             "!II",
             int(time.time()),
             self.event_seq.next() & 0xFFFFFFFFL
-        )
+        ))
         # Batch event
         self.event_batch.insert({
             "timestamp": timestamp,
