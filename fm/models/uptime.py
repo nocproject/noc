@@ -10,8 +10,9 @@
 import datetime
 import logging
 ## NOC modules
-from noc.lib.nosql import (Document, IntField, DateTimeField)
+from noc.lib.nosql import (Document, IntField, DateTimeField, FloatField)
 from reboot import Reboot
+from noc.lib.dateutils import total_seconds
 
 logger = logging.getLogger(__name__)
 
@@ -26,13 +27,28 @@ class Uptime(Document):
     start = DateTimeField()
     stop = DateTimeField()  # None for active uptime
     last = DateTimeField()  # Last update
+    last_value = FloatField()  # Last registred value
 
-    EPSILON = datetime.timedelta(seconds=3)
     SEC = datetime.timedelta(seconds=1)
-    WRAP = datetime.timedelta(seconds=float((1 << 32) - 1) / 100.0)
+    FWRAP = float((1 << 32) - 1) / 100.0
+    WRAP = datetime.timedelta(seconds=FWRAP)
+    WPREC = 0.1  # Wrap precision
 
     def __unicode__(self):
         return u"%d" % self.object
+
+    @classmethod
+    def is_reboot(cls, old_uptime, new_uptime):
+        """
+        Returns true if reboot detected
+        :param old_uptime:
+        :param new_uptime:
+        :return:
+        """
+        if old_uptime > new_uptime:
+            # Check for counter wrap
+            return True
+        return False
 
     @classmethod
     def register(cls, managed_object, uptime):
@@ -55,17 +71,26 @@ class Uptime(Document):
             "stop": None
         })
         if d:
-            r_uptime = now - d["start"]
-            while r_uptime >= cls.WRAP:
-                r_uptime -= cls.WRAP
-            if r_uptime - delta > cls.EPSILON:
+            # Check for reboot
+            is_rebooted = False
+            if d["last_value"] > uptime:
+                # Check for counter wrapping
+                # Get wrapped delta
+                dl = cls.FWRAP - d["last_value"] + uptime
+                # Get timestamp delta
+                tsd = total_seconds(now - d["last"])
+                if abs(dl - tsd) > tsd * cls.WPREC:
+                    is_rebooted = True
+                else:
+                    logger.debug("Counter wrap detected")
+            if is_rebooted:
                 # Reboot registered
                 # Closing existing uptime
                 ts = now - delta
                 logger.debug("[%s] Closing uptime (%s - %s, delta %s)",
                              managed_object.name,
                              d["start"], ts - cls.SEC,
-                             r_uptime - delta)
+                             delta)
                 c.update(
                     {"_id": d["_id"]},
                     {
@@ -81,7 +106,8 @@ class Uptime(Document):
                     "object": oid,
                     "start": ts,
                     "stop": None,
-                    "last": now
+                    "last": now,
+                    "last_value": uptime
                 })
                 #
                 Reboot.register(managed_object, ts, d["last"])
@@ -95,7 +121,8 @@ class Uptime(Document):
                     {"_id": d["_id"]},
                     {
                         "$set": {
-                            "last": now
+                            "last": now,
+                            "last_value": uptime
                         }
                     }
                 )
@@ -107,5 +134,6 @@ class Uptime(Document):
                 "object": oid,
                 "start": now - delta,
                 "stop": None,
-                "last": now
+                "last": now,
+                "last_value": uptime
             })
