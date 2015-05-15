@@ -258,7 +258,7 @@ class SAE(Daemon):
         t = time.time()
         reset_queries()  # Clear debug SQL log
         if self.batched_events:
-            self.logger.debug("Writing %d batched events", self.batched_events)
+            self.logger.info("Writing %d batched events", self.batched_events)
             self.event_batch.execute({"w": 0})
             self.prepare_event_bulk()
         if t - self.last_mrtask_check >= self.mrt_schedule_interval:
@@ -296,7 +296,10 @@ class SAE(Daemon):
             and data["source"] == "syslog" and "severity" in data):
             del data["severity"]
         # Normalize data
-        data = dict((k, str(data[k])) for k in data)
+        data = dict(
+            (str(k).replace(".", "__").replace("$", "^^"), str(data[k]))
+            for k in data
+        )
         # Generate sequental number
         seq = Binary(struct.pack(
             "!II",
