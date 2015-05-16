@@ -27,7 +27,10 @@ class ActiveEvent(document.Document):
     meta = {
         "collection": "noc.events.active",
         "allow_inheritance": False,
-        "indexes": ["timestamp", "discriminator", "alarms"]
+        "indexes": [
+            "timestamp", "discriminator", "alarms",
+            ("timestamp", "event_class", "managed_object")
+        ]
     }
     status = "A"
     # Fields
