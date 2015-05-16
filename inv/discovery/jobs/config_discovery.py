@@ -14,6 +14,7 @@ from noc.settings import config
 class ConfigDiscoveryJob(MODiscoveryJob):
     name = "config_discovery"
     map_task = "get_config"
+    threaded = True
 
     ignored = not config.getboolean("config_discovery", "enabled")
     to_save = config.getboolean("config_discovery", "save")
