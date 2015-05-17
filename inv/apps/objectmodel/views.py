@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## inv.objectmodel application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -24,7 +24,13 @@ class ObjectModelApplication(ExtDocApplication):
     model = ObjectModel
     parent_model = DocCategory
     parent_field = "parent"
-    query_fields = ["name__icontains", "description__icontains"]
+    query_fields = [
+        "name__icontains",
+        "description__icontains",
+        "data__asset__part_no",
+        "data__asset__order_part_no",
+        "uuid"
+    ]
 
     def clean(self, data):
         if "data" in data:
