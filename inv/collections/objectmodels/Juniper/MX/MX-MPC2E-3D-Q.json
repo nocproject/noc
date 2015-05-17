@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "b30de1db-7ada-4c64-9fc3-1fd1141be263",
     "vendor__code": "JUNIPER",
-    "description": "MX-MPC2E-3D -Q  ÃÂ¿ÃÂ¾ÃÂ´ÃÂ´ÃÂµÃÂÃÂ¶ÃÂºÃÂ¾ÃÂ¹ ÃÂ¾ÃÂÃÂµÃÂÃÂµÃÂ´ÃÂµÃÂ¹ HQoS per IFL 256k",
+    "description": "2xTrio Chipset Enhanced MPC. Per-IFL HQoS 256k queues (maximum 128k egress).",
     "connection_rule__name": "Juniper | MX",
     "cr_context": "FPC",
     "connections": [
