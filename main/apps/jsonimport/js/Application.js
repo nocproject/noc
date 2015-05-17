@@ -11,8 +11,6 @@ Ext.define("NOC.main.jsonimport.Application", {
     requires: [
         "NOC.core.CMText"
     ],
-    layout: "anchor",
-    anchor: "0,0",
     initComponent: function() {
         var me = this;
 
@@ -26,13 +24,15 @@ Ext.define("NOC.main.jsonimport.Application", {
         });
 
         me.jsonField = Ext.create("NOC.core.CMText", {
-            anchor: "0,0",
-            allowBlank: false
+            allowBlank: false,
+            flex: 1
         });
 
         me.form = Ext.create("Ext.form.Panel", {
-            layout: "anchor",
-            anchor: "0,0",
+            layout: {
+                type: "vbox",
+                align: "stretch"
+            },
             items: [
                 me.jsonField
             ],
