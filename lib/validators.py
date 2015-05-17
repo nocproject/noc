@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import re
+import uuid
 try:
     from django.forms import ValidationError
 except:  # pragma: no cover
@@ -415,6 +416,19 @@ def is_mimetype(v):
     False
     """
     return rx_mimetype.match(v) is not None
+
+
+def is_uuid(v):
+    """
+    Check value is UUID
+    :param v:
+    :return:
+    """
+    try:
+        uuid.UUID(v)
+        return True
+    except ValueError:
+        return False
 
 
 def is_objectid(v):
