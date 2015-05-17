@@ -1,0 +1,39 @@
+{
+    "name": "Finisar | Transceiver | 1G | FTRJ1519P1xCL",
+    "$collection": "inv.objectmodels",
+    "uuid": "cd43843e-c3b5-4754-8190-63bc8ed94077",
+    "vendor__code": "FINISAR",
+    "description": "1000BASE-ZX 2Gb/s Fibre Channel Long-Wavelength SFP Transceiver 80 km.\n",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1GBASEZX-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1GBASEZX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FTRJ1519P1BCL-C1"]
+        }
+    }
+}

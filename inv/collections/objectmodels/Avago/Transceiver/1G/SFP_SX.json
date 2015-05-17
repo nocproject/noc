@@ -1,0 +1,39 @@
+{
+    "name": "Avago | Transceiver | 1G | SFP SX",
+    "$collection": "inv.objectmodels",
+    "uuid": "85db8da9-21db-4856-95ee-4f592f68c6e5",
+    "vendor__code": "AVAGO",
+    "description": "1000BASE-SX SFP transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1GBASESX"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1GBASESX"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFBR-5766PZ-CS2"]
+        }
+    }
+}

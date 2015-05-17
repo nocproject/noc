@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | Transceiver | 10G | XFP10GER-192IR-L",
+    "$collection": "inv.objectmodels",
+    "uuid": "772721e0-cb68-45df-94ce-c7ece99068be",
+    "vendor__code": "CISCO",
+    "description": "Cisco Multirate 10GBASE-ER/-EW and OC-192/STM-64 IR-2 XFP Module for SMF, low power (2.5W)",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASEER-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASEER-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["XFP10GER-192IR-L"]
+        }
+    }
+}
