@@ -1,5 +1,5 @@
 {
-    "name": "DLink | DxS | Network | IMPB | Unauthenticated IP-MAC (SYSLOG)",
+    "name": "DLink | DxS | Network | IMPB | Unauthenticated IP-MAC #1 (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
     "uuid": "097f0b3f-c6f0-4f65-89d3-7e4f4293fca5",
     "description": "WARN: Unauthenticated IP-MAC address and discarded by ip mac port binding (IP: 172.16.1.49, MAC: 00-E0-52-85-91-56, Port: 12)",
