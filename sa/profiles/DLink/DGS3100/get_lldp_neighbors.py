@@ -23,7 +23,7 @@ class Script(NOCScript):
     name = "DLink.DGS3100.get_lldp_neighbors"
     implements = [IGetLLDPNeighbors]
 
-    rx_line = re.compile(r"\n\nPort ID\s+:\s+", re.MULTILINE)
+    rx_line = re.compile(r"\n\n\s*Port ID\s+:\s+", re.MULTILINE)
     rx_id = re.compile(r"^(?P<port_id>\S+)", re.MULTILINE)
     rx_re_ent = re.compile(
         r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)", re.IGNORECASE)
