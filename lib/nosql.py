@@ -246,9 +246,14 @@ class ForeignKeyField(BaseField):
         if not self.name:
             return
         doc = self.owner_document
-        if doc.objects.filter(**{self.name: instance.id}).first() is not None:
-            raise IntegrityError("%r object is referenced from %r" % (instance,
-                                                                      doc))
+        if hasattr(doc, "objects"):
+            if doc.objects.filter(**{self.name: instance.id}).first() is not None:
+                raise IntegrityError(
+                    "%r object is referenced from %r" % (instance,
+                                                         doc)
+                )
+        else:
+            pass  # Embedded Document
 
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
