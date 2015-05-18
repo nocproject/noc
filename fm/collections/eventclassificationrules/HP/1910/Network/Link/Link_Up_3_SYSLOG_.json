@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | Network | Link | Link Up #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "53744266-4ee2-4420-b174-506ddf649cce",
+    "description": "Feb 11 12:39:20 2013 Teh %%10IFNET/3/LINK_UPDOWN(l): GigabitEthernet1/0/7 link status is UP.",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%10IFNET/3/LINK_UPDOWN\\(l\\): (?P<interface>\\S+) link status is UP\\.$"
+        }
+    ]
+}
