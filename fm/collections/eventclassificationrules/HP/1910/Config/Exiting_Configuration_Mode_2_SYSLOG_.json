@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | Config | Exiting Configuration Mode #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "842d7c3f-7833-40a4-a9b1-8f5ac88d3131",
+    "description": "Feb 11 16:25:10 2013 Teh %%10CFGMAN/5/CFGMAN_EXIT(l): Exit from configuration mode.",
+    "event_class__name": "Config | Exiting Configuration Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%10CFGMAN/5/CFGMAN_EXIT\\(l\\): Exit from configuration mode\\.$"
+        }
+    ]
+}

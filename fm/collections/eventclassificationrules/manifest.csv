@@ -684,6 +684,73 @@ HP | 1905 | Security | Authentication | Login (SYSLOG),f696b44a-831c-40fc-ae26-6
 HP | 1905 | Security | Authentication | Logout (SYSLOG),50be49d3-0f6c-439c-93c4-1b503570456c,HP/1905/Security/Authentication/Logout_SYSLOG_.json,08158e06afc7605329e12eb625a3d2c2f2a15e2fcf5e7f43c036e30a92d6beac
 HP | 1905 | Unknown | Ignore #1 (SYSLOG),5a3aae4a-c246-4a25-a8bf-f46afca3923c,HP/1905/Unknown/Ignore_1_SYSLOG_.json,71abae432c1ce631a03396c892d813b9ba887d17f902157117ac3b7a2a0ea339
 HP | 1905 | Unknown | Ignore #2 (SYSLOG),d5f9defc-3167-4e7c-a9f2-216fb43f352c,HP/1905/Unknown/Ignore_2_SYSLOG_.json,de1de517fb767b2deba8b170de20255585542d649fe8bf793724fc2e0e755330
+HP | 1910 | Config | Config Changed #1 (SYSLOG),a4ebd2ad-e18c-4328-ac9f-83da395f7702,HP/1910/Config/Config_Changed_1_SYSLOG_.json,26f47d05c809b3a7f724fa7ffc94491e25cfbb3cfe303b9c8a738ca6916b2f0b
+HP | 1910 | Config | Config Changed #2 (SYSLOG),995e356c-fe6e-4606-a980-2bddddf30f69,HP/1910/Config/Config_Changed_2_SYSLOG_.json,b9395b2382a048c6a4816e7c9ccc7a16928518d597b924cb9de5268ef8c2fa58
+HP | 1910 | Config | Config Synced (SYSLOG),1954d770-ac4d-45a4-91be-e602a48aa73b,HP/1910/Config/Config_Synced_SYSLOG_.json,9947410ab83b6567e9528a540fac344e88dcb017eb805090ae4506736260b623
+HP | 1910 | Config | Exiting Configuration Mode #1 (SYSLOG),38c6a48b-3ce3-43d0-95c3-fde2798d4de7,HP/1910/Config/Exiting_Configuration_Mode_1_SYSLOG_.json,088db4fb3b894a0dd87bdf72d1f88166cce4f7fc3b646fa8b2a6c68d288facab
+HP | 1910 | Config | Exiting Configuration Mode #2 (SYSLOG),842d7c3f-7833-40a4-a9b1-8f5ac88d3131,HP/1910/Config/Exiting_Configuration_Mode_2_SYSLOG_.json,e87102fccd7309f7060a9a75de4e06e7424ef4691b037ab7cceeda850ec2a116
+HP | 1910 | Network | LAG | Bundle (SYSLOG),57b77b2a-b26f-4976-8953-deb918fbee0e,HP/1910/Network/LAG/Bundle_SYSLOG_.json,f8fd8991d7fac8057ed93f857f0452c8b1932f10d4fb14c2935683f6ffd5f4de
+HP | 1910 | Network | LAG | Unbundle (SYSLOG),6ddae6c1-3fe3-4b2b-9029-50b3a99b0eeb,HP/1910/Network/LAG/Unbundle_SYSLOG_.json,ef023cb0f73c43699bf5a6f29f3bcbce340880c518d0d4af51839390862f83f8
+HP | 1910 | Network | LLDP | Created New Neighbor (SYSLOG),fd6a0844-0a88-4860-99d6-838ebc534dbd,HP/1910/Network/LLDP/Created_New_Neighbor_SYSLOG_.json,27ae0df0062f420b1f360619e236d64bec3486b422a8e9293851f0b43958e096
+HP | 1910 | Network | LLDP | LLDP Aged Out #1 (SYSLOG),39bfedc0-15c7-4222-92b3-22ee13c8c5ec,HP/1910/Network/LLDP/LLDP_Aged_Out_1_SYSLOG_.json,efabb8d8e8219f5db3258c65bc58adb252427c2ae5d8c813e2a3d1b199460910
+HP | 1910 | Network | LLDP | LLDP Aged Out #2  (SYSLOG),4cdfaea3-0a25-45e3-8246-6ae8f1293b41,HP/1910/Network/LLDP/LLDP_Aged_Out_2_SYSLOG_.json,cbee49b76662eaef32e1401772b1f079b7397fd154f808a7dfb190c9df767614
+HP | 1910 | Network | LLDP | Remote Tables Change (SYSLOG),2329c6eb-5ee1-4c1b-94c4-eff32b964718,HP/1910/Network/LLDP/Remote_Tables_Change_SYSLOG_.json,4defcac7726cd726766a9d688f61f8be5bba477cfeae0eccb4a19e1d448ca9f0
+HP | 1910 | Network | Link | Link Down #1 (SYSLOG),6f40b4d7-a9d4-4972-95fb-2d44ca6079d4,HP/1910/Network/Link/Link_Down_1_SYSLOG_.json,c01cb425f4c55ee9c23da892e44883035c96c03f18db0e0e1f79ee02ec838255
+HP | 1910 | Network | Link | Link Down #2 (SYSLOG),54a5539b-b067-4cec-8b99-857b0757e34d,HP/1910/Network/Link/Link_Down_2_SYSLOG_.json,837c66ac531a4eff14f02286cb722286113af46b533e3a1101b7fe5daa8c81ed
+HP | 1910 | Network | Link | Link Down #3 (SYSLOG),da3cbc59-8ff0-40a8-aab6-d506ff7ff025,HP/1910/Network/Link/Link_Down_3_SYSLOG_.json,8a020bcdef5b56b1dd0024a54e0924397701497f0441ab0538f13ac5c7e6fb5e
+HP | 1910 | Network | Link | Link Down (SNMP),57b015bd-87ea-4805-a2fc-29542acfd9f4,HP/1910/Network/Link/Link_Down_SNMP_.json,b58521bce8a660aa53d6e8635488fa825bcbf77f9eec4dd01794a1d1c62818e4
+HP | 1910 | Network | Link | Link Up #1 (SYSLOG),25920ef7-2579-4ab1-9577-3b67eb299919,HP/1910/Network/Link/Link_Up_1_SYSLOG_.json,2add6737366fa35feb1069c9f7dc2988bd1bbd5907e33938b11b4f47ffda7333
+HP | 1910 | Network | Link | Link Up #2 (SYSLOG),6e763a97-d5b9-4118-a7f5-88b4ae9a0933,HP/1910/Network/Link/Link_Up_2_SYSLOG_.json,d178d53acfc61c2f3d80d435a367c6823618aedf9e8150770da1b58d3e974998
+HP | 1910 | Network | Link | Link Up #3 (SYSLOG),53744266-4ee2-4420-b174-506ddf649cce,HP/1910/Network/Link/Link_Up_3_SYSLOG_.json,d54a0b2c76ed793ded7d00cc32eb9e57164c967b2fd6145779c06a6718981f0f
+HP | 1910 | Network | Link | Link Up #4 (SYSLOG),db2e938e-7e99-475f-b45a-0cdfc9a47a6b,HP/1910/Network/Link/Link_Up_4_SYSLOG_.json,e1607c740bb237c31f63cd149868435e234c64c49d8da84a6627052998f00455
+HP | 1910 | Network | Link | Link Up (SNMP),6ba4884b-2e43-4830-8e33-04a3967474e9,HP/1910/Network/Link/Link_Up_SNMP_.json,acff44278f364f6930d2bb40072cead05a370cd30dfb88ed50a2664a3b9486df
+HP | 1910 | Network | NTP | System Clock Synchronized (SYSLOG),f6c3d652-1cd8-4068-a0cb-779187e20b62,HP/1910/Network/NTP/System_Clock_Synchronized_SYSLOG_.json,dd8cc2191bcb8310c934f873e6bce59ba21987bb650b17d2031fc6beb52f81c6
+HP | 1910 | Network | STP | Topology Changed (SYSLOG),2bd19da8-31ad-4bee-9001-5c8df16bec7e,HP/1910/Network/STP/Topology_Changed_SYSLOG_.json,b8d55fed57ed42005d0297f8ca904a55e21c9bac1032ae513ddbfe43d69c7f06
+HP | 1910 | Network | VLAN | VLAN Created (SYSLOG),2b888023-b71a-471b-9233-b5e748144cdd,HP/1910/Network/VLAN/VLAN_Created_SYSLOG_.json,31483bc042451807fce3f2c529cb14ef5f319923caf8046228dc28147f88e245
+HP | 1910 | Security | Audit | Command #1 (SYSLOG),e1e3e927-5dcd-4812-91a9-8cf63cd674ba,HP/1910/Security/Audit/Command_1_SYSLOG_.json,3e1b38e0f424ad2a5f99acfa4c5131e283b76abbda950c9f7e0926cac9cefd3d
+HP | 1910 | Security | Audit | Command #2 (SYSLOG),0a09e4c0-9c1c-4d5a-82c2-cbeb7cb5068b,HP/1910/Security/Audit/Command_2_SYSLOG_.json,f2538ca2e6cb09f54f0230c85de7599d6280dd0cabe22980e762083826553853
+HP | 1910 | Security | Authentication | Login #1 (SYSLOG),a65b1e31-9440-43d5-aa22-8d596e0f6650,HP/1910/Security/Authentication/Login_1_SYSLOG_.json,ce29d3cb1a850573d977b768d92eb71ed359c2f26c213113654e091762085ea1
+HP | 1910 | Security | Authentication | Login #2 (SYSLOG),74b3df40-4385-4b4f-a142-0c0ee210ab24,HP/1910/Security/Authentication/Login_2_SYSLOG_.json,5cfc6b583a0f8bac1689178c556493b0d3a2fee422d0c5a5b37d2a8a1bd5b273
+HP | 1910 | Security | Authentication | Login #3 (SYSLOG),70e97a16-cd1f-4691-9859-32fea368a754,HP/1910/Security/Authentication/Login_3_SYSLOG_.json,a9dd0b4545c1763187164c7d057436cf14196a312ce05ddd7c817ea8268995c9
+HP | 1910 | Security | Authentication | Login (SNMP),92b35a58-7406-41a9-bf8d-777c97d7edba,HP/1910/Security/Authentication/Login_SNMP_.json,0270bac27c61a836179861ca361be30a1bd68e76fb38d68340fa4daac7116e18
+HP | 1910 | Security | Authentication | Login Failed #1 (SYSLOG),d3a2f76f-3bbf-4d84-a7cc-610d8d06fc06,HP/1910/Security/Authentication/Login_Failed_1_SYSLOG_.json,96cd4e766ac2703d863fee58a54acb43078add7e0a73781aa894665058aefaac
+HP | 1910 | Security | Authentication | Login Failed #2 (SYSLOG),69d82846-e3b7-4c14-bf57-93afc7bf33cf,HP/1910/Security/Authentication/Login_Failed_2_SYSLOG_.json,46937918463c93228f8c4f40f0b1982d2e6dd3dd1d345284f4e6de7b4a5863ba
+HP | 1910 | Security | Authentication | Login Failed #3 (SYSLOG),9d80c4d4-ec5d-4995-a634-d19fb502df9a,HP/1910/Security/Authentication/Login_Failed_3_SYSLOG_.json,5743fea0c2b9e9faf7b647932d41771b82de17afb4006d4c43abdb20c007b92e
+HP | 1910 | Security | Authentication | Login Failed (SNMP),002a7370-8f1b-472a-b2b8-5a9e42387d5a,HP/1910/Security/Authentication/Login_Failed_SNMP_.json,bb0ab4cc66ef2bef0a61cbf2fbaeffbc2e93de21e166e040fd718493d7b7b00d
+HP | 1910 | Security | Authentication | Logout #1 (SYSLOG),2970cb6f-4505-4689-91c2-f6db77222a8c,HP/1910/Security/Authentication/Logout_1_SYSLOG_.json,5bb4dcab9b74772538aded1db814779a098a550b7a5c3d13b8df1be316f9ae6f
+HP | 1910 | Security | Authentication | Logout #2 (SYSLOG),038c5046-64e0-4fdb-9374-9376143bb692,HP/1910/Security/Authentication/Logout_2_SYSLOG_.json,acdf97c9521d21c1b13a11453e3cec141c22ec907719e972577fb88c3bac28b3
+HP | 1910 | Security | Authentication | Logout (SNMP),6c6ea076-8e18-4c5d-bd4f-181b347bdac4,HP/1910/Security/Authentication/Logout_SNMP_.json,4ebd8ebde20e59a13f217bba6b284895f46c2d2574f2e760aedf2d03b4073e93
+HP | 1910 | Security | Authentication | Privilege Level Changed (SYSLOG),efbc24ed-bd8b-420f-8af8-c596e89e6d61,HP/1910/Security/Authentication/Privilege_Level_Changed_SYSLOG_.json,e8bd77137733038829f9f83cc76f9113cea4fbd5e3f6b6701444ab178b672dc8
+HP | 1910 | System | Started (SYSLOG),5992a995-b3e5-493f-8280-e996c534531b,HP/1910/System/Started_SYSLOG_.json,c0ec744c5420d5b03a73a8cda4aa8f6b02cfa0e7b91877af0494d74f12146ac8
+HP | 1910 | Unknown | Ignore #1 (SYSLOG),1ff44a4d-ac11-44f8-bd25-d87be51f7bdb,HP/1910/Unknown/Ignore_1_SYSLOG_.json,6fac19e349caf088033b47225430766b8002131d19939137e045c4ea176d215e
+HP | 1910 | Unknown | Ignore #10 (SYSLOG),e01a0abf-4b5d-42a5-af7b-6f39724d31e5,HP/1910/Unknown/Ignore_10_SYSLOG_.json,c7579414f852072c8d5217778c794f651acd470d265e5052fe9977eb5d255f4f
+HP | 1910 | Unknown | Ignore #11 (SYSLOG),3bafbec5-c87e-460f-8f3f-a9069079803b,HP/1910/Unknown/Ignore_11_SYSLOG_.json,b8e7322aee1fa07ad3ef9a3a00d777840a8d58d70c3cf7f064370ffe936d4900
+HP | 1910 | Unknown | Ignore #12 (SYSLOG),649fbf81-c14e-4b81-9e12-196039095b02,HP/1910/Unknown/Ignore_12_SYSLOG_.json,97e193a7acf69527b0491c8b61ffc1fe679f1dcb0a32a96eea3e68ddc3ee25a3
+HP | 1910 | Unknown | Ignore #13 (SYSLOG),dc8789a3-001c-4516-9794-abeda66b4f7a,HP/1910/Unknown/Ignore_13_SYSLOG_.json,1946afa53f73a78ade47d34b7d0c7e0db18bcda841679a5d752ddf70918c0637
+HP | 1910 | Unknown | Ignore #14 (SYSLOG),e694e6ef-7a44-44c6-92dd-00d675605f14,HP/1910/Unknown/Ignore_14_SYSLOG_.json,4a5a0bcf2f5f7cda386dcc8d1d491089f26c422148ee3c39e40f1bbd72cf2f70
+HP | 1910 | Unknown | Ignore #15 (SYSLOG),96a3c2b7-2765-4ddd-a0a9-9ee5ab467bc2,HP/1910/Unknown/Ignore_15_SYSLOG_.json,5e2e3af63a616d0965b397dd5850bc8e5be7b18a2f9013d0e91933def28400d4
+HP | 1910 | Unknown | Ignore #16 (SYSLOG),ed27c647-043f-4cef-a411-6efc35f9673c,HP/1910/Unknown/Ignore_16_SYSLOG_.json,0c9d7da8900ecb2fb4a643c1fd8e067cbc18792f7838b6f9858c91cab93c7169
+HP | 1910 | Unknown | Ignore #18 (SYSLOG),f5cc5ff3-fca0-4962-a733-44121deabf45,HP/1910/Unknown/Ignore_18_SYSLOG_.json,fe0b143652d02422f8a26e4c2a5c30de2117d3afc9d91caf8f69e1bb06c40756
+HP | 1910 | Unknown | Ignore #19 (SYSLOG),09566e60-c65e-4bd4-8f1d-f249cdf9de37,HP/1910/Unknown/Ignore_19_SYSLOG_.json,072b99c3ec57178ddebc1b066f2c5c15747399bfbe8b1672f38e9f4bf0492f01
+HP | 1910 | Unknown | Ignore #2 (SYSLOG),6eeec66a-49a2-469c-8b26-e50705816e7b,HP/1910/Unknown/Ignore_2_SYSLOG_.json,8a78de07a99cd81192fcbb12bb17658a4cbe67c9932e266ef42787e286b114ab
+HP | 1910 | Unknown | Ignore #20 (SYSLOG),5dd1947a-113a-4f09-977a-c4a71902a0cc,HP/1910/Unknown/Ignore_20_SYSLOG_.json,85a571940a02aa2e316755575a22562560aa98fd81a52c5668193f057baf9124
+HP | 1910 | Unknown | Ignore #22 (SYSLOG),9691c08a-af50-4afd-939d-9a2a3108f132,HP/1910/Unknown/Ignore_22_SYSLOG_.json,890ad373b3fe65e96b51c59077444d5976cba28dd8547aafc2ad3a4f41945a30
+HP | 1910 | Unknown | Ignore #23 (SYSLOG),a259d2f8-6825-4d63-8ff7-fb62ddb89d7c,HP/1910/Unknown/Ignore_23_SYSLOG_.json,5451830a2dce054fb40964e17143657565b425fb5a349fe9d78eb7ad34dd4c1a
+HP | 1910 | Unknown | Ignore #27 (SYSLOG),f8a6838d-2049-4181-948e-6365aaf97ca1,HP/1910/Unknown/Ignore_27_SYSLOG_.json,3cab2a633971928fc1da9df0987fb83ab92e2e656a1bfebd8f48c0d8a3d34158
+HP | 1910 | Unknown | Ignore #28 (SYSLOG),b52a10de-ce73-41e2-9cb6-82aeb9978c82,HP/1910/Unknown/Ignore_28_SYSLOG_.json,7debfa3d5bf074e031ebbfe051298842cf63bf2d9941be1b10032f3dd116b075
+HP | 1910 | Unknown | Ignore #29 (SYSLOG),f92c3477-6196-4a9e-8c29-8afb7b526bb7,HP/1910/Unknown/Ignore_29_SYSLOG_.json,5949dfbf40b1a66b4582199cf96985fbc2e17348d1fd396b349c5b5f71b29de8
+HP | 1910 | Unknown | Ignore #3 (SYSLOG),70c786ab-a4bf-446e-8fa5-fa526f2c89b6,HP/1910/Unknown/Ignore_3_SYSLOG_.json,f070470b2e6f2c748a85550727ce0ce508ad8330a630c013c4d978d1cbab24fa
+HP | 1910 | Unknown | Ignore #4  (SYSLOG),1a0abd3b-5f49-4882-b2eb-c7550803535a,HP/1910/Unknown/Ignore_4_SYSLOG_.json,c5bd36d20e25a785b1aba6b22f33558ad09368b3d1e776180c585b98b88e5dff
+HP | 1910 | Unknown | Ignore #5 (SYSLOG),dba665fb-1c9c-408d-ad0d-dfd7dae46f36,HP/1910/Unknown/Ignore_5_SYSLOG_.json,f4120ddc9d4a6b342bb92f2f4bb7c48124dda2fb732df2ab6a8505abb8ace1ad
+HP | 1910 | Unknown | Ignore #6 (SYSLOG),9b0f8d64-a8a9-4cd2-86bc-f075d1b4dabe,HP/1910/Unknown/Ignore_6_SYSLOG_.json,9a1de5f5ae379c76b8935ddcbb36fbdb9c81ba5e2bfee7a1cfe2c55a499ab2f3
+HP | 1910 | Unknown | Ignore #7 (SYSLOG),d65379a4-aa56-40b1-a2d7-bc1bcebf57c4,HP/1910/Unknown/Ignore_7_SYSLOG_.json,caaea6506520fd53f52283fb8b4a967c7b11117a493fb72c0dce1b2fa81ec799
+HP | 1910 | Unknown | Ignore #8 (SYSLOG),5e8c5610-5322-4c15-89c0-297808d719dc,HP/1910/Unknown/Ignore_8_SYSLOG_.json,14013945b1533653d09a7645454762f3e7fbbe9ee7a97b762c99976e16192d40
+HP | 1910 | Unknown | Ignore #9 (SYSLOG),48fd5a65-d2b3-4a6e-a761-41c64994779d,HP/1910/Unknown/Ignore_9_SYSLOG_.json,480bbc80be99526271b6d3d8d749325b7030b133b528eedafcf10738ece5b824
+HP | 1910 | Unknown | Syslog #17 (SYSLOG),e105f72b-42c8-499a-a164-5f0ed73a23f9,HP/1910/Unknown/Syslog_17_SYSLOG_.json,500d689873d69ddbcb651e585528f7e673638208bb42d69bd705663f47b2e63a
+HP | 1910 | Unknown | Syslog #21 (SYSLOG),2c7d8b49-cf55-4e84-a927-ca162a989284,HP/1910/Unknown/Syslog_21_SYSLOG_.json,a9464a5c5f3447d4d7a46b08bfc5e476db18c9d1925bad22af2b541315485e10
+HP | 1910 | Unknown | Syslog #24 (SYSLOG),c85c4e87-9c91-4c3b-944c-a1ce05f44fb2,HP/1910/Unknown/Syslog_24_SYSLOG_.json,fd3253e608f6a6e4a42552b45586cf2f3170b1e813c824cece594e54e82e11fd
+HP | 1910 | Unknown | Syslog #25 (SYSLOG),f20b748e-b3ad-4e00-90a3-5b574392f3c4,HP/1910/Unknown/Syslog_25_SYSLOG_.json,05985e2a76760879dd3bc31981b86387aa7653b0c154acd6103cbc3ebc0160b8
+HP | 1910 | Unknown | Syslog #26 (SYSLOG),e8de9bdb-eda9-4b5b-8cab-1308b189dced,HP/1910/Unknown/Syslog_26_SYSLOG_.json,4f6b1a4072fb340927826ceeb2dde3fb9f7c615d8840cd03ee9090ebf969d99d
 HP | ProCurve | Network | Link | Connection Problem (SYSLOG),c6994c4d-7758-4e7d-a1b9-475ae0353125,HP/ProCurve/Network/Link/Connection_Problem_SYSLOG_.json,fe741e8f18c16ab0aff343ef05451877a60b8d2deb1308c753d258228f0067ab
 HP | ProCurve | Security | Authentication | 802.1x failed (SYSLOG),9d2a8907-0b89-4e5c-a0a0-2410e25b762c,HP/ProCurve/Security/Authentication/802_1x_failed_SYSLOG_.json,aca603a2a948209d355c2a34f2ca209d5399ad61c8e7f08dfb34428b371ba090
 HP | ProCurve | Security | Authentication | RADIUS server failed (SYSLOG),12f4d775-0a00-46f2-9b5e-5f75d14708b3,HP/ProCurve/Security/Authentication/RADIUS_server_failed_SYSLOG_.json,8c741d6bb0c78c8de75b3519927a2d2ca01a8b7c818328367dec7c25e9f03a9e
