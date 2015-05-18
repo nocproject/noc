@@ -53,7 +53,7 @@ class ReportRebootsApplication(SimpleReport):
                 SELECT id, name
                 FROM sa_managedobject
                 WHERE id IN (%s)""" % ", ".join(chunk))
-            mo_names = dict(cursor)
+            mo_names.update(dict(cursor))
         #
         data = [
             (mo_names.get(x["_id"], "---"), x["count"])
