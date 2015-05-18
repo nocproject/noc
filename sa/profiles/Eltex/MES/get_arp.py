@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Eltex.MES.get_arp
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -19,11 +19,12 @@ class Script(noc.sa.script.Script):
     cache = True
 
     rx_line = re.compile(
-        r"^vlan\s+\d+\s+(?P<interface>\S+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+\S+",
+        r"^vlan\s+\d+\s+(?P<interface>\S+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(dynamic|static)\s*$",
         re.MULTILINE)
 
     def execute(self):
         r = []
+        """
         # Try SNMP first
         if self.snmp and self.access_profile.snmp_ro:
             try:
@@ -31,7 +32,7 @@ class Script(noc.sa.script.Script):
                     ["1.3.6.1.2.1.4.22.1.1", "1.3.6.1.2.1.4.22.1.2",
                     "1.3.6.1.2.1.4.22.1.3"], bulk=True):
                     iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + v[1],
-                        cached=True)  # IF-MIB
+                        cached=True)  # Vlan ID, not interface name!!!
                     mac = ":".join(["%02x" % ord(c) for c in v[2]])
                     ip = ["%02x" % ord(c) for c in v[3]]
                     ip = ".".join(str(int(c, 16)) for c in ip)
@@ -42,6 +43,7 @@ class Script(noc.sa.script.Script):
                 return r
             except self.snmp.TimeOutError:
                 pass
+        """
 
         # Fallback to CLI
         for match in self.rx_line.finditer(self.cli("show arp", cached=True)):

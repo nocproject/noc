@@ -21,7 +21,7 @@ class Profile(NOCProfile):
         (r"^More: <space>,  Quit: q, One line: <return>$", " "),
         (r"\[Yes/press any key for no\]", "Y")
         ]
-    pattern_unpriveleged_prompt = r"^\S+>"
+    pattern_unpriveleged_prompt = r"^\S+> "
     pattern_syntax_error = r"^% (Unrecognized command|Incomplete command|Wrong number of parameters or invalid range, size or characters entered)$"
     command_disable_pager = "terminal datadump"
     command_super = "enable"
@@ -29,4 +29,4 @@ class Profile(NOCProfile):
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
     pattern_prompt = r"^\S+#"
-#    convert_interface_name = NOCProfile.convert_interface_name_cisco
+    convert_interface_name = NOCProfile.convert_interface_name_cisco

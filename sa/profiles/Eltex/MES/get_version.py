@@ -41,7 +41,7 @@ class Script(NOCScript):
         "39": "MES-3116F",
         "40": "MES-3224",
         "41": "MES-3224F",
-        "42": "MES-2124",
+        "43": "MES-2124"
     }
 
     def execute(self):
