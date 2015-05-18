@@ -30,6 +30,8 @@ class CheckLinkJob(AlarmJob):
         :param result:
         :return:
         """
+        self.logger.debug("check_link returns %s (checking %s)",
+                          result, self.data)
         if len(result) == 1:
             r = result[0]
             if (r["status"] and
