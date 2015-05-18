@@ -23,16 +23,36 @@ class RCACondition(object):
         # Build match condition expression
         x = [
             "'alarm_class': ObjectId('%s')" % self.root.id,
-            "'id__ne': alarm.id",
             "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
             "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window
         ]
+        if self.root.id == alarm_class.id:
+            x += ["'id__ne': alarm.id"]
         for k, v in condition.match_condition.items():
-            if k == "managed_object" and v == "alarm.managed_object":
+            if k == "managed_object" and v == "alarm.managed_object.id":
                 self.same_object = True
             x += ["'%s': %s" % (k, v)]
-        self.match_condition = compile("{%s}" % ", ".join(x),
-            "<string>", "eval")
+        self.match_condition = compile(
+            "{%s}" % ", ".join(x),
+            "<string>",
+            "eval"
+        )
+        # Build reverse match condition expression
+        x = [
+            "'alarm_class': ObjectId('%s')" % alarm_class.id,
+            "'root__exists': False",
+            "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
+            "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window
+        ]
+        if self.root.id == alarm_class.id:
+            x += ["'id__ne': alarm.id"]
+        if self.same_object:
+            x += ["'managed_object': alarm.managed_object"]
+        self.reverse_match_condition = compile(
+            "{%s}" % ", ".join(x),
+            "<string>",
+            "eval"
+        )
 
     def __unicode__(self):
         return self.name
@@ -49,3 +69,7 @@ class RCACondition(object):
 
     def get_match_condition(self, alarm):
         return eval(self.match_condition, {}, self.get_context(alarm))
+
+    def get_reverse_match_condition(self, alarm):
+        return eval(self.reverse_match_condition, {},
+                    self.get_context(alarm))
