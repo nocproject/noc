@@ -23,7 +23,12 @@ class ArchivedAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.archived",
         "allow_inheritance": False,
-        "indexes": ["root", "control_time"]
+        "indexes": [
+            "root",
+            "control_time",
+            "timestamp",
+            "managed_object"
+        ]
     }
     status = "C"
 
