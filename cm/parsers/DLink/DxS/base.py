@@ -105,7 +105,11 @@ class BaseDLinkParser(BaseParser):
         Search for keyword and return next item
         """
         if name in tokens:
-            return tokens[tokens.index(name) + 1]
+            idx = tokens.index(name) + 1
+            if idx < len(tokens):
+                return tokens[idx]
+            else:
+                return None
         else:
             return None
 
