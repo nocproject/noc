@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Eltex.MES.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -29,6 +29,17 @@ class Script(noc.sa.script.Script):
                 vlan_oid = []
                 if mac is not None:
                     mac = mac.lower()
+                iface_name = {}
+                for v in self.snmp.get_tables(
+                    ["1.3.6.1.2.1.31.1.1.1.1"], bulk=True):
+                    if v[1][:2] == 'fa' or v[1][:2] == 'gi' or v[1][:2] == 'te' or v[1][:2] == 'po':
+                        name = v[1]
+                        name = name.replace('fa', 'Fa ')
+                        name = name.replace('gi', 'Gi ')
+                        name = name.replace('te', 'Te ')
+                        name = name.replace('po', 'Po ')
+                        iface_name.update({v[0]: name})
+
                 for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"],
                         bulk=True):
                         vlan_oid.append(v[0])
@@ -47,8 +58,7 @@ class Script(noc.sa.script.Script):
                         continue
                     if int(v[3]) > 3 or int(v[3]) < 1:
                         continue
-                    iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + v[2],
-                            cached=True)  # IF-MIB
+                    iface = iface_name[v[2]]
                     if interface is not None:
                         if iface == interface:
                             pass
