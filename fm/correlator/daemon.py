@@ -70,6 +70,11 @@ class Correlator(Daemon):
         self.load_rca_rules()
         self.load_alarm_jobs()
         self.load_handlers()
+        max_faults = self.config.getint("main", "max_job_faults")
+        self.scheduler.max_faults = max_faults or None
+        mrt_limit = self.config.getint("main", "mrt_limit")
+        self.scheduler.mrt_limit = mrt_limit or None
+
 
     def load_rules(self):
         """
