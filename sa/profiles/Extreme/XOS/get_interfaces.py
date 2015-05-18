@@ -147,6 +147,7 @@ class Script(NOCScript):
                  "oper_status": o_stat,
                  "mac": mac,
                  "description": switchports[ifname][2],
+                 "snmp_ifindex": ifidxs[ifname],
                  "subinterfaces": [{
                             "name": ifnaggr,
                             "description": switchports[ifname][2],
@@ -159,8 +160,12 @@ class Script(NOCScript):
                }
                if switchports[ifname][1]:
                   aggriface["subinterfaces"][0]["tagged_vlans"] = switchports[ifname][1]
+               else:
+                  iface["subinterfaces"][0]["tagged_vlans"] = []
                if switchports[ifname][0]:
                   aggriface["subinterfaces"][0]["untagged_vlan"] = switchports[ifname][0]
+               else:
+                  iface["subinterfaces"][0]["untagged_vlan"] = ""
                aggriface["description"] = switchports[ifname][2]
                aggrifaces += [aggriface]
             else:
@@ -173,6 +178,7 @@ class Script(NOCScript):
                 "oper_status": o_stat,
                 "mac": mac,
                 "description": switchports[ifname][2],
+                "snmp_ifindex": ifidxs[ifname],
                 "subinterfaces": [{
                             "name": ifname,
                             "description": switchports[ifname][2],
@@ -186,8 +192,12 @@ class Script(NOCScript):
 
             if switchports[ifname][1]:
                 iface["subinterfaces"][0]["tagged_vlans"] = switchports[ifname][1]
+            else:
+                iface["subinterfaces"][0]["tagged_vlans"] = []
             if switchports[ifname][0]:
                 iface["subinterfaces"][0]["untagged_vlan"] = switchports[ifname][0]
+            else:
+                iface["subinterfaces"][0]["untagged_vlan"] = ""
             iface["description"] = switchports[ifname][2]
 
             # Portchannel member

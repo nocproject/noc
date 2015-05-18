@@ -25,7 +25,7 @@ class Script(NOCScript):
 
     rx_descr_if = re.compile(r"^(?P<interface>\d+)\s+(?P<description>\S+).+")
     rx_snmp_name_eth = re.compile(r"^X\S+\s+Port\s+(?P<port>\d+)", re.IGNORECASE | re.DOTALL)
-    rx_body_port = re.compile(r"^(?P<interface>\d+).+", re.IGNORECASE | re.DOTALL)
+    rx_body_port = re.compile(r"^(?P<interface>\d+)(\S+)?", re.IGNORECASE)
     rx_body_untagvl = re.compile(r"^\s+Name:\s+\S+\s+Internal\s+Tag\s+=\s+(?P<avlan>\d+).+", re.IGNORECASE | re.DOTALL)
     rx_body_tagvl =   re.compile(r"^\s+Name:\s+\S+\s+802\.1Q\s+Tag\s+=\s+(?P<tvlan>\d+).+", re.IGNORECASE | re.DOTALL)
     rx_body_omode =   re.compile(r"^\s+Link\s+State:\s+(?P<omode>\S+).+", re.IGNORECASE | re.DOTALL)
