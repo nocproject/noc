@@ -393,7 +393,8 @@ Finisar | Transceiver | 1G | FTLF1318P2xCL,a36d670d-b902-4a5c-bbcb-7f0db27025bd,
 Finisar | Transceiver | 1G | FTLF1318P3BTL,3d0e281a-f91a-45fb-8f8d-cd97b84fe3f8,Finisar/Transceiver/1G/FTLF1318P3BTL.json,ddf8f48147ad75266287a1338e65caa11b55e89b26accb9e51985fd544e43062
 Finisar | Transceiver | 1G | FTLF8519P2BCL,a96c6815-1c75-401e-b5c7-3c25619a00f6,Finisar/Transceiver/1G/FTLF8519P2BCL.json,442e8a9ccabfe549dbc4c13ae9287bfcb4f73d0cd579f733fa1f78d44ce7c6e0
 Finisar | Transceiver | 1G | FTLF8519PnxyL,bd025c29-e954-4f3c-8d89-a8bf2a9bf5a7,Finisar/Transceiver/1G/FTLF8519PnxyL.json,1f0a2c29eae01a6fae4111a9891ae6193412620524ac1d80ff34f83781f2faa3
-Finisar | Transceiver | 1G | FTRJ1519P1xCL,cd43843e-c3b5-4754-8190-63bc8ed94077,Finisar/Transceiver/1G/FTRJ1519P1xCL.json,ddf1f9fe8b412288aa42e5605ce254f3bbc880d13a6387206d259db531a87df5
+Finisar | Transceiver | 1G | FTRJ1319P1BTL,e2665247-4955-478e-a5d2-368a3f317f5b,Finisar/Transceiver/1G/FTRJ1319P1BTL.json,d00c22d45a7ba1d7dcf3bce603c9d7c715133e0818e2ba56caa91e376407ebf0
+Finisar | Transceiver | 1G | FTRJ1519P1xCL,cd43843e-c3b5-4754-8190-63bc8ed94077,Finisar/Transceiver/1G/FTRJ1519P1xCL.json,8880dca2e525b71a612d9a825ea44c5d11d2acfce028d4bb035b5bcd1e519242
 Finisar | Transceiver | 1G | FTRJ8519P1BNL,b202b8ad-5f97-4ab4-aa51-ab1da5d70d69,Finisar/Transceiver/1G/FTRJ8519P1BNL.json,622af3e13ce8fed5991958550688b9a39a45b173c7bb774f5ddfa8b82db6e9f6
 Finisar | Transceiver | 1G | SFP LH,bb81c014-4d71-451d-aa13-eadfaef53869,Finisar/Transceiver/1G/SFP_LH.json,e228fc9cf74151641fb793967f3ca08cfef4565320b5fa92041c9b1f7e8c8a57
 Finisar | Transceiver | 1G | SFP LH DOM,eda16365-3e64-492f-9405-167022998ad4,Finisar/Transceiver/1G/SFP_LH_DOM.json,6e72f2042e4ed40ede5958a71a90893690db69de1a4ff3d672aa7be0c927f74f

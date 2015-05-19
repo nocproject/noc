@@ -1,9 +1,9 @@
 {
-    "name": "Finisar | Transceiver | 1G | FTRJ1519P1xCL",
+    "name": "Finisar | Transceiver | 1G | FTRJ1319P1BTL",
     "$collection": "inv.objectmodels",
-    "uuid": "cd43843e-c3b5-4754-8190-63bc8ed94077",
+    "uuid": "e2665247-4955-478e-a5d2-368a3f317f5b",
     "vendor__code": "FINISAR",
-    "description": "1000BASE-ZX 2Gb/s Fibre Channel Long-Wavelength SFP Transceiver 80 km.\n",
+    "description": "1000BASE-LX and 1G Fibre Channel (1GFC) 10km Industrial Temperature Gen 3 SFP Optical Transceiver\n",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -19,7 +19,7 @@
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1GBASEZX-1550"],
+            "protocols": [">1GBASELX-1310"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,13 +27,13 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1GBASEZX-1550"],
+            "protocols": ["<1GBASELX-1310"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["FTRJ1519P1BCL-C1", "FTRJ1519P1BCL-CS"]
+            "part_no": ["FTRJ1319P1BTL-C6"]
         }
     }
 }
