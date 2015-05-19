@@ -34,7 +34,7 @@ class Script(NOCScript):
            re.MULTILINE)
 
     rx_status = re.compile(
-           r"^(?P<interface>\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(?P<oper_status>Up|Down)\s+(\S+\s+\S+\s+|)\S+\s*$",
+           r"^(?P<interface>\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(?P<oper_status>Up|Down).+$",
            re.MULTILINE)
 
     types = {
@@ -94,7 +94,7 @@ class Script(NOCScript):
         ospfs = self.get_ospfint()
 
         # Get IP interfaces
-        mac = self.scripts.get_chassis_id()
+        mac = self.scripts.get_chassis_id()[0]
         mac = mac['first_chassis_mac']
         interfaces = []
         ip_iface = self.cli("show ip interface")
