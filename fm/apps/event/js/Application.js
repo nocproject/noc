@@ -18,7 +18,7 @@ Ext.define("NOC.fm.event.Application", {
         N: "New", A: "Active",
         F: "Failed", S: "Archived"
     },
-    pollingInterval: 10000,
+    pollingInterval: 30000,
     //
     initComponent: function() {
         var me = this,
