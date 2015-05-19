@@ -555,6 +555,13 @@ class Activator(Daemon, FSM):
             self.compile_ignore_event_rules(response.ignore_rules)
             self.debug("Setting object mappings to: %s" % self.object_mappings)
             self.next_mappings_update = time.time() + response.expire
+            #
+            if not self.object_status:
+                self.object_status = dict(
+                    (x.address, x.current_status)
+                    for x in response.ping
+                    if x.current_status is not None
+                )
             # Schedule ping checks
             self.ping_interval = dict((x.address, x.interval)
                 for x in response.ping)
