@@ -493,7 +493,7 @@ Juniper | Transceiver | 1G | SFP SX,8b2e420a-3464-40f5-a1f1-6800963c3cbf,Juniper
 Juniper | Transceiver | 1G | SFP T,03a7f540-4dc2-412d-9990-183c3d29e507,Juniper/Transceiver/1G/SFP_T.json,432a52f87cf65a76b0988c4e954dbcd75f9a65fbe23e9f55fb3f5acee6f7a84a
 Lost&Found,b0fae773-b214-4edf-be35-3468b53b03f2,Lost_Found.json,9952956e67368218a8e40ba1ea60dbfe338a4a32bd404791f7467568565205f3
 MergeOptics | Transceiver | 10G | 10119467-3030LF,733f1b42-ce82-4d73-abcc-5cb99b1576de,MergeOptics/Transceiver/10G/10119467-3030LF.json,d09157ec67c0bb2a39feba2c5ba3f9a702b33de523b4d32a2751da576b1bcd24
-Methode | Transceiver | 1G | SFP T,cd0449f7-6fe4-4e55-bfa9-90bee6c0bdc2,Methode/Transceiver/1G/SFP_T.json,361d687ccbbd7b30c00a453419c78f15bb577b6e90063d12e11aa872036d2602
+Methode | Transceiver | 1G | SFP T,cd0449f7-6fe4-4e55-bfa9-90bee6c0bdc2,Methode/Transceiver/1G/SFP_T.json,8721f53fc11b9d06a76042d75fab996aa5e5711544bef72aee6921af1fcec427
 Nateks | Transceiver | 1G | SFP-GE-SM-10KM,8490de94-1ca6-44e7-96f9-0fb5bf3f60b2,Nateks/Transceiver/1G/SFP-GE-SM-10KM.json,bae4fbc1fbbcfd6abe16ae9bddbb1ed8bab4de54774563b3ba0c2df68001d4b3
 Newstar | Transceiver | 10G | X2 LR,714250aa-b66b-45d8-bad6-6de4318b6305,Newstar/Transceiver/10G/X2_LR.json,bdd5aa94ce767ab596b38083b932fad353a5283878b51147d201178ca35aa68f
 NoName | Patch | LC-LC SMF Duplex Patch Cord,c16eb516-bbb1-45b1-a3d4-a960c3109e2f,NoName/Patch/LC-LC_SMF_Duplex_Patch_Cord.json,7785732d8679ec7e09df1def762f57d0a5d141227189b11b0ddd0979c4c3f74d
