@@ -457,6 +457,7 @@ class Command(BaseCommand):
             for r in requests:
                 print r
                 t = threading.Thread(target=self.run_script, args=(service, r))
+                t.setDaemon(True)
                 t.start()
                 # Finally give control to activator's factory
             service.activator.factory.run(run_forever=True)
