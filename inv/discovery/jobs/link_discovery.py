@@ -60,8 +60,9 @@ class LinkDiscoveryJob(MODiscoveryJob):
             return  # Interface not found
         if not self.can_link(i):
             return
-        self.debug("Link candidate found: %s -> %s:%s" % (
-            local_interface, remote_object.name, remote_interface))
+        self.debug("Link candidate found: %s:%s -> %s:%s" % (
+            self.object.name, local_interface,
+            remote_object.name, remote_interface))
         self.candidates[remote_object] += [
             (local_interface, remote_interface)
         ]
@@ -128,10 +129,11 @@ class LinkDiscoveryJob(MODiscoveryJob):
 
     def load_pending_checks(self, object):
         for plc in PendingLinkCheck.objects.filter(
-            method=self.method, local_object=object.id,
-            expire__gt=datetime.datetime.now()):
+                method=self.method, local_object=object.id,
+                expire__gt=datetime.datetime.now()
+        ):
             if (self.strict_pending_candidates_check and
-                plc.remote_object not in self.candidates):
+                    plc.remote_object not in self.candidates):
                 continue  # Ignore uncheckable links
             local_interface = plc.local_interface
             remote_interface = plc.remote_interface
