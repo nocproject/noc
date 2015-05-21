@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR901 | A901-6CZ-FT-D",
+    "$collection": "inv.objectmodels",
     "uuid": "364b86ae-3515-4402-a708-077d3f4db80f",
     "vendor__code": "CISCO",
     "description": "A901-6CZ-FT-D with Built-in 12GE, 2 10GE, 1FE, 8T1E1",
@@ -292,7 +293,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "A901-6CZ-FT-D"
+            "part_no": ["A901-6CZ-FT-D"]
         },
         "management": {
             "managed": true

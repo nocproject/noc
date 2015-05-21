@@ -70,6 +70,11 @@ class Correlator(Daemon):
         self.load_rca_rules()
         self.load_alarm_jobs()
         self.load_handlers()
+        max_faults = self.config.getint("main", "max_job_faults")
+        self.scheduler.max_faults = max_faults or None
+        mrt_limit = self.config.getint("main", "mrt_limit")
+        self.scheduler.mrt_limit = mrt_limit or None
+
 
     def load_rules(self):
         """
@@ -123,15 +128,17 @@ class Correlator(Daemon):
         logging.debug("Loading RCA Rules")
         n = 0
         self.rca_forward = {}
-        self.rca_reverse = defaultdict(set)
-        for a in AlarmClass.objects.all():
+        self.rca_reverse = {}
+        for a in AlarmClass.objects.filter(root_cause__0__exists=True):
             if not a.root_cause:
                 continue
             self.rca_forward[a.id] = []
             for c in a.root_cause:
                 rc = RCACondition(a, c)
                 self.rca_forward[a.id] += [rc]
-                self.rca_reverse[rc.root.id].add(str(a.id))
+                if rc.root.id not in self.rca_reverse:
+                    self.rca_reverse[rc.root.id] = []
+                self.rca_reverse[rc.root.id] += [rc]
                 n += 1
         logging.debug("%d RCA Rules have been loaded" % n)
 
@@ -200,7 +207,7 @@ class Correlator(Daemon):
         r = "\n".join(r)
         event.mark_as_failed(version=self.version, traceback=r)
 
-    def set_root_cause(self, a, root=None):
+    def set_root_cause(self, a):
         """
         Search for root cause and set, if found
         :returns: Boolean. True, if root cause set
@@ -211,16 +218,42 @@ class Correlator(Daemon):
                 continue
             # Check match condition
             q = rc.get_match_condition(a)
-            if root:
-                q["id"] = root.id
             root = ActiveAlarm.objects.filter(**q).first()
             if root:
                 # Root cause found
-                logging.debug("%s is root cause for %s (Rule: %s)" % (
-                    root.id, a.id, rc.name))
+                logging.debug("%s is root cause for %s (Rule: %s)",
+                    root.id, a.id, rc.name)
                 a.set_root(root)
                 return True
         return False
+
+    def set_reverse_root_cause(self, a):
+        """
+        Set *a* as root cause for existing events
+        :param a:
+        :return:
+        """
+        found = False
+        for rc in self.rca_reverse[a.alarm_class.id]:
+            # Check reverse match condition
+            q = rc.get_reverse_match_condition(a)
+            for ca in ActiveAlarm.objects.filter(**q):
+                # Check condition
+                if not rc.check_condition(ca):
+                    continue
+                # Try to set root cause
+                q = rc.get_match_condition(ca)
+                q["id"] = a.id
+                rr = ActiveAlarm.objects.filter(**q).first()
+                if rr:
+                    # Reverse root cause found
+                    logging.debug(
+                        "%s is root cause for %s (Reverse rule: %s)",
+                        a.id, ca.id, rc.name
+                    )
+                    ca.set_root(a)
+                    found = True
+        return found
 
     def raise_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)
@@ -285,12 +318,9 @@ class Correlator(Daemon):
         if a.alarm_class.id in self.rca_forward:
             # Check alarm is a consequence of existing one
             self.set_root_cause(a)
-        # Check alarm is root cause for existing ones
         if a.alarm_class.id in self.rca_reverse:
-            # @todo: Restrict to window
-            for aa in ActiveAlarm.objects.filter(alarm_class__in=self.rca_reverse[a.alarm_class.id]):
-                if aa.alarm_class.id in self.rca_forward and a.id != aa.id:
-                    self.set_root_cause(aa, a)
+            # Check alarm is the root cause for existing ones
+            self.set_reverse_root_cause(a)
         # Call handlers
         if a.alarm_class.id in self.handlers:
             for h in self.handlers[a.alarm_class.id]:

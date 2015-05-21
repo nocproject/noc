@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | PWR-MX80-AC-S",
+    "$collection": "inv.objectmodels",
     "uuid": "1ad8cac8-b6a6-45c3-b21a-411ed7b590e5",
     "vendor__code": "JUNIPER",
     "description": "MX80 AC Power Supply",
@@ -23,8 +24,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "PWR-MX80-AC-S",
-            "part_no0": "740-028288"
+            "order_part_no": ["PWR-MX80-AC-S"],
+            "part_no": ["740-028288"]
         }
     }
 }

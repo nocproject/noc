@@ -1,5 +1,6 @@
 {
     "name": "Brocade | JetCore | 8 slot chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "9ac4db8f-3421-4ff0-9378-e6dc87bfbd56",
     "vendor__code": "BROCADE",
     "description": "BigIron 8000 Router/FastIron 800 Router/Switch",
@@ -65,9 +66,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "BigIron 8000 Router",
-            "part_no1": "FastIron 800 Router",
-            "part_no2": "NetIron 800 Router"
+            "part_no": ["FastIron 800 Router", "BigIron 8000 Router", "NetIron 800 Router"]
         },
         "management": {
             "managed": true

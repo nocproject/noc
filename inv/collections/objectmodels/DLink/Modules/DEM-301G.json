@@ -1,5 +1,6 @@
 {
     "name": "DLink | Modules | DEM-301G",
+    "$collection": "inv.objectmodels",
     "uuid": "18ca94b2-a3f9-4b7c-9229-20878bf2780d",
     "vendor__code": "DLINK",
     "description": "1 Port GBIC Module",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DEM-301G"
+            "part_no": ["DEM-301G"]
         }
     }
 }

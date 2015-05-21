@@ -1,5 +1,6 @@
 {
     "name": "Edge-Core | ES | ECS4210-12T",
+    "$collection": "inv.objectmodels",
     "uuid": "50d5837d-d0e2-4ca3-803f-7670e1b928b8",
     "vendor__code": "EDGECORE",
     "description": "ECS4210-12T L2 Switch with 8 10/100/1000Base-TX  Ports + 4 SFP Uplink Ports",
@@ -118,7 +119,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ECS4210-12T"
+            "part_no": ["ECS4210-12T"]
         },
         "management": {
             "managed": true

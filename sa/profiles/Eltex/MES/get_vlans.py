@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Eltex.MES.get_vlans
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ class Script(NOCScript):
     implements = [IGetVlans]
 
     rx_vlan = re.compile(
-        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+\S+\s+\S+\s+\S", re.MULTILINE)
+        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(\S+|)\s+\S+\s+\S+\s*$", re.MULTILINE)
 
     def execute(self):
         r = []

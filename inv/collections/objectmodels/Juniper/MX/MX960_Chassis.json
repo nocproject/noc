@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | MX960 Chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "1b88d39f-1dbe-49dc-bc3b-52a3179d83d1",
     "vendor__code": "JUNIPER",
     "description": "Juniper MX960 chassis",
@@ -161,7 +162,7 @@
             "intake": "r"
         },
         "asset": {
-            "order_part_no0": "MX960"
+            "order_part_no": ["MX960"]
         },
         "management": {
             "managed": true

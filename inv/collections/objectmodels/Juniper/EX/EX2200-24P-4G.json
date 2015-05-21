@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | EX2200-24P-4G",
+    "$collection": "inv.objectmodels",
     "uuid": "3829c390-d0d9-49cd-b068-28c0cfe4a00b",
     "vendor__code": "JUNIPER",
     "description": "EX 2200, 24-port 10/100/1000BaseT (24-ports PoE+) with 4 SFP uplink ports\n",
@@ -279,7 +280,7 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "EX2200-24P-4G"
+            "order_part_no": ["EX2200-24P-4G"]
         },
         "management": {
             "managed": true

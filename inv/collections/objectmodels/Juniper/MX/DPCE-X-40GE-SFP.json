@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | DPCE-X-40GE-SFP",
+    "$collection": "inv.objectmodels",
     "uuid": "8221904d-8d20-4101-ad5c-cb615f835f85",
     "vendor__code": "JUNIPER",
     "description": "40x1GE DPC for MX with L2/L2.5 features",
@@ -393,8 +394,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "DPCE-X-40GE-SFP",
-            "part_no0": "750-020220"
+            "order_part_no": ["DPCE-X-40GE-SFP"],
+            "part_no": ["750-020220"]
         }
     }
 }

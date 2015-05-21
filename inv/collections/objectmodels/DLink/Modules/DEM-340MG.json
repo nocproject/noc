@@ -1,5 +1,6 @@
 {
     "name": "DLink | Modules | DEM-340MG",
+    "$collection": "inv.objectmodels",
     "uuid": "a7e008b2-4343-449b-b270-207521a4fdb9",
     "vendor__code": "DLINK",
     "description": "4 Port SFP Module",
@@ -47,7 +48,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DEM-340MG"
+            "part_no": ["DEM-340MG"]
         }
     }
 }

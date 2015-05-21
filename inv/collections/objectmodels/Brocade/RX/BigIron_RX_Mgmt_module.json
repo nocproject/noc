@@ -1,5 +1,6 @@
 {
     "name": "Brocade | RX | BigIron RX Mgmt module",
+    "$collection": "inv.objectmodels",
     "uuid": "17722045-ff6b-4a67-9b48-536eefeb3365",
     "vendor__code": "BROCADE",
     "description": "0 port management module\n",
@@ -16,8 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "35524-001A",
-            "part_no1": "35524-001C"
+            "part_no": ["35524-001C", "35524-001A"]
         }
     }
 }

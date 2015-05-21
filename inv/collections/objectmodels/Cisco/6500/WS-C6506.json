@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 6500 | WS-C6506",
+    "$collection": "inv.objectmodels",
     "uuid": "b50204ce-5d2a-41b4-be7c-5b51a2cfdcfe",
     "vendor__code": "CISCO",
     "description": "Cisco C6506 6-slot Chassis",
@@ -104,8 +105,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C6506",
-            "part_no1": "WS-C6506-E"
+            "part_no": ["WS-C6506-E", "WS-C6506"]
         },
         "management": {
             "managed": true

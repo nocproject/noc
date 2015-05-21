@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | EX-PWR-320-AC",
+    "$collection": "inv.objectmodels",
     "uuid": "54ecf30a-b209-4a2e-a853-9c52a771cde2",
     "vendor__code": "JUNIPER",
     "description": "320 W AC Power Supply Unit (PSU)",
@@ -22,7 +23,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "740-020957"
+            "part_no": ["740-020957"]
         }
     }
 }

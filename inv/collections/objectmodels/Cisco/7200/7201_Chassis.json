@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7200 | 7201 Chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "ffba3ba6-eaeb-4e4b-bb77-88c299585450",
     "vendor__code": "CISCO",
     "description": "Cisco 7201 Chassis, 1GB Memory, Dual P/S, 256MB Flash",
@@ -113,7 +114,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CISCO7201"
+            "part_no": ["CISCO7201"]
         },
         "management": {
             "managed": true

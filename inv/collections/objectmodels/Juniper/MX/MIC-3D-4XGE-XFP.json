@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | MIC-3D-4XGE-XFP",
+    "$collection": "inv.objectmodels",
     "uuid": "b10a145e-fc7b-4484-8079-429385fdf83c",
     "vendor__code": "JUNIPER",
     "description": "4x10G MIC for MX",
@@ -43,8 +44,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "MIC-3D-4XGE-XFP",
-            "part_no0": "750-028387"
+            "order_part_no": ["MIC-3D-4XGE-XFP"],
+            "part_no": ["750-028387"]
         }
     }
 }

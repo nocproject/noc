@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3000-10TC",
+    "$collection": "inv.objectmodels",
     "uuid": "52ef2870-b34a-4b77-b653-2258e24183bf",
     "vendor__code": "DLINK",
     "description": "DGS-3000-10TC xStackL2 Managed Switch witch 8 ports 10/100/1000BASE-T, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -123,7 +124,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3000-10TC"
+            "part_no": ["DGS-3000-10TC"]
         },
         "management": {
             "managed": true

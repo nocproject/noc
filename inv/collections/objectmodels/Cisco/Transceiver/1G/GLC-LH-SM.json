@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 1G | GLC-LH-SM",
+    "$collection": "inv.objectmodels",
     "uuid": "e848a84b-0e8a-4184-930f-baf93ebfd4f7",
     "vendor__code": "CISCO",
     "description": "Cisco SFP LH/LX transceiver without DOM support",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "GLC-LH-SM"
+            "part_no": ["GLC-LH-SM"]
         }
     }
 }

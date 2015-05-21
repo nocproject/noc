@@ -24,12 +24,14 @@ class Script(NOCScript):
         # Try SNMP first
         if self.snmp and self.access_profile.snmp_ro:
             try:
-                mac = self.snmp.get("1.3.6.1.2.1.17.1.1.0", cached=True)
+                macs = []
+                for v in self.snmp.get_tables(
+                    ["1.3.6.1.2.1.2.2.1.6"], bulk=True):
+                        macs += [v[1]]
                 return {
-                    "first_chassis_mac": mac,
-                    "last_chassis_mac": mac
+                    "first_chassis_mac": min(macs),
+                    "last_chassis_mac": max(macs)
                 }
-                return mac
             except self.snmp.TimeOutError:
                 pass
 

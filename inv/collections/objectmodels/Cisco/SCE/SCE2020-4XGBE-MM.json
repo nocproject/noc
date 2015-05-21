@@ -1,5 +1,6 @@
 {
     "name": "Cisco | SCE | SCE2020-4XGBE-MM",
+    "$collection": "inv.objectmodels",
     "uuid": "eae66cf8-f394-4c9d-a9d0-bb8bf5aa56f2",
     "vendor__code": "CISCO",
     "description": "Cisco SCE2020-4XGBE-MM Service Control Engine Platform",
@@ -73,7 +74,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SCE2020-4XGBE-MM"
+            "part_no": ["SCE2020-4XGBE-MM"]
         },
         "dimensions": {
             "depth": 460,

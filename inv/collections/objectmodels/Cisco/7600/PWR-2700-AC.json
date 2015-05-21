@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | PWR-2700-AC",
+    "$collection": "inv.objectmodels",
     "uuid": "39aa31be-5609-4a5d-beac-b70d585f30a8",
     "vendor__code": "CISCO",
     "description": "Cisco 7600 AC Power Supply",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "PWR-2700-AC"
+            "part_no": ["PWR-2700-AC"]
         }
     }
 }

@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+# Third-party modules
+from bson import ObjectId
 # NOC modules
 from activeevent import ActiveEvent
 from archivedevent import ArchivedEvent
@@ -35,3 +37,37 @@ def get_alarm(alarm_id):
             if a:
                 return a
         return None
+
+
+def get_severity(alarms):
+    """
+    Return severity CSS class name for the alarms
+    :param alarms: Single instance or list of alarms
+    """
+    def f(a):
+        if hasattr(a, "id"):
+            return a.id
+        elif isinstance(a, basestring):
+            return ObjectId(a)
+        else:
+            return a
+
+    severity = 0
+    if not isinstance(alarms, list):
+        alarms = [alarms]
+    al = [f(x) for x in alarms]
+    for ac in (ActiveAlarm, ArchivedAlarm):
+        if len(al) == 1:
+            q = {"_id": al[0]}
+        else:
+            q = {
+                "_id": {
+                    "$in": al
+                }
+            }
+        for d in ac._get_collection().find(q, {"severity": 1}):
+            severity = max(severity, d["severity"])
+            al.remove(d["_id"])
+        if not al:
+            break
+    return severity

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7200 | 7204VXR Chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "c2dfa7f6-8d46-4f17-84ca-76f678b00a1a",
     "vendor__code": "CISCO",
     "description": "Cisco 7204VXR, 4-slot chassis",
@@ -58,7 +59,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CISCO7204VXR"
+            "part_no": ["CISCO7204VXR"]
         },
         "management": {
             "managed": true

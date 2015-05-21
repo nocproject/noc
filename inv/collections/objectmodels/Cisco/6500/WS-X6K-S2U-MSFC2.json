@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 6500 | WS-X6K-S2U-MSFC2",
+    "$collection": "inv.objectmodels",
     "uuid": "5f32f1a8-d14b-48bf-bcd0-b368c1827ef8",
     "vendor__code": "CISCO",
     "description": "WS-X6K-S2U-MSFC2 2 ports Catalyst 6000 supervisor 2",
@@ -46,7 +47,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-X6K-S2U-MSFC2"
+            "part_no": ["WS-X6K-S2U-MSFC2"]
         }
     }
 }

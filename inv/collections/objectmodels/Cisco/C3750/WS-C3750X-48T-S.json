@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3750 | WS-C3750X-48T-S",
+    "$collection": "inv.objectmodels",
     "uuid": "ff9729dc-0529-4219-8ea8-126cd25c819b",
     "vendor__code": "CISCO",
     "description": "48 Ethernet 10/100/1000 ports + FRU NM module",
@@ -422,7 +423,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C3750X-48T-S"
+            "part_no": ["WS-C3750X-48T-S"]
         },
         "management": {
             "managed": true

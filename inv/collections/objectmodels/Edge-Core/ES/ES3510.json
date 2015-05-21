@@ -1,5 +1,6 @@
 {
     "name": "Edge-Core | ES | ES3510",
+    "$collection": "inv.objectmodels",
     "uuid": "e4935dff-8f94-407b-a1d3-419ec5027565",
     "vendor__code": "EDGECORE",
     "description": "ES3510 L2 Switch with 8 RJ-45 10/100Base-T +2 Combo Gigabit (RJ-45/SFP)",
@@ -122,7 +123,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ES3510"
+            "part_no": ["ES3510"]
         },
         "management": {
             "managed": true

@@ -1,5 +1,6 @@
 {
     "name": "DLink | Modules | DEM-410X",
+    "$collection": "inv.objectmodels",
     "uuid": "d5ac323b-3be2-4936-affc-bbe8336d8cd5",
     "vendor__code": "DLINK",
     "description": "1 Port XFP Module",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DEM-410X"
+            "part_no": ["DEM-410X"]
         }
     }
 }

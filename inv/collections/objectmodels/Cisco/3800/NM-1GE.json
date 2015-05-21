@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 3800 | NM-1GE",
+    "$collection": "inv.objectmodels",
     "uuid": "b3420b5c-63f9-42d6-8b03-c730aebce7f9",
     "vendor__code": "CISCO",
     "description": "1 Port GBIC Module",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "NM-1GE"
+            "part_no": ["NM-1GE"]
         }
     }
 }

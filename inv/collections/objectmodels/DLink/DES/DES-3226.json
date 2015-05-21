@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3226",
+    "$collection": "inv.objectmodels",
     "uuid": "bc7203be-5591-48a1-b980-a72cc81ce377",
     "vendor__code": "DLINK",
     "description": "DES-3226 L2 Managed Switch witch 24 ports 10/100BASE-TX and 1 expansion slots",
@@ -224,8 +225,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3226",
-            "part_no1": "DES-3226S"
+            "part_no": ["DES-3226S", "DES-3226"]
         },
         "management": {
             "managed": true

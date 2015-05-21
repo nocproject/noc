@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3560 | WS-C3560G-24TS",
+    "$collection": "inv.objectmodels",
     "uuid": "81d596c4-8290-4f0f-89ed-057a20db8803",
     "vendor__code": "CISCO",
     "description": "24 Ethernet 10/100/1000 ports and 4 SFP-based Gigabit Ethernet ports",
@@ -279,7 +280,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C3560G-24TS-S"
+            "part_no": ["WS-C3560G-24TS-S"]
         },
         "management": {
             "managed": true

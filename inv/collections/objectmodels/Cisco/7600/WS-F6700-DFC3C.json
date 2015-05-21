@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-F6700-DFC3C",
+    "$collection": "inv.objectmodels",
     "uuid": "b02842f4-2993-40fe-b6c8-e7f618a36c33",
     "vendor__code": "CISCO",
     "description": "Cisco WS-F6700-DFC3C Distributed Forwarding Card 3",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-F6700-DFC3C"
+            "part_no": ["WS-F6700-DFC3C"]
         }
     }
 }

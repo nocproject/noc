@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 1800 | 1801",
+    "$collection": "inv.objectmodels",
     "uuid": "b4a53dff-ec0a-4c7e-a99c-ff35a5ffbd07",
     "vendor__code": "CISCO",
     "description": "ADSL over POTS router with 8-port 10/100BASE-T switch",
@@ -121,7 +122,7 @@
     ],
     "data": {
         "asset": {
-            "part_no1": "CISCO1801"
+            "part_no": ["CISCO1801"]
         },
         "management": {
             "managed": true

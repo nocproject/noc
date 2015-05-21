@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 3800 | 3845 Motherboard",
+    "$collection": "inv.objectmodels",
     "uuid": "05b0cad5-3e34-4562-a35b-36079e55af3c",
     "vendor__code": "CISCO",
     "description": "Cisco 3845 Motherboard",
@@ -152,7 +153,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CISCO3845-MB"
+            "part_no": ["CISCO3845-MB"]
         }
     }
 }

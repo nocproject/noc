@@ -1,5 +1,6 @@
 {
     "name": "Sumitomo | Transceiver | 100M | SFP LX",
+    "$collection": "inv.objectmodels",
     "uuid": "98fa28dc-09de-46e7-9971-45f707ba9d08",
     "vendor__code": "SUMITOMO",
     "description": "100BaseLX-FE SFP",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SCP6803-C1-BM"
+            "part_no": ["SCP6803-C1-BM"]
         }
     }
 }

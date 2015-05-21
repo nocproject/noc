@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9k | A9K-MPA-20X1GE",
+    "$collection": "inv.objectmodels",
     "uuid": "9a30e618-45ae-4557-844f-7776d47725f1",
     "vendor__code": "CISCO",
     "description": "ASR 9000 20-port 1GE Modular Port Adapter",
@@ -175,7 +176,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "A9K-MPA-20X1GE"
+            "part_no": ["A9K-MPA-20X1GE"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "DLink | Modules | DEM-540",
+    "$collection": "inv.objectmodels",
     "uuid": "b42574e6-c536-4ac1-abe6-2bc716f63910",
     "vendor__code": "DLINK",
     "description": "Stack Module",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DEM-540"
+            "part_no": ["DEM-540"]
         }
     }
 }

@@ -2,5 +2,6 @@
     "name": "Cisco Systems",
     "uuid": "ae42a900-7e76-4cfe-93c3-21e3c7c9b1ba",
     "code": "CISCO",
-    "site": "http://cisco.com/"
+    "site": "http://cisco.com/",
+    "$collection": "inv.vendors"
 }

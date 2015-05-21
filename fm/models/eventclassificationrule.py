@@ -79,7 +79,10 @@ class EventClassificationRule(Document):
     meta = {
         "collection": "noc.eventclassificationrules",
         "allow_inheritance": False,
-        "json_collection": "fm.eventclassificationrules"
+        "json_collection": "fm.eventclassificationrules",
+        "json_depends_on": [
+            "fm.eventclasses"
+        ]
     }
     name = fields.StringField(required=True, unique=True)
     uuid = fields.UUIDField(binary=True)

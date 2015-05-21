@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3750 | WS-C3750-48TS-S",
+    "$collection": "inv.objectmodels",
     "uuid": "5511a018-54d3-4b39-8723-b5e19f2a9091",
     "vendor__code": "CISCO",
     "description": "48 Ethernet 10/100 ports, 4 SFP-based Gigabit Ethernet ports",
@@ -495,7 +496,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C3750-48TS-S"
+            "part_no": ["WS-C3750-48TS-S"]
         },
         "management": {
             "managed": true

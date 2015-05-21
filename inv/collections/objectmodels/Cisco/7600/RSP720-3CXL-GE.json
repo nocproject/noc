@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | RSP720-3CXL-GE",
+    "$collection": "inv.objectmodels",
     "uuid": "8c623e23-678c-41f6-b7ed-438f6b14ce73",
     "vendor__code": "CISCO",
     "description": "RSP720-3C-GE 2 ports Route Switch Processor 720 with PFC-3CXL",
@@ -83,7 +84,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "RSP720-3CXL-GE"
+            "part_no": ["RSP720-3CXL-GE"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Force10 | S | S50-01-LSC-12G",
+    "$collection": "inv.objectmodels",
     "uuid": "a0cd579b-bfe2-467b-b7ba-d08a0b7560ea",
     "vendor__code": "FORCE10",
     "description": "4m stacking cable for S50-01-12G-2S",

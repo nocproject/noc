@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9k | A9K-MOD80-SE",
+    "$collection": "inv.objectmodels",
     "uuid": "61cc1401-a1cf-44e4-b7f1-369585545425",
     "vendor__code": "CISCO",
     "description": "80G Modular Linecard, Service Edge Optimized",
@@ -29,7 +30,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "A9K-MOD80-SE"
+            "part_no": ["A9K-MOD80-SE"]
         }
     }
 }

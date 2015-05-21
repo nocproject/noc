@@ -16,28 +16,6 @@ from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.lib.collection import Collection, DereferenceError
 from noc.main.models.doccategory import DocCategory
-from noc.gis.models.layer import Layer
-from noc.inv.models.technology import Technology
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.modelinterface import ModelInterface
-from noc.inv.models.connectiontype import ConnectionType
-from noc.inv.models.connectionrule import ConnectionRule
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.capability import Capability
-from noc.sa.models.action import Action
-from noc.sa.models.actioncommands import ActionCommands
-from noc.cm.models.errortype import ErrorType
-from noc.fm.models.oidalias import OIDAlias
-from noc.fm.models.syntaxalias import SyntaxAlias
-from noc.fm.models.mibalias import MIBAlias
-from noc.fm.models.mibpreference import MIBPreference
-from noc.fm.models.enumeration import Enumeration
-from noc.fm.models.alarmseverity import AlarmSeverity
-from noc.fm.models.alarmclass import AlarmClass
-from noc.fm.models.eventclass import EventClass
-from noc.fm.models.eventclassificationrule import EventClassificationRule
-from noc.fm.models.cloneclassificationrule import CloneClassificationRule
-from noc.pm.models.metrictype import MetricType
 from noc.lib.serialize import json_decode
 from noc.lib.fileutils import read_file
 from noc.lib.debug import error_report
@@ -93,50 +71,18 @@ class Command(BaseCommand):
         )
     )
 
-    collections = [
-        # Gis
-        ("gis.layers", Layer),
-        # Inventory
-        ("inv.technologies", Technology),
-        ("inv.vendors", Vendor),
-        ("inv.modelinterfaces", ModelInterface),
-        ("inv.connectiontypes", ConnectionType),
-        ("inv.connectionrules", ConnectionRule),
-        ("inv.objectmodels", ObjectModel),
-        ("inv.capabilities", Capability),
-        #
-        ("sa.actions", Action),
-        ("sa.actioncommands", ActionCommands),
-        # Configuration management
-        ("cm.errortypes", ErrorType),
-        # Fault Management
-        ("fm.oidaliases", OIDAlias),
-        ("fm.syntaxaliases", SyntaxAlias),
-        ("fm.mibaliases", MIBAlias),
-        ("fm.mibpreferences", MIBPreference),
-        ("fm.enumerations", Enumeration),
-        ("fm.alarmseverities", AlarmSeverity),
-        ("fm.alarmclasses", AlarmClass),
-        ("fm.eventclasses", EventClass),
-        ("fm.eventclassificationrules", EventClassificationRule),
-        ("fm.cloneclassificationrules", CloneClassificationRule),
-        # Performance Management
-        ("pm.metrictypes", MetricType)
-    ]
-
-    cdict = dict(collections)
-
     def log(self, msg):
         if not self.verbose:
             return
         print msg
 
     def not_found(self, name):
-        msg = "Collection not found: %s" % name
-        msg = "%s\nAvailable collections:" % msg
-        for n, d in self.collections:
-            msg = "%s\n  %s" % (msg, n)
-        return msg
+        msg = [
+            "Collection not found: %s" % name,
+            "Available collections are:"
+        ]
+        msg += ["  %s" % c for c in sorted(Collection.iter_collections())]
+        return "\n".join(msg)
 
     def handle(self, *args, **kwargs):
         try:
@@ -154,13 +100,6 @@ class Command(BaseCommand):
         elif options["cmd"] == "upgrade":
             return self.handle_upgrade(args)
         elif options["cmd"] == "install":
-            # if len(args) < 2:
-            #     parts = args[0].split(os.path.sep)
-            #     if (len(parts) < 2 or parts[1] != "collections"):
-            #         raise CommandError("Usage: <collection> <file1> .. <fileN>")
-            #     # Generate collection name from path
-            #     name = "%s.%s" % (parts[0], parts[2])
-            #     args = [name] + list(args)
             return self.handle_install(args)
             # return self.handle_install(args[0], args[1:])
         elif options["cmd"] == "remove":
@@ -173,20 +112,13 @@ class Command(BaseCommand):
     def fix_categories(self):
         pass
 
-    def get_collection(self, name):
-        d = self.cdict.get(name)
-        if d:
-            return d
-        else:
-            raise CommandError(self.not_found(name))
-
     def handle_sync(self):
         DocCategory.fix_all()
         try:
-            for name, doc in self.collections:
-                lc = Collection(name, doc, local=True)
+            for name in Collection.iter_collections():
+                lc = Collection(name, local=True)
                 lc.load()
-                dc = Collection(name, doc)
+                dc = Collection(name)
                 dc.load()
                 lc.apply(dc)
         except ValueError, why:
@@ -197,8 +129,7 @@ class Command(BaseCommand):
     def handle_upgrade(self, collections):
         for c in collections:
             self.log("Upgrading %s" % c)
-            d = self.get_collection(c)
-            dc = Collection(c, d)
+            dc = Collection(c)
             cr = "%s/collections/%s" % (dc.module, dc.name)
             if os.path.exists(os.path.join(cr, "manifest.csv")):
                 raise CommandError("Collection %s is already upgraded" % c)
@@ -240,7 +171,7 @@ class Command(BaseCommand):
 
         dcs = {}  # name -> collection
         files = list(files)
-        if files[0] in self.cdict:
+        if files[0] in Collection.COLLECTIONS:
             # Get collection name hints
             current_name = files.pop(0)
         else:
@@ -248,7 +179,7 @@ class Command(BaseCommand):
             parts = files[0].split(os.path.sep)
             if (len(parts) > 3 and
                     parts[1] == "collections" and
-                    "%s.%s" % (parts[0], parts[2]) in self.cdict):
+                    "%s.%s" % (parts[0], parts[2]) in Collection.COLLECTIONS):
                 current_name = "%s.%s" % (parts[0], parts[2])
             else:
                 current_name = None
@@ -270,9 +201,8 @@ class Command(BaseCommand):
             if current_name in dcs:
                 dc = dcs[current_name]
             else:
-                d = self.get_collection(current_name)
                 self.log("    ... open collection %s" % current_name)
-                dc = Collection(current_name, d)
+                dc = Collection(current_name)
                 dc.load()
                 dcs[current_name] = dc
             if "uuid" in data:
@@ -291,8 +221,8 @@ class Command(BaseCommand):
 
     def handle_check(self):
         try:
-            for name, doc in self.collections:
-                dc = Collection(name, doc)
+            for name in Collection.iter_collections():
+                dc = Collection(name)
                 dc.load()
                 for mi in dc.items.itervalues():
                     r = dc.check_item(mi)
@@ -305,10 +235,9 @@ class Command(BaseCommand):
 
     def handle_status(self, collections=None):
         if not collections:
-            collections = [c[0] for c in self.collections]
+            collections = list(Collection.iter_collections())
         for c in collections:
-            d = self.get_collection(c)
-            dc = Collection(c, d)
+            dc = Collection(c)
             dc.load()
             print "*", c
             for status, ci in dc.get_status():

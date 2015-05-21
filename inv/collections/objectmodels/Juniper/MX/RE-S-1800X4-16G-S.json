@@ -40,8 +40,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "RE-S-1800X4-16G-S",
-            "part_no0": "740-031116"
+            "order_part_no": ["RE-S-1800X4-16G-S"],
+            "part_no": ["740-031116"]
         }
     }
 }

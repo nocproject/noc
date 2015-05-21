@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 1G | GLC-2BX-D",
+    "$collection": "inv.objectmodels",
     "uuid": "25c3a94f-bfca-433f-9d6f-daf95ad03c4a",
     "vendor__code": "CISCO",
     "description": "2-channel 1000BASE-BX10-D for Single-Fiber Bidirectional Applications",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "GLC-2BX-D"
+            "part_no": ["GLC-2BX-D"]
         }
     }
 }

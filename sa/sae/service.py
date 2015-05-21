@@ -9,6 +9,8 @@
 ## Python modules
 import logging
 import datetime
+## Django modules
+from django.db import connection
 ## NOC modules
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import Activator, ManagedObject
@@ -17,6 +19,7 @@ from noc.sa.rpc import (get_nonce, get_digest, PROTOCOL_NAME,
                         PROTOCOL_VERSION, PUBLIC_KEYS, CIPHERS, MACS,
                         COMPRESSIONS, KEY_EXCHANGES)
 from noc.lib.ip import IP
+from noc.sa.models.objectstatus import ObjectStatus
 
 logger = logging.getLogger(__name__)
 
@@ -189,40 +192,62 @@ class Service(SAEService):
 
     def object_mappings(self, controller, request, done):
         """
-        Handle RPC event_filter request
+        Handle RPC object_mappings request
         """
         if not controller.stream.is_authenticated:
             done(controller,
                  error=Error(code=ERR_AUTH_REQUIRED,
                              text="Authentication required"))
             return
+        logger.info("Object mappings requested")
         activator = self.get_controller_activator(controller)
         r = ObjectMappingsResponse()
         r.expire = self.sae.config.getint("sae", "refresh_event_filter")
-        # Build source filter
-        for c in ManagedObject.objects.filter(activator=activator,
-                    trap_source_ip__isnull=False, collector__isnull=True).only("id", "trap_source_ip"):
-            if c.profile_name.startswith("NOC."):
-                continue
-            s = r.mappings.add()
-            s.source = c.trap_source_ip
-            s.object = str(c.id)
-        # Ping settings
-        for c in ManagedObject.objects.filter(activator=activator,
-            trap_source_ip__isnull=False,
-            object_profile__enable_ping=True,
-            object_profile__ping_interval__gt=0
-        ).only("trap_source_ip", "object_profile__ping_interval").select_related():
-            if c.profile_name.startswith("NOC."):
-                continue
-            p = r.ping.add()
-            p.address = c.trap_source_ip
-            p.interval = c.object_profile.ping_interval
+        # Build source filter and ping settings
+        cursor = connection.cursor()
+        cursor.execute("""
+        SELECT mo.id, mo.trap_source_ip, op.enable_ping,
+               op.ping_interval, mo.collector_id
+        FROM
+            sa_managedobject mo JOIN sa_managedobjectprofile op ON (mo.object_profile_id = op.id)
+        WHERE
+            mo.activator_id = %s
+            AND mo.trap_source_ip IS NOT NULL
+            AND mo.profile_name NOT LIKE 'NOC.%%'
+        """, [activator.id])
+        cdata = list(cursor)
+        pingable = [x[0] for x in cdata if x[2] and x[3] > 0]
+        c = ObjectStatus._get_collection()
+        statuses = {}
+        while pingable:
+            chunk, pingable = pingable[:500], pingable[500:]
+            statuses.update(
+                dict(
+                    (r["object"], r["status"])
+                    for r in c.find(
+                        {"object": {"$in": chunk}},
+                        {"_id": 0, "object": 1, "status": 1}
+                    )
+                )
+            )
+        for mo_id, trap_source_ip, enable_ping, ping_interval, collector_id in cdata:
+            if not collector_id:
+                s = r.mappings.add()
+                s.source = trap_source_ip
+                s.object = str(mo_id)
+            if enable_ping and ping_interval > 0:
+                s = r.ping.add()
+                s.address = trap_source_ip
+                s.interval = ping_interval
+                status = statuses.get(mo_id)
+                if status is not None:
+                    s.current_status = status
         # Build event filter
         for ir in IgnoreEventRules.objects.filter(is_active=True):
             i = r.ignore_rules.add()
             i.left_re = ir.left_re
             i.right_re = ir.right_re
+        logger.info("Object mappings returned")
         done(controller, response=r)
 
     def event(self, controller, request, done):
@@ -249,7 +274,7 @@ class Service(SAEService):
             mo = None
         # Write event to database
         self.sae.write_event(
-            data=[(b.key, b.value) for b in request.body],
+            data=dict((b.key, b.value) for b in request.body),
             timestamp=datetime.datetime.fromtimestamp(request.timestamp),
             managed_object=mo
         )

@@ -1,5 +1,6 @@
 {
     "name": "Force10 | S | S50-01-12G-2S",
+    "$collection": "inv.objectmodels",
     "uuid": "377926e1-b158-429d-90ea-e0de574dccfe",
     "vendor__code": "FORCE10",
     "description": "2-port 12 Gbps stacking module",
@@ -28,7 +29,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "S50-01-12G-2S"
+            "part_no": ["S50-01-12G-2S"]
         }
     }
 }

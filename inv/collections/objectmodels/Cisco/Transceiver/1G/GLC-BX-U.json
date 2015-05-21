@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 1G | GLC-BX-U",
+    "$collection": "inv.objectmodels",
     "uuid": "b3d9223c-28da-4696-a01e-624f843fcc19",
     "vendor__code": "CISCO",
     "description": "1000BASE-BX-U",
@@ -24,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "GLC-BX-U"
+            "part_no": ["GLC-BX-U"]
         }
     }
 }

@@ -1,7 +1,8 @@
 {
     "name": "DLink | DxS | Network | UDLD | UDLD Protocol Error Detected (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a8847268-400e-4755-bd5e-97a1882ea331",
-    "description": "Feb 19 17:02:46 10.200.25.7 INFO: Port: 10 is unidirectional",
+    "description": "INFO: Port: 10 is unidirectional",
     "event_class__name": "Network | UDLD | UDLD Protocol Error Detected",
     "preference": 1000,
     "patterns": [
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "message",
-            "value_re": "(?:INFO:|INFO\\(6\\)|WARN\\(4\\)) [Pp]ort: (?P<interface>\\S+) is unidirectional"
+            "value_re": "[Pp]ort: (?P<interface>\\S+) is unidirectional"
         }
     ]
 }

@@ -28,6 +28,7 @@ class GridVCS(object):
         self.fs = gridfs.GridFS(
             get_db(), collection="noc.gridvcs.%s" % repo)
         self.files = self.fs._GridFS__files
+        self.files.ensure_index([("object", 1), ("ft", 1)])
 
     def get_delta(self, src, dst):
         """

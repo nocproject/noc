@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Extreme.XOS.get_arp
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetARP
 
 rx_line = re.compile(
-    r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+\S+\s+\S+\s+(?P<interface>\S+)\(.+$")
+    r"^\S+\s+(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+\S+\s+(?P<interface>\S+).+$")
 
 
 class Script(NOCScript):

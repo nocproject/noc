@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-SUP32-GE-3B",
+    "$collection": "inv.objectmodels",
     "uuid": "4dcd0c05-388d-4b50-b7ec-53a0b7706c76",
     "vendor__code": "CISCO",
     "description": "WS-SUP32-GE-3B 9 ports Supervisor Engine 32 8GE",
@@ -124,7 +125,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-SUP32-GE-3B"
+            "part_no": ["WS-SUP32-GE-3B"]
         }
     }
 }

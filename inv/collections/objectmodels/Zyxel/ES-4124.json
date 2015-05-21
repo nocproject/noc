@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | ES-4124",
+    "$collection": "inv.objectmodels",
     "uuid": "51ac454c-3314-4afd-9a78-31a416b72213",
     "vendor__code": "ZYXEL",
     "description": "Zyxel ES-4124 switch, 24 10/100, 2 SFP, 2 Combo",
@@ -265,7 +266,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ES-4124"
+            "part_no": ["ES-4124"]
         },
         "management": {
             "managed": true

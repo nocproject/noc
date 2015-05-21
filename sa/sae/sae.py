@@ -22,9 +22,12 @@ import struct
 from collections import defaultdict
 ## Django modules
 from django.db import reset_queries
+# Third-party modules
+from bson import Binary
 ## NOC modules
 from noc.sa.sae.service import Service
 from noc.sa.sae.sae_socket import SAESocket
+from noc.main.models import Shard
 from noc.sa.models import (Activator, ManagedObject, MapTask, ReduceTask,
                            script_registry, profile_registry,
                            ActivatorCapabilitiesCache, FailedScriptLog)
@@ -45,6 +48,7 @@ class SAE(Daemon):
 
     def __init__(self):
         self.shards = []
+        self.single_shard = False
         self.force_plaintext = []
         #
         self.strip_syslog_facility = False
@@ -91,6 +95,10 @@ class SAE(Daemon):
         self.blocked_pools = set()  # Blocked activator names
         #
         self.default_managed_object = None
+        #
+        self.event_batch = None
+        self.batched_events = 0
+        self.prepare_event_bulk()
 
     def load_config(self):
         """
@@ -99,7 +107,12 @@ class SAE(Daemon):
         super(SAE, self).load_config()
         self.shards = [s.strip()
                        for s in self.config.get("sae", "shards", "").split(",")]
-        self.logger.info("Serving shards: %s" % ", ".join(self.shards))
+        self.single_shard = Shard.objects.filter(is_active=True).count() == 1 and len(self.shards) == 1
+        self.logger.info(
+            "Serving shards: %s%s",
+            ", ".join(self.shards),
+            " (single shard)" if self.single_shard else "(multi shard)"
+        )
         self.force_plaintext = [IP.prefix(p) for p
                 in self.config.get("sae", "force_plaintext").strip().split(",")
                 if p]
@@ -121,6 +134,7 @@ class SAE(Daemon):
         # Settings
         self.mrt_schedule_interval = 1
         self.activator_status_interval = 60
+        #
 
     def start_listeners(self):
         """
@@ -243,6 +257,10 @@ class SAE(Daemon):
         """
         t = time.time()
         reset_queries()  # Clear debug SQL log
+        if self.batched_events:
+            self.logger.info("Writing %d batched events", self.batched_events)
+            self.event_batch.execute({"w": 0})
+            self.prepare_event_bulk()
         if t - self.last_mrtask_check >= self.mrt_schedule_interval:
             # Check Map/Reduce task status
             self.process_mrtasks()
@@ -278,21 +296,25 @@ class SAE(Daemon):
             and data["source"] == "syslog" and "severity" in data):
             del data["severity"]
         # Normalize data
-        data = dict((k, str(data[k])) for k in data)
+        data = dict(
+            (str(k).replace(".", "__").replace("$", "^^"), str(data[k]))
+            for k in data
+        )
         # Generate sequental number
-        seq = struct.pack(
+        seq = Binary(struct.pack(
             "!II",
             int(time.time()),
             self.event_seq.next() & 0xFFFFFFFFL
-        )
-        # Write event
-        NewEvent(
-            timestamp=timestamp,
-            managed_object=managed_object,
-            raw_vars=data,
-            log=[],
-            seq=seq
-        ).save()
+        ))
+        # Batch event
+        self.event_batch.insert({
+            "timestamp": timestamp,
+            "managed_object": managed_object.id,
+            "raw_vars": data,
+            "log": [],
+            "seq": seq
+        })
+        self.batched_events += 1
 
     def on_stream_close(self, stream):
         self.streams.unregister(stream)
@@ -568,12 +590,17 @@ class SAE(Daemon):
         throttled_shards = set()  # shard_id
         self.blocked_pools = set()  # Reset block status
         # Run tasks
-        for mt in MapTask.objects.filter(
-                status="W",
-                next_try__lte=t,
-                managed_object__activator__shard__is_active=True,
-                managed_object__activator__shard__name__in=self.shards
-            ).order_by("next_try").select_related("activator", "managed_object").select_for_update():
+        qs = {
+            "status": "W",
+            "next_try__lte": t
+        }
+        if not self.single_shard:
+            qs["managed_object__activator__shard__is_active"] = True
+            qs["managed_object__activator__shard__name__in"] = self.shards
+        for mt in MapTask.objects.filter(**qs)\
+                .order_by("next_try")\
+                .select_related("activator", "managed_object")\
+                .select_for_update():
             # Check object is managed
             if not mt.managed_object.is_managed:
                 fail_task(mt, ERR_OBJECT_NOT_MANAGED, "Object is not managed")
@@ -728,6 +755,10 @@ class SAE(Daemon):
                 if hasattr(stream, "last_status"):
                     r += [stream.last_status]
         return r
+
+    def prepare_event_bulk(self):
+        self.event_batch = NewEvent._get_collection().initialize_ordered_bulk_op()
+        self.batched_events = 0
 
     ##
     ## Signal handlers

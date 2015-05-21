@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASA | ASA-180W-PWR-AC",
+    "$collection": "inv.objectmodels",
     "uuid": "4d121546-4c62-405a-aaa6-ca94dfd70101",
     "vendor__code": "CISCO",
     "description": "ASA/IPS 180W AC Power Supply",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ASA-180W-PWR-AC"
+            "part_no": ["ASA-180W-PWR-AC"]
         }
     }
 }

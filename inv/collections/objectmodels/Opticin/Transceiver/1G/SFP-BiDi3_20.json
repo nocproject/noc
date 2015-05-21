@@ -1,5 +1,6 @@
 {
     "name": "Opticin | Transceiver | 1G | SFP-BiDi3.20",
+    "$collection": "inv.objectmodels",
     "uuid": "bba3f257-e75a-4138-9ac4-157a0eed8610",
     "vendor__code": "OPTICIN",
     "description": "Opticin SFP WDM transceiver, 1310 tx, 1550 rx, LC, 20km",
@@ -24,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-BiDi3.20"
+            "part_no": ["SFP-BiDi3.20"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ME3600 | ME-3600X-24FS-M",
+    "$collection": "inv.objectmodels",
     "uuid": "dbfa1dd5-3dd6-4996-8e1e-68be5ddaca9c",
     "vendor__code": "CISCO",
     "description": "Cisco ME 3600X-24FS Ethernet Access Switch, 24 ports 1000Base-X (SFP), 2 ports 10G (SFP+)",
@@ -293,7 +294,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ME-3600X-24FS-M"
+            "part_no": ["ME-3600X-24FS-M"]
         },
         "dimensions": {
             "depth": 442,

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N5K-C5596UP-SUP",
+    "$collection": "inv.objectmodels",
     "uuid": "0cb738db-14c4-4bcb-a081-b05fc767e76e",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 5596UP O2 48X10GE/Modular Supervisor",
@@ -444,7 +445,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N5K-C5596UP-SUP"
+            "part_no": ["N5K-C5596UP-SUP"]
         }
     }
 }

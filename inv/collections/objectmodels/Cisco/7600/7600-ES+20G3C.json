@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | 7600-ES+20G3C",
+    "$collection": "inv.objectmodels",
     "uuid": "0fa16dc0-52b3-49a6-a4e1-7b20424ea24d",
     "vendor__code": "CISCO",
     "description": "7600-ES+20G3C 20 ports 7600 ES+",
@@ -175,7 +176,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": "7600-ES+20G3C"
+            "part_no": ["7600-ES+20G3C"]
         }
     }
 }

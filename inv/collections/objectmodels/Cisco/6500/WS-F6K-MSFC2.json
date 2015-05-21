@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 6500 | WS-F6K-MSFC2",
+    "$collection": "inv.objectmodels",
     "uuid": "bff89ef0-6cca-495b-bb14-4ca6e115fb59",
     "vendor__code": "CISCO",
     "description": "Cisco WS-F6K-MSFC2 Daughterboard",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-F6K-MSFC2"
+            "part_no": ["WS-F6K-MSFC2"]
         }
     }
 }

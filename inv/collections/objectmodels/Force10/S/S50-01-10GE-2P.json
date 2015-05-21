@@ -1,5 +1,6 @@
 {
     "name": "Force10 | S | S50-01-10GE-2P",
+    "$collection": "inv.objectmodels",
     "uuid": "2a4a146d-8b8c-4509-b026-b25ff398e5b7",
     "vendor__code": "FORCE10",
     "description": "2-port 10 GbE XFP module",
@@ -28,7 +29,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "S50-01-10GE-2P"
+            "part_no": ["S50-01-10GE-2P"]
         }
     }
 }

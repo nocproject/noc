@@ -1,5 +1,6 @@
 {
     "name": "Huawei | Quidway S5300 | ETPC-Stack Rear Subcard",
+    "$collection": "inv.objectmodels",
     "uuid": "586ea21e-c3c4-47db-9211-3d28f570984c",
     "vendor__code": "HUAWEI",
     "description": "Interface card with 2 PCI-E 12G stacking ports",
@@ -28,7 +29,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "LS5DSTACK200"
+            "part_no": ["LS5DSTACK200"]
         },
         "dimensions": {
             "depth": "69",

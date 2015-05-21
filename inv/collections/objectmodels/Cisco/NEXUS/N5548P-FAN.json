@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N5548P-FAN",
+    "$collection": "inv.objectmodels",
     "uuid": "d1c720e2-2d9f-4784-8191-90af0bee46b8",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 5548P/5548UP Fan Module, Front-to-Back Airflow",
@@ -16,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N5548P-FAN"
+            "part_no": ["N5548P-FAN"]
         }
     }
 }

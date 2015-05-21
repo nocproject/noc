@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | EX-PWR-190-DC",
+    "$collection": "inv.objectmodels",
     "uuid": "e9111636-8a21-4b52-9d27-6a924f76d878",
     "vendor__code": "JUNIPER",
     "description": "190 W DC Power Supply Unit (PSU)",
@@ -31,7 +32,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "740-023938"
+            "part_no": ["740-023938"]
         }
     }
 }

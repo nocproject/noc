@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | FAN-MOD-6SHS",
+    "$collection": "inv.objectmodels",
     "uuid": "f9a56c2a-e431-4031-9b10-c352a06f37b9",
     "vendor__code": "CISCO",
     "description": "High Speed Fan Module for Cisco 7606-S",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "FAN-MOD-6SHS"
+            "part_no": ["FAN-MOD-6SHS"]
         }
     }
 }

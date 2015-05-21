@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-X6148A-GE-45AF",
+    "$collection": "inv.objectmodels",
     "uuid": "eb507034-572e-4584-a9fc-8ed51dcb9164",
     "vendor__code": "CISCO",
     "description": "WS-X6148A-GE-45AF 48-port 10/100/1000 RJ45 EtherModule",
@@ -400,7 +401,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-X6148A-GE-45AF"
+            "part_no": ["WS-X6148A-GE-45AF"]
         }
     }
 }

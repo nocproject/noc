@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7200 | PWR-7200-DC",
+    "$collection": "inv.objectmodels",
     "uuid": "802f4d6c-b0bf-4358-a85e-22f63417abe9",
     "vendor__code": "CISCO",
     "description": "Cisco 7200 DC Power Supply",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "PWR-7200-DC"
+            "part_no": ["PWR-7200-DC"]
         }
     }
 }

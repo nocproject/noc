@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-F6K-DFC4-A",
+    "$collection": "inv.objectmodels",
     "uuid": "eeb3bf77-ed40-4dc4-8324-d6430b6b3a1b",
     "vendor__code": "CISCO",
     "description": "Cisco WS-F6K-DFC4-A Distributed Forwarding Card 4",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-F6700-DFC4-A"
+            "part_no": ["WS-F6700-DFC4-A"]
         }
     }
 }

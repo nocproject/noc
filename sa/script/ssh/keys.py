@@ -160,7 +160,7 @@ class Key(object):
         """
         signature_type, signature = get_NS(signature)
         if signature_type != self.ssh_type():
-            raise ValueError("Bad signature type: %s" % signature_type)
+            raise ValueError("Bad signature type: %s" % signature_type.encode("hex"))
         if self.type() == "RSA":
             numbers = list(get_MP(signature))
             digest = pkcs1_digest(data, self.key.size() / 8)

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3560 | WS-C3560-24PS",
+    "$collection": "inv.objectmodels",
     "uuid": "cf919560-502a-4fb2-a49d-dc86ae084de9",
     "vendor__code": "CISCO",
     "description": "24 Ethernet 10/100 ports with PoE and 2 SFP-based Gigabit Ethernet ports",
@@ -233,8 +234,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C3560-24PS-S",
-            "part_no1": "WS-C3560-24PS"
+            "part_no": ["WS-C3560-24PS", "WS-C3560-24PS-S"]
         },
         "management": {
             "managed": true

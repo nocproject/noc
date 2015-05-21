@@ -1,5 +1,6 @@
 {
     "name": "Brocade | SX | SX-FIZMRXL6 0-port management module",
+    "$collection": "inv.objectmodels",
     "uuid": "f4a68d1d-f6cc-4be3-b857-de6bd573e3e4",
     "vendor__code": "BROCADE",
     "description": "0 port management module\n",
@@ -16,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SX-FIZMRXL6"
+            "part_no": ["SX-FIZMRXL6"]
         }
     }
 }

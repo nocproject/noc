@@ -10,6 +10,7 @@ from south.db import db
 
 class Migration:
     def forwards(self):
+        return  # Conflicts with 0087_managedobjectselector_managed, skip
         from noc.sa.models.managedobjectselector import ManagedObjectSelector
 
         for vc_domain_id, selector_id in db.execute(

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C2960 | WS-C2960-24LC-S",
+    "$collection": "inv.objectmodels",
     "uuid": "17d654b2-a39c-460b-84c6-70d956d8cc2b",
     "vendor__code": "CISCO",
     "description": "24 Ethernet 10/100 and 8 10/100 PoE ports (123W capacity)",
@@ -233,7 +234,7 @@
     ],
     "data": {
         "asset": {
-            "part_no1": "WS-C2960-24PC-L"
+            "part_no": ["WS-C2960-24PC-L"]
         },
         "management": {
             "managed": true

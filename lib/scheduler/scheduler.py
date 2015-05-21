@@ -105,6 +105,10 @@ class Scheduler(object):
         self.collection.ensure_index(k)
         self.logger.debug("Checking indexes: jcls, key")
         self.collection.ensure_index([("jcls", 1), ("key", 1)])
+        self.logger.debug("Checking indexes: s, ts, jcls")
+        self.collection.ensure_index([("s", 1), ("ts", 1), ("jcls", 1)])
+        self.logger.debug("Checking indexes: key, s")
+        self.collection.ensure_index([("s", 1), ("key", 1)])
         self.logger.debug("Indexes are ready")
 
     def debug(self, msg):

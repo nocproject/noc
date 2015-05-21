@@ -1,5 +1,6 @@
 {
     "name": "DLink | Modules | DEM-320GH",
+    "$collection": "inv.objectmodels",
     "uuid": "850204fe-821d-41db-929b-7cc7ad75a10b",
     "vendor__code": "DLINK",
     "description": "2 Port GBIC Module",
@@ -31,7 +32,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DEM-320GH"
+            "part_no": ["DEM-320GH"]
         }
     }
 }

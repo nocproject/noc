@@ -1,5 +1,6 @@
 {
     "name": "NoName | Patch | LC-LC SMF Simplex Patch Cord",
+    "$collection": "inv.objectmodels",
     "uuid": "217ba845-5309-4c4b-8543-d26dea35f11a",
     "vendor__code": "NONAME",
     "description": "1-fiber LC-LC SMF Patch",

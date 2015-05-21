@@ -1,5 +1,6 @@
 {
     "name": "Cisco | PWR | C3KX-PWR-350WAC",
+    "$collection": "inv.objectmodels",
     "uuid": "e1fa3784-a666-4d0b-83b4-a9db571d9ac2",
     "vendor__code": "CISCO",
     "description": "350 Watt AC PSU for Cisco Catalyst 3750-X, 3560-X Series switches",
@@ -7,7 +8,7 @@
     "connections": [],
     "data": {
         "asset": {
-            "part_no0": "C3KX-PWR-350WAC"
+            "part_no": ["C3KX-PWR-350WAC"]
         }
     }
 }

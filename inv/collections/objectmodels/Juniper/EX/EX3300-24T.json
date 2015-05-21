@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | EX3300-24T",
+    "$collection": "inv.objectmodels",
     "uuid": "b1df44e7-bfa5-4920-a899-52557e35cb59",
     "vendor__code": "JUNIPER",
     "description": "24-port 10/100/1000BASE-T",
@@ -270,8 +271,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "EX3300-24T",
-            "part_no0": "750-034299"
+            "order_part_no": ["EX3300-24T"],
+            "part_no": ["750-034299"]
         },
         "management": {
             "managed": true

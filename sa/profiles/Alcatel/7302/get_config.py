@@ -6,16 +6,17 @@
 ## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-import noc.sa.script
-from noc.sa.interfaces import IGetConfig
 
-class Script(noc.sa.script.Script):
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetconfig import IGetConfig
+
+
+class Script(NOCScript):
     name = "Alcatel.7302.get_config"
     implements = [IGetConfig]
 
-    noc.sa.script.telnet.CLITelnetSocket.TTL = 600
+    CLI_TIMEOUT = 600
 
     def execute(self):
         self.cli("environment inhibit-alarms mode batch terminal-timeout timeout:30")

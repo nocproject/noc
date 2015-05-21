@@ -28,7 +28,8 @@ class CapsItem(EmbeddedDocument):
 
 class ObjectCapabilities(Document):
     meta = {
-        "collection": "noc.sa.objectcapabilities"
+        "collection": "noc.sa.objectcapabilities",
+        "indexes": ["object"]
     }
     object = ForeignKeyField(ManagedObject)
     caps = ListField(EmbeddedDocumentField(CapsItem))

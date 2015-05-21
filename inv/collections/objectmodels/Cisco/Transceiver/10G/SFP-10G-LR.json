@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 10G | SFP-10G-LR",
+    "$collection": "inv.objectmodels",
     "uuid": "868f6895-a088-4f9b-b61a-32039d1b7540",
     "vendor__code": "CISCO",
     "description": "Cisco SFP+ 10G LR transceiver",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-10G-LR"
+            "part_no": ["SFP-10G-LR"]
         }
     }
 }

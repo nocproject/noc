@@ -22,9 +22,9 @@ Ext.define("NOC.fm.event.Application", {
     //
     initComponent: function() {
         var me = this,
-            bs = Math.ceil(screen.height / 24);
+            bs = Math.max(50, Math.ceil(screen.height / 24) + 10);
+        me.pollingTaskId = null;
         me.currentQuery = {status: "A"};
-        me.pollingTaskHandler = Ext.bind(me.pollingTask, me);
         me.store = Ext.create("NOC.core.ModelStore", {
             model: "NOC.fm.event.Model",
             autoLoad: false,
@@ -34,7 +34,7 @@ Ext.define("NOC.fm.event.Application", {
             },
             pageSize: bs,
             leadingBufferZone: bs,
-            numFromEdge: Math.ceil(bs / 2),
+            numFromEdge: bs,
             trailingBufferZone: bs
         });
 
@@ -132,6 +132,7 @@ Ext.define("NOC.fm.event.Application", {
         me.gridPanel = Ext.create("Ext.grid.Panel", {
             store: me.store,
             border: false,
+            itemId: "grid-panel",
             stateful: true,
             stateId: "fm.event-grid",
             plugins: [
@@ -264,8 +265,9 @@ Ext.define("NOC.fm.event.Application", {
     //
     reloadStore: function() {
         var me = this;
-        if(me.currentQuery)
+        if(me.currentQuery) {
             me.store.setFilterParams(me.currentQuery);
+        }
         me.store.load();
     },
     //
@@ -276,7 +278,7 @@ Ext.define("NOC.fm.event.Application", {
                 if(v) {
                     q[k] = v;
                 }
-            }
+            };
 
         // Status
         q.status = me.typeCombo.getValue();
@@ -320,23 +322,49 @@ Ext.define("NOC.fm.event.Application", {
         me.getLayout().setActiveItem(1);
         me.eventPanel.showEvent(record.get("id"));
     },
+    // Returns true if polling is locked
+    isPollLocked: function() {
+        var me = this,
+            ls;
+        ls = me.gridPanel.getView().getScrollable().getPosition().y !== 0;
+        return ls;
+    },
     //
     pollingTask: function() {
         var me = this;
-        me.store.load();
+        // Poll only application tab is visible
+        if(!me.isActiveApp()) {
+            return;
+        }
+        // Poll only when in grid preview
+        if(me.getLayout().getActiveItem().itemId !== "grid-panel") {
+            return;
+        }
+        // Poll only if polling is not locked
+        if(!me.isPollLocked()) {
+            me.store.load();
+        }
     },
     //
     startPolling: function() {
         var me = this;
-        me.pollingTaskId = Ext.TaskManager.start({
-            run: me.pollingTaskHandler,
-            interval: me.pollingInterval
-        });
+        if(me.pollingTaskId) {
+            me.pollingTask();
+        } else {
+            me.pollingTaskId = Ext.TaskManager.start({
+                run: me.pollingTask,
+                interval: me.pollingInterval,
+                scope: me
+            });
+        }
     },
     //
     stopPolling: function() {
         var me = this;
-        Ext.TaskManager.stop(me.pollingTaskId);
+        if(me.pollingTaskId) {
+            Ext.TaskManager.stop(me.pollingTaskId);
+            me.pollingTaskId = null;
+        }
     },
     //
     showForm: function() {

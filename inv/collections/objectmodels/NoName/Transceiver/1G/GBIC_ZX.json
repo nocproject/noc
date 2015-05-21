@@ -1,5 +1,6 @@
 {
     "name": "NoName | Transceiver | 1G | GBIC ZX",
+    "$collection": "inv.objectmodels",
     "uuid": "3bfb9115-e49c-445a-aef1-82cc82cc75d1",
     "vendor__code": "NONAME",
     "description": "NoName Transceiver 1G GBIC ZX",

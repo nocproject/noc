@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | EX8200-2XS-40T",
+    "$collection": "inv.objectmodels",
     "uuid": "26efceec-891a-4568-8e4d-8a377a82a364",
     "vendor__code": "JUNIPER",
     "description": "40-port 10/100/1000BASE-T RJ-45, 4 port SFP, 2 port SFP+ line card",
@@ -382,7 +383,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "711-035032"
+            "part_no": ["711-035032"]
         }
     }
 }

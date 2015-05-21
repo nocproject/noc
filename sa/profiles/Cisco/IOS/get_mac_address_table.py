@@ -32,6 +32,13 @@ class Script(NOCScript):
         return False
 
     def execute(self, interface=None, vlan=None, mac=None):
+        def qn(s):
+            s = s.strip()
+            if s.startswith("Eth VLAN "):
+                return s[4:]
+            else:
+                return s
+
         cmd = "show mac address-table"
         if mac is not None:
             cmd += " address %s" % self.profile.convert_mac(mac)
@@ -61,7 +68,7 @@ class Script(NOCScript):
                 if mac.startswith("3333."):
                     continue  # Static entries
                 interfaces = [
-                    i.strip() for i in match.group("interfaces").split(",")
+                    qn(i) for i in match.group("interfaces").split(",")
                 ]
                 interfaces = [
                     i for i in interfaces

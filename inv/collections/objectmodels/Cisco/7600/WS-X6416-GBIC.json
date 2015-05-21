@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-X6416-GBIC",
+    "$collection": "inv.objectmodels",
     "uuid": "5d5ce12b-fdbd-4f0b-8885-695d3139c3ac",
     "vendor__code": "CISCO",
     "description": "Cisco WS-X6416-GBIC 16 port 1000mb GBIC ethernet",
@@ -143,7 +144,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-X6416-GBIC"
+            "part_no": ["WS-X6416-GBIC"]
         }
     }
 }

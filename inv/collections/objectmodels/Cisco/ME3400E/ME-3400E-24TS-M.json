@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ME3400E | ME-3400E-24TS-M",
+    "$collection": "inv.objectmodels",
     "uuid": "cc57e073-e679-475f-8e52-dc8a6be9beb6",
     "vendor__code": "CISCO",
     "description": "Cisco ME3400E Series Metro Ethernet access switch with 24 FastEthernet + 2 combo ports",
@@ -334,7 +335,7 @@
             "intake": "f"
         },
         "asset": {
-            "part_no0": "ME-3400E-24TS-M"
+            "part_no": ["ME-3400E-24TS-M"]
         },
         "management": {
             "managed": true

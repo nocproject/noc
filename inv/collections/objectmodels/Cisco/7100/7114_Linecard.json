@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7100 | 7114 Linecard",
+    "$collection": "inv.objectmodels",
     "uuid": "e12132d5-a40e-49fe-87ee-07005985af57",
     "vendor__code": "CISCO",
     "description": "Cisco uBR7114 Linecard",
@@ -51,7 +52,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "UBR7114"
+            "part_no": ["UBR7114"]
         }
     }
 }

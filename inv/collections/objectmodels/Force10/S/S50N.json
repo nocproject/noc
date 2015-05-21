@@ -1,5 +1,6 @@
 {
     "name": "Force10 | S | S50N",
+    "$collection": "inv.objectmodels",
     "uuid": "ff9f8621-7ee7-40db-a5f9-6c91134655a8",
     "vendor__code": "FORCE10",
     "description": "48-port 10/100/1000Base-T chassis with 4 SFP ports, 2 modular slots, 1AC + 1 DC power supply, FTOS software",
@@ -460,8 +461,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": "S50N",
-            "part_no0": "S50-01-GE-48T-AC-2"
+            "order_part_no": ["S50N"],
+            "part_no": ["S50-01-GE-48T-AC-2"]
         }
     }
 }

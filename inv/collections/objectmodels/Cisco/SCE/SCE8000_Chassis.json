@@ -1,5 +1,6 @@
 {
     "name": "Cisco | SCE | SCE8000 Chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "a36322b5-8649-4dea-b285-fc9bf69a734c",
     "vendor__code": "CISCO",
     "description": "Cisco SCE 8000 Service Control Engine",
@@ -58,7 +59,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SCE8000"
+            "part_no": ["SCE8000"]
         },
         "dimensions": {
             "depth": 552,

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-X6748-GE-TX",
+    "$collection": "inv.objectmodels",
     "uuid": "a2bb7457-adab-4cff-abb6-ef75b15942df",
     "vendor__code": "CISCO",
     "description": "WS-X6748-GE-TX CEF720 48 port 10/100/1000mb Ethernet",
@@ -399,7 +400,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": "WS-X6748-GE-TX"
+            "part_no": ["WS-X6748-GE-TX"]
         }
     }
 }

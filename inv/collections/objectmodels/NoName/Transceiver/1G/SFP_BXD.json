@@ -1,5 +1,6 @@
 {
     "name": "NoName | Transceiver | 1G | SFP BXD",
+    "$collection": "inv.objectmodels",
     "uuid": "d045bb34-bf41-409e-8e73-db7c655f44a0",
     "vendor__code": "NONAME",
     "description": "NoName SFP BX-D (tx 1550nm) transceiver",

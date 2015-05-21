@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 6500 | WS-CAC-2500W",
+    "$collection": "inv.objectmodels",
     "uuid": "7464b565-0bf1-4a56-ab4e-67a9a6727f74",
     "vendor__code": "CISCO",
     "description": "Cisco 110/220v AC power supply, 2500 watt",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-CAC-2500W"
+            "part_no": ["WS-CAC-2500W"]
         }
     }
 }

@@ -34,7 +34,6 @@ from noc.lib.nbsocket.socketfactory import SocketFactory
 from noc.lib.nbsocket.pingsocket import Ping4Socket, Ping6Socket
 from noc.sa.activator.service import Service
 from noc.sa.activator.activator_socket import ActivatorSocket
-from noc.sa.activator.pm_collector_socket import PMCollectorSocket
 
 logger = logging.getLogger(__name__)
 
@@ -133,7 +132,6 @@ class Activator(Daemon, FSM):
         self.ignore_event_rules = []  # [(left_re,right_re)]
         self.trap_collectors = []  # List of SNMP Trap collectors
         self.syslog_collectors = []  # List of SYSLOG collectors
-        self.pm_data_collectors = []  # List of PM Data collectors
         self.to_save_output = False  # Do not save canned result
         self.use_canned_session = False  # Do not use canned session
         logger.info("Loading profile classes")
@@ -152,9 +150,6 @@ class Activator(Daemon, FSM):
         self.scripts_failed = 0
         self.script_lock = RLock()
         self.script_call_queue = Queue.Queue()
-        self.pm_data_queue = []
-        self.pm_result_queue = []
-        self.pm_data_secret = self.config.get("activator", "pm_data_secret")
         self.servers = ServersHub(self)
         # CLI debug logging
         self.log_cli_sessions = self.config.getboolean("main",
@@ -203,8 +198,6 @@ class Activator(Daemon, FSM):
                 self.stop_trap_collectors()
             if self.syslog_collectors:
                 self.stop_syslog_collectors()
-            if self.pm_data_collectors:
-                self.stop_pm_data_collectors()
         self.set_timeout(1)
 
     def on_CONNECT_enter(self):
@@ -268,9 +261,6 @@ class Activator(Daemon, FSM):
             if self.config.get("activator", "listen_syslog"):
                 self.start_syslog_collectors()
                 to_refresh_filters = True
-            if self.config.get("activator", "listen_pm_data"):
-                self.start_pm_data_collectors()
-                to_refresh_filters = True
         if to_refresh_filters:
             self.get_object_mappings()
 
@@ -325,27 +315,6 @@ class Activator(Daemon, FSM):
             for sc in self.syslog_collectors:
                 sc.close()
             self.syslog_collectors = []
-
-    def start_pm_data_collectors(self):
-        """
-        Launch PM Data collectors
-        """
-        logger.debug("Starting PM Data collectors")
-        self.pm_data_collectors = [
-            PMCollectorSocket(self, ip, port)
-            for ip, port
-            in self.resolve_addresses(self.config.get("activator", "listen_pm_data"), 19704)
-        ]
-
-    def stop_pm_data_collectors(self):
-        """
-        Disable PM Data collectors
-        """
-        if self.pm_data_collectors:
-            logger.debug("Stopping PM Data collectors")
-            for pdc in self.pm_data_collectors:
-                pdc.close()
-            self.pm_data_collectors = []
 
     def can_run_script(self):
         """
@@ -433,9 +402,6 @@ class Activator(Daemon, FSM):
                 break
             logger.debug("Calling delayed %s(*%s,**%s)" % (f, args, kwargs))
             apply(f, args, kwargs)
-        # Send collected PM data
-        if self.get_state() == "ESTABLISHED" and self.pm_data_queue:
-            self.send_pm_data()
         # Send object status changes
         if self.to_ping and self.get_state() == "ESTABLISHED" and self.status_change_queue:
             self.send_status_change()
@@ -589,6 +555,13 @@ class Activator(Daemon, FSM):
             self.compile_ignore_event_rules(response.ignore_rules)
             self.debug("Setting object mappings to: %s" % self.object_mappings)
             self.next_mappings_update = time.time() + response.expire
+            #
+            if not self.object_status:
+                self.object_status = dict(
+                    (x.address, x.current_status)
+                    for x in response.ping
+                    if x.current_status is not None
+                )
             # Schedule ping checks
             self.ping_interval = dict((x.address, x.interval)
                 for x in response.ping)
@@ -636,42 +609,10 @@ class Activator(Daemon, FSM):
             i.value = str(v)
         self.sae_stream.proxy.event(r, on_event_callback)
 
-    def queue_pm_data(self, pm_data):
-        self.pm_data_queue += pm_data
-
-    def queue_pm_result(self, pm_result):
-        self.pm_result_queue += pm_result
-
     def queue_status_change(self, address, status):
         i = self.object_mappings.get(address)
         if i:
             self.status_change_queue += [(i, status)]
-
-    def send_pm_data(self):
-        """
-        Send collected PM data to SAE
-        """
-        def pm_data_callback(transaction, response=None, error=None):
-            if error:
-                logging.error("pm_data failed: %s" % error)
-        r = PMDataRequest()
-        for probe_name, probe_type, timestamp, service, result, message in self.pm_result_queue:
-            d = r.result.add()
-            d.probe_name = probe_name
-            d.probe_type = probe_type
-            d.timestamp = timestamp
-            d.service = service
-            d.result = result
-            d.message = message
-        self.pm_result_queue = []
-        for name, timestamp, is_null, value in self.pm_data_queue:
-            d = r.data.add()
-            d.name = name
-            d.timestamp = timestamp
-            d.is_null = is_null
-            d.value = value
-        self.pm_data_queue = []
-        self.sae_stream.proxy.pm_data(r, pm_data_callback)
 
     def send_status_change(self):
         def status_change_callback(transaction, response=None, error=None):
