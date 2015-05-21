@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | IMPB | Recover IMPB stop learning state (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bd669f93-fc77-4198-bf03-4a0ee56baf3e",
     "description": "WARN: Port 28 recovers from IMPB stop learning state",
     "event_class__name": "Network | IMPB | Recover IMPB stop learning state",
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "(?:WARN:|WARN\\(4\\)) Port (?P<interface>\\S+) recovers from IMPB stop learning state$"
+            "value_re": "Port (?P<interface>\\S+) recovers from IMPB stop learning state$"
         }
     ]
 }

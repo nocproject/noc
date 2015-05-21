@@ -1,5 +1,6 @@
 {
     "name": "DLink | Modules | DES-132GB",
+    "$collection": "inv.objectmodels",
     "uuid": "ad2f4760-ac4a-45b0-a993-5c03f0ee921a",
     "vendor__code": "DLINK",
     "description": "2 Port GBIC Module",
@@ -31,7 +32,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-132GB"
+            "part_no": ["DES-132GB"]
         }
     }
 }

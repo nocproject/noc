@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3200-28/C1",
+    "$collection": "inv.objectmodels",
     "uuid": "644f91eb-5fb8-4a5d-b79c-c63b614ba624",
     "vendor__code": "DLINK",
     "description": "DES-3200-28/C1 xStack L2 Managed Switch witch 24 ports 10/100BASE-TX, 2 ports 100/1000 SFP, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -271,9 +272,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3200-28/C1",
-            "part_no1": "DES-3200-28/B1",
-            "part_no2": "DES-3200-28/ME/C1"
+            "part_no": ["DES-3200-28/B1", "DES-3200-28/C1", "DES-3200-28/ME/C1"]
         },
         "management": {
             "managed": true

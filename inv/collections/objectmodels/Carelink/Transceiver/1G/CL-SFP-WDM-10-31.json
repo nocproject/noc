@@ -1,5 +1,6 @@
 {
     "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-10-31",
+    "$collection": "inv.objectmodels",
     "uuid": "9fc8baef-f958-4e44-93e7-d57f2971761c",
     "vendor__code": "CARELINK",
     "description": "CareLink SFP WDM transceiver (1310 tx, 1550 rx)",
@@ -24,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CL-SFP-WDM-10-31"
+            "part_no": ["CL-SFP-WDM-10-31"]
         }
     }
 }

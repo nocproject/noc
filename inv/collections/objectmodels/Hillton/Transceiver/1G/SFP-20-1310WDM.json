@@ -1,5 +1,6 @@
 {
     "name": "Hillton | Transceiver | 1G | SFP-20-1310WDM",
+    "$collection": "inv.objectmodels",
     "uuid": "66ce730e-ff6c-4ad8-9d45-385bbae2976a",
     "vendor__code": "HILLTON",
     "description": "Hillton 20km SFP LX transceiver",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-20-1310WDM"
+            "part_no": ["SFP-20-1310WDM"]
         }
     }
 }

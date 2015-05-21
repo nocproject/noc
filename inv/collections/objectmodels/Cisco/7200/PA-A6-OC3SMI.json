@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7200 | PA-A6-OC3SMI",
+    "$collection": "inv.objectmodels",
     "uuid": "8a3f8a61-5d7f-4748-9998-747dfdb89b22",
     "vendor__code": "CISCO",
     "description": "1-port ATM OC-3c/STM-1 single-mode (IR) port adapter",
@@ -23,8 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "PA-A6-OC3SMI",
-            "part_no1": "PA-A6-OC3SMI="
+            "part_no": ["PA-A6-OC3SMI=", "PA-A6-OC3SMI"]
         }
     }
 }

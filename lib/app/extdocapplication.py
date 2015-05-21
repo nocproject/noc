@@ -22,7 +22,7 @@ from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
                                ModelParameter, ListOfParameter,
                                EmbeddedDocumentParameter, DictParameter,
                                InterfaceTypeError, DocumentParameter)
-from noc.lib.validators import is_int
+from noc.lib.validators import is_int, is_uuid
 from noc.lib.serialize import json_decode
 from noc.main.models.collectioncache import CollectionCache
 from noc.main.models.doccategory import DocCategory
@@ -119,14 +119,21 @@ class ExtDocApplication(ExtApplication):
         Prepare Q statement for query
         """
         def get_q(f):
+            if f == "uuid":
+                if is_uuid(query):
+                    return f
+                else:
+                    return None
             if "__" not in f:
                 return "%s__%s" % (f, self.query_condition)
             else:
                 return f
 
+        qfx = [get_q(f) for f in self.query_fields]
+        qfx = [x for x in qfx if x]
         q = reduce(lambda x, y: x | Q(**{get_q(y):query}),
-                   self.query_fields[1:],
-                   Q(**{get_q(self.query_fields[0]): query}))
+                   qfx[1:],
+                   Q(**{qfx[0]: query}))
         if self.int_query_fields and is_int(query):
             v = int(query)
             for f in self.int_query_fields:
@@ -374,7 +381,7 @@ class ExtDocApplication(ExtApplication):
         from noc.lib.collection import Collection
         o = self.get_object_or_404(self.model, id=id)
         data = json_decode(o.to_json())
-        dc = Collection(self.json_collection, self.model)
+        dc = Collection(self.json_collection)
         dc.load()
         dc.install_item(data)
         dc.save()

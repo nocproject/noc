@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3620-52T",
+    "$collection": "inv.objectmodels",
     "uuid": "fc6e6723-9e97-463b-afd6-3010d6419e98",
     "vendor__code": "DLINK",
     "description": "DGS-3620-52T xStack L3 Managed Switch witch 48 ports 10/100/1000BASE-T and 4 SFP+",
@@ -458,7 +459,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3620-52T"
+            "part_no": ["DGS-3620-52T"]
         },
         "management": {
             "managed": true

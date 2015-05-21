@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | MX-MPC2-3D",
+    "$collection": "inv.objectmodels",
     "uuid": "4d3c9a48-9a71-457c-ae48-59f8d1ed442a",
     "vendor__code": "JUNIPER",
     "description": "2 Trio PFEs, port queue, 64 K IFLs",
@@ -29,8 +30,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "MX-MPC2-3D",
-            "part_no0": "750-031089"
+            "order_part_no": ["MX-MPC2-3D"],
+            "part_no": ["750-031089"]
         }
     }
 }

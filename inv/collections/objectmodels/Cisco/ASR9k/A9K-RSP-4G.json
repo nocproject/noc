@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9k | A9K-RSP-4G",
+    "$collection": "inv.objectmodels",
     "uuid": "fef21c55-1211-4b93-ac99-ff6e38173c87",
     "vendor__code": "CISCO",
     "description": "ASR9K Route Switch Processor with 4G memory",
@@ -47,7 +48,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "A9K-RSP-4G"
+            "part_no": ["A9K-RSP-4G"]
         }
     }
 }

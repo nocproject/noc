@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | EX4200-T",
+    "$collection": "inv.objectmodels",
     "uuid": "e390fc44-9d33-4378-8501-184302aca58d",
     "vendor__code": "JUNIPER",
     "description": "24-port 10/100/1000BASE-T",
@@ -242,7 +243,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "750-033065"
+            "part_no": ["750-033065"]
         },
         "management": {
             "managed": true

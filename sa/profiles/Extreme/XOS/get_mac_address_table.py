@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Extreme.XOS.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -11,12 +11,13 @@ import noc.sa.script
 from noc.sa.interfaces import IGetMACAddressTable
 import re
 
-rx_line = re.compile(r"^(?P<mac>\S+)\s+\S+\((?P<vlan_id>\d+)\)\s+\d+\s+(?P<type>(?:(?:\S)(?:\s))+)\s+(?P<interfaces>.*)$")
+rx_line = re.compile(r"^(?P<mac>\S+)\s+\S+\((?P<vlan_id>\d+)\)\s+\d+\s+(?P<type>([dhmis\s]+))\s+?(?:\S+)?\s+(?P<interfaces>\d+)(?:\S+)?$")
 
 
 class Script(noc.sa.script.Script):
     name = "Extreme.XOS.get_mac_address_table"
     implements = [IGetMACAddressTable]
+    TIMEOUT = 1900
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show fdb"
@@ -31,10 +32,11 @@ class Script(noc.sa.script.Script):
         for l in vlans.split("\n"):
             match = rx_line.match(l.strip())
             if match:
+                mactype = match.group("type")
                 r.append({
                     "vlan_id": match.group("vlan_id"),
                     "mac": match.group("mac"),
                     "interfaces": [match.group("interfaces")],
-                    "type": {"d m ": "D", "s m ": "S"}[match.group("type")]
+                    "type": {"d m": "D", "dhm": "D","dhmi": "D", "d mi": "D", "s m": "S", "shm": "S"}[mactype.strip()]
                 })
         return r

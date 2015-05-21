@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS | Network | LBD | Vlan Loop Cleared (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "9a7eac08-beb2-41ee-86e8-326836364e71",
     "description": "INFO(6) Port 25 VID 356 LBD recovered. Loop detection restarted",
     "event_class__name": "Network | LBD | Vlan Loop Cleared",
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD recovered. Loop detection restarted"
+            "value_re": "Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD recovered. Loop detection restarted"
         }
     ]
 }

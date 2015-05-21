@@ -191,8 +191,6 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.out_data_buffer = ""
         ConnectedTCPSocket.__init__(self, self.script.activator.factory,
                                     self.script.access_profile.address, port)
-        if self.script.CLI_TIMEOUT:
-            ConnectedTCPSocket.set_timeout(self, self.script.CLI_TIMEOUT)
 
     def dump_data(self, data):
         return " ".join(["%02X" % ord(c) for c in data])

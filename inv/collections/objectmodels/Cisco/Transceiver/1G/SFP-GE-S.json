@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | Transceiver | 1G | SFP-GE-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "ef448862-574b-4706-bd14-d0b03b3bc8db",
+    "vendor__code": "CISCO",
+    "description": "Cisco SFP SX transceiver with DOM support",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASESX"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASESX"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFP-GE-S"]
+        }
+    }
+}

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3750X | C3KX-NM-1G",
+    "$collection": "inv.objectmodels",
     "uuid": "213e22d3-14df-463b-99f4-70e15e935441",
     "vendor__code": "CISCO",
     "description": "Four GbE port network module",
@@ -47,7 +48,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "C3KX-NM-1G"
+            "part_no": ["C3KX-NM-1G"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX | MS-MIC-16G",
+    "$collection": "inv.objectmodels",
     "uuid": "42b19590-c194-4873-bded-b417f34aea8c",
     "vendor__code": "JUNIPER",
     "description": "Multiservices MIC for MX",
@@ -15,8 +16,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "MS-MIC-16G",
-            "part_no0": "750-043688"
+            "order_part_no": ["MS-MIC-16G"],
+            "part_no": ["750-043688"]
         }
     }
 }

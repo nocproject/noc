@@ -1,5 +1,6 @@
 {
     "name": "Brocade | JetCore | 4 slot chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "c69d8ee7-a292-48ca-9db4-bd64515c722b",
     "vendor__code": "BROCADE",
     "description": "BigIron 4000 Router/FastIron 400 Router/Switch",
@@ -37,8 +38,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "BigIron 4000 Router",
-            "part_no1": "FastIron 400 Router"
+            "part_no": ["FastIron 400 Router", "BigIron 4000 Router"]
         },
         "management": {
             "managed": true

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | 7600-ES20-20GE",
+    "$collection": "inv.objectmodels",
     "uuid": "62233d97-002a-4428-b4e9-7bd7f3a6bd81",
     "vendor__code": "CISCO",
     "description": "7600-ES20-10G3C ESM20G",
@@ -38,7 +39,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": "7600-ES20-20GE"
+            "part_no": ["7600-ES20-20GE"]
         }
     }
 }

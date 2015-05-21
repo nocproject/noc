@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7200 | uBR7246VXR Chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "2784b4b6-7666-48df-8419-5057b24d255f",
     "vendor__code": "CISCO",
     "description": "Cisco uBR7246VXR",
@@ -44,7 +45,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CISCOUBR7246VXR"
+            "part_no": ["CISCOUBR7246VXR"]
         },
         "management": {
             "managed": true

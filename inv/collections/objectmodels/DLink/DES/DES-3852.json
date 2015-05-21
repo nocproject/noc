@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3852",
+    "$collection": "inv.objectmodels",
     "uuid": "1236cc09-320f-4d22-8277-8c8e721bb5d3",
     "vendor__code": "DLINK",
     "description": "DES-3852 xStack L3 Managed Switch witch 48 ports 10/100BASE-TX, 4 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -481,7 +482,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3852"
+            "part_no": ["DES-3852"]
         },
         "management": {
             "managed": true

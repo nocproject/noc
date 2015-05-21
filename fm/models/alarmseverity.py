@@ -8,8 +8,8 @@
 
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, IntField, UUIDField,
-                                BooleanField)
+from mongoengine.fields import (StringField, IntField, UUIDField)
+import cachetools
 ## NOC modules
 from noc.main.models.style import Style
 from noc.lib.nosql import ForeignKeyField
@@ -24,6 +24,7 @@ class AlarmSeverity(Document):
     meta = {
         "collection": "noc.alarmseverities",
         "allow_inheritance": False,
+        "indexes": ["severity"],
         "json_collection": "fm.alarmseverities"
     }
     name = StringField(required=True, unique=True)
@@ -44,6 +45,11 @@ class AlarmSeverity(Document):
         if not s:
             s = cls.objects.order_by("severity").first()
         return s
+
+    @classmethod
+    @cachetools.ttl_cache(maxsize=1000, ttl=600)
+    def get_severity_css_class_name(cls, severity):
+        return cls.get_severity(severity).style.css_class_name
 
     def get_json_path(self):
         return "%s.json" % quote_safe_path(self.name)

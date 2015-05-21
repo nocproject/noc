@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7200 | NPE-G2",
+    "$collection": "inv.objectmodels",
     "uuid": "1f6bc39a-d87f-4666-bd3b-9229cd54f4b6",
     "vendor__code": "CISCO",
     "description": "Cisco 7200 Series Network Processing Engine NPE-G2",
@@ -100,7 +101,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "NPE-G2"
+            "part_no": ["NPE-G2"]
         }
     }
 }

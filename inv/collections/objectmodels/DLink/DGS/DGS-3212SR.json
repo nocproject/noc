@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3212SR",
+    "$collection": "inv.objectmodels",
     "uuid": "f85ecb09-cc87-4b5f-8320-672cf2f83605",
     "vendor__code": "DLINK",
     "description": "DGS-3212SR L2 Managed Switch witch 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 module slot",
@@ -105,7 +106,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3212SR"
+            "part_no": ["DGS-3212SR"]
         },
         "management": {
             "managed": true

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 10G | XENPAK-10GB-CX4",
+    "$collection": "inv.objectmodels",
     "uuid": "e0748813-8335-4826-b972-880c0e43b9ec",
     "vendor__code": "CISCO",
     "description": "Cisco XENPAK 10G CX4 transceiver",
@@ -16,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "XENPAK-10GB-CX4"
+            "part_no": ["XENPAK-10GB-CX4"]
         }
     }
 }

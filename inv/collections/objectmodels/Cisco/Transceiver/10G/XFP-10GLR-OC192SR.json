@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 10G | XFP-10GLR-OC192SR",
+    "$collection": "inv.objectmodels",
     "uuid": "8eb6bad5-4ad7-4f3e-972c-8a1cc07fa6a9",
     "vendor__code": "CISCO",
     "description": "Cisco XFP 10G LR transceiver",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "XFP-10GLR-OC192SR"
+            "part_no": ["XFP-10GLR-OC192SR"]
         }
     }
 }

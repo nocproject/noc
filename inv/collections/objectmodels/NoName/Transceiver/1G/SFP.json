@@ -1,5 +1,6 @@
 {
     "name": "NoName | Transceiver | 1G | SFP",
+    "$collection": "inv.objectmodels",
     "uuid": "5144216d-f876-4e97-ad23-b41512985be5",
     "vendor__code": "NONAME",
     "description": "NoName SFP transceiver",

@@ -14,6 +14,8 @@ from mongoengine.fields import (StringField, UUIDField, DictField,
                                 ListField, EmbeddedDocumentField,
                                 ObjectIdField)
 from mongoengine import signals
+from mongoengine.queryset import Q
+import cachetools
 ## NOC modules
 from connectiontype import ConnectionType
 from connectionrule import ConnectionRule
@@ -88,8 +90,15 @@ class ObjectModel(Document):
     meta = {
         "collection": "noc.objectmodels",
         "allow_inheritance": False,
-        "indexes": [],
-        "json_collection": "inv.objectmodels"
+        "indexes": [
+            ("vendor", "data.asset.part_no"),
+            ("vendor", "data.asset.order_part_no")
+        ],
+        "json_collection": "inv.objectmodels",
+        "json_depends_on": [
+            "inv.vendors",
+            "inv.connectionrules"
+        ]
     }
 
     name = StringField(unique=True)
@@ -103,6 +112,8 @@ class ObjectModel(Document):
     uuid = UUIDField(binary=True)
     plugins = ListField(StringField(), required=False)
     category = ObjectIdField()
+
+    om_cache = {}
 
     def __unicode__(self):
         return self.name
@@ -167,6 +178,65 @@ class ObjectModel(Document):
             if (c.name == name or (
                     c.internal_name and c.internal_name == name)):
                 return c
+        return None
+
+    @classmethod
+    def get_model(cls, vendor, part_no):
+        """
+        Get ObjectModel by part part_no,
+        Search order:
+            * NOC model name
+            * asset.part_no* value (Part numbers)
+            * asset.order_part_no* value (FRU numbers)
+        """
+        if type(part_no) == list:
+            for p in part_no:
+                m = cls._get_model(vendor, p)
+                if m:
+                    return m
+            return None
+        else:
+            return cls._get_model(vendor, part_no)
+
+    @classmethod
+    @cachetools.ttl_cache(maxsize=10000, ttl=60)
+    def _get_model(cls, vendor, part_no):
+        """
+        Get ObjectModel by part part_no,
+        Search order:
+            * NOC model name
+            * asset.part_no* value (Part numbers)
+            * asset.order_part_no* value (FRU numbers)
+        """
+        # Check for model name
+        if " | " in part_no:
+            m = ObjectModel.objects.filter(name=part_no).first()
+            if m:
+                return m
+        # Check for asset_part_no
+        m = ObjectModel.objects.filter(
+            vendor=vendor.id,
+            data__asset__part_no=part_no
+        ).first()
+        if m:
+            return m
+        m = ObjectModel.objects.filter(
+            vendor=vendor.id,
+            data__asset__order_part_no=part_no
+        ).first()
+        if m:
+            return m
+        # Not found
+        # Fallback and search by unique part no
+        oml = list(ObjectModel.objects.filter(data__asset__part_no=part_no))
+        if len(oml) == 1:
+            # Unique match found
+            return oml[0]
+        oml = list(ObjectModel.objects.filter(data__asset__order_part_no=part_no))
+        if len(oml) == 1:
+            # Unique match found
+            return oml[0]
+        # Nothing found
         return None
 
     @property
@@ -239,11 +309,8 @@ def clear_unknown_models(sender, document, **kwargs):
     Clear unknown part numbers
     """
     if "asset" in document.data:
-        part_no = [
-            document.data["asset"][k]
-            for k in document.data["asset"]
-            if k.startswith("part_no") or k.startswith("order_part_no")
-        ]
+        part_no = (document.data["asset"].get("part_no", []) +
+                   document.data["asset"].get("order_part_no", []))
         if part_no:
             vendor = document.vendor
             if isinstance(vendor, basestring):

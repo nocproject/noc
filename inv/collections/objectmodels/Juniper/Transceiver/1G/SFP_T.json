@@ -1,5 +1,6 @@
 {
     "name": "Juniper | Transceiver | 1G | SFP T",
+    "$collection": "inv.objectmodels",
     "uuid": "03a7f540-4dc2-412d-9990-183c3d29e507",
     "vendor__code": "JUNIPER",
     "description": "Juniper SFP TX transceiver",
@@ -24,9 +25,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "SFP-T",
-            "part_no0": "740-013111",
-            "part_no1": "740-014132"
+            "order_part_no": ["SFP-T"],
+            "part_no": ["740-014132", "740-013111"]
         }
     }
 }

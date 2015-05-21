@@ -1,5 +1,6 @@
 {
     "name": "DLink | DGS | DGS-3426P",
+    "$collection": "inv.objectmodels",
     "uuid": "d0e055b6-1bb3-4f14-91ca-977a58c0c2e2",
     "vendor__code": "DLINK",
     "description": "DGS-3426P xStack L2 Managed Switch witch 20 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 module slot with PoE",
@@ -265,7 +266,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DGS-3426P"
+            "part_no": ["DGS-3426P"]
         },
         "management": {
             "managed": true

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | SRX | SRX210HE",
+    "$collection": "inv.objectmodels",
     "uuid": "b476f76e-3ee3-4faa-8627-e9b877be6fbd",
     "vendor__code": "JUNIPER",
     "description": "SRX services gateway 210 with 2xGE + 6xFE ports, 1xMini-PIM slot, 1xExpressCard slot, and high memory (1Gb RAM w/ 512Mb accessible, 1GB FLASH)",
@@ -114,7 +115,7 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "SRX210HE"
+            "order_part_no": ["SRX210HE"]
         },
         "management": {
             "managed": true

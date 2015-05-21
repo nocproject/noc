@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7100 | 7100 Motherboard",
+    "$collection": "inv.objectmodels",
     "uuid": "8ef20aaf-0caa-4b19-9ff9-54af97b53b91",
     "vendor__code": "CISCO",
     "description": "Cisco 7100 Motherboard",
@@ -62,7 +63,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CISCO7100-MB"
+            "part_no": ["CISCO7100-MB"]
         }
     }
 }

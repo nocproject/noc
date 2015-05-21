@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3028P",
+    "$collection": "inv.objectmodels",
     "uuid": "c293ea57-8fa6-47cf-800a-f547c6c2736c",
     "vendor__code": "DLINK",
     "description": "DES-3028P L2 Managed Switch witch 24 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP, 2 10/100/1000BASE-T with PoE",
@@ -269,7 +270,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3028P"
+            "part_no": ["DES-3028P"]
         },
         "management": {
             "managed": true

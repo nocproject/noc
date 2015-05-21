@@ -23,6 +23,7 @@ class CorrelatorScheduler(Scheduler):
             # Register all jobs
             self.register_all(os.path.join("fm", "correlator", "jobs"),
                 exclude=["base.py"])
+            self.reset_running = True
         else:
             # Called from classifier,
             # Register only "dispose" job

@@ -30,12 +30,14 @@ class CheckLinkJob(AlarmJob):
         :param result:
         :return:
         """
-        if len(result) == 1:
-            r = result[0]
+        self.logger.debug("check_link returns %s (checking %s)",
+                          result, self.data)
+        for r in result:
             if (r["status"] and
-                r["interface"] == self.data["interface"]):
+                        r["interface"] == self.data["interface"]):
                 self.clear_alarm("Interface '%s' is up" % (
                     self.data["interface"]))
+                break
         return True
 
     def get_effective_intervals(self):

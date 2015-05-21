@@ -1,5 +1,6 @@
 {
     "name": "Cisco | PWR | PWR-C49-300DC",
+    "$collection": "inv.objectmodels",
     "uuid": "f6d06ad0-e8c7-45e7-8045-9aa1883f558b",
     "vendor__code": "CISCO",
     "description": "300 Watt DC PSU",
@@ -16,7 +17,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "PWR-C49-300DC"
+            "part_no": ["PWR-C49-300DC"]
         }
     }
 }

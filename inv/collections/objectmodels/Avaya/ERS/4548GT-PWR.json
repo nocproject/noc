@@ -1,5 +1,6 @@
 {
     "name": "Avaya | ERS | 4548GT-PWR",
+    "$collection": "inv.objectmodels",
     "uuid": "8f73e716-c8ae-4d92-8d64-b5c1d7a04b97",
     "vendor__code": "AVAYA",
     "description": "48 10/100/1000BASE-T ports supporting 802.3af PoE, including 4 shared SFP Uplink ports",
@@ -441,7 +442,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "4548GT-PWR"
+            "part_no": ["4548GT-PWR"]
         },
         "dimensions": {
             "depth": 430,

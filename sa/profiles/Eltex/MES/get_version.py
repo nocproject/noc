@@ -31,7 +31,6 @@ class Script(NOCScript):
         r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
 
     platforms = {
-        "10": "MES-1024",
         "24": "MES-3124",
         "26": "MES-5148",
         "30": "MES-3124F",
@@ -41,7 +40,9 @@ class Script(NOCScript):
         "39": "MES-3116F",
         "40": "MES-3224",
         "41": "MES-3224F",
-        "42": "MES-2124",
+        "42": "MES-1024",
+        "43": "MES-2124",
+        "52": "MES-1124"
     }
 
     def execute(self):

@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | Unknown | Ignore #20 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "5dd1947a-113a-4f09-977a-c4a71902a0cc",
+    "description": "Feb 12 10:35:36 2013 Teh %%10VLAN/5/WEBOPT_CHANGE_PORT_TYPE(l): (by admin via web from host 192.168.1.3)   Changing interface GigabitEthernet1/0/8 port type to hybrid.",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%10VLAN/5/WEBOPT_CHANGE_PORT_TYPE\\(l\\):\\s+\\(by admin via web from host \\S+\\)\\s+Changing interface \\S+ port type to hybrid\\.$"
+        }
+    ]
+}

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 10G | X2-10GB-ER",
+    "$collection": "inv.objectmodels",
     "uuid": "09219722-0638-45fc-bc0c-a2fac16a833d",
     "vendor__code": "CISCO",
     "description": "Cisco X2 10G ER transciever",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "X2-10GB-ER"
+            "part_no": ["X2-10GB-ER"]
         }
     }
 }

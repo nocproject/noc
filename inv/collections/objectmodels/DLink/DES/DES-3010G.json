@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3010G",
+    "$collection": "inv.objectmodels",
     "uuid": "11cfe094-e988-4ed0-87fd-fce5abca5a09",
     "vendor__code": "DLINK",
     "description": "DES-3010G L2 Managed Switch witch 8 ports 10/100BASE-TX, 1 ports 10/100/1000BASE-T, 1 port 100/1000 SFP",
@@ -105,7 +106,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3010G"
+            "part_no": ["DES-3010G"]
         },
         "management": {
             "managed": true

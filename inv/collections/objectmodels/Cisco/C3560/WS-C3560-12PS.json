@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3560 | WS-C3560-12PS",
+    "$collection": "inv.objectmodels",
     "uuid": "d3d5b2eb-a535-424f-9269-076ee791ce02",
     "vendor__code": "CISCO",
     "description": "12 Ethernet 10/100 ports with PoE 1 dual-purpose 10/100/1000 and SFP port",
@@ -138,8 +139,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C3560-12PS-S",
-            "part_no1": "WS-C3560-12PS"
+            "part_no": ["WS-C3560-12PS", "WS-C3560-12PS-S"]
         },
         "management": {
             "managed": true

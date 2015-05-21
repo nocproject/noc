@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-SUP720-3B",
+    "$collection": "inv.objectmodels",
     "uuid": "d46b3077-773e-4a87-b9b6-d62570d1b07d",
     "vendor__code": "CISCO",
     "description": "WS-SUP720-3B 2 ports Supervisor Engine 720",
@@ -67,8 +68,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-SUP720-3B",
-            "part_no1": "WS-SUP720-3BXL"
+            "part_no": ["WS-SUP720-3BXL", "WS-SUP720-3B"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | CLK-7600",
+    "$collection": "inv.objectmodels",
     "uuid": "04dfc198-6f73-4ebf-b05f-9ccaf8966a05",
     "vendor__code": "CISCO",
     "description": "Cisco OSR-7600 Clock FRU",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CLK-7600"
+            "part_no": ["CLK-7600"]
         }
     }
 }

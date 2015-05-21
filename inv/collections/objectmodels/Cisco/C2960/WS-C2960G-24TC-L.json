@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C2960 | WS-C2960G-24TC-L",
+    "$collection": "inv.objectmodels",
     "uuid": "61035350-cf7c-47d5-9181-a8c44f019234",
     "vendor__code": "CISCO",
     "description": "20 Ethernet 10/100/1000 ports and 4 dual-purpose uplinks",
@@ -249,7 +250,7 @@
     ],
     "data": {
         "asset": {
-            "part_no1": "WS-C2960G-24TC-L"
+            "part_no": ["WS-C2960G-24TC-L"]
         },
         "management": {
             "managed": true

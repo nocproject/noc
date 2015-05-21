@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | EX8208 Chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "3ac04b37-a6f7-43a4-acfb-6b95e1d50c59",
     "vendor__code": "JUNIPER",
     "description": "Base EX8208 system configuration:  8-slot chassis with passive backplane",
@@ -114,7 +115,7 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "EX8208"
+            "order_part_no": ["EX8208"]
         },
         "management": {
             "managed": true

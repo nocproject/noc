@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 6500 | VS-S720-10G",
+    "$collection": "inv.objectmodels",
     "uuid": "619a4fb8-a4a5-4eab-b3f2-3aec491188de",
     "vendor__code": "CISCO",
     "description": "Cisco VS-S720-10G 5 ports Supervisor Engine 720 10GE",
@@ -84,10 +85,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "VS-S720-10G",
-            "part_no1": "VS-S720-10G-3C",
-            "part_no2": "VS-S720-10G-3CXL",
-            "part_no3": "VS-SUP2T-10G"
+            "part_no": ["VS-S720-10G-3C", "VS-S720-10G", "VS-SUP2T-10G", "VS-S720-10G-3CXL"]
         }
     }
 }

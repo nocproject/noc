@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 6500 | WS-C6509-E",
+    "$collection": "inv.objectmodels",
     "uuid": "0d5ae327-cc0f-4568-8a2b-7ee0bb54896a",
     "vendor__code": "CISCO",
     "description": "Cisco C6509-E 9-slot Chassis",
@@ -132,7 +133,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C6509-E"
+            "part_no": ["WS-C6509-E"]
         },
         "dimensions": {
             "depth": 460,

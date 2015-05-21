@@ -1,5 +1,6 @@
 {
     "name": "Huawei | Quidway S5300 | E4GF-4-Port GE SFP subcard",
+    "$collection": "inv.objectmodels",
     "uuid": "4420bda2-606e-481f-925b-04b9f5cb85f7",
     "vendor__code": "HUAWEI",
     "description": "Interface card with 4 GE SFP ports",
@@ -46,7 +47,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "LS5D00E4GF00"
+            "part_no": ["LS5D00E4GF00"]
         },
         "dimensions": {
             "depth": "69",

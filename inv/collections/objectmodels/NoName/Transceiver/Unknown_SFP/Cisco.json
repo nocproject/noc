@@ -1,5 +1,6 @@
 {
     "name": "NoName | Transceiver | Unknown SFP | Cisco",
+    "$collection": "inv.objectmodels",
     "uuid": "f52610b5-718c-4e8d-a4c1-7585588cd8c0",
     "vendor__code": "NONAME",
     "description": "Unknown SFP transceiver. Replace with real type manually",

@@ -13,6 +13,7 @@ import uuid
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.lib.debug import error_report
+from noc.lib.collection import Collection
 from noc.main.management.commands.collection import Command as CollectionCommand
 
 
@@ -24,11 +25,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         try:
+            self.get_existing_mo()
             self.fix_uuids()
             self.fix_inv_root()
             self.fix_inv_lost_and_found()
             self.fix_inv_orphans()
             self.fix_metricsettings()
+            self.fix_fm_outage_orphans()
             self.fix_wiping_mo()
         except:
             error_report()
@@ -45,7 +48,8 @@ class Command(BaseCommand):
         Fix collection uuids to binary format
         """
         self.info("Checking collections UUID")
-        for n, c in CollectionCommand.collections:
+        for n in Collection.iter_collections():
+            c = Collection.COLLECTIONS[n]
             if ("uuid" in c._fields and
                     hasattr(c._fields["uuid"], "_binary") and
                     c._fields["uuid"]._binary
@@ -170,3 +174,62 @@ class Command(BaseCommand):
             if not c.find({"object": mo.id, "jcls": "sa.wipe_managed_object"}).count():
                 self.info("Restarting wipe process: %s", mo)
                 submit_job("main.jobs", "sa.wipe_managed_object", mo.id)
+
+    def fix_fm_outage_orphans(self):
+        from noc.sa.models.managedobject import ManagedObject
+        from fm.models.outage import Outage
+
+        self.info("Checking fm.Outages")
+        collection = Outage._get_collection()
+        self.fix_missed_mo(collection, "object")
+
+    def get_existing_mo(self):
+        """
+        Initialize set of existing managed objects ids
+        :return:
+        """
+        from sa.models import ManagedObject
+
+        self.existing_mo = set(
+            ManagedObject.objects.exclude(
+                name__startswith="wiping-"
+            ).values_list("id", flat=True)
+        )
+
+    def get_missed_mo(self, collection, field):
+        """
+        Returns a list of missed objects in collection
+        :param collection:
+        :param fields:
+        :return:
+        """
+        data = collection.aggregate([
+            {
+                "$group": {
+                    "_id": "$%s" % field,
+                    "count": {"$sum": 1}
+                }
+            }
+        ])
+        x = set(d["_id"] for d in data["result"])
+        return list(x - self.existing_mo)
+
+    def fix_missed_mo(self, collection, field):
+        """
+        Remove all records with missed objects
+        :param collection:
+        :param field:
+        :return:
+        """
+        missed = self.get_missed_mo(collection, field)
+        while missed:
+            chunk, missed = missed[:500], missed[500:]
+            self.info(
+                "    ... Removing records for %s",
+                ", ".join(str(x) for x in chunk)
+            )
+            collection.remove({
+                field: {
+                    "$in": chunk
+                }
+            })

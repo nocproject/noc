@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-F6K-MSFC2A",
+    "$collection": "inv.objectmodels",
     "uuid": "ad665010-b2d0-4fb4-91b2-bdbc97e9945e",
     "vendor__code": "CISCO",
     "description": "WS-F6K-MSFC2A Cat6k MSFC 2A daughterboard Rev. 4.0",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-F6K-MSFC2A"
+            "part_no": ["WS-F6K-MSFC2A"]
         }
     }
 }

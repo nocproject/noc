@@ -10,8 +10,6 @@
 from collections import defaultdict
 import hashlib
 import base64
-## Third-party modules
-from mongoengine.queryset import Q
 ## NOC modules
 from base import Report
 from noc.inv.models.objectmodel import ObjectModel
@@ -30,7 +28,6 @@ class AssetReport(Report):
     def __init__(self, job, enabled=True, to_save=False):
         super(AssetReport, self).__init__(
             job, enabled=enabled, to_save=to_save)
-        self.om_cache = {}  # part_no -> object model
         self.unknown_part_no = {}  # part_no -> list of variants
         self.pn_description = {}  # part_no -> Description
         self.vendors = {}  # code -> Vendor instance
@@ -49,6 +46,20 @@ class AssetReport(Report):
                vendor=None,
                revision=None, serial=None,
                description=None):
+        # Check the vendor and the serial are sane
+        # OEM transceivers return binary trash often
+        if vendor:
+            try:
+                vendor.encode("utf-8")
+            except UnicodeDecodeError:
+                self.info("Trash submited as vendor id: %s" % vendor.encode("hex"))
+                return
+        if serial:
+            try:
+                serial.encode("utf-8")
+            except UnicodeDecodeError:
+                self.info("Trash submited as serial: %s" % serial.encode("hex"))
+                return
         #
         is_unknown_xcvr = (not builtin and
                            part_no[0].startswith("Unknown | Transceiver | "))
@@ -82,7 +93,7 @@ class AssetReport(Report):
                 return
         else:
             # Find model
-            m = self.get_model(vnd, part_no)
+            m = ObjectModel.get_model(vnd, part_no)
             if not m:
                 # Try to resolve via model map
                 m = self.get_model_map(vendor, part_no, serial)
@@ -347,58 +358,6 @@ class AssetReport(Report):
                 self.error("Unknown part number for %s: %s (%s)" % (
                     platform, ", ".join(pns), description))
 
-    def get_model(self, vendor, part_no):
-        """
-        Get ObjectModel by part part_no,
-        Search order:
-            * NOC model name
-            * asset.part_no* value (Part numbers)
-            * asset.order_part_no* value (FRU numbers)
-        """
-        # Process list of part no
-        if type(part_no) == list:
-            for p in part_no:
-                m = self.get_model(vendor, p)
-                if m:
-                    return m
-            return None
-        # Process scalar type
-        m = self.om_cache.get(part_no)
-        if m:
-            return m
-        # Check for model name
-        if " | " in part_no:
-            m = ObjectModel.objects.filter(name=part_no).first()
-            if m:
-                self.om_cache[part_no] = m
-                return m
-        vq = Q(vendor=vendor.id)
-        pq = (
-            Q(data__asset__part_no0=part_no) |
-            Q(data__asset__part_no1=part_no) |
-            Q(data__asset__part_no2=part_no) |
-            Q(data__asset__part_no3=part_no) |
-            Q(data__asset__order_part_no0=part_no) |
-            Q(data__asset__order_part_no1=part_no) |
-            Q(data__asset__order_part_no2=part_no) |
-            Q(data__asset__order_part_no3=part_no)
-        )
-        # Check for asset.part_no* and asset.order_part_no*
-        m = ObjectModel.objects.filter(vq & pq).first()
-        if m:
-            self.om_cache[part_no] = m
-            return m
-        # Not found
-        # Fallback and search by unique part no
-        oml = list(ObjectModel.objects.filter(pq))
-        if len(oml) == 1:
-            # Unique match found
-            self.om_cache[part_no] = oml[0]
-            return oml[0]
-        # Nothing found
-        self.om_cache[part_no] = None
-        return None
-
     def register_unknown_part_no(self, vendor, part_no, descripton):
         """
         Register missed part number
@@ -434,6 +393,9 @@ class AssetReport(Report):
         v = v.upper()
         if v in self.vendors:
             return self.vendors[v]
+        # Temporary fix
+        if v == "D-LINK":
+            v = "DLINK"
         o = Vendor.objects.filter(code=v).first()
         if o:
             self.vendors[v] = o

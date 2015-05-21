@@ -1,5 +1,6 @@
 {
     "name": "Arista | 7100 | DCS-7124S",
+    "$collection": "inv.objectmodels",
     "uuid": "f2ba6387-5e5a-46e1-a2f3-e0cc645877a2",
     "vendor__code": "ARISTA",
     "description": "Arista 7124S, 24-port L2/3/4 switch, 600ns latency, 760W AC power supplies",
@@ -281,7 +282,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DCS-7124S"
+            "part_no": ["DCS-7124S"]
         },
         "management": {
             "managed": true

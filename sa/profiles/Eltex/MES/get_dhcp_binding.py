@@ -19,7 +19,7 @@ class Script(noc.sa.script.Script):
     implements = [IGetDHCPBinding]
 
     rx_line = re.compile(
-        r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<expire>.+?)\s+(?P<type>Automatic|Manual)$",
+        r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<expire>.+?)\s+(?P<type>Automatic|Manual)",
         re.IGNORECASE)
 
     def execute(self):

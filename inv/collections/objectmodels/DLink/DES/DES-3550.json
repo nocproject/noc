@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3550",
+    "$collection": "inv.objectmodels",
     "uuid": "b8b2e556-ecf7-42f9-92cd-9eef3357f10a",
     "vendor__code": "DLINK",
     "description": "DES-3550 L2 Managed Switch witch 48 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
@@ -445,7 +446,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3550"
+            "part_no": ["DES-3550"]
         },
         "management": {
             "managed": true

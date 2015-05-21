@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Eltex.MES.get_switchport
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -36,55 +36,72 @@ class Script(NOCScript):
         for p in portchannels:
             portchannel_members += p["members"]
 
-        # Get interafces status
-        interface_status = {}
-        port_vlans = {}
-        for s in self.scripts.get_interface_status():
-            interface_status[s["interface"]] = s["status"]
 
         #TODO
         # Get 802.1ad status if supported
         vlan_stack_status = {}
-        try:
-            cmd = self.cli("show vlan-stacking")
-            for match in self.rx_vlan_stack.finditer(cmd):
-                if match.group("role").lower() == "tunnel":
-                    vlan_stack_status[int(match.group("interface"))] = True
-        except self.CLISyntaxError:
-            pass
+#        try:
+#            cmd = self.cli("show vlan-stacking")
+#            for match in self.rx_vlan_stack.finditer(cmd):
+#                if match.group("role").lower() == "tunnel":
+#                    vlan_stack_status[int(match.group("interface"))] = True
+#        except self.CLISyntaxError:
+#            pass
 
         # Try snmp first
         if self.snmp and self.access_profile.snmp_ro:
-            def hex2bin(ports):
-                bin = [
-                    '0000', '0001', '0010', '0011',
-                    '0100', '0101', '0110', '0111',
-                    '1000', '1001', '1010', '1011',
-                    '1100', '1101', '1110', '1111',
-                    ]
-                ports = ["%02x" % ord(c) for c in ports]
-                p = ''
-                for c in ports:
-                   for i in range(len(c)):
-                        p += bin[int(c[i], 16)]
-                return p
             try:
+                # Get switchport index, name and description
+                iface_name = {}
+                iface_descr = {}
+                interface_status = {}
+                N = None
+                for v in self.snmp.get_tables(
+                    ["1.3.6.1.2.1.31.1.1.1.1",
+                    "1.3.6.1.2.1.31.1.1.1.18",
+                    "1.3.6.1.2.1.2.2.1.8"], bulk=True):
+                    if v[1][:2] == 'fa' or v[1][:2] == 'gi' or v[1][:2] == 'te' or v[1][:2] == 'po':
+                        name = v[1]
+                        name = name.replace('fa', 'Fa ')
+                        name = name.replace('gi', 'Gi ')
+                        name = name.replace('te', 'Te ')
+                        name = name.replace('po', 'Po ')
+                        iface_name.update({v[0]: name})
+                        iface_descr.update({name: v[2]})
+                        if name[:2] != 'Po':
+                            interface_status.update({name: v[3]})
+
                 # Make a list of tags for each interface or portchannel
                 port_vlans = {}
                 for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.17.7.1.4.2.1.3",
-                    "1.3.6.1.2.1.17.7.1.4.2.1.4",
-                    "1.3.6.1.2.1.17.7.1.4.2.1.5"], bulk=True):
+                    ["1.3.6.1.2.1.17.7.1.4.3.1.1",
+                    "1.3.6.1.2.1.17.7.1.4.3.1.2",
+                    "1.3.6.1.2.1.17.7.1.4.3.1.4"], bulk=True):
                     tagged = v[2]
                     untagged = v[3]
 
-#                    s = self.hex_to_bin(untagged)
-                    s = hex2bin(untagged)
+                    s = self.hex_to_bin(untagged)
                     un = []
-                    for i in range(len(s)):
-                        if s[i] == '1':
-                            oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
-                            iface = self.snmp.get(oid, cached=True)
+                    for i in iface_name:
+                        j = int(i) - 1
+                        if j < 1008:
+                            iface = iface_name[i]
+                            if iface not in port_vlans:
+                                port_vlans.update(
+                                    {iface: {
+                                        "tagged": [],
+                                        "untagged": '1',
+                                        }
+                                    })
+                            if s[j] == '1':
+                                port_vlans[iface]["untagged"] = v[0]
+                                un += [j]
+
+                    s = self.hex_to_bin(tagged)
+                    for i in iface_name:
+                        j = int(i) - 1
+                        if j < 1008 and s[j] == '1' and j not in un:
+                            iface = iface_name[i]
                             if iface not in port_vlans:
                                 port_vlans.update(
                                     {iface: {
@@ -92,30 +109,7 @@ class Script(NOCScript):
                                         "untagged": '',
                                         }
                                     })
-                            port_vlans[iface]["untagged"] = v[1]
-                            un += [str(i + 1)]
-
-#                    s = self.hex_to_bin(tagged)
-                    s = hex2bin(tagged)
-                    for i in range(len(s)):
-                        if s[i] == '1' and str(i + 1) not in un:
-                            oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
-                            iface = self.snmp.get(oid, cached=True)
-                            if iface not in port_vlans:
-                                port_vlans.update(
-                                    {iface: {
-                                        "tagged": [],
-                                        "untagged": '',
-                                        }
-                                    })
-                            port_vlans[iface]["tagged"].append(v[1])
-
-                # Get switchport description
-                port_descr = {}
-                for iface, description in self.snmp.join_tables(
-                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18",
-                    bulk=True):
-                    port_descr.update({iface: description})
+                            port_vlans[iface]["tagged"].append(v[0])
 
                 # Get switchport data and overall result
                 r = []
@@ -130,7 +124,7 @@ class Script(NOCScript):
                                 for interface in p["members"]:
                                     if interface_status.get(interface):
                                         status = True
-                                description = port_descr[name]
+                                description = iface_descr[name]
                                 if not description:
                                     description = ''
                                 members = p["members"]
@@ -142,7 +136,7 @@ class Script(NOCScript):
                             status = True
                         else:
                             status = False
-                        description = port_descr[name]
+                        description = iface_descr[name]
                         if not description:
                             description = ''
                         members = []
@@ -174,6 +168,13 @@ class Script(NOCScript):
 
         # Fallback to CLI
         # Make a list of tags for each interface or portchannel
+        r = []
+
+        # Get interafces status
+        interface_status = {}
+        for s in self.scripts.get_interface_status():
+            interface_status[s["interface"]] = s["status"]
+
         port_vlans = {}
         port_channels = portchannels
         for interface in interface_status:
@@ -197,7 +198,7 @@ class Script(NOCScript):
                     rule = vlan.group("rule")
                     if rule == "Tagged":
                         port_vlans[interface]["tagged"].append(vlan_id)
-                    elif rule == "Untagged" and vlan_id != '1':
+                    elif rule == "Untagged":  # and vlan_id != '1':
                         port_vlans[interface]["untagged"] = vlan_id
 
         # Why portchannels=[] ???????
@@ -210,6 +211,10 @@ class Script(NOCScript):
         cmd = self.cli("show interfaces description")
         for match in self.rx_description.finditer(cmd):
             name = match.group("interface")
+            name = name.replace('fa', 'Fa ')
+            name = name.replace('gi', 'Gi ')
+            name = name.replace('te', 'Te ')
+
             if name in portchannel_members:
                 for p in portchannels:
                     if name in p["members"]:

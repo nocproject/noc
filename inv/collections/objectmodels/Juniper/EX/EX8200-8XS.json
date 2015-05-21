@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | EX8200-8XS",
+    "$collection": "inv.objectmodels",
     "uuid": "3bcd0afb-5352-44e3-b47f-ac1679c6090f",
     "vendor__code": "JUNIPER",
     "description": "8-port 10GbE SFP+ line card",
@@ -78,7 +79,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "710-016837"
+            "part_no": ["710-016837"]
         }
     }
 }

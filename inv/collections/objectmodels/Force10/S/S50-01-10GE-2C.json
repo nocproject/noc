@@ -1,5 +1,6 @@
 {
     "name": "Force10 | S | S50-01-10GE-2C",
+    "$collection": "inv.objectmodels",
     "uuid": "c4fd87c0-9fe6-4d4d-9ecb-ed2dfcfc8803",
     "vendor__code": "FORCE10",
     "description": "2-port 10 GbE CX4 module",
@@ -30,7 +31,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "S50-01-10GE-2C"
+            "part_no": ["S50-01-10GE-2C"]
         }
     }
 }

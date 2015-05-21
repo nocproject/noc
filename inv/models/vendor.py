@@ -21,7 +21,7 @@ class Vendor(Document):
     meta = {
         "collection": "noc.vendors",
         "allow_inheritance": False,
-        "json_collection": "noc.vendors"
+        "json_collection": "inv.vendors"
     }
 
     name = StringField(unique=True)

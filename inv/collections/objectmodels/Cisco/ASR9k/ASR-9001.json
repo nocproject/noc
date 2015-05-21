@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9k | ASR-9001",
+    "$collection": "inv.objectmodels",
     "uuid": "a200af53-df9e-4562-9fd6-98975a5c04ef",
     "vendor__code": "CISCO",
     "description": "Cisco ASR9001 aggregation services router",
@@ -149,7 +150,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ASR-9001"
+            "part_no": ["ASR-9001"]
         },
         "management": {
             "managed": true

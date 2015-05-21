@@ -198,7 +198,10 @@ class EventClass(Document):
     meta = {
         "collection": "noc.eventclasses",
         "allow_inheritance": False,
-        "json_collection": "fm.eventclasses"
+        "json_collection": "fm.eventclasses",
+        "json_depends_on": [
+            "fm.alarmclasses"
+        ]
     }
     name = fields.StringField(required=True, unique=True)
     uuid = fields.UUIDField(binary=True)

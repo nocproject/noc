@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9010 | ASR-9010-FAN-V2",
+    "$collection": "inv.objectmodels",
     "uuid": "87f3fb09-1ceb-45ca-bb30-f928f782002b",
     "vendor__code": "CISCO",
     "description": "ASR 9010 Fan Tray Version 2",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ASR-9010-FAN-V2"
+            "part_no": ["ASR-9010-FAN-V2"]
         }
     }
 }

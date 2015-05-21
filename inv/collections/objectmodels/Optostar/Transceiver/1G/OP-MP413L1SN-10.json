@@ -1,5 +1,6 @@
 {
     "name": "Optostar | Transceiver | 1G | OP-MP413L1SN-10",
+    "$collection": "inv.objectmodels",
     "uuid": "57d4d724-619f-43a5-a82e-ad6fbaee468b",
     "vendor__code": "OPTOSTAR",
     "description": "Optostar SFP LX transceiver",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "OP-MP413L1SN-10"
+            "part_no": ["OP-MP413L1SN-10"]
         }
     }
 }

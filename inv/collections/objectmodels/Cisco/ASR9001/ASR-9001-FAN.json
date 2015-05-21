@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9001 | ASR-9001-FAN",
+    "$collection": "inv.objectmodels",
     "uuid": "3de22d30-cebb-47d0-a8da-b3c42207b28a",
     "vendor__code": "CISCO",
     "description": "ASR-9001 FAN tray",
@@ -15,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "ASR-9001-FAN"
+            "part_no": ["ASR-9001-FAN"]
         }
     }
 }

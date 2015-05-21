@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 1G | GLC-T",
+    "$collection": "inv.objectmodels",
     "uuid": "37b32d6b-90b5-4f69-ba1d-efecf3525565",
     "vendor__code": "CISCO",
     "description": "Cisco SFP TX transceiver",
@@ -24,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "GLC-T"
+            "part_no": ["GLC-T"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7200 | PA-MCX-4TE1",
+    "$collection": "inv.objectmodels",
     "uuid": "07009623-b634-4344-ae16-0e9719bce3a6",
     "vendor__code": "CISCO",
     "description": "Single-wide port adapter with 4 T1 or E1 PRI RJ48c ports",
@@ -44,7 +45,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "PA-MCX-4TE1"
+            "part_no": ["PA-MCX-4TE1"]
         }
     }
 }

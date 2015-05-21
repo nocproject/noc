@@ -1,5 +1,6 @@
 {
     "name": "Avaya | ERS | 5650TD-PWR",
+    "$collection": "inv.objectmodels",
     "uuid": "a7865e00-d17a-4aa7-9914-70b9a61f1bbd",
     "vendor__code": "AVAYA",
     "description": "ERS 5650TD-PWR with 48 x 10/100/1000Base-T IEEE 802.3af PoE ports, plus 2 x 10GBase-XFP Uplink ports, and 600W AC Integrated Power Supply",
@@ -425,7 +426,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "5650TD-PWR"
+            "part_no": ["5650TD-PWR"]
         },
         "dimensions": {
             "depth": 430,

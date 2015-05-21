@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 3800 | 3825 Chassis",
+    "$collection": "inv.objectmodels",
     "uuid": "daa957c9-0b3e-45c0-b0a0-6d54c3617400",
     "vendor__code": "CISCO",
     "description": "Cisco 3800 Series Integrated Services Routers with 2 NME slots",
@@ -44,7 +45,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "CISCO3825"
+            "part_no": ["CISCO3825"]
         },
         "management": {
             "managed": true

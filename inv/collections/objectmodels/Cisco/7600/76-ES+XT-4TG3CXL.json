@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | 76-ES+XT-4TG3CXL",
+    "$collection": "inv.objectmodels",
     "uuid": "b8099319-e928-4713-b7e8-1fabce36ff5d",
     "vendor__code": "CISCO",
     "description": "76-ES+XT-4TG3CXL 4 ports 7600 ES+",
@@ -47,7 +48,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "76-ES+XT-4TG3CXL"
+            "part_no": ["76-ES+XT-4TG3CXL"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | EX4200-F",
+    "$collection": "inv.objectmodels",
     "uuid": "51da70bf-e32b-4584-bcd5-ace0b7b58e6a",
     "vendor__code": "JUNIPER",
     "description": "24-port 10/100/1000BASE-F",
@@ -250,11 +251,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "EX4200-24F",
-            "part_no0": "750-033075",
-            "part_no1": "750-025719",
-            "part_no2": "750-033067",
-            "part_no3": "750-021258"
+            "order_part_no": ["EX4200-24F"],
+            "part_no": ["750-025719", "750-033075", "750-021258", "750-033067"]
         },
         "management": {
             "managed": true

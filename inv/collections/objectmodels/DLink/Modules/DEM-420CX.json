@@ -1,5 +1,6 @@
 {
     "name": "DLink | Modules | DEM-420CX",
+    "$collection": "inv.objectmodels",
     "uuid": "8d44af10-0aff-49cf-9cc8-3d6ea8aa3a94",
     "vendor__code": "DLINK",
     "description": "2 Port CX4 Module",
@@ -31,7 +32,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DEM-420CX"
+            "part_no": ["DEM-420CX"]
         }
     }
 }

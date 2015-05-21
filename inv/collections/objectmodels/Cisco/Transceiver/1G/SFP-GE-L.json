@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Transceiver | 1G | SFP-GE-L",
+    "$collection": "inv.objectmodels",
     "uuid": "aa50f7d4-fb20-42d8-bdc6-e5c036d98e40",
     "vendor__code": "CISCO",
     "description": "Cisco SFP LH/LX transceiver with DOM support",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "SFP-GE-L"
+            "part_no": ["SFP-GE-L"]
         }
     }
 }

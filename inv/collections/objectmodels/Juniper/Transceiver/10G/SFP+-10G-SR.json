@@ -1,5 +1,6 @@
 {
     "name": "Juniper | Transceiver | 10G | SFP+-10G-SR",
+    "$collection": "inv.objectmodels",
     "uuid": "1372bce3-e3f1-4086-8db7-ffee47795d22",
     "vendor__code": "JUNIPER",
     "description": "Juniper SFP+ SR transceiver",
@@ -32,8 +33,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no0": "SFP+-10G-SR",
-            "part_no0": "740-021308"
+            "order_part_no": ["SFP+-10G-SR"],
+            "part_no": ["740-021308"]
         }
     }
 }

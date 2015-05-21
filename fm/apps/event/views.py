@@ -18,7 +18,7 @@ from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.mib import MIB
-from noc.fm.models import get_alarm, get_event
+from noc.fm.models.utils import get_alarm, get_event, get_severity
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models import AdministrativeDomain
 from noc.sa.models.selectorcache import SelectorCache
@@ -104,13 +104,9 @@ class EventApplication(ExtApplication):
             duration = o.duration
             n_alarms = len(o.alarms)
             if n_alarms:
-                severity = 0
-                for a in o.alarms:
-                    alarm = get_alarm(a)
-                    if alarm:
-                        severity = max(severity, alarm.severity)
-                s = AlarmSeverity.get_severity(severity)
-                row_class = s.style.css_class_name
+                row_class = AlarmSeverity.get_severity_css_class_name(
+                    get_severity(o.alarms)
+                )
         else:
             subject = None
             repeats = None
@@ -144,7 +140,7 @@ class EventApplication(ExtApplication):
         if status not in self.model_map:
             raise Exception("Invalid status")
         model = self.model_map[status]
-        return model.objects.all()
+        return model.objects
 
     @view(url=r"^$", access="launch", method=["GET"], api=True)
     def api_list(self, request):
@@ -156,7 +152,6 @@ class EventApplication(ExtApplication):
         event = get_event(id)
         if not event:
             self.response_not_found()
-        lang = "en"
         d = self.instance_to_dict(event)
         dd = dict((v, None) for v in (
             "body", "symptoms", "probable_causes",
@@ -247,7 +242,6 @@ class EventApplication(ExtApplication):
             d["plugins"] = [
                 ("NOC.fm.event.plugins.Traceback", {})
             ]
-        print d
         return d
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/post/", method=["POST"], api=True,

@@ -1,5 +1,6 @@
 {
     "name": "Newstar | Transceiver | 10G | X2 LR",
+    "$collection": "inv.objectmodels",
     "uuid": "714250aa-b66b-45d8-bad6-6de4318b6305",
     "vendor__code": "Newstar",
     "description": "Cisco-compatible X2 10G LR transciever",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "TRT5024EN-SMC-13"
+            "part_no": ["TRT5024EN-SMC-13"]
         }
     }
 }

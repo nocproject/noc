@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | 7600-ES+4TG",
+    "$collection": "inv.objectmodels",
     "uuid": "080e20f6-271c-452c-9ff8-27f9d55b4705",
     "vendor__code": "CISCO",
     "description": "7600-ES+4TG 4 ports 7600 ES+",
@@ -47,7 +48,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": "7600-ES+4TG"
+            "part_no": ["7600-ES+4TG"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "Avaya | Transceiver | 10G | XFP LR",
+    "$collection": "inv.objectmodels",
     "uuid": "8022f15a-7a78-4819-b039-740b781e2d85",
     "vendor__code": "AVAYA",
     "description": "10GBASE-LR, XFP, SFM, 1310nm, 10km",
@@ -32,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "AA1403001-E5"
+            "part_no": ["AA1403001-E5"]
         }
     }
 }

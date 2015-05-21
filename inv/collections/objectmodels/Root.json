@@ -1,5 +1,6 @@
 {
     "name": "Root",
+    "$collection": "inv.objectmodels",
     "uuid": "0f1b7c90-c611-4046-9a83-b120377eb6e0",
     "vendor__code": "NOC",
     "description": "Inventory root",

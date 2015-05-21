@@ -106,7 +106,6 @@ class AlarmApplication(ExtApplication):
         return q
 
     def instance_to_dict(self, o, fields=None):
-        lang = "en"
         s = AlarmSeverity.get_severity(o.severity)
         n_events = (ActiveEvent.objects.filter(alarms=o.id).count() +
                     ArchivedEvent.objects.filter(alarms=o.id).count())

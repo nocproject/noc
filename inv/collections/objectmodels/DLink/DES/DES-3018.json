@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-3018",
+    "$collection": "inv.objectmodels",
     "uuid": "fb37bfc2-10e4-464f-a47b-42e3345a756a",
     "vendor__code": "DLINK",
     "description": "DES-3018 L2 Managed Switch witch 16 ports 10/100BASE-TX and 2 expansion slots",
@@ -167,7 +168,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-3018"
+            "part_no": ["DES-3018"]
         },
         "management": {
             "managed": true

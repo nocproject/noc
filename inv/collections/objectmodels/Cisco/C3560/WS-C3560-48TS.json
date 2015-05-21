@@ -1,5 +1,6 @@
 {
     "name": "Cisco | C3560 | WS-C3560-48TS",
+    "$collection": "inv.objectmodels",
     "uuid": "8d180e76-144b-40c0-adab-eae796b51f5b",
     "vendor__code": "CISCO",
     "description": "48 Ethernet 10/100 ports and 4 SFP-based Gigabit Ethernet ports",
@@ -441,8 +442,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-C3560-48TS-S",
-            "part_no1": "WS-C3560-48TS"
+            "part_no": ["WS-C3560-48TS", "WS-C3560-48TS-S"]
         },
         "management": {
             "managed": true

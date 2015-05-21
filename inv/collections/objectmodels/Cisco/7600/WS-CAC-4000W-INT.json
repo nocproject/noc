@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | WS-CAC-4000W-INT",
+    "$collection": "inv.objectmodels",
     "uuid": "19e135b3-a3ea-44fa-897a-02165652abe5",
     "vendor__code": "CISCO",
     "description": "Cisco 110/220v AC power supply, 4000 watt, international cord",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "WS-CAC-4000W-INT"
+            "part_no": ["WS-CAC-4000W-INT"]
         }
     }
 }

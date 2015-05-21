@@ -1,5 +1,6 @@
 {
     "name": "Cisco | NEXUS | N55-PAC-750W-B",
+    "$collection": "inv.objectmodels",
     "uuid": "dcbf62c3-3d73-4545-8537-c50792770647",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 5548UP PSU Back-to-Front Airflow module spare, A/C, 100-240V, 750W",
@@ -23,7 +24,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "N55-PAC-750W-B"
+            "part_no": ["N55-PAC-750W-B"]
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "name": "DLink | DES | DES-2110",
+    "$collection": "inv.objectmodels",
     "uuid": "d0b71ad7-b2db-453c-a75e-c973c597a4b6",
     "vendor__code": "DLINK",
     "description": "DES-2110 L2 Managed Switch witch 8 ports 10/100BASE-TX, 1 ports 10/100/1000BASE-T, 1 port 100/1000 SFP",
@@ -97,7 +98,7 @@
     ],
     "data": {
         "asset": {
-            "part_no0": "DES-2110"
+            "part_no": ["DES-2110"]
         },
         "management": {
             "managed": true

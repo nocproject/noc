@@ -27,6 +27,8 @@ from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.outage import Outage
+from noc.fm.models.reboot import Reboot
+from noc.fm.models.uptime import Uptime
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.models.validationrule import ValidationRule
@@ -99,6 +101,12 @@ def wipe(o):
     # Wipe outages
     log.debug("Wiping outages")
     Outage.objects.filter(object=o.id).delete()
+    # Wipe uptimes
+    log.debug("Wiping uptimes")
+    Uptime.objects.filter(object=o.id).delete()
+    # Wipe reboots
+    log.debug("Wiping reboots")
+    Reboot.objects.filter(object=o.id).delete()
     # Delete Managed Object's capabilities
     log.debug("Wiping capabilitites")
     ObjectCapabilities.objects.filter(object=o.id).delete()
