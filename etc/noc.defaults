@@ -680,6 +680,9 @@ NSN.hiX56xx.get_arp = 600
 NSN.hiX56xx.get_mac_address_table = 600
 Opticin.OS.get_interfaces = 240
 Qtech.QSW.get_interfaces = 600
+Extreme.XOS.get_interfaces = 1800
+Extreme.XOS.get_mac_address_table = 1800
+Extreme.XOS.get_switchport = 1800
 
 [i18n]
 # Global translation settings
