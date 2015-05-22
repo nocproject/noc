@@ -25,29 +25,38 @@ class Script(NOCScript):
     implements = [IGetInterfaces]
 
     rx_phy_split = re.compile(r"^Physical interface:\s+", re.MULTILINE)
-    rx_phy_name = re.compile(r"^(?P<ifname>\S+)( \(\S+, \S+\))?, (?P<admin>Enabled|Disabled|Administratively down), Physical link is (?P<oper>Up|Down)",
-                             re.MULTILINE | re.IGNORECASE)
-    rx_phy_description = re.compile(r"^\s+Description:\s+(?P<description>.+?)\s*$",
-                                    re.MULTILINE)
+    rx_phy_name = re.compile(
+        r"^(?P<ifname>\S+)( \(\S+, \S+\))?, (?P<admin>Enabled|Disabled|"
+        r"Administratively down), Physical link is (?P<oper>Up|Down)",
+        re.MULTILINE | re.IGNORECASE)
+    rx_phy_description = re.compile(
+        r"^\s+Description:\s+(?P<description>.+?)\s*$", re.MULTILINE)
     rx_phy_ifindex = re.compile(r"SNMP ifIndex: (?P<ifindex>\d+)",
                                 re.MULTILINE | re.IGNORECASE)
-    rx_phy_mac = re.compile(r"^\s+Current address: (?P<mac>\S+),", re.MULTILINE)
+    rx_phy_mac = re.compile(
+        r"^\s+Current address: (?P<mac>\S+),", re.MULTILINE)
     rx_log_split = re.compile(r"^\s+Logical interface\s+", re.MULTILINE)
-    rx_log_name = re.compile(r"^(?P<name>\S+).+?SNMP ifIndex (?P<ifindex>\d+)",
-                             re.IGNORECASE)
+    rx_log_name = re.compile(
+        r"^(?P<name>\S+).+?SNMP ifIndex (?P<ifindex>\d+)", re.IGNORECASE)
     rx_log_protocol = re.compile(r"^\s+Protocol\s+", re.MULTILINE)
     rx_log_pname = re.compile(r"^(?P<proto>[a-zA-Z0-9\-]+)")
     rx_log_address = re.compile(r"^\s+Local:\s+(?P<address>\S+)", re.MULTILINE)
-    rx_log_netaddress = re.compile(r"^\s+Destination: (?P<dest>\S+?),\s+Local: (?P<local>\S+?)(?:,|$)",
+    rx_log_netaddress = re.compile(
+        r"^\s+Destination: (?P<dest>\S+?),\s+Local: (?P<local>\S+?)(?:,|$)",
         re.MULTILINE)
-    rx_log_netaddress6 = re.compile(r"^\s+Destination: (?P<dest>\S+?),[ \r\n]+Local: (?P<local>\S+?)$",
+    rx_log_netaddress6 = re.compile(
+        r"^\s+Destination: (?P<dest>\S+?),[ \r\n]+Local: (?P<local>\S+?)$",
         re.MULTILINE)
     rx_log_ae = re.compile(r"AE bundle: (?P<bundle>\S+?)\.\d+", re.MULTILINE)
-    rx_flags_vlan = re.compile(r"^\s+Flags:.+VLAN-Tag \[\s*0x\d+\.(?P<vlan>\d+)\s*\]",
+    rx_flags_vlan = re.compile(
+        r"^\s+Flags:.+VLAN-Tag \[\s*0x\d+\.(?P<vlan>\d+)\s*\]",
         re.IGNORECASE | re.MULTILINE)
 
-    internal_interfaces = re.compile(r"^(lc-|cbp|demux|dsc|em|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|bme|jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep)")
-    internal_interfaces_olive = re.compile(r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip)")
+    internal_interfaces = re.compile(
+        r"^(lc-|cbp|demux|dsc|em|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|bme|"
+        r"jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-0|pc-0|me0)")
+    internal_interfaces_olive = re.compile(
+        r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip)")
 
     def execute(self):
         untagged = {}
