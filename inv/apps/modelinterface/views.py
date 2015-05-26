@@ -19,3 +19,9 @@ class ModelInterfaceApplication(ExtDocApplication):
     menu = "Setup | Model Interfaces"
     model = ModelInterface
     query_fields = ["name__icontains", "description__icontains"]
+
+    def cleaned_query(self, q):
+        if "label" in q:
+            q["name"] = q["label"]
+            del q["label"]
+        return super(ModelInterfaceApplication, self).cleaned_query(q)
