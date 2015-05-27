@@ -804,6 +804,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Show edit form
         me.showForm();
         // Load records
+        me.form.reset();
         me.form.setValues(r);
         me.loadInlines();
         // Activate delete button
