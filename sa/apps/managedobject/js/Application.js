@@ -398,14 +398,16 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "profile_name",
                                     xtype: "main.ref.profile.LookupField",
                                     fieldLabel: "SA Profile",
-                                    allowBlank: false
+                                    allowBlank: false,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "scheme",
                                     xtype: "sa.managedobject.SchemeLookupField",
                                     fieldLabel: "Scheme",
                                     allowBlank: false,
-                                    uiStyle: "small"
+                                    uiStyle: "small",
+                                    groupEdit: true
                                 },
                                 {
                                     name: "address",
