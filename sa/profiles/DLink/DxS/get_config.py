@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
+import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetConfig
 from noc.sa.profiles.DLink.DxS import DGS3600
