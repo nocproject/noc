@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## EdgeCore.ES.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -40,8 +40,13 @@ class Script(NOCScript):
                     v = self.snmp.get(oid[: -3] + "1.4.1.1.3.1.6.1",
                         cached=True)
                 else:
-                    # 3526-Style OID
-                    v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
+                    if oid[-3:] == "101":
+                        # 3528MV2-Style OID
+                        v = self.snmp.get(
+                            oid[: -3] + "1.1.3.1.6.1", cached=True)
+                    else:
+                        # 3526-Style OID
+                        v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
                 if v == "":
                     # 4626-Style OID
                     v = self.snmp.get(oid + ".100.1.3.0", cached=True)
@@ -118,7 +123,8 @@ class Script(NOCScript):
             pass
         elif "MR2228N" in platform:
             vendor = "MRV"
-        elif platform.lower() == "8 sfp ports + 4 gigabit combo ports l2/l3/l4 managed standalone switch":
+        elif platform.lower() == "8 sfp ports + 4 gigabit combo ports " \
+            "l2/l3/l4 managed standalone switch":
             platform = "ES4612"
         elif platform == "Managed 8G+4GSFP Switch":
             platform = "ECS4210-12T"
@@ -198,4 +204,3 @@ class Script(NOCScript):
         if match:
             r["attributes"].update({"Serial Number": match.group("serial")})
         return r
-
