@@ -81,7 +81,7 @@ class Script(NOCScript):
                     remote_port = match.get("p_id")
                 n["remote_chassis_id"] = match.get("id")
                 n["remote_system_name"] = match.get("name")
-                n["remote_port"] = remote_port
+                n["remote_port"] = str(remote_port)
                 # Get capability
                 cap = 0
                 if match.get("capability"):
@@ -114,7 +114,7 @@ class Script(NOCScript):
                         remote_port = match.get("p_id")
                     n["remote_chassis_id"] = match.get("id")
                     n["remote_system_name"] = match.get("name")
-                    n["remote_port"] = remote_port
+                    n["remote_port"] = str(remote_port)
             i["neighbors"] += [n]
             r += [i]
         return r
