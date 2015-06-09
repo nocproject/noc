@@ -38,7 +38,12 @@ class Script(NOCScript):
          r"Chassis ID\s+:\s(?P<id>\S+)",
          r"Port type\s+:\s(?P<p_type>.+)",
          r"Port \S+\s+:\s(?P<p_id>.+)",
-         r"System name\s+:\s(?P<name>\S+)",
+         r"System name\s+:\s(?P<name>\S+)"
+    ]
+    rx_detail2 = [
+         r"Chassis ID\s+:\s(?P<id>\S+)",
+         r"Port type\s+:\s(?P<p_type>.+)",
+         r"Port \S+\s+:\s(?P<p_id>.+)"
     ]
 
     @NOCScript.match(platform__regex="[em]x")
@@ -115,6 +120,28 @@ class Script(NOCScript):
                     n["remote_chassis_id"] = match.get("id")
                     n["remote_system_name"] = match.get("name")
                     n["remote_port"] = str(remote_port)
+                else:
+                    match = self.match_lines(self.rx_detail2, v)
+                    if match:
+                        n["remote_port_subtype"] = {
+                            "Mac address": 3,
+                            "Interface alias": 1,
+                            "Interface name": 5,
+                            "Locally assigned": 7
+                        }[match.get("p_type")]
+                        if n["remote_port_subtype"] == 3:
+                            remote_port = \
+                                MACAddressParameter().clean(match.get("p_id"))
+                        elif n["remote_port_subtype"] == 7:
+                            p_id = match.get("p_id")
+                            try:
+                                remote_port = IntParameter().clean(p_id)
+                            except InterfaceTypeError:
+                                remote_port = p_id
+                        else:
+                            remote_port = match.get("p_id")
+                        n["remote_chassis_id"] = match.get("id")
+                        n["remote_port"] = str(remote_port)
             i["neighbors"] += [n]
             r += [i]
         return r
