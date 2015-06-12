@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MikroTik.RouterOS.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -30,8 +30,11 @@ class Script(NOCScript):
         "pptp-in": "tunnel",
         "ovpn-out": "tunnel",
         "ovpn-in": "tunnel",
+        "sstp-out": "tunnel",
+        "sstp-in": "tunnel",
         "gre-tunnel": "tunnel",
-        "ipip-tunnel": "tunnel"
+        "ipip-tunnel": "tunnel",
+        "eoip": "tunnel"
     }
     si = {}
 
@@ -39,12 +42,14 @@ class Script(NOCScript):
         self.si["tunnel"] = {}
         tun = self.si["tunnel"]
         tun["type"] = tun_type
-        if tun_type in ["PPP", "PPPOE", "L2TP", "PPTP", "OVPN"]:
+        if tun_type in ["PPP", "PPPOE", "L2TP", "PPTP", "OVPN", "SSTP"]:
             if (f == "D" and afi == "IPv4"):
                 tun["local_address"] = ipif["address"].split("/", 1)[0].strip()
                 tun["remote_address"] = ipif["network"]
                 return
         iftype = tun_type.lower()
+        if iftype == "ipip":
+            iftype = "ip"
         for n1, f1, r1 in self.cli_detail(
             "/interface %s print detail without-paging" % iftype, cached=True):
             if self.si["name"] == r1["name"]:
@@ -64,6 +69,10 @@ class Script(NOCScript):
         # Fill interfaces
         for n, f, r in self.cli_detail(
             "/interface print detail without-paging"):
+            if r["type"] in [
+                "mesh", "traffic-eng", "vpls", "vrrp", "wds", "lte"
+            ]:
+                continue
             if not r["type"] in "vlan":  # TODO: Check other types
                 ifaces[r["name"]] = {
                     "name": r["name"],
@@ -77,6 +86,23 @@ class Script(NOCScript):
                 }
                 if n in n_ifindex:
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
+                if r["type"].startswith("ipip-") \
+                or r["type"].startswith("eoip") \
+                or r["type"].startswith("gre-"):
+                    self.si = {
+                        "name": r["name"],
+                        "mtu": r["actual-mtu"],
+                        "admin_status": "X" not in f,
+                        "oper_status": "R" in f,
+                        "enabled_afi": ["IPv4"]
+                    }
+                    if r["type"].startswith("ipip-"):
+                        self.get_tunnel("IPIP", "R", "IPv4", ifaces)
+                    if r["type"].startswith("eoip"):
+                        self.get_tunnel("EOIP", "R", "IPv4", ifaces)
+                    if r["type"].startswith("gre-"):
+                        self.get_tunnel("GRE", "R", "IPv4", ifaces)
+                    ifaces[r["name"]]["subinterfaces"] += [self.si]
         # Refine ethernet parameters
         for n, f, r in self.cli_detail(
             "/interface ethernet print detail without-paging"):
@@ -116,7 +142,8 @@ class Script(NOCScript):
                     }
                     i["subinterfaces"] += [self.si]
                 else:
-                    self.debug('Error: subinterfaces already exists !!!')
+                    self.debug('\nError: subinterfaces already exists in ' \
+                        'interface \n%s\n' % i)
                     continue
             else:
                 for i in ifaces:
@@ -144,6 +171,8 @@ class Script(NOCScript):
                 a += [r["address"]]
                 self.si["ipv6_addresses"] = a
             # Tunnel types
+            # XXX /ip address print detail do not print tunnels !!!
+            # Need reworks !!!
             if t["type"].startswith("ppp-"):
                 self.get_tunnel("PPP", f, afi, r)
             if t["type"].startswith("pppoe-"):
@@ -156,8 +185,6 @@ class Script(NOCScript):
                 self.get_tunnel("PPTP", f, afi, r)
             if t["type"].startswith("ovpn-"):
                 self.get_tunnel("PPP", f, afi, r)
-            if t["type"].startswith("gre-"):
-                self.get_tunnel("GRE", f, afi, r)
-            if t["type"].startswith("ipip-"):
-                self.get_tunnel("IPIP", f, afi, r)
+            if t["type"].startswith("sstp-"):
+                self.get_tunnel("SSTP", f, afi, r)
         return [{"interfaces": ifaces.values()}]

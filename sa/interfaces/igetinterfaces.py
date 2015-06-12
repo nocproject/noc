@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## IGetInterfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from base import *
@@ -254,7 +254,8 @@ class IGetInterfaces(Interface):
                 # Tunnel services
                 "tunnel": DictParameter(required=False, attrs={
                     "type": StringParameter(choices=[
-                        "GRE", "IPIP", "IPsec", "PPTP", "L2TP", "PPPOE", "PPP"
+                        "GRE", "IPIP", "IPsec", "PPTP", "L2TP", "PPPOE", "PPP",
+                        "SSTP", "EOIP"
                     ]),
                     "local_address": IPParameter(required=False),
                     "remote_address": IPParameter(required=False)
