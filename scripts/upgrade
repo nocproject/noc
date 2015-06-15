@@ -114,6 +114,7 @@ chmod 600 etc/support.conf
 OSNAME=`uname -s`
 OSSETTINGS="./scripts/os/$OSNAME/upgrade"
 if [ -f $OSSETTINGS ]; then
+    info "Using $OSNAME specific settings from $OSSETTINGS"
     . $OSSETTINGS
 fi
 
