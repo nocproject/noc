@@ -83,7 +83,6 @@ class Script(NOCScript):
                     iface["aggregated_interface"] = pc_members[ifname][0]
                     if pc_members[ifname][1]:
                         iface["enabled_protocols"] += ["LACP"]
-                        iface["is_lacp"] = True # @todo: Deprecated
                 # process subinterfaces
                 if "aggregated_interface" not in iface:
                     sub = {
@@ -100,7 +99,6 @@ class Script(NOCScript):
                         if t:
                             sub["tagged_vlans"] = t
                         sub["enabled_afi"] += ["BRIDGE"]
-                        sub["is_bridge"] = True # @todo: Deprecated
             # get snmp ifindex
             match = self.rx_ifindex.search(l)
             if match:
@@ -117,7 +115,6 @@ class Script(NOCScript):
             if match:
                 if not "ipv4 addresses" in sub:
                     sub["enabled_afi"] += ["IPv4"]
-                    sub["is_ipv4"] = True # @todo: Deprecated
                     sub["ipv4_addresses"] = []
                     vid = re.search("(?P<vid>\d+)", ifname)
                     sub["vlan_ids"] = [int(vid.group("vid"))]
