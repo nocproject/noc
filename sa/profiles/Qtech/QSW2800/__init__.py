@@ -19,25 +19,22 @@ class Profile(NOCProfile):
     pattern_username = r"^login:"
     pattern_password = r"^Password:"
     pattern_more = [
-        (r"^\.\.\.\.press ENTER to next line, CTRL_C to break, other key to next page\.\.\.\.", "\n"),
-        (r"^Startup config in flash will be updated, are you sure\(y/n\)\? \[n\]", "y\n"),
         (r"^ --More-- $", " "),
         (r"^Confirm to overwrite current startup-config configuration","\ny\n"),
-        (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
-        (r"^Begin to receive file, please wait", " "),
-        (r"#####"," ")
+        (r"^Confirm to overwrite the existed destination file?", "\ny\n")
     ]
     pattern_unpriveleged_prompt = r"^\S+>"
-    pattern_syntax_error = r" % Unrecognized command, and error detected at '\^' marker."
+    pattern_syntax_error = r"% (?:Invalid input detected at '\^' marker|" \
+        r"(?:Ambiguous|Incomplete) command)"
     command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
     command_submit = "\r"
-    pattern_prompt = r"^\S+#"
+    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
 
-    rx_ifname = re.compile(r"^(?:1/)?(?P<number>\d+)$")
+    rx_ifname = re.compile(r"^(?P<number>\d+)$")
 
     def convert_interface_name(self, s):
         """
