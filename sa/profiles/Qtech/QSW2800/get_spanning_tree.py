@@ -100,12 +100,12 @@ class Script(NOCScript):
                     if e_match:
                         edge = (e_match.group("edge") == "Yes")
                     else:
-                        edge = False  # no(default)
+                        edge = False
                     p2p_match = self.rx_p2p.search(if_details)
                     if p2p_match:
                         p2p = "point-to-point" in p2p_match.group("p2p")
                     else:
-                        p2p = True # default
+                        p2p = False
                     ifaces += [{
                         "interface": iface,
                         "port_id": int(port[1]),
