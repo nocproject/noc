@@ -34,7 +34,8 @@ class Script(NOCScript):
         "sstp-in": "tunnel",
         "gre-tunnel": "tunnel",
         "ipip-tunnel": "tunnel",
-        "eoip": "tunnel"
+        "eoip": "tunnel",
+        "bond": "aggregated"
     }
     si = {}
 
@@ -79,6 +80,7 @@ class Script(NOCScript):
                     "type": self.type_map[r["type"]],
                     "admin_status": "X" not in f,
                     "oper_status": "R" in f,
+                    "enabled_protocols": [],
                     "subinterfaces": []
                 }
                 misc[r["name"]] = {
@@ -94,7 +96,8 @@ class Script(NOCScript):
                         "mtu": r["actual-mtu"],
                         "admin_status": "X" not in f,
                         "oper_status": "R" in f,
-                        "enabled_afi": ["IPv4"]
+                        "enabled_afi": ["IPv4"],
+                        "enabled_protocols": []
                     }
                     if r["type"].startswith("ipip-"):
                         self.get_tunnel("IPIP", "R", "IPv4", ifaces)
@@ -108,21 +111,22 @@ class Script(NOCScript):
             "/interface ethernet print detail without-paging"):
             iface = ifaces[r["name"]]
             ifaces[r["name"]]["mac"] = r["mac-address"]
-            # Attach `vlan` subinterfaces to physical parent
-            for n1, f1, r1 in self.cli_detail(
-                "/interface vlan print detail without-paging", cached=True):
-                if r["name"] == r1["interface"]:
-                    i = ifaces[r1["interface"]]
-                    self.si = {
-                        "name": r1["name"],
-                        "mac": r1["mac-address"],
-                        "mtu": r1["mtu"],
-                        "admin_status": "X" not in f1,
-                        "oper_status": "R" in f1,
-                        "enabled_afi": [],
-                        "tagged_vlans": [int(r1["vlan-id"])]
-                    }
-                    i["subinterfaces"] += [self.si]
+        # Attach `vlan` subinterfaces to parent
+        for n, f, r in self.cli_detail(
+            "/interface vlan print detail without-paging"):
+            if r["interface"] in ifaces:
+                i = ifaces[r["interface"]]
+                self.si = {
+                    "name": r["name"],
+                    "mac": r["mac-address"],
+                    "mtu": r["mtu"],
+                    "admin_status": "X" not in f,
+                    "oper_status": "R" in f,
+                    "enabled_afi": [],
+                    "tagged_vlans": [int(r["vlan-id"])],
+                    "enabled_protocols": []
+                }
+                i["subinterfaces"] += [self.si]
         # Refine ip addresses
         for n, f, r in self.cli_detail(
             "/ip address print detail without-paging"):
@@ -138,7 +142,8 @@ class Script(NOCScript):
                         "enabled_afi": [],
                         # XXX Workaround
                         "admin_status": i["admin_status"],
-                        "oper_status": i["oper_status"]
+                        "oper_status": i["oper_status"],
+                        "enabled_protocols": []
                     }
                     i["subinterfaces"] += [self.si]
                 else:
@@ -187,4 +192,91 @@ class Script(NOCScript):
                 self.get_tunnel("PPP", f, afi, r)
             if t["type"].startswith("sstp-"):
                 self.get_tunnel("SSTP", f, afi, r)
+        # bridge
+        for n, f, r in self.cli_detail("/interface bridge print detail"):
+            self.si = {}
+            if r["name"] in ifaces:
+                i = ifaces[r["name"]]
+                if not i["subinterfaces"]:
+                    self.si = {
+                        "name": r["name"],
+                        "enabled_afi": ["BRIDGE"],
+                        # XXX Workaround
+                        "admin_status": i["admin_status"],
+                        "oper_status": i["oper_status"],
+                        "mac": r["mac-address"],
+                        "mtu": r["actual-mtu"],
+                        "enabled_protocols": []
+                    }
+                    i["subinterfaces"] += [self.si]
+                else:
+                    i["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
+                if r["protocol-mode"] in ["stp", "rstp"]:
+                    i["enabled_protocols"] += ["STP"]
+        # bonding
+        for n, f, r in self.cli_detail("/interface bonding print detail"):
+            self.si = {}
+            if r["name"] in ifaces:
+                i = ifaces[r["name"]]
+                if not i["subinterfaces"]:
+                    self.si = {
+                        "name": r["name"],
+                        "enabled_afi": [],
+                        # XXX Workaround
+                        "admin_status": i["admin_status"],
+                        "oper_status": i["oper_status"],
+                        "mac": r["mac-address"],
+                        "mtu": r["mtu"],
+                        "enabled_protocols": []
+                    }
+                    i["subinterfaces"] += [self.si]
+                if r["mode"] in ["802.3ad"]:
+                    i["enabled_protocols"] += ["LACP"]
+                if r["slaves"]:
+                    slaves = r["slaves"].split(",")
+                    for s in slaves:
+                        if s in ifaces:
+                            ifaces[s]["aggregated_interface"] = r["name"]
+        # OSPF
+        for n, f, r in self.cli_detail("/routing ospf interface print detail"):
+            self.si = {}
+            if r["interface"] in ifaces:
+                i = ifaces[r["interface"]]
+                if not i["subinterfaces"]:
+                    self.si = {
+                        "name": r["interface"],
+                        "enabled_afi": [],
+                        # XXX Workaround
+                        "admin_status": i["admin_status"],
+                        "oper_status": i["oper_status"],
+                        "enabled_protocols": ["OSPF"]
+                    }
+                    i["subinterfaces"] += [self.si]
+                else:
+                    i["subinterfaces"][0]["enabled_protocols"] += ["OSPF"]
+        # PIMm IGMP
+        for n, f, r in self.cli_detail("/routing pim interface print detail"):
+            self.si = {}
+            proto = r["protocols"].upper().split(",")
+            if r["interface"] in ifaces:
+                i = ifaces[r["interface"]]
+                if not i["subinterfaces"]:
+                    self.si = {
+                        "name": r["interface"],
+                        "enabled_afi": [],
+                        # XXX Workaround
+                        "admin_status": i["admin_status"],
+                        "oper_status": i["oper_status"],
+                        "enabled_protocols": [proto]
+                    }
+                    i["subinterfaces"] += [self.si]
+                else:
+                    i["subinterfaces"][0]["enabled_protocols"] += [proto]
+            for i in ifaces:
+                for si in ifaces[i].get("subinterfaces", []):
+                    if si["name"] == r["interface"]:
+                        for p in proto:
+                            if not p in si["enabled_protocols"]:
+                                si["enabled_protocols"] += [p]
+
         return [{"interfaces": ifaces.values()}]
