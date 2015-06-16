@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Juniper.JUNOS.get_dhcp_binding
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ class Script(NOCScript):
 
     rx_line = re.compile(
         r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+\d+\s+(?P<mac>\S+)\s+"
-        r"(?P<expires>\d+)\s+BOUND\s+\S+\s*$$", re.IGNORECASE | re.MULTILINE)
+        r"(?P<expires>\d+)\s+BOUND\s+\S+\s*$", re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
         try:
