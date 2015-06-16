@@ -46,13 +46,17 @@ class ReportObjectsSummary(SimpleReport):
         # By tags
         elif report_type=="tag":
             columns=["Tag"]
-            query="""SELECT t.name,COUNT(*)
-                FROM tagging_tag t JOIN tagging_taggeditem ti ON (t.id=ti.tag_id)
-                    JOIN django_content_type c ON (ti.content_type_id=c.id)
-                WHERE c.app_label='sa'
-                    AND c.model='managedobject'
-                GROUP BY 1
-                ORDER BY 1 DESC
+            query = """
+              SELECT t.tag, COUNT(*)
+              FROM (
+                SELECT unnest(tags) AS tag
+                FROM sa_managedobject
+                WHERE
+                  tags IS NOT NULL
+                  AND array_length(tags, 1) > 0
+                ) t
+              GROUP BY 1
+              ORDER BY 2 DESC;
             """
         else:
             raise Exception("Invalid report type: %s"%report_type)
