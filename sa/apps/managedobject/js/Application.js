@@ -22,7 +22,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.main.ref.profile.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "NOC.sa.authprofile.LookupField",
-        "NOC.sa.terminationgroup.LookupField"
+        "NOC.sa.terminationgroup.LookupField",
+        "NOC.inv.networksegment.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
@@ -194,7 +195,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     text: "Name",
                     dataIndex: "name",
-                    width: 130,
+                    width: 130
+                },
+                {
+                    text: "Segment",
+                    dataIndex: "segment",
+                    width: 150,
+                    renderer: NOC.render.Lookup("segment")
                 },
                 {
                     text: "Managed",
@@ -346,6 +353,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                             name: "administrative_domain",
                             xtype: "sa.administrativedomain.LookupField",
                             fieldLabel: "Administrative Domain",
+                            width: 200,
+                            allowBlank: false,
+                            groupEdit: true
+                        },
+                        {
+                            name: "segment",
+                            xtype: "inv.networksegment.LookupField",
+                            fieldLabel: "Segment",
                             width: 200,
                             allowBlank: false,
                             groupEdit: true

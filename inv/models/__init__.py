@@ -1,14 +1,11 @@
 ## -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## models for "inventory" module
+## models for *inventory* module
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import re
-import datetime
 ## NOC modules
 from noc.lib.nosql import *
 from vendor import Vendor
@@ -24,6 +21,7 @@ from capability import Capability
 ##
 ## Network topology
 ##
+from networksegment import NetworkSegment
 from interfaceprofile import InterfaceProfile
 from interfaceclassificationrule import InterfaceClassificationRule,\
     InterfaceClassificationMatch
