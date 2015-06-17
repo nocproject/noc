@@ -29,8 +29,9 @@ from objectmap import ObjectMap
 from terminationgroup import TerminationGroup
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.profiles import profile_registry
-from noc.lib.fields import INETField, TagsField
+from noc.lib.fields import INETField, TagsField, DocumentReferenceField
 from noc.lib.app.site import site
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.stencil import stencil_registry
@@ -69,6 +70,8 @@ class ManagedObject(models.Model):
     is_managed = models.BooleanField(_("Is Managed?"), default=True)
     administrative_domain = models.ForeignKey(AdministrativeDomain,
             verbose_name=_("Administrative Domain"))
+    segment = DocumentReferenceField(
+            NetworkSegment, null=True, blank=True)
     activator = models.ForeignKey(Activator,
             verbose_name=_("Activator"),
             limit_choices_to={"is_active": True})
