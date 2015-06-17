@@ -20,10 +20,7 @@ class Script(NOCScript):
         r"(?P<interface>\S+)", re.MULTILINE | re.DOTALL)
 
     def execute(self, vrf=None):
-        if vrf:
-            s = self.cli("setfib %d arp -an" % vrf)
-        else:
-            s = self.cli("arp -an")
+        s = self.cli("arp -an")
         r = []
         for match in self.rx_line.finditer(s):
             if match.group("mac") == "FF:FF:FF:FF:FF:FF":
