@@ -17,7 +17,7 @@ protobuf==2.5.0
 pyasn1==0.1.7
 pyasn1-modules==0.0.5
 pyparsing==2.0.3
-pyproj==1.9.3
+pyproj==1.9.4
 pyrad>=2.0
 pysnmp==4.2.1
 python-creole==0.2.4
