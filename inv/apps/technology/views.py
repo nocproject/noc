@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.inv.models import Technology
+from noc.inv.models.technology import Technology
 
 
 class TechnologyApplication(ExtDocApplication):

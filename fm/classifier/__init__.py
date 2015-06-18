@@ -27,7 +27,7 @@ from noc.fm.models import (EventClassificationRule,
                            EventClass, MIB, EventLog, CloneClassificationRule,
                            ActiveEvent, EventTrigger, Enumeration)
 from noc.fm.models.ignorepattern import IgnorePattern
-from noc.inv.models import InterfaceProfile
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.fm.correlator.scheduler import CorrelatorScheduler
 import noc.inv.models
 from noc.sa.models import profile_registry

@@ -8,7 +8,7 @@
 
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.inv.models import NewPrefixDiscoveryLog
+from noc.inv.models.newprefixdiscoverylog import NewPrefixDiscoveryLog
 
 
 class ReportDiscoveredPrefixes(SimpleReport):

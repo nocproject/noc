@@ -6,10 +6,14 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from mongoengine import Q
 ## NOC modules
 from noc.lib.app import ExtApplication, view
-from noc.sa.models import ManagedObject
-from noc.inv.models import Interface, SubInterface, InterfaceProfile, Q
+from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.interfaces import (StringParameter, ListOfParameter,
     DocumentParameter, ModelParameter)
 from noc.main.models.resourcestate import ResourceState
