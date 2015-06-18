@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.inv.models import UnknownModel
+from noc.inv.models.unknownmodel import UnknownModel
 
 
 class UnknownModelApplication(ExtDocApplication):

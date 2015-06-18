@@ -2,14 +2,15 @@
 ##----------------------------------------------------------------------
 ## ip.reportvpnstatus
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow
 from noc.ip.models import VRF
-from noc.inv.models import SubInterface, ForwardingInstance
+from noc.inv.models.forwardinginstance import ForwardingInstance
+from noc.inv.models.subinterface import SubInterface
 
 
 class ReportVPNStatusApplication(SimpleReport):

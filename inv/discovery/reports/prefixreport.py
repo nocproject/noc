@@ -13,7 +13,7 @@ from base import Report
 from noc.main.models import PyRule
 from noc.ip.models.prefix import Prefix
 from noc.lib.ip import IP
-from noc.inv.models import NewPrefixDiscoveryLog
+from noc.inv.models.newprefixdiscoverylog import NewPrefixDiscoveryLog
 from noc.settings import config
 
 

@@ -2,14 +2,18 @@
 ##----------------------------------------------------------------------
 ## inv.macdb application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from mongoengine import Q
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.sa.models import ManagedObject
-from noc.inv.models import MACDB, MACLog, Interface, Q
+from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.macdb import MACDB
+from noc.inv.models.maclog import MACLog
+from noc.inv.models.interface import Interface
 
 ##@todo: REST proxy for backend buffered output(paging support in history)
 ##@todo: search in field Managed Object/Port/Description

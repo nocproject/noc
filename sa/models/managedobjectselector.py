@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ManagedObjectSelector
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -346,7 +346,6 @@ class ManagedObjectSelector(models.Model):
 class ManagedObjectSelectorByAttribute(models.Model):
     class Meta:
         verbose_name = _("Managed Object Selector by Attribute")
-        verbose_name = _("Managed Object Selectors by Attribute")
         db_table = "sa_managedobjectselectorbyattribute"
         app_label = "sa"
 

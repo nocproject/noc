@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.inv.models import InterfaceProfile
+from noc.inv.models.interfaceprofile import InterfaceProfile
 
 
 class InterfaceProfileApplication(ExtDocApplication):

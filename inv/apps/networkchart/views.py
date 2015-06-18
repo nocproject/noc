@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.inv.models import NetworkChart
+from noc.inv.models.networkchart import NetworkChart
 
 
 class NetworkChartApplication(ExtModelApplication):
