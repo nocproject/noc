@@ -19,22 +19,33 @@ class Script(NOCScript):
     name = "Zyxel.ZyNOS.get_interfaces"
     implements = [IGetInterfaces]
 
-    rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*"
-                                r"Active\s+:(?P<admin>(Yes|No)).*$",
-                                re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_ospf_status = re.compile(r"^\s+Internet Address (?P<ifaddr>"
-                                r"\d+\.\d+\.\d+\.\d+\/\d+).+$",
-                                re.MULTILINE)
-    rx_rip_status = re.compile(r"^\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
-                               r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s+"
-                               r"(?P<direction>\S+)\s+.+$",
-                               re.MULTILINE)
+    rx_admin_status = re.compile(
+        r"Port No\s+:(?P<interface>\d+).\s*"
+        r"Active\s+:(?P<admin>(Yes|No)).*$",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ospf_status = re.compile(
+        r"^\s+Internet Address (?P<ifaddr>"
+        r"\d+\.\d+\.\d+\.\d+\/\d+).+$",
+        re.MULTILINE)
+    rx_rip_status = re.compile(
+        r"^\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
+        r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s+"
+        r"(?P<direction>\S+)\s+.+$",
+        re.MULTILINE)
     rx_ipif = re.compile(
         r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
         r"Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
         r"\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
+    rx_ctp = re.compile(
+        r"^\s+(?P<interface>\d+)\s+\S+"
+        r"\s+(?P<state>\S+)\s+\d+"
+        r"\s+\d+\s+\d+\s+.+$",
+        re.MULTILINE)
+    rx_gvrp = re.compile(
+        r"^Port\s+(?P<interface>\d+)$",
+        re.MULTILINE)
 
-    # @todo: vlan trunking, STP, CTP aka LBD
+    # @todo: vlan trunking, STP, LLDP (fw >= 3.90)
 
     def get_admin_status(self, iface):
         """
@@ -109,6 +120,20 @@ class Script(NOCScript):
                 iface["enabled_protocols"] = ["LACP"]
             interfaces += [iface]
 
+        # Get loopguard
+        ctp = {}
+        cmd = self.cli("show loopguard")
+        if "LoopGuard Status: Enable" in cmd:
+            for match in self.rx_ctp.finditer(cmd):
+                ctp[match.group("interface")] = match.group("state")
+
+        # Get gvrp
+        gvrp = []
+        cmd = self.cli("show vlan1q gvrp")
+        if "gvrpEnable = YES" in cmd:
+            for match in self.rx_gvrp.finditer(cmd):
+                gvrp += [match.group("interface")]
+
         # Get mac
         mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
 
@@ -130,24 +155,33 @@ class Script(NOCScript):
                 "admin_status": admin,
                 "oper_status": swp["status"],
                 "mac": mac,
+                "enabled_protocols": [],
                 "subinterfaces": [{
                     "name": name,
                     "admin_status": admin,
                     "oper_status": swp["status"],
                     "enabled_afi": ["BRIDGE"],
                     "mac": mac,
-                    #"snmp_ifindex": self.scripts.get_ifindex(interface=name)
+                    "snmp_ifindex": self.scripts.get_ifindex(interface=name) if self.snmp 
+                                                and self.access_profile.snmp_ro
+                                                else None
                 }]
             }
+            iface["snmp_ifindex"] = iface["subinterfaces"][0]["snmp_ifindex"]
             if swp["tagged"]:
                 iface["subinterfaces"][0]["tagged_vlans"] = swp["tagged"]
             try:
                 iface["subinterfaces"][0]["untagged_vlan"] = swp["untagged"]
             except KeyError:
                 pass
-            if swp["description"]:
+            if "description" in swp.keys():
                 iface["description"] = swp["description"]
                 iface["subinterfaces"][0]["description"] = swp["description"]
+            if len(ctp) > 0:
+                if ctp[name] == "Enable":
+                    iface["enabled_protocols"] += ["CTP"]
+            if name in gvrp:
+                iface["enabled_protocols"] += ["GVRP"]
             interfaces += [iface]
 
         # Get SVIs
