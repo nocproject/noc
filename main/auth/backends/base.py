@@ -136,6 +136,9 @@ def get_backend():
     elif method == "ad":
         import adbackend
         return adbackend.NOCADBackend()
+    elif method == "radius":
+        import radiusbackend
+        return radiusbackend.NOCRadiusBackend()
     elif method == "pyrule":
         import pyrulebackend
         return pyrulebackend.NOCPyRuleBackend()
