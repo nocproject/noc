@@ -46,7 +46,8 @@ class Script(NOCScript):
                "T": 'physical',
                "M": 'management',
                "R": 'aggregated',
-               "P": 'aggregated'
+               "P": 'aggregated',
+               "V": "SVI"
         }
         v = self.cli("show interface")
         for s in v.split("\nInterface "):
@@ -98,6 +99,11 @@ class Script(NOCScript):
                         interfaces[-1]['subinterfaces'] = [sub]
                     else:
                         interfaces[-1]['subinterfaces'] += [sub]
+            # get SVI data
+            for i in interfaces:
+                if i["type"] == "SVI" and i["name"].startswith("Vlan"):
+                    vid = i["name"].split("Vlan")[1]
+                    i["subinterfaces"][0]["vlan_ids"] = [vid]
             else:
                 continue
         return [{"interfaces": interfaces}]
