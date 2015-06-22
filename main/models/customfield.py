@@ -66,6 +66,7 @@ class CustomField(models.Model):
                                    verbose_name="Enum Group",
                                    null=True, blank=True)
     _cfields = {}
+    _installed = set()
 
     def __unicode__(self):
         return u"%s.%s" % (self.table, self.name)
@@ -311,6 +312,10 @@ class CustomField(models.Model):
         """
         Install custom field to model
         """
+        un = unicode(self)
+        if un in self._installed:
+            return
+        self._installed.add(un)
         fn = str(self.name)
         logger.info("Installing custom field %s.%s",
                     self.table, self.name)
