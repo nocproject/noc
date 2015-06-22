@@ -48,10 +48,13 @@ class Profile(NOCProfile):
         :param cached:
         :return:
         """
-        if cached == True:
-            return self.parse_detail(script.cli(cmd, cached=True))
-        else:
-            return self.parse_detail(script.cli(cmd))
+        try:
+            if cached == True:
+                return self.parse_detail(script.cli(cmd, cached=True))
+            else:
+                return self.parse_detail(script.cli(cmd))
+        except:
+            return []
 
     rx_p_new = re.compile("^\s*(?P<line>\d+)\s+")
     rx_key = re.compile("([0-9a-zA-Z\-]+)=")
