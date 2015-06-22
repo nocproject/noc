@@ -355,8 +355,13 @@ class Activator(Daemon, FSM):
         else:
             s = "is completed"
             failed = 0
-        logger.info("Script %s(%s) %s" % (script.name,
-                                           script.debug_name, s))
+        logger.info(
+            "Script %s(%s) %s (%sms)",
+            script.name,
+            script.debug_name,
+            s,
+            int((time.time() - script.start_time) * 1000)
+        )
         with self.script_lock:
             cb = self.script_threads.pop(script)
             logger.info("%d script threads left (%d max)" % (
