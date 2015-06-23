@@ -20,6 +20,7 @@ from noc.sa.models.managedobject import (ManagedObject,
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.reducetask import ReduceTask
 from noc.sa.models.interactionlog import InteractionLog
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -78,6 +79,18 @@ class ManagedObjectApplication(ExtModelApplication):
 
     def field_link_count(self, o):
         return Link.object_links_count(o)
+
+    def cleaned_query(self, q):
+        if "selector" in q:
+            s = self.get_object_or_404(ManagedObjectSelector,
+                                       id=int(q["selector"]))
+            del q["selector"]
+        else:
+            s = None
+        r = super(ManagedObjectApplication, self).cleaned_query(q)
+        if s:
+            r["id__in"] = ManagedObject.objects.filter(s.Q)
+        return r
 
     def queryset(self, request, query=None):
         qs = super(ManagedObjectApplication, self).queryset(request, query)

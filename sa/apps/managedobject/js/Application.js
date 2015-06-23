@@ -16,6 +16,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.activator.LookupField",
         "NOC.sa.collector.LookupField",
         "NOC.sa.managedobjectprofile.LookupField",
+        "NOC.sa.managedobjectselector.LookupField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.main.pyrule.LookupField",
@@ -660,6 +661,12 @@ Ext.define("NOC.sa.managedobject.Application", {
             name: "segment",
             ftype: "lookup",
             lookup: "inv.networksegment"
+        },
+        {
+            title: "By Selector",
+            name: "selector",
+            ftype: "lookup",
+            lookup: "sa.managedobjectselector"
         },
         {
             title: "By Activator",
