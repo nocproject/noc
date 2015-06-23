@@ -29,7 +29,7 @@ from noc.fm.models import (EventClassificationRule,
 from noc.fm.models.ignorepattern import IgnorePattern
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.fm.correlator.scheduler import CorrelatorScheduler
-import noc.inv.models
+import noc.inv.models.interface
 from noc.sa.models import profile_registry
 from noc.sa.models.collector import Collector
 from noc.sa.models.managedobject import ManagedObject
@@ -563,7 +563,7 @@ class Classifier(Daemon):
         """
         Get interface instance
         """
-        return noc.inv.models.Interface.objects.filter(
+        return noc.inv.models.interface.Interface.objects.filter(
             managed_object=managed_object_id,
             name=name
         ).first()
