@@ -59,6 +59,12 @@ class ManagedObjectApplication(ExtModelApplication):
     cfg = RepoInline("config")
 
     extra_permissions = ["alarm", "change_interface"]
+    implied_permissions = {
+        "read": [
+            "inv:networksegment:lookup",
+            "sa:activator:lookup"
+        ]
+    }
 
     mrt_config = {
         "console": {
