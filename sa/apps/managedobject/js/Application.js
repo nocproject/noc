@@ -656,6 +656,12 @@ Ext.define("NOC.sa.managedobject.Application", {
             lookup: "sa.administrativedomain"
         },
         {
+            title: "By Segment",
+            name: "segment",
+            ftype: "lookup",
+            lookup: "inv.networksegment"
+        },
+        {
             title: "By Activator",
             name: "activator",
             ftype: "lookup",
