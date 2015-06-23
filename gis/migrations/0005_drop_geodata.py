@@ -10,7 +10,7 @@ from south.db import db
 
 class Migration(object):
     def forwards(self):
-        db.drop_table("gis_geodata")
+        db.execute("DROP TABLE IF EXISTS gis_geodata")
 
     def backwards(self):
         pass
