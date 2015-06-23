@@ -26,6 +26,11 @@ class ManagedObjectSelectorApplication(ExtModelApplication):
     def field_expression(self, o):
         return o.expr
 
+    def cleaned_query(self, q):
+        if q.get("id__referred") == "sa.managedobject__selector":
+            del q["id__referred"]
+        return super(ManagedObjectSelectorApplication, self).cleaned_query(q)
+
     @view(url="(?P<id>\d+)/objects/", method=["GET"],
           access="read", api=True)
     def api_test(self, request, id):
