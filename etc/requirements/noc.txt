@@ -28,6 +28,7 @@ docutils==0.7
 Pygments==1.2.2
 mistune==0.5
 mongoengine==0.9.0
+networkx==1.9.1
 tornado==4.0.2
 sleekxmpp==1.1.11
 Whoosh==2.5.4
@@ -39,6 +40,7 @@ noc-pkg-silk-companion1==1.0
 noc-pkg-extjs==5.1.0
 noc-pkg-mxgraph==1.10.4.2
 noc-pkg-openlayers==2.13
+noc-pkg-jointjs==0.9.0
 noc-pkg-jquery==1.11.0
 noc-pkg-flot==0.8.3
 noc-pkg-font-awesome==4.2.0
