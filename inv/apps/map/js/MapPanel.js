@@ -28,9 +28,8 @@ Ext.define("NOC.inv.map.MapPanel", {
                     xtype: "component",
                     autoScroll: true,
                     layout: "fit",
-                    padding: 4,
                     style: {
-                        background: "url('/static/img/grid.gif')"
+                        background: "#e0e0e0"
                     }
                 }
             ]
@@ -56,6 +55,8 @@ Ext.define("NOC.inv.map.MapPanel", {
             el: dom,
             model: me.graph,
             gridSize: 10,
+            gridWidth: 10,
+            gridHeight: 10,
             interactive: false
         });
         me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
@@ -96,6 +97,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             cells.push(me.createLink(link));
         });
         me.graph.addCells(cells);
+        me.paper.fitToContent();
     },
 
     //
