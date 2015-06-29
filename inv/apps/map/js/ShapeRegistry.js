@@ -19,7 +19,7 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
             return sc;
         }
         sc = joint.shapes.basic.Generic.extend({
-            markup: '<g class="rotatable"><g class="scalable"><image/></g>><text/></g>',
+            markup: '<g class="rotatable"><g class="scalable"><image/></g><text/></g>',
             defaults: joint.util.deepSupplement({
                 //type: "basic." + n,
                 type: "basic.Generic.nocobject",
