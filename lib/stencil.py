@@ -71,7 +71,6 @@ class StencilRegistry:
                 file, name, w, h = row
                 n = os.path.splitext(file)[0]
                 id = os.path.join(d, n)
-                print name, w, h
                 s = Stencil(
                     id=id,
                     img_path=os.path.join("/", self.prefix, d, file),

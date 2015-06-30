@@ -26,7 +26,6 @@ class MapApplication(ExtApplication):
     title = "Network Map"
     menu = "Network Map"
     icon = "icon_map"
-    PADDING = 30
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["GET"],
           access="read", api=True)
@@ -45,6 +44,7 @@ class MapApplication(ExtApplication):
                 "height": sh
             }
             r["nodes"] += [mo[o.id]]
+            layout.set_node_size(o.id, sw, sh)
 
         segment = self.get_object_or_404(NetworkSegment, id=id)
         layout = Layout()
@@ -115,15 +115,15 @@ class MapApplication(ExtApplication):
         # Calculated position is the center of node
         for o in npos:
             x, y = npos[o]
-            mo[o]["x"] = x - mo[o]["width"] / 2 + self.PADDING
-            mo[o]["y"] = y - mo[o]["height"] / 2 + self.PADDING
+            mo[o]["x"] = x
+            mo[o]["y"] = y
         # Adjust link hints
         for lid in lpos:
             links[lid]["smooth"] = True
             links[lid]["vertices"] = [
                 {
-                    "x": p["x"] + self.PADDING,
-                    "y": p["y"] + self.PADDING
+                    "x": p["x"],
+                    "y": p["y"]
                 } for p in lpos[lid]
             ]
         return r

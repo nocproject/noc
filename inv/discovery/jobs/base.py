@@ -13,6 +13,7 @@ from noc.lib.scheduler.intervaljob import IntervalJob
 
 class MODiscoveryJob(IntervalJob):
     ignored = True
+    transaction = True
 
     def get_display_key(self):
         if self.object:
