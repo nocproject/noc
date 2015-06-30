@@ -23,6 +23,7 @@ from django.core.urlresolvers import *
 from django.conf import settings
 from django.utils.simplejson.encoder import JSONEncoder
 from django.utils.encoding import smart_str
+from django.db.models.loading import load_app
 ## NOC modules
 from noc.settings import INSTALLED_APPS, config
 from noc.lib.debug import error_report
@@ -458,9 +459,17 @@ class Site(object):
         if self.apps:
             # Do not discover site twice
             return
-        for app in [a for a in INSTALLED_APPS if a.startswith("noc.")]:
-            # Import models
-            __import__(app + ".models", {}, {}, "*")
+        noc_apps = [a for a in INSTALLED_APPS if a.startswith("noc.")]
+        noc_models = {}
+        # Load models
+        for app in noc_apps:
+            logger.debug("Loading %s models", app)
+            noc_models[app] = load_app(app)
+        # Start after-load handlers
+        import noc.ready
+        # Load applications
+        for app in noc_apps:
+            logger.debug("Loading %s applications", app)
             m = app.split(".")[1]
             root = self.add_module_menu(app)
             # Initialize application
