@@ -47,7 +47,7 @@ class BINDFileHandler(DNSZoneSyncHandler):
         self.db = None
         self.db_path = None
         self.inc_path = None
-        self.touch_includes = False
+        self.touch_includes = True
 
     def configure(self, root, inc_root, inc_extra_config = None,
                   on_new_zone=None, on_deleted_zone=None,
