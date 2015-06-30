@@ -16,6 +16,7 @@ import threading
 from collections import defaultdict
 import warnings
 ## Third-party modules
+from django.db import transaction
 import pymongo.errors
 ## NOC modules
 from error import JobExists
@@ -316,10 +317,34 @@ class Scheduler(object):
         tb = None
         t0 = time.time()
         job.logger.info("Running job handler")
+        if job.transaction:
+            # Start transaction management
+            job.logger.debug("Entering transaction management")
+            transaction.enter_transaction_management()
+            transaction.managed(True)
         try:
             r = job.handler(**kwargs)
+            if job.transaction:
+                # Commit transaction
+                try:
+                    job.logger.debug("Commiting transaction")
+                    transaction.commit()
+                except Exception:
+                    job.logger.debug("Failed to commit. Trying to rollback")
+                    transaction.rollback()
+                    job.logger.debug("Leaving transaction management")
+                    transaction.leave_transaction_management()
+                    raise
+                job.logger.debug("Leaving transaction management")
+                transaction.leave_transaction_management()
         except Exception:
             # error_report()
+            if job.transaction:
+                # Rollback transaction
+                job.logger.debug("Rolling back transaction")
+                transaction.rollback()
+                job.logger.debug("Leaving transaction management")
+                transaction.leave_transaction_management()
             tb = get_traceback()
             job.error(tb)
             job.on_exception()

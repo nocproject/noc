@@ -46,6 +46,7 @@ class DiscoveryJob(Document):
 
     @classmethod
     def install(cls):
+        logger.info("Installing discovery jobs watchers")
         from noc.sa.models.managedobject import ManagedObject
         from noc.sa.models.managedobjectprofile import ManagedObjectProfile
         post_save.connect(cls.on_managed_object_save, sender=ManagedObject)
