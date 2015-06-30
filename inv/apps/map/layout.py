@@ -21,6 +21,7 @@ class Layout(object):
         self.G = nx.Graph()
         self.seen_links = {}  # n1, n2 -> count
         self.link_ids = defaultdict(list)  # n1, n2 -> [link id]
+        self.node_size = {}  # n -> w, h
 
     def add_link(self, n1, n2, lid):
         if n1 == n2:
@@ -30,6 +31,9 @@ class Layout(object):
         if len(self.link_ids[lp]) > 1:
             return
         self.G.add_edge(lp[0], lp[1])
+
+    def set_node_size(self, n, w, h):
+        self.node_size[n] = (w, h)
 
     def set_position(self, n, x, y):
         print "[IGNORED] set_position", n, x, y
@@ -50,6 +54,13 @@ class Layout(object):
             m0, m1 = l
             x0, y0 = npos[m0]
             x1, y1 = npos[m1]
+            # Adjust to node sizes
+            w0, h0 = self.node_size[m0]
+            x0 += w0 / 2
+            y0 += h0 / 2
+            w1, h1 = self.node_size[m1]
+            x1 += w1 / 2
+            y1 += h1 / 2
             # Calculte sin and cos
             L = math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
             sin_a = (y1 - y0) / L
