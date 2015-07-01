@@ -14,6 +14,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     layout: "fit",
     autoScroll: true,
     app: null,
+    readOnly: false,
 
     initComponent: function () {
         var me = this;
@@ -21,6 +22,8 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.shapeRegistry = NOC.inv.map.ShapeRegistry;
         me.objectNodes = {};
         me.portObjects = {};  // port id -> object id
+        me.isInteractive = false;  // Graph is editable
+        me.isDirty = false;  // Graph is changed
 
         Ext.apply(me, {
             items: [
@@ -51,13 +54,14 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this,
             dom = me.items.first().el.dom;
         me.graph = new joint.dia.Graph;
+        me.graph.on("change", Ext.bind(me.onChange, me));
         me.paper = new joint.dia.Paper({
             el: dom,
             model: me.graph,
             gridSize: 10,
             gridWidth: 10,
             gridHeight: 10,
-            interactive: false
+            interactive: Ext.bind(me.onInteractive, me)
         });
         me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
         me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
@@ -84,6 +88,8 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this,
             cells = [];
 
+        me.isInteractive = false;
+        me.isDirty = false;
         me.graph.clear();
         // Create nodes
         Ext.each(data.nodes, function(node) {
@@ -203,5 +209,72 @@ Ext.define("NOC.inv.map.MapPanel", {
     onBlankSelected: function() {
         var me = this;
         me.app.inspectSegment();
+    },
+    // Change interactive flag
+    setInteractive: function(interactive) {
+        var me = this;
+        me.isInteractive = interactive;
+    },
+    //
+    onInteractive: function() {
+        var me = this;
+        return me.isInteractive;
+    },
+    //
+    onChange: function() {
+        var me = this;
+        me.isDirty = true;
+        me.fireEvent("changed");
+    },
+
+    save: function() {
+        var me = this,
+            bbox = me.paper.getContentBBox(),
+            r = {
+                nodes: [],
+                links: [],
+                width: bbox.width - bbox.x,
+                height: bbox.height - bbox.y
+            };
+        // Get nodes position
+        Ext.each(me.graph.getElements(), function(e) {
+            var v = e.get("id").split(":");
+            r.nodes.push({
+                type: v[0],
+                id: v[1],
+                x: e.get("position").x,
+                y: e.get("position").y
+            });
+        });
+        // Get links position
+        Ext.each(me.graph.getLinks(), function(e) {
+            var vertices = e.get("vertices"),
+                lr = {
+                    id: e.get("id")
+                };
+            if(vertices) {
+                lr.vertices = vertices.map(function(o) {
+                    return {
+                        x: o.x,
+                        y: o.y
+                    }
+                });
+            }
+            r.links.push(lr);
+        });
+        Ext.Ajax.request({
+            url: "/inv/map/" + me.segmentId + "/data/",
+            method: "POST",
+            jsonData: r,
+            scope: me,
+            success: function(response) {
+                NOC.info("Map has been saved");
+                me.isDirty = false;
+                me.app.saveButton.setDisabled(true);
+            },
+            failure: function() {
+                NOC.error("Failed to save data");
+            }
+     });
     }
 });

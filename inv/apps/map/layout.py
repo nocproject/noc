@@ -22,6 +22,9 @@ class Layout(object):
         self.seen_links = {}  # n1, n2 -> count
         self.link_ids = defaultdict(list)  # n1, n2 -> [link id]
         self.node_size = {}  # n -> w, h
+        self.fixed_positions = {}  # n -> x, y
+        self.width = None
+        self.height = None
 
     def add_link(self, n1, n2, lid):
         if n1 == n2:
@@ -35,15 +38,22 @@ class Layout(object):
     def set_node_size(self, n, w, h):
         self.node_size[n] = (w, h)
 
-    def set_position(self, n, x, y):
-        print "[IGNORED] set_position", n, x, y
+    def set_node_position(self, n, x, y):
+        self.fixed_positions[n] = (x, y)
+
+    def set_page_size(self, w, h):
+        self.width = w
+        self.height = h
 
     def layout(self):
         """
         Auto-layout graph
         Retuns dict of nodes positions, dict of links hints
         """
-        npos = self.layout_spring()
+        if len(self.fixed_positions) == len(self.G):
+            npos = self.fixed_positions
+        else:
+            npos = self.layout_spring()
         # Set link hints
         lpos = {}
         for l in self.link_ids:
@@ -75,17 +85,18 @@ class Layout(object):
                 lpos[lid] = [{"x": xi, "y": yi}]
         return npos, lpos
 
-    def get_scale(self):
-        """
-        Calculate optimal scale
-        """
-        return self.SCALE_FACTOR * math.sqrt(len(self.G))
-
     def layout_spring(self):
         """
         Fruchterman-Reingold force-directed algorithm
         """
+        if not self.width or not self.height:
+            scale = self.SCALE_FACTOR * math.sqrt(len(self.G))
+        else:
+            scale = max(self.width, self.height)
+
         return nx.spring_layout(
             self.G,
-            scale=self.get_scale()
+            scale=scale,
+            pos=self.fixed_positions or None,
+            fixed=list(self.fixed_positions) or None
         )
