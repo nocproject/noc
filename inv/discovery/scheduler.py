@@ -16,11 +16,12 @@ from noc.lib.solutions import solutions_roots
 
 
 class DiscoveryScheduler(Scheduler):
-    def __init__(self, daemon=None):
+    def __init__(self, daemon=None, max_threads=None):
         self.daemon = daemon
         super(DiscoveryScheduler, self).__init__(
             "inv.discovery", initial_submit=daemon is not None,
-            reset_running=daemon is not None
+            reset_running=daemon is not None,
+            max_threads=None
         )
         self.register_all(
             os.path.join("inv", "discovery", "jobs"),
