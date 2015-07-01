@@ -46,8 +46,9 @@ class DiscoveryDaemon(Daemon):
         mrt_limit = self.config.getint("main", "mrt_limit")
         self.scheduler.mrt_limit = mrt_limit or None
         max_threads = self.config.getint("main", "max_threads")
-        self.logger.info("Limiting thread pool to %d threads", max_threads)
-        self.scheduler.max_threads = max_threads or None
+        self.scheduler.thread_pool.configure(
+            max_threads=max_threads or None
+        )
 
     def load_beef_map(self):
         for o in self.config.options("beef"):
