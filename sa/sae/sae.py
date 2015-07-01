@@ -21,7 +21,7 @@ import itertools
 import struct
 from collections import defaultdict
 ## Django modules
-from django.db import reset_queries
+from django.db import reset_queries, transaction
 # Third-party modules
 from bson import Binary
 ## NOC modules
@@ -517,6 +517,7 @@ class SAE(Daemon):
         """
         Process Map/Reduce tasks
         """
+        @transaction.commit_on_success
         def map_callback(mt_id, result=None, error=None):
             try:
                 mt = MapTask.objects.get(id=mt_id)
@@ -546,20 +547,24 @@ class SAE(Daemon):
                     if mt.retries_left and (not mt.task or next_try < mt.task.stop_time):
                         # Check we're still in task time and have retries left
                         self.log_mrt(logging.INFO, task=mt, status="retry")
-                        mt.next_try = next_try
-                        mt.retries_left = next_retries
-                        mt.status = "W"
-                        mt.save()
-                        return
-                mt.status = "F"
-                mt.script_result = dict(code=error.code, text=error.text)
+                        MapTask.objects.filter(id=mt.id).update(
+                            next_try=next_try,
+                            retries_left=next_retries,
+                            status="W"
+                        )
+                else:
+                    MapTask.objects.filter(id=mt.id).update(
+                        status="F",
+                        script_result=dict(code=error.code, text=error.text)
+                    )
                 self.log_mrt(logging.INFO, task=mt, status="failed",
                              code=error.code, error=error.text)
             else:
-                mt.status = "C"
-                mt.script_result = result
+                MapTask.objects.filter(id=mt.id).update(
+                    status="C",
+                    script_result=result
+                )
                 self.log_mrt(logging.INFO, task=mt, status="completed")
-            mt.save()
 
         # Additional stack frame to store mt_id in a closure
         def exec_script(mt):
@@ -572,15 +577,47 @@ class SAE(Daemon):
                     timeout=mt.script_timeout,
                     **kwargs)
 
+        @transaction.commit_on_success
+        def get_pending_tasks():
+            qs = {
+                "status": "W",
+                "next_try__lte": t
+            }
+            if not self.single_shard:
+                qs["managed_object__activator__shard__is_active"] = True
+                qs["managed_object__activator__shard__name__in"] = self.shards
+            return list(
+                MapTask.objects.filter(**qs)\
+                .order_by("next_try")\
+                .select_related("activator", "managed_object")
+            )
+
+        @transaction.commit_on_success
         def fail_task(mt, code, text):
-            mt.status = "F"
-            mt.script_result = dict(code=code, text=text)
-            try:
-                mt.save()
-            except Exception:
-                pass  # Can raise integrity error if MRT is gone
+            MapTask.objects.filter(id=mt.id).update(
+                status="F",
+                script_result=dict(code=code, text=text)
+            )
             self.log_mrt(logging.INFO, task=mt, status="failed",
                 code=code, error=text)
+
+        @transaction.commit_on_success
+        def mark_as_running(mt):
+            MapTask.objects.filter(id=mt.id).update(status="R")
+
+        @transaction.commit_on_success
+        def fail_invalid_reduce():
+            n = MapTask.objects.extra(
+                where=[
+                    "task_id IS NOT NULL AND task_id NOT IN ("
+                    "   SELECT id FROM sa_reducetask)"
+                ]
+            ).update(
+                status="F",
+                script_result=dict(code=ERR_TIMEOUT, text="Timed out")
+            )
+            if n:
+                self.logger.error("Failing %d orphaned map tasks", n)
 
         t = datetime.datetime.now()
         # self.logger.debug("Processing MRT schedules")
@@ -590,17 +627,8 @@ class SAE(Daemon):
         throttled_shards = set()  # shard_id
         self.blocked_pools = set()  # Reset block status
         # Run tasks
-        qs = {
-            "status": "W",
-            "next_try__lte": t
-        }
-        if not self.single_shard:
-            qs["managed_object__activator__shard__is_active"] = True
-            qs["managed_object__activator__shard__name__in"] = self.shards
-        for mt in MapTask.objects.filter(**qs)\
-                .order_by("next_try")\
-                .select_related("activator", "managed_object")\
-                .select_for_update():
+        fail_invalid_reduce()
+        for mt in get_pending_tasks():
             # Check object is managed
             if not mt.managed_object.is_managed:
                 fail_task(mt, ERR_OBJECT_NOT_MANAGED, "Object is not managed")
@@ -645,14 +673,12 @@ class SAE(Daemon):
                     throttled_shards.add(s_id)
                 else:
                     shard_mrt_rate[s_id] = sr
-            mt.status = "R"
-            mt.save()
+            mark_as_running(mt)
             exec_script(mt)
         dt = total_seconds(datetime.datetime.now() - t)
         # self.logger.debug("MRT Schedules processed in %ss" % dt)
         if dt > self.mrt_schedule_interval:
             self.logger.error("SAE is overloaded by MRT scheduling (took %ss)" % dt)
-            #  @todo: Generate FM event
 
     def run_sae_script(self, request, callback):
         """
