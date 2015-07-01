@@ -27,6 +27,7 @@ class CancelledError(Exception):
 class Worker(Thread):
     def __init__(self, pool, queue, *args, **kwargs):
         super(Worker, self).__init__(*args, **kwargs)
+        self.setDaemon(True)
         self.pool = pool
         self.queue = queue
         self.logger = self.pool.logger
@@ -40,17 +41,22 @@ class Worker(Thread):
         self.is_idle = status
         self.pool.set_idle(status)
 
+    def get_task(self):
+        self.set_idle(True)
+        while True:
+            try:
+                task = self.queue.get(block=True, timeout=1)
+                self.set_idle(False)
+                return task
+            except Empty:
+                # Apply pool scheduling
+                self.set_idle(None)
+
     def run(self):
         self.logger.debug("Starting worker thread")
         while True:
             # Get task from queue
-            try:
-                self.set_idle(True)
-                task = self.queue.get(block=True, timeout=1)
-                self.set_idle(False)
-            except Empty:
-                self.set_idle(False)
-                continue
+            task = self.get_task()
             if task is None:
                 break  # Shutdown
             title, f, args, kwargs = task
@@ -99,6 +105,7 @@ class Pool(object):
     def __init__(self, name="pool", metrics_prefix=None,
                  start_threads=1, max_threads=10,
                  min_spare=1, max_spare=1, backlog=0):
+        max_threads = max_threads or 100
         if min_spare > max_spare:
             raise ValueError("min_spare (%d) must not be greater"
                              " than max_spare (%d)" % (min_spare,
@@ -122,7 +129,7 @@ class Pool(object):
         self.max_threads = max_threads
         self.min_spare = min_spare
         self.max_spare = max_spare
-        self.backlog = backlog if backlog else max_threads
+        self.backlog = backlog or max_threads
         self.t_lock = Lock()
         self.threads = set()
         self.queue = Queue(backlog)
@@ -206,12 +213,29 @@ class Pool(object):
                   max_spare=None, backlog=None):
         if max_threads is not None:
             self.max_threads = max_threads
+            if not backlog:
+                backlog = max_threads
         if min_spare is not None:
             self.min_spare = min_spare
         if max_spare is not None:
             self.max_spare = max_spare
+        else:
+            self.max_spare = max(self.max_threads // 4, 1)
         if backlog is not None:
             self.backlog = backlog
+            self.queue.maxsize = backlog
+        self.log_config()
+
+    def is_blocked(self):
+        return self.queue.qsize() >= self.backlog
+
+    def log_config(self):
+        logger.debug(
+            "Pool settings: name=%s start_threads=%s max_threads=%s "
+            "min_spare=%s max_spare=%s backlog=%s",
+            self.name, self.start_threads, self.max_threads,
+            self.min_spare, self.max_spare, self.backlog
+        )
 
 
 class LabeledPool(object):
