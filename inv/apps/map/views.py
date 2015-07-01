@@ -13,6 +13,7 @@ from noc.lib.app import ExtApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface
 from noc.sa.models import ManagedObject
+from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
 from noc.lib.stencil import stencil_registry
 from layout import Layout
@@ -45,9 +46,22 @@ class MapApplication(ExtApplication):
             }
             r["nodes"] += [mo[o.id]]
             layout.set_node_size(o.id, sw, sh)
+            mk = (u"managedobject", unicode(o.id))
+            mos = node_settings.get(mk)
+            if mos:
+                layout.set_node_position(o.id, mos.x, mos.y)
 
         segment = self.get_object_or_404(NetworkSegment, id=id)
+        settings = MapSettings.objects.filter(segment=id).first()
+        node_settings = {}
         layout = Layout()
+        if settings:
+            self.logger.debug("Using stored positions")
+            layout.set_page_size(settings.width, settings.height)
+            for n in settings.nodes:
+                node_settings[n.type, n.id] = n
+        else:
+            self.logger.debug("Generating positions")
         r = {
             "id": str(segment.id),
             "name": segment.name,
@@ -126,7 +140,21 @@ class MapApplication(ExtApplication):
                     "y": p["y"]
                 } for p in lpos[lid]
             ]
+        if not settings:
+            self.logger.debug("@todo: Saving first-time layout")
+            # @todo: Save layout
         return r
+
+    @view("^(?P<id>[0-9a-f]{24})/data/$", method=["POST"],
+          access="write", api=True)
+    def api_save(self, request, id):
+        segment = self.get_object_or_404(NetworkSegment, id=id)
+        data = self.deserialize(request.raw_post_data)
+        data["id"] = id
+        MapSettings.load_json(data, request.user.username)
+        return {
+            "status": True
+        }
 
     def get_object_shape(self, object):
         if object.shape:

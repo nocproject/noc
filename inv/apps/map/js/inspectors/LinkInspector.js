@@ -10,6 +10,9 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
     extend: "Ext.panel.Panel",
     title: "Link Inspector",
     autoScroll: true,
+    bodyStyle: {
+        background: "#c0c0c0"
+    },
 
     initComponent: function() {
         var me = this;

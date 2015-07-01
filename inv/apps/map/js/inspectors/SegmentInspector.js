@@ -11,6 +11,9 @@ Ext.define("NOC.inv.map.inspectors.SegmentInspector", {
     title: "Segment Inspector",
     autoScroll: true,
     layout: "vbox",
+    bodyStyle: {
+        background: "#c0c0c0"
+    },
 
     initComponent: function() {
         var me = this;

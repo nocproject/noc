@@ -10,6 +10,9 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
     extend: "Ext.panel.Panel",
     title: "Object Inspector",
     autoScroll: true,
+        bodyStyle: {
+        background: "#c0c0c0"
+    },
 
     initComponent: function() {
         var me = this;
