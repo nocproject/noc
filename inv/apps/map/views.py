@@ -26,7 +26,7 @@ class MapApplication(ExtApplication):
     """
     title = "Network Map"
     menu = "Network Map"
-    icon = "icon_map"
+    glyph = "globe"
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["GET"],
           access="read", api=True)
@@ -75,7 +75,7 @@ class MapApplication(ExtApplication):
             }
         # Nodes
         mo = {}
-        for o in ManagedObject.objects.filter(segment=id):
+        for o in segment.managed_objects:
             add_mo(o, external=False)
         # Load links
         links = {}

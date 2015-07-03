@@ -36,6 +36,7 @@ class Layout(object):
         self.G.add_edge(lp[0], lp[1])
 
     def set_node_size(self, n, w, h):
+        self.G.add_node(n)
         self.node_size[n] = (w, h)
 
     def set_node_position(self, n, x, y):
@@ -94,9 +95,13 @@ class Layout(object):
         else:
             scale = max(self.width, self.height)
 
-        return nx.spring_layout(
+        pos = nx.spring_layout(
             self.G,
             scale=scale,
             pos=self.fixed_positions or None,
             fixed=list(self.fixed_positions) or None
         )
+        if self.fixed_positions:
+            # Overwrite fixed positions
+            pos.update(self.fixed_positions)
+        return pos
