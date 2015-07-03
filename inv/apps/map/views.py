@@ -141,8 +141,19 @@ class MapApplication(ExtApplication):
                 } for p in lpos[lid]
             ]
         if not settings:
-            self.logger.debug("@todo: Saving first-time layout")
-            # @todo: Save layout
+            self.logger.debug("Saving first-time layout")
+            MapSettings.load_json({
+                "id": str(segment.id),
+                "nodes": [
+                    {
+                        "type": n["type"],
+                        "id": n["id"],
+                        "x": n["x"],
+                        "y": n["y"]
+                    } for n in r["nodes"]
+                ],
+                "links": []
+            })
         return r
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["POST"],
