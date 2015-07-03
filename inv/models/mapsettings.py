@@ -112,10 +112,6 @@ class MapSettings(Document):
         if user:
             d.user = user
         d.changed = datetime.datetime.now()
-        if "width" in data:
-            d.width = data["width"]
-        if "height" in data:
-            d.height = data["height"]
         # Update nodes
         new_nodes = {}  # id -> data
         for n in data.get("nodes", []):
@@ -129,6 +125,8 @@ class MapSettings(Document):
             n.y = nd["y"]
             nn += [n]
             del new_nodes[(n.type, n.id)]
+        mx = 0.0
+        my = 0.0
         for n in new_nodes:
             nd = new_nodes[n]
             nn += [NodeSettings(
@@ -137,6 +135,10 @@ class MapSettings(Document):
                 x=nd["x"],
                 y=nd["y"]
             )]
+            mx = max(mx, nd["x"])
+            my = max(my, nd["y"])
+        d.width = data.get("width", mx)
+        d.height = data.get("height", my)
         d.nodes = sorted(nn, key=lambda x: (x.type, x.id))
         # Update links
         # Finally save
