@@ -195,7 +195,7 @@ Ext.define("NOC.inv.map.Application", {
 
     onChanged: function() {
         var me = this;
-        me.saveButton.setDisabled(!me.readOnly);
-        me.revertButton.setDisabled(!me.readOnly);
+        me.saveButton.setDisabled(me.readOnly);
+        me.revertButton.setDisabled(me.readOnly);
     }
 });
