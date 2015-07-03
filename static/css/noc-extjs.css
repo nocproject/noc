@@ -203,6 +203,6 @@ TABLE {
     -webkit-filter: brightness(0.95);
 }
 
-.element.highlighted.nocobject {
-    outline: dashed 4px red;
-}
+/*.element.highlighted.nocobject {*/
+    /*outline: dashed 4px red;*/
+/*}*/
