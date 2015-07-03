@@ -79,6 +79,9 @@ Ext.define("NOC.inv.map.MapPanel", {
             scope: me,
             success: function(response) {
                 me.renderMap(Ext.decode(response.responseText));
+            },
+            failure: function() {
+                NOC.error("Failed to get data");
             }
         });
     },

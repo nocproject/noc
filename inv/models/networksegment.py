@@ -9,6 +9,8 @@
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, ReferenceField
+from noc.lib.nosql import ForeignKeyField
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 
 
 class NetworkSegment(Document):
@@ -21,6 +23,8 @@ class NetworkSegment(Document):
     parent = ReferenceField("self", required=False)
     description = StringField(required=False)
     settings = DictField(default=lambda: {}.copy())
+    # Selectors for fake segments
+    selector = ForeignKeyField(ManagedObjectSelector)
 
     def __unicode__(self):
         return self.name
@@ -65,3 +69,12 @@ class NetworkSegment(Document):
                 return True
             p = p.parent
         return False
+
+    @property
+    def managed_objects(self):
+        from noc.sa.models.managedobject import ManagedObject
+
+        if self.selector:
+            return self.selector.managed_objects
+        else:
+            return ManagedObject.objects.filter(segment=str(self.id))

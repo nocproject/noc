@@ -11,6 +11,7 @@ Ext.define("NOC.inv.networksegment.Application", {
     requires: [
         "NOC.inv.networksegment.Model",
         "NOC.inv.networksegment.LookupField",
+        "NOC.sa.managedobjectselector.LookupField",
         "Ext.ux.form.DictField"
     ],
     model: "NOC.inv.networksegment.Model",
@@ -50,6 +51,12 @@ Ext.define("NOC.inv.networksegment.Application", {
                     flex: 1
                 },
                 {
+                    text: "Selector",
+                    dataIndex: "selector",
+                    width: 100,
+                    renderer: NOC.render.Lookup("selector")
+                },
+                {
                     text: "Obj.",
                     dataIndex: "count",
                     width: 30,
@@ -84,6 +91,12 @@ Ext.define("NOC.inv.networksegment.Application", {
                     name: "settings",
                     xtype: "dictfield",
                     fieldLabel: "Settings"
+                },
+                {
+                    name: "selector",
+                    xtype: "sa.managedobjectselector.LookupField",
+                    fieldLabel: "Selector",
+                    allowBlank: true
                 }
             ],
 
