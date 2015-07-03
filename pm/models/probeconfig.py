@@ -115,6 +115,7 @@ class ProbeConfig(Document):
 
     @classmethod
     def install(cls):
+        logger.info("Installing probe config watchers")
         mongoengine.signals.class_prepared.connect(cls.on_new_document)
         django.db.models.signals.class_prepared.connect(cls.on_new_model)
 
