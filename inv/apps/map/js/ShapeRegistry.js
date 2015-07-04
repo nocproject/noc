@@ -39,7 +39,11 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
                         'ref-y': .85
                     }
                 }
-            }, joint.shapes.basic.Generic.prototype.defaults)
+            }, joint.shapes.basic.Generic.prototype.defaults),
+            setFilter: function(filter) {
+                var me = this;
+                me.attr("image/filter", "url(#" + filter + ")");
+            }
         });
         me.shapes[name] = sc;
         return sc;

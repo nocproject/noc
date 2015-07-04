@@ -35,6 +35,20 @@ class ObjectStatus(Document):
             return True
 
     @classmethod
+    def get_statuses(cls, objects):
+        """
+        Returns a map of object id -> status
+        for a list od object ids
+        """
+        s = {}
+        c = cls._get_collection()
+        while objects:
+            chunk, objects = objects[:500], objects[500:]
+            for d in c.find({"object": {"$in": chunk}}):
+                s[d["object"]] = d["status"]
+        return s
+
+    @classmethod
     def set_status(cls, object, status):
         from noc.fm.models.outage import Outage
         from noc.inv.models.discoveryjob import DiscoveryJob

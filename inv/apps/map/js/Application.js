@@ -197,5 +197,10 @@ Ext.define("NOC.inv.map.Application", {
         var me = this;
         me.saveButton.setDisabled(me.readOnly);
         me.revertButton.setDisabled(me.readOnly);
+    },
+
+    onCloseApp: function() {
+        var me = this;
+        me.mapPanel.stopPolling();
     }
 });
