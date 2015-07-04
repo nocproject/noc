@@ -15,15 +15,34 @@ Ext.define("NOC.inv.map.MapPanel", {
     autoScroll: true,
     app: null,
     readOnly: false,
+    pollingInterval: 20000,
+
+    svgFilters: {
+        osUnknown: [128, 128, 128],
+        osOk: [0, 0, 255],
+        osAlarm: [255, 255, 0],
+        osUnreach: [64, 64, 64],
+        osDown: [255, 0, 0]
+    },
+
+    statusFilter: {
+        0: "osUnknown",
+        1: "osOk",
+        2: "osAlarm",
+        3: "osUnreach",
+        4: "osDown"
+    },
 
     initComponent: function () {
         var me = this;
 
         me.shapeRegistry = NOC.inv.map.ShapeRegistry;
         me.objectNodes = {};
+        me.objectsList = [];
         me.portObjects = {};  // port id -> object id
         me.isInteractive = false;  // Graph is editable
         me.isDirty = false;  // Graph is changed
+        me.pollingTaskId = null;
 
         Ext.apply(me, {
             items: [
@@ -63,6 +82,13 @@ Ext.define("NOC.inv.map.MapPanel", {
             gridHeight: 10,
             interactive: Ext.bind(me.onInteractive, me)
         });
+        // Apply SVG filters
+        Ext.Object.each(me.svgFilters, function(fn) {
+            var ft = me.getFilter(fn, me.svgFilters[fn]),
+                fd = V(ft);
+            V(me.paper.svg).defs().append(fd);
+        });
+        // Subscribe to events
         me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
         me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
         //me.createContextMenus();
@@ -93,6 +119,8 @@ Ext.define("NOC.inv.map.MapPanel", {
 
         me.isInteractive = false;
         me.isDirty = false;
+        me.objectNodes = {};
+        me.objectsList = [];
         me.graph.clear();
         // Create nodes
         Ext.each(data.nodes, function(node) {
@@ -107,6 +135,15 @@ Ext.define("NOC.inv.map.MapPanel", {
         });
         me.graph.addCells(cells);
         me.paper.fitToContent();
+        if(me.pollingTaskId) {
+            me.getObjectStatus();
+        } else {
+            me.pollingTaskId = Ext.TaskManager.start({
+                run: me.getObjectStatus,
+                interval: me.pollingInterval,
+                scope: me
+            });
+        }
     },
 
     //
@@ -141,6 +178,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             }
         });
         me.objectNodes[data.id] = node;
+        me.objectsList.push(data.id);
         return node;
     },
     //
@@ -279,5 +317,76 @@ Ext.define("NOC.inv.map.MapPanel", {
                 NOC.error("Failed to save data");
             }
      });
+    },
+
+    getObjectStatus: function() {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/inv/map/objects_statuses/",
+            method: "POST",
+            jsonData: {
+                objects: me.objectsList
+            },
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                me.applyObjectStatuses(data);
+            },
+            failure: function() {
+
+            }
+        });
+    },
+
+    applyObjectStatuses: function(data) {
+        var me = this;
+        Ext.Object.each(data, function(s) {
+            var node = me.objectNodes[s];
+            if(!node) {
+                return;
+            }
+            node.setFilter(me.statusFilter[data[s]]);
+        });
+    },
+    //
+    svgFilterTpl: new Ext.XTemplate(
+        '<filter id="{id}">',
+            '<feColorMatrix type="matrix" ',
+            'values="',
+                '{r0} 0    0    0 {r1} ',
+                '0    {g0} 0    0 {g1} ',
+                '0    0    {b0} 0 {b1} ',
+                '0    0    0    1 0    " />',
+        '</filter>'
+    ),
+    //
+    // Get SVG filter text
+    //   c = [R, G, B]
+    //
+    getFilter: function(filterId, c) {
+        var me = this,
+            r1 = c[0] / 255.0,
+            g1 = c[1] / 255.0,
+            b1 = c[2] / 255.0,
+            r0 = 1.0 - r1,
+            g0 = 1.0 - g1,
+            b0 = 1.0 - b1;
+        return me.svgFilterTpl.apply({
+            id: filterId,
+            r0: r0,
+            r1: r1,
+            g0: g0,
+            g1: g1,
+            b0: b0,
+            b1: b1
+        });
+    },
+
+    stopPolling: function() {
+        var me = this;
+        if(me.pollingTaskId) {
+            Ext.TaskManager.stop(me.pollingTaskId);
+            me.pollingTaskId = null;
+        }
     }
 });

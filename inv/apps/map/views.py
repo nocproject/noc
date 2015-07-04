@@ -15,9 +15,12 @@ from noc.inv.models.interface import Interface
 from noc.sa.models import ManagedObject
 from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
+from noc.sa.models.objectstatus import ObjectStatus
+from noc.fm.models.activealarm import ActiveAlarm
 from noc.lib.stencil import stencil_registry
 from layout import Layout
 from noc.lib.text import split_alnum
+from noc.sa.interfaces.base import ListOfParameter, IntParameter
 
 
 class MapApplication(ExtApplication):
@@ -27,6 +30,13 @@ class MapApplication(ExtApplication):
     title = "Network Map"
     menu = "Network Map"
     glyph = "globe"
+
+    # Object statuses
+    ST_UNKNOWN = 0  # Object state is unknown
+    ST_OK = 1  # Object is OK
+    ST_ALARM = 2  # Object is reachable, Active alarms
+    ST_UNREACH = 3  # Object is unreachable due to other's object failure
+    ST_DOWN = 4  # Object is down
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["GET"],
           access="read", api=True)
@@ -246,4 +256,55 @@ class MapApplication(ExtApplication):
                     for i in sorted(o[mo], key=lambda x: split_alnum(x.name))
                 ]
             }]
+        return r
+
+    @view(url="^objects_statuses/$", method=["POST"],
+          access="read", api=True,
+          validate={
+              "objects": ListOfParameter(IntParameter())
+          }
+    )
+    def api_objects_statuses(self, request, objects):
+        def get_alarms(objects):
+            """
+            Returns a set of objects with alarms
+            """
+            r = set()
+            c = ActiveAlarm._get_collection()
+            while objects:
+                chunk, objects = objects[:500], objects[500:]
+                a = c.aggregate([
+                    {
+                        "$match": {
+                            "managed_object": {
+                                "$in": chunk
+                            }
+                        }
+                    },
+                    {
+                        "$group": {
+                            "_id": "$managed_object",
+                            "count": {
+                                "$sum": 1
+                            }
+                        }
+                    }
+                ])
+                if "ok" in a:
+                    r.update([d["_id"] for d in a["result"]])
+            return r
+
+        # Mark all as unknown
+        r = dict((o, self.ST_UNKNOWN) for o in objects)
+        sr = ObjectStatus.get_statuses(objects)
+        sa = get_alarms(objects)
+        for o in sr:
+            if sr[o]:
+                # Check for alarms
+                if o in sa:
+                    r[o] = self.ST_ALARM
+                else:
+                    r[o] = self.ST_OK
+            else:
+                r[o] = self.ST_DOWN
         return r
