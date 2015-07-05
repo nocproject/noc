@@ -36,7 +36,10 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
                     text: {
                         text: 'New Object',
                         fill: 'black',
-                        'ref-y': .85
+                        ref: 'image',
+                        'ref-x':.5,
+                        'text-anchor': 'middle',
+                        'ref-y':.99
                     }
                 }
             }, joint.shapes.basic.Generic.prototype.defaults),
