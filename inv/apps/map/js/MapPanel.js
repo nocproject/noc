@@ -25,6 +25,16 @@ Ext.define("NOC.inv.map.MapPanel", {
         osDown: [255, 0, 0]
     },
 
+    svgDefaultFilters: [
+        '<filter id="highlight">' +
+            '<feGaussianBlur stdDeviation="4" result="coloredBlur"/>' +
+            '<feMerge>' +
+                '<feMergeNode in="coloredBlur"/>' +
+                '<feMergeNode in="SourceGraphic"/>' +
+            '</feMerge>' +
+        '</filter>'
+    ],
+
     statusFilter: {
         0: "osUnknown",
         1: "osOk",
@@ -43,6 +53,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.isInteractive = false;  // Graph is editable
         me.isDirty = false;  // Graph is changed
         me.pollingTaskId = null;
+        me.currentHighlight = null;
 
         Ext.apply(me, {
             items: [
@@ -88,6 +99,9 @@ Ext.define("NOC.inv.map.MapPanel", {
                 fd = V(ft);
             V(me.paper.svg).defs().append(fd);
         });
+        Ext.each(me.svgDefaultFilters, function(f) {
+            V(me.paper.svg).defs().append(V(f));
+        });
         // Subscribe to events
         me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
         me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
@@ -119,6 +133,7 @@ Ext.define("NOC.inv.map.MapPanel", {
 
         me.isInteractive = false;
         me.isDirty = false;
+        me.currentHighlight = null;
         me.objectNodes = {};
         me.objectsList = [];
         me.graph.clear();
@@ -234,12 +249,22 @@ Ext.define("NOC.inv.map.MapPanel", {
         return new joint.dia.Link(cfg);
     },
     //
+    unhighlight: function() {
+        var me = this;
+        if(me.currentHighlight) {
+            me.currentHighlight.unhighlight();
+            me.currentHighlight = null;
+        }
+    },
+    //
     onCellSelected: function(view, evt, x, y) {
         var me = this,
             data = view.model.get("data")
         switch(data.type) {
             case "managedobject":
+                me.unhighlight();
                 view.highlight();
+                me.currentHighlight = view;
                 me.app.inspectManagedObject(data.id);
                 break;
             case "link":
@@ -249,6 +274,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     },
     onBlankSelected: function() {
         var me = this;
+        me.unhighlight();
         me.app.inspectSegment();
     },
     // Change interactive flag
