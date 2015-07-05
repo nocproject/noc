@@ -19,10 +19,10 @@ Ext.define("NOC.inv.map.MapPanel", {
 
     svgFilters: {
         osUnknown: [128, 128, 128],
-        osOk: [0, 0, 255],
-        osAlarm: [255, 255, 0],
+        osOk: [57, 190, 106],
+        osAlarm: [233, 149, 62],
         osUnreach: [64, 64, 64],
-        osDown: [255, 0, 0]
+        osDown: [220, 38, 43]
     },
 
     svgDefaultFilters: [
