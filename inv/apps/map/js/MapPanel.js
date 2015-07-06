@@ -259,10 +259,10 @@ Ext.define("NOC.inv.map.MapPanel", {
     //
     onCellSelected: function(view, evt, x, y) {
         var me = this,
-            data = view.model.get("data")
+            data = view.model.get("data");
+        me.unhighlight();
         switch(data.type) {
             case "managedobject":
-                me.unhighlight();
                 view.highlight();
                 me.currentHighlight = view;
                 me.app.inspectManagedObject(data.id);
