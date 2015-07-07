@@ -20,7 +20,11 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.lib.stencil import stencil_registry
 from layout import Layout
 from noc.lib.text import split_alnum
-from noc.sa.interfaces.base import ListOfParameter, IntParameter
+from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
+                                    StringParameter)
+from noc.lib.solutions import get_solution
+from noc.settings import config
+from noc.pm.db.base import tsdb
 
 
 class MapApplication(ExtApplication):
@@ -37,6 +41,10 @@ class MapApplication(ExtApplication):
     ST_ALARM = 2  # Object is reachable, Active alarms
     ST_UNREACH = 3  # Object is unreachable due to other's object failure
     ST_DOWN = 4  # Object is down
+
+    router = get_solution(
+        config.get("pm", "metric_router")
+    )
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["GET"],
           access="read", api=True)
@@ -60,6 +68,25 @@ class MapApplication(ExtApplication):
             mos = node_settings.get(mk)
             if mos:
                 layout.set_node_position(o.id, mos.x, mos.y)
+
+        def get_interfaces_metrics(interfaces, type):
+            return [
+                self.router.get_metric(
+                    "inv.Interface",
+                    i,
+                    type
+                ) for i in interfaces
+            ]
+
+        def bandwidth(speed, bandwidth):
+            if speed and bandwidth:
+                return min(speed, bandwidth)
+            elif speed and not bandwidth:
+                return speed
+            elif bandwidth:
+                return bandwidth
+            else:
+                return 0
 
         segment = self.get_object_or_404(NetworkSegment, id=id)
         settings = MapSettings.objects.filter(segment=id).first()
@@ -87,16 +114,35 @@ class MapApplication(ExtApplication):
         mo = {}
         for o in segment.managed_objects:
             add_mo(o, external=False)
+        # Get interfaces
+        ic = Interface._get_collection()
+        idata = list(ic.find(
+            {
+                "managed_object": {
+                    "$in": list(mo)
+                },
+                "type": {
+                    "$in": ["physical", "management"]
+                }
+            },
+            {
+                "_id": 1,
+                "bandwidth": 1,
+                "in_speed": 1,
+                "out_speed": 1
+            }
+        ))
+        if_ids = set(i["_id"] for i in idata)
+        if_bw = dict(
+            (i["_id"], (
+                i.get("bandwidth", 0),
+                i.get("in_speed", 0),
+                i.get("out_speed", 0)
+            )) for i in idata
+        )
         # Load links
         links = {}
         pn = 0
-        if_ids = set(
-            i.id for i in
-            Interface.objects.filter(
-                managed_object__in=list(mo),
-                type__in=["physical", "management"]
-            )
-        )
         for link in Link.objects.filter(interfaces__in=if_ids):
             mos = set()
             for i in link.interfaces:
@@ -115,23 +161,52 @@ class MapApplication(ExtApplication):
                 add_mo(m0, external=True)
             mo[m0.id]["ports"] += [{
                 "id": pn,
-                "ports": [i.name for i in i0]
+                "ports": [i.name for i in i0],
+                "metrics": {
+                    "in": get_interfaces_metrics(i0, "Interface | Load | In"),
+                    "out": get_interfaces_metrics(i0, "Interface | Load | Out")
+                }
             }]
             if m1.id not in mo:
                 add_mo(m1, external=True)
             mo[m1.id]["ports"] += [{
                 "id": pn + 1,
-                "ports": [i.name for i in i1]
+                "ports": [i.name for i in i1],
+                "metrics": {
+                    "in": get_interfaces_metrics(i1, "Interface | Load | In"),
+                    "out": get_interfaces_metrics(i1, "Interface | Load | Out")
+                }
             }]
+            t_in_bw = 0
+            t_out_bw = 0
+            for i in i0:
+                bw, in_speed, out_speed = if_bw.get(i.id, (0, 0, 0))
+                t_in_bw += bandwidth(in_speed, bw)
+                t_out_bw += bandwidth(out_speed, bw)
+            d_in_bw = 0
+            d_out_bw = 0
+            for i in i1:
+                bw, in_speed, out_speed = if_bw.get(i.id, (0, 0, 0))
+                d_in_bw += bandwidth(in_speed, bw)
+                d_out_bw += bandwidth(out_speed, bw)
             lid = str(link.id)
+            in_bw = bandwidth(t_in_bw, d_out_bw)
+            out_bw = bandwidth(t_out_bw, d_in_bw)
             links[lid] = {
                 "id": lid,
                 "type": "link",
                 "method": link.discovery_method,
                 "ports": [pn, pn + 1],
+                # Target to source
+                "in_bw": in_bw,
+                # Source to target
+                "out_bw": out_bw,
+                # Max bandwidth
+                "bw": max(in_bw, out_bw)
             }
             pn += 2
             layout.add_link(m0.id, m1.id, str(link.id))
+        print links
         r["links"] = links.values()
         # Auto-layout
         npos, lpos = layout.layout()
@@ -307,4 +382,21 @@ class MapApplication(ExtApplication):
                     r[o] = self.ST_OK
             else:
                 r[o] = self.ST_DOWN
+        return r
+
+    @view(url="^metrics/$", method=["POST"],
+          access="read", api=True,
+          validate={
+              "metrics": ListOfParameter(StringParameter())
+          }
+    )
+    def api_metrics(self, request, metrics):
+        r = {}
+        for m in metrics:
+            v, ts = tsdb.get_last_value(m)
+            if ts:
+                r[m] = {
+                    "ts": ts,
+                    "value": v
+                }
         return r

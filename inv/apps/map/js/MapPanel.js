@@ -32,9 +32,32 @@ Ext.define("NOC.inv.map.MapPanel", {
                 '<feMergeNode in="coloredBlur"/>' +
                 '<feMergeNode in="SourceGraphic"/>' +
             '</feMerge>' +
+        '</filter>',
+
+        '<filter id="glow">' +
+            '<feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>' +
+            '<feMerge>' +
+                '<feMergeNode in="coloredBlur"/>' +
+                '<feMergeNode in="SourceGraphic"/>' +
+            '</feMerge>' +
         '</filter>'
     ],
 
+    // Link bandwidth style
+    bwStyle: [
+        [10000000, {"stroke-width": "4px"}],  // 10G
+        [1000000, {"stroke-width": "2px"}],  // 1G
+        [100000, {"stroke-width": "1px"}],  // 100M
+        [0, {"stroke-width": "1px", "stroke-dasharray": "10 5"}]
+    ],
+    // Link utilization style
+    luStyle: [
+        [.95, {stroke: "#ff0000"}],
+        [.80, {stroke: "#990000"}],
+        [.50, {stroke: "#ff9933"}],
+        [.0, {stroke: "#006600"}]
+    ],
+    // Object status filter names
     statusFilter: {
         0: "osUnknown",
         1: "osOk",
@@ -43,6 +66,10 @@ Ext.define("NOC.inv.map.MapPanel", {
         4: "osDown"
     },
 
+    // Link overlay modes
+    LO_NONE: 0,
+    LO_LOAD: 1,
+
     initComponent: function () {
         var me = this;
 
@@ -50,10 +77,14 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.objectNodes = {};
         me.objectsList = [];
         me.portObjects = {};  // port id -> object id
+        me.portMetrics = {};
+        me.linkBw = {};  // Link id -> {in: ..., out: ...}
         me.isInteractive = false;  // Graph is editable
         me.isDirty = false;  // Graph is changed
-        me.pollingTaskId = null;
+        me.statusPollingTaskId = null;
+        me.overlayPollingTaskId = null;
         me.currentHighlight = null;
+        me.overlayMode = me.LO_NONE;
 
         Ext.apply(me, {
             items: [
@@ -135,6 +166,8 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.isDirty = false;
         me.currentHighlight = null;
         me.objectNodes = {};
+        me.portMetrics = {};
+        me.linkBw = {};
         me.objectsList = [];
         me.graph.clear();
         // Create nodes
@@ -142,6 +175,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             cells.push(me.createNode(node));
             Ext.each(node.ports, function(port) {
                 me.portObjects[port.id] = node.id;
+                me.portMetrics[port.id] = port.metrics;
             })
         });
         // Create links
@@ -150,10 +184,11 @@ Ext.define("NOC.inv.map.MapPanel", {
         });
         me.graph.addCells(cells);
         me.paper.fitToContent();
-        if(me.pollingTaskId) {
+        // Run status polling
+        if(me.statusPollingTaskId) {
             me.getObjectStatus();
         } else {
-            me.pollingTaskId = Ext.TaskManager.start({
+            me.statusPollingTaskId = Ext.TaskManager.start({
                 run: me.getObjectStatus,
                 interval: me.pollingInterval,
                 scope: me
@@ -199,7 +234,15 @@ Ext.define("NOC.inv.map.MapPanel", {
     //
     createLink: function(data) {
         var me = this,
-            cfg, src, dst;
+            cfg, src, dst,
+            getConnectionStyle=function(bw) {
+                for(var i = 0; i < me.bwStyle.length; i++) {
+                    var s = me.bwStyle[i];
+                    if(s[0] <= bw) {
+                        return s[1];
+                    }
+                }
+            };
 
         src = me.objectNodes[me.portObjects[data.ports[0]]];
         dst = me.objectNodes[me.portObjects[data.ports[1]]];
@@ -218,12 +261,32 @@ Ext.define("NOC.inv.map.MapPanel", {
                 },
                 ".marker-arrowheads": {
                     display: "none"  // Do not show hover arrowheads
-                }
+                },
+                ".connection": getConnectionStyle(data.bw)
             },
             data: {
                 type: data.type,
-                id: data.id
-            }
+                id: data.id,
+                ports: data.ports
+            },
+            labels: [
+                // Balance marker
+                // @todo: Make hidden by default
+                {
+                    position: 0.5,
+                    attrs: {
+                        text: {
+                            fill: "black",
+                            text: "\uf111",
+                            "font-family": "FontAwesome",
+                            "font-size": 5
+                        },
+                        rect: {
+                            display: "none"
+                        }
+                    }
+                }
+            ]
         };
         //
         if(data.smooth) {
@@ -245,6 +308,11 @@ Ext.define("NOC.inv.map.MapPanel", {
                 d: "M 10 0 L 0 5 L 10 10 z"
             };
         }
+        //
+        me.linkBw[data.id] = {
+            in: data.in_bw,
+            out: data.out_bw
+        };
         //
         return new joint.dia.Link(cfg);
     },
@@ -364,6 +432,38 @@ Ext.define("NOC.inv.map.MapPanel", {
         });
     },
 
+    getOverlayData: function() {
+        var me = this;
+        switch(me.overlayMode) {
+            case me.LO_LOAD:
+                var r = [];
+                // Fill in/out metrics
+                Ext.Object.each(me.portMetrics, function(port) {
+                    Ext.each(me.portMetrics[port]["in"], function(m) {
+                        r.push(m);
+                    });
+                    Ext.each(me.portMetrics[port]["out"], function(m) {
+                        r.push(m);
+                    });
+                });
+                Ext.Ajax.request({
+                    url: "/inv/map/metrics/",
+                    method: "POST",
+                    jsonData: {
+                        metrics: r
+                    },
+                    scope: me,
+                    success: function(response) {
+                        me.setLoadOverlayData(
+                            Ext.decode(response.responseText)
+                        );
+                    },
+                    failure: function() {}
+                });
+                break;
+        }
+    },
+
     applyObjectStatuses: function(data) {
         var me = this;
         Ext.Object.each(data, function(s) {
@@ -377,7 +477,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     //
     svgFilterTpl: new Ext.XTemplate(
         '<filter id="{id}">',
-            '<feColorMatrix type="matrix" ',
+            '<feColorMatrix type="matrix" color-interpolation-filters="sRGB" ',
             'values="',
                 '{r0} 0    0    0 {r1} ',
                 '0    {g0} 0    0 {g1} ',
@@ -391,12 +491,12 @@ Ext.define("NOC.inv.map.MapPanel", {
     //
     getFilter: function(filterId, c) {
         var me = this,
-            r1 = c[0] / 255.0,
-            g1 = c[1] / 255.0,
-            b1 = c[2] / 255.0,
-            r0 = 1.0 - r1,
-            g0 = 1.0 - g1,
-            b0 = 1.0 - b1;
+            r1 = c[0] / 256.0,
+            g1 = c[1] / 256.0,
+            b1 = c[2] / 256.0,
+            r0 = (256.0 - c[0]) / 256.0,
+            g0 = (256.0 - c[1]) / 256.0,
+            b0 = (256.0 - c[2]) / 256.0;
         return me.svgFilterTpl.apply({
             id: filterId,
             r0: r0,
@@ -410,9 +510,108 @@ Ext.define("NOC.inv.map.MapPanel", {
 
     stopPolling: function() {
         var me = this;
-        if(me.pollingTaskId) {
-            Ext.TaskManager.stop(me.pollingTaskId);
-            me.pollingTaskId = null;
+        if(me.statusPollingTaskId) {
+            Ext.TaskManager.stop(me.statusPollingTaskId);
+            me.statusPollingTaskId = null;
         }
+        if(me.overlayPollingTaskId) {
+            Ext.TaskManager.stop(me.overlayPollingTaskId);
+            me.overlayPollingTaskId = null;
+        }
+    },
+
+    setOverlayMode: function(mode) {
+        var me = this;
+        // Stop polling when necessary
+        if(mode == me.LO_NONE && me.overlayPollingTaskId) {
+            Ext.TaskManager.stop(me.overlayPollingTaskId);
+            me.overlayPollingTaskId = null;
+        }
+        me.overlayMode = mode;
+        // Start polling when necessary
+        if(mode !== me.LO_NONE && !me.overlayPollingTaskId) {
+            me.overlayPollingTaskId = Ext.TaskManager.start({
+                run: me.getOverlayData,
+                interval: me.pollingInterval,
+                scope: me
+            });
+        }
+        //
+        if(mode !== me.LO_NONE) {
+            me.getOverlayData();
+        }
+    },
+
+    // Display links load
+    // data is dict of
+    // metric -> {ts: .., value: }
+    setLoadOverlayData: function(data) {
+        var me = this;
+        Ext.each(me.graph.getLinks(), function(link) {
+            var sIn = 0.0, sOut = 0.0, dIn = 0.0, dOut = 0.0,
+                td, dt, lu, cfg, tb, balance,
+                ports = link.get("data").ports,
+                linkId = link.get("data").id,
+                bw = me.linkBw[linkId];
+            Ext.each(me.portMetrics[ports[0]]["in"], function(m) {
+                var v = data[m].value;
+                if(v) {
+                    sIn += v;
+                }
+            });
+            Ext.each(me.portMetrics[ports[0]]["out"], function(m) {
+                var v = data[m].value;
+                if(v) {
+                    sOut += v;
+                }
+            });
+            Ext.each(me.portMetrics[ports[1]]["in"], function(m) {
+                var v = data[m].value;
+                if(v) {
+                    dIn += v;
+                }
+            });
+            Ext.each(me.portMetrics[ports[1]]["out"], function(m) {
+                var v = data[m].value;
+                if(v) {
+                    dOut += v;
+                }
+            // Destination to target
+            td = Math.max(sOut, dIn);
+            // Target to destination
+            dt = Math.max(sIn, dOut);
+            });
+            if(bw) {
+                // Link utilization
+                lu = 0.0;
+                if (bw.in) {
+                    lu = Math.max(lu, dt / bw.in);
+                }
+                if (bw.out) {
+                    lu = Math.max(lu, td / bw.out);
+                }
+                // Apply proper style according to load
+                for (var i = 0; i < me.luStyle.length; i++) {
+                    var t = me.luStyle[i][0],
+                        style = me.luStyle[i][1];
+                    if (lu >= t) {
+                        cfg = {
+                            filter: "url(#glow)"
+                        };
+                        cfg = Ext.apply(cfg, style);
+                        link.attr({
+                            ".connection": cfg
+                        });
+                        break;
+                    }
+                }
+            }
+            // Balance
+            tb = td + dt;
+            if(tb > 0) {
+                balance = td / tb;
+                link.label(0, {position: balance});
+            }
+        });
     }
 });
