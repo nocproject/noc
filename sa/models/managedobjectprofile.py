@@ -96,6 +96,13 @@ class ManagedObjectProfile(models.Model):
         _("Min. interface discovery interval"), default=600)
     interface_discovery_max_interval = models.IntegerField(
         _("Max. interface discovery interval"), default=86400)
+    # Interface status discovery
+    enable_interface_status_discovery = models.BooleanField(
+        _("Enable interface status_discovery"), default=True)
+    interface_status_discovery_min_interval = models.IntegerField(
+        _("Min. interface status discovery interval"), default=60)
+    interface_status_discovery_max_interval = models.IntegerField(
+        _("Max. interface status discovery interval"), default=600)
     # IP discovery
     enable_ip_discovery = models.BooleanField(
         _("Enable IP discovery"), default=True)

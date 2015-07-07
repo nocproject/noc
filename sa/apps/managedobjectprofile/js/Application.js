@@ -86,6 +86,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     renderer: NOC.render.Bool
                 },
                 {
+                    text: "Int.S",
+                    dataIndex: "enable_interface_status_discovery",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
                     text: "Asset",
                     dataIndex: "enable_asset_discovery",
                     width: 50,
@@ -378,6 +384,26 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                         },
                         {
                             name: "interface_discovery_max_interval",
+                            xtype: "numberfield",
+                            allowBlank: false
+                        },
+                        // Interface status discovery
+                        {
+                            xtype: "label",
+                            text: "Interface Status Discovery"
+                        },
+                        {
+                            name: "enable_interface_status_discovery",
+                            xtype: "checkboxfield",
+                            allowBlank: false
+                        },
+                        {
+                            name: "interface_status_discovery_min_interval",
+                            xtype: "numberfield",
+                            allowBlank: false
+                        },
+                        {
+                            name: "interface_status_discovery_max_interval",
                             xtype: "numberfield",
                             allowBlank: false
                         },
