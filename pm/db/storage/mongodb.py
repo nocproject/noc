@@ -56,3 +56,21 @@ class MongoDBStorage(KVStorage):
         p = ".".join("p%s" % x for x in partition.split("."))
         db = get_db()
         return db["noc.ts.%s" % p]
+
+    def get_last_value(self, start, end):
+        d = self.collection.find(
+            {
+                "_id": {
+                    "$gte": Binary(start),
+                    "$lte": Binary(end)
+                }
+            }, {
+                "_id": 1,
+                "v": 1
+            }
+        ).sort("_id", -1).first()
+        if d:
+            return d["_id"], d["v"]
+        else:
+            return None, None
+
