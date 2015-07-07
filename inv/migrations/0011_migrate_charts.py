@@ -43,6 +43,8 @@ class Migration(object):
             my = 0.0
             for s in cstate.find({"chart": cid, "type": "mo"}):
                 # object, state: {x, y, w, h}
+                if "x" not in s["state"] or "y" not in s["state"]:
+                    continue
                 x = float(s["state"]["x"])
                 y = float(s["state"]["y"])
                 mx = max(mx, x)
