@@ -12,6 +12,7 @@ import base64
 ## NOC modules
 from noc.pm.models.metricsettings import MetricSettings
 from noc.pm.models.probe import Probe
+from noc.lib.solutions import get_solution
 
 
 class BaseRouter(object):
@@ -36,6 +37,13 @@ class BaseRouter(object):
     @classmethod
     def get_model_id(cls, object):
         return MetricSettings.get_model_id(object)
+
+    @classmethod
+    def get_metric(cls, model_id, object, metric_type):
+        """
+        Returns metric name
+        """
+        raise NotImplementedError()
 
     @classmethod
     def model_handler(cls, model_id):

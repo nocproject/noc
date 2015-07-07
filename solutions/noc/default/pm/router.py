@@ -49,11 +49,8 @@ class DefaultRouter(BaseRouter):
             )
             settings.is_active = False
             return
-        settings.metric = tpl.render(Context({
-            "object": object,
-            "model_id": model_id,
-            "metric_type": settings.metric_type
-        }))
+        settings.metric = cls.get_metric(model_id, object,
+                                         settings.metric_type)
         settings.probe = cls.route_probe(object, settings)
         # Apply rules
         for r in cls._RULES:
@@ -72,6 +69,18 @@ class DefaultRouter(BaseRouter):
             model_id, object, settings.metric_type,
             settings.metric, settings.probe
         )
+
+    @classmethod
+    def get_metric(cls, model_id, object, metric_type):
+        """
+        Returns metric name
+        """
+        tpl = cls._TEMPLATES.get(model_id.lower())
+        return tpl.render(Context({
+            "object": object,
+            "model_id": model_id,
+            "metric_type": metric_type
+        }))
 
     @classmethod
     def route_probe(cls, object, settings):
