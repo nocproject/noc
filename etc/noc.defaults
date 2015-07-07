@@ -450,6 +450,9 @@ classification_pyrule =
 # Description generator
 get_interface_profile = noc.solutions.noc.default.discovery.interface.get_interface_profile
 
+[interface_status_discovery]
+enabled = true
+save = true
 
 [prefix_discovery]
 enabled = true
