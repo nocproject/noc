@@ -17,6 +17,8 @@ class ArchiveJob(AutoIntervalJob):
     name = "fm.archive"
     interval = 300
     randomize = True
+    threaded = True
+    transaction = True
 
     def handler(self):
         w = config.getint("fm", "active_window")

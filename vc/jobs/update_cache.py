@@ -16,6 +16,7 @@ class UpdateCacheJob(AutoIntervalJob):
     name = "vc.update_cache"
     interval = 300
     threaded = True
+    transaction = True
 
     def handler(self):
         for vc in VC.objects.all():
