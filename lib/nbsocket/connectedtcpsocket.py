@@ -105,9 +105,13 @@ class ConnectedTCPSocket(TCPSocket):
                 self.on_conn_refused()
                 self.close()
                 return
-            self.handle_connect()
+            if not self.closing and not self.stale:
+                self.handle_connect()
+            else:
+                self.logger.error("Trying to connect to closing socket")
             return
-        TCPSocket.handle_write(self)
+        else:
+            TCPSocket.handle_write(self)
 
     def on_conn_refused(self):
         pass
