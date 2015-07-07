@@ -43,6 +43,7 @@ from noc.inv.discovery.utils import get_active_discovery_methods
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.engine import Engine
 from noc.sa.models.action import Action
+from noc.inv.models.discoveryjob import DiscoveryJob
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -287,6 +288,7 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         r = json_decode(request.raw_post_data).get("names", [])
         d = 0
+        DiscoveryJob.apply_object_jobs(o)
         for name in get_active_discovery_methods():
             cfg = "enable_%s" % name
             if getattr(o.object_profile, cfg) and name in r:
