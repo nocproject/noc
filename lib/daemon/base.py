@@ -381,8 +381,10 @@ class Daemon(object):
                 try:
                     x = a[2][0]["addr"]
                 except (IndexError, KeyError):
-                    raise Exception(
-                        "No ip address for interface: '%s' found" % x)
+                    self.logger.error(
+                        "No ip address for interface: '%s' found", x
+                    )
+                    continue
                 r += [(x, port)]
                 continue
             raise Exception("Cannot resolve address '%s'" % x)
