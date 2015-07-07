@@ -104,6 +104,28 @@ Ext.define("NOC.inv.map.Application", {
             }
         });
 
+        me.viewMapButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.globe,
+            tooltip: "Show static map",
+            enableToggle: true,
+            toggleGroup: "overlay",
+            pressed: true,
+            scope: me,
+            handler: me.onSetOverlay,
+            mapOverlay: me.mapPanel.LO_NONE
+        });
+
+        me.viewLoadButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.line_chart,
+            tooltip: "Show interface load",
+            enableToggle: true,
+            toggleGroup: "overlay",
+            scope: me,
+            handler: me.onSetOverlay,
+            mapOverlay: me.mapPanel.LO_LOAD
+        });
+
+
         Ext.apply(me, {
             dockedItems: [
                 {
@@ -113,7 +135,10 @@ Ext.define("NOC.inv.map.Application", {
                         me.segmentCombo,
                         me.editButton,
                         me.saveButton,
-                        me.revertButton
+                        me.revertButton,
+                        "-",
+                        me.viewMapButton,
+                        me.viewLoadButton
                     ]
                 },
                 me.inspectorPanel
@@ -137,6 +162,7 @@ Ext.define("NOC.inv.map.Application", {
         me.saveButton.setDisabled(true);
         me.revertButton.setDisabled(true);
         me.inspectSegment();
+        me.viewMapButton.setPressed(true);
     },
 
     onMapReady: function() {
@@ -202,5 +228,10 @@ Ext.define("NOC.inv.map.Application", {
     onCloseApp: function() {
         var me = this;
         me.mapPanel.stopPolling();
+    },
+
+    onSetOverlay: function(button) {
+        var me = this;
+        me.mapPanel.setOverlayMode(button.mapOverlay);
     }
 });
