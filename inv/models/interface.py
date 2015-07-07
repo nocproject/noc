@@ -52,7 +52,6 @@ class Interface(Document):
     enabled_protocols = ListField(StringField(
         choices=[(x, x) for x in INTERFACE_PROTOCOLS]
     ), default=[])
-    # @todo: admin status + oper status
     profile = PlainReferenceField(InterfaceProfile,
         default=InterfaceProfile.get_default_profile)
     # profile locked on manual user change
@@ -61,6 +60,13 @@ class Interface(Document):
     project = ForeignKeyField(Project)
     state = ForeignKeyField(ResourceState)
     vc_domain = ForeignKeyField(VCDomain)
+    # Current status
+    admin_status = BooleanField(required=False)
+    oper_status = BooleanField(required=False)
+    full_duplex = BooleanField(required=False)
+    in_speed = IntField(required=False)  # Input speed, kbit/s
+    out_speed = IntField(required=False)  # Output speed, kbit/s
+    bandwidth = IntField(required=False)  # Configured bandwidth, kbit/s
     # Coverage
     coverage = PlainReferenceField(Coverage)
     technologies = ListField(StringField())
