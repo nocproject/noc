@@ -433,6 +433,26 @@ Ext.define("NOC.inv.map.MapPanel", {
         });
     },
 
+    resetOverlayData: function() {
+        var me = this;
+        Ext.each(me.graph.getLinks(), function(link) {
+            link.attr({
+                ".connection": {
+                    filter: "none",
+                    stroke: "black"
+                }
+            });
+
+            link.label(0, {
+                attrs: {
+                    text: {
+                        visibility: "hidden"
+                    }
+                }
+            });
+        });
+    },
+
     getOverlayData: function() {
         var me = this;
         switch(me.overlayMode) {
@@ -538,7 +558,9 @@ Ext.define("NOC.inv.map.MapPanel", {
             });
         }
         //
-        if(mode !== me.LO_NONE) {
+        if(mode === me.LO_NONE) {
+            me.resetOverlayData();
+        } else {
             me.getOverlayData();
         }
     },
