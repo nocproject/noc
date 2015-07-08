@@ -206,3 +206,13 @@ TABLE {
 .element.highlighted.nocobject {
     filter: url(#highlight);
 }
+
+.noc-offset-0 {}
+
+.noc-offset-1 {
+    padding-left: 4px;
+}
+
+.noc-offset-2 {
+    padding-left: 8px;
+}

@@ -48,13 +48,21 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
 
         t = "";
         Ext.each(data.objects, function(v) {
-            t += "<b>" + v.name + ":</b><br>";
+            var fmt;
+
+            t += "<div class='noc-offset-0'><b>" + v.name + ":</b></div>";
             Ext.each(v.interfaces, function(i) {
-                t += "&nbsp;&nbsp;" + Ext.htmlEncode(i.name);
                 if(i.description) {
-                    t += " (" + Ext.htmlEncode(i.description) + ")";
+                    fmt = "<div class='noc-offset-1'>{0}: {1}</div><div class='noc-offset-2'>{2}</div>";
+                } else {
+                    fmt = "<div class='noc-offset-1'>{0}: {1}</div>";
                 }
-                t += "<br>";
+                t += Ext.String.format(
+                    fmt,
+                    Ext.htmlEncode(i.name),
+                    i.status,
+                    i.description
+                );
             });
         });
         t += "<b>Discovery: </b>" + data.method + "<br>";

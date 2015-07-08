@@ -326,7 +326,8 @@ class MapApplication(ExtApplication):
                 "interfaces": [
                     {
                         "name": i.name,
-                        "description": i.description or None
+                        "description": i.description or None,
+                        "status": i.status
                     }
                     for i in sorted(o[mo], key=lambda x: split_alnum(x.name))
                 ]
