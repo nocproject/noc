@@ -548,40 +548,30 @@ Ext.define("NOC.inv.map.MapPanel", {
     setLoadOverlayData: function(data) {
         var me = this;
         Ext.each(me.graph.getLinks(), function(link) {
-            var sIn = 0.0, sOut = 0.0, dIn = 0.0, dOut = 0.0,
+            var sIn, sOut, dIn, dOut, bw,
                 td, dt, lu, cfg, tb, balance,
                 ports = link.get("data").ports,
                 linkId = link.get("data").id,
-                bw = me.linkBw[linkId],
-                luStyle = null;
-            Ext.each(me.portMetrics[ports[0]]["in"], function(m) {
-                var v = data[m].value;
-                if(v) {
-                    sIn += v;
-                }
-            });
-            Ext.each(me.portMetrics[ports[0]]["out"], function(m) {
-                var v = data[m].value;
-                if(v) {
-                    sOut += v;
-                }
-            });
-            Ext.each(me.portMetrics[ports[1]]["in"], function(m) {
-                var v = data[m].value;
-                if(v) {
-                    dIn += v;
-                }
-            });
-            Ext.each(me.portMetrics[ports[1]]["out"], function(m) {
-                var v = data[m].value;
-                if(v) {
-                    dOut += v;
-                }
+                luStyle = null,
+                getTotal = function(metrics) {
+                    var v = 0.0;
+                    Ext.each(metrics, function(m) {
+                        if(data[m]) {
+                            v += data[m].value;
+                        }
+                    });
+                    return v;
+                };
+            sIn = getTotal(me.portMetrics[ports[0]]["in"]);
+            sOut = getTotal(me.portMetrics[ports[0]]["out"]);
+            dIn = getTotal(me.portMetrics[ports[1]]["in"]);
+            dOut = getTotal(me.portMetrics[ports[1]]["out"]);
+
+            bw = me.linkBw[linkId];
             // Destination to target
             td = Math.max(sOut, dIn);
             // Target to destination
             dt = Math.max(sIn, dOut);
-            });
             if(bw) {
                 // Link utilization
                 lu = 0.0;
