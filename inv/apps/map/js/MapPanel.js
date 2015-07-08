@@ -279,10 +279,11 @@ Ext.define("NOC.inv.map.MapPanel", {
                             fill: "black",
                             text: "\uf111",
                             "font-family": "FontAwesome",
-                            "font-size": 5
+                            "font-size": 5,
+                            visibility: "hidden"
                         },
                         rect: {
-                            display: "none"
+                            visibility: "hidden"
                         }
                     }
                 }
@@ -605,6 +606,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                 link.label(0, {position: balance});
                 if(luStyle) {
                     luStyle.fill = luStyle.stroke;
+                    luStyle.visibility = "visible";
                     link.label(0, {attrs: {text: luStyle}});
                 }
             }
