@@ -50,6 +50,11 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                             dataIndex: "name"
                         },
                         {
+                            text: "Status",
+                            dataIndex: "status",
+                            width: 100
+                        },
+                        {
                             text: "MAC",
                             dataIndex: "mac"
                         },

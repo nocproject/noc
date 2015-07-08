@@ -381,6 +381,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 "id": str(i.id),
                 "name": i.name,
                 "description": i.description,
+                "status": i.status,
                 "mac": i.mac,
                 "ifindex": i.ifindex,
                 "lag": (i.aggregated_interface.name
