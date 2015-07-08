@@ -241,6 +241,50 @@ class Interface(Document):
         # Fallback to interface profile
         return self.profile.get_probe_config(config)
 
+    @property
+    def status(self):
+        """
+        Returns interface status in form of
+        Up/100/Full
+        """
+        def humanize_speed(speed):
+            if not speed:
+                return "-"
+            for t, n in [
+                (1000000, "G"),
+                (1000, "M"),
+                (1, "k")
+            ]:
+                if speed >= t:
+                    if speed // t * t == speed:
+                        return "%d%s" % (speed // t, n)
+                    else:
+                        return "%.2f%s" % (float(speed) / t, n)
+            return str(speed)
+
+        s = [{
+            True: "Up",
+            False: "Down",
+            None: "-"
+        }[self.oper_status]]
+        # Speed
+        if self.oper_status:
+            if self.in_speed and self.in_speed == self.out_speed:
+                s += [humanize_speed(self.in_speed)]
+            else:
+                s += [
+                    humanize_speed(self.in_speed),
+                    humanize_speed(self.out_speed)
+                ]
+            s += [{
+                True: "Full",
+                False: "Half",
+                None: "-"
+            }[self.full_duplex]]
+        else:
+            s += ["-", "-"]
+        return "/".join(s)
+
 
 ## Avoid circular references
 from subinterface import SubInterface
