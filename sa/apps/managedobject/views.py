@@ -129,6 +129,7 @@ class ManagedObjectApplication(ExtModelApplication):
                         "local_interface__label": li.name,
                         "remote_object": ri.managed_object.id,
                         "remote_object__label": ri.managed_object.name,
+                        "remote_platform": ri.managed_object.platform,
                         "remote_interface": str(ri.id),
                         "remote_interface__label": ri.name,
                         "discovery_method": link.discovery_method,
