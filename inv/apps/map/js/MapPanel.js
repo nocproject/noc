@@ -552,7 +552,8 @@ Ext.define("NOC.inv.map.MapPanel", {
                 td, dt, lu, cfg, tb, balance,
                 ports = link.get("data").ports,
                 linkId = link.get("data").id,
-                bw = me.linkBw[linkId];
+                bw = me.linkBw[linkId],
+                luStyle = null;
             Ext.each(me.portMetrics[ports[0]]["in"], function(m) {
                 var v = data[m].value;
                 if(v) {
@@ -599,6 +600,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                             filter: "url(#glow)"
                         };
                         cfg = Ext.apply(cfg, style);
+                        luStyle = cfg;
                         link.attr({
                             ".connection": cfg
                         });
@@ -611,6 +613,10 @@ Ext.define("NOC.inv.map.MapPanel", {
             if(tb > 0) {
                 balance = td / tb;
                 link.label(0, {position: balance});
+                if(luStyle) {
+                    luStyle.fill = luStyle.stroke;
+                    link.label(0, {attrs: {text: luStyle}});
+                }
             }
         });
     }
