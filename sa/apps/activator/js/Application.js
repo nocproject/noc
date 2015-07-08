@@ -14,6 +14,8 @@ Ext.define("NOC.sa.activator.Application", {
         "NOC.main.prefixtable.LookupField"
     ],
     model: "NOC.sa.activator.Model",
+    search: true,
+    
     columns: [
         {
             text: "Name",
