@@ -282,18 +282,22 @@ class TimeSeriesDatabase(object):
         else:
             return False
 
-    def get_last_value(self, metric):
+    def get_last_value(self, metric, ts=None, window=86400):
         """
-        Returns (value, time) with last metric measure
+        Returns (value, time) with last metric measure before ts
         or (None, None)
+        :param metric: Metric to search
+        :param ts: Last allowed timestamp, None for current time
+        :param window: Search window in seconds. Default 1 day
         """
-        T = 86400
-        t = int(time.time()) + 1
-        for pn, s, e in reversed(list(self.partition.enumerate(t - T, t))):
+        if not ts:
+            ts = int(time.time()) + 1
+        start = ts - window
+        for pn, s, e in reversed(list(self.partition.enumerate(start, ts))):
             partition = self.get_partition_by_name(pn)
             k, v = partition.get_last_value(
-                self.get_key(metric, s),
-                self.get_key(metric, e)
+                self.get_key(metric, max(s, start)),
+                self.get_key(metric, min(e, ts))
             )
             if k:
                 return (
