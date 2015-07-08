@@ -55,7 +55,7 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
                 {
                     text: "Neighbor",
                     dataIndex: "remote_object",
-                    renderer: NOC.render.Lookup("remote_object")
+                    renderer: NOC.render.LookupTooltip("remote_object", "{remote_platform}")
                 },
                 {
                     text: "Remote",

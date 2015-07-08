@@ -31,6 +31,10 @@ Ext.define("NOC.sa.managedobject.LinksStore", {
             type: "string"
         },
         {
+            name: "remote_platform",
+            type: "string"
+        },
+        {
             name: "remote_interface",
             type: "string"
         },
