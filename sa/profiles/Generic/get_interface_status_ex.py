@@ -62,8 +62,8 @@ class Script(NOCScript):
             if hs is not None:
                 hs = int(hs)
                 if hs:
-                    r[ifindex]["in_speed"] = hs // 1000
-                    r[ifindex]["out_speed"] = hs // 1000
+                    r[ifindex]["in_speed"] = hs * 1000
+                    r[ifindex]["out_speed"] = hs * 1000
                     continue
             s = s_table.get(ifindex)
             if s is not None:
