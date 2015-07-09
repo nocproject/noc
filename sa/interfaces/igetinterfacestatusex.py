@@ -29,3 +29,4 @@ class IGetInterfaceStatusEx(Interface):
         # Configured bandwidth, kbit/s
         "bandwidth": IntParameter(required=False)
     }))
+    preview = "NOC.sa.managedobject.scripts.ShowInterfaceStatusEx"
