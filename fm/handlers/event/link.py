@@ -7,22 +7,38 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.inv.models.interfacestatus import InterfaceStatus
+from noc.inv.models.interface import Interface
+
+
+def _get_interface(object, name):
+    Interface._get_collection().update({
+        "managed_object": object.id
+    })
 
 
 def oper_up(event):
     """
     Set oper status to up
     """
-    i_name = event.vars["interface"]
-    InterfaceStatus.set_status(
-        event.managed_object, i_name, oper_status=True)
+    Interface._get_collection().update({
+        "managed_object": event.managed_object.id,
+        "name": event.vars["interface"]
+    }, {
+        "$set": {
+            "oper_status": True
+        }
+    })
 
 
 def oper_down(event):
     """
     Set oper status to down
     """
-    i_name = event.vars["interface"]
-    InterfaceStatus.set_status(
-        event.managed_object, i_name, oper_status=False)
+    Interface._get_collection().update({
+        "managed_object": event.managed_object.id,
+        "name": event.vars["interface"]
+    }, {
+        "$set": {
+            "oper_status": False
+        }
+    })
