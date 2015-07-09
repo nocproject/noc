@@ -14,7 +14,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 ## NOC modules
 from managedobject import ManagedObject
-from reducetask import ReduceTask
 from noc.lib.fields import PickledField
 from noc.sa.protocols.sae_pb2 import ERR_INVALID_SCRIPT
 
@@ -27,7 +26,7 @@ class MapTask(models.Model):
         app_label = "sa"
 
     task = models.ForeignKey(
-        ReduceTask,
+        "sa.ReduceTask",
         verbose_name=_("Task"),
         null=True, blank=True,
         on_delete=models.CASCADE
@@ -67,6 +66,16 @@ class MapTask(models.Model):
         return self.status in ("C", "F")
 
     @classmethod
+    def resolve_object(cls, object):
+        # Resolve object
+        if isinstance(object, basestring):
+            return ManagedObject.objects.get(name=object)
+        elif isinstance(object, (int, long)):
+            return ManagedObject.objects.get(id=object)
+        else:
+            return object
+
+    @classmethod
     def create_task(cls, object, script, params=None, timeout=None):
         """
         Create single Map task
@@ -79,10 +88,7 @@ class MapTask(models.Model):
         status = "W"
         result = None
         # Resolve object
-        if isinstance(object, basestring):
-            object = ManagedObject.objects.get(name=object)
-        elif isinstance(object, (int, long)):
-            object = ManagedObject.objects.get(id=object)
+        object = cls.resolve_object(object)
         # Convert script name
         if "." not in script:
             script = "%s.%s" % (object.profile_name, script)
@@ -136,4 +142,16 @@ class MapTask(models.Model):
             # Waiting or running
             if not block:
                 return False
+            time.sleep(1)
+
+    @classmethod
+    def run(cls, object, script, params=None, timeout=None):
+        object = cls.resolve_object(object)
+        t = MapTask.create_task(object, script, params, timeout)
+        while True:
+            for mt in MapTask.objects.filter(id=t.id, status__in=["C", "F"]):
+                if mt.status == "C":
+                    return mt.script_result
+                else:
+                    return None
             time.sleep(1)
