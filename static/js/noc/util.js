@@ -62,7 +62,6 @@ Ext.apply(NOC.render, {
         var tpl = new Ext.XTemplate(fmt);
         return function(value, meta, record) {
             var tooltip = tpl.apply(record.getData());
-            console.log("tooltip", tooltip);
             return Ext.String.format(
                 '<span title="{0}">{1}</span>',
                 Ext.htmlEncode(tooltip),
