@@ -7,11 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import os
-import re
 import difflib
 from collections import namedtuple
 import logging
+
+import os
+import re
+
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -180,12 +182,8 @@ class ManagedObject(models.Model):
                 self.object = obj
 
             def __call__(self, **kwargs):
-                task = ReduceTask.create_task(
-                    [self.object],
-                    reduce_object_script, {},
-                    self.name, kwargs, None
-                )
-                return task.get_result(block=True)
+                from maptask import MapTask
+                return MapTask.run(self.object, self.name, **kwargs)
 
         def __init__(self, obj):
             self._object = obj
@@ -478,20 +476,11 @@ class ManagedObject(models.Model):
         """
         Refresh event filters for all activators serving object
         """
-        def reduce_notify(task):
-            mt = task.maptask_set.all()[0]
-            if mt.status == "C":
-                return mt.script_result
-            return False
-
-        ReduceTask.create_task(
-            "SAE",
-            reduce_notify, {},
-            "notify", {
-                "event": "refresh_event_filter",
-                "object_id": self.id},
-            1
-        )
+        from maptask import MapTask
+        MapTask.create_task("SAE", "notify", {
+            "event": "refresh_event_filter",
+            "object_id": self.id
+        }, 1)
 
     def get_status(self):
         return ObjectStatus.get_status(self)
