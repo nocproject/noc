@@ -310,7 +310,7 @@ Ext.define("NOC.fm.alarm.Application", {
     showGrid: function() {
         var me = this;
         me.getLayout().setActiveItem(0);
-        me.reloadStore();
+        //me.reloadStore();
         me.startPolling();
         me.setHistoryHash();
     },
