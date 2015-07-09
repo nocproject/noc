@@ -136,6 +136,8 @@ Ext.define("NOC.inv.map.MapPanel", {
         // Subscribe to events
         me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
         me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
+        me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight));
+        me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight));
         //me.createContextMenus();
         me.fireEvent("mapready");
     },
@@ -633,5 +635,15 @@ Ext.define("NOC.inv.map.MapPanel", {
                 }
             }
         });
+    },
+
+    onCellHighlight: function(view, el) {
+        var me = this;
+        V(el).attr("filter", "url(#highlight)");
+    },
+
+    onCellUnhighlight: function(view, el) {
+        var me = this;
+        V(el).attr("filter", "");
     }
 });
