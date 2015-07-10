@@ -160,7 +160,9 @@ class MapTask(models.Model):
         while True:
             for mt in MapTask.objects.filter(id=t.id, status__in=["C", "F"]):
                 if mt.status == "C":
-                    return mt.script_result
+                    result = mt.script_result
                 else:
-                    return None
+                    result = None
+                mt.delete()
+                return result
             time.sleep(1)
