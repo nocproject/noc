@@ -200,9 +200,10 @@ class ReduceTask(models.Model):
             reduce_script = reduce_dumb
         # Create reduce task
         start_time = datetime.datetime.now()
+        stop_time = start_time + datetime.timedelta(seconds=timeout)
         r_task = ReduceTask(
             start_time=start_time,
-            stop_time=start_time + datetime.timedelta(seconds=timeout),
+            stop_time=stop_time,
             script=reduce_script,
             script_params=reduce_script_params if reduce_script_params else {},
         )
@@ -249,7 +250,9 @@ class ReduceTask(models.Model):
                     map_script=msn,
                     script_params=p,
                     next_try=start_time + datetime.timedelta(seconds=delay),
-                    status=status
+                    status=status,
+                    script_timeout=o.profile.scripts[ms].get_timeout(),
+                    stop_time=stop_time
                 )
                 if status == "F":
                     if no_sessions:
