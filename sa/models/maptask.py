@@ -11,7 +11,7 @@ import datetime
 import time
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
+from django.db import models, connection
 ## NOC modules
 from managedobject import ManagedObject
 from noc.lib.fields import PickledField
@@ -155,14 +155,12 @@ class MapTask(models.Model):
 
     @classmethod
     def run(cls, object, script, params=None, timeout=None):
+        from noc.sa.mtmanager import MTManager
         object = cls.resolve_object(object)
-        t = MapTask.create_task(object, script, params, timeout)
-        while True:
-            for mt in MapTask.objects.filter(id=t.id, status__in=["C", "F"]):
-                if mt.status == "C":
-                    result = mt.script_result
-                else:
-                    result = None
-                mt.delete()
-                return result
-            time.sleep(1)
+        mt = MTManager.run(object, script, params, timeout)
+        if mt.status == "C":
+            result = mt.script_result
+        else:
+            result = None
+        mt.delete()
+        return result
