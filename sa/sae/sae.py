@@ -633,14 +633,8 @@ class SAE(Daemon):
             if not mt.managed_object.is_managed:
                 fail_task(mt, ERR_OBJECT_NOT_MANAGED, "Object is not managed")
                 continue
-            # Check reduce task still valid
-            is_valid_reduce = True
-            try:
-                mt.task
-            except ReduceTask.DoesNotExist:
-                is_valid_reduce = False
             # Check for task timeouts
-            if not is_valid_reduce or (mt.task and mt.task.stop_time < t):
+            if mt.stop_time < t:
                 fail_task(mt, ERR_TIMEOUT, text="Timed out")
                 continue
             # Check blocked pools

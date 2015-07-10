@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MapTask
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -51,7 +51,10 @@ class MapTask(models.Model):
         default="W")
     script_result = PickledField(_("Result"), null=True, blank=True)
     # Override script's default timeout
-    script_timeout = models.IntegerField(_("Script timeout"), null=True, blank=True)
+    script_timeout = models.IntegerField(
+        _("Script timeout"), null=True, blank=True)
+    stop_time = models.DateTimeField(
+        _("Stop Time"))
 
     def __unicode__(self):
         if self.id:
@@ -101,16 +104,22 @@ class MapTask(models.Model):
                 "code": ERR_INVALID_SCRIPT,
                 "text": "Invalid script %s" % script
             }
+        if not timeout:
+            timeout = object.profile.scripts[sp[-1]].get_timeout()
+        if not timeout:
+            timeout = 60
+        now = datetime.datetime.now()
         # Create task
         t = MapTask(
             task=None,
             managed_object=object,
             map_script=script,
             script_params=params,
-            next_try=datetime.datetime.now(),
+            next_try=now,
             status=status,
             script_result=result,
-            script_timeout=timeout
+            script_timeout=timeout,
+            stop_time=now + datetime.timedelta(seconds=timeout)
         )
         t.save()
         return t
