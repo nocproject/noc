@@ -104,7 +104,7 @@ class MapTask(models.Model):
                 "code": ERR_INVALID_SCRIPT,
                 "text": "Invalid script %s" % script
             }
-        if not timeout:
+        elif not timeout:
             timeout = object.profile.scripts[sp[-1]].get_timeout()
         if not timeout:
             timeout = 60
