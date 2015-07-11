@@ -13,6 +13,7 @@ import difflib
 ## Third-party modules
 import pymongo
 import gridfs
+import gridfs.errors
 from mercurial.mdiff import textdiff, patch
 ## NOC modules
 from revision import Revision
@@ -80,19 +81,22 @@ class GridVCS(object):
         """
         if self.fs.exists(object=object):
             # Save delta
-            # Get old version
-            with self.fs.get_last_version(object=object, ft=self.T_FILE) as f:
-                old_data = f.read()
-            # Check data has been changed
-            if data == old_data:
-                return False
-            # Calculate reverse delta
-            dt, delta = self.get_delta(data, old_data)
-            # Save delta
-            self.fs.put(delta, object=object, ts=f.ts, ft=dt,
-                encoding=self.ENCODING)
-            # Remove old version
-            self.fs.delete(f._id)
+            try:
+                # Get old version
+                with self.fs.get_last_version(object=object, ft=self.T_FILE) as f:
+                    old_data = f.read()
+                # Check data has been changed
+                if data == old_data:
+                    return False
+                # Calculate reverse delta
+                dt, delta = self.get_delta(data, old_data)
+                # Save delta
+                self.fs.put(delta, object=object, ts=f.ts, ft=dt,
+                    encoding=self.ENCODING)
+                # Remove old version
+                self.fs.delete(f._id)
+            except gridfs.errors.NoFile:
+                pass
         # Save new version
         ts = ts or datetime.datetime.now()
         self.fs.put(data, object=object,
