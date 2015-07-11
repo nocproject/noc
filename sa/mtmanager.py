@@ -49,7 +49,6 @@ class MTManagerImplementation(object):
         return t
 
     def handler(self):
-        from noc.sa.models.maptask import MapTask
         logger.debug("Start polling")
         tasks = {}  # task id -> queue
         while True:
@@ -59,8 +58,7 @@ class MTManagerImplementation(object):
                     q, object, script, params, timeout = self.run_queue.get(timeout=1)
                 except Queue.Empty:
                     break
-                with transaction.commit_on_success():
-                    t = MapTask.create_task(object, script, params, timeout)
+                t = self.create_task(object, script, params, timeout)
                 if t.status == "F":
                     # Error during creation
                     q.put(t)
@@ -69,13 +67,21 @@ class MTManagerImplementation(object):
             if not tasks:
                 continue
             # Wait for tasks
-            with transaction.commit_on_success():
-                for mt in MapTask.objects.filter(
-                        status__in=["C", "F"],
-                        id__in=list(tasks)):
-                    tasks[mt.id].put(mt)
-                    del tasks[mt.id]
+            for mt in self.get_complete_tasks(list(tasks)):
+                tasks[mt.id].put(mt)
+                del tasks[mt.id]
         logger.debug("Stop")
+
+    @transaction.commit_on_success()
+    def create_task(self, object, script, params=None, timeout=None):
+        return MapTask.create_task(object, script, params, timeout)
+
+    @transaction.commit_on_success
+    def get_complete_tasks(self, tasks):
+        return list(MapTask.objects.filter(
+            status__in=["C", "F"],
+            id__in=tasks
+        ))
 
 
 # Run single instance
