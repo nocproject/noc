@@ -55,7 +55,7 @@ class Worker(Thread):
                 self.set_idle(True)
 
     def run(self):
-        self.logger.debug("Starting worker thread")
+        self.logger.info("Starting worker thread")
         while True:
             # Get task from queue
             task = self.get_task()
@@ -82,7 +82,7 @@ class Worker(Thread):
         # Shutdown
         self.queue.task_done()
         self.pool.thread_done(self)
-        self.logger.debug("Stopping worker thread")
+        self.logger.info("Stopping worker thread")
 
     def cancel(self):
         """
@@ -159,7 +159,7 @@ class Pool(object):
                 w = Worker(self, self.queue)
                 self.threads.add(w)
                 w.start()
-            elif status and (self.n_idle > self.max_spare or n > self.max_threads):
+            elif status and n > 1 and (self.n_idle > self.max_spare or n > self.max_threads):
                 # Stop one thread
                 self.queue.put(None)
 
