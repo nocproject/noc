@@ -190,8 +190,8 @@ class MapApplication(ExtApplication):
                 d_in_bw += bandwidth(in_speed, bw)
                 d_out_bw += bandwidth(out_speed, bw)
             lid = str(link.id)
-            in_bw = bandwidth(t_in_bw, d_out_bw)
-            out_bw = bandwidth(t_out_bw, d_in_bw)
+            in_bw = bandwidth(t_in_bw, d_out_bw) * 1000
+            out_bw = bandwidth(t_out_bw, d_in_bw) * 1000
             links[lid] = {
                 "id": lid,
                 "type": "link",
