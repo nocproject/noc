@@ -39,6 +39,8 @@ class Worker(Thread):
 
     def set_idle(self, status):
         self.is_idle = status
+        if status:
+            self.title = "idle"
         self.pool.set_idle(status)
 
     def get_task(self):
@@ -50,7 +52,7 @@ class Worker(Thread):
                 return task
             except Empty:
                 # Apply pool scheduling
-                self.set_idle(None)
+                self.set_idle(True)
 
     def run(self):
         self.logger.debug("Starting worker thread")
@@ -74,6 +76,9 @@ class Worker(Thread):
                 if not self.cancelled:
                     error_report()
             self.queue.task_done()
+            self.logger.debug("[%s] complete in %ss",
+                              title, time.time() - self.start_time)
+            self.start_time = 0
         # Shutdown
         self.queue.task_done()
         self.pool.thread_done(self)
