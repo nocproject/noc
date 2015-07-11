@@ -256,14 +256,6 @@ class Scheduler(object):
         :param job:
         :return:
         """
-        @transaction.commit_on_success
-        def create_task(job):
-            return MapTask.create_task(
-                job.get_managed_object(),
-                job.map_task,
-                job.get_map_task_params()
-            )
-
         # Dereference job
         self.metrics.jobs_dereference_count += 1
         if not job.dereference():
@@ -304,7 +296,11 @@ class Scheduler(object):
             else:
                 job.logger.info("Running script %s", job.map_task)
                 # Run in MRT mode
-                t = create_task(job)
+                t = MTManager.create_task(
+                    job.get_managed_object(),
+                    job.map_task,
+                    job.get_map_task_params()
+                )
                 self.active_mrt[t.id] = job
         else:
             self._run_job_handler(job)
@@ -464,13 +460,6 @@ class Scheduler(object):
             self.logger.error("Trying to recover")
 
     def run_pending(self):
-        @transaction.commit_on_success
-        def get_complete_tasks():
-            return list(MapTask.objects.filter(
-                status__in=["C", "F"],
-                id__in=list(self.active_mrt)
-            ))
-
         n = 0
         self.mrt_overload = False
         # Run pending intial submits
@@ -496,7 +485,7 @@ class Scheduler(object):
                         t0 + jcls.initial_submit_interval)
         # Check for complete MRT
         if self.active_mrt:
-            for t in get_complete_tasks():
+            for t in MTManager.get_complete_tasks(list(self.active_mrt)):
                 self.complete_mrt_job(t)
         # Check for pending persistent tasks
         for job_data in self.iter_pending_jobs():
@@ -526,6 +515,8 @@ class Scheduler(object):
                         self.running_count[group] += 1
                 self.run_job(job)
                 n += 1
+            elif self.mrt_overload:
+                break
         return n
 
     def run(self):
@@ -601,4 +592,4 @@ class Scheduler(object):
                 self.log_jobs = None
 
 ## Avoid circular reference
-from noc.sa.models.maptask import MapTask
+from noc.sa.mtmanager import MTManager
