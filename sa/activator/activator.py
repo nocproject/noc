@@ -361,7 +361,7 @@ class Activator(Daemon, FSM):
             failed = 0
         with self.script_lock:
             cb = self.script_threads.pop(script)
-            logging.info(
+            logger.info(
                 "[%s] Stopping. %s [%d/%d threads] (%sms)",
                 script.debug_name,
                 s,
@@ -425,18 +425,6 @@ class Activator(Daemon, FSM):
         # Run default daemon/fsm machinery
         super(Activator, self).tick()
 
-    def register_stream(self, stream):
-        logger.debug("Registering stream %s" % str(stream))
-        self.streams[stream] = None
-
-    def release_stream(self, stream):
-        logger.debug("Releasing stream %s" % str(stream))
-        del self.streams[stream]
-
-    def reboot(self):
-        logger.info("Rebooting")
-        os.execv(sys.executable, [sys.executable] + sys.argv)
-
     @check_state("CONNECTED")
     def protocol(self):
         """ Start protocol negotiation """
@@ -444,19 +432,19 @@ class Activator(Daemon, FSM):
             if self.get_state() != "CONNECTED":
                 return
             if error:
-                logging.error("Protocol negotiation error: %s" % error.text)
+                logger.error("Protocol negotiation error: %s", error.text)
                 self.event("error")
                 return
             if (response.protocol != PROTOCOL_NAME or
                 response.version != PROTOCOL_VERSION):
-                logging.error("Protocol negotiation failed")
+                logger.error("Protocol negotiation failed")
                 self.event("error")
                 return
             logger.info("Protocol version negotiated")
             self.event("setup")
 
-        logger.info("Negotiation protocol '%s' version '%s'" % (
-            PROTOCOL_NAME, PROTOCOL_VERSION))
+        logger.info("Negotiation protocol '%s' version '%s'",
+                    PROTOCOL_NAME, PROTOCOL_VERSION)
         r = ProtocolRequest(protocol=PROTOCOL_NAME, version=PROTOCOL_VERSION)
         self.sae_stream.proxy.protocol(r, protocol_callback)
     
@@ -467,7 +455,7 @@ class Activator(Daemon, FSM):
             if self.get_state() != "SETUP":
                 return
             if error:
-                logging.error("Crypto negotiation failed: %s" % e.text)
+                logger.error("Crypto negotiation failed: %s", error.text)
                 self.event("error")
                 return
             if response.key_exchange == "none":
@@ -498,7 +486,7 @@ class Activator(Daemon, FSM):
             if self.get_state() != "KEX":
                 return
             if error:
-                logging.error("Key exchange failed: %s" % error.text)
+                logger.error("Key exchange failed: %s", error.text)
                 self.event("error")
                 return
             self.sae_stream.complete_kex(response)
@@ -513,7 +501,7 @@ class Activator(Daemon, FSM):
             if self.get_state() != "REGISTER":
                 return
             if error:
-                logging.error("Registration error: %s" % error.text)
+                logger.error("Registration error: %s" % error.text)
                 self.event("error")
                 return
             logger.info("Registration accepted")
@@ -530,7 +518,7 @@ class Activator(Daemon, FSM):
             if self.get_state() != "REGISTRED":
                 return
             if error:
-                logging.error("Authentication failed: %s" % error.text)
+                logger.error("Authentication failed: %s", error.text)
                 self.event("error")
                 return
             logger.info("Authenticated")
@@ -556,7 +544,7 @@ class Activator(Daemon, FSM):
     def get_object_mappings(self):
         def object_mappings_callback(transaction, response=None, error=None):
             if error:
-                logging.error("get_object_mappings error: %s" % error.text)
+                logger.error("get_object_mappings error: %s", error.text)
                 return
             self.object_mappings = dict((x.source, x.object)
                                         for x in response.mappings)
@@ -602,7 +590,7 @@ class Activator(Daemon, FSM):
         """
         def on_event_callback(transaction, response=None, error=None):
             if error:
-                logging.error("event_proxy failed: %s" % error)
+                logger.error("event_proxy failed: %s", error)
         r = EventRequest()
         r.timestamp = timestamp
         r.object = object
@@ -625,7 +613,7 @@ class Activator(Daemon, FSM):
     def send_status_change(self):
         def status_change_callback(transaction, response=None, error=None):
             if error:
-                logging.error("object_status failed: %s" % error)
+                logger.error("object_status failed: %s", error)
 
         r = ObjectStatusRequest()
         for object, status in self.status_change_queue:
@@ -644,7 +632,7 @@ class Activator(Daemon, FSM):
                 ir += [(re.compile(r.left_re, re.IGNORECASE),
                         re.compile(r.right_re, re.IGNORECASE))]
             except re.error, why:
-                logging.error("Failed to compile ignore event rule: %s,%s. skipping" % (l, r))
+                logger.error("Failed to compile ignore event rule: %s,%s. skipping" % (l, r))
         self.ignore_event_rules = ir
 
     @check_state("ESTABLISHED")
