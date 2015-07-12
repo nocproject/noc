@@ -32,7 +32,7 @@ class ArchiveJob(AutoIntervalJob):
         if dc:
             ActiveEvent.objects.filter(event_class__in=to_drop,
                 timestamp__lte=border).delete()
-            self.info("%d active events cleaned (requested by event class)" % dc)
+            self.logger.info("%d active events cleaned (requested by event class)" % dc)
         ## Events without alarms
         if woa == 0:
             # Drop all events not contributing to alarms
@@ -41,7 +41,7 @@ class ArchiveJob(AutoIntervalJob):
             if dc:
                 ActiveEvent.objects.filter(alarms__exists=False,
                     timestamp__lte=border).delete()
-                self.info("%d active events cleaned (no related alarms)" % dc)
+                self.logger.info("%d active events cleaned (no related alarms)" % dc)
         ## Events with alarms
         if wa == 0:
             # Drop all events contributing to alarms
@@ -50,14 +50,14 @@ class ArchiveJob(AutoIntervalJob):
             if dc:
                 ActiveEvent.objects.filter(alarms__exists=True,
                     timestamp__lte=border).delete()
-                self.info("%d active events cleaned (with related alarms)" % dc)
+                self.logger.info("%d active events cleaned (with related alarms)" % dc)
         # Archive left events
         n = 0
         for e in ActiveEvent.objects.filter(timestamp__lte=border):
             e.mark_as_archived("Archived by fm.archive job")
             n += 1
         if n:
-            self.info("%d active events are moved into archive" % n)
+            self.logger.info("%d active events are moved into archive" % n)
         # Cleanup archive
         if woa > 0:
             border = datetime.datetime.now() - datetime.timedelta(days=woa)
@@ -66,7 +66,7 @@ class ArchiveJob(AutoIntervalJob):
             if dc:
                 ArchivedEvent.objects.filter(
                     alarms__exists=False, timestamp__lte=border).delete()
-                self.info("%d archived events cleaned (no related alarms)")
+                self.logger.info("%d archived events cleaned (no related alarms)", dc)
         if wa > 0:
             border = datetime.datetime.now() - datetime.timedelta(days=wa)
             dc = ArchivedEvent.objects.filter(
@@ -74,5 +74,5 @@ class ArchiveJob(AutoIntervalJob):
             if dc:
                 ArchivedEvent.objects.filter(
                     alarms__exists=True, timestamp__lte=border).delete()
-                self.info("%d archived events cleaned (with related alarms)")
+                self.logger.info("%d archived events cleaned (with related alarms)", dc)
         return True
