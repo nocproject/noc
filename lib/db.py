@@ -2,18 +2,21 @@
 ##----------------------------------------------------------------------
 ## Various database utilities
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import subprocess
+import logging
 ##
 from psycopg2.extensions import adapt
 ## Django modules
 from django.utils import tree
 from django.db.models import Q
 from django.db import connection
+
+logger = logging.getLogger(__name__)
 
 
 class SQLExpression(object):
@@ -154,12 +157,15 @@ def vacuum(table, analyze=False):
     :param analyze: Issue ANALYZE command
     :return:
     """
+    pc = connection.cursor()
+    c = connection.connection
+    level = c.isolation_level
+    c.set_isolation_level(0)
+    cursor = c.cursor()
     if analyze:
         cmd = "VACUUM ANALYZE %s" % table
     else:
         cmd = "VACUUM %s" % table
-    c = connection.cursor()
-    # Close current transaction
-    # before running VACUUM
-    c.execute("COMMIT")
-    c.execute(cmd)
+    logger.info(cmd)
+    cursor.execute(cmd)
+    c.set_isolation_level(level)
