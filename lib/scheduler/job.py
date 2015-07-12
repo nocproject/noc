@@ -96,7 +96,10 @@ class Job(object):
         cls.beef = beef
 
     def get_display_key(self):
-        return self.key
+        if self.object:
+            return unicode(object)
+        else:
+            return self.key
 
     def debug(self, msg):
         self.logger.debug(msg)
@@ -188,6 +191,10 @@ class Job(object):
                 return False
             try:
                 self.object = self.model.objects.get(**q)
+                self.logger.set_prefix(
+                    "%s][%s][%s" % (self.scheduler.name, self.name,
+                    self.get_display_key())
+                )
             except self.model.DoesNotExist:
                 return False
         return True

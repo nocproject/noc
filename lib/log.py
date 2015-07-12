@@ -16,11 +16,14 @@ class PrefixLoggerAdapter(logging.LoggerAdapter):
     Add [prefix] to log message
     """
     def __init__(self, logger, prefix, extra=None):
-        self.pattern = "[%s] %%s" % prefix
+        self.set_prefix(prefix)
         logging.LoggerAdapter.__init__(self, logger, extra or {})
 
     def process(self, msg, kwargs):
         return self.pattern % msg, kwargs
+
+    def set_prefix(self, prefix):
+        self.pattern = "[%s] %%s" % prefix
 
 
 class TeeLoggerAdapter(logging.LoggerAdapter):
@@ -63,6 +66,12 @@ class TeeLoggerAdapter(logging.LoggerAdapter):
     def log(self, level, msg, *args, **kwargs):
         self._append(msg, args)
         logging.LoggerAdapter.log(self, msg, *args, **kwargs)
+
+    def set_prefix(self, prefix):
+        try:
+            self.logger.set_prefix(prefix)
+        except AttributeError:
+            pass
 
 
 class ColorFormatter(logging.Formatter):
