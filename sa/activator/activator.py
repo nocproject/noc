@@ -334,38 +334,41 @@ class Activator(Daemon, FSM):
         if not timeout:
             timeout = script_class.get_timeout()
         script = script_class(profile, self, object_name, access_profile, timeout, **kwargs)
-        logger.info("Script %s(%s). Timeout set to %s" % (script_name,
-                                            access_profile.address, timeout))
         with self.script_lock:
             self.script_threads[script] = callback
-            logger.info("%d script threads (%d max)" % (
-                len(self.script_threads), self.max_script_threads))
+            logger.info(
+                "[%s] Running. Timeout %s [%d/%d threads]",
+                script.debug_name,
+                timeout,
+                len(self.script_threads),
+                self.max_script_threads
+            )
+        script.setDaemon(True)
         script.start()
 
     def on_script_exit(self, script):
         failed = 1
         if script.e_timeout:
-            s = "is timed out"
+            s = "Timed out"
         elif script.e_cancel:
-            s = "is cancelled"
+            s = "Cancelled"
         elif script.e_disconnected:
-            s = "got cli lost"
+            s = "CLI lost"
         elif script.login_error:
-            s = "cannot log in"
+            s = "Cannot log in"
         else:
-            s = "is completed"
+            s = "Completed"
             failed = 0
-        logger.info(
-            "Script %s(%s) %s (%sms)",
-            script.name,
-            script.debug_name,
-            s,
-            int((time.time() - script.start_time) * 1000)
-        )
         with self.script_lock:
             cb = self.script_threads.pop(script)
-            logger.info("%d script threads left (%d max)" % (
-                len(self.script_threads), self.max_script_threads))
+            logging.info(
+                "[%s] Stopping. %s [%d/%d threads] (%sms)",
+                script.debug_name,
+                s,
+                len(self.script_threads),
+                self.max_script_threads,
+                int((time.time() - script.start_time) * 1000)
+            )
             self.scripts_processed += 1
             self.scripts_failed += failed
         cb(script)
