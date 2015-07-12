@@ -49,6 +49,8 @@ class Profile(NOCProfile):
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
+        if ".ServiceInstance." in interface:
+            interface = interface.replace(".ServiceInstance.", ".SI.")
         if ".SI." in interface:
             l, r = interface.split(".SI.", 1)
             return "%s.SI.%d" % (
