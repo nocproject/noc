@@ -50,6 +50,9 @@ Ext.define("NOC.inv.map.inspectors.SegmentInspector", {
         if(data.description && data.description.length) {
             t += "<br><b>Description:</b><br>" + Ext.htmlEncode(data.description);
         }
+        if(data.objects) {
+            t += "<br/><b>Objects: </b>" + data.objects;
+        }
         me.infoText.setHtml(t);
     }
 });

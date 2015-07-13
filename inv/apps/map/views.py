@@ -301,7 +301,8 @@ class MapApplication(ExtApplication):
         segment = self.get_object_or_404(NetworkSegment, id=id)
         r = {
             "name": segment.name,
-            "description": segment.description
+            "description": segment.description,
+            "objects": segment.managed_objects.count()
         }
         return r
 
