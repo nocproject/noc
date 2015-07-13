@@ -17,8 +17,9 @@ from mongoengine.fields import (StringField, DateTimeField,
 
 logger = logging.getLogger(__name__)
 
-LS_STRAIGT = "st"
-LS_SMOOTH = "sm"
+LC_NORMAL = "normal"
+LC_SMOOTH = "smooth"
+LC_ROUNDED = "rounded"
 
 
 class NodeSettings(EmbeddedDocument):
@@ -40,17 +41,19 @@ class VertexPosition(EmbeddedDocument):
 
 
 class LinkSettings(EmbeddedDocument):
-    link = StringField()
-    style = StringField(
+    type = StringField()
+    id = StringField()
+    connector = StringField(
         choices=[
-            (LS_STRAIGT, "Straight"),
-            (LS_SMOOTH, "Smooth")
-        ], default=LS_STRAIGT
+            (LC_NORMAL, "Normal"),
+            (LC_SMOOTH, "Smooth"),
+            (LC_ROUNDED, "Rounded")
+        ], default=LC_NORMAL
     )
     vertices = ListField(EmbeddedDocumentField(VertexPosition))
 
     def __unicode__(self):
-        return self.link
+        return "%s:%s" % (self.type, self.id)
 
 
 class MapSettings(Document):
@@ -141,6 +144,28 @@ class MapSettings(Document):
         d.height = data.get("height", my)
         d.nodes = sorted(nn, key=lambda x: (x.type, x.id))
         # Update links
+        new_links = {}
+        for l in data.get("links", []):
+            new_links[(l["type"], l["id"])] = l
+        nn = []
+        for l in d.links:
+            nl = new_links.get((n.type, n.id))
+            if not nl:
+                continue  # Not found
+            l.vertices = nl["vertices"]
+            l.connector = nl.get("connector", LC_NORMAL)
+            nn += [nl]
+            del new_links[(l.type, l.id)]
+        for l in new_links:
+            nl = new_links[l]
+            nn += [LinkSettings(
+                type=nl["type"],
+                id=nl["id"],
+                vertices=nl.get("vertices", []),
+                connector=nl.get("connector", "normal")
+            )]
+        d.links = [l for l in sorted(nn, key=lambda x: (x.type, x.id))
+                   if l.vertices or l.connector != LC_NORMAL]
         # Finally save
         d.save()
         return d

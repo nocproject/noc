@@ -236,7 +236,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     //
     createLink: function(data) {
         var me = this,
-            cfg, src, dst,
+            cfg, src, dst, connector,
             getConnectionStyle=function(bw) {
                 for(var i = 0; i < me.bwStyle.length; i++) {
                     var s = me.bwStyle[i];
@@ -292,10 +292,13 @@ Ext.define("NOC.inv.map.MapPanel", {
             ]
         };
         //
-        if(data.smooth) {
-            cfg.smooth = true;
+        if(data.connector) {
+            cfg.connector = {name: data.connector};
+        } else {
+            cfg.connector = {name: "normal"};
         }
-        if(data.vertices) {
+
+        if(data.vertices && data.vertices.length > 0) {
             cfg.vertices = data.vertices;
         }
         //
@@ -387,8 +390,11 @@ Ext.define("NOC.inv.map.MapPanel", {
         // Get links position
         Ext.each(me.graph.getLinks(), function(e) {
             var vertices = e.get("vertices"),
+                v = e.get("id").split(":"),
                 lr = {
-                    id: e.get("id")
+                    type: v[0],
+                    id: v[1],
+                    connector: e.get("connector").name
                 };
             if(vertices) {
                 lr.vertices = vertices.map(function(o) {

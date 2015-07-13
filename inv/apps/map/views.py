@@ -91,12 +91,15 @@ class MapApplication(ExtApplication):
         segment = self.get_object_or_404(NetworkSegment, id=id)
         settings = MapSettings.objects.filter(segment=id).first()
         node_settings = {}
+        link_settings = {}
         layout = Layout()
         if settings:
             self.logger.debug("Using stored positions")
             layout.set_page_size(settings.width, settings.height)
             for n in settings.nodes:
                 node_settings[n.type, n.id] = n
+            for l in settings.links:
+                link_settings[l.type, l.id] = l
         else:
             self.logger.debug("Generating positions")
         r = {
@@ -189,11 +192,11 @@ class MapApplication(ExtApplication):
                 bw, in_speed, out_speed = if_bw.get(i.id, (0, 0, 0))
                 d_in_bw += bandwidth(in_speed, bw)
                 d_out_bw += bandwidth(out_speed, bw)
-            lid = str(link.id)
+            lid = (u"link", str(link.id))
             in_bw = bandwidth(t_in_bw, d_out_bw) * 1000
             out_bw = bandwidth(t_out_bw, d_in_bw) * 1000
             links[lid] = {
-                "id": lid,
+                "id": str(link.id),
                 "type": "link",
                 "method": link.discovery_method,
                 "ports": [pn, pn + 1],
@@ -205,9 +208,7 @@ class MapApplication(ExtApplication):
                 "bw": max(in_bw, out_bw)
             }
             pn += 2
-            layout.add_link(m0.id, m1.id, str(link.id))
-        print links
-        r["links"] = links.values()
+            layout.add_link(m0.id, m1.id, lid)
         # Auto-layout
         npos, lpos = layout.layout()
         # Set nodes position
@@ -218,13 +219,24 @@ class MapApplication(ExtApplication):
             mo[o]["y"] = y
         # Adjust link hints
         for lid in lpos:
-            links[lid]["smooth"] = True
+            links[lid]["connector"] = "smooth"
             links[lid]["vertices"] = [
                 {
                     "x": p["x"],
                     "y": p["y"]
                 } for p in lpos[lid]
             ]
+        # Override link hints with saved one
+        for lid in link_settings:
+            if lid not in links:
+                continue
+            links[lid]["connector"] = link_settings[lid].connector
+            links[lid]["vertices"] = [
+                {
+                    "x": v.x,
+                    "y": v.y
+                } for v in link_settings[lid].vertices]
+        r["links"] = links.values()
         if not settings:
             self.logger.debug("Saving first-time layout")
             MapSettings.load_json({
@@ -237,7 +249,14 @@ class MapApplication(ExtApplication):
                         "y": n["y"]
                     } for n in r["nodes"]
                 ],
-                "links": []
+                "links": [
+                    {
+                        "type": n["type"],
+                        "id": n["id"],
+                        "vertices": n["vertices"],
+                        "connector": n["connector"]
+                    } for n in r["links"]
+                ]
             })
         return r
 
