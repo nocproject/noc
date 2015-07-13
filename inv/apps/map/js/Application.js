@@ -206,6 +206,10 @@ Ext.define("NOC.inv.map.Application", {
 
     onEdit: function() {
         var me = this;
+        if(me.editButton.pressed) {
+            me.mapPanel.setOverlayMode(0);
+            me.viewMapButton.setPressed(true);
+        }
         me.mapPanel.setInteractive(me.editButton.pressed);
     },
 
@@ -221,8 +225,10 @@ Ext.define("NOC.inv.map.Application", {
 
     onChanged: function() {
         var me = this;
-        me.saveButton.setDisabled(me.readOnly);
-        me.revertButton.setDisabled(me.readOnly);
+        if(me.editButton.pressed) {
+            me.saveButton.setDisabled(me.readOnly);
+            me.revertButton.setDisabled(me.readOnly);
+        }
     },
 
     onCloseApp: function() {
