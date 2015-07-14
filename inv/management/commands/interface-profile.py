@@ -103,12 +103,12 @@ class Command(BaseCommand):
                     pn = get_profile(i)
                     if pn:
                         p = pcache.get(pn)
-                        if not pn:
-                            p = InterfaceProfile.objects.get(name=p)
+                        if not p:
+                            p = InterfaceProfile.objects.get(name=pn)
                             pcache[pn] = p
                         i.profile = p
                         i.save()
-                        v = "Set %s" % pn
+                        v = "Set %s" % p.name
                     else:
                         v = "Not matched"
                     self.show_interface(tps, i, v)
