@@ -48,15 +48,25 @@ class Command(BaseCommand):
 
     def get_interfaces(self, object):
         return sorted(
-            Interface.objects.filter(managed_object=object.id),
+            Interface.objects.filter(
+                managed_object=object.id,
+                type="physical"
+            ),
             key=split_alnum
         )
 
     def get_interface_template(self, interfaces):
         il = max(len(i.name) for i in interfaces)
         il = max(il, 15)
-        tps = "    %%-%ds %%-12s %%s" % il
+        tps = "    %%-%ds  %%-12s  %%-30s  %%s" % il
         return tps
+
+    def show_interface(self, tpl, i, status):
+        if i.description:
+            d = i.description[:30]
+        else:
+            d = ""
+        print tpl % (i.name, i.status, d, status)
 
     def handle_show(self, *args, **kwargs):
         for o in self.get_objects(args):
@@ -64,8 +74,8 @@ class Command(BaseCommand):
             ifaces = self.get_interfaces(o)
             tps = self.get_interface_template(ifaces)
             for i in ifaces:
-                print tps % (i.name, i.status,
-                             i.profile.name if i.profile else "-")
+                self.show_interface(
+                    tps, i, i.profile.name if i.profile else "-")
 
     def handle_reset(self, *args, **kwargs):
         for o in self.get_objects(args):
@@ -82,7 +92,7 @@ class Command(BaseCommand):
         if sol:
             get_profile = get_solution(sol)
         if not get_profile:
-            raise CommandError, "No classification solution"
+            raise CommandError("No classification solution")
         pcache = {}
         for o in self.get_objects(args):
             print "%s (%s):" % (o.name, o.platform or o.profile_name)
@@ -101,4 +111,4 @@ class Command(BaseCommand):
                         v = "Set %s" % pn
                     else:
                         v = "Not matched"
-                    print tps % (i.name, i.status, v)
+                    self.show_interface(tps, i, v)
