@@ -45,9 +45,9 @@ Ext.define("NOC.inv.map.MapPanel", {
 
     // Link bandwidth style
     bwStyle: [
-        [10000000, {"stroke-width": "4px"}],  // 10G
-        [1000000, {"stroke-width": "2px"}],  // 1G
-        [100000, {"stroke-width": "1px"}],  // 100M
+        [10000000000, {"stroke-width": "4px"}],  // 10G
+        [1000000000, {"stroke-width": "2px"}],  // 1G
+        [100000000, {"stroke-width": "1px"}],  // 100M
         [0, {"stroke-width": "1px", "stroke-dasharray": "10 5"}]
     ],
     // Link utilization style
