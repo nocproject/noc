@@ -49,6 +49,10 @@ Ext.define("NOC.inv.networksegment.Model", {
             name: "count",
             type: "integer",
             persist: false
+        },
+        {
+            name: "tags",
+            type: "auto"
         }
     ]
 });

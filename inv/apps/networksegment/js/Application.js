@@ -51,6 +51,12 @@ Ext.define("NOC.inv.networksegment.Application", {
                     flex: 1
                 },
                 {
+                    text: "Tags",
+                    dataIndex: "tags",
+                    width: 100,
+                    renderer: NOC.render.Tags
+                },
+                {
                     text: "Selector",
                     dataIndex: "selector",
                     width: 100,
@@ -96,6 +102,12 @@ Ext.define("NOC.inv.networksegment.Application", {
                     name: "selector",
                     xtype: "sa.managedobjectselector.LookupField",
                     fieldLabel: "Selector",
+                    allowBlank: true
+                },
+                {
+                    name: "tags",
+                    xtype: "tagsfield",
+                    fieldLabel: "Tags",
                     allowBlank: true
                 }
             ],
