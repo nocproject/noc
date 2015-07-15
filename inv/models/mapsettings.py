@@ -149,19 +149,25 @@ class MapSettings(Document):
             new_links[(l["type"], l["id"])] = l
         nn = []
         for l in d.links:
-            nl = new_links.get((n.type, n.id))
+            nl = new_links.get((l.type, l.id))
             if not nl:
                 continue  # Not found
-            l.vertices = nl["vertices"]
+            l.vertices = [
+                VertexPosition(x=v["x"], y=v["y"])
+                for v in nl["vertices"]
+            ]
             l.connector = nl.get("connector", LC_NORMAL)
-            nn += [nl]
+            nn += [l]
             del new_links[(l.type, l.id)]
         for l in new_links:
             nl = new_links[l]
             nn += [LinkSettings(
                 type=nl["type"],
                 id=nl["id"],
-                vertices=nl.get("vertices", []),
+                vertices=[
+                    VertexPosition(x=v["x"], y=v["y"])
+                    for v in nl.get("vertices", [])
+                ],
                 connector=nl.get("connector", "normal")
             )]
         d.links = [l for l in sorted(nn, key=lambda x: (x.type, x.id))
