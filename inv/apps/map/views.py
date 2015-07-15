@@ -253,7 +253,7 @@ class MapApplication(ExtApplication):
                     {
                         "type": n["type"],
                         "id": n["id"],
-                        "vertices": n["vertices"],
+                        "vertices": n.get("vertices", []),
                         "connector": n["connector"]
                     } for n in r["links"]
                 ]
