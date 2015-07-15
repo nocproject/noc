@@ -421,3 +421,12 @@ class MapApplication(ExtApplication):
                     "value": v
                 }
         return r
+
+    @view("^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"],
+          access="write", api=True)
+    def api_reset(self, request, id):
+        self.get_object_or_404(NetworkSegment, id=id)
+        MapSettings.objects.filter(segment=id).delete()
+        return {
+            "status": True
+        }

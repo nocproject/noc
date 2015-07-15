@@ -651,5 +651,23 @@ Ext.define("NOC.inv.map.MapPanel", {
     onCellUnhighlight: function(view, el) {
         var me = this;
         V(el).attr("filter", "");
+    },
+
+    resetLayout: function() {
+        var me = this;
+        if(!me.segmentId) {
+            return;
+        }
+        Ext.Ajax.request({
+            url: "/inv/map/" + me.segmentId + "/data/",
+            method: "DELETE",
+            scope: me,
+            success: function(response) {
+                me.loadSegment(me.segmentId);
+            },
+            failure: function() {
+                NOC.error("Failed to reset layout");
+            }
+        });
     }
 });
