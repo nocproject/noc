@@ -52,6 +52,7 @@ class ObjectStatus(Document):
     def set_status(cls, object, status):
         from noc.fm.models.outage import Outage
         from noc.inv.models.discoveryjob import DiscoveryJob
+        from noc.inv.discovery.scheduler import get_scheduler
 
         s = cls.objects.filter(object=object.id).first()
         if s:
@@ -64,6 +65,7 @@ class ObjectStatus(Document):
                 else:
                     # True -> False transition
                     DiscoveryJob.set_deferred(object)
+                get_scheduler().ensure_jobs(object, status=status)
         else:
             cls(object=object.id, status=status).save()
         Outage.register_outage(object, not status)

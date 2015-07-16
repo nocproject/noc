@@ -26,6 +26,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
     method = None
 #    ignored = not config.getboolean("interface_discovery", "enabled")
     strict_pending_candidates_check = True
+    required_caps = ["DB | Interfaces"]
 
     def is_submitted(self, local_interface, remote_object,
                      remote_interface):

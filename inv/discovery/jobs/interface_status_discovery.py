@@ -18,6 +18,7 @@ class InterfaceStatusDiscovery(MODiscoveryJob):
 
     ignored = not config.getboolean("interface_status_discovery", "enabled")
     to_save = config.getboolean("interface_status_discovery", "save")
+    required_caps = ["DB | Interfaces"]
 
     def handler(self, object, result):
         """

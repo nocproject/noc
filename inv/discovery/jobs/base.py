@@ -14,6 +14,8 @@ from noc.lib.scheduler.intervaljob import IntervalJob
 class MODiscoveryJob(IntervalJob):
     ignored = True
     transaction = True
+    # List of required capabilities
+    required_caps = []
 
     def get_display_key(self):
         if self.object:
