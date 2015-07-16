@@ -33,6 +33,8 @@ class Command(BaseCommand):
             self.fix_metricsettings()
             self.fix_fm_outage_orphans()
             self.fix_wiping_mo()
+            self.fix_suspended_discovery_jobs()
+            self.fix_db_interfaces_capability()
         except:
             error_report()
             sys.exit(1)
@@ -233,3 +235,42 @@ class Command(BaseCommand):
                     "$in": chunk
                 }
             })
+
+    def fix_suspended_discovery_jobs(self):
+        """
+        Suspend/resumed discovery jobs
+        """
+        from noc.inv.discovery.scheduler import get_scheduler
+        from noc.sa.models.managedobject import ManagedObject
+
+        self.info("Suspending/Resuming discovery jobs")
+        scheduler = get_scheduler()
+        for o in ManagedObject.objects.filter(is_managed=True):
+            scheduler.ensure_jobs(o, o.get_status())
+
+    def fix_db_interfaces_capability(self):
+        """
+        Fixing DB | Interfaces capability
+        """
+        from noc.inv.models.interface import Interface
+        from noc.sa.models.managedobject import ManagedObject
+
+        self.info("Fixing *DB | Interfaces* capability")
+        r = Interface._get_collection().aggregate([{
+            "$group": {
+                "_id": "$managed_object",
+                "count": {
+                    "$sum": 1
+                }
+            }
+        }])
+        if not "ok" in r:
+            self.info("    ... error")
+            return
+        # Process capabilities
+        caps = dict((x["_id"], x["count"]) for x in r["result"])
+        for o in ManagedObject.objects.filter(is_managed=True):
+            if o.id in caps:
+                o.update_caps({
+                    "DB | Interfaces": caps[o.id]
+                })
