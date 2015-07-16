@@ -176,6 +176,8 @@ Ext.define("Ext.ux.form.GridField", {
         }
         rowEditing.cancelEdit();
         newRecord = sel.copy();
+        delete newRecord.data.id;
+        newRecord = me.store.createModel(newRecord.data);
         me.fireEvent("clone", newRecord);
         me.currentSelection += 1;
         me.grid.store.insert(me.currentSelection, newRecord);

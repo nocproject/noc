@@ -52,6 +52,15 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "segment",
+            type: "string"
+        },
+        {
+            name: "segment__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "collector",
             type: "int"
         },

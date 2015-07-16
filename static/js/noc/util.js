@@ -58,6 +58,29 @@ Ext.apply(NOC.render, {
         };
     },
 
+    Tooltip: function(fmt) {
+        var tpl = new Ext.XTemplate(fmt);
+        return function(value, meta, record) {
+            var tooltip = tpl.apply(record.getData());
+            return Ext.String.format(
+                '<span title="{0}">{1}</span>',
+                Ext.htmlEncode(tooltip),
+                Ext.htmlEncode(value)
+            );
+        }
+    },
+
+    LookupTooltip: function(name, fmt) {
+        var lookup = NOC.render.Lookup(name),
+            tooltip = NOC.render.Tooltip(fmt);
+        return function(value, meta, record) {
+            return tooltip(
+                lookup(value, meta, record),
+                meta, record
+            )
+        }
+    },
+
     Clickable: function(value) {
         return "<a href='#' class='noc-clickable-cell'>" + value + "</a>";
     },

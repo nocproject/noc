@@ -12,8 +12,8 @@ Arista | Transceiver | 10G | CAB-SFP-SFP-3M,6b3a8475-cac0-4f86-8a7a-7204288e1ce9
 Arista | Transceiver | 10G | SFP-10G-SR,945b77ec-1178-4741-8f0f-d9ce4ad0e2d9,Arista/Transceiver/10G/SFP-10G-SR.json,7a1d6e83e74e35df3f500415226ae6659a36bea1d8b6a99f226172eb076d156d
 Arista | Transceiver | 10G | SFP-10G-SRL,b098b6a5-d6d3-44d7-b337-6f2ca142ada1,Arista/Transceiver/10G/SFP-10G-SRL.json,5d4e671101f94c10cdd33d427244ecf6be607b298bee08fdda1583b684524826
 Arista | Transceiver | 1G | SFP-1G-T,5bc911e4-1d42-4f90-b0a3-8f483d7d5e9f,Arista/Transceiver/1G/SFP-1G-T.json,4b6aa37562eab55e1d24c8508c7fb57dfe3d347d7f0d70ade4659ccab1766240
-Avago | Transceiver | 1G | SFP LH,8c27952d-8fc0-4cff-9220-3bad9cb270c9,Avago/Transceiver/1G/SFP_LH.json,053463f4c463283581db6730420e3f704d726d8d66003c2cecad62c3d76f30c9
-Avago | Transceiver | 1G | SFP SX,85db8da9-21db-4856-95ee-4f592f68c6e5,Avago/Transceiver/1G/SFP_SX.json,2dc10c5894c88ef543995a7cb5d9036e22e6adf61f4fe45a5d3c4730702534b5
+Avago | Transceiver | 1G | SFP LH,8c27952d-8fc0-4cff-9220-3bad9cb270c9,Avago/Transceiver/1G/SFP_LH.json,350be5c7fecc28b54b1d6800692ad063747db3fd7c38d2a2167fa40d40b09272
+Avago | Transceiver | 1G | SFP SX,85db8da9-21db-4856-95ee-4f592f68c6e5,Avago/Transceiver/1G/SFP_SX.json,2e5e16d58ceebee65210751926753fad1790d7a38f0008a1edc7b6701ff5e5a4
 Avago | Transceiver | 1G | SFP T,7cfc875b-2413-4607-96c0-608a78b59b80,Avago/Transceiver/1G/SFP_T.json,e8b90199e8b3a451c1a67834c67a055258f4a9150462c93c9f7dd58ae585a029
 Avaya | ERS | 3510GT-PWR+,5d88e7d5-96bc-4ba0-8c77-decf454752ce,Avaya/ERS/3510GT-PWR+.json,102e5bc93dc3e6650fa897589d57a93bbb29bbb83842d063030852c045c08cfc
 Avaya | ERS | 4524GT-PWR,8a40a45d-0d2f-47a2-869c-3aaa099adabd,Avaya/ERS/4524GT-PWR.json,6dd1928500393350720ed62b80e15161d3a53c627f9057810969a395c09039f4
@@ -391,8 +391,10 @@ Finisar | Transceiver | 10G | FTLX8570D3BCL-C1,9c4650be-8583-4702-b6eb-cebfd3a2e
 Finisar | Transceiver | 10G | FTLX8571D3BCL-C2,496fae23-e37d-45d4-86ab-a3f66c32084b,Finisar/Transceiver/10G/FTLX8571D3BCL-C2.json,e9bf73a9b0eb8067add424c9bc90c40f08b04c97388c42e28c77a7973e0fb810
 Finisar | Transceiver | 1G | FTLF1318P2xCL,a36d670d-b902-4a5c-bbcb-7f0db27025bd,Finisar/Transceiver/1G/FTLF1318P2xCL.json,50a5c23dbcb0848abb8622d27281f79c1da2b51e3dead51b1a40ea9a8133d98d
 Finisar | Transceiver | 1G | FTLF1318P3BTL,3d0e281a-f91a-45fb-8f8d-cd97b84fe3f8,Finisar/Transceiver/1G/FTLF1318P3BTL.json,ddf8f48147ad75266287a1338e65caa11b55e89b26accb9e51985fd544e43062
+Finisar | Transceiver | 1G | FTLF8519P2BCL,a96c6815-1c75-401e-b5c7-3c25619a00f6,Finisar/Transceiver/1G/FTLF8519P2BCL.json,442e8a9ccabfe549dbc4c13ae9287bfcb4f73d0cd579f733fa1f78d44ce7c6e0
 Finisar | Transceiver | 1G | FTLF8519PnxyL,bd025c29-e954-4f3c-8d89-a8bf2a9bf5a7,Finisar/Transceiver/1G/FTLF8519PnxyL.json,1f0a2c29eae01a6fae4111a9891ae6193412620524ac1d80ff34f83781f2faa3
-Finisar | Transceiver | 1G | FTRJ1519P1xCL,cd43843e-c3b5-4754-8190-63bc8ed94077,Finisar/Transceiver/1G/FTRJ1519P1xCL.json,ddf1f9fe8b412288aa42e5605ce254f3bbc880d13a6387206d259db531a87df5
+Finisar | Transceiver | 1G | FTRJ1319P1BTL,e2665247-4955-478e-a5d2-368a3f317f5b,Finisar/Transceiver/1G/FTRJ1319P1BTL.json,d00c22d45a7ba1d7dcf3bce603c9d7c715133e0818e2ba56caa91e376407ebf0
+Finisar | Transceiver | 1G | FTRJ1519P1xCL,cd43843e-c3b5-4754-8190-63bc8ed94077,Finisar/Transceiver/1G/FTRJ1519P1xCL.json,8880dca2e525b71a612d9a825ea44c5d11d2acfce028d4bb035b5bcd1e519242
 Finisar | Transceiver | 1G | FTRJ8519P1BNL,b202b8ad-5f97-4ab4-aa51-ab1da5d70d69,Finisar/Transceiver/1G/FTRJ8519P1BNL.json,622af3e13ce8fed5991958550688b9a39a45b173c7bb774f5ddfa8b82db6e9f6
 Finisar | Transceiver | 1G | SFP LH,bb81c014-4d71-451d-aa13-eadfaef53869,Finisar/Transceiver/1G/SFP_LH.json,e228fc9cf74151641fb793967f3ca08cfef4565320b5fa92041c9b1f7e8c8a57
 Finisar | Transceiver | 1G | SFP LH DOM,eda16365-3e64-492f-9405-167022998ad4,Finisar/Transceiver/1G/SFP_LH_DOM.json,6e72f2042e4ed40ede5958a71a90893690db69de1a4ff3d672aa7be0c927f74f
@@ -492,7 +494,7 @@ Juniper | Transceiver | 1G | SFP SX,8b2e420a-3464-40f5-a1f1-6800963c3cbf,Juniper
 Juniper | Transceiver | 1G | SFP T,03a7f540-4dc2-412d-9990-183c3d29e507,Juniper/Transceiver/1G/SFP_T.json,432a52f87cf65a76b0988c4e954dbcd75f9a65fbe23e9f55fb3f5acee6f7a84a
 Lost&Found,b0fae773-b214-4edf-be35-3468b53b03f2,Lost_Found.json,9952956e67368218a8e40ba1ea60dbfe338a4a32bd404791f7467568565205f3
 MergeOptics | Transceiver | 10G | 10119467-3030LF,733f1b42-ce82-4d73-abcc-5cb99b1576de,MergeOptics/Transceiver/10G/10119467-3030LF.json,d09157ec67c0bb2a39feba2c5ba3f9a702b33de523b4d32a2751da576b1bcd24
-Methode | Transceiver | 1G | SFP T,cd0449f7-6fe4-4e55-bfa9-90bee6c0bdc2,Methode/Transceiver/1G/SFP_T.json,361d687ccbbd7b30c00a453419c78f15bb577b6e90063d12e11aa872036d2602
+Methode | Transceiver | 1G | SFP T,cd0449f7-6fe4-4e55-bfa9-90bee6c0bdc2,Methode/Transceiver/1G/SFP_T.json,8721f53fc11b9d06a76042d75fab996aa5e5711544bef72aee6921af1fcec427
 Nateks | Transceiver | 1G | SFP-GE-SM-10KM,8490de94-1ca6-44e7-96f9-0fb5bf3f60b2,Nateks/Transceiver/1G/SFP-GE-SM-10KM.json,bae4fbc1fbbcfd6abe16ae9bddbb1ed8bab4de54774563b3ba0c2df68001d4b3
 Newstar | Transceiver | 10G | X2 LR,714250aa-b66b-45d8-bad6-6de4318b6305,Newstar/Transceiver/10G/X2_LR.json,bdd5aa94ce767ab596b38083b932fad353a5283878b51147d201178ca35aa68f
 NoName | Patch | LC-LC SMF Duplex Patch Cord,c16eb516-bbb1-45b1-a3d4-a960c3109e2f,NoName/Patch/LC-LC_SMF_Duplex_Patch_Cord.json,7785732d8679ec7e09df1def762f57d0a5d141227189b11b0ddd0979c4c3f74d

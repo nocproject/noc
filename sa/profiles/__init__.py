@@ -99,6 +99,13 @@ class Profile(object):
     # If CLI output matches pattern_syntax_error and not matches
     # pattern_syntax_error, then CLIOperationError exception raised
     pattern_operation_error = None
+    # Device can strip long hostname in various modes
+    # i.e
+    # my.very.long.hostname# converts to
+    # my.very.long.hos(config)#
+    # In this case set can_strip_hostname_to = 16
+    # None by default
+    can_strip_hostname_to = None
     # Sequence to be send to list forward pager
     # If pattern_more is string and is matched
     command_more = "\n"

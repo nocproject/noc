@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Eltex.MES.get_switchport
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,20 +11,17 @@ import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetSwitchport
+from noc.lib.text import parse_table
 
 
 class Script(NOCScript):
     name = "Eltex.MES.get_switchport"
     implements = [IGetSwitchport]
 
-    rx_vlan = re.compile(
-        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(?P<rule>\S+)\s+(?P<type>\S+)\s*",
-        re.IGNORECASE)
-    rx_description = re.compile(
-        r"^(?P<interface>(fa|gi|te)\S+)\s+((?P<description>\S+)|)$",
-        re.MULTILINE)
+    TIMEOUT = 240
+
     rx_channel_description = re.compile(
-        r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
+        r"^(?P<interface>(p|P)o\d+)\s+(Up|Down)\s+(Not Present|Present)\s+((?P<description>\S+.+)|)$", re.MULTILINE)
     rx_vlan_stack = re.compile(
         r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
 
@@ -56,29 +53,24 @@ class Script(NOCScript):
                 iface_descr = {}
                 interface_status = {}
                 N = None
-                for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.31.1.1.1.18",
-                    "1.3.6.1.2.1.2.2.1.8"], bulk=True):
+                for v in self.snmp.get_tables(["1.3.6.1.2.1.31.1.1.1.1",
+                                               "1.3.6.1.2.1.31.1.1.1.18",
+                                               "1.3.6.1.2.1.2.2.1.8"],
+                                              bulk=True):
                     if v[1][:2] == 'fa' or v[1][:2] == 'gi' or v[1][:2] == 'te' or v[1][:2] == 'po':
                         name = v[1]
-                        name = name.replace('fa', 'Fa ')
-                        name = name.replace('gi', 'Gi ')
-                        name = name.replace('te', 'Te ')
-                        name = name.replace('po', 'Po ')
                         iface_name.update({v[0]: name})
                         iface_descr.update({name: v[2]})
-                        if name[:2] != 'Po':
+                        if name[:2].lower() != 'po':
                             interface_status.update({name: v[3]})
 
                 # Make a list of tags for each interface or portchannel
                 port_vlans = {}
-                for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.17.7.1.4.3.1.1",
-                    "1.3.6.1.2.1.17.7.1.4.3.1.2",
-                    "1.3.6.1.2.1.17.7.1.4.3.1.4"], bulk=True):
-                    tagged = v[2]
-                    untagged = v[3]
+                for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.4.3.1.2",
+                                               "1.3.6.1.2.1.17.7.1.4.3.1.4"],
+                                              bulk=True):
+                    tagged = v[1]
+                    untagged = v[2]
 
                     s = self.hex_to_bin(untagged)
                     un = []
@@ -87,12 +79,10 @@ class Script(NOCScript):
                         if j < 1008:
                             iface = iface_name[i]
                             if iface not in port_vlans:
-                                port_vlans.update(
-                                    {iface: {
-                                        "tagged": [],
-                                        "untagged": '1',
-                                        }
-                                    })
+                                port_vlans.update({iface: {
+                                    "tagged": [],
+                                    "untagged": '1',
+                                    }})
                             if s[j] == '1':
                                 port_vlans[iface]["untagged"] = v[0]
                                 un += [j]
@@ -103,12 +93,10 @@ class Script(NOCScript):
                         if j < 1008 and s[j] == '1' and j not in un:
                             iface = iface_name[i]
                             if iface not in port_vlans:
-                                port_vlans.update(
-                                    {iface: {
-                                        "tagged": [],
-                                        "untagged": '',
-                                        }
-                                    })
+                                port_vlans.update({iface: {
+                                    "tagged": [],
+                                    "untagged": '',
+                                    }})
                             port_vlans[iface]["tagged"].append(v[0])
 
                 # Get switchport data and overall result
@@ -147,14 +135,14 @@ class Script(NOCScript):
                         else:
                             tagged = port_vlans[name]["tagged"]
                         swp = {
-                                "status": status,
-                                "description": description,
-                                "802.1Q Enabled": len(port_vlans.get(name,
-                                                '')) > 0,
-                                "802.1ad Tunnel": vlan_stack_status.get(name,
-                                                False),
-                                "tagged": tagged,
-                                }
+                            "status": status,
+                            "description": description,
+                            "802.1Q Enabled": len(port_vlans.get(name,
+                                                                 '')) > 0,
+                            "802.1ad Tunnel": vlan_stack_status.get(name,
+                                                                    False),
+                            "tagged": tagged,
+                            }
                         if name in port_vlans:
                             if port_vlans[name]["untagged"]:
                                 swp["untagged"] = port_vlans[name]["untagged"]
@@ -167,9 +155,6 @@ class Script(NOCScript):
                 pass
 
         # Fallback to CLI
-        # Make a list of tags for each interface or portchannel
-        r = []
-
         # Get interafces status
         interface_status = {}
         for s in self.scripts.get_interface_status():
@@ -186,31 +171,30 @@ class Script(NOCScript):
                         break
             if interface not in port_vlans:
                 port_vlans.update({interface: {
-                                        "tagged": [],
-                                        "untagged": '',
-                                        }
-                                })
-            cmd = "show interfaces switchport %s" % interface
-            for vlans in self.cli(cmd).splitlines():
-                vlan = self.rx_vlan.match(vlans)
-                if vlan:
-                    vlan_id = vlan.group("vlan")
-                    rule = vlan.group("rule")
-                    if rule == "Tagged":
-                        port_vlans[interface]["tagged"].append(vlan_id)
-                    elif rule == "Untagged":  # and vlan_id != '1':
-                        port_vlans[interface]["untagged"] = vlan_id
+                    "tagged": [],
+                    "untagged": '',
+                    }
+                })
+            cmd = self.cli("show interfaces switchport %s" % interface)
+            for vlan in parse_table(cmd, allow_wrap=True):
+                vlan_id = vlan[0]
+                rule = vlan[2]
+                if rule == "Tagged":
+                    port_vlans[interface]["tagged"].append(vlan_id)
+                elif rule == "Untagged":
+                    port_vlans[interface]["untagged"] = vlan_id
 
         # Why portchannels=[] ???????
         # Get portchannels onse more!!!
         portchannels = self.scripts.get_portchannel()
+
         # Get switchport data and overall result
         r = []
         swp = {}
         write = False
         cmd = self.cli("show interfaces description")
-        for match in self.rx_description.finditer(cmd):
-            name = match.group("interface")
+        for iface in parse_table(cmd, allow_wrap=True):
+            name = iface[0]
             name = name.replace('fa', 'Fa ')
             name = name.replace('gi', 'Gi ')
             name = name.replace('te', 'Te ')
@@ -236,24 +220,24 @@ class Script(NOCScript):
                         portchannels.remove(p)
                         write = True
                         break
-            else:
-                if interface_status.get(name):
+            elif name[:2].lower() in ['fa', 'gi', 'te']:
+                if interface_status[name]:
                     status = True
                 else:
                     status = False
-                description = match.group("description")
+                description = iface[3]
                 if not description:
                     description = ''
                 members = []
                 write = True
             if write:
                 swp = {
-                        "status": status,
-                        "description": description,
-                        "802.1Q Enabled": len(port_vlans.get(name, None)) > 0,
-                        "802.1ad Tunnel": vlan_stack_status.get(name, False),
-                        "tagged": port_vlans[name]["tagged"],
-                        }
+                    "status": status,
+                    "description": description,
+                    "802.1Q Enabled": len(port_vlans.get(name, None)) > 0,
+                    "802.1ad Tunnel": vlan_stack_status.get(name, False),
+                    "tagged": port_vlans[name]["tagged"],
+                    }
                 if port_vlans[name]["untagged"]:
                     swp["untagged"] = port_vlans[name]["untagged"]
                 swp["interface"] = name

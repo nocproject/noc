@@ -16,6 +16,7 @@ import threading
 from collections import defaultdict
 import warnings
 ## Third-party modules
+from django.db import transaction
 import pymongo.errors
 ## NOC modules
 from error import JobExists
@@ -25,6 +26,7 @@ from noc.lib.debug import error_report, get_traceback
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.perf import MetricsHub
+from noc.lib.threadpool import Pool
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +53,7 @@ class Scheduler(object):
     S_RUN = "R"   # Running
     S_STOP = "S"  # Stopped by operator
     S_DISABLED = "D"  # Disabled by system
+    S_SUSPEND = "s"  # Suspended by system
 
     JobExists = JobExists
 
@@ -71,7 +74,7 @@ class Scheduler(object):
         self.job_classes = {}
         self.collection_name = self.COLLECTION_BASE + self.name
         self.collection = get_db()[self.collection_name]
-        self.active_mrt = {}  # ReduceTask -> Job instance
+        self.active_mrt = {}  # MapTask -> Job instance
         self.cleanup_callback = cleanup
         self.reset_running = reset_running
         self.ignored = []
@@ -95,6 +98,7 @@ class Scheduler(object):
             "jobs.dereference.failed",
             "jobs.time"
         )
+        self.thread_pool = Pool(max_threads=max_threads)
 
     def ensure_indexes(self):
         if self.preserve_order:
@@ -263,9 +267,9 @@ class Scheduler(object):
             return
         self.metrics.jobs_dereference_success += 1
         # Check threaded jobs limit
-        if job.threaded and self.max_threads:
-            if threading.active_count() >= self.max_threads:
-                return
+        if (job.threaded and self.max_threads and
+                not job.map_task and self.thread_pool.is_blocked()):
+            return
         # Check job can be run
         job.started = time.time()
         if not job.can_run():
@@ -293,22 +297,23 @@ class Scheduler(object):
             else:
                 job.logger.info("Running script %s", job.map_task)
                 # Run in MRT mode
-                t = ReduceTask.create_task(
-                    job.get_managed_object(),  # Managed object is in key
-                    None, {},
-                    job.map_task, job.get_map_task_params()
+                t = MTManager.create_task(
+                    job.get_managed_object(),
+                    job.map_task,
+                    job.get_map_task_params()
                 )
-                self.active_mrt[t] = job
+                self.active_mrt[t.id] = job
         else:
             self._run_job_handler(job)
 
     def _run_job_handler(self, job, **kwargs):
         if job.threaded:
-            t = threading.Thread(target=self._job_wrapper,
-                args=(job,), kwargs=kwargs
+            self.thread_pool.run(
+                title="%s:%s" % (job.name, job.key),
+                target=self._job_wrapper,
+                args=(job,),
+                kwargs=kwargs
             )
-            t.daemon = True
-            t.start()
         else:
             return self._job_wrapper(job, **kwargs)
 
@@ -316,10 +321,34 @@ class Scheduler(object):
         tb = None
         t0 = time.time()
         job.logger.info("Running job handler")
+        if job.transaction:
+            # Start transaction management
+            job.logger.debug("Entering transaction management")
+            transaction.enter_transaction_management()
+            transaction.managed(True)
         try:
             r = job.handler(**kwargs)
+            if job.transaction:
+                # Commit transaction
+                try:
+                    job.logger.debug("Commiting transaction")
+                    transaction.commit()
+                except Exception:
+                    job.logger.debug("Failed to commit. Trying to rollback")
+                    transaction.rollback()
+                    job.logger.debug("Leaving transaction management")
+                    transaction.leave_transaction_management()
+                    raise
+                job.logger.debug("Leaving transaction management")
+                transaction.leave_transaction_management()
         except Exception:
             # error_report()
+            if job.transaction:
+                # Rollback transaction
+                job.logger.debug("Rolling back transaction")
+                transaction.rollback()
+                job.logger.debug("Leaving transaction management")
+                transaction.leave_transaction_management()
             tb = get_traceback()
             job.error(tb)
             job.on_exception()
@@ -391,16 +420,19 @@ class Scheduler(object):
             ts = datetime.datetime.now()
             self.reschedule_job(job_name, key, ts, skip_running=True)
 
+    @transaction.commit_on_success
     def complete_mrt_job(self, t):
-        job = self.active_mrt.pop(t)
-        for m in t.maptask_set.all():
-            if m.status == "C":
-                self._run_job_handler(job, object=m.managed_object,
-                    result=m.script_result)
-            else:
-                self.logger.info("Job %s(%s) is failed",
-                    job.name, job.get_display_key())
-                self._complete_job(job, job.S_FAILED, m.script_result)
+        job = self.active_mrt.pop(t.id)
+        if t.status == "C":
+            self._run_job_handler(
+                job,
+                object=t.managed_object,
+                result=t.script_result
+            )
+        else:
+            self.logger.info("Job %s(%s) is failed",
+                job.name, job.get_display_key())
+            self._complete_job(job, job.S_FAILED, t.script_result)
         t.delete()
 
     def iter_pending_jobs(self):
@@ -454,12 +486,8 @@ class Scheduler(object):
                         t0 + jcls.initial_submit_interval)
         # Check for complete MRT
         if self.active_mrt:
-            complete = [t for t in self.active_mrt if t.complete]
-            for t in complete:
+            for t in MTManager.get_complete_tasks(list(self.active_mrt)):
                 self.complete_mrt_job(t)
-            self.active_mrt = dict(
-                (t, self.active_mrt[t])
-                    for t in self.active_mrt if t not in complete)
         # Check for pending persistent tasks
         for job_data in self.iter_pending_jobs():
             jcls = self.job_classes.get(job_data[self.ATTR_CLASS])
@@ -488,6 +516,8 @@ class Scheduler(object):
                         self.running_count[group] += 1
                 self.run_job(job)
                 n += 1
+            elif self.mrt_overload:
+                break
         return n
 
     def run(self):
@@ -563,4 +593,4 @@ class Scheduler(object):
                 self.log_jobs = None
 
 ## Avoid circular reference
-from noc.sa.models.reducetask import ReduceTask
+from noc.sa.mtmanager import MTManager

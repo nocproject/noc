@@ -34,6 +34,17 @@ class Script(NOCScript):
          r"System capabilities",
          r"Supported\s*:\s(?P<capability>.+)"
     ]
+    rx_detail1 = [
+         r"Chassis ID\s+:\s(?P<id>\S+)",
+         r"Port type\s+:\s(?P<p_type>.+)",
+         r"Port \S+\s+:\s(?P<p_id>.+)",
+         r"System name\s+:\s(?P<name>\S+)"
+    ]
+    rx_detail2 = [
+         r"Chassis ID\s+:\s(?P<id>\S+)",
+         r"Port type\s+:\s(?P<p_type>.+)",
+         r"Port \S+\s+:\s(?P<p_id>.+)"
+    ]
 
     @NOCScript.match(platform__regex="[em]x")
     def execute_ex(self):
@@ -51,7 +62,8 @@ class Script(NOCScript):
         for i in ifs:
             if i["local_interface"] in local_port_ids:
                 i["local_interface_id"] = local_port_ids[i["local_interface"]]
-            v = self.cli("show lldp neighbors interface %s" % i["local_interface"])
+            v = self.cli("show lldp neighbors interface %s" % \
+                i["local_interface"])
             match = self.match_lines(self.rx_detail, v)
             n = {"remote_chassis_id_subtype": 4}
             if match:
@@ -62,7 +74,8 @@ class Script(NOCScript):
                     "Locally assigned": 7
                 }[match.get("p_type")]
                 if n["remote_port_subtype"] == 3:
-                    remote_port = MACAddressParameter().clean(match.get("p_id"))
+                    remote_port = \
+                        MACAddressParameter().clean(match.get("p_id"))
                 elif n["remote_port_subtype"] == 7:
                     p_id = match.get("p_id")
                     try:
@@ -73,7 +86,7 @@ class Script(NOCScript):
                     remote_port = match.get("p_id")
                 n["remote_chassis_id"] = match.get("id")
                 n["remote_system_name"] = match.get("name")
-                n["remote_port"] = remote_port
+                n["remote_port"] = str(remote_port)
                 # Get capability
                 cap = 0
                 if match.get("capability"):
@@ -84,6 +97,51 @@ class Script(NOCScript):
                             "Cable": 64, "Station": 128
                             }[c]
                 n["remote_capabilities"] = cap
+            else:
+                match = self.match_lines(self.rx_detail1, v)
+                if match:
+                    n["remote_port_subtype"] = {
+                        "Mac address": 3,
+                        "Interface alias": 1,
+                        "Interface name": 5,
+                        "Locally assigned": 7
+                    }[match.get("p_type")]
+                    if n["remote_port_subtype"] == 3:
+                        remote_port = \
+                            MACAddressParameter().clean(match.get("p_id"))
+                    elif n["remote_port_subtype"] == 7:
+                        p_id = match.get("p_id")
+                        try:
+                            remote_port = IntParameter().clean(p_id)
+                        except InterfaceTypeError:
+                            remote_port = p_id
+                    else:
+                        remote_port = match.get("p_id")
+                    n["remote_chassis_id"] = match.get("id")
+                    n["remote_system_name"] = match.get("name")
+                    n["remote_port"] = str(remote_port)
+                else:
+                    match = self.match_lines(self.rx_detail2, v)
+                    if match:
+                        n["remote_port_subtype"] = {
+                            "Mac address": 3,
+                            "Interface alias": 1,
+                            "Interface name": 5,
+                            "Locally assigned": 7
+                        }[match.get("p_type")]
+                        if n["remote_port_subtype"] == 3:
+                            remote_port = \
+                                MACAddressParameter().clean(match.get("p_id"))
+                        elif n["remote_port_subtype"] == 7:
+                            p_id = match.get("p_id")
+                            try:
+                                remote_port = IntParameter().clean(p_id)
+                            except InterfaceTypeError:
+                                remote_port = p_id
+                        else:
+                            remote_port = match.get("p_id")
+                        n["remote_chassis_id"] = match.get("id")
+                        n["remote_port"] = str(remote_port)
             i["neighbors"] += [n]
             r += [i]
         return r

@@ -23,7 +23,7 @@ rx_header_start = re.compile(r"^\s*[-=]+\s+[-=]+")
 rx_col = re.compile(r"^(\s*)([\-]+|[=]+)")
 
 
-def parse_table(s):
+def parse_table(s, allow_wrap=False):
     """
     >>> parse_table("First Second Third\\n----- ------ -----\\na     b       c\\nddd   eee     fff\\n")
     [['a', 'b', 'c'], ['ddd', 'eee', 'fff']]
@@ -50,8 +50,19 @@ def parse_table(s):
                 x += match.end()
                 l = l[match.end():]
         elif columns:  # Fetch cells
-            r.append([l[f:t].strip() for f, t in columns])
-    return r
+            if allow_wrap:
+                row = [l[f:t] for f, t in columns]
+                if row[0].startswith(" ") and r:
+                    for i, x in enumerate(row):
+                        r[-1][i] += x
+                else:
+                    r += [row]
+            else:
+                r += [[l[f:t].strip() for f, t in columns]]
+    if allow_wrap:
+        return [[x.strip() for x in row] for row in r]
+    else:
+        return r
 
 ##
 ## Convert HTML to plain text

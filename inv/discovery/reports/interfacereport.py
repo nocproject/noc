@@ -276,3 +276,10 @@ class InterfaceReport(Report):
     def send(self):
         self.prefix_report.send()
         self.ip_report.send()
+
+    def update_caps(self):
+        self.object.update_caps({
+            "DB | Interfaces": Interface.objects.filter(
+                managed_object=self.object.id
+            ).count()
+        })

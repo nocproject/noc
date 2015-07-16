@@ -32,10 +32,16 @@ class Migration:
             return
         # Create user and set config
         os.system("./scripts/set-conf.py etc/noc-probe.conf autoconf user %s" % PROBEUSER)
-        os.system(
+        r = os.system(
             "PW=`./noc user --add --username=%s --email=test@example.com --template=probe --pwgen` &&"
             "./scripts/set-conf.py etc/noc-probe.conf autoconf passwd $PW" % PROBEUSER
         )
+        if r != 0:
+            import sys
+            sys.stderr.write(
+                "\nCannot create probe user. Terminating\n"
+            )
+            sys.exit(1)
         uid = db.execute("SELECT id FROM auth_user WHERE username=%s", [PROBEUSER])[0][0]
         sid = mdb.noc.pm.storages.find_one({})["_id"]
         mdb.noc.pm.probe.update({}, {

@@ -10,9 +10,11 @@
 import logging
 ## Django modules
 from django.db import models, connection
+from django.db.models import signals as django_signals
 ## Third-party modules
 from mongoengine.base.common import _document_registry
 from mongoengine import fields
+import mongoengine.signals
 ## NOC modules
 from customfieldenumgroup import CustomFieldEnumGroup
 from noc.lib.validators import is_int
@@ -63,6 +65,8 @@ class CustomField(models.Model):
     enum_group = models.ForeignKey(CustomFieldEnumGroup,
                                    verbose_name="Enum Group",
                                    null=True, blank=True)
+    _cfields = {}
+    _installed = set()
 
     def __unicode__(self):
         return u"%s.%s" % (self.table, self.name)
@@ -245,10 +249,10 @@ class CustomField(models.Model):
             else:
                 self.drop_index()
 
-    def delete(self):
+    def delete(self, using=None):
         if self.is_active:
             self.deactivate_field()
-        super(CustomField, self).delete()
+        super(CustomField, self).delete(using=using)
 
     def model_class(self):
         """
@@ -277,25 +281,58 @@ class CustomField(models.Model):
         Must be called after all models are initialized
         """
         for f in cls.objects.filter(is_active=True).order_by("table"):
-            fn = str(f.name)
-            logger.info("Installing custom field %s.%s", f.table, f.name)
-            if f.is_table:
-                # Get model
-                m = f.model_class()
-                # Install field
-                mf = f.get_field()
-                mf.contribute_to_class(m, fn)
+            if f.table not in cls._cfields:
+                if f.is_table:
+                    django_signals.class_prepared.connect(
+                        cls.on_new_model
+                    )
+                else:
+                    mongoengine.signals.class_prepared.connect(
+                        cls.on_new_document
+                    )
+                cls._cfields[f.table] = [f]
             else:
-                # Get Document
-                m = f.document_class()
-                # Install field
-                mf = f.get_field()
-                setattr(m, fn, mf)
-                mf.name = fn
-                m._fields[fn] = mf
-                m._db_field_map[fn] = mf.db_field
-                m._reverse_db_field_map[mf.db_field] = fn
-                m._fields_ordered = m._fields_ordered + (fn,)
+                cls._cfields[f.table] += [f]
+        # Initialize already installed models
+        for t in cls._cfields:
+            t0 = cls._cfields[t][0]
+            try:
+                if t0.is_table:
+                    m = t0.model_class()
+                else:
+                    m = t0.document_class()
+            except Exception:
+                m = 0
+            if m:
+                # Install existing fields
+                for f in cls._cfields[t]:
+                    f.install_field()
+
+    def install_field(self):
+        """
+        Install custom field to model
+        """
+        un = unicode(self)
+        if un in self._installed:
+            return
+        self._installed.add(un)
+        fn = str(self.name)
+        logger.info("Installing custom field %s.%s",
+                    self.table, self.name)
+        mf = self.get_field()
+        if self.is_table:
+            # Install model field
+            m = self.model_class()
+            mf.contribute_to_class(m, fn)
+        else:
+            # Install document field
+            m = self.document_class()
+            setattr(m, fn, mf)
+            mf.name = fn
+            m._fields[fn] = mf
+            m._db_field_map[fn] = mf.db_field
+            m._reverse_db_field_map[mf.db_field] = fn
+            m._fields_ordered = m._fields_ordered + (fn,)
 
     @property
     def ext_model_field(self):
@@ -405,3 +442,13 @@ class CustomField(models.Model):
                 models.Q(**q[0]))
         else:
             return None
+
+    @classmethod
+    def on_new_model(cls, sender, *args, **kwargs):
+        for f in cls._cfields.get(sender._meta.db_table, []):
+            f.install_field()
+
+    @classmethod
+    def on_new_document(cls, sender, *args, **kwargs):
+        for f in cls._cfields.get(sender._meta.get("collection"), []):
+            f.install_field()

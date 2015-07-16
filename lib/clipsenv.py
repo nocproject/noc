@@ -10,6 +10,7 @@
 import threading
 import logging
 import re
+import itertools
 ## Third-party modules
 import clips
 
@@ -24,49 +25,41 @@ class CLIPSEnv(object):
     with CLIPSEnv() as env:
         ....
     """
-    cond = threading.Condition()
-    max_environments = clips._clips.getMaxEnvironments()
     free_envs = {}
     used_envs = {}
-    env_seq = 0
+    env_seq = itertools.count()
+    semaphore = threading.BoundedSemaphore(
+        clips._clips.getMaxEnvironments()
+    )
+    lock = threading.Lock()
 
     def __init__(self):
         self.env_id = None
 
     def __enter__(self):
-        self.cond.acquire()
-        env = None
-        while not env:
+        self.semaphore.acquire()
+        with self.lock:
             if self.free_envs:
-                # Reuse free environment
+                # Free environments are available
                 self.env_id, env = self.free_envs.popitem()
                 logger.debug("Reusing CLIPS environment #%d", self.env_id)
-                self.used_envs[self.env_id] = env
-                break
-            elif self.env_seq < self.max_environments:
+            else:
                 # Create new environment
-                self.env_id = self.env_seq
-                self.env_seq += 1
+                self.env_id = self.env_seq.next()
                 logger.debug("Creating new CLIPS environment #%d", self.env_id)
                 env = clips.Environment()
-                self.used_envs[self.env_id] = env
-                break
-            else:
-                logging.debug("No free CLIPS environment available. Waiting")
-                self.cond.wait()
-        self.cond.release()
+            self.used_envs[self.env_id] = env
         return env
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        logger.debug("Releasing CLIPS environment #%d", self.env_id)
-        self.cond.acquire()
-        env = self.used_envs.pop(self.env_id)
-        self.free_envs[self.env_id] = env
-        self.env_id = None
-        env.Clear()
-        env.Reset()
-        self.cond.notify()
-        self.cond.release()
+        with self.lock:
+            logger.debug("Releasing CLIPS environment #%d", self.env_id)
+            env = self.used_envs.pop(self.env_id)
+            self.free_envs[self.env_id] = env
+            self.env_id = None
+            env.Clear()
+            env.Reset()
+        self.semaphore.release()
 
     @classmethod
     def prepare(cls):

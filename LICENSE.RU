@@ -1,4 +1,4 @@
-Copyright (c) 2007-2012, The NOC Project (http://nocproject.org)
+Copyright (c) 2007-2015, The NOC Project (http://nocproject.org)
 Все права сохранены
 
 Разрешается повторное распространение и использование как в виде исходного кода,

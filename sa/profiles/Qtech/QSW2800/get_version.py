@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(NOCScript):
@@ -19,11 +19,12 @@ class Script(NOCScript):
     cache = True
 
     rx_ver = re.compile(r"^\s*(?P<platform>\S+) Device.+"
-        r"\s*SoftWare Version (?P<version>\S+)."
-        r"\s*BootRom Version (?P<bootprom>\S+).+"
-        r"\s*HardWare Version (?P<hardware>\S+).+"
-        r"\s*(?:Device serial number |Serial No.:)(?P<serial>\S+).",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+                        r"\s*SoftWare(?: Package)? Version (?P<version>\S+)\n"
+                        r"\s*BootRom Version (?P<bootprom>\S+)\n"
+                        r"\s*HardWare Version (?P<hardware>\S+).+"
+                        r"\s*(?:Device serial number |Serial No.:)"
+                        r"(?P<serial>\S+)\n",
+                        re.MULTILINE | re.DOTALL)
 
     def execute(self):
         ver = self.cli("show version", cached=True)
@@ -36,18 +37,18 @@ class Script(NOCScript):
             serial = match.group("serial")
 
             return {
-                    "vendor": "Qtech",
-                    "platform": platform,
-                    "version": version,
-                    "attributes": {
-                        "Boot PROM": bootprom,
-                        "HW version": hardware,
-                        "Serial Number": serial
-                    }
+                "vendor": "Qtech",
+                "platform": platform,
+                "version": version,
+                "attributes": {
+                    "Boot PROM": bootprom,
+                    "HW version": hardware,
+                    "Serial Number": serial
+                }
             }
         else:
             return {
-                "vendor": "Unknown",
+                "vendor": "Qtech",
                 "platform": "Unknown",
                 "version": "Unknown"
             }

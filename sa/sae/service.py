@@ -19,6 +19,7 @@ from noc.sa.rpc import (get_nonce, get_digest, PROTOCOL_NAME,
                         PROTOCOL_VERSION, PUBLIC_KEYS, CIPHERS, MACS,
                         COMPRESSIONS, KEY_EXCHANGES)
 from noc.lib.ip import IP
+from noc.sa.models.objectstatus import ObjectStatus
 
 logger = logging.getLogger(__name__)
 
@@ -191,7 +192,7 @@ class Service(SAEService):
 
     def object_mappings(self, controller, request, done):
         """
-        Handle RPC event_filter request
+        Handle RPC object_mappings request
         """
         if not controller.stream.is_authenticated:
             done(controller,
@@ -214,16 +215,33 @@ class Service(SAEService):
             AND mo.trap_source_ip IS NOT NULL
             AND mo.profile_name NOT LIKE 'NOC.%%'
         """, [activator.id])
-        for mo_id, trap_source_ip, enable_ping, ping_interval, collector_id in cursor:
-            mo_id = str(mo_id)
+        cdata = list(cursor)
+        pingable = [x[0] for x in cdata if x[2] and x[3] > 0]
+        c = ObjectStatus._get_collection()
+        statuses = {}
+        while pingable:
+            chunk, pingable = pingable[:500], pingable[500:]
+            statuses.update(
+                dict(
+                    (r["object"], r["status"])
+                    for r in c.find(
+                        {"object": {"$in": chunk}},
+                        {"_id": 0, "object": 1, "status": 1}
+                    )
+                )
+            )
+        for mo_id, trap_source_ip, enable_ping, ping_interval, collector_id in cdata:
             if not collector_id:
                 s = r.mappings.add()
                 s.source = trap_source_ip
-                s.object = mo_id
+                s.object = str(mo_id)
             if enable_ping and ping_interval > 0:
                 s = r.ping.add()
                 s.address = trap_source_ip
                 s.interval = ping_interval
+                status = statuses.get(mo_id)
+                if status is not None:
+                    s.current_status = status
         # Build event filter
         for ir in IgnoreEventRules.objects.filter(is_active=True):
             i = r.ignore_rules.add()

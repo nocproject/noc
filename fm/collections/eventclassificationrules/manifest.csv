@@ -795,8 +795,8 @@ Huawei | VRP | Network | Link | Full-Duplex (SNMP),45088293-d691-42ce-9ec5-fb39a
 Huawei | VRP | Network | Link | Full-Duplex (SYSLOG),aec75d97-9d27-4867-8956-8b8b997821c0,Huawei/VRP/Network/Link/Full-Duplex_SYSLOG_.json,b3b8bbec6cdd7ae622a6b0b6078bc6c13231c29e3c939fe6f1c658a7c7745a13
 Huawei | VRP | Network | Link | Half-Duplex (SNMP),3d75df72-2f37-43eb-8af8-9790f74d6206,Huawei/VRP/Network/Link/Half-Duplex_SNMP_.json,964b44e826895d0f1bbbc7642c0b743f73a0d2f7fa26fd27df44076e7b947806
 Huawei | VRP | Network | Link | Half-Duplex (SYSLOG),6e4ef520-b074-4527-aa5d-a1038022ca6a,Huawei/VRP/Network/Link/Half-Duplex_SYSLOG_.json,3c156daa85ab034cb20ccf41b5693073758737afc0732b233717f2cc52ab0350
-Huawei | VRP | Network | Link | Link Down #1 (SYSLOG),5ac5d424-7626-4203-a943-03882e86fc11,Huawei/VRP/Network/Link/Link_Down_1_SYSLOG_.json,184f8bc00a0a0b113183b624de8de665a4acfccfd970c67f4c35f50ddb3f65a6
-Huawei | VRP | Network | Link | Link Down #2 (SYSLOG),f71d22c3-eaba-4186-b7f7-0bc534846d48,Huawei/VRP/Network/Link/Link_Down_2_SYSLOG_.json,1aae93a3894e3b7d3fac72d0d6cf2cc754f33e404f36168b3071b81c6f33dbd0
+Huawei | VRP | Network | Link | Link Down #1 (SYSLOG),5ac5d424-7626-4203-a943-03882e86fc11,Huawei/VRP/Network/Link/Link_Down_1_SYSLOG_.json,c4f69c553f195da209711cc795d3cc8c8895ea10033d2f96e3fdb17be01fb97f
+Huawei | VRP | Network | Link | Link Down #2 (SYSLOG),f71d22c3-eaba-4186-b7f7-0bc534846d48,Huawei/VRP/Network/Link/Link_Down_2_SYSLOG_.json,cac3c2d9e82484b94890183e7175fbb638c29ea4e6f8a82e7bf0a00896f32743
 Huawei | VRP | Network | Link | Link Down #3 (SYSLOG),33c54ba3-a4a6-487d-83c9-b63d3eccbd3a,Huawei/VRP/Network/Link/Link_Down_3_SYSLOG_.json,85cba877d4b54e5da0dd6d69d1b8e0333319a3a4622f372768439536001ca5f3
 Huawei | VRP | Network | Link | Link Down (SNMP),0aae129f-1e58-4890-a4a2-c5f39c7d6929,Huawei/VRP/Network/Link/Link_Down_SNMP_.json,d495b4b1a0c6705aa64ed2dedcb4c860369567a52b20d679857d52fc27247d6f
 Huawei | VRP | Network | Link | Link Down (SYSLOG) #4,1722386a-4aaf-480a-b8c9-4ec8f0442872,Huawei/VRP/Network/Link/Link_Down_SYSLOG_4.json,8898621fb3c35570348217e6bff8abf1fd0cb4440754eed640c6d45522b841de

@@ -63,19 +63,19 @@ Ext.define("NOC.core.LookupField", {
 
     setValue: function(value, doSelect) {
         var me = this,
-            vm;
+            vm,
+            params = {};
         if(typeof value === "string" || typeof value === "number") {
             if(value === "") {
                 me.clearValue();
                 return;
             }
+            params[me.valueField] = value;
             Ext.Ajax.request({
                 url: me.restUrl,
                 method: "GET",
                 scope: me,
-                params: {
-                    id: value
-                },
+                params: params,
                 success: function (response) {
                     var data = Ext.decode(response.responseText);
                     if (data.length === 1) {

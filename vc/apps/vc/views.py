@@ -8,13 +8,14 @@
 
 ## Python modules
 from collections import defaultdict
+## Third-party modules
+from mongoengine import Q
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.vc.models import VC, VCDomain, VCFilter
-from noc.inv.models import SubInterface, Q
+from noc.inv.models.subinterface import SubInterface
 from noc.sa.interfaces import DictParameter, ModelParameter, ListOfParameter,\
     IntParameter, StringParameter
-from noc.sa.caches import managedobjectselector_object_ids
 from noc.vc.caches import vcinterfacescount, vcprefixes
 
 

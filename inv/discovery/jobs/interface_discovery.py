@@ -115,6 +115,7 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
         self.report.submit_forwarding_instances(
             fi["forwarding_instance"] for fi in result)
         self.report.refine_ifindexes()
+        self.report.update_caps()
         self.report.send()
         return True
 

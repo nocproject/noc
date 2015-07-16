@@ -12,7 +12,8 @@ from collections import defaultdict
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.inv.models import Interface, Link
+from noc.inv.models.interface import Interface
+from noc.inv.models.link import Link
 
 
 class Command(BaseCommand):

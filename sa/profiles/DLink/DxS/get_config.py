@@ -2,11 +2,12 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS.get_config
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
+import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetConfig
 from noc.sa.profiles.DLink.DxS import DGS3600
@@ -40,7 +41,10 @@ class Script(NOCScript):
     @NOCScript.match(platform__regex=r"DES-1210-28\/ME")
     def execute_config_current(self):
         config = self.cli("show config current_config")
-        config = self.strip_first_lines(config, 3)
+        config = self.strip_first_lines(config, 4)
+        config = re.sub("config time \d+[^\n]*\n", "", config)
+        while config.endswith("\n\n"):
+            config = config[:-1]
         return self.cleaned_config(config)
 
     ##
@@ -65,6 +69,17 @@ class Script(NOCScript):
         raise self.NotSupportedError()
 
     ##
+    ## DGS-1100-06/ME
+    ##
+    @NOCScript.match(platform__regex=r"DGS-1100-06\/ME")
+    def execute_config_current(self):
+        config = self.cli("show config current_config")
+        config = self.strip_first_lines(config, 4)
+        config = re.sub("config time \d+[^\n]*\n", "", config)
+        while config.endswith("\n\n"):
+            config = config[:-1]
+        return self.cleaned_config(config)
+
     ## Other
     ##
     @NOCScript.match()

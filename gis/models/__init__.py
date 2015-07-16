@@ -11,6 +11,9 @@ import inspect
 ## NOC modules
 from noc.lib import nosql
 
+from layer import Layer
+
+
 class FontSet(nosql.Document):
     meta = {
         "collection": "noc.gis.fontsets",
@@ -59,7 +62,7 @@ class Style(nosql.Document):
         return self.name
 
 
-class Layer(nosql.Document):
+class _Layer(nosql.Document):
     meta = {
         "collection": "noc.gis.layers",
         "allow_inheritance": False

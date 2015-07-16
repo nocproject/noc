@@ -16,13 +16,15 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.activator.LookupField",
         "NOC.sa.collector.LookupField",
         "NOC.sa.managedobjectprofile.LookupField",
+        "NOC.sa.managedobjectselector.LookupField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.main.pyrule.LookupField",
         "NOC.main.ref.profile.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "NOC.sa.authprofile.LookupField",
-        "NOC.sa.terminationgroup.LookupField"
+        "NOC.sa.terminationgroup.LookupField",
+        "NOC.inv.networksegment.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
@@ -194,7 +196,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     text: "Name",
                     dataIndex: "name",
-                    width: 130,
+                    width: 130
+                },
+                {
+                    text: "Segment",
+                    dataIndex: "segment",
+                    width: 150,
+                    renderer: NOC.render.Lookup("segment")
                 },
                 {
                     text: "Managed",
@@ -351,6 +359,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                             groupEdit: true
                         },
                         {
+                            name: "segment",
+                            xtype: "inv.networksegment.LookupField",
+                            fieldLabel: "Segment",
+                            width: 200,
+                            allowBlank: false,
+                            groupEdit: true
+                        },
+                        {
                             name: "activator",
                             xtype: "sa.activator.LookupField",
                             fieldLabel: "Activator",
@@ -398,14 +414,16 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "profile_name",
                                     xtype: "main.ref.profile.LookupField",
                                     fieldLabel: "SA Profile",
-                                    allowBlank: false
+                                    allowBlank: false,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "scheme",
                                     xtype: "sa.managedobject.SchemeLookupField",
                                     fieldLabel: "Scheme",
                                     allowBlank: false,
-                                    uiStyle: "small"
+                                    uiStyle: "small",
+                                    groupEdit: true
                                 },
                                 {
                                     name: "address",
@@ -637,6 +655,18 @@ Ext.define("NOC.sa.managedobject.Application", {
             name: "administrative_domain",
             ftype: "lookup",
             lookup: "sa.administrativedomain"
+        },
+        {
+            title: "By Segment",
+            name: "segment",
+            ftype: "lookup",
+            lookup: "inv.networksegment"
+        },
+        {
+            title: "By Selector",
+            name: "selector",
+            ftype: "lookup",
+            lookup: "sa.managedobjectselector"
         },
         {
             title: "By Activator",

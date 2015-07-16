@@ -8,7 +8,7 @@
 
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.inv.models import NewAddressDiscoveryLog
+from noc.inv.models.newaddressdiscoverylog import NewAddressDiscoveryLog
 
 
 class ReportDiscoveredAddreses(SimpleReport):

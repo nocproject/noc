@@ -11,7 +11,7 @@ Ext.define("NOC.main.ref.stencil.LookupField", {
     alias: "widget.main.ref.stencil.LookupField",
     requires: ["NOC.main.ref.stencil.Lookup"],
     listConfig: {
-        tpl: '<tpl for="."><div class="x-boundlist-item"><img src="/inv/map/stencils/n/{id}/" style="width: 32px;height: 32px"/> {label}</div></tpl>',
+        tpl: '<tpl for="."><div class="x-boundlist-item"><img src="/inv/map/stencils/{id}/" style="width: 32px;height: 32px"/> {label}</div></tpl>',
         minWidth: 240
     },
     uiStyle: "medium"

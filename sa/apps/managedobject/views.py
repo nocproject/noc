@@ -20,6 +20,7 @@ from noc.sa.models.managedobject import (ManagedObject,
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.reducetask import ReduceTask
 from noc.sa.models.interactionlog import InteractionLog
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -42,6 +43,7 @@ from noc.inv.discovery.utils import get_active_discovery_methods
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.engine import Engine
 from noc.sa.models.action import Action
+from noc.inv.models.discoveryjob import DiscoveryJob
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -58,6 +60,12 @@ class ManagedObjectApplication(ExtModelApplication):
     cfg = RepoInline("config")
 
     extra_permissions = ["alarm", "change_interface"]
+    implied_permissions = {
+        "read": [
+            "inv:networksegment:lookup",
+            "sa:activator:lookup"
+        ]
+    }
 
     mrt_config = {
         "console": {
@@ -78,6 +86,18 @@ class ManagedObjectApplication(ExtModelApplication):
 
     def field_link_count(self, o):
         return Link.object_links_count(o)
+
+    def cleaned_query(self, q):
+        if "selector" in q:
+            s = self.get_object_or_404(ManagedObjectSelector,
+                                       id=int(q["selector"]))
+            del q["selector"]
+        else:
+            s = None
+        r = super(ManagedObjectApplication, self).cleaned_query(q)
+        if s:
+            r["id__in"] = ManagedObject.objects.filter(s.Q)
+        return r
 
     def queryset(self, request, query=None):
         qs = super(ManagedObjectApplication, self).queryset(request, query)
@@ -109,6 +129,7 @@ class ManagedObjectApplication(ExtModelApplication):
                         "local_interface__label": li.name,
                         "remote_object": ri.managed_object.id,
                         "remote_object__label": ri.managed_object.name,
+                        "remote_platform": ri.managed_object.platform,
                         "remote_interface": str(ri.id),
                         "remote_interface__label": ri.name,
                         "discovery_method": link.discovery_method,
@@ -268,6 +289,7 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         r = json_decode(request.raw_post_data).get("names", [])
         d = 0
+        DiscoveryJob.apply_object_jobs(o)
         for name in get_active_discovery_methods():
             cfg = "enable_%s" % name
             if getattr(o.object_profile, cfg) and name in r:
@@ -360,6 +382,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 "id": str(i.id),
                 "name": i.name,
                 "description": i.description,
+                "status": i.status,
                 "mac": i.mac,
                 "ifindex": i.ifindex,
                 "lag": (i.aggregated_interface.name

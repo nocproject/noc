@@ -8,9 +8,12 @@
 
 ## Python modules
 import os
+import logging
 ## NOC modules
 from gridvcs import GridVCS
 from noc.lib.fileutils import safe_rewrite
+
+logger = logging.getLogger(__name__)
 
 
 class GridVCSField(object):
@@ -95,7 +98,11 @@ class GridVCSObjectProxy(object):
     def write(self, data):
         r = self.get_gridvcs().put(self.id, data)
         if r and self.mirror:
-            safe_rewrite(self.mirror, data)
+            try:
+                safe_rewrite(self.mirror, data)
+            except OSError, why:
+                logger.error("Cannot mirror file to %s: %s",
+                             self.mirror, why)
         return r
 
     def delete(self):

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelApplication
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2015 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelApplication");
@@ -20,6 +20,7 @@ Ext.define("NOC.core.ModelApplication", {
     currentRecord: null,
     appTitle: null,
     createTitle: "Create {0}",
+    cloneTitle: "Clone {0}",
     changeTitle: "Change {0}",
     groupChangeTitle: "Change {0} {1}",
     rowClassField: undefined,
@@ -456,14 +457,6 @@ Ext.define("NOC.core.ModelApplication", {
             formToolbar.push("-");
         }
         formToolbar = formToolbar.concat(me.formToolbar);
-        me.toolbarIdField = Ext.create("Ext.form.field.Display", {
-            fieldLabel: "ID",
-            labelWidth: 15
-        });
-        formToolbar = formToolbar.concat([
-            "->",
-            me.toolbarIdField
-        ]);
         // Prepare inlines grid
         var formInlines = [];
         me.inlineStores = [];
@@ -553,10 +546,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.formTitle = Ext.create("Ext.container.Container", {
             html: "Title",
             itemId: "form_title",
-            padding: 4,
-            style: {
-                fontWeight: "bold"
-            }
+            padding: "0 0 4 0"
         });
         // Build form fields
         var formFields = [me.formTitle];
@@ -623,7 +613,10 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this;
         me.showItem(me.ITEM_FORM);
         if(me.formPanel && me.formPanel.getDefaultFocus) {
-            me.formPanel.getDefaultFocus().focus();
+            var df = me.formPanel.getDefaultFocus();
+            if(df) {
+                df.focus();
+            }
         }
     },
     //
@@ -753,8 +746,7 @@ Ext.define("NOC.core.ModelApplication", {
         //
         me.currentRecord = null;
         me.resetInlines();
-        me.setFormTitle(me.createTitle);
-        me.setFormId("NEW");
+        me.setFormTitle(me.createTitle, "NEW");
         me.showForm();
         // Activate delete button
         me.deleteButton.setDisabled(true);
@@ -780,8 +772,7 @@ Ext.define("NOC.core.ModelApplication", {
                 return name.indexOf("__label", name.length - 7) !== -1;
             };
         me.currentRecord = record;
-        me.setFormTitle(me.changeTitle);
-        me.setFormId(me.currentRecord.get(me.idField));
+        me.setFormTitle(me.changeTitle, me.currentRecord.get(me.idField));
         // Process lookup fields
         data = record.getData();
         Ext.iterate(data, function(v) {
@@ -804,6 +795,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Show edit form
         me.showForm();
         // Load records
+        me.form.reset();
         me.form.setValues(r);
         me.loadInlines();
         // Activate delete button
@@ -982,17 +974,18 @@ Ext.define("NOC.core.ModelApplication", {
         }
     },
     // Set form title
-    setFormTitle: function(tpl) {
-        var me = this;
+    setFormTitle: function(tpl, itemId) {
+        var me = this,
+            t;
         if(me.formTitle) {
-            me.formTitle.update(Ext.String.format(tpl, me.appTitle));
-        }
-    },
-    //
-    setFormId: function(id) {
-        var me = this;
-        if(me.toolbarIdField) {
-            me.toolbarIdField.setValue(id);
+            t = "<b>" + Ext.String.format(tpl, me.appTitle) + "</b>";
+            if(itemId !== "NEW" && itemId !== "CLONE") {
+                itemId = "<b>ID: </b>" + itemId;
+            } else {
+                itemId = "<b>" + itemId + "</b>";
+            }
+            t += "<span style='float:right'>" + itemId + "</span>";
+            me.formTitle.update(t);
         }
     },
     //
@@ -1059,8 +1052,7 @@ Ext.define("NOC.core.ModelApplication", {
             s.cloneData();
         });
         me.currentRecord = null;  // Mark record as new
-        me.setFormTitle(me.createTitle);
-        me.setFormId("CLONE");
+        me.setFormTitle(me.cloneTitle, "CLONE");
         me.cloneButton.setDisabled(true);
     },
     // Return Grid's row classes

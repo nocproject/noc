@@ -516,7 +516,8 @@ class Script(threading.Thread):
                 r = [str(t), str(v)]
                 r += [format_frames(get_traceback_frames(tb))]
                 self.error_traceback = "\n".join(r)
-                self.logger.debug("Script traceback:\n%s" % self.error_traceback)
+                self.logger.error("Script traceback:\n%s",
+                                  self.error_traceback)
                 if self.activator.to_save_output:
                     # Save fake result
                     self.activator.save_result(self.error_traceback)
@@ -526,7 +527,7 @@ class Script(threading.Thread):
                     not self.activator.use_canned_session):
                 self.logger.debug("Shutting down session")
                 self.profile.shutdown_session(self)
-                # Serialize result
+            # Serialize result
             self.result = self.serialize_result(result)
             if self.parent is None and self.need_to_save and self.profile.command_save_config:
                 self.logger.debug("Saving config")

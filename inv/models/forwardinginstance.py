@@ -2,12 +2,15 @@
 ##----------------------------------------------------------------------
 ## Forwarding Instance model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField
 ## NOC modules
-from noc.lib.nosql import Document, ForeignKeyField, StringField
+from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 
 
@@ -42,8 +45,7 @@ class ForwardingInstance(Document):
 
     @property
     def subinterface_set(self):
-        return SubInterface.objects.filter(forwarding_instance=self.id)
+        ## Avoid circular references
+        from subinterface import SubInterface
 
-## Avoid circular references
-import interface
-from subinterface import SubInterface
+        return SubInterface.objects.filter(forwarding_instance=self.id)

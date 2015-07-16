@@ -148,6 +148,21 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 86400
         },
         {
+            name: "enable_interface_status_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "interface_status_discovery_min_interval",
+            type: "int",
+            defaultValue: 60
+        },
+        {
+            name: "interface_status_discovery_max_interval",
+            type: "int",
+            defaultValue: 600
+        },
+        {
             name: "enable_ip_discovery",
             type: "boolean",
             defaultValue: true

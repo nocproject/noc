@@ -11,7 +11,8 @@ import re
 import logging
 import new
 ## NOC modules
-from noc.inv.models import Interface, SubInterface
+from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
 from noc.lib.datasource import datasource_registry
 from exception import InvalidPatternException
 from noc.lib.escape import fm_unescape

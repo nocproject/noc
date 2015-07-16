@@ -24,7 +24,7 @@ class BaseJUNOSParser(BaseParser):
         super(BaseJUNOSParser, self).__init__(managed_object)
 
     def parse(self, config):
-        VALUE = OneOrMore(Word(alphanums + "-/.:_+") | QuotedString("\""))
+        VALUE = OneOrMore(Word(alphanums + "-/.:_+[]") | QuotedString("\""))
         context = []
         inactive_level = None
         for l in config.splitlines():
@@ -66,6 +66,14 @@ class BaseJUNOSParser(BaseParser):
         # Yield facts
         for f in self.iter_facts():
             yield f
+
+    def iter_group(self, tokens):
+        if tokens and tokens[0] == "[" and tokens[-1] == "]":
+            for t in tokens[1:-1]:
+                yield t
+        else:
+            for t in tokens:
+                yield t
 
     def get_interface_defaults(self, name):
         r = super(BaseJUNOSParser, self).get_interface_defaults(name)
@@ -255,7 +263,8 @@ class BaseJUNOSParser(BaseParser):
         prefix = tokens[3]
         cmd = tokens[4] if len(tokens) >= 4 else None
         if cmd == "next-hop":
-            self.get_static_route_fact(prefix).next_hop = tokens[5]
+            for nh in self.iter_group(tokens[5:]):
+                self.get_static_route_fact(prefix).next_hop = nh
         elif cmd == "discard":
             self.get_static_route_fact(prefix).discard = True
         elif cmd == "tag":
