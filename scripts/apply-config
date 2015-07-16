@@ -1,0 +1,48 @@
+#!./bin/python
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Generate etc/supervisord.conf
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import glob
+import ConfigParser
+import cStringIO
+
+CFG = "etc/supervisord.conf"
+
+
+def build():
+    config = ConfigParser.RawConfigParser()
+    # Read configs
+    for ge in [
+        "etc/defaults/supervisor/*.conf",
+        "etc/defaults/services/*.conf",
+        "etc/config/supervisor/*.conf",
+        "etc/config/services/*.conf"
+    ]:
+        for path in glob.glob(ge):
+            config.read(path)
+    # Build config
+    out = ConfigParser.ConfigParser()
+    for s in config.sections():
+        out.add_section(s)
+        for o in config.options(s):
+            v = config.get(s, o)
+            out.set(s, o, v)
+    buffer = cStringIO.StringIO()
+    out.write(buffer)
+    cfg = buffer.getvalue()
+    # Read old config
+    with open(CFG) as f:
+        old = f.read()
+    if old != cfg:
+        # Rewrite
+        with open(CFG, "w") as f:
+            f.write(cfg)
+
+if __name__ == "__main__":
+    build()
