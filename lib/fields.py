@@ -314,6 +314,8 @@ class DocumentReferenceField(models.Field):
     def to_python(self, value):
         if value is None:
             return None
+        elif hasattr(value, "id"):
+            return value
         else:
             return self.document.objects.get(id=value)
 
