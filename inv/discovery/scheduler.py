@@ -25,7 +25,7 @@ class DiscoveryScheduler(Scheduler):
         super(DiscoveryScheduler, self).__init__(
             "inv.discovery", initial_submit=daemon is not None,
             reset_running=daemon is not None,
-            max_threads=None
+            max_threads=None if daemon else 0
         )
         self.register_all(
             os.path.join("inv", "discovery", "jobs"),
