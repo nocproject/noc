@@ -98,7 +98,10 @@ class Scheduler(object):
             "jobs.dereference.failed",
             "jobs.time"
         )
-        self.thread_pool = Pool(max_threads=max_threads)
+        if max_threads != 0:
+            self.thread_pool = Pool(max_threads=max_threads)
+        else:
+            self.thread_pool = None
 
     def ensure_indexes(self):
         if self.preserve_order:
