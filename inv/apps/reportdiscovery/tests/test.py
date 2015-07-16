@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## inv.reportlinkmethodsummary unittests
+## inv.reportdiscovery unittests
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,5 +10,5 @@
 from noc.lib.test import ReportApplicationTestCase
 
 
-class reportlinkmethodsummaryTestCase(ReportApplicationTestCase):
+class reportdiscoveryTestCase(ReportApplicationTestCase):
     pass
