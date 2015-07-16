@@ -66,6 +66,7 @@ class Script(NOCScript):
            "Tu": "tunnel",      # Tunnel
            "VL": "SVI",         # VLAN, found on C3500XL
            "Vl": "SVI",         # Vlan
+           "vl": "SVI",         # vlan Eltex ver 1.1.38
            "XT": "SVI"          # Extended Tag ATM
            }
 
