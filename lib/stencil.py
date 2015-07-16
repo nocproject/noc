@@ -81,17 +81,23 @@ class StencilRegistry:
                 self.stencils[id] = s
                 self.choices += [(id, name)]
 
-    def get_svg(self, status, shape):
-        if shape not in self.stencils:
+    def get_svg(self, shape):
+        st = self.stencils.get(shape)
+        if not st:
             return None
-        st = self.stencils[shape]
-        if status not in self.svg:
+        else:
             return st.svg
-        sm = self.svg[status]
-        if shape not in sm:
-            svg = st.get_svg(self.COLOR_MAP[status])
-            sm[shape] = svg
-        return sm[shape]
+
+    def get_size(self, shape):
+        """
+        Returns width, height of shape
+        """
+        st = self.stencils.get(shape)
+        if not st:
+            return None, None
+        else:
+            return st.width, st.height
+
 
 stencil_registry = StencilRegistry()
 stencil_registry.load()

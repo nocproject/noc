@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MikroTik.RouterOS.get_license
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -19,8 +19,10 @@ class Script(NOCScript):
     cache = True
     implements = [IGetLicense]
     rx_lic = re.compile(
-        r"^\s*software-id: (?P<sid>\S+).+upgradable-to: (?P<upto>\S+).+nlevel:"
-        r" (?P<nlevel>\d+).+features:.*(?P<features>\.*)$",
+        r"^\s*software-id: (?P<sid>\S+)\n"
+        r"(^\s*upgradable-to: (?P<upto>\S+)\n)?"
+        r"^\s*nlevel: (?P<nlevel>\d+)\n"
+        r"(^\s*features:.*(?P<features>\.*)$)?",
         re.MULTILINE | re.DOTALL)
 
     def execute(self):

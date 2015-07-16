@@ -28,7 +28,8 @@ class Profile(NOCProfile):
     command_leave_config = "end"
     command_exit = "exit"
     command_save_config = "copy running-config startup-config\n"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
+    can_strip_hostname_to = 20
     requires_netmask_conversion = True
     convert_mac = NOCProfile.convert_mac_to_cisco
     config_volatile = ["^ntp clock-period .*?^"]
@@ -49,6 +50,8 @@ class Profile(NOCProfile):
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
+        if ".ServiceInstance." in interface:
+            interface = interface.replace(".ServiceInstance.", ".SI.")
         if ".SI." in interface:
             l, r = interface.split(".SI.", 1)
             return "%s.SI.%d" % (

@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Django's standard models module
-## For VC application
+## VC modules caches
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from mongoengine import Q
 ## NOC modules
 from noc.settings import config
 from noc.lib.cache import Cache
-from noc.inv.models import SubInterface, Q
-from noc.vc.models import VC
+from noc.inv.models.subinterface import SubInterface
+from noc.vc.models.vc import VC
 from noc.lib.ip import IP
 
 

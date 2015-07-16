@@ -27,3 +27,10 @@ class KVStorage(object):
         Iterate all keys, values between k0 and k1
         """
         raise NotImplementedError()
+
+    def get_last_value(self, start, end):
+        """
+        Returns tuple of (key, value) for the last key in (start, end)
+        or return None, None when no data found
+        """
+        raise NotImplementedError()

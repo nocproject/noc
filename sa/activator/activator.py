@@ -34,7 +34,6 @@ from noc.lib.nbsocket.socketfactory import SocketFactory
 from noc.lib.nbsocket.pingsocket import Ping4Socket, Ping6Socket
 from noc.sa.activator.service import Service
 from noc.sa.activator.activator_socket import ActivatorSocket
-from noc.sa.activator.pm_collector_socket import PMCollectorSocket
 
 logger = logging.getLogger(__name__)
 
@@ -133,7 +132,6 @@ class Activator(Daemon, FSM):
         self.ignore_event_rules = []  # [(left_re,right_re)]
         self.trap_collectors = []  # List of SNMP Trap collectors
         self.syslog_collectors = []  # List of SYSLOG collectors
-        self.pm_data_collectors = []  # List of PM Data collectors
         self.to_save_output = False  # Do not save canned result
         self.use_canned_session = False  # Do not use canned session
         logger.info("Loading profile classes")
@@ -152,9 +150,6 @@ class Activator(Daemon, FSM):
         self.scripts_failed = 0
         self.script_lock = RLock()
         self.script_call_queue = Queue.Queue()
-        self.pm_data_queue = []
-        self.pm_result_queue = []
-        self.pm_data_secret = self.config.get("activator", "pm_data_secret")
         self.servers = ServersHub(self)
         # CLI debug logging
         self.log_cli_sessions = self.config.getboolean("main",
@@ -203,8 +198,6 @@ class Activator(Daemon, FSM):
                 self.stop_trap_collectors()
             if self.syslog_collectors:
                 self.stop_syslog_collectors()
-            if self.pm_data_collectors:
-                self.stop_pm_data_collectors()
         self.set_timeout(1)
 
     def on_CONNECT_enter(self):
@@ -268,9 +261,6 @@ class Activator(Daemon, FSM):
             if self.config.get("activator", "listen_syslog"):
                 self.start_syslog_collectors()
                 to_refresh_filters = True
-            if self.config.get("activator", "listen_pm_data"):
-                self.start_pm_data_collectors()
-                to_refresh_filters = True
         if to_refresh_filters:
             self.get_object_mappings()
 
@@ -326,27 +316,6 @@ class Activator(Daemon, FSM):
                 sc.close()
             self.syslog_collectors = []
 
-    def start_pm_data_collectors(self):
-        """
-        Launch PM Data collectors
-        """
-        logger.debug("Starting PM Data collectors")
-        self.pm_data_collectors = [
-            PMCollectorSocket(self, ip, port)
-            for ip, port
-            in self.resolve_addresses(self.config.get("activator", "listen_pm_data"), 19704)
-        ]
-
-    def stop_pm_data_collectors(self):
-        """
-        Disable PM Data collectors
-        """
-        if self.pm_data_collectors:
-            logger.debug("Stopping PM Data collectors")
-            for pdc in self.pm_data_collectors:
-                pdc.close()
-            self.pm_data_collectors = []
-
     def can_run_script(self):
         """
         Check max_scripts limit is not exceeded
@@ -365,33 +334,41 @@ class Activator(Daemon, FSM):
         if not timeout:
             timeout = script_class.get_timeout()
         script = script_class(profile, self, object_name, access_profile, timeout, **kwargs)
-        logger.info("Script %s(%s). Timeout set to %s" % (script_name,
-                                            access_profile.address, timeout))
         with self.script_lock:
             self.script_threads[script] = callback
-            logger.info("%d script threads (%d max)" % (
-                len(self.script_threads), self.max_script_threads))
+            logger.info(
+                "[%s] Running. Timeout %s [%d/%d threads]",
+                script.debug_name,
+                timeout,
+                len(self.script_threads),
+                self.max_script_threads
+            )
+        script.setDaemon(True)
         script.start()
 
     def on_script_exit(self, script):
         failed = 1
         if script.e_timeout:
-            s = "is timed out"
+            s = "Timed out"
         elif script.e_cancel:
-            s = "is cancelled"
+            s = "Cancelled"
         elif script.e_disconnected:
-            s = "got cli lost"
+            s = "CLI lost"
         elif script.login_error:
-            s = "cannot log in"
+            s = "Cannot log in"
         else:
-            s = "is completed"
+            s = "Completed"
             failed = 0
-        logger.info("Script %s(%s) %s" % (script.name,
-                                           script.debug_name, s))
         with self.script_lock:
             cb = self.script_threads.pop(script)
-            logger.info("%d script threads left (%d max)" % (
-                len(self.script_threads), self.max_script_threads))
+            logger.info(
+                "[%s] Stopping. %s [%d/%d threads] (%sms)",
+                script.debug_name,
+                s,
+                len(self.script_threads),
+                self.max_script_threads,
+                int((time.time() - script.start_time) * 1000)
+            )
             self.scripts_processed += 1
             self.scripts_failed += failed
         cb(script)
@@ -433,9 +410,6 @@ class Activator(Daemon, FSM):
                 break
             logger.debug("Calling delayed %s(*%s,**%s)" % (f, args, kwargs))
             apply(f, args, kwargs)
-        # Send collected PM data
-        if self.get_state() == "ESTABLISHED" and self.pm_data_queue:
-            self.send_pm_data()
         # Send object status changes
         if self.to_ping and self.get_state() == "ESTABLISHED" and self.status_change_queue:
             self.send_status_change()
@@ -451,18 +425,6 @@ class Activator(Daemon, FSM):
         # Run default daemon/fsm machinery
         super(Activator, self).tick()
 
-    def register_stream(self, stream):
-        logger.debug("Registering stream %s" % str(stream))
-        self.streams[stream] = None
-
-    def release_stream(self, stream):
-        logger.debug("Releasing stream %s" % str(stream))
-        del self.streams[stream]
-
-    def reboot(self):
-        logger.info("Rebooting")
-        os.execv(sys.executable, [sys.executable] + sys.argv)
-
     @check_state("CONNECTED")
     def protocol(self):
         """ Start protocol negotiation """
@@ -470,19 +432,19 @@ class Activator(Daemon, FSM):
             if self.get_state() != "CONNECTED":
                 return
             if error:
-                logging.error("Protocol negotiation error: %s" % error.text)
+                logger.error("Protocol negotiation error: %s", error.text)
                 self.event("error")
                 return
             if (response.protocol != PROTOCOL_NAME or
                 response.version != PROTOCOL_VERSION):
-                logging.error("Protocol negotiation failed")
+                logger.error("Protocol negotiation failed")
                 self.event("error")
                 return
             logger.info("Protocol version negotiated")
             self.event("setup")
 
-        logger.info("Negotiation protocol '%s' version '%s'" % (
-            PROTOCOL_NAME, PROTOCOL_VERSION))
+        logger.info("Negotiation protocol '%s' version '%s'",
+                    PROTOCOL_NAME, PROTOCOL_VERSION)
         r = ProtocolRequest(protocol=PROTOCOL_NAME, version=PROTOCOL_VERSION)
         self.sae_stream.proxy.protocol(r, protocol_callback)
     
@@ -493,7 +455,7 @@ class Activator(Daemon, FSM):
             if self.get_state() != "SETUP":
                 return
             if error:
-                logging.error("Crypto negotiation failed: %s" % e.text)
+                logger.error("Crypto negotiation failed: %s", error.text)
                 self.event("error")
                 return
             if response.key_exchange == "none":
@@ -524,7 +486,7 @@ class Activator(Daemon, FSM):
             if self.get_state() != "KEX":
                 return
             if error:
-                logging.error("Key exchange failed: %s" % error.text)
+                logger.error("Key exchange failed: %s", error.text)
                 self.event("error")
                 return
             self.sae_stream.complete_kex(response)
@@ -539,7 +501,7 @@ class Activator(Daemon, FSM):
             if self.get_state() != "REGISTER":
                 return
             if error:
-                logging.error("Registration error: %s" % error.text)
+                logger.error("Registration error: %s" % error.text)
                 self.event("error")
                 return
             logger.info("Registration accepted")
@@ -556,7 +518,7 @@ class Activator(Daemon, FSM):
             if self.get_state() != "REGISTRED":
                 return
             if error:
-                logging.error("Authentication failed: %s" % error.text)
+                logger.error("Authentication failed: %s", error.text)
                 self.event("error")
                 return
             logger.info("Authenticated")
@@ -582,13 +544,20 @@ class Activator(Daemon, FSM):
     def get_object_mappings(self):
         def object_mappings_callback(transaction, response=None, error=None):
             if error:
-                logging.error("get_object_mappings error: %s" % error.text)
+                logger.error("get_object_mappings error: %s", error.text)
                 return
             self.object_mappings = dict((x.source, x.object)
                                         for x in response.mappings)
             self.compile_ignore_event_rules(response.ignore_rules)
             self.debug("Setting object mappings to: %s" % self.object_mappings)
             self.next_mappings_update = time.time() + response.expire
+            #
+            if not self.object_status:
+                self.object_status = dict(
+                    (x.address, x.current_status)
+                    for x in response.ping
+                    if x.current_status is not None
+                )
             # Schedule ping checks
             self.ping_interval = dict((x.address, x.interval)
                 for x in response.ping)
@@ -621,7 +590,7 @@ class Activator(Daemon, FSM):
         """
         def on_event_callback(transaction, response=None, error=None):
             if error:
-                logging.error("event_proxy failed: %s" % error)
+                logger.error("event_proxy failed: %s", error)
         r = EventRequest()
         r.timestamp = timestamp
         r.object = object
@@ -636,47 +605,15 @@ class Activator(Daemon, FSM):
             i.value = str(v)
         self.sae_stream.proxy.event(r, on_event_callback)
 
-    def queue_pm_data(self, pm_data):
-        self.pm_data_queue += pm_data
-
-    def queue_pm_result(self, pm_result):
-        self.pm_result_queue += pm_result
-
     def queue_status_change(self, address, status):
         i = self.object_mappings.get(address)
         if i:
             self.status_change_queue += [(i, status)]
 
-    def send_pm_data(self):
-        """
-        Send collected PM data to SAE
-        """
-        def pm_data_callback(transaction, response=None, error=None):
-            if error:
-                logging.error("pm_data failed: %s" % error)
-        r = PMDataRequest()
-        for probe_name, probe_type, timestamp, service, result, message in self.pm_result_queue:
-            d = r.result.add()
-            d.probe_name = probe_name
-            d.probe_type = probe_type
-            d.timestamp = timestamp
-            d.service = service
-            d.result = result
-            d.message = message
-        self.pm_result_queue = []
-        for name, timestamp, is_null, value in self.pm_data_queue:
-            d = r.data.add()
-            d.name = name
-            d.timestamp = timestamp
-            d.is_null = is_null
-            d.value = value
-        self.pm_data_queue = []
-        self.sae_stream.proxy.pm_data(r, pm_data_callback)
-
     def send_status_change(self):
         def status_change_callback(transaction, response=None, error=None):
             if error:
-                logging.error("object_status failed: %s" % error)
+                logger.error("object_status failed: %s", error)
 
         r = ObjectStatusRequest()
         for object, status in self.status_change_queue:
@@ -695,7 +632,7 @@ class Activator(Daemon, FSM):
                 ir += [(re.compile(r.left_re, re.IGNORECASE),
                         re.compile(r.right_re, re.IGNORECASE))]
             except re.error, why:
-                logging.error("Failed to compile ignore event rule: %s,%s. skipping" % (l, r))
+                logger.error("Failed to compile ignore event rule: %s,%s. skipping" % (l, r))
         self.ignore_event_rules = ir
 
     @check_state("ESTABLISHED")

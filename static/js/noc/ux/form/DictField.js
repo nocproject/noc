@@ -93,7 +93,11 @@ Ext.define("Ext.ux.form.DictField", {
         var me = this,
             value = {};
         me.store.each(function(r) {
-            value[r.get("key")] = r.get("value");
+            var v = r.get("value");
+            if(v === undefined) {
+                v = null;
+            }
+            value[r.get("key")] = v;
         });
         return value;
     },

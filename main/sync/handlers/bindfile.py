@@ -24,6 +24,8 @@ class BINDFileHandler(DNSZoneSyncHandler):
         # Path to include directory
         # (Relative to bind's chroot)
         "inc_root": StringParameter(required=False),
+        # Extra config for the zones in the include file
+        "inc_extra_config": StringParameter(required=False),
         # Shell command to execute when new zone created
         "on_new_zone": StringParameter(required=False),
         # Shell command to execute when zone deleted
@@ -38,21 +40,23 @@ class BINDFileHandler(DNSZoneSyncHandler):
         super(BINDFileHandler, self).__init__(daemon, name)
         self.root = None
         self.inc_root = None
+        self.inc_extra_config = None
         self.on_new_zone = None
         self.on_deleted_zone = None
         self.on_updated_zone = None
         self.db = None
         self.db_path = None
         self.inc_path = None
-        self.touch_includes = False
+        self.touch_includes = True
 
-    def configure(self, root, inc_root,
+    def configure(self, root, inc_root, inc_extra_config = None,
                   on_new_zone=None, on_deleted_zone=None,
                   on_updated_zone=None, **kwargs):
         if not os.path.isdir(root):
             raise ValueError("'%s' is not a directory" % root)
         self.root = root
         self.inc_root = inc_root or root
+        self.inc_extra_config = inc_extra_config or "#set inc_extra_config option to add your config here"
         self.on_new_zone = on_new_zone or None
         self.on_deleted_zone = on_deleted_zone or None
         self.on_updated_zone = on_updated_zone or None
@@ -102,6 +106,7 @@ class BINDFileHandler(DNSZoneSyncHandler):
                 "zone %s {" % zone,
                 "    type master;",
                 "    file \"%s\";" % self.get_zone_inc_path(zone),
+                "    %s" % self.inc_extra_config,
                 "};",
                 ""
             ]

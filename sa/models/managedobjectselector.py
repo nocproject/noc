@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ManagedObjectSelector
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -14,7 +14,6 @@ from django.db.models import Q
 import six
 ## NOC modules
 from administrativedomain import AdministrativeDomain
-from managedobject import ManagedObject, ManagedObjectAttribute
 from managedobjectprofile import ManagedObjectProfile
 from activator import Activator
 from terminationgroup import TerminationGroup
@@ -27,7 +26,6 @@ from noc.lib.db import SQL, QTags
 
 
 class ManagedObjectSelector(models.Model):
-
     class Meta:
         verbose_name = _("Managed Object Selector")
         verbose_name_plural = _("Managed Object Selectors")
@@ -95,6 +93,8 @@ class ManagedObjectSelector(models.Model):
         Returns Q object which can be applied to
         ManagedObject.objects.filter
         """
+        from managedobject import ManagedObjectAttribute
+
         # Exclude NOC internal objects
         q = ~Q(profile_name__startswith="NOC.")
         # Exclude objects being wiped
@@ -161,7 +161,10 @@ class ManagedObjectSelector(models.Model):
         # @todo: optimize with SQL
         m_ids = None
         for s in  self.managedobjectselectorbyattribute_set.all():
-            ids = ManagedObjectAttribute.objects.filter(key__regex=s.key_re, value__regex=s.value_re).values_list("managed_object", flat=True)
+            ids = ManagedObjectAttribute.objects.filter(
+                key__regex=s.key_re,
+                value__regex=s.value_re
+            ).values_list("managed_object", flat=True)
             if m_ids is None:
                 m_ids = set(ids)
             else:
@@ -247,6 +250,7 @@ class ManagedObjectSelector(models.Model):
     ##
     @property
     def managed_objects(self):
+        from managedobject import ManagedObject
         return ManagedObject.objects.filter(self.Q)
 
     ##
@@ -318,6 +322,8 @@ class ManagedObjectSelector(models.Model):
         :param s:
         :return:
         """
+        from managedobject import ManagedObject
+
         if type(s) in (int, long, str, unicode):
             s = [s]
         if type(s) != list:
@@ -346,7 +352,6 @@ class ManagedObjectSelector(models.Model):
 class ManagedObjectSelectorByAttribute(models.Model):
     class Meta:
         verbose_name = _("Managed Object Selector by Attribute")
-        verbose_name = _("Managed Object Selectors by Attribute")
         db_table = "sa_managedobjectselectorbyattribute"
         app_label = "sa"
 

@@ -45,6 +45,10 @@ class DiscoveryDaemon(Daemon):
         self.scheduler.max_faults = max_faults or None
         mrt_limit = self.config.getint("main", "mrt_limit")
         self.scheduler.mrt_limit = mrt_limit or None
+        max_threads = self.config.getint("main", "max_threads")
+        self.scheduler.thread_pool.configure(
+            max_threads=max_threads or None
+        )
 
     def load_beef_map(self):
         for o in self.config.options("beef"):
@@ -74,21 +78,3 @@ class DiscoveryDaemon(Daemon):
         for method in self.beef:
             self.scheduler.job_classes[method].set_beef(
                 self.beef[method])
-
-#    def report_address_collisions(self):
-#        ctx = {
-#            "count": len(self.address_collisions),
-#            "collisions": [
-#                {
-#                    "address": address,
-#                    "vrf_old": vrf1,
-#                    "vrf_new": vrf2,
-#                    "object_old": o1,
-#                    "object_new": o2,
-#                    "interface_new": i2
-#                }
-#                for address, vrf1, o1, vrf2, o2, i2
-#                in self.address_collisions
-#            ]
-#        }
-#        self.send_report("inv.discovery.address_collision_report", ctx)

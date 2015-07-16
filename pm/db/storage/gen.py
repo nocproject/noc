@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## RocksDB Key-Value storage
+## Fake testing storage
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-import os
 import random
 import time
 import struct
@@ -33,6 +32,9 @@ class GenStorage(KVStorage):
         """
         time.sleep(self.WRITE_DELAY)
 
+    def _gen_value(self):
+        return random.random() * 100
+
     def iterate(self, start, end):
         """
         Iterate all keys between k0 and k1
@@ -45,10 +47,17 @@ class GenStorage(KVStorage):
         e = struct.unpack("!L", end[-4:])[0]
         time.sleep(self.READ_DELAY)
         while s <= e:
-            v = random.random() * 100
+            v = self._gen_value()
             yield p + struct.pack("!L", s), struct.pack("!d", v)
             s += self.STEP
 
     def get_db(self):
         time.sleep(self.OPEN_DELAY)
         return 1
+
+    def get_last_value(self, start, end):
+        """
+        Returns tuple of (key, value) for the last key in (start, end)
+        or return None, None when no data found
+        """
+        return end, struct.pack("!d", self._gen_value())

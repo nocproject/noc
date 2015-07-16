@@ -18,7 +18,7 @@ Ext.define("NOC.fm.event.Application", {
         N: "New", A: "Active",
         F: "Failed", S: "Archived"
     },
-    pollingInterval: 10000,
+    pollingInterval: 30000,
     //
     initComponent: function() {
         var me = this,
@@ -312,8 +312,9 @@ Ext.define("NOC.fm.event.Application", {
     showGrid: function() {
         var me = this;
         me.getLayout().setActiveItem(0);
-        me.reloadStore();
+        //me.reloadStore();
         me.startPolling();
+        me.setHistoryHash();
     },
     //
     onSelectEvent: function(grid, record, item, index) {

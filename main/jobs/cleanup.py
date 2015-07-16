@@ -8,6 +8,8 @@
 
 ## Python modules
 import datetime
+## Django modules
+from django.db import transaction
 ## Third-party modules
 from mongoengine.django.sessions import MongoSession
 ## NOC modules
@@ -27,10 +29,13 @@ class CleanupJob(AutoIntervalJob):
         Remove old map/reduce tasks
         """
         self.info("Cleanup map/reduce tasks")
-        watermark = datetime.datetime.now() - datetime.timedelta(days=1)
-        for t in ReduceTask.objects.filter(stop_time__lt=watermark):
-            MapTask.objects.filter(task=t).delete()
-            t.delete()
+        with transaction.commit_on_success():
+            rt_watermark = datetime.datetime.now() - datetime.timedelta(days=1)
+            for t in ReduceTask.objects.filter(stop_time__lt=rt_watermark):
+                MapTask.objects.filter(task=t).delete()
+                t.delete()
+            mt_watermark = datetime.datetime.now() - datetime.timedelta(hours=1)
+            MapTask.objects.filter(stop_time__lt=mt_watermark).delete()
         self.info("Map/Reduce tasks are cleaned")
         self.info("Compacting MRT tables")
         vacuum(ReduceTask._meta.db_table, analyze=True)

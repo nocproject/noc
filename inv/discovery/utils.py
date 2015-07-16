@@ -17,6 +17,7 @@ DISCOVERY_METHODS = [
     "id_discovery",
     "config_discovery",
     "interface_discovery",
+    "interface_status_discovery",
     "asset_discovery",
     "vlan_discovery",
     "lldp_discovery",

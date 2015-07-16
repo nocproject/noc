@@ -2,13 +2,13 @@
 ##----------------------------------------------------------------------
 ## project.project application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.project.models import Project
+from noc.project.models.project import Project
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.main.models.resourcestate import ResourceState

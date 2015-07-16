@@ -19,6 +19,10 @@ Ext.define("NOC.sa.managedobject.L1Store", {
             type: "string"
         },
         {
+            name: "status",
+            type: "string"
+        },
+        {
             name: "mac",
             type: "string"
         },

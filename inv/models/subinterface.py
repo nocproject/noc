@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.nosql import (Document, PlainReferenceField,
-                           ForeignKeyField, StringField, BooleanField,
+                           ForeignKeyField, StringField,
                            ListField, IntField)
 from forwardinginstance import ForwardingInstance
 from interface import Interface

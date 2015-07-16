@@ -467,6 +467,7 @@ class Script(NOCScript):
                 my_dict['type'] = 'physical'
                 my_dict['subinterfaces'] = []
                 my_dict.pop('bad_stat')
+                my_dict['description'] = my_dict['description'].replace("\n", "")
                 fi['interfaces'].append(my_dict)
 
         lag_info = self.cli('show lag detail')
@@ -497,6 +498,7 @@ class Script(NOCScript):
                     my_dict['protocols'] = ['LACP']
                 else:
                     my_dict['protocols'] = []
+                my_dict['description'] = my_dict['description'].replace("\n", "")
                 fi['interfaces'].append(my_dict)
 
         return fi

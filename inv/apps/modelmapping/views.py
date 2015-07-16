@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.inv.models import ModelMapping
+from noc.inv.models.modelmapping import ModelMapping
 
 
 class ModelMappingApplication(ExtDocApplication):

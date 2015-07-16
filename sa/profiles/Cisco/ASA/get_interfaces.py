@@ -10,7 +10,7 @@
 import re
 # NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 
 
@@ -33,71 +33,75 @@ class Script(NOCScript):
         for s in v.split("\n"):
             match = self.rx_ospf.search(s)
             if match:
-                ospfs.append(match.group('name'))
+                ospfs.append(match.group("name"))
         return ospfs
 
     def execute(self):
         interfaces = []
         ospfs = self.get_ospfint()
         types = {
-               "L": 'loopback',
-               "E": 'physical',
-               "G": 'physical',
-               "T": 'physical',
-               "M": 'management',
-               "R": 'aggregated',
-               "P": 'aggregated'
+            "L": "loopback",
+            "E": "physical",
+            "G": "physical",
+            "T": "physical",
+            "M": "management",
+            "R": "aggregated",
+            "P": "aggregated",
+            "V": "SVI"
         }
         v = self.cli("show interface")
         for s in v.split("\nInterface "):
             match = self.rx_int.search(s)
             if match:
-                ifname = match.group('interface')
-                if ifname in ['Virtual254', 'Tunnel0', 'Tunnel1']:
+                ifname = match.group("interface")
+                if ifname.startswith("Virtual") or ifname.startswith("Tunnel"):
                     continue
-                a_stat = match.group('admin_status').lower() == "up"
-                o_stat = match.group('oper_status').lower() == "up"
-                alias = match.group('alias')
-                match = self.rx_mac.search(s)
-                if match:
-                    mac = match.group('mac')
+                a_stat = match.group("admin_status").lower() == "up"
+                o_stat = match.group("oper_status").lower() == "up"
+                alias = match.group("alias")
+                mac = self.re_search(self.rx_mac, s).group("mac")
                 sub = {
+                    "name": ifname,
+                    "admin_status": a_stat,
+                    "oper_status": o_stat,
+                    "description": alias,
+                    "mac": mac,
+                    "enabled_afi": [],
+                    "enabled_protocols": []
+                }
+                match = self.rx_ip.search(s)
+                if match:
+                    ip = IPv4(match.group("ip"),
+                              netmask=match.group("mask")).prefix
+                    sub["ipv4_addresses"] = [ip]
+                    sub["enabled_afi"] += ["IPv4"]
+                match = self.rx_vlan.search(s)
+                if match:
+                    vlan = match.group("vlan")
+                    sub["vlan_ids"] = [vlan]
+                if alias in ospfs:
+                    sub["enabled_protocols"] += ["OSPF"]
+                phys = ifname.find(".") == -1
+                if phys:
+                    iftype = types[ifname[0]]
+                    iface = {
                         "name": ifname,
                         "admin_status": a_stat,
                         "oper_status": o_stat,
                         "description": alias,
+                        "type": iftype,
                         "mac": mac,
-                        "enabled_afi": [],
-                        "enabled_protocols": []
-                        }
-                match = self.rx_ip.search(s)
-                if match:
-                    ip = IPv4(match.group('ip'), netmask=match.group('mask')).prefix
-                    sub['ipv4_addresses'] = [ip]
-                    sub['enabled_afi'] += ["IPv4"]
-                match = self.rx_vlan.search(s)
-                if match:
-                    vlan = match.group('vlan')
-                    sub['vlan_ids'] = [vlan]
-                if alias in ospfs:
-                    sub['enabled_protocols'] += ["OSPF"]
-                phys = ifname.find('.') == -1
-                if phys:
-                        iface = {
-                            "name": ifname,
-                            "admin_status": a_stat,
-                            "oper_status": o_stat,
-                            "description": alias,
-                            "type": types[ifname[0]],
-                            "mac": mac,
-                            'subinterfaces': [sub]
-                        }
-                        interfaces.append(iface)
+                        "subinterfaces": [sub]
+                    }
+                    interfaces += [iface]
+                    if iftype == "SVI" and ifname.startswith("Vlan"):
+                        vid = int(ifname[4:].strip())
+                        sub["vlan_ids"] = [vid]
                 else:
-                    if interfaces[-1]['name'] == interfaces[-1]['subinterfaces'][-1]['name']:
-                        interfaces[-1]['subinterfaces'] = [sub]
+                    if interfaces[-1]["name"] == interfaces[-1]["subinterfaces"][-1]["name"]:
+                        interfaces[-1]["subinterfaces"] = [sub]
                     else:
-                        interfaces[-1]['subinterfaces'] += [sub]
+                        interfaces[-1]["subinterfaces"] += [sub]
             else:
                 continue
         return [{"interfaces": interfaces}]

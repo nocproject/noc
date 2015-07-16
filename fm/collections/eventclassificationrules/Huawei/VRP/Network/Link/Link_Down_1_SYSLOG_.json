@@ -1,5 +1,6 @@
 {
     "name": "Huawei | VRP | Network | Link | Link Down #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5ac5d424-7626-4203-a943-03882e86fc11",
     "description": "%%01IFNET/4/IF_STATE(l)[1475]:Interface GigabitEthernet2/0/9 has turned into DOWN state.",
     "event_class__name": "Network | Link | Link Down",
@@ -15,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "Interface (?P<interface>\\S+)( has)? turned into DOWN state\\.$"
+            "value_re": "IFNET/\\d+/IF_STATE.+Interface (?P<interface>\\S+)( has)? turned into DOWN state\\.$"
         }
     ]
 }

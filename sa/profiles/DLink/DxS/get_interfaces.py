@@ -125,7 +125,11 @@ class Script(NOCScript):
 
     rx_gvrp = re.compile(r"^ (?P<ipif>\d+)\s+\d+\s+(?P<state>Enabled)")
 
-    rx_stp = re.compile(r"Port Index\s+: (?P<ipif>\d+([:/]\d+)?)\s+.+?Port STP (: )?(?P<state>Enabled|Disabled)")
+    rx_stp = re.compile(
+        r"Port Index\s+: (?P<ipif>\d+([:/]\d+)?)\s+.+?"
+        r"Port STP (: )?(?P<state>[Ee]nabled|[Dd]isabled)"
+    )
+
     rx_stp1 = re.compile(r"Port Index\s+: (?P<ipif>\d+)\s*\n"
         r"Connection\s+: Link (?:Up|Down)\s*\n"
         r"State : (?P<state>Yes|Enabled|No|Disabled)")

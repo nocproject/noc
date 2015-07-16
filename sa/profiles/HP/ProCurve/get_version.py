@@ -20,12 +20,12 @@ class Script(NOCScript):
     cache = True
     implements = [IGetVersion]
 
-    rx_ver = re.compile(r"ProCurve\s+\S+\s+(Switch\s+)?(?P<platform>\S+).*?,"
-                        "\s*revision\s+(?P<version>\S+),",
-                        re.IGNORECASE)
-    rx_ver_new = re.compile(r"HP\s+\S+\s+(?P<platform>\S+)\s+Switch,"
-                            "\s+revision\s+(?P<version>\S+),",
-                            re.IGNORECASE)
+    rx_ver = re.compile(
+        r"ProCurve\s+\S+\s+(Switch\s+)?(?P<platform>\S+).*?,"
+        r"\s*revision\s+(?P<version>\S+),", re.IGNORECASE)
+    rx_ver_new = re.compile(
+        r"HP\s+(?:\S+\s+)?(?P<platform>\S+)\s+Switch(?: Stack)?,"
+        r"\s+revision\s+(?P<version>\S+),", re.IGNORECASE)
 
     def execute(self):
         v = None

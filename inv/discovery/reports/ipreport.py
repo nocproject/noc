@@ -18,7 +18,7 @@ from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
 from noc.ip.models.prefix import Prefix
 from noc.fm.models import NewEvent
-from noc.inv.models import NewAddressDiscoveryLog
+from noc.inv.models.newaddressdiscoverylog import NewAddressDiscoveryLog
 from noc.settings import config
 from noc.lib.solutions import get_solution
 

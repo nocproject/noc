@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MapTask
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,10 +11,9 @@ import datetime
 import time
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
+from django.db import models, connection
 ## NOC modules
 from managedobject import ManagedObject
-from reducetask import ReduceTask
 from noc.lib.fields import PickledField
 from noc.sa.protocols.sae_pb2 import ERR_INVALID_SCRIPT
 
@@ -27,7 +26,7 @@ class MapTask(models.Model):
         app_label = "sa"
 
     task = models.ForeignKey(
-        ReduceTask,
+        "sa.ReduceTask",
         verbose_name=_("Task"),
         null=True, blank=True,
         on_delete=models.CASCADE
@@ -52,7 +51,10 @@ class MapTask(models.Model):
         default="W")
     script_result = PickledField(_("Result"), null=True, blank=True)
     # Override script's default timeout
-    script_timeout = models.IntegerField(_("Script timeout"), null=True, blank=True)
+    script_timeout = models.IntegerField(
+        _("Script timeout"), null=True, blank=True)
+    stop_time = models.DateTimeField(
+        _("Stop Time"))
 
     def __unicode__(self):
         if self.id:
@@ -67,6 +69,16 @@ class MapTask(models.Model):
         return self.status in ("C", "F")
 
     @classmethod
+    def resolve_object(cls, object):
+        # Resolve object
+        if isinstance(object, basestring):
+            return ManagedObject.objects.get(name=object)
+        elif isinstance(object, (int, long)):
+            return ManagedObject.objects.get(id=object)
+        else:
+            return object
+
+    @classmethod
     def create_task(cls, object, script, params=None, timeout=None):
         """
         Create single Map task
@@ -79,10 +91,7 @@ class MapTask(models.Model):
         status = "W"
         result = None
         # Resolve object
-        if isinstance(object, basestring):
-            object = ManagedObject.objects.get(name=object)
-        elif isinstance(object, (int, long)):
-            object = ManagedObject.objects.get(id=object)
+        object = cls.resolve_object(object)
         # Convert script name
         if "." not in script:
             script = "%s.%s" % (object.profile_name, script)
@@ -95,16 +104,22 @@ class MapTask(models.Model):
                 "code": ERR_INVALID_SCRIPT,
                 "text": "Invalid script %s" % script
             }
+        elif not timeout:
+            timeout = object.profile.scripts[sp[-1]].get_timeout()
+        if not timeout:
+            timeout = 60
+        now = datetime.datetime.now()
         # Create task
         t = MapTask(
             task=None,
             managed_object=object,
             map_script=script,
             script_params=params,
-            next_try=datetime.datetime.now(),
+            next_try=now,
             status=status,
             script_result=result,
-            script_timeout=timeout
+            script_timeout=timeout,
+            stop_time=now + datetime.timedelta(seconds=timeout)
         )
         t.save()
         return t
@@ -137,3 +152,15 @@ class MapTask(models.Model):
             if not block:
                 return False
             time.sleep(1)
+
+    @classmethod
+    def run(cls, object, script, params=None, timeout=None):
+        from noc.sa.mtmanager import MTManager
+        object = cls.resolve_object(object)
+        mt = MTManager.run(object, script, params, timeout)
+        if mt.status == "C":
+            result = mt.script_result
+        else:
+            result = None
+        mt.delete()
+        return result

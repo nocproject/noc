@@ -101,15 +101,12 @@ class Command(BaseCommand):
             # Spool next party
             while len(tasks) < limit and objects:
                 o = objects.pop(0)
-                mt = MapTask(
-                    managed_object=o,
-                    map_script="%s.commands" % o.profile_name,
-                    script_params={"commands": commands},
-                    next_try=datetime.datetime.now(),
-                    script_timeout=timeout,
-                    retries_left=retries
+                mt = MapTask.create_task(
+                    o,
+                    "%s.commands" % o.profile_name,
+                    params={"commands": commands},
+                    timeout=timeout
                 )
-                mt.save()
                 tasks.add(mt.id)
             # Check complete tasks
             complete = False

@@ -17,6 +17,7 @@ from base import KVStorage
 
 class RocksDBStorage(KVStorage):
     name = "rocksdb"
+    prefix_extractor = None
 
     def __init__(self, database, partition):
         super(RocksDBStorage, self).__init__(database, partition)
@@ -24,6 +25,10 @@ class RocksDBStorage(KVStorage):
                                  "%s.db" % self.partition)
         self.db = None
         self.is_empty = None
+        if self.prefix_extractor is None:
+            self.prefix_extractor = self.get_prefix_extractor(
+                database.hash_width
+            )
 
     def write(self, batch):
         """
@@ -48,7 +53,6 @@ class RocksDBStorage(KVStorage):
             if self.is_empty:
                 raise StopIteration
             self.db = self.get_db(read_only=True)
-        # @todo: Apply PrefixExtractor
         it = self.db.iteritems()
         try:
             it.seek(start)
@@ -64,7 +68,45 @@ class RocksDBStorage(KVStorage):
             self.path,
             rocksdb.Options(
                 create_if_missing=True,
-                keep_log_file_num=10
+                keep_log_file_num=10,
+                prefix_extractor=self.prefix_extractor
             ),
             read_only=read_only
         )
+
+    def get_prefix_extractor(self, w):
+        """
+        Returns SliceTransform with static prefix extractor
+        """
+        class StaticPrefix(rocksdb.interfaces.SliceTransform):
+            def name(self):
+                return b'static'
+
+            def transform(self, src):
+                return (0, w)
+
+            def in_domain(self, src):
+                return len(src) >= w
+
+            def in_range(self, dst):
+                return len(dst) == w
+
+        return StaticPrefix()
+
+    def get_last_value(self, start, end):
+        if self.is_empty:
+            return None, None
+        if not self.db:
+            self.is_empty = not os.path.exists(self.path)
+            if self.is_empty:
+                return None, None
+            self.db = self.get_db(read_only=True)
+        it = reversed(self.db.iteritems())
+        try:
+            it.seek(end)
+        except rocksdb.errors.RocksIOError:
+            return None, None
+        for k, v in it:
+            if k <= end:
+                return k, v
+        return None, None

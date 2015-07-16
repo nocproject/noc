@@ -47,6 +47,7 @@ class Job(object):
     system_notification = None  # Name of system notification group
     concurrency = None  # Limit number of concurrently running jobs
     threaded = False  # Run handler in separate thread
+    transaction = False  # Run job within transaction context
     max_delay = 0  # When set, consider task delayed more than
                    # max delay seconds as late
     delay_interval = 0  # Postpone late tasks to random 0..delay_interval
@@ -95,7 +96,10 @@ class Job(object):
         cls.beef = beef
 
     def get_display_key(self):
-        return self.key
+        if self.object:
+            return unicode(object)
+        else:
+            return self.key
 
     def debug(self, msg):
         self.logger.debug(msg)
@@ -187,6 +191,10 @@ class Job(object):
                 return False
             try:
                 self.object = self.model.objects.get(**q)
+                self.logger.set_prefix(
+                    "%s][%s][%s" % (self.scheduler.name, self.name,
+                    self.get_display_key())
+                )
             except self.model.DoesNotExist:
                 return False
         return True

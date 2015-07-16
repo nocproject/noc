@@ -2,24 +2,20 @@
 ##----------------------------------------------------------------------
 ## Basic Managed Object-based discovery
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import datetime
-import random
-## Django modules
-from django.db.models import Q
 ## NOC modules
-from inv.models import Interface
+from noc.inv.models.interface import Interface
 from noc.lib.scheduler.intervaljob import IntervalJob
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.script import script_registry
 
 
 class MODiscoveryJob(IntervalJob):
     ignored = True
+    transaction = True
+    # List of required capabilities
+    required_caps = []
 
     def get_display_key(self):
         if self.object:

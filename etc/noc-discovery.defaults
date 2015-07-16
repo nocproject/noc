@@ -19,6 +19,8 @@ start_delay = 10
 # Limit concurrent SA tasks
 # 0 - no limit
 mrt_limit = 0
+# Maximum threadpool size
+max_threads = 30
 
 [debug]
 enable_manhole = false

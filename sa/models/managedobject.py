@@ -7,11 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import os
-import re
 import difflib
 from collections import namedtuple
 import logging
+
+import os
+import re
+
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -29,8 +31,9 @@ from objectmap import ObjectMap
 from terminationgroup import TerminationGroup
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.profiles import profile_registry
-from noc.lib.fields import INETField, TagsField
+from noc.lib.fields import INETField, TagsField, DocumentReferenceField
 from noc.lib.app.site import site
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.stencil import stencil_registry
@@ -69,6 +72,8 @@ class ManagedObject(models.Model):
     is_managed = models.BooleanField(_("Is Managed?"), default=True)
     administrative_domain = models.ForeignKey(AdministrativeDomain,
             verbose_name=_("Administrative Domain"))
+    segment = DocumentReferenceField(
+            NetworkSegment, null=True, blank=True)
     activator = models.ForeignKey(Activator,
             verbose_name=_("Activator"),
             limit_choices_to={"is_active": True})
@@ -177,12 +182,8 @@ class ManagedObject(models.Model):
                 self.object = obj
 
             def __call__(self, **kwargs):
-                task = ReduceTask.create_task(
-                    [self.object],
-                    reduce_object_script, {},
-                    self.name, kwargs, None
-                )
-                return task.get_result(block=True)
+                from maptask import MapTask
+                return MapTask.run(self.object, self.name, **kwargs)
 
         def __init__(self, obj):
             self._object = obj
@@ -475,20 +476,11 @@ class ManagedObject(models.Model):
         """
         Refresh event filters for all activators serving object
         """
-        def reduce_notify(task):
-            mt = task.maptask_set.all()[0]
-            if mt.status == "C":
-                return mt.script_result
-            return False
-
-        ReduceTask.create_task(
-            "SAE",
-            reduce_notify, {},
-            "notify", {
-                "event": "refresh_event_filter",
-                "object_id": self.id},
-            1
-        )
+        from maptask import MapTask
+        MapTask.create_task("SAE", "notify", {
+            "event": "refresh_event_filter",
+            "object_id": self.id
+        }, 1)
 
     def get_status(self):
         return ObjectStatus.get_status(self)

@@ -13,7 +13,6 @@ import logging
 import re
 import threading
 import time
-import datetime
 from collections import namedtuple
 ## Third-party modules
 import cachetools
@@ -282,6 +281,30 @@ class TimeSeriesDatabase(object):
             return True
         else:
             return False
+
+    def get_last_value(self, metric, ts=None, window=86400):
+        """
+        Returns (value, time) with last metric measure before ts
+        or (None, None)
+        :param metric: Metric to search
+        :param ts: Last allowed timestamp, None for current time
+        :param window: Search window in seconds. Default 1 day
+        """
+        if not ts:
+            ts = int(time.time()) + 1
+        start = ts - window
+        for pn, s, e in reversed(list(self.partition.enumerate(start, ts))):
+            partition = self.get_partition_by_name(pn)
+            k, v = partition.get_last_value(
+                self.get_key(metric, max(s, start)),
+                self.get_key(metric, min(e, ts))
+            )
+            if k:
+                return (
+                    self.get_value(v),
+                    self.get_time(k)
+                )
+        return None, None
 
 IterResult = namedtuple("IterResult", ["name", "has_children"])
 

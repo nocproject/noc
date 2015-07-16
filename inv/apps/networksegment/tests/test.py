@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## inv.networkchart unittes
+## inv.networksegment unittes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,8 +11,8 @@ from noc.lib.test import RestModelTestCase, unittest
 
 
 @unittest.skip("Not ready")
-class NetworkChartTestCase(RestModelTestCase):
-    app = "inv.networkchart"
+class NetworkSegmentTestCase(RestModelTestCase):
+    app = "inv.networksegment"
 
     scenario = [
         {

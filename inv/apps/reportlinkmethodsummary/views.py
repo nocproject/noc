@@ -16,13 +16,16 @@ class reportlinkmethodsummaryApplication(SimpleReport):
 
     def get_data(self, **kwargs):
         db = get_db()
-        data = db.noc.links.group(
-            key={"discovery_method": True},
-            condition={}, initial={"count": 0},
-            reduce="function(doc, prev) {prev.count += 1;}"
-        )
-        data = [(r["discovery_method"], int(r["count"])) for r in data]
-        data = sorted(data, key=lambda x: -x[1])
+        data = db.noc.links.aggregate([
+            {
+                "$group": {
+                    "_id": "$discovery_method",
+                    "count": {"$sum": 1}
+                }
+            },
+            {"$sort": {"count": -1}}
+        ])
+        data = [(x["_id"], x["count"]) for x in data["result"]]
         return self.from_dataset(
             title=self.title,
             columns=[
@@ -30,5 +33,6 @@ class reportlinkmethodsummaryApplication(SimpleReport):
                 TableColumn("Count", align="right",
                     format="integer", total="sum", total_label="Total")
             ],
-            data=data
+            data=data,
+            enumerate=True
         )

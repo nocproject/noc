@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## LLDP Link Discovery Job
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,8 +11,9 @@ from link_discovery import LinkDiscoveryJob
 from noc.settings import config
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
-from noc.lib.validators import is_int
-from noc.sa.interfaces.base import InterfaceTypeError
+from noc.lib.validators import is_int, is_ipv4
+from noc.sa.interfaces.base import (InterfaceTypeError,
+                                    MACAddressParameter)
 
 
 class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
@@ -33,17 +34,29 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
             # Resolve remote object
             ni = n["neighbors"][0]
             remote_object = self.get_neighbor(
-                ni["remote_chassis_id"], ni["remote_chassis_id_subtype"])
-            self.debug("get_neighbor(%s, %s) -> %s" % (ni["remote_chassis_id"],
-                ni["remote_chassis_id_subtype"], remote_object))
+                ni["remote_chassis_id"],
+                ni["remote_chassis_id_subtype"]
+            )
+            self.logger.debug(
+                "get_neighbor(%s, %s) -> %s",
+                ni["remote_chassis_id"],
+                ni["remote_chassis_id_subtype"],
+                remote_object
+            )
             if not remote_object:
                 # Object not found
                 continue
             # Resolve remote interface
-            remote_port = self.get_remote_port(remote_object,
-                ni["remote_port"], ni["remote_port_subtype"])
+            remote_port = self.get_remote_port(
+                remote_object,
+                ni["remote_port"],
+                ni["remote_port_subtype"]
+            )
             self.submit_candidate(
-                n["local_interface"], remote_object, remote_port)
+                n["local_interface"],
+                remote_object,
+                remote_port
+            )
 
     def get_neighbor(self, chassis_id, chassis_subtype):
         """
@@ -76,8 +89,31 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
         else:
             return None
 
+    def get_neighbor_by_hostname(self, name):
+        ds = DiscoveryID.objects.filter(hostname=name)[:2]
+        if len(ds) == 1:
+            # Exactly one neighbor known
+            return ds[0].object
+        else:
+            return None
+
     def get_neighbor_by_local(self, local):
-        pass
+        # Check IPv4
+        if is_ipv4(local):
+            n = self.get_neighbor_by_ip(local)
+            if n:
+                return n
+        else:
+            # Check MAC
+            try:
+                mac = MACAddressParameter().clean(local)
+                n = self.get_neighbor_by_mac(mac)
+                if n:
+                    return n
+            except InterfaceTypeError:
+                pass
+        # Fallback to hostname
+        return self.get_neighbor_by_hostname(local)
 
     def get_remote_port(self, object, remote_port, remote_port_subtype):
         f = {
@@ -88,13 +124,22 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
             128: self.get_remote_port_unspecified    # undetermined
         }.get(remote_port_subtype)
         if f:
-            return f(object, remote_port)
+            rp = f(object, remote_port)
+            if rp:
+                return rp
         else:
-            self.info(
+            self.logger.info(
                 "Unsupported remote port subtype "
-                "from %s. value=%s subtype=%s" % (
-                object, remote_port, remote_port_subtype))
-            return None
+                "from %s. value=%s subtype=%s."
+                "Trying to guess",
+                object, remote_port, remote_port_subtype
+            )
+        if remote_port_subtype != 128:
+            self.logger.info(
+                "Trying to guess port using unspecified subtype"
+            )
+            return self.get_remote_port_unspecified(object, remote_port)
+        return None
 
     def get_remote_port_by_name(self, object, port):
         self.debug("Remote port name: %s" % port)
@@ -110,9 +155,9 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
         self.debug("Remote port description: %s" % port)
         try:
             i = Interface.objects.filter(
-                managed_object=object.id, description=port).first()
-            if i:
-                return i.name
+                managed_object=object.id, description=port)[:2]
+            if len(i) == 1:
+                return i[0].name
             else:
                 return None
         except:
@@ -153,12 +198,19 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
 
     def get_remote_port_by_mac(self, object, mac):
         self.debug("Remote port mac: %s" % mac)
-        i = Interface.objects.filter(managed_object=object.id,
-            mac=mac).first()
-        if i:
-            return i.name
-        else:
+        try:
+            mac = MACAddressParameter().clean(mac)
+        except InterfaceTypeError:
+            self.debug("Invalid MAC, ignoring")
             return None
+        i = Interface.objects.filter(
+            managed_object=object.id,
+            mac=mac)[:2]
+        if len(i) == 1:
+            return i[0].name
+        elif len(i) > 1:
+            self.debug("Non-unique MAC address: %s. Ignoring" % mac)
+        return None
 
     def get_remote_port_unspecified(self, object, port):
         """

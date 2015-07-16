@@ -222,6 +222,7 @@ message ObjectMappingsResponse {
     message PingItem {
         required string address = 1;
         required int32 interval = 2;
+        optional bool current_status = 3;
     }
     required int32 expire  = 1;
     repeated ObjectMappingItem mappings = 2;

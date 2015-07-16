@@ -33,7 +33,7 @@ def reduce_commands(task, commands):
     return "".join(r)
 
 
-class RunCommandsAppplication(SAApplication):
+class RunCommandsApplication(SAApplication):
     title = "Run commands"
     menu = "Tasks | Run Commands"
     reduce_task = reduce_commands
@@ -45,6 +45,10 @@ class RunCommandsAppplication(SAApplication):
                                    help_text="Enter a list of commands to execute. One command per a line.")
         ignore_cli_errors = forms.BooleanField(required=False,
             help_text="Ignore CLI errors and continue execution")
+        batch = forms.BooleanField(
+            required=False,
+            help_text="Run as single command"
+        )
 
     form = CommandsForm
 
@@ -54,8 +58,12 @@ class RunCommandsAppplication(SAApplication):
         :param data:
         :return:
         """
+        if data.get("batch"):
+            commands = [data["commands"]]
+        else:
+            commands = [c for c in data["commands"].splitlines()]
         return {
-            "commands": [c for c in data["commands"].splitlines()],
+            "commands": commands,
             "ignore_cli_errors": data["ignore_cli_errors"]
         }
 
