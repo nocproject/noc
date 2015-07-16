@@ -57,6 +57,14 @@ Ext.define("NOC.inv.map.Application", {
             handler: me.onRevert
         });
 
+        me.newLayoutButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.repeat,
+            text: "New layout",
+            disabled: me.readOnly,
+            scope: me,
+            handler: me.onNewLayout
+        });
+
         me.segmentInspector = Ext.create(
             "NOC.inv.map.inspectors.SegmentInspector",
             {
@@ -136,6 +144,7 @@ Ext.define("NOC.inv.map.Application", {
                         me.editButton,
                         me.saveButton,
                         me.revertButton,
+                        me.newLayoutButton,
                         "-",
                         me.viewMapButton,
                         me.viewLoadButton
@@ -239,5 +248,20 @@ Ext.define("NOC.inv.map.Application", {
     onSetOverlay: function(button) {
         var me = this;
         me.mapPanel.setOverlayMode(button.mapOverlay);
+    },
+
+    onNewLayout: function() {
+        var me = this;
+        Ext.Msg.show({
+            title: "Reset Layout",
+            message: "Would you like to reset current layout and generate new?",
+            icon: Ext.Msg.QUESTION,
+            buttons: Ext.Msg.YESNO,
+            fn: function(btn) {
+                if(btn == "yes") {
+                    me.mapPanel.resetLayout();
+                }
+            }
+        });
     }
 });
