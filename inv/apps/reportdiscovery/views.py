@@ -8,6 +8,8 @@
 
 ## Python modules
 import datetime
+## Django modules
+from django.db.models import Count
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, TableColumn
 from noc.sa.models.managedobject import ManagedObject
@@ -16,6 +18,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
 from noc.inv.models.discoveryjob import DiscoveryJob
+from noc.sa.models.maptask import MapTask
 
 
 class ReportDiscoveryApplication(SimpleReport):
@@ -85,6 +88,20 @@ class ReportDiscoveryApplication(SimpleReport):
                     }.get(x["_id"], "-"),
                     x["count"]
                 ]]
+        data += sorted(d, key=lambda x: -x[1])
+        # MapTask summary
+        data += [SectionRow("Map Tasks")]
+        d = [
+            (
+                {
+                    "W": "Wait",
+                    "R": "Running",
+                    "C": "Complete",
+                    "F": "Failed"
+                }.get(x["status"], "-"),
+                x["count"]
+             )
+            for x in MapTask.objects.values("status").annotate(count=Count("status"))]
         data += sorted(d, key=lambda x: -x[1])
 
         return self.from_dataset(
