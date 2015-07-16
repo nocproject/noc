@@ -57,10 +57,17 @@ def get_model_fields(model):
                 # Try to find unique key
                 k = "id"
                 for ff in f.rel.to._meta.fields:
-                    if ff.name != "id" and ff.unique:
+                    if ff.name != k and ff.unique:
                         k = ff.name
                         break
                 fields += [(f.name, required, f.rel.to, k)]
+        elif hasattr(f, "document"):
+            k = f.document._meta["id_field"]
+            for ff, fi in f.document._fields.items():
+                if fi.name != k and fi.unique:
+                    k = fi.name
+                    break
+            fields += [(f.name, required, f.document, k)]
         else:
             fields += [(f.name, required, None, None)]
     return fields
