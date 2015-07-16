@@ -21,8 +21,10 @@ def build():
     for ge in [
         "etc/defaults/supervisor/*.conf",
         "etc/defaults/services/*.conf",
+        "etc/defaults/groups/*.conf",
         "etc/config/supervisor/*.conf",
-        "etc/config/services/*.conf"
+        "etc/config/services/*.conf",
+        "etc/config/groups/*.conf"
     ]:
         for path in glob.glob(ge):
             config.read(path)
