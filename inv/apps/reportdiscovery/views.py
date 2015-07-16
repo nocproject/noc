@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import datetime
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, TableColumn
 from noc.sa.models.managedobject import ManagedObject
@@ -59,22 +61,31 @@ class ReportDiscoveryApplication(SimpleReport):
                     "_id": "$s",
                     "count": {"$sum": 1}
                 }
-            },
-            {"$sort": {"count": -1}}
+            }
         ])
-        data += [
-            (
-                {
-                    "W": "Wait",
-                    "R": "Run",
-                    "S": "Stop",
-                    "D": "Disabled",
-                    "s": "Suspend"
-                }.get(x["_id"], "-"),
-                x["count"]
-            )
-            for x in r["result"]
-        ]
+        d = []
+        for x in r["result"]:
+            if x["_id"] == "W":
+                nl = DiscoveryJob.objects.filter(
+                    status="W",
+                    ts__lte=datetime.datetime.now()
+                ).count()
+                d += [
+                    ["Wait (Late)", nl],
+                    ["Wait", x["count"] - nl]
+                ]
+            else:
+                d += [[
+                    {
+                        "W": "Wait",
+                        "R": "Run",
+                        "S": "Stop",
+                        "D": "Disabled",
+                        "s": "Suspend"
+                    }.get(x["_id"], "-"),
+                    x["count"]
+                ]]
+        data += sorted(d, key=lambda x: -x[1])
 
         return self.from_dataset(
             title=self.title,
