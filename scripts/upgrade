@@ -211,6 +211,10 @@ done
 info "Creating required directories"
 ensure_dir local 750
 ensure_dir etc/ssh 700
+ensure_dir etc/config/supervisor 700
+ensure_dir etc/config/services 700
+ensure_dir var/sock 700
+ensure_dir var/log
 [ -z "$LOCAL_REPO" ] || ensure_dir $LOCAL_REPO 750
 [ -z "$BACKUP" ] || ensure_dir $BACKUP 750
 [ -z "$LOG" ] || ensure_dir $LOG 750

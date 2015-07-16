@@ -10,7 +10,13 @@ dist/
 build/
 noc.egg-info/
 bin/*
-etc/*.conf
+etc/noc-*.conf
+etc/support.conf
+etc/upgrade.conf
+etc/beef.conf
+etc/noc.conf
+etc/config/
+etc/supervisord.conf
 etc/address/*.conf
 etc/certs/*
 etc/ssh/id_*
@@ -31,3 +37,4 @@ static/pkg/
 share/
 static/test/
 pip-selfcheck.json
+var/

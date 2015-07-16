@@ -124,8 +124,7 @@ class SAE(Daemon):
                                                     "max_mrt_rate_per_sae")
         self.max_mrt_rate_per_shard = self.config.getint("sae",
                                                     "max_mrt_rate_per_shard")
-        self.mrt_log = (self.options.daemonize and
-                        self.config.getboolean("main", "mrt_log"))
+        self.mrt_log = self.config.getboolean("main", "mrt_log")
         if self.mrt_log:
             ld = os.path.dirname(self.config.get("main", "logfile"))
             self.mrt_log_dir = os.path.join(ld, "mrt")

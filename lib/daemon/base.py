@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## System daemons base class
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -41,7 +41,6 @@ class Daemon(object):
     daemon_name = "daemon"
     defaults_config_path = "etc/%(daemon_name)s.defaults"
     config_path = "etc/%(daemon_name)s.conf"
-    create_piddir = False
     # Initialize custom fields and solutions
     use_solutions = False
 
@@ -75,10 +74,6 @@ class Daemon(object):
                                    type="string", dest="instance_id",
                                    default="0",
                                    help="Set instnace id")
-        self.opt_parser.add_option("-f", "--foreground", action="store_false",
-                                   dest="daemonize", default=True,
-                                   help="Do not daemonize. "
-                                        "Run at the foreground")
         self.opt_parser.add_option("-V", "--version", action="store_true",
                                    dest="show_version", default=False,
                                    help="Show daemon version")
@@ -87,13 +82,7 @@ class Daemon(object):
         if self.options.show_version:
             print get_version()
             sys.exit(0)
-        if len(self.args) < 1 or self.args[0] not in ["start", "launch",
-                                                      "stop", "refresh",
-                                                      "manifest"]:
-            self.opt_parser.error(
-                "You must supply one of start|launch|stop|refresh commands")
         # Read config
-        self.pidfile = None
         self.config = None
         self.instance_id = self.options.instance_id
         self.metrics = MetricsHub(
@@ -157,73 +146,19 @@ class Daemon(object):
                 "Invalid loglevel '%s'" % self.config.get("main", "loglevel"))
         for h in logging.root.handlers:
             logging.root.removeHandler(h)  # Dirty hack for baseConfig
-        if self.options.daemonize:
-            # Set up logging
-            logfile = self.config.get("main", "logfile")
-            syslog_host = self.config.get("main", "syslog_host")
-            if logfile or syslog_host:
-                loglevel = self.LOG_LEVELS[self.config.get("main", "loglevel")]
-                logging.root.setLevel(loglevel)
-            if logfile:
-                filename = logfile.replace(
-                    "{{instance}}", self.instance_id)
-                # Check permissions
-                self.check_writable(filename)
-                # Log to file
-                rf_handler = logging.handlers.RotatingFileHandler(
-                    filename=filename,
-                    maxBytes=self.parse_logsize(
-                        self.config.get("main", "logsize")
-                    ),
-                    backupCount=self.config.getint("main", "logfiles")
-                )
-                # @todo: Configurable parameter
-                rf_handler.setFormatter(
-                    logging.Formatter(self.LOG_FORMAT, None))
-                logging.root.addHandler(rf_handler)
-            if syslog_host:
-                # Log to remote host
-                for host in syslog_host.split(","):
-                    host = host.strip()
-                    if not host:
-                        continue
-                    syslog_handler = logging.handlers.SysLogHandler(
-                        address=(host, 514)
-                    )
-                    # @todo: Configurable parameter
-                    syslog_handler.setFormatter(
-                        logging.Formatter(self.LOG_FORMAT, None))
-                    logging.root.addHandler(syslog_handler)
-            self.pidfile = self.config.get("main", "pidfile").replace(
-                "{{instance}}", self.instance_id)
-            if self.pidfile and self.create_piddir:
-                piddir = os.path.dirname(self.pidfile)
-                if not os.path.exists(piddir):
-                    try:
-                        os.makedirs(piddir)
-                        os.chmod(piddir, 01777)
-                    except OSError, why:
-                        self.die("Cannot create PIDfile directory %s: %s" % (
-                            piddir, why))
-                elif not os.path.isdir(piddir):
-                    self.die("'%s' is not a directory" % piddir)
-                elif not os.access(piddir, os.W_OK):
-                    self.die("'%s' is not writable" % piddir)
-            if self.pidfile:
-                self.check_writable(self.pidfile)
+        # Log to stdout
+        loglevel = self.LOG_LEVELS[self.config.get("main", "loglevel")]
+        handler = logging.StreamHandler(sys.stdout)
+        if self.is_stderr_supports_color():
+            formatter = ColorFormatter(
+                "%(color)s" + self.LOG_FORMAT + "%(endcolor)s",
+                None
+            )
         else:
-            # Log to stdout
-            handler = logging.StreamHandler(None)
-            if self.is_stderr_supports_color():
-                formatter = ColorFormatter(
-                    "%(color)s" + self.LOG_FORMAT + "%(endcolor)s",
-                    None
-                )
-            else:
-                formatter = logging.Formatter(self.LOG_FORMAT, None)
-            handler.setFormatter(formatter)
-            logging.root.addHandler(handler)
-            logging.root.setLevel(logging.DEBUG)
+            formatter = logging.Formatter(self.LOG_FORMAT, None)
+        handler.setFormatter(formatter)
+        logging.root.addHandler(handler)
+        logging.root.setLevel(loglevel)
         self.setup_manhole()
         self.setup_perf()
         if self.config.has_option("main", "start_delay"):
@@ -287,39 +222,6 @@ class Daemon(object):
         :return:
         """
         pass
-
-    def become_daemon(self):
-        """
-        Daemonize process
-        :return:
-        """
-        try:
-            if os.fork():
-                # Exit parent and return control to the shell immediately
-                os._exit(0)
-        except OSError, e:
-            sys.stderr.write("Fork failed")
-            sys.exit(1)
-        os.setsid()  # Become session leader
-        os.umask(022)
-        try:
-            pid = os.fork()
-        except OSError, e:
-            sys.stderr.write("Fork failed")
-            os._exit(1)
-        if pid:
-            if self.pidfile:
-                self.write_pidfile(pid)
-            os._exit(0)
-        # In daemon process, redirect stdin/stdout/stderr to /dev/null
-        i = open("/dev/null", "r")
-        o = open("/dev/null", "a+")
-        e = open("/dev/null", "a+")
-        os.dup2(i.fileno(), sys.stdin.fileno())
-        os.dup2(o.fileno(), sys.stdout.fileno())
-        os.dup2(e.fileno(), sys.stderr.fileno())
-        sys.stdout = o
-        sys.stderr = e
 
     def resolve_address(self, s):
         """
@@ -390,22 +292,6 @@ class Daemon(object):
             raise Exception("Cannot resolve address '%s'" % x)
         return r
 
-    def write_pidfile(self, pid=None):
-        """
-        Write pidfile
-        :return:
-        """
-        if not self.pidfile:
-            return
-        if pid is None:
-            pid = os.getpid()  # Process' pid
-        try:
-            with open(self.pidfile, "w") as f:
-                f.write(str(pid))
-        except IOError, why:
-            self.die("Unable to write PIDfile '%s': %s" % (self.pidfile,
-                                                           why))
-
     def setup_opt_parser(self):
         """
         Add additional options to setup_opt_parser
@@ -418,7 +304,7 @@ class Daemon(object):
         Process self.args[0] command
         :return:
         """
-        getattr(self, self.args[0])()
+        self.guarded_run()
 
     def guarded_run(self):
         """
@@ -441,78 +327,7 @@ class Daemon(object):
             error_report()
         self.at_exit()
 
-    def start(self):
-        """
-        "start" command handler
-        :return:
-        """
-        # Daemonize
-        if self.options.daemonize:
-            self.become_daemon()
-        self.guarded_run()
-
-    def stop(self):
-        """
-        "stop" command handler
-        :return:
-        """
-        pidfile = self.config.get("main", "pidfile")
-        if os.path.exists(pidfile):
-            with open(pidfile) as f:
-                data = f.read().strip()
-                if data:
-                    pid = int(data)
-                else:
-                    pid = None
-            if pid is not None:
-                self.logger.info(
-                    "Stopping %s pid=%s" % (self.daemon_name, pid))
-                try:
-                    os.kill(pid, signal.SIGTERM)
-                except:
-                    pass
-
-    def launch(self):
-        """
-        "launch" command handler
-        :return:
-        """
-        # Write pidfile
-        self.write_pidfile()
-        # Close stdin/stdout/stderr
-        i = open("/dev/null", "r")
-        o = open("/dev/null", "a+")
-        e = open("/dev/null", "a+")
-        os.dup2(i.fileno(), sys.stdin.fileno())
-        os.dup2(o.fileno(), sys.stdout.fileno())
-        os.dup2(e.fileno(), sys.stderr.fileno())
-        sys.stdout = o
-        sys.stderr = e
-        self.guarded_run()
-
-    def refresh(self):
-        """
-        "refresh" command handler
-        :return:
-        """
-        self.stop()
-        self.start()
-
-    def manifest(self):
-        import sys
-        for name in [x for x in sys.modules if x.startswith("noc.")]:
-            mod = sys.modules[name]
-            if not mod:
-                continue
-            print mod
-
     def at_exit(self):
-        if self.pidfile:
-            try:
-                self.logger.info("Removing pidfile: %s" % self.pidfile)
-                os.unlink(self.pidfile)
-            except OSError:
-                pass
         self.logger.info("STOP")
 
     def is_stderr_supports_color(self):
