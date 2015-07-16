@@ -13,11 +13,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.inv.discovery.scheduler import DiscoveryScheduler
+from noc.inv.discovery.scheduler import get_scheduler
 
 DELAY = 600
 
-discovery_scheduler = DiscoveryScheduler()
+discovery_scheduler = get_scheduler()
 
 def refresh_config(event):
     # Check managed object is managed

@@ -53,6 +53,7 @@ class Scheduler(object):
     S_RUN = "R"   # Running
     S_STOP = "S"  # Stopped by operator
     S_DISABLED = "D"  # Disabled by system
+    S_SUSPEND = "s"  # Suspended by system
 
     JobExists = JobExists
 
