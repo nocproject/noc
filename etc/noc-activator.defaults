@@ -37,10 +37,8 @@ ping_failure_threshold = 3
 ping_check_limit = 256
 listen_traps    =
 listen_syslog   =
-listen_pm_data  = 127.0.0.1
 secret          = thesecretkey
 max_scripts     = 10
-pm_data_secret  = secret
 enable_internal_trap_parser = false
 
 [sae]

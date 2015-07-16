@@ -28,3 +28,29 @@ Index: noc/lib/python/site-packages/django/contrib/gis/gdal/srs.py
              self.import_epsg(srs_input)
  
      def __del__(self):
+Index: noc/lib/python/site-packages/django/db/transaction.py
+===================================================================
+--- noc.orig/lib/python/site-packages/django/db/transaction.py
++++ noc/lib/python/site-packages/django/db/transaction.py
+@@ -274,15 +274,13 @@ def commit_on_success(using=None):
+     def exiting(exc_value, using):
+         try:
+             if exc_value is not None:
+-                if is_dirty(using=using):
+-                    rollback(using=using)
++                rollback(using=using)
+             else:
+-                if is_dirty(using=using):
+-                    try:
+-                        commit(using=using)
+-                    except:
+-                        rollback(using=using)
+-                        raise
++                try:
++                    commit(using=using)
++                except:
++                    rollback(using=using)
++                    raise
+         finally:
+             leave_transaction_management(using=using)
+ 
