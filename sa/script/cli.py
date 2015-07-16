@@ -8,8 +8,8 @@
 
 ## Python modules
 import sys
-import re
 import Queue
+import re
 ## NOC modules
 from noc.lib.fsm import StreamFSM
 from noc.sa.script.exception import *
@@ -284,14 +284,30 @@ class CLI(StreamFSM):
         self.debug("on_PROMPT_enter")
         if not self.is_ready:
             self.pattern_prompt = self.profile.pattern_prompt
-            # Refine adaprive pattern prompt
+            # Refine adaptive pattern prompt
+            sl = self.profile.can_strip_hostname_to
             for k, v in self.match.groupdict().items():
                 if v:
-                    v = re.escape(v)
-                    self.pattern_prompt = replace_re_group(self.pattern_prompt,
-                        "(?P<%s>" % k, v)
-                    self.pattern_prompt = replace_re_group(self.pattern_prompt,
-                        "(?P=%s" % k, v)
+                    if (k == "hostname" and sl and len(v) > sl):
+                        ss = list(reversed(v[sl:]))
+                        v = re.escape(v[:sl]) + reduce(
+                            lambda x, y: "(?:%s%s)?" % (
+                                re.escape(y), x),
+                            ss[1:],
+                            "(?:%s)?" % re.escape(ss[0])
+                        )
+                    else:
+                        v = re.escape(v)
+                    self.pattern_prompt = replace_re_group(
+                        self.pattern_prompt,
+                        "(?P<%s>" % k,
+                        v
+                    )
+                    self.pattern_prompt = replace_re_group(
+                        self.pattern_prompt,
+                        "(?P=%s" % k,
+                        v
+                    )
                 else:
                     self.debug("Invalid prompt pattern")
             self.debug("Using prompt pattern: %s" % self.pattern_prompt)
