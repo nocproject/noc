@@ -56,22 +56,26 @@ class Script(NOCScript):
         self.apply_table(r, "IF-MIB::ifOperStatus", "oper_status", lambda x: str(x) == "1")
         # Apply ifSpeed
         s_table = self.get_iftable("IF-MIB::ifSpeed")
-        hs_table = self.get_iftable("IF-MIB::ifHighSpeed")
+        highspeed = set()
         for ifindex in r:
-            hs = hs_table.get(ifindex)
-            if hs is not None:
-                hs = int(hs)
-                if hs:
-                    r[ifindex]["in_speed"] = hs * 1000
-                    r[ifindex]["out_speed"] = hs * 1000
-                    continue
             s = s_table.get(ifindex)
             if s is not None:
                 s = int(s)
-                if s:
+                if s == 4294967295:
+                    highspeed.add(ifindex)
+                elif s:
                     r[ifindex]["in_speed"] = s // 1000
                     r[ifindex]["out_speed"] = s // 1000
-                    continue                    
+        # Refer to ifHighSpeed if necessary
+        if highspeed:
+            hs_table = self.get_iftable("IF-MIB::ifHighSpeed")
+            for ifindex in highspeed:
+                s = hs_table.get(ifindex)
+                if s is not None:
+                    s = int(s)
+                    if s:
+                        r[ifindex]["in_speed"] = s * 1000
+                        r[ifindex]["out_speed"] = s * 1000
         return r.values()
 
     def execute(self):
