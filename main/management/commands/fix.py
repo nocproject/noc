@@ -35,6 +35,7 @@ class Command(BaseCommand):
             self.fix_wiping_mo()
             self.fix_suspended_discovery_jobs()
             self.fix_db_interfaces_capability()
+            self.fix_maptask()
         except:
             error_report()
             sys.exit(1)
@@ -75,7 +76,6 @@ class Command(BaseCommand):
                     }
                 }
             )
-
 
     def fix_metricsettings(self):
         def remove_ms(ms):
@@ -274,3 +274,11 @@ class Command(BaseCommand):
                 o.update_caps({
                     "DB | Interfaces": caps[o.id]
                 })
+
+    def fix_maptask(self):
+        from django.db import connection
+        self.info("Optimizing sa_maptask")
+        cursor = connection.cursor()
+        cursor.execute("COMMIT")
+        cursor.execute("VACUUM FULL ANALYZE sa_maptask")
+        cursor.execute("REINDEX TABLE sa_maptask")
