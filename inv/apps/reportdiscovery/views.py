@@ -36,6 +36,7 @@ class ReportDiscoveryApplication(SimpleReport):
             ]]
         data += sorted(d, key=lambda x: -x[1])
         # Interface summary
+        d = []
         data += [SectionRow("Interfaces")]
         d_count = Interface.objects.count()
         for p in InterfaceProfile.objects.all():
