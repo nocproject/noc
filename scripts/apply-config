@@ -8,6 +8,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+import os
 import glob
 import ConfigParser
 import cStringIO
@@ -35,47 +36,45 @@ def build():
     ]:
         for path in glob.glob(ge):
             config.read(path)
-    # Read cluster settings
-    noc_env = "eval"
-    noc_dc = "dc1"
-    noc_node = "n01"
-    if config.has_option("noc-cluster", "environment"):
-        noc_env = config.get("noc-cluster", "environment")
-    if config.has_option("noc-cluster", "datacenter"):
-        noc_dc = config.get("noc-cluster", "datacenter")
-    if config.has_option("noc-cluster", "node"):
-        noc_node = config.get("noc-cluster", "node")
-    # Apply cluster settings
-    # Change supervisorctl prompt
-    if config.has_option("supervisorctl", "prompt"):
-        config.set(
-            "supervisorctl", "prompt",
-            "%s@%s-%s-%s" % (
-                config.get("supervisorctl", "prompt"),
-                noc_env, noc_dc, noc_node
-            )
-        )
-    # Set supervisor environment
-    se = {
-        "NOC_ENV": noc_env,
-        "NOC_DC": noc_dc,
-        "NOC_NODE": noc_node
-    }
-    svc_env = ""
-    if config.has_option("supervisor", "environment"):
-        svc_env = config.get("supervisor", "environment") + ","
-    svc_env += format_env(se)
-    config.set("supervisord", "environment", svc_env)
+    # Read environments
+    env = {}
+    env_config = ConfigParser.RawConfigParser()
+    env_config.optionxform = str  # Preserve case
+    for path in glob.glob("etc/config/env/*.conf"):
+        env_config.read(path)
+    for s in env_config.sections():
+        env[s] = {}
+        for o in env_config.options(s):
+            env[s][o] = env_config.get(s, o)
+    # @todo: Check for required options
+
     # Build config
     out = ConfigParser.ConfigParser()
     for s in config.sections():
-        if s.startswith("noc-"):
-            continue
         out.add_section(s)
+        # Build service's environment
+        de = {}
+        if s == "supervisord":
+            pn = s
+        elif s.startswith("program:"):
+            pn = s[8:]
+        else:
+            pn = None
+        if pn:
+            de.update(env.get(pn, {}))
+            if de:
+                ce = ""
+                if config.has_option(s, "environment"):
+                    ce = config.get(s, "environment") + ","
+                ce += format_env(de)
+                config.set(s, "environment", ce)
+        re = de.copy()  # service + supervisor environment
+        re.update(env["supervisord"])
         for o in config.options(s):
             v = config.get(s, o)
-            for e in se:
-                v = v.replace("%%(ENV_%s)s" % e, se[e])
+            # Apply environment variables to parameters
+            for e in re:
+                v = v.replace("%%(ENV_%s)s" % e, re[e])
             out.set(s, o, v)
     buffer = cStringIO.StringIO()
     out.write(buffer)
