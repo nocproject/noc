@@ -173,6 +173,7 @@ class Service(object):
             self.logger.info("Creating Consul session")
             self.consul_session = yield self.consul.session.create(
                 name=self.service_id,
+                lock_delay=1,
                 ttl=self.config.session_ttl
             )
             c = tornado.ioloop.PeriodicCallback(
@@ -214,10 +215,16 @@ class Service(object):
         if self.leader_group and self.consul_session:
             self.logger.info("Releasing leadership for %s",
                              self.leader_group)
+            try:
+                yield self.consul.kv.put(
+                    self.leader_key, "",
+                    release=self.consul_session
+                )
+            except consul.base.Timeout:
+                pass
             self.logger.info("Closing Consul session %s",
                              self.consul_session)
-            cs = self.consul_session
-            self.consul_session = None
+            cs, self.consul_session = self.consul_session, None
             yield self.consul.session.destroy(cs)
         self.logger.debug("Stopping IOLoop")
         self.ioloop.stop()
