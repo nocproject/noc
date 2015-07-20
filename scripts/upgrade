@@ -77,6 +77,7 @@ if [ -f "./etc/noc-launcher.conf" ]; then
     if [ -f "$PIDFILE" ]; then
         error_exit "NOC is running now. Shutdown it first."
     fi
+    ./scripts/migrate-launcher-conf.py
 fi
 ##
 ## Setup logging
@@ -216,8 +217,13 @@ ensure_dir etc/config/services 700
 ensure_dir var/sock 700
 ensure_dir var/log
 ensure_dir var/run
+ensure_dir var/db/consul
+ensure_dir var/db/mongo
+ensure_dir var/db/nsq
+ensure_dir var/db/postgres
 [ -z "$LOCAL_REPO" ] || ensure_dir $LOCAL_REPO 750
 [ -z "$BACKUP" ] || ensure_dir $BACKUP 750
+# @todo: Remove
 [ -z "$LOG" ] || ensure_dir $LOG 750
 ##
 ## Uninstall legacy patches
