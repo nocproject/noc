@@ -47,7 +47,9 @@ def build():
         for o in env_config.options(s):
             env[s][o] = env_config.get(s, o)
     # @todo: Check for required options
-
+    noc_env = env["supervisord"]["NOC_ENV"]
+    noc_dc = env["supervisord"]["NOC_DC"]
+    noc_node = env["supervisord"]["NOC_NODE"]
     # Build config
     out = ConfigParser.ConfigParser()
     for s in config.sections():
@@ -58,6 +60,11 @@ def build():
             pn = s
         elif s.startswith("program:"):
             pn = s[8:]
+            de["NOC_CONF"] = ":".join([
+                "/v1/kv/noc/%s/config/global/%s/" % (noc_env, pn),
+                "/v1/kvnoc/%s/config/dc/%s/node/%s/%s/" % (
+                    noc_env, noc_dc, noc_node, pn)
+            ])
         else:
             pn = None
         if pn:
