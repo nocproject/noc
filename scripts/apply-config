@@ -61,8 +61,8 @@ def build():
         elif s.startswith("program:"):
             pn = s[8:]
             de["NOC_CONF"] = ":".join([
-                "/v1/kv/noc/%s/config/global/%s/" % (noc_env, pn),
-                "/v1/kvnoc/%s/config/dc/%s/node/%s/%s/" % (
+                "noc/%s/config/global/%s/" % (noc_env, pn),
+                "noc/%s/config/dc/%s/node/%s/%s/" % (
                     noc_env, noc_dc, noc_node, pn)
             ])
         else:
