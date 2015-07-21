@@ -190,6 +190,13 @@ Ext.define("NOC.fm.event.EventPanel", {
             handler: me.onReclassify
         });
 
+        me.showMapButton = Ext.create("Ext.button.Button", {
+            text: "Show Map",
+            glyph: NOC.glyph.globe,
+            scope: me,
+            handler: me.onShowMap
+        });
+
         Ext.apply(me, {
             dockedItems: [
                 {
@@ -208,6 +215,8 @@ Ext.define("NOC.fm.event.EventPanel", {
                             scope: me,
                             handler: me.onRefresh
                         },
+                        "-",
+                        me.showMapButton,
                         "-",
                         me.reclassifyButton,
                         "-",
@@ -413,5 +422,12 @@ Ext.define("NOC.fm.event.EventPanel", {
     onCreateIgnorePattern: function() {
         var me = this;
         NOC.launch("fm.ignorepattern", "from_event", {id: me.data.id});
+    },
+
+    onShowMap: function() {
+        var me = this;
+        NOC.launch("inv.map", "history", {
+            args: [me.data.segment_id]
+        });
     }
 });
