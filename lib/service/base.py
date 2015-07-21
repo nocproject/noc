@@ -21,6 +21,7 @@ import consul.tornado
 import consul.base
 ## NOC modules
 from .config import Config
+from noc.sa.interfaces.base import DictParameter, StringParameter
 
 
 class Service(object):
@@ -79,6 +80,15 @@ class Service(object):
         )
     ]
 
+    # Dict parameter containing values accepted
+    # via dynamic configuration
+    config_interface = {
+        "loglevel": StringParameter(
+            default=os.environ.get("NOC_LOGLEVEL", "info"),
+            choices=["critical", "error", "warning", "info", "debug"]
+        )
+    }
+
     LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
 
     LOG_LEVELS = {
@@ -98,6 +108,7 @@ class Service(object):
         self.leader_group = None
         self.leader_key = None
         self.consul_session = None
+        self.renew_session_callback = None
 
     @classmethod
     def die(cls, msg):
@@ -139,6 +150,8 @@ class Service(object):
         )
         self.config = Config(
             consul=self.consul,
+            interface=DictParameter(attrs=self.config_interface,
+                                    truncate=True),
             **vc
         )
 
@@ -165,7 +178,12 @@ class Service(object):
         """
         # @todo: Release leadership and terminate
         if self.consul_session:
-            yield self.consul.session.renew(self.consul_session)
+            try:
+                yield self.consul.session.renew(self.consul_session)
+            except consul.base.NotFound:
+                # Wake up after suspend
+                self.die("Wake up after suspend. Restarting")
+                self.stop()
 
     @tornado.gen.coroutine
     def acquire_leadership(self):
@@ -176,12 +194,12 @@ class Service(object):
                 lock_delay=1,
                 ttl=self.config.session_ttl
             )
-            c = tornado.ioloop.PeriodicCallback(
+            self.renew_session_callback = tornado.ioloop.PeriodicCallback(
                 self.renew_session,
                 self.config.session_ttl * 500,
                 self.ioloop
             )
-            c.start()
+            self.renew_session_callback.start()
             self.logger.info("Acquiring leadership for %s (session %s)",
                              self.leader_group, self.consul_session)
             while True:
@@ -217,7 +235,7 @@ class Service(object):
                              self.leader_group)
             try:
                 yield self.consul.kv.put(
-                    self.leader_key, "",
+                    self.leader_key, "EMPTY",
                     release=self.consul_session
                 )
             except consul.base.Timeout:

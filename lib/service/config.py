@@ -10,6 +10,7 @@
 import logging
 import os
 import functools
+from copy import deepcopy
 ## Third-party modules
 import consul.base
 import tornado.ioloop
@@ -18,13 +19,14 @@ import blinker
 
 
 class Config(object):
-    def __init__(self, consul, conf="", dc=None, **kwargs):
+    def __init__(self, consul, interface, conf="", dc=None, **kwargs):
         self.change = blinker.signal("confchanged")
         self.ready = blinker.signal("confready")
         self._conf = kwargs.copy()
         self._raw_conf = {}  # level -> dict
         self._logger = logging.getLogger("config")
         self._consul = consul
+        self._interface = interface
         self._pending_configs = set(conf.split(":"))
         ioloop = tornado.ioloop.IOLoop.instance()
         for n, conf in enumerate(self._pending_configs):
@@ -63,8 +65,16 @@ class Config(object):
                     # Apply data at shadowed level
                     for l in range(level + 1, max_level + 1):
                         hidden |= set(self._raw_conf[l]) & k
+                # Validate config
+                rc = deepcopy(self._conf)
+                rc.update(dict((x, c[x]) for x in k - hidden))
+                try:
+                    c = self._interface.clean(rc)
+                except ValueError, why:
+                    self._logger.error("Invalid configuration: %s", why)
+                    continue
                 # Apply changes
-                for x in k - hidden:
+                for x in set(c) - hidden:
                     if self._conf.get(x) != c[x]:
                         self._conf[x] = c[x]
                         self.change.send(x, value=c[x])
