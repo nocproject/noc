@@ -90,8 +90,12 @@ option_list = [
         "--edit",
         action="store_const", dest="action", const="edit",
         help="Edit config"
+    ),
+    make_option(
+        "--file",
+        action="store", dest="file",
+        help="Read config from file (- for stdin)"
     )
-
 ]
 
 usage = "usage: %prog [options] arg1 arg2 ..."
@@ -155,20 +159,22 @@ def action_show(conf, args):
     print format(conf, d)
 
 
+def get_config_interface(conf):
+    m = __import__("noc.services.%s.service" % conf.service, {}, {}, "*")
+    for a in dir(m):
+        o = getattr(m, a)
+        if isinstance(o, type) and issubclass(o, Service):
+            return DictParameter(attrs=o.config_interface,
+                                 truncate=True)
+    die("Service cannot be configured")
+
+
 def action_edit(conf, args):
     """
     Edit configuration node
     """
     # Find interface
-    m = __import__("noc.services.%s.service" % conf.service, {}, {}, "*")
-    interface = None
-    for a in dir(m):
-        o = getattr(m, a)
-        if isinstance(o, type) and issubclass(o, Service):
-            interface = DictParameter(attrs=o.config_interface,
-                                      truncate=True)
-    if not interface:
-        die("Service cannot be configured")
+    interface = get_config_interface(conf)
     #
     d = get_data(conf)
     # Save text to file
@@ -194,14 +200,48 @@ def action_edit(conf, args):
             die("Not changed, aborting")
     finally:
         os.unlink(name)
-    # Apply config. Calculate differencies
+    # Parse file
     data = decode(conf, nd)
     # Verify
     try:
         data[conf.service] = interface.clean(data[conf.service])
     except ValueError, why:
         die("ERROR: %s" % why)
-    print data
+    save_config(conf, data)
+
+
+def from_file(conf, args):
+    if conf.file == "-":
+        data = sys.stdin.read()
+    else:
+        with open(conf.file) as f:
+            data = f.read()
+    # Parse file
+    data = decode(conf, data)
+    # Find interface
+    interface = get_config_interface(conf)
+    # Verify
+    try:
+        data[conf.service] = interface.clean(data[conf.service])
+    except ValueError, why:
+        die("ERROR: %s" % why)
+    save_config(conf, data)
+
+
+def save_config(conf, data):
+    def iter_items(prefix, r):
+        for k in r:
+            v = r[k]
+            if type(v) == dict:
+                for x, y in iter_items(prefix + k + "/", v):
+                    yield x, y
+            else:
+                yield prefix + k, v
+
+    consul = get_consul(conf)
+    base = conf_path(conf)
+    for k, v in iter_items(base, data):
+        consul.kv.put(k, v, dc=conf.dc)
 
 
 def format(conf, data):
@@ -239,6 +279,7 @@ def decode_yaml(data):
     import yaml
     return yaml.load(data)
 
+
 def main():
     parser = OptionParser(
         usage=usage,
@@ -250,7 +291,9 @@ def main():
         return die(why)
     except OptParseError, why:
         return die(why)
-    if conf.action == "show":
+    if conf.file:
+        from_file(conf, args)
+    elif conf.action == "show":
         action_show(conf, args)
     elif conf.action == "edit":
         action_edit(conf, args)
