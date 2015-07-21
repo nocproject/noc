@@ -18,6 +18,10 @@ case "$1" in
         shift
         exec ./bin/supervisorctl "$@"
         ;;
+    "conf")
+        shift
+        exec ./scripts/conf.py "$@"
+        ;;
     "generate-ssh-keys")
         exec ./scripts/generate-ssh-keys.py "$@"
         ;;
