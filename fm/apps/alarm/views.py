@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## fm.alarm application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -169,6 +169,8 @@ class AlarmApplication(ExtApplication):
         d["managed_object_profile"] = mo.profile_name
         d["managed_object_platform"] = mo.platform
         d["managed_object_version"] = mo.get_attr("version")
+        d["segment"] = mo.segment.name
+        d["tags"] = mo.tags
         # Log
         if alarm.log:
             d["log"] = [

@@ -1,9 +1,14 @@
 <div class="{{row_class}}">
 <u><b>{{subject}}</b> [{{status__label}}]</u><br/>
-<b>Severity:</b> {{severity__label}} ({{severity}})<br/>
+<b>Class:</b> {{alarm_class__label}}
+    <b>Severity:</b> {{severity__label}} ({{severity}})<br/>
 <b>Object:</b> {{managed_object__label}} ({{managed_object_address}},
-    {{managed_object_platform}}, {{managed_object_version}})<br/>
-<b>Class:</b> {{alarm_class__label}} <br/>
+    {{managed_object_platform}}, {{managed_object_version}})
+    <b>Segment:</b> {{segment}}<br/>
 <b>Timestamp:</b> {{timestamp}} (duration {{formatDuration duration}})<br/>
-<b>Watchers:</b>
+<b>Watchers:</b><br/>
+<b>Tags:</b>
+    {{#each tags}}
+    <span class='x-display-tag'>{{this}}</span>
+    {{/each}}
 </div>
