@@ -14,14 +14,20 @@ from optparse import (make_option, OptionParser,
                       OptionError, OptParseError)
 import signal
 import uuid
+import socket
 ## Third-party modules
 from tornado import ioloop
 import tornado.gen
+import tornado.web
+import tornado.netutil
+import tornado.httpserver
 import consul.tornado
 import consul.base
 ## NOC modules
 from .config import Config
 from noc.sa.interfaces.base import DictParameter, StringParameter
+from .api.mon import MonAPI
+from .doc import DocRequestHandler
 
 
 class Service(object):
@@ -88,6 +94,11 @@ class Service(object):
             choices=["critical", "error", "warning", "info", "debug"]
         )
     }
+
+    ## List of ServiceAPI instances
+    api = [
+        MonAPI
+    ]
 
     LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
 
@@ -299,3 +310,20 @@ class Service(object):
         Initialize services before run
         """
         self.logger.info("Activating service")
+        if self.api:
+            # Collect exposed API
+            api = [(h.get_base_url(), h) for h in self.api]
+            # Bind random socket
+            socks = tornado.netutil.bind_sockets(0,
+                                                 family=socket.AF_INET)
+            host, port = socks[0].getsockname()
+            self.logger.info("Running HTTP API at http://%s:%s/",
+                             host, port)
+            for url, h in api:
+                self.logger.info("Supported API: %s at %s",
+                                 h.name, url)
+            api += [("/", DocRequestHandler)]
+            app = tornado.web.Application(api)
+            app.service = self
+            http_server = tornado.httpserver.HTTPServer(app)
+            http_server.add_socket(socks[0])
