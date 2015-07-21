@@ -188,6 +188,9 @@ class EventApplication(ExtApplication):
         d["managed_object_profile"] = mo.profile_name
         d["managed_object_platform"] = mo.platform
         d["managed_object_version"] = mo.get_attr("version")
+        d["segment"] = mo.segment.name
+        d["segment_id"] = str(mo.segment.id)
+        d["tags"] = mo.tags
         # Log
         if event.log:
             dd["log"] = [
