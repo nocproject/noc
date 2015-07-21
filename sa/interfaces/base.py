@@ -16,9 +16,7 @@ from noc.lib.ip import IPv6
 from noc.lib.mac import MAC
 from noc.lib.validators import *
 
-
-class InterfaceTypeError(Exception):
-    pass
+InterfaceTypeError = ValueError
 
 
 class Parameter(object):
@@ -649,9 +647,10 @@ class DictParameter(Parameter):
         ...
     InterfaceTypeError: DictParameter: {'i': '10', 'x': 'ten'}
     """
-    def __init__(self, required=True, default=None, attrs=None):
+    def __init__(self, required=True, default=None, attrs=None, truncate=False):
         super(DictParameter, self).__init__(required=required, default=default)
         self.attrs = attrs
+        self.truncate = truncate
 
     def clean(self, value):
         if value is None and self.default is not None:
@@ -683,8 +682,10 @@ class DictParameter(Parameter):
                             value,
                             "Invalid value for '%s': %s" % (a_name, why))
                 del in_value[a_name]
-        for k, v in in_value.items():
-            out_value[k] = v
+        # Copy left items
+        if not self.truncate:
+            for k, v in in_value.items():
+                out_value[k] = v
         return out_value
 
     def script_clean_input(self, profile, value):
