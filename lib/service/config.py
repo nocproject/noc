@@ -57,18 +57,17 @@ class Config(object):
                 ) for d in data)
                 self._raw_conf[level].update(c)
                 max_level = max(self._raw_conf.iterkeys())
-                if level == max_level:
-                    # Apply all data if on max level
-                    self._conf.update(c)
-                else:
-                    k = set(c)
-                    hidden = set()
+                k = set(c)
+                hidden = set()
+                if level != max_level:
+                    # Apply data at shadowed level
                     for l in range(level + 1, max_level + 1):
                         hidden |= set(self._raw_conf[l]) & k
-                    for x in k - hidden:
-                        if self._conf.get(x) != c[x]:
-                            self._conf[x] = c[x]
-                            self.change.send(x, value=c[x])
+                # Apply changes
+                for x in k - hidden:
+                    if self._conf.get(x) != c[x]:
+                        self._conf[x] = c[x]
+                        self.change.send(x, value=c[x])
                 self._logger.debug("Config: %s", self._conf)
             if conf in self._pending_configs:
                 self._pending_configs.remove(conf)
