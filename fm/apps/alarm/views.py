@@ -124,7 +124,9 @@ class AlarmApplication(ExtApplication):
             "subject": o.subject,
             "events": n_events,
             "duration": o.duration,
-            "row_class": s.style.css_class_name
+            "row_class": s.style.css_class_name,
+            "segment__label": o.managed_object.segment.name,
+            "segment": str(o.managed_object.segment.id)
         }
         if fields:
             d = dict((k, d[k]) for k in fields)
@@ -170,6 +172,7 @@ class AlarmApplication(ExtApplication):
         d["managed_object_platform"] = mo.platform
         d["managed_object_version"] = mo.get_attr("version")
         d["segment"] = mo.segment.name
+        d["segment_id"] = str(mo.segment.id)
         d["tags"] = mo.tags
         # Log
         if alarm.log:
