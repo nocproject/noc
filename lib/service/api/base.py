@@ -19,12 +19,14 @@ class ServiceAPI(tornado.web.RequestHandler):
 
     API methods are denoted by @api decorator
     """
-    SUPPORTED_METHODS = ("POST",)
-
     # Name and version of the service
     # RPC URL will be /v<verson>/<name>/
     name = "test"
     version = 1
+
+    SUPPORTED_METHODS = ("POST",)
+    # Register service to DNS and NSQ
+    register = False
 
     def post(self, *args, **kwargs):
         # Parse JSON
