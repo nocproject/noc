@@ -42,6 +42,11 @@ class Service(object):
     # Only one service in leader group can be running at a time
     # Config variables can be expanded as %(varname)s
     leader_group_name = None
+    # Pooled service are used to distribute load between services.
+    # Pool name set in NOC_POOL parameter or --pool option.
+    # May be used in conjunction with leader_group_name
+    # to allow only one instance of services per node or datacenter
+    pooled = False
     #
     usage = "usage: %prog [options] arg1 arg2 ..."
     # CLI option list
@@ -86,6 +91,14 @@ class Service(object):
         )
     ]
 
+    pooled_option_list = [
+        make_option(
+            "--pool",
+            action="store", dest="pool",
+            default=os.environ.get("NOC_POOL", "default"),
+            help="Pool name"
+        )
+    ]
     # Dict parameter containing values accepted
     # via dynamic configuration
     config_interface = {
@@ -140,9 +153,13 @@ class Service(object):
         """
         Parse CLI command-line options
         """
+        opt_list = []
+        opt_list += self.option_list
+        if self.pooled:
+            opt_list += self.pooled_option_list
         parser = OptionParser(
             usage=self.usage,
-            option_list=self.option_list
+            option_list=opt_list
         )
         try:
             conf, args = parser.parse_args()
