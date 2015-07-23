@@ -23,6 +23,7 @@ import tornado.netutil
 import tornado.httpserver
 import consul.tornado
 import consul.base
+import consul
 ## NOC modules
 from .config import Config
 from noc.sa.interfaces.base import DictParameter, StringParameter
@@ -258,22 +259,19 @@ class Service(object):
 
     @tornado.gen.coroutine
     def release_leadership(self):
-        if self.leader_group and self.consul_session:
-            self.logger.info("Releasing leadership for %s",
-                             self.leader_group)
-            try:
-                yield self.consul.kv.put(
-                    self.leader_key, "EMPTY",
-                    release=self.consul_session
-                )
-            except consul.base.Timeout:
-                pass
-            self.logger.info("Closing Consul session %s",
-                             self.consul_session)
-            cs, self.consul_session = self.consul_session, None
-            yield self.consul.session.destroy(cs)
-        self.logger.debug("Stopping IOLoop")
-        self.ioloop.stop()
+        self.logger.info("Releasing leadership for %s",
+                         self.leader_group)
+        try:
+            yield self.consul.kv.put(
+                self.leader_key, "EMPTY",
+                release=self.consul_session
+            )
+        except consul.base.Timeout:
+            pass
+        self.logger.info("Closing Consul session %s",
+                         self.consul_session)
+        cs, self.consul_session = self.consul_session, None
+        yield self.consul.session.destroy(cs)
 
     def on_config_ready(self, *args, **kwargs):
         """
@@ -315,7 +313,7 @@ class Service(object):
 
     def stop(self):
         self.logger.warn("Stopping")
-        self.ioloop.add_callback(self.release_leadership)
+        self.ioloop.add_callback(self.deactivate)
 
     def on_SIGTERM(self, signo, frame):
         self.logger.warn("SIGTERM caught, Stopping")
@@ -334,6 +332,13 @@ class Service(object):
             socks = tornado.netutil.bind_sockets(0,
                                                  family=socket.AF_INET)
             host, port = socks[0].getsockname()
+            if host == "0.0.0.0" or host == "127.0.0.1":
+                # Detect advertised address
+                aconf = yield self.consul.agent.self()
+                ac = aconf["Config"]
+                host = ac["ClientAddr"]
+                if host == "127.0.0.1":
+                    host = ac["AdvertiseAddrWan"]
             self.logger.info("Running HTTP API at http://%s:%s/",
                              host, port)
             for url, h in api:
@@ -344,3 +349,42 @@ class Service(object):
             app.service = self
             http_server = tornado.httpserver.HTTPServer(app)
             http_server.add_socket(socks[0])
+            # Register services
+            tags = None
+            if self.pooled:
+                tags = [self.config.pool]
+            for h in self.api:
+                if not h.register:
+                    continue
+                self.logger.info(
+                    "Registering service %s at %s:%s",
+                    h.name, host, port
+                )
+                yield self.consul.agent.service.register(
+                    name=h.name,
+                    service_id=h.name,
+                    address=host,
+                    port=port,
+                    tags=tags,
+                    check=[
+                        consul.Check.http(
+                            "http://%s:%s/" % (host, port),
+                            1, 1
+                        )
+                    ]
+                )
+
+    @tornado.gen.coroutine
+    def deactivate(self):
+        # deregister services
+        for h in self.api:
+            if not h.register:
+                continue
+            self.logger.info("Deregister service %s", h.name)
+            yield self.consul.agent.service.deregister(h.name)
+        # Release leadership locj
+        if self.leader_group and self.consul_session:
+            yield self.release_leadership()
+        # Finally stop ioloop
+        self.logger.info("Stopping IOLoop")
+        self.ioloop.stop()
