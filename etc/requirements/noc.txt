@@ -49,3 +49,4 @@ noc-pkg-codemirror==5.2
 noc-pkg-stacktrace==1.0.0
 noc-pkg-grafana==1.9.1
 noc-pkg-pyclips==1.0.7
+noc-pkg-consul-ui==0.5.2
