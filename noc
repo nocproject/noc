@@ -34,11 +34,7 @@ case "$1" in
         ;;
     "runserver")
         shift
-        if [ $# -ge 1 ]; then
-            exec ./scripts/noc-web.py -f start -l $1
-        else
-            exec ./scripts/noc-web.py -f start
-        fi
+        exec ./scripts/noc-web.py
         ;;
     "upgrade")
         exec ./scripts/upgrade
