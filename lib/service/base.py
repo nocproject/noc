@@ -185,12 +185,19 @@ class Service(object):
         )
 
     def setup_logging(self):
-        # @todo: Change logging settings when necessary
-        logging.basicConfig(
-            stream=sys.stdout,
-            format=self.LOG_FORMAT,
-            level=self.LOG_LEVELS[self.config.loglevel]
-        )
+        if len(logging.root.handlers):
+            # Logger is already initialized
+            fmt = logging.Formatter(self.LOG_FORMAT, None)
+            for h in logging.root.handlers:
+                h.setFormatter(fmt)
+            logging.root.setLevel(self.LOG_LEVELS[self.config.loglevel])
+        else:
+            # Imitialize logger
+            logging.basicConfig(
+                stream=sys.stdout,
+                format=self.LOG_FORMAT,
+                level=self.LOG_LEVELS[self.config.loglevel]
+            )
         self.logger = logging.getLogger(self.name)
 
     def on_change_loglevel(self, sender, value):
@@ -357,8 +364,8 @@ class Service(object):
                 if not h.register:
                     continue
                 self.logger.info(
-                    "Registering service %s at %s:%s",
-                    h.name, host, port
+                    "Registering service %s at %s:%s (tags: %s)",
+                    h.name, host, port, tags
                 )
                 yield self.consul.agent.service.register(
                     name=h.name,
@@ -373,6 +380,7 @@ class Service(object):
                         )
                     ]
                 )
+        self.on_activate()
 
     @tornado.gen.coroutine
     def deactivate(self):
@@ -388,3 +396,9 @@ class Service(object):
         # Finally stop ioloop
         self.logger.info("Stopping IOLoop")
         self.ioloop.stop()
+
+    def on_activate(self):
+        """
+        Called when service activated
+        """
+        pass
