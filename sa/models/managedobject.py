@@ -79,14 +79,6 @@ class ManagedObject(models.Model):
         Pool,
         null=False, blank=False
     )
-    # @todo: Remove
-    activator = models.ForeignKey(Activator,
-             verbose_name=_("Activator"),
-             limit_choices_to={"is_active": True})
-    # @todo: Remove
-    collector = models.ForeignKey(Collector,
-             verbose_name=_("Collector"),
-             limit_choices_to={"is_active": True}, null=True, blank=True)
     profile_name = models.CharField(_("SA Profile"),
             max_length=128, choices=profile_registry.choices)
     object_profile = models.ForeignKey(ManagedObjectProfile,
@@ -106,7 +98,31 @@ class ManagedObject(models.Model):
             max_length=32, blank=True, null=True)
     remote_path = models.CharField(_("Path"),
             max_length=256, blank=True, null=True)
+    trap_source_type = models.CharField(
+        max_length=1,
+        choices=[
+            ("d", "Disable"),
+            ("m", "Management Address"),
+            ("s", "Specify address"),
+            ("l", "Loopback address"),
+            ("a", "All interface addresses")
+        ],
+        default="d", null=False, blank=False
+    )
     trap_source_ip = INETField(_("Trap Source IP"), null=True,
+            blank=True, default=None)
+    syslog_source_type = models.CharField(
+        max_length=1,
+        choices=[
+            ("d", "Disable"),
+            ("m", "Management Address"),
+            ("s", "Specify address"),
+            ("l", "Loopback address"),
+            ("a", "All interface addresses")
+        ],
+        default="d", null=False, blank=False
+    )
+    syslog_source_ip = INETField(_("Syslog Source IP"), null=True,
             blank=True, default=None)
     trap_community = models.CharField(_("Trap Community"),
             blank=True, null=True, max_length=64)
@@ -323,13 +339,7 @@ class ManagedObject(models.Model):
         if old is None:
             SelectorCache.rebuild_for_object(self)
             self.event(self.EV_NEW, {"object": self})
-        if not self.collector or not self.trap_source_ip:
-            # Remove from object mappings
-            ObjectMap.delete_map(self)
-        else:
-            # Add to object mappings
-            ObjectMap.update_map(
-                self, self.collector, self.trap_source_ip)
+        ObjectMap.invalidate(self.pool)
 
     def delete(self, *args, **kwargs):
         # Deny to delete "SAE" object
