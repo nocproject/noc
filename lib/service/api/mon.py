@@ -27,7 +27,7 @@ class MonAPI(ServiceAPI):
     name = "mon"
     SUPPORTED_METHODS = ("GET", "POST")
     http_request_handler = MonAPIRequestHandler
-    level = ServiceAPI.AL_NODE
+    level = ServiceAPI.AL_SERVICE
 
     @api
     def stats(self):
