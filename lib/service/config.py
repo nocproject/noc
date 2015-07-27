@@ -19,7 +19,7 @@ import blinker
 
 
 class Config(object):
-    def __init__(self, consul, interface, conf="", dc=None, **kwargs):
+    def __init__(self, consul, interface, conf="", **kwargs):
         self.change = blinker.signal("confchanged")
         self.ready = blinker.signal("confready")
         self._conf = kwargs.copy()
@@ -88,7 +88,7 @@ class Config(object):
         if item.startswith("_") or item in ("change", "ready"):
             return self.__dict__[item]
         else:
-            return self._conf[item]
+            return self._conf.get(item)
 
     def __getitem__(self, item):
         return self._conf[item]
