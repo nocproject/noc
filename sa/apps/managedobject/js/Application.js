@@ -13,8 +13,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.managedobject.AttributesModel",
         "NOC.sa.managedobject.SchemeLookupField",
         "NOC.sa.administrativedomain.LookupField",
-        "NOC.sa.activator.LookupField",
-        "NOC.sa.collector.LookupField",
+        "NOC.main.pool.LookupField",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.vc.vcdomain.LookupField",
@@ -248,10 +247,10 @@ Ext.define("NOC.sa.managedobject.Application", {
                     dataIndex: "address"
                 },
                 {
-                    text: "Activator",
-                    dataIndex: "activator",
-                    renderer: NOC.render.Lookup("activator"),
-                    width: 100,
+                    text: "Pool",
+                    dataIndex: "pool",
+                    renderer: NOC.render.Lookup("pool"),
+                    width: 100
                 },
                 {
                     text: "Description",
@@ -367,19 +366,11 @@ Ext.define("NOC.sa.managedobject.Application", {
                             groupEdit: true
                         },
                         {
-                            name: "activator",
-                            xtype: "sa.activator.LookupField",
-                            fieldLabel: "Activator",
+                            name: "pool",
+                            xtype: "main.pool.LookupField",
+                            fieldLabel: "Pool",
                             width: 100,
                             allowBlank: false,
-                            groupEdit: true
-                        },
-                        {
-                            name: "collector",
-                            xtype: "sa.collector.LookupField",
-                            fieldLabel: "Collector",
-                            width: 100,
-                            allowBlank: true,
                             groupEdit: true
                         },
                         {
@@ -669,16 +660,10 @@ Ext.define("NOC.sa.managedobject.Application", {
             lookup: "sa.managedobjectselector"
         },
         {
-            title: "By Activator",
-            name: "activator",
+            title: "By Pool",
+            name: "pool",
             ftype: "lookup",
-            lookup: "sa.activator"
-        },
-        {
-            title: "By Collector",
-            name: "collector",
-            ftype: "lookup",
-            lookup: "sa.collector"
+            lookup: "main.pool"
         },
         {
             title: "By VRF",

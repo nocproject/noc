@@ -29,6 +29,7 @@ from collector import Collector
 from objectstatus import ObjectStatus
 from objectmap import ObjectMap
 from terminationgroup import TerminationGroup
+from noc.main.models.pool import Pool
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.networksegment import NetworkSegment
@@ -74,12 +75,18 @@ class ManagedObject(models.Model):
             verbose_name=_("Administrative Domain"))
     segment = DocumentReferenceField(
             NetworkSegment, null=True, blank=True)
+    pool = DocumentReferenceField(
+        Pool,
+        null=False, blank=False
+    )
+    # @todo: Remove
     activator = models.ForeignKey(Activator,
-            verbose_name=_("Activator"),
-            limit_choices_to={"is_active": True})
+             verbose_name=_("Activator"),
+             limit_choices_to={"is_active": True})
+    # @todo: Remove
     collector = models.ForeignKey(Collector,
-            verbose_name=_("Collector"),
-            limit_choices_to={"is_active": True}, null=True, blank=True)
+             verbose_name=_("Collector"),
+             limit_choices_to={"is_active": True}, null=True, blank=True)
     profile_name = models.CharField(_("SA Profile"),
             max_length=128, choices=profile_registry.choices)
     object_profile = models.ForeignKey(ManagedObjectProfile,
