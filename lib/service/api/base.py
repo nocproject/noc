@@ -72,6 +72,7 @@ class ServiceSubscriber(object):
 
     def get_topic(self):
         return self.api_class.get_service_topic(
+            name=self.service.name,
             pool=self.service.config.pool,
             dc=self.service.config.dc,
             node=self.service.config.node
@@ -144,6 +145,8 @@ class ServiceAPI(object):
     AL_POOL = 2
     # Advertise at node level
     AL_NODE = 3
+    # Advertise at service level
+    AL_SERVICE = 4
     # API level
     level = AL_NONE
 
@@ -155,13 +158,15 @@ class ServiceAPI(object):
         return r"/v%s/%s/" % (cls.version, cls.name)
 
     @classmethod
-    def get_service_topic(cls, pool=None, dc=None, node=None):
+    def get_service_topic(cls, name=None, pool=None, dc=None, node=None):
         if cls.level == cls.AL_GLOBAL:
             return "v%s-%s" % (cls.version, cls.name)
         elif cls.level == cls.AL_POOL:
             return "v%s-%s-%s" % (cls.version, cls.name, pool)
         elif cls.level == cls.AL_NODE:
             return "v%s-%s-%s-%s" % (cls.version, cls.name, dc, node)
+        elif cls.level == cls.AL_SERVICE:
+            return "v%s-%s-%s-%s-%s" % (cls.version, name, cls.name, dc, node)
         else:
             return None
 
