@@ -27,7 +27,6 @@ class FMWriterService(Service):
 
     #
     leader_group_name = "fmwriter-%(env)s-%(pool)s"
-    pooled = True
     # Dict parameter containing values accepted
     # via dynamic configuration
     config_interface = {
@@ -58,7 +57,8 @@ class FMWriterService(Service):
         )
         # Generate sequental number
         seq = Binary(struct.pack(
-            "!II",
+            "!16sII",
+            self.config.pool,
             int(time.time()),
             self.event_seq.next() & 0xFFFFFFFFL
         ))

@@ -1,8 +1,9 @@
+#!./bin/python
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## noc-classifier daemon
+## Classifier service
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -12,28 +13,23 @@ import time
 import datetime
 import sys
 import os
-from collections import defaultdict
 import operator
-## Django modules
-from django.db import reset_queries
 ## Third-party modules
-import mongoengine.connection
 from cachetools import TTLCache, cachedmethod
+import tornado.gen
+import tornado.queues
 ## NOC modules
-from noc.lib.daemon import Daemon
+from noc.lib.service.base import Service
 from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models import (EventClassificationRule,
                            EventClass, MIB, EventLog, CloneClassificationRule,
                            ActiveEvent, EventTrigger, Enumeration)
-from noc.fm.models.ignorepattern import IgnorePattern
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.fm.correlator.scheduler import CorrelatorScheduler
 import noc.inv.models.interface
 from noc.sa.models import profile_registry
-from noc.sa.models.collector import Collector
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.objectmap import ObjectMap
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.escape import fm_unescape
@@ -48,6 +44,7 @@ from exception import InvalidPatternException, EventProcessingFailed
 from cloningrule import CloningRule
 from rule import Rule
 from noc.lib.solutions import get_event_class_handlers, get_solution
+from noc.sa.interfaces.base import StringParameter, IntParameter
 
 ##
 ## Exceptions
@@ -71,11 +68,35 @@ CR = ["failed", "deleted", "suppressed",
       ]
 
 
-class Classifier(Daemon):
+class ClassifierService(Service):
     """
-    noc-classifier daemon
+    Events-classification service
     """
-    daemon_name = "noc-classifier"
+    name = "classifier"
+    leader_group_name = "classifier-%(env)s-%(pool)s"
+    _pooled = True
+
+    # Dict parameter containing values accepted
+    # via dynamic configuration
+    config_interface = {
+        "loglevel": StringParameter(
+            default=os.environ.get("NOC_LOGLEVEL", "info"),
+            choices=["critical", "error", "warning", "info", "debug"]
+        ),
+        # Interval in seconds to find duplicated events
+        # 0 - disable deduplication
+        "deduplication_window": IntParameter(default=3),
+        # Interface profile name to use as default, when
+        # event interface is not found in inventory
+        "default_interface_profile": StringParameter(default="default"),
+        # Rule lookup solution
+        # * noc.fm.classifier.rulelookup.RuleLookup - default lookup
+        # * noc.fm.classifier.xrulelookup.XRuleLookup - Accelerated (experimental)
+        "lookup_solution": StringParameter(
+            default="noc.fm.classifier.rulelookup.RuleLookup"
+        )
+    }
+
     DEFAULT_RULE = "Unknown | Default"
 
     # SNMP OID pattern
@@ -84,6 +105,7 @@ class Classifier(Daemon):
     interface_cache = TTLCache(maxsize=10000, ttl=60)
 
     def __init__(self):
+        super(ClassifierService, self).__init__()
         self.version = get_version()
         self.rules = {}  # profile -> [rule, ..., rule]
         self.triggers = {}  # event_class_id -> [trigger1, ..., triggerN]
@@ -91,47 +113,32 @@ class Classifier(Daemon):
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
         self.enumerations = {}  # name -> value -> enumerated
         self.suppression = {}  # event_class_id -> (condition, suppress)
-        self.dump_clone = False
-        self.deduplication_window = 0
         self.unclassified_codebook_depth = 5
         self.unclassified_codebook = {}  # object id -> [<codebook>]
         self.handlers = {}  # event class id -> [<handler>]
         self.default_rule = None
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
-        self.is_distributed = False
-        self.collector_id = None
         # Lookup solution setup
         self.lookup_cls = None
-        Daemon.__init__(self)
-        self.logger.info("Running Classifier version %s", self.version)
         self.correlator_scheduler = CorrelatorScheduler()
+        #
+        self.ev_queue = tornado.queues.Queue(maxsize=1)
 
-    def setup_opt_parser(self):
-        self.opt_parser.add_option("-d", "--dump", action="append",
-                                   dest="dump")
-
-    def load_config(self):
+    def on_activate(self):
         """
         Load rules from database after loading config
         """
-        self.dump_clone = (self.options.dump is not None and
-                           "clone" in self.options.dump)
-        super(Classifier, self).load_config()
-        self.deduplication_window = self.config.getint(
-            "classifier", "deduplication_window")
-        lsn = self.config.get("classifier", "lookup_solution")
-        self.logger.info("Using rule lookup solution: %s", lsn)
-        self.lookup_cls = get_solution(lsn)
+        self.logger.info("Using rule lookup solution: %s",
+                         self.config.lookup_solution)
+        self.lookup_cls = get_solution(self.config.lookup_solution)
         self.load_enumerations()
         self.load_rules()
         self.load_triggers()
         self.load_suppression()
         self.load_link_action()
         self.load_handlers()
-        self.is_distributed = self.config.getboolean("collector", "enabled")
-        if self.is_distributed:
-            self.setup_distributed_mode()
+        self.ioloop.add_callback(self.start_processing)
 
     def load_rules(self):
         """
@@ -260,12 +267,13 @@ class Classifier(Daemon):
                     if (s["condition"] == r.condition and
                         s["window"] == r.window and
                         s["suppress"] == r.suppress and
-                        s["match_condition"] == r.match_condition):
-                        if r.event_class.id not in s["event_class"]:
-                            s["event_class"] += [r.event_class.id]
-                            s["name"] += ", " + r.name
-                            to_skip = True
-                            break
+                        s["match_condition"] == r.match_condition and
+                        r.event_class.id not in s["event_class"]
+                    ):
+                        s["event_class"] += [r.event_class.id]
+                        s["name"] += ", " + r.name
+                        to_skip = True
+                        break
                 if to_skip:
                     continue
                 suppression += [{
@@ -285,10 +293,9 @@ class Classifier(Daemon):
 
     def load_link_action(self):
         self.default_link_action = None
-        profile_name = self.config.get(
-            "classifier", "default_interface_profile").strip()
-        if profile_name:
-            p = InterfaceProfile.objects.filter(name=profile_name).first()
+        if self.config.default_interface_profile:
+            p = InterfaceProfile.objects.filter(
+                name=self.config.default_interface_profile).first()
             if p:
                 self.logger.info("Setting default link event action to %s", p.link_events)
                 self.default_link_action = p.link_events
@@ -311,35 +318,7 @@ class Classifier(Daemon):
                 self.handlers[ec.id] = hl
         self.logger.info("Handlers are loaded")
 
-    def setup_distributed_mode(self):
-        if "collector" in mongoengine.connection._connection_settings:
-            return
-        self.logger.info("Entering distributed mode")
-        # Get collector id
-        collector_name = self.config.get("collector", "name")
-        if not collector_name:
-            self.logger.error("Collector name missed. Exiting")
-            os._exit(1)
-        try:
-            self.collector_id = Collector.objects.get(name=collector_name).id
-        except Collector.DoesNotExist:
-            self.logger.error("Invalid collector name: '%s'. Exiting", collector_name)
-            os._exit(1)
-        # Connect to collector's database
-        mongoengine.connection.register_connection(
-            "collector",
-            name=self.config.get("collector_database", "name"),
-            host=self.config.get("collector_database", "host") or "127.0.0.1",
-            port=self.config.getint("collector_database", "port") or 27017,
-            username=self.config.get("collector_database", "user") or None,
-            password=self.config.get("collector_database", "password") or None
-        )
-        # Switch new and failed events collections to collector database
-        NewEvent._meta["db_alias"] = "collector"
-        FailedEvent._meta["db_alias"] = "collector"
-
-    @classmethod
-    def resolve_handler(cls, h):
+    def resolve_handler(self, h):
         mn, s = h.rsplit(".", 1)
         try:
             m = __import__(mn, {}, {}, s)
@@ -351,38 +330,6 @@ class Classifier(Daemon):
         except AttributeError:
             self.logger.error("Failed to load handler '%s'. Ignoring", h)
             return None
-
-    def update_object_map(self):
-        self.logger.debug("Updating object maps")
-        d = ObjectMap.get_map(self.collector_id)
-        cdb = mongoengine.connection.get_db("collector")
-        n = self.config.get("collector_database", "object_map")
-        ntmp = n + "_tmp"
-        cdb.drop_collection(ntmp)
-        tmp = cdb[ntmp]
-        if d:
-            tmp.insert(d, safe=True)
-            tmp.rename(n, dropTarget=True)
-        cdb[n].ensure_index("sources")
-        self.logger.debug("Updating ignore rules")
-        im = cdb[self.config.get("collector_database", "ignore_map")]
-        i_patterns = defaultdict(list)
-        for p in IgnorePattern.objects.filter(is_active=True):
-            try:
-                re.compile(p.pattern)
-                i_patterns[p.source] += [p.pattern]
-            except re.error, why:
-                self.logger.error("Invalid ignore pattern '%s' (%s)",
-                    p.pattern, why)
-        # Update patterns
-        for src in i_patterns:
-            im.update(
-                {"source": src},
-                {"$set": {"patterns": list(i_patterns[src])}},
-                upsert=True
-            )
-        # Remove obsolete sources
-        im.remove({"source": {"$nin": list(i_patterns)}})
 
     ##
     ## Variable decoders
@@ -439,13 +386,6 @@ class Classifier(Daemon):
         for e in FailedEvent.objects.filter(version__ne=self.version):
             e.mark_as_new("Reclassification has been requested by noc-classifer")
             self.logger.debug("Failed event %s has been recovered", e.id)
-
-    def iter_new_events(self, max_chunk=1000):
-        """
-        Generator iterating unclassified events in the queue
-        """
-        for e in NewEvent.objects.order_by("seq")[:max_chunk]:
-            yield e
 
     def mark_as_failed(self, event, traceback=None):
         """
@@ -653,7 +593,7 @@ class Classifier(Daemon):
                     self.logger.info("Event %s has been marked as not disposable by default interface", event.id)
                 disposable = False
         # Deduplication
-        if self.deduplication_window:
+        if self.config.deduplication_window:
             de = self.find_duplicated_event(event, event_class, vars)
             if de:
                 self.logger.debug(
@@ -744,7 +684,7 @@ class Classifier(Daemon):
         """
         Returns duplicated event if exists
         """
-        t0 = event.timestamp - datetime.timedelta(seconds=self.deduplication_window)
+        t0 = event.timestamp - datetime.timedelta(seconds=self.config.deduplication_window)
         q = {
             "managed_object": event.managed_object.id,
             "timestamp__gte": t0,
@@ -755,53 +695,51 @@ class Classifier(Daemon):
             q["vars__%s" % v] = vars[v]
         return ActiveEvent.objects.filter(**q).first()
 
-    def consume_event(self, e):
+    @tornado.gen.coroutine
+    def event_producer(self):
         """
-        Consume single event and return classification status
+        Producer generating unclassified events
         """
-        try:
-            return self.classify_event(e)
-        except EventProcessingFailed, why:
-            self.mark_as_failed(e, why[0])
-            return CR_FAILED
-        except:
-            self.mark_as_failed(e)
-            return CR_FAILED
-        finally:
-            reset_queries()
+        while True:
+            n = 0
+            for e in NewEvent.objects.filter(
+                **NewEvent.seq_range(self.config.pool)
+            ).order_by("seq"):
+                yield self.ev_queue.put(e)
+                n += 1
+            if not n:
+                # No data, sleep a while
+                yield  self.ev_queue.put(None)  # Report end of data
+                yield tornado.gen.sleep(0.25)
 
-    def run(self):
-        """
-        Main daemon loop
-        """
-        # @todo: move to configuration
-        CHECK_EVERY = 1  # Recheck queue every N seconds
-        REPORT_INTERVAL = 1000  # Performance report interval
-        OM_UPDATE_INTERVAL = 600
-        # Try to classify events which processing failed
-        # on previous versions of classifier
-        self.retry_failed_events()
-        if self.is_distributed:
-            self.update_object_map()
-        nu = time.time() + OM_UPDATE_INTERVAL
-        self.logger.info("Ready to process events")
+    @tornado.gen.coroutine
+    def event_consumer(self):
         st = {
             CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
             CR_UNKNOWN: 0, CR_CLASSIFIED: 0, CR_DISPOSED: 0,
             CR_DUPLICATED: 0, CR_UDUPLICATED: 0
         }
-        # Enter main loop
+        REPORT_INTERVAL = 1000  # Performance report interval
         while True:
-            n = 0  # Number of events processed
             sn = st.copy()
             t0 = time.time()
-            if self.is_distributed and t0 > nu:
-                self.update_object_map()
-                nu = t0 + OM_UPDATE_INTERVAL
-            for e in self.iter_new_events(REPORT_INTERVAL):
-                s = self.consume_event(e)
+            lts = None
+            for n in range(REPORT_INTERVAL):
+                try:
+                    e = yield self.ev_queue.get()
+                    if not e:
+                        break  # No data, report
+                    lts = e.timestamp
+                    s = self.classify_event(e)
+                except EventProcessingFailed, why:
+                    self.mark_as_failed(e, why[0])
+                    s = CR_FAILED
+                except:
+                    self.mark_as_failed(e)
+                    s = CR_FAILED
+                finally:
+                    self.ev_queue.task_done()
                 sn[s] += 1
-                n += 1
             if n:
                 # Write performance report
                 tt = time.time()
@@ -814,14 +752,21 @@ class Classifier(Daemon):
                     "elapsed: %ss" % ("%10.4f" % dt).strip(),
                     "speed: %sev/s" % ("%10.1f" % perf).strip(),
                     "events: %d" % n,
-                    "lag: %fs" % total_seconds(datetime.datetime.now() - e.timestamp)
+                    "lag: %fs" % total_seconds(
+                        datetime.datetime.now() - lts
+                    )
                 ]
                 s += ["%s: %d" % (CR[i], sn[i]) for i in range(len(CR))]
                 s = ", ".join(s)
                 self.logger.info("REPORT: %s", s)
-            else:
-                # No events classified this pass. Sleep
-                time.sleep(CHECK_EVERY)
+
+    @tornado.gen.coroutine
+    def start_processing(self):
+        self.logger.info("Starting processing")
+        self.event_consumer()
+        yield self.event_producer()
+        yield self.ev_queue.join()
+        self.logger.info("Stop processing")
 
     rx_non_alpha = re.compile(r"[^a-z]+")
     rx_spaces = re.compile(r"\s+")
@@ -839,3 +784,6 @@ class Classifier(Daemon):
         Check codebooks for match
         """
         return cb1 == cb2
+
+if __name__ == "__main__":
+    ClassifierService().start()
