@@ -188,7 +188,11 @@ class Service(object):
             return self.die(why)
         except OptParseError, why:
             return self.die(why)
-        vc = vars(conf)
+        # Get defaults
+        vc = DictParameter(attrs=self.config_interface).clean({})
+        # Update with bootstrap
+        vc.update(vars(conf))
+        # Calculate leader group name
         self.leader_group = self.get_leader_group_name(**vc)
         if self.leader_group:
             self.leader_key = "noc/%s/service/leader/%s" % (
