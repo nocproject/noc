@@ -8,8 +8,10 @@
 
 ## Python modules
 import datetime
+import struct
 ## Third-party modules
 from mongoengine import document, fields
+from bson import Binary
 ## NOC modules
 from eventlog import EventLog
 from noc.sa.models.managedobject import ManagedObject
@@ -31,10 +33,22 @@ class NewEvent(document.Document):
     managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
     raw_vars = nosql.RawDictField(required=True)
     log = fields.ListField(fields.EmbeddedDocumentField(EventLog))
-    seq = fields.BinaryField(max_bytes=8, required=False)
+    # pool (16 octets), time (4 octets), seq (4 octets)
+    seq = fields.BinaryField(max_bytes=24, required=False)
 
     def __unicode__(self):
         return unicode(self.id)
+
+    @classmethod
+    def seq_range(cls, pool):
+        """
+        Expression to limit events to pool
+        """
+        return {
+            "seq__gte": Binary(struct.pack("!16sII", pool, 0, 0)),
+            "seq__lte": Binary(struct.pack("!16sII", pool,
+                                           0xFFFFFFFF, 0xFFFFFFFF))
+        }
 
     def mark_as_failed(self, version, traceback):
         """

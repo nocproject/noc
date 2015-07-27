@@ -1,12 +1,19 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## noc-classifier daemon
+## Ping service
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## NOC modules
+from noc.lib.service.base import Service
+
+
+class PingService(Service):
+    name = "ping"
+
+
 if __name__ == "__main__":
-    from noc.fm.classifier import Classifier
-    Classifier().process_command()
+    PingService().run()
