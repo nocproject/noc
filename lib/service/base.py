@@ -15,6 +15,7 @@ from optparse import (make_option, OptionParser,
 import signal
 import uuid
 import socket
+import json
 ## Third-party modules
 from tornado import ioloop
 import tornado.gen
@@ -24,11 +25,14 @@ import tornado.httpserver
 import consul.tornado
 import consul.base
 import consul
+import nsq
 ## NOC modules
 from .config import Config
 from noc.sa.interfaces.base import DictParameter, StringParameter
+from .api.base import ServiceAPI, ServiceSubscriber
 from .api.mon import MonAPI
 from .doc import DocRequestHandler
+from .rpc import RPCHub
 
 
 class Service(object):
@@ -47,7 +51,9 @@ class Service(object):
     # Pool name set in NOC_POOL parameter or --pool option.
     # May be used in conjunction with leader_group_name
     # to allow only one instance of services per node or datacenter
-    pooled = False
+    # Service became pooled whenever any of advertised APIs
+    # declared at AL_POOL level
+    _pooled = None
     #
     usage = "usage: %prog [options] arg1 arg2 ..."
     # CLI option list
@@ -100,6 +106,9 @@ class Service(object):
             help="Pool name"
         )
     ]
+
+    # Service-specific option list
+    service_option_list = []
     # Dict parameter containing values accepted
     # via dynamic configuration
     config_interface = {
@@ -129,11 +138,21 @@ class Service(object):
         self.logger = None
         self.config = None
         self.consul = None
+        self.nsq_writer = None
         self.service_id = str(uuid.uuid4())
         self.leader_group = None
         self.leader_key = None
         self.consul_session = None
         self.renew_session_callback = None
+        self.rpc = RPCHub(self)
+
+    @property
+    def pooled(self):
+        if self._pooled is None:
+            # Any API with AL_POOL
+            self._pooled = any(x for x in self.api
+                               if x.level == ServiceAPI.AL_POOL)
+        return self._pooled
 
     @classmethod
     def die(cls, msg):
@@ -158,6 +177,7 @@ class Service(object):
         opt_list += self.option_list
         if self.pooled:
             opt_list += self.pooled_option_list
+        opt_list += self.service_option_list
         parser = OptionParser(
             usage=self.usage,
             option_list=opt_list
@@ -297,7 +317,11 @@ class Service(object):
         self.parse_bootstrap_config()
         self.setup_logging()
         signal.signal(signal.SIGTERM, self.on_SIGTERM)
-        self.logger.warn("Running service %s", self.name)
+        if self.pooled:
+            self.logger.warn("Running service %s (pool: %s)",
+                             self.name, self.config.pool)
+        else:
+            self.logger.warn("Running service %s", self.name)
         self.ioloop = ioloop.IOLoop.instance()
         # Subscribing to config changes
         for d in dir(self):
@@ -333,8 +357,6 @@ class Service(object):
         """
         self.logger.info("Activating service")
         if self.api:
-            # Collect exposed API
-            api = [(h.get_base_url(), h) for h in self.api]
             # Bind random socket
             socks = tornado.netutil.bind_sockets(0,
                                                  family=socket.AF_INET)
@@ -346,23 +368,40 @@ class Service(object):
                 host = ac["ClientAddr"]
                 if host == "127.0.0.1":
                     host = ac["AdvertiseAddrWan"]
-            self.logger.info("Running HTTP API at http://%s:%s/",
+            self.logger.info("Running HTTP APIs at http://%s:%s/",
                              host, port)
-            for url, h in api:
+            # Collect and register exposed API
+            api = []
+            for a in self.api:
+                url = a.get_service_url()
                 self.logger.info("Supported API: %s at %s",
-                                 h.name, url)
+                                 a.name, url)
+                api += [
+                    (
+                        url,
+                        a.get_http_request_handler(),
+                        {"service": self, "api_class": a}
+                    )
+                ]
+                if a.level != ServiceAPI.AL_NONE:
+                    srv = ServiceSubscriber(self, a)
+                    topic = srv.get_topic()
+                    self.logger.info(
+                        "Registering NSQ RPC endpoint at %s", topic
+                    )
+                    self.subscribe(topic, "rpc", srv.on_message)
             api += [("/", DocRequestHandler)]
             app = tornado.web.Application(api)
-            app.service = self
             http_server = tornado.httpserver.HTTPServer(app)
             http_server.add_socket(socks[0])
             # Register services
-            tags = None
-            if self.pooled:
-                tags = [self.config.pool]
             for h in self.api:
-                if not h.register:
+                if not h.level == ServiceAPI.AL_NONE:
                     continue
+                if h.level == ServiceAPI.AL_POOL:
+                    tags = [self.config.pool]
+                else:
+                    tags = None
                 self.logger.info(
                     "Registering service %s at %s:%s (tags: %s)",
                     h.name, host, port, tags
@@ -384,9 +423,8 @@ class Service(object):
 
     @tornado.gen.coroutine
     def deactivate(self):
-        # deregister services
         for h in self.api:
-            if not h.register:
+            if h.level == ServiceAPI.AL_NONE:
                 continue
             self.logger.info("Deregister service %s", h.name)
             yield self.consul.agent.service.deregister(h.name)
@@ -402,3 +440,33 @@ class Service(object):
         Called when service activated
         """
         pass
+
+    def subscribe(self, topic, channel, handler):
+        """
+        Subscribe to NSQ topic and channel
+        """
+        self.logger.debug("Subscribing to %s/%s", topic, channel)
+        reader = nsq.Reader(
+            topic=topic,
+            channel=channel,
+            lookupd_http_addresses=["http://127.0.0.1:4161"],
+            lookupd_poll_interval=15,
+            message_handler=handler
+        )
+        return reader
+
+    def publish(self, topic, msg):
+        """
+        Publish to NSQ topic
+        """
+        def callback(conn, data):
+            if isinstance(data, nsq.Error):
+                # Republish on error
+                self.ioloop.add_callback(self.publish, topic, msg)
+
+        if not self.nsq_writer:
+            self.logger.info("Opening NSQ writer")
+            self.nsq_writer = nsq.Writer(["127.0.0.1:4150"])
+        if not isinstance(msg, basestring):
+            msg = json.dumps(msg)
+        self.nsq_writer.pub(topic, msg, callback=callback)
