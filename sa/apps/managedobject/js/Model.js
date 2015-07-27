@@ -43,11 +43,11 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
-            name: "activator",
-            type: "int"
+            name: "pool",
+            type: "string"
         },
         {
-            name: "activator__label",
+            name: "pool__label",
             type: "string",
             persist: false
         },
@@ -57,15 +57,6 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "segment__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "collector",
-            type: "int"
-        },
-        {
-            name: "collector__label",
             type: "string",
             persist: false
         },
