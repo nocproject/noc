@@ -8,39 +8,43 @@
 
 ## Python modules
 import itertools
+import uuid
+import json
+import logging
+## Third-party modules
+import tornado.concurrent
+import tornado.gen
+## NOC modules
+from noc.lib.log import PrefixLoggerAdapter
+
+logger = logging.getLogger(__name__)
 
 
-class RPCHub(object):
-    def __init__(self, service):
+class RPCProxy(object):
+    """
+    API Proxy
+    """
+    def __init__(self, service, topic):
+        self._logger = PrefixLoggerAdapter(logger, topic)
         self._service = service
-        self._aliases = {}
-
-    def alias(self, name, service, pool=None, version=1):
-        """
-        Register RPC service alias
-        """
-        self._aliases[name] = RPCServiceWrapper(
-            self._service,
-            service, pool, version
+        self._topic = topic
+        self._client_id = str(uuid.uuid4())
+        self._tid = itertools.count()
+        self._transactions = {}
+        self._methods = {}
+        self._service.connect_writer()
+        self._reply_to = "rpc.%s#ephemeral" % self._client_id
+        self._service.subscribe(
+            self._reply_to,
+            "rpc#ephemeral",
+            self.on_response
         )
 
-    def __getattr__(self, item):
-        i = self._aliases.get(item)
-        if i:
-            return i
-        else:
-            return self.__dict__[item]
+    def __del__(self):
+        self.close()
 
-
-class RPCServiceWrapper(object):
-    def __init__(self, service, name, pool, version):
-        self._service = service
-        self._topic = "/v%s/%s/" % (version, name)
-        if pool:
-            self._topic += "%s/" % pool
-        self._topic = self._topic[1:-1].replace("/", "-")
-        self._tid = itertools.count()
-        self._methods = {}
+    def close(self):
+        pass
 
     def __getattr__(self, item):
         if item.startswith("_"):
@@ -48,24 +52,60 @@ class RPCServiceWrapper(object):
         else:
             mw = self._methods.get(item)
             if not mw:
-                mw =  RPCMethodWrapper(self, item)
+                mw = RPCMethod(self, item)
                 self._methods[item] = mw
             return mw
 
+    def _call(self, method, *args, **kwargs):
+        tid = self._tid.next()
+        msg = {
+            "id": tid,
+            "method": method,
+            "params": list(args)
+        }
+        if "_async" not in kwargs:
+            # Set response address
+            msg["from"] = self._reply_to
+        self._logger.debug("RPC Request: %s", msg)
+        self._service.publish(self._topic, msg)
+        f = tornado.concurrent.Future()
+        if "_async" in kwargs:
+            f.set_result(None)
+        else:
+            self._transactions[tid] = f
+        return f
 
-class RPCMethodWrapper(object):
-    def __init__(self, service_wrapper, name):
-        self._service_wrapper = service_wrapper
+    def on_response(self, message):
+        self._logger.debug("RPC Response: %s", message.body)
+        try:
+            msg = json.loads(message.body)
+        except ValueError, why:
+            self._logger.error(
+                "Failed to decode RPC response: %s", why)
+            return True
+        tid = msg.get("id")
+        try:
+            f = self._transactions.pop(tid)
+        except KeyError:
+            self._logger.error(
+                "Invalid transaction id %s", tid
+            )
+            return True
+        error = msg.get("error")
+        if error:
+            f.set_exception(error)
+        else:
+            f.set_result(msg.get("result"))
+        return True
+
+
+class RPCMethod(object):
+    """
+    API Method wrapper
+    """
+    def __init__(self, proxy, name):
+        self._proxy = proxy
         self._name = name
 
     def __call__(self, *args, **kwargs):
-        tid = self._service_wrapper._tid.next()
-        self._service_wrapper._service.publish(
-            topic=self._service_wrapper._topic,
-            msg={
-                "id": tid,
-                "method": self._name,
-                "params": args
-            }
-        )
-        # @todo: Return Future
+        return self._proxy._call(self._name, *args, **kwargs)

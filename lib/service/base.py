@@ -32,7 +32,7 @@ from noc.sa.interfaces.base import DictParameter, StringParameter
 from .api.base import ServiceAPI, ServiceSubscriber
 from .api.mon import MonAPI
 from .doc import DocRequestHandler
-from .rpc import RPCHub
+from .rpc import RPCProxy
 
 
 class Service(object):
@@ -144,7 +144,6 @@ class Service(object):
         self.leader_key = None
         self.consul_session = None
         self.renew_session_callback = None
-        self.rpc = RPCHub(self)
 
     @property
     def pooled(self):
@@ -453,11 +452,21 @@ class Service(object):
         reader = nsq.Reader(
             topic=topic,
             channel=channel,
-            lookupd_http_addresses=["http://127.0.0.1:4161"],
+            # lookupd_http_addresses=["http://127.0.0.1:4161"],
+            nsqd_tcp_addresses=["127.0.0.1:4150"],
             lookupd_poll_interval=15,
             message_handler=handler
         )
         return reader
+
+    def connect_writer(self):
+        """
+        Connect NSQ reader
+        """
+        if self.nsq_writer:
+            return
+        self.logger.info("Opening NSQ writer")
+        self.nsq_writer = nsq.Writer(["127.0.0.1:4150"])
 
     def publish(self, topic, msg):
         """
@@ -465,12 +474,28 @@ class Service(object):
         """
         def callback(conn, data):
             if isinstance(data, nsq.Error):
-                # Republish on error
-                self.ioloop.add_callback(self.publish, topic, msg)
+                if self.nsq_writer.conns:
+                    self.logger.error("Failed to publish: %s", data)
+                else:
+                    # Retry
+                    self.ioloop.add_callback(self.publish, topic, msg)
 
-        if not self.nsq_writer:
-            self.logger.info("Opening NSQ writer")
-            self.nsq_writer = nsq.Writer(["127.0.0.1:4150"])
+        # Already connected
         if not isinstance(msg, basestring):
             msg = json.dumps(msg)
         self.nsq_writer.pub(topic, msg, callback=callback)
+
+    def open_rpc(self, api_name, level, env=None, service_name=None,
+                 pool=None, dc=None, node=None, version=1):
+        topic = ServiceAPI.get_service_topic(
+            level=level,
+            api_name=api_name,
+            env=env or self.config.env,
+            service_name=service_name,
+            pool=pool or self.config.pool,
+            dc=dc or self.config.dc,
+            node=node or self.config.node,
+            version=version
+        )
+        self.logger.debug("Opening RPC proxy to %s", topic)
+        return RPCProxy(self, topic)

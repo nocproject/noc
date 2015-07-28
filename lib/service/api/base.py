@@ -82,13 +82,18 @@ class ServiceSubscriber(object):
     def __init__(self, service, api_class):
         self.service = service
         self.api_class = api_class
+        self.service.connect_writer()
 
     def get_topic(self):
         return self.api_class.get_service_topic(
-            name=self.service.name,
+            self.api_class.level,
+            api_name=self.api_class.name,
+            service_name=self.service.name,
+            env=self.service.config.env,
             pool=self.service.config.pool,
             dc=self.service.config.dc,
-            node=self.service.config.node
+            node=self.service.config.node,
+            version=self.api_class.version
         )
 
     def on_message(self, message):
@@ -98,42 +103,41 @@ class ServiceSubscriber(object):
         except ValueError, why:
             return self.api_error(message, why)
         # Parse request
-        id = req.get("id", "0")
+        tid = req.get("id", "0")
         params = req.get("params", [])
         method = req.get("method")
+        reply_to = req.get("from")
         if not method or not hasattr(self.api_class, method):
-            return self.api_error(
-                "Invalid method: '%s'" % method,
-                id=id
+            self.service.logger.error("Invalid API method %s", method)
+            return self.reply(
+                reply_to, tid,
+                error="Invalid API method %s" % method
             )
         api = self.api_class(self.service)
         h = getattr(api, method)
         if not hasattr(h, "api"):
-            return self.api_error(
-                "Method is not callable: '%s'" % method,
-                id=id
+            return self.reply(
+                reply_to, tid,
+                "Method is not callable: '%s'" % method
             )
         try:
             result = h(*params)
         except Exception, why:
-            return self.api_error(
-                "Failed: %s" % why,
-                id=id
-            )
-        # self.write(json.dumps({
-        #     "id": id,
-        #     "error": None,
-        #     "result": result
-        # }))
-        return True
+            return self.reply(reply_to, tid, "Failed: %s" % why)
+        return self.reply(reply_to, tid, result=result)
 
-    def api_error(self, msg, id=None):
-        rsp = {
-            "error": str(msg)
+    def reply(self, reply_to, tid, error=None, result=None):
+        msg = {
+            "id": tid
         }
-        if id:
-            rsp["id"] = id
-        self.write(json.dumps(rsp))
+        if error:
+            self.service.logger.error("[API ERROR] %s", error)
+            msg["error"] = error
+        elif result:
+            msg["result"] = result
+        if reply_to:
+            self.service.publish(reply_to, msg)
+        return True
 
 
 class ServiceAPI(object):
@@ -171,15 +175,21 @@ class ServiceAPI(object):
         return r"/v%s/%s/" % (cls.version, cls.name)
 
     @classmethod
-    def get_service_topic(cls, name=None, pool=None, dc=None, node=None):
-        if cls.level == cls.AL_GLOBAL:
-            return "v%s-%s" % (cls.version, cls.name)
-        elif cls.level == cls.AL_POOL:
-            return "v%s-%s-%s" % (cls.version, cls.name, pool)
-        elif cls.level == cls.AL_NODE:
-            return "v%s-%s-%s-%s" % (cls.version, cls.name, dc, node)
-        elif cls.level == cls.AL_SERVICE:
-            return "v%s-%s-%s-%s-%s" % (cls.version, name, cls.name, dc, node)
+    def get_service_topic(cls, level=None, api_name=None, env=None,
+                          service_name=None, pool=None,
+                          dc=None, node=None, version=None):
+        api_name = api_name or cls.name
+        version = version or cls.version
+        level = level or cls.level
+        if level == cls.AL_GLOBAL:
+            return "%s.%s.v%s" % (env, api_name, version)
+        elif level == cls.AL_POOL:
+            return "%s.%s.%s.v%s" % (env, api_name, pool, version)
+        elif level == cls.AL_NODE:
+            return "%s.%s.%s.%s.v%s" % (env, api_name, dc, node, version)
+        elif level == cls.AL_SERVICE:
+            return "%s.%s.%s.%s.%s.v%s" % (env, service_name, api_name,
+                                           dc, node, version)
         else:
             return None
 
