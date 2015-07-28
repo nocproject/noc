@@ -21,8 +21,6 @@ class SyslogServer(UDPServer):
         self.service = service
 
     def on_read(self, data, address):
-        logger.debug("Incoming message: %s %s", data, address)
-        #
         object = self.service.lookup_object(address[0])
         if not object:
             return  # Invalid event source
