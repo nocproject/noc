@@ -38,11 +38,24 @@ class ServiceAPIRequestHandler(tornado.web.RequestHandler):
                 id=id
             )
         h = getattr(self.api, method)
-        if not hasattr(h, "api"):
+        if not getattr(h, "api", False):
             return self.api_error(
                 "Method is not callable: '%s'" % method,
                 id=id
             )
+        # lock = getattr(h, "lock", None)
+        # if lock:
+        #     # Locked call
+        #     try:
+        #         lock_name = lock % self.service.config
+        #         with self.service.lock(lock_name):
+        #             result = h(*params)
+        #     except Exception, why:
+        #         return self.api_error(
+        #             "Failed: %s" % why,
+        #             id=id
+        #         )
+        # else:
         try:
             result = h(*params)
         except Exception, why:
@@ -181,3 +194,15 @@ def api(method):
     """
     method.api = True
     return method
+
+
+class lock(object):
+    """
+    Decorator to lock api method call with named lock
+    """
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, method):
+        method.lock = self.name
+        return method
