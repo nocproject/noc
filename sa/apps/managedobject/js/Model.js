@@ -110,6 +110,18 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
+            name: "syslog_source_ip",
+            type: "string"
+        },
+        {
+            name: "trap_source_type",
+            type: "string"
+        },
+        {
+            name: "syslog_source_type",
+            type: "string"
+        },
+        {
             name: "trap_community",
             type: "string"
         },

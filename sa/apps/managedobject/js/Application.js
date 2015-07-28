@@ -524,7 +524,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "SNMP",
+                    title: "Event Sources",
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -532,12 +532,66 @@ Ext.define("NOC.sa.managedobject.Application", {
                     },
                     items: [
                         {
+                            name: "trap_source_type",
+                            xtype: "combobox",
+                            fieldLabel: "Trap Source",
+                            store: [
+                                ["d", "Disable"],
+                                ["m", "Management Address"],
+                                ["s", "Specify address"],
+                                ["l", "Loopback address"],
+                                ["a", "All interface addresses"]
+                            ],
+                            listeners: {
+                                scope: me,
+                                change: function(combo, newValue, oldValue, eOpts) {
+                                    combo.nextSibling().setHidden(newValue !== "s");
+                                }
+                            }
+                        },
+                        {
                             name: "trap_source_ip",
                             xtype: "textfield",
                             fieldLabel: "Trap Source IP",
                             allowBlank: true,
                             uiStyle: "medium"
                         },
+                        {
+                            name: "syslog_source_type",
+                            xtype: "combobox",
+                            fieldLabel: "Syslog Source",
+                            store: [
+                                ["d", "Disable"],
+                                ["m", "Management Address"],
+                                ["s", "Specify address"],
+                                ["l", "Loopback address"],
+                                ["a", "All interface addresses"]
+                            ],
+                            listeners: {
+                                scope: me,
+                                change: function(combo, newValue, oldValue, eOpts) {
+                                    combo.nextSibling().setHidden(newValue !== "s");
+                                }
+                            }
+                        },
+                        {
+                            name: "syslog_source_ip",
+                            xtype: "textfield",
+                            fieldLabel: "Syslog Source IP",
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: "SNMP",
+                    layout: "hbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
                         {
                             name: "trap_community",
                             xtype: "textfield",
