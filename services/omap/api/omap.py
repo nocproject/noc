@@ -9,7 +9,7 @@
 ## Python modules
 import datetime
 ## NOC modules
-from noc.lib.service.api.base import ServiceAPI, api
+from noc.lib.service.api.base import ServiceAPI, api, lock
 from noc.main.models.pool import Pool
 from noc.sa.models.objectmap import ObjectMap
 
@@ -22,6 +22,7 @@ class OMapAPI(ServiceAPI):
     level = ServiceAPI.AL_GLOBAL
 
     @api
+    @lock("lock-omap-%(env)s")
     def get_syslog_mappings(self, pool):
         """
         Returns a dict of ip -> object id for syslog sources
@@ -32,6 +33,7 @@ class OMapAPI(ServiceAPI):
         return ObjectMap.get_syslog_sources(p)
 
     @api
+    @lock("lock-omap-%(env)s")
     def get_trap_mappings(self, pool):
         """
         Returns a dict of ip -> object id for trap sources

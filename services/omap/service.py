@@ -16,7 +16,7 @@ from api.omap import OMapAPI
 
 
 class OMapService(Service):
-    name = "nm"
+    name = "omap"
     # One active object mapper per environment
     leader_group_name = "omap-%(env)s"
 
