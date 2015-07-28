@@ -330,11 +330,6 @@ class ManagedObject(models.Model):
         # IPAM sync
         if self.object_profile.sync_ipam:
             self.sync_ipam()
-        # Notify changes
-        if ((old is None and self.trap_source_ip) or
-            (old and self.trap_source_ip != old.trap_source_ip) or
-            (old and self.activator.id != old.activator.id)):
-            self.sae_refresh_event_filter()
         # Notify new object
         if old is None:
             SelectorCache.rebuild_for_object(self)
@@ -488,16 +483,6 @@ class ManagedObject(models.Model):
         if rx:
             return re.match(rx, interface) is not None
         return False
-
-    def sae_refresh_event_filter(self):
-        """
-        Refresh event filters for all activators serving object
-        """
-        from maptask import MapTask
-        MapTask.create_task("SAE", "notify", {
-            "event": "refresh_event_filter",
-            "object_id": self.id
-        }, 1)
 
     def get_status(self):
         return ObjectStatus.get_status(self)
