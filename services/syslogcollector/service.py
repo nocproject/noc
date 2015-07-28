@@ -11,8 +11,10 @@
 import os
 from optparse import make_option
 import socket
+from collections import defaultdict
 # Third-party modules
 import tornado.ioloop
+import tornado.gen
 ## NOC modules
 from noc.lib.service.base import Service
 from noc.sa.interfaces.base import StringParameter
@@ -47,10 +49,17 @@ class FMWriterService(Service):
         super(FMWriterService, self).__init__()
         self.messages = []
         self.send_callback = None
+        self.mappings_callback = None
+        self.report_invalid_callback = None
+        self.source_map = {}
+        self.invalid_sources = defaultdict(int)  # ip -> count
+        self.omap = None
+        self.fmwriter = None
 
     def on_activate(self):
         # Register RPC aliases
-        self.rpc.alias("fmwriter", "fmwriter", self.config.pool)
+        self.omap = self.open_rpc("omap", 1)
+        self.fmwriter = self.open_rpc("fmwriter", 2)
         # Listen sockets
         server = SyslogServer(service=self)
         for l in self.config.listen:
@@ -68,19 +77,44 @@ class FMWriterService(Service):
                     addr, port, why
                 )
         server.start()
+        # Send spooled messages every 250ms
+        self.logger.debug("Stating message sender task")
         self.send_callback = tornado.ioloop.PeriodicCallback(
             self.send_messages,
             250,
             self.ioloop
         )
         self.send_callback.start()
+        # Get object mappings every 300s
+        self.logger.debug("Stating object mapping task")
+        self.mappings_callback = tornado.ioloop.PeriodicCallback(
+            self.get_object_mappings,
+            300000,
+            self.ioloop
+        )
+        self.mappings_callback.start()
+        self.ioloop.add_callback(self.get_object_mappings)
+        # Report invalid sources every 60 seconds
+        self.logger.info("Stating invalid sources reporting task")
+        self.report_invalid_callback = tornado.ioloop.PeriodicCallback(
+            self.report_invalid_sources,
+            60000,
+            self.ioloop
+        )
+        self.report_invalid_callback.start()
 
     def lookup_object(self, address):
         """
         Returns object id for given address or None when
         unknown source
         """
-        return 1
+        obj_id = self.source_map.get(address)
+        if not obj_id:
+            # Register invalid event source
+            if self.source_map:
+                self.invalid_sources[address] += 1
+            return None
+        return obj_id
 
     def register_message(self, object, timestamp, message,
                          facility, severity):
@@ -96,15 +130,44 @@ class FMWriterService(Service):
                 "message": message
             }
         }]
-        # self.rpc.fmwriter.event(timestamp, object, {
-        #    "source": "syslog",
-        #    "collector": "???",
-        #    "message": message
-        #})
 
+    @tornado.gen.coroutine
     def send_messages(self):
-        self.rpc.fmwriter.events(self.messages)
-        self.messages = []
+        """
+        Periodic task to send collected messages to fmwriter
+        """
+        if self.messages:
+            yield self.fmwriter.events(self.messages, _async=True)
+            self.messages = []
+
+    @tornado.gen.coroutine
+    def get_object_mappings(self):
+        """
+        Periodic task to request object mappings
+        """
+        self.logger.debug("Requesting object mappings")
+        sm = yield self.omap.get_syslog_mappings(
+            self.config.pool
+        )
+        if sm != self.source_map:
+            self.logger.debug("Setting object mappings to: %s", sm)
+            self.source_map = sm
+
+    @tornado.gen.coroutine
+    def report_invalid_sources(self):
+        """
+        Report invalid event sources
+        """
+        if not self.invalid_sources:
+            return
+        total = sum(self.invalid_sources[s] for s in self.invalid_sources)
+        self.logger.info(
+            "Dropping %d messages with invalid sources: %s",
+            total,
+            ", ".join("%s: %s" % (s, self.invalid_sources[s])
+                      for s in self.invalid_sources)
+        )
+        self.invalid_sources = defaultdict(int)
 
 
 if __name__ == "__main__":
