@@ -16,6 +16,7 @@ import signal
 import uuid
 import socket
 import json
+import uuid
 ## Third-party modules
 from tornado import ioloop
 import tornado.gen
@@ -144,6 +145,7 @@ class Service(object):
         self.leader_key = None
         self.consul_session = None
         self.renew_session_callback = None
+        self.client_id = str(uuid.uuid4())
 
     @property
     def pooled(self):
@@ -499,3 +501,21 @@ class Service(object):
         )
         self.logger.debug("Opening RPC proxy to %s", topic)
         return RPCProxy(self, topic)
+
+    def subscribe_event(self, name, pool=None, callback=None):
+        def on_message(message):
+            try:
+                msg = json.loads(message.body)
+            except ValueError, why:
+                self._logger.error(
+                    "Failed to decode event data: %s", why)
+                return True
+            callback(msg)
+            return True
+
+        topic = "ev.%s" % name
+        if pool:
+            topic += ".%s" % pool
+        topic += "#ephemeral"
+        channel = "%s#ephemeral" % self.client_id
+        self.subscribe(topic, channel, on_message)
