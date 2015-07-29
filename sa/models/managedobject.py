@@ -24,8 +24,6 @@ from django.contrib.auth.models import User, Group
 from administrativedomain import AdministrativeDomain
 from authprofile import AuthProfile
 from managedobjectprofile import ManagedObjectProfile
-from activator import Activator
-from collector import Collector
 from objectstatus import ObjectStatus
 from objectmap import ObjectMap
 from terminationgroup import TerminationGroup
@@ -334,7 +332,14 @@ class ManagedObject(models.Model):
         if old is None:
             SelectorCache.rebuild_for_object(self)
             self.event(self.EV_NEW, {"object": self})
-        ObjectMap.invalidate(self.pool)
+        if (
+            old is None or
+                self.trap_source_type != old.trap_source_type or
+                self.trap_source_ip != old.trap_source_ip or
+                self.syslog_source_type != old.syslog_source_type or
+                self.syslog_source_ip != old.syslog_source_ip
+        ):
+            ObjectMap.invalidate(self.pool)
 
     def delete(self, *args, **kwargs):
         # Deny to delete "SAE" object
