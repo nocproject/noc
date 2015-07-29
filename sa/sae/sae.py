@@ -389,8 +389,6 @@ class SAE(Daemon):
                 self.logger.error(e.text)
                 callback(error=e)
                 return
-            # Update counters
-            stream.current_scripts += 1
             # Check object's limits
             o_limits = object.scripts_limit
             if o_limits:
@@ -403,6 +401,8 @@ class SAE(Daemon):
                     return
                 else:
                     self.object_scripts[object.id] = o_scripts + 1
+            # Update counters
+            stream.current_scripts += 1
         # Build request
         r = ScriptRequest()
         r.object_name = object.name
