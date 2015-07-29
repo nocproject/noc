@@ -1,7 +1,7 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Node Manager service
+## Syslog Collector service
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
@@ -21,7 +21,7 @@ from noc.sa.interfaces.base import StringParameter
 from syslogserver import SyslogServer
 
 
-class FMWriterService(Service):
+class SyslogCollectorService(Service):
     name = "syslogcollector"
 
     #
@@ -46,7 +46,7 @@ class FMWriterService(Service):
     ]
 
     def __init__(self):
-        super(FMWriterService, self).__init__()
+        super(SyslogCollectorService, self).__init__()
         self.messages = []
         self.send_callback = None
         self.mappings_callback = None
@@ -60,6 +60,9 @@ class FMWriterService(Service):
         # Register RPC aliases
         self.omap = self.open_rpc("omap", 1)
         self.fmwriter = self.open_rpc("fmwriter", 2)
+        # Set event listeners
+        self.subscribe_event("objmapchange", pool=self.config.pool,
+                             callback=self.on_object_map_change)
         # Listen sockets
         server = SyslogServer(service=self)
         for l in self.config.listen:
@@ -169,6 +172,9 @@ class FMWriterService(Service):
         )
         self.invalid_sources = defaultdict(int)
 
+    def on_object_map_change(self, data):
+        self.logger.info("Object mappings changed. Rerequesting")
+        self.ioloop.add_callback(self.get_object_mappings)
 
 if __name__ == "__main__":
-    FMWriterService().start()
+    SyslogCollectorService().start()

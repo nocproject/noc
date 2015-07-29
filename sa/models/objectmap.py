@@ -11,10 +11,10 @@ import datetime
 import logging
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, ReferenceField,
-                                DictField, DateTimeField)
+from mongoengine.fields import ReferenceField, DictField, DateTimeField
 ## NOC modules
 from noc.main.models.pool import Pool
+from noc.lib.service.event import send
 
 
 logger = logging.getLogger(__name__)
@@ -58,6 +58,8 @@ class ObjectMap(Document):
                 trap_sources[aq(mo.address)] = mo.id
             elif mo.trap_source_type == "s" and mo.trap_source_ip:
                 trap_sources[aq(mo.trap_source_ip)] = mo.id
+            elif mo.trap_source_type == "d":
+                pass
             else:
                 logger.info(
                     "Cannot generate trap source mapping for %s",
@@ -68,6 +70,8 @@ class ObjectMap(Document):
                 syslog_sources[aq(mo.address)] = mo.id
             elif mo.syslog_source_type == "s" and mo.syslog_source_ip:
                 syslog_sources[aq(mo.syslog_source_ip)] = mo.id
+            elif mo.syslog_source_type == "d":
+                pass
             else:
                 logger.info(
                     "Cannot generate syslog source mapping for %s",
@@ -122,6 +126,7 @@ class ObjectMap(Document):
         """
         Invalidate pool mappings
         """
+        logger.debug("Invalidation %s object mappings", pool)
         ObjectMap._get_collection().update({
             "pool": pool.id
         }, {
@@ -129,3 +134,4 @@ class ObjectMap(Document):
                 "updated": datetime.datetime.now() - datetime.timedelta(seconds=cls.TTL)
             }
         })
+        send("objmapchange", pool=pool)
