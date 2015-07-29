@@ -30,7 +30,7 @@ if __name__ == "__main__":
     if (len(sys.argv) > 1 and
         sys.argv[1] not in ("test", "syncdb", "migrate", "debug-script",
                             "script-test", "topo-test", "collection",
-                            "get-uuid", "sync-pyrules")):
+                            "get-uuid", "sync-pyrules", "cli-commands")):
         # Initialize applications and models
         import noc.urls
     if len(sys.argv) > 1 and sys.argv[1] in ("runserver", "debug-script"):
