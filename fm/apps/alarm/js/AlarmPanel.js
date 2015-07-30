@@ -232,6 +232,13 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             handler: me.onSetRoot
         });
 
+        me.showMapButton = Ext.create("Ext.button.Button", {
+            text: "Show Map",
+            glyph: NOC.glyph.globe,
+            scope: me,
+            handler: me.onShowMap
+        });
+
         Ext.apply(me, {
             dockedItems: [
                 {
@@ -254,6 +261,8 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                         me.clearButton,
                         me.watchButton,
                         me.setRootButton,
+                        "-",
+                        me.showMapButton,
                         "->",
                         me.alarmIdField
                     ]
@@ -495,5 +504,12 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                 }
             }
         );
+    },
+
+    onShowMap: function() {
+        var me = this;
+        NOC.launch("inv.map", "history", {
+            args: [me.data.segment_id]
+        });
     }
 });

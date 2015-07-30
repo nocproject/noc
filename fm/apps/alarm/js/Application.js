@@ -189,6 +189,12 @@ Ext.define("NOC.fm.alarm.Application", {
                     renderer: NOC.render.DateTime
                 },
                 {
+                    text: "Segment",
+                    dataIndex: "segment",
+                    width: 200,
+                    renderer: NOC.render.Lookup("segment")
+                },
+                {
                     text: "Object",
                     dataIndex: "managed_object",
                     width: 200,

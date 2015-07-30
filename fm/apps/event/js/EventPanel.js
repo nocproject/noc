@@ -27,43 +27,15 @@ Ext.define("NOC.fm.event.EventPanel", {
             labelClsExtra: "noc-label-required"
         });
 
-        me.subjectField = Ext.create("Ext.form.DisplayField", {
-            fieldLabel: "Event",
-            labelWidth: lw
-        });
-
-        me.objectField = Ext.create("Ext.form.DisplayField", {
-            fieldLabel: "Object",
-            labelWidth: lw
-        });
-
-        me.eventClassField = Ext.create("Ext.form.DisplayField", {
-            fieldLabel: "Class",
-            labelWidth: lw
-        });
-
-        me.timeField = Ext.create("Ext.form.DisplayField", {
-            fieldLabel: "Time",
-            labelWidth: lw
-        });
-
         me.topPanel = Ext.create("Ext.panel.Panel", {
             height: 98,
             bodyPadding: 4,
-            layout: {
-                type: "vbox",
-                align: "stretch",
-                pack: "start"
-            },
-            defaults: {
-                labelClsExtra: "noc-label-required"
-            },
-            items: [
-                me.subjectField,
-                me.objectField,
-                me.eventClassField,
-                me.timeField
-            ]
+            layout: "fit",
+            items: [{
+                xtype: "container",
+                autoScroll: true,
+                padding: 4
+            }]
         });
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
@@ -218,6 +190,13 @@ Ext.define("NOC.fm.event.EventPanel", {
             handler: me.onReclassify
         });
 
+        me.showMapButton = Ext.create("Ext.button.Button", {
+            text: "Show Map",
+            glyph: NOC.glyph.globe,
+            scope: me,
+            handler: me.onShowMap
+        });
+
         Ext.apply(me, {
             dockedItems: [
                 {
@@ -236,6 +215,8 @@ Ext.define("NOC.fm.event.EventPanel", {
                             scope: me,
                             handler: me.onRefresh
                         },
+                        "-",
+                        me.showMapButton,
                         "-",
                         me.reclassifyButton,
                         "-",
@@ -305,26 +286,9 @@ Ext.define("NOC.fm.event.EventPanel", {
         //
         me.eventIdField.setValue(me.data.id);
         //
-        me.subjectField.setValue(
-            Ext.String.format("{0} [{1}]",
-                me.data.subject ? me.data.subject : "Unclassified event",
-                me.app.STATUS_MAP[me.data.status]
-            )
+        me.topPanel.items.first().update(
+            me.app.templates.SummaryPanel(me.data)
         );
-        // Managed object details
-        if(me.data.managed_object_address) {
-            o.push(me.data.managed_object_address);
-        }
-        o.push(me.data.managed_object_profile);
-        if(me.data.managed_object_platform) {
-            o.push(me.data.managed_object_platform);
-        }
-        if(me.data.managed_object_version) {
-            o.push(me.data.managed_object_version);
-        }
-        me.objectField.setValue(me.data.managed_object__label + " (" + o.join(", ") + ")");
-        me.eventClassField.setValue(me.data.event_class__label);
-        me.timeField.setValue(me.data.timestamp);
         //
         me.updatePanel(me.overviewPanel, me.app.templates.Overview,
             data.subject, data);
@@ -458,5 +422,12 @@ Ext.define("NOC.fm.event.EventPanel", {
     onCreateIgnorePattern: function() {
         var me = this;
         NOC.launch("fm.ignorepattern", "from_event", {id: me.data.id});
+    },
+
+    onShowMap: function() {
+        var me = this;
+        NOC.launch("inv.map", "history", {
+            args: [me.data.segment_id]
+        });
     }
 });
