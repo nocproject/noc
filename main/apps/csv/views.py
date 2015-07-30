@@ -13,7 +13,6 @@ from django import forms
 from django.contrib import admin
 from django.http import HttpResponse
 from django.db import transaction
-## Django modules
 from django.db import models
 ## NOC modules
 from noc.lib.app import Application, view
@@ -101,10 +100,13 @@ class CSVApplication(Application):
         fields = []
         for name, required, rel, rname in get_model_fields(m):
             if rel:
-                db_table = rel._meta.db_table
-                r = ["%s.\"id\"" % db_table]
-                if rname != "id":
-                    r = ["%s.\"%s\"" % (db_table, rname)] + r
+                if isinstance(rel._meta, dict):
+                    r = ["%s.%s" % (rel._meta["collection"], rname)]
+                else:
+                    db_table = rel._meta.db_table
+                    r = ["%s.\"id\"" % db_table]
+                    if rname != "id":
+                        r = ["%s.\"%s\"" % (db_table, rname)] + r
             else:
                 r = []
             fields += [(name, required, " or ".join(r))]
