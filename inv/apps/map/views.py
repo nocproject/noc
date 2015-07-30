@@ -230,7 +230,11 @@ class MapApplication(ExtApplication):
         for lid in link_settings:
             if lid not in links:
                 continue
-            links[lid]["connector"] = link_settings[lid].connector
+            if link_settings[lid].vertices:
+                connector = link_settings[lid].connector
+            else:
+                connector = "normal"
+            links[lid]["connector"] = connector
             links[lid]["vertices"] = [
                 {
                     "x": v.x,
