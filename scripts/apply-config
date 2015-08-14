@@ -15,6 +15,7 @@ import cStringIO
 
 CFG = "etc/supervisord.conf"
 
+
 def format_env(env):
     """
     Build environment string
@@ -23,16 +24,15 @@ def format_env(env):
         return str(s).replace("%", "%%")
     return ",".join("%s=\"%s\"" % (k, q(env[k])) for k in env)
 
+
 def build():
     config = ConfigParser.RawConfigParser()
     # Read configs
     for ge in [
         "etc/defaults/supervisor/*.conf",
         "etc/defaults/services/*.conf",
-        "etc/defaults/groups/*.conf",
         "etc/config/supervisor/*.conf",
-        "etc/config/services/*.conf",
-        "etc/config/groups/*.conf"
+        "etc/config/services/*.conf"
     ]:
         for path in glob.glob(ge):
             config.read(path)
@@ -53,7 +53,6 @@ def build():
     # Build config
     out = ConfigParser.ConfigParser()
     for s in config.sections():
-        out.add_section(s)
         # Build service's environment
         de = {}
         if s == "supervisord":
@@ -77,12 +76,45 @@ def build():
                 config.set(s, "environment", ce)
         re = de.copy()  # service + supervisor environment
         re.update(env["supervisord"])
-        for o in config.options(s):
-            v = config.get(s, o)
-            # Apply environment variables to parameters
-            for e in re:
-                v = v.replace("%%(ENV_%s)s" % e, re[e])
-            out.set(s, o, v)
+        if (s.startswith("program")
+            and config.has_option(s, "pools")
+            and config.get(s, "pools")
+        ):
+            # Clone pooled configuration
+            for p in config.get(s, "pools").split(","):
+                if ":" in p:
+                    pool_name, numprocs = p.split(":")
+                else:
+                    pool_name, numprocs = p, None
+                ns = "%s-%s" % (s, pool_name)
+                # Add NOC_POOL environment to expand
+                re["NOC_POOL"] = pool_name
+                out.add_section(ns)
+                # Non-pooled configuration
+                for o in config.options(s):
+                    if o == "pools":
+                        continue
+                    v = config.get(s, o)
+                    #
+                    if o == "environment":
+                        v += ","
+                        v += format_env({"NOC_POOL": pool_name})
+                    # Apply environment variables to parameters
+                    for e in re:
+                        v = v.replace("%%(ENV_%s)s" % e, re[e])
+                    out.set(ns, o, v)
+                if numprocs:
+                    # Override numprocs
+                    out.set(ns, "numprocs", numprocs)
+        else:
+            out.add_section(s)
+            # Non-pooled configuration
+            for o in config.options(s):
+                v = config.get(s, o)
+                # Apply environment variables to parameters
+                for e in re:
+                    v = v.replace("%%(ENV_%s)s" % e, re[e])
+                out.set(s, o, v)
     buffer = cStringIO.StringIO()
     out.write(buffer)
     cfg = buffer.getvalue()
