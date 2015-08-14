@@ -15,6 +15,7 @@ from mongoengine.fields import ReferenceField, DictField, DateTimeField
 ## NOC modules
 from noc.main.models.pool import Pool
 from noc.lib.service.event import send
+from noc.sa.models.objectstatus import ObjectStatus
 
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,8 @@ class ObjectMap(Document):
     # Trap source ip -> object id
     trap_sources = DictField()
     #
+    ping_sources = DictField()
+    #
     updated = DateTimeField()
 
     TTL = 600
@@ -48,8 +51,11 @@ class ObjectMap(Document):
         logger.info("Updating object mappings for pool %s", pool.name)
         syslog_sources = {}
         trap_sources = {}
-        for mo in ManagedObject.objects.exclude(
-                trap_source_type="d", syslog_source_type="d"
+        ping_sources = {}
+        for mo in ManagedObject.objects.filter(
+            pool=pool
+        ).exclude(
+            trap_source_type="d", syslog_source_type="d"
         ).only("id", "name", "address",
                "trap_source_type", "syslog_source_type",
                "trap_source_ip", "syslog_source_ip"):
@@ -77,6 +83,26 @@ class ObjectMap(Document):
                     "Cannot generate syslog source mapping for %s",
                     mo.name
                 )
+        # Get ping settings
+        for mo in ManagedObject.objects.filter(
+            pool=pool,
+            object_profile__enable_ping=True
+        ).select_related(
+            "object_profile"
+        ).only("id", "address", "object_profile",
+               "object_profile__ping_interval"
+        ):
+            if mo.object_profile.ping_interval and mo.object_profile.ping_interval > 0:
+                ping_sources[aq(mo.address)] = {
+                    "id": mo.id,
+                    "interval": mo.object_profile.ping_interval,
+                    "status": True
+                }
+        # Resolve object statuses
+        oids = dict((d["id"], q) for q, d in ping_sources.iteritems())
+        for o in [x for x, y in ObjectStatus.get_statuses(list(oids)).iteritems() if not y]:
+            ping_sources[oids[o]]["status"] = False
+        # Update mappings
         ObjectMap._get_collection().update({
             "pool": pool.id
         }, {
@@ -84,6 +110,7 @@ class ObjectMap(Document):
                 "pool": pool.id,
                 "syslog_sources": syslog_sources,
                 "trap_sources": trap_sources,
+                "ping_sources": ping_sources,
                 "updated": datetime.datetime.now()
             }
         }, upsert=True)
@@ -120,6 +147,15 @@ class ObjectMap(Document):
         om = cls.get_object_mappings(pool)
         return dict((k.replace("_", "."), om["trap_sources"][k])
                     for k in om["trap_sources"])
+
+    @classmethod
+    def get_ping_sources(cls, pool):
+        """
+        Returns a dict of IP -> {"id": ..., "status": ..., "interval": ...}
+        """
+        om = cls.get_object_mappings(pool)
+        return dict((k.replace("_", "."), om["ping_sources"][k])
+                    for k in om["ping_sources"])
 
     @classmethod
     def invalidate(cls, pool):

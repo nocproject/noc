@@ -42,3 +42,14 @@ class OMapAPI(ServiceAPI):
         if not p:
             return {}
         return ObjectMap.get_syslog_sources(p)
+
+    @api
+    @lock("lock-omap-%(env)s")
+    def get_ping_mappings(self, pool):
+        """
+        Returns a dict of ip -> {"id": ..., "status": ..., "interval": ...}
+        """
+        p = Pool.objects.filter(name=pool).first()
+        if not p:
+            return {}
+        return ObjectMap.get_ping_sources(p)
