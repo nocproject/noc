@@ -75,18 +75,14 @@ class PingService(Service):
         self.mappings_callback.start()
         self.ioloop.add_callback(self.get_object_mappings)
 
-    def register_message(self, object, timestamp, message):
+    def register_message(self, object, timestamp, data):
         """
         Spool message to be sent
         """
         self.messages += [{
             "ts": timestamp,
             "object": object,
-            "data": {
-                "source": "syslog",
-                "collector": self.config.pool,
-                "message": message
-            }
+            "data": data
         }]
 
     @tornado.gen.coroutine
