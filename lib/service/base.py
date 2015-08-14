@@ -17,6 +17,7 @@ import uuid
 import socket
 import json
 import uuid
+import pwd
 ## Third-party modules
 from tornado import ioloop
 import tornado.gen
@@ -519,3 +520,26 @@ class Service(object):
         topic += "#ephemeral"
         channel = "%s#ephemeral" % self.client_id
         self.subscribe(topic, channel, on_message)
+
+    def drop_privileges(self):
+        """
+        Drop root-priveleges to NOC_USER when necessary
+        """
+        uname = os.environ.get("NOC_USER")
+        if not uname:
+            return
+        try:
+            uid = pwd.getpwnam(uname)[2]
+        except KeyError:
+            self.logger.error("Invalid user: %s", uname)
+            return
+        euid = os.geteuid()
+        if euid == uid:
+            return  # Nothing to drop
+        # Try to drop priveleges
+        try:
+            self.logger.info("Setting current user to %s (%s)",
+                             uname, uid)
+            os.setuid(uid)
+        except OSError, why:
+            self.logger.info("Failed to set current user: %s", why)
