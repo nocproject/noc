@@ -37,6 +37,7 @@ class Scheduler(object):
     ATTR_CLASS = "jcls"
     ATTR_STATUS = "s"
     ATTR_TIMEOUT = "timeout"
+    ATTR_POOL = "pool"  # Pool object id
     ATTR_KEY = "key"
     ATTR_DATA = "data"
     ATTR_SCHEDULE = "schedule"
@@ -68,9 +69,10 @@ class Scheduler(object):
     def __init__(self, name, cleanup=None, reset_running=False,
                  initial_submit=False, max_threads=None,
                  preserve_order=False, max_faults=None,
-                 mrt_limit=None):
+                 mrt_limit=None, pool=None):
         self.logger = PrefixLoggerAdapter(logger, name)
         self.name = name
+        self.pool = pool
         self.job_classes = {}
         self.collection_name = self.COLLECTION_BASE + self.name
         self.collection = get_db()[self.collection_name]
@@ -448,6 +450,8 @@ class Scheduler(object):
         }
         if self.ignored:
             q[self.ATTR_CLASS] = {"$nin": self.ignored}
+        if self.pool:
+            q[self.ATTR_POOL] = self.pool
         # Get remaining pending tasks
         qs = self.collection.find(q)
         if self.preserve_order:
