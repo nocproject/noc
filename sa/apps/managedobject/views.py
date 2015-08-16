@@ -19,6 +19,7 @@ from noc.sa.models.managedobject import (ManagedObject,
                                          ManagedObjectAttribute)
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.reducetask import ReduceTask
+from noc.sa.models.maptask import MapTask
 from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.inv.models.link import Link
@@ -653,11 +654,9 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         if name not in o.profile.scripts:
             return self.response_not_found("Script not found: %s" % name)
-        task = ReduceTask.create_task(
-            o, "pyrule:mrt_result", {},
-            name, {},
-            None)
-        return task.id
+        params = self.deserialize(request.raw_post_data)
+        t = MapTask.create_task(o, name, params)
+        return t.id
 
     @view(url="^(?P<id>\d+)/scripts/(?P<name>[^/]+)/(?P<task>\d+)/$",
           method=["GET"], access="script", api=True)
@@ -667,22 +666,19 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         if name not in o.profile.scripts:
             return self.response_not_found("Script not found: %s" % name)
-        t = self.get_object_or_404(ReduceTask, id=int(task))
-        try:
-            r = t.get_result(block=False)
-        except ReduceTask.NotReady:
-            # Not ready
+        t = self.get_object_or_404(MapTask, id=int(task))
+        if t.complete:
+            return {
+                "ready": True,
+                "max_timeout": 0,
+                "result": t.script_result
+            }
+        else:
             return {
                 "ready": False,
                 "max_timeout": (t.stop_time - datetime.datetime.now()).seconds,
                 "result": None
             }
-        # Return result
-        return {
-            "ready": True,
-            "max_timeout": 0,
-            "result": r[0]
-        }
 
     @view(url="(?P<id>\d+)/caps/$", method=["GET"],
           access="read", api=True)
