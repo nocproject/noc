@@ -34,11 +34,23 @@ class Profile(noc.sa.profiles.Profile):
     command_save_config = "copy running-config startup-config"
     convert_mac = noc.sa.profiles.Profile.convert_mac_to_dashed
 
+    rx_if_snmp_eth = re.compile(
+        r"^Ethernet Port on Unit (?P<unit>\d+), port (?P<port>\d+)$",
+        re.IGNORECASE
+    )
+
     def convert_interface_name(self, s):
         """
         >>> Profile().convert_interface_name("Eth 1/ 1")
         'Eth 1/1'
+        >>> Profile().convert_interface_name("Ethernet Port on unit 1, port 21")
+        'Eth 1/21'
         """
+        s = s.strip()
+        match = self.rx_if_snmp_eth.match(s)
+        if match:
+            return "Eth %s/%s" % (match.group("unit"),
+                                  match.group("port"))
         s = s.replace("  ", " ")
         return s.replace("/ ", "/")
 
