@@ -90,29 +90,6 @@ class Service(SAEService):
             request.access_profile, script_callback, request.timeout,
             **kwargs)
 
-    def ping_check(self, controller, request, done):
-        """
-        Start ping check of addresses
-        """
-        def ping_check_callback(status):
-            r = PingCheckResponse()
-            for address, result in status:
-                s = r.status.add()
-                s.address = address
-                s.status = result
-            done(controller, response=r)
-
-        self.activator.ping_check(
-            [a for a in request.addresses],
-            ping_check_callback)
-
-    def refresh_object_mappings(self, controller, request, done):
-        """
-        Request event filter refresh
-        """
-        self.activator.refresh_object_mappings()
-        done(controller, response=RefreshEventFilterResponse())
-
     def get_status(self, controller, request, done):
         status = self.activator.get_status()
         r = StatusResponse()

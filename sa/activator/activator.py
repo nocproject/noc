@@ -31,7 +31,6 @@ from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM, check_state
 from noc.lib.nbsocket.socketfactory import SocketFactory
-from noc.lib.nbsocket.pingsocket import Ping4Socket, Ping6Socket
 from noc.sa.activator.service import Service
 from noc.sa.activator.activator_socket import ActivatorSocket
 
@@ -110,28 +109,6 @@ class Activator(Daemon, FSM):
             tick_callback=self.tick, controller=self)
         self.children = {}
         self.sae_stream = None
-        self.to_listen = self.config.get("activator", "listen_instance") == self.instance_id
-        self.ping_count = self.config.getint("activator", "ping_count")
-        self.ping_timeout = self.config.getint("activator", "ping_timeout")
-        self.to_ping = self.config.get("activator", "ping_instance") == self.instance_id  # To start or not to start ping checks
-        if self.to_ping:
-            logger.info("Preparing ICMPv4 socket")
-            self.ping4_socket = Ping4Socket(self.factory)
-            logger.info("Preparing ICMPv6 socket")
-            self.ping6_socket = Ping6Socket(self.factory)
-        self.object_mappings = {}  # source -> object_id
-        self.object_status = {}  # address -> True | False | None
-        self.ping_time = []  # (time, address)
-        self.ping_offset = {}  # address -> 0..1
-        self.ping_interval = {}  # address -> interval
-        self.ping_failures = defaultdict(int)  # address -> failure count
-        self.ping_failure_threshold = self.config.getint("activator", "ping_failure_threshold")
-        self.ping_check_limit = self.config.getint("activator", "ping_check_limit")
-        self.running_pings = set()  # address
-        self.status_change_queue = []  # [(object_id, new status)]
-        self.ignore_event_rules = []  # [(left_re,right_re)]
-        self.trap_collectors = []  # List of SNMP Trap collectors
-        self.syslog_collectors = []  # List of SYSLOG collectors
         self.to_save_output = False  # Do not save canned result
         self.use_canned_session = False  # Do not use canned session
         logger.info("Loading profile classes")
@@ -139,13 +116,8 @@ class Activator(Daemon, FSM):
         script_registry.register_all()
         self.nonce = None
         FSM.__init__(self)
-        self.next_mappings_update = None
         self.script_threads = {}
-        if ((self.to_listen and self.config.getboolean("activator", "dedicated_collector")) or (
-            self.to_ping and self.config.getboolean("activator", "dedicated_ping"))):
-            self.max_script_threads = 0
-        else:
-            self.max_script_threads = self.config.getint("activator", "max_scripts")
+        self.max_script_threads = self.config.getint("activator", "max_scripts")
         self.scripts_processed = 0
         self.scripts_failed = 0
         self.script_lock = RLock()
@@ -193,11 +165,6 @@ class Activator(Daemon, FSM):
         if self.sae_stream:
             self.sae_stream.close()
             self.sae_stream = None
-        if self.to_listen:
-            if self.trap_collectors:
-                self.stop_trap_collectors()
-            if self.syslog_collectors:
-                self.stop_syslog_collectors()
         self.set_timeout(1)
 
     def on_CONNECT_enter(self):
@@ -249,72 +216,8 @@ class Activator(Daemon, FSM):
         """
         Entering ESTABLISHED state
         """
-        to_refresh_filters = self.to_ping
-        self.next_mappings_update = None
         self.scripts_processed = 0
         self.scripts_failed = 0
-        # Check does our instance is designated to listen
-        if self.to_listen:
-            if self.config.get("activator", "listen_traps"):
-                self.start_trap_collectors()
-                to_refresh_filters = True
-            if self.config.get("activator", "listen_syslog"):
-                self.start_syslog_collectors()
-                to_refresh_filters = True
-        if to_refresh_filters:
-            self.get_object_mappings()
-
-    def start_trap_collectors(self):
-        """
-        Start SNMP Trap Collectors
-        """
-        logger.debug("Starting trap collectors")
-        if self.config.getboolean("activator",
-            "enable_internal_trap_parser"):
-            logger.info("Using internal trap parser")
-            from noc.sa.activator.trap_collector import TrapCollector
-        else:
-            logger.info("Using pysnmp trap parser")
-            from noc.sa.activator.pysnmp_trap_collector import TrapCollector
-        log_traps = self.config.getboolean("main", "log_snmp_traps")
-        self.trap_collectors = [
-            TrapCollector(self, ip, port, log_traps)
-            for ip, port
-            in self.resolve_addresses(
-                self.config.get("activator", "listen_traps"), 162)
-        ]
-
-    def stop_trap_collectors(self):
-        """
-        Stop SNMP Trap Collectors
-        """
-        if self.trap_collectors:
-            logger.debug("Stopping trap collectors")
-            for tc in self.trap_collectors:
-                tc.close()
-            self.trap_collectors = []
-
-    def start_syslog_collectors(self):
-        """
-        Start syslog collectors
-        """
-        logger.debug("Starting syslog collectors")
-        from noc.sa.activator.syslog_collector import SyslogCollector
-        self.syslog_collectors = [
-            SyslogCollector(self, ip, port)
-            for ip, port
-            in self.resolve_addresses(self.config.get("activator", "listen_syslog"), 514)
-        ]
-
-    def stop_syslog_collectors(self):
-        """
-        Disable syslog collectors
-        """
-        if self.syslog_collectors:
-            logger.debug("Stopping syslog collectors")
-            for sc in self.syslog_collectors:
-                sc.close()
-            self.syslog_collectors = []
 
     def can_run_script(self):
         """
@@ -377,16 +280,6 @@ class Activator(Daemon, FSM):
         logger.debug("Requesting call: %s(*%s,**%s)" % (f, args, kwargs))
         self.script_call_queue.put((f, args, kwargs))
 
-    def map_event(self, source):
-        """
-        Map event source to object id
-        :param source: Event source
-        :type source: str
-        :return: object id or None
-        :rtype: str or None
-        """
-        return self.object_mappings.get(source)
-
     def run(self):
         """
         Main event loop
@@ -398,10 +291,6 @@ class Activator(Daemon, FSM):
         Called every second
         """
         t = time.time()
-        # Request filter updates
-        if (self.get_state() == "ESTABLISHED" and self.next_mappings_update and
-            t > self.next_mappings_update):
-            self.get_object_mappings()
         # Perform delayed calls
         while not self.script_call_queue.empty():
             try:
@@ -410,18 +299,9 @@ class Activator(Daemon, FSM):
                 break
             logger.debug("Calling delayed %s(*%s,**%s)" % (f, args, kwargs))
             apply(f, args, kwargs)
-        # Send object status changes
-        if self.to_ping and self.get_state() == "ESTABLISHED" and self.status_change_queue:
-            self.send_status_change()
         # Cancel stale scripts
         if self.get_state() == "ESTABLISHED":
             self.cancel_stale_scripts()
-        # Run pending ping probes
-        if self.to_ping and self.get_state() == "ESTABLISHED" and (
-                    bool(self.ping4_socket.socket_is_ready()) or
-                    bool(self.ping6_socket.socket_is_ready())
-        ):
-            self.run_ping_checks()
         # Run default daemon/fsm machinery
         super(Activator, self).tick()
 
@@ -531,109 +411,9 @@ class Activator(Daemon, FSM):
                               self.config.get("activator", "secret"),
                               self.nonce),
             max_scripts=self.max_script_threads,
-            instance=str(self.instance_id),
-            can_ping=bool(self.to_ping)
+            instance=str(self.instance_id)
         )
         self.sae_stream.proxy.auth(r, auth_callback)
-
-    @check_state("ESTABLISHED")
-    def refresh_object_mappings(self):
-        self.get_object_mappings()
-
-    @check_state("ESTABLISHED")
-    def get_object_mappings(self):
-        def object_mappings_callback(transaction, response=None, error=None):
-            if error:
-                logger.error("get_object_mappings error: %s", error.text)
-                return
-            self.object_mappings = dict((x.source, x.object)
-                                        for x in response.mappings)
-            self.compile_ignore_event_rules(response.ignore_rules)
-            self.debug("Setting object mappings to: %s" % self.object_mappings)
-            self.next_mappings_update = time.time() + response.expire
-            #
-            if not self.object_status:
-                self.object_status = dict(
-                    (x.address, x.current_status)
-                    for x in response.ping
-                    if x.current_status is not None
-                )
-            # Schedule ping checks
-            self.ping_interval = dict((x.address, x.interval)
-                for x in response.ping)
-            self.ping_time = [(t, a) for t, a in self.ping_time
-                              if a in self.ping_interval]
-            self.running_pings = set(
-                a for a in self.running_pings if a in self.ping_interval)
-            n = set(self.ping_interval) - (set(a for f, a in self.ping_time) | set(self.running_pings))
-            if n:
-                # New mappings
-                for a in n:
-                    self.ping_offset[a] = random.random()
-                self.ping_time += [(self.get_next_ping_time(a), a) for a in n]
-                self.ping_time = sorted(self.ping_time)
-            self.debug("Scheduling ping probes to: %s" % self.ping_time)
-
-        logger.info("Requesting object mappings")
-        # Delay next request to at least 1 minute
-        self.next_mappings_update = time.time() + 60
-        # Request object mappings
-        r = ObjectMappingsRequest()
-        self.sae_stream.proxy.object_mappings(r, object_mappings_callback)
-
-    def on_event(self, timestamp, object, body):
-        """
-        Send FM event to SAE
-        :param timestamp: Event timestamp
-        :param object: Object id
-        :param body: Event content
-        """
-        def on_event_callback(transaction, response=None, error=None):
-            if error:
-                logger.error("event_proxy failed: %s", error)
-        r = EventRequest()
-        r.timestamp = timestamp
-        r.object = object
-        for k, v in body.items():
-            # Check ignore rules
-            for lr, rr in self.ignore_event_rules:
-                if lr.search(k) and rr.search(v):
-                    return  # Ignore event
-            # Populate event request
-            i = r.body.add()
-            i.key = str(k)
-            i.value = str(v)
-        self.sae_stream.proxy.event(r, on_event_callback)
-
-    def queue_status_change(self, address, status):
-        i = self.object_mappings.get(address)
-        if i:
-            self.status_change_queue += [(i, status)]
-
-    def send_status_change(self):
-        def status_change_callback(transaction, response=None, error=None):
-            if error:
-                logger.error("object_status failed: %s", error)
-
-        r = ObjectStatusRequest()
-        for object, status in self.status_change_queue:
-            s = r.status.add()
-            s.object = object
-            s.status = status
-        self.status_change_queue = []
-        self.sae_stream.proxy.object_status(r, status_change_callback)
-
-    def compile_ignore_event_rules(self, rules):
-        ir = []
-        for r in rules:
-            try:
-                logger.debug("Adding ignore rule: %s | %s" % (r.left_re,
-                                                               r.right_re))
-                ir += [(re.compile(r.left_re, re.IGNORECASE),
-                        re.compile(r.right_re, re.IGNORECASE))]
-            except re.error, why:
-                logger.error("Failed to compile ignore event rule: %s,%s. skipping" % (l, r))
-        self.ignore_event_rules = ir
 
     @check_state("ESTABLISHED")
     def cancel_stale_scripts(self):
@@ -647,88 +427,6 @@ class Activator(Daemon, FSM):
                 logger.info("Cancelling stale script %s(%s)" % (
                     script.name, script.access_profile.address))
                 script.cancel_script()
-
-    def run_ping_checks(self):
-        if not self.ping_time:
-            return
-        i = bisect.bisect_right(self.ping_time, (time.time(), None))
-        while i > 0:
-            t, a = self.ping_time.pop(0)
-            self.debug("PING %s" % a)
-            self.running_pings.add(a)
-            sock = self.ping6_socket if ":" in a else self.ping4_socket
-            if sock.socket_is_ready():
-                sock.ping(
-                    a, count=self.ping_count, timeout=self.ping_timeout,
-                    callback=self.ping_callback, stop_on_success=True)
-            else:
-                logger.debug("Ignoring ping %s: Socket is not ready", a)
-            i -= 1
-
-    def ping_callback(self, address, result):
-        # Pessimistic: Fail if any ping failed
-        # status = bool(len(result) == len([r for r in result if r is not None]))
-        # Optimistic: Fail if all pings failed
-        status = len([r for r in result if r is not None]) > 0
-        if address in self.running_pings:
-            # Return to schedule
-            self.running_pings.remove(address)
-            bisect.insort_right(
-                self.ping_time,
-                (self.get_next_ping_time(address), address))
-        old_status = self.object_status.get(address)
-        if old_status is False and status is True:
-            # Reset failures count
-            self.ping_failures[address] = 0
-        elif old_status is True and status is False:
-            # Check failure threshold
-            self.ping_failures[address] += 1
-            if self.ping_failures[address] < self.ping_failure_threshold:
-                status = True  # Failure confirmation needed
-        self.debug("PING %s: Result %s [%s -> %s]" % (
-            address, result, old_status, status))
-        if status != old_status:
-            # Status changed
-            self.object_status[address] = status
-            self.queue_status_change(address, status)
-
-    def get_next_ping_time(self, address):
-        i = self.ping_interval.get(address, 60)
-        t = time.time()
-        istart = (int(t) // i) * i
-        delta = i * self.ping_offset[address]
-        n = istart + delta
-        if n > t:
-            return n
-        else:
-            return n + i
-
-    def ping_check(self, addresses, callback):
-        """
-        Ping addresses
-        """
-        def spool():
-            while left and len(running) < self.ping_check_limit:
-                a = left.pop(0)
-                running.add(a)
-                self.ping4_socket.ping(
-                    a, count=self.ping_count, timeout=self.ping_timeout,
-                    callback=cb, stop_on_success=True)
-
-        def cb(address, result):
-            r = bool([x for x in result if x is not None])
-            status.append((address, r))
-            if len(status) == la:
-                callback(status)
-            else:
-                running.remove(address)
-                spool()  # Run next batch
-
-        status = []
-        la = len(addresses)
-        left = [a for a in addresses]
-        running = set()
-        spool()  # Run first batch
 
     def get_status(self):
         s = {
