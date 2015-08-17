@@ -73,7 +73,7 @@ class ManagedObject(models.Model):
     administrative_domain = models.ForeignKey(AdministrativeDomain,
             verbose_name=_("Administrative Domain"))
     segment = DocumentReferenceField(
-            NetworkSegment, null=True, blank=True)
+            NetworkSegment, null=False, blank=False)
     activator = models.ForeignKey(Activator,
             verbose_name=_("Activator"),
             limit_choices_to={"is_active": True})
