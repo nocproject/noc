@@ -129,8 +129,8 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
                 var data = Ext.decode(response.responseText);
                 if(data.ready) {
                     me.loadMask.hide();
-                    if(data.result && data.result.result && data.result.result.code > 0 && data.result.result.text.length > 0) {
-                        me.showError(name, data.result.result);
+                    if(data.result && data.result.code > 0 && data.result.text.length > 0) {
+                        me.showError(name, data.result);
                     } else {
                         me.showResult(name, data.result);
                     }
@@ -150,7 +150,7 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
             preview = Ext.create(me.currentPreview, {
             app: me,
             script: name,
-            result: result.result
+            result: result
         });
         me.add(preview);
         me.getLayout().setActiveItem(1);
@@ -212,7 +212,23 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
     //
     onFormRun: function(name) {
         var me = this,
-            params = me.form.getValues();
+            params = {},
+            values;
+
+        if(!me.form.isValid()) {
+            return;
+        }
+        values = me.form.getValues();
+        Ext.Object.each(values, function(n) {
+            var v = values[n];
+            if(!v) {
+                return;
+            }
+            if(typeof v === "string" && !v.length) {
+                return;
+            }
+            params[n] = v;
+        });
         me.destroyForm();
         me.runScript(name, params);
     },

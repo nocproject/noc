@@ -9,6 +9,9 @@ Yo're trying to delete prefix {{prefix.prefix}} ({{prefix.description}})<br/>
         <input type="radio" name="scope" value="p" checked /> Delete prefix and save and relink the nested prefixes and addresses?<br/>
         <input type="radio" name="scope" value="r" /> Delete prefix and all nested prefixes, addresses and permissions?<br/>
         
+        {% if prefix.ipv6_transition or prefix.ipv4_transition %}
+        <input type="checkbox" name="delete_transition"  /> Also apply this action on the linked dual-stack allocation<br/>
+        {% endif %}
         <input type="submit" value="Delete" />
         <input type="button" value="Cancel" onclick="document.location='{% url ip:ipam:vrf_index prefix.vrf.id prefix.afi prefix.prefix %}';"/>
     </div>

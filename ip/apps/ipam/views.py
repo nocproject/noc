@@ -773,6 +773,21 @@ class IPAMAppplication(Application):
         if request.POST:
             if "scope" in request.POST and request.POST["scope"][0] in (
             "p", "r"):
+                if "delete_transition" in request.POST:
+                    prefix_transition = prefix.ipv6_transition if prefix.ipv6_transition else prefix.ipv4_transition
+                    if  request.POST["scope"] == "p":
+                        # Delete prefix only
+                        prefix_transition.delete()
+                        self.message_user(request, _(
+                            "Prefix %(prefix)s has been successfully deleted") % {
+                            "prefix": prefix_transition.prefix})
+                    else:
+                        # Delete recursive prefixes
+                        prefix_transition.delete_recursive()
+                        self.message_user(request, _(
+                            "Prefix %(prefix)s and all descendans have been successfully deleted") % {
+                            "prefix": prefix_transition.prefix})
+                
                 if  request.POST["scope"] == "p":
                     # Delete prefix only
                     prefix.delete()

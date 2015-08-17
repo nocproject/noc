@@ -45,3 +45,10 @@ class Parser(noc.kb.parsers.Parser):
         block=ET.tostring(xhtml.xmlbody)
         return block
     
+    @classmethod
+    def is_enabled(cls):
+        try:
+            from mwlib.uparser import parseString
+            return True
+        except ImportError:
+            return False
