@@ -5,6 +5,10 @@
 ## See LICENSE for details
 ##---------------------------------------------------------------------
 
-## Adjust include path
-CPATH="/usr/local/include:$CPATH"
-export CPATH
+COMP=`./bin/python -c "import sys; print 'CLANG' if 'clang' in sys.version.lower() else 'GCC'"`
+
+if [ "$COMP" == "GCC" ]; then
+    ## Adjust include path
+    CPATH="/usr/local/include:$CPATH"
+    export CPATH
+export
