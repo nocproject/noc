@@ -37,6 +37,11 @@ class Script(NOCScript):
         "eoip": "tunnel",
         "bond": "aggregated"
     }
+
+    ignored_types = set([
+        "mesh", "traffic-eng", "vpls", "vrrp", "wds", "lte",
+        "cap", "vrrp"
+    ])
     si = {}
 
     def get_tunnel(self, tun_type, f, afi, ipif):
@@ -70,9 +75,7 @@ class Script(NOCScript):
         # Fill interfaces
         for n, f, r in self.cli_detail(
             "/interface print detail without-paging"):
-            if r["type"] in [
-                "mesh", "traffic-eng", "vpls", "vrrp", "wds", "lte"
-            ]:
+            if r["type"] in self.ignored_types:
                 continue
             if not r["type"] in "vlan":  # TODO: Check other types
                 ifaces[r["name"]] = {

@@ -72,7 +72,7 @@ class ManagedObject(models.Model):
     administrative_domain = models.ForeignKey(AdministrativeDomain,
             verbose_name=_("Administrative Domain"))
     segment = DocumentReferenceField(
-            NetworkSegment, null=True, blank=True)
+            NetworkSegment, null=False, blank=False)
     pool = DocumentReferenceField(
         Pool,
         null=False, blank=False
