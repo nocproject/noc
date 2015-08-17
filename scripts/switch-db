@@ -1,0 +1,38 @@
+#!/bin/sh
+SHELVE_ROOT=./var/db/shelve
+DB_ROOT=./var/db/
+NEW_SHELVE=$1
+
+function info () {
+    echo $1
+}
+
+function die () {
+    echo $1
+    exit 1
+}
+
+function stop () {
+    ./noc ctl status $1 | grep RUNNING
+    if [ $? -eq 0 ]; then
+        info "Stopping $1"
+        ./noc ctl stop $1 || die "Cannot stop $1"
+    fi
+}
+
+function start () {
+    ./noc ctl status $1 | grep RUNNING
+    if [ $? -ne 0 ]; then
+        info "Starting $1"
+        ./noc ctl start $1 || die "Cannot start $1"
+    fi
+}
+
+stop mongod
+stop postgres
+rm $DB_ROOT/mongo
+rm $DB_ROOT/postgres
+ln -s $PWD/$SHELVE_ROOT/$NEW_SHELVE/mongo $PWD/$DB_ROOT/mongo
+ln -s $PWD/$SHELVE_ROOT/$NEW_SHELVE/postgres $PWD/$DB_ROOT/postgres
+start mongod
+start postgres
