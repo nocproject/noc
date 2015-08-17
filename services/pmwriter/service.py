@@ -13,7 +13,7 @@ import os
 import tornado.ioloop
 ## NOC modules
 from noc.lib.service.base import Service
-from noc.sa.interfaces.base import StringParameter
+from noc.sa.interfaces.base import StringParameter, IntParameter
 from api.pmwriter import PMWriterAPI
 from noc.pm.db.base import tsdb
 
@@ -29,7 +29,8 @@ class PMWriterService(Service):
         "loglevel": StringParameter(
             default=os.environ.get("NOC_LOGLEVEL", "info"),
             choices=["critical", "error", "warning", "info", "debug"]
-        )
+        ),
+        "batch_size": IntParameter(default=1000)
     }
 
     api = Service.api + [
@@ -49,6 +50,7 @@ class PMWriterService(Service):
         self.logger.debug("Register metric %s %s %s",
                           metric, value, timestamp)
         self.batch.write(metric, timestamp, value)
+        self.batched_metrics += 1
         if self.batched_metrics >= self.config.batch_size:
             self.flush()
 
