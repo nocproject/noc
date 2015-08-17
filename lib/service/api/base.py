@@ -89,11 +89,9 @@ class ServiceSubscriber(object):
             self.api_class.level,
             api_name=self.api_class.name,
             service_name=self.service.name,
-            env=self.service.config.env,
             pool=self.service.config.pool,
             dc=self.service.config.dc,
-            node=self.service.config.node,
-            version=self.api_class.version
+            node=self.service.config.node
         )
 
     def on_message(self, message):
@@ -150,7 +148,6 @@ class ServiceAPI(object):
     # Name and version of the service
     # RPC URL will be /v<verson>/<name>/
     name = "test"
-    version = 1
     # Tornado JSON-RPC request handler
     http_request_handler = ServiceAPIRequestHandler
     # API LEVEL Constants
@@ -172,24 +169,22 @@ class ServiceAPI(object):
 
     @classmethod
     def get_service_url(cls):
-        return r"/v%s/%s/" % (cls.version, cls.name)
+        return r"/%s/" % cls.name
 
     @classmethod
-    def get_service_topic(cls, level=None, api_name=None, env=None,
+    def get_service_topic(cls, level=None, api_name=None,
                           service_name=None, pool=None,
-                          dc=None, node=None, version=None):
+                          dc=None, node=None):
         api_name = api_name or cls.name
-        version = version or cls.version
         level = level or cls.level
         if level == cls.AL_GLOBAL:
-            return "%s.%s.v%s" % (env, api_name, version)
+            return "rpc.%s" % api_name
         elif level == cls.AL_POOL:
-            return "%s.%s.%s.v%s" % (env, api_name, pool, version)
+            return "rpc.%s.%s" % (api_name, pool)
         elif level == cls.AL_NODE:
-            return "%s.%s.%s.%s.v%s" % (env, api_name, dc, node, version)
+            return "rpc.%s.%s.%s" % (api_name, dc, node)
         elif level == cls.AL_SERVICE:
-            return "%s.%s.%s.%s.%s.v%s" % (env, service_name, api_name,
-                                           dc, node, version)
+            return "rpc.%s.%s.%s.%s" % (api_name, dc, node, service_name)
         else:
             return None
 

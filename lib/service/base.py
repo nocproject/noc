@@ -87,12 +87,6 @@ class Service(object):
             help="NOC node name"
         ),
         make_option(
-            "--config",
-            action="store", dest="conf",
-            default=os.environ.get("NOC_CONF", ""),
-            help="Comma-separated paths to config in Consul KV-store"
-        ),
-        make_option(
             "--session-ttl",
             action="store", dest="session_ttl", type="int",
             default=os.environ.get("NOC_SESSION_TTL", "10"),
@@ -197,18 +191,11 @@ class Service(object):
         # Calculate leader group name
         self.leader_group = self.get_leader_group_name(**vc)
         if self.leader_group:
-            self.leader_key = "noc/%s/service/leader/%s" % (
-                conf.env, self.leader_group
-            )
+            self.leader_key = "service/leader/%s" % self.leader_group
         self.consul = consul.tornado.Consul(
             dc=conf.dc or None
         )
-        self.config = Config(
-            consul=self.consul,
-            interface=DictParameter(attrs=self.config_interface,
-                                    truncate=True),
-            **vc
-        )
+        self.config = Config(self, **vc)
 
     def setup_logging(self):
         if len(logging.root.handlers):
@@ -218,7 +205,7 @@ class Service(object):
                 h.setFormatter(fmt)
             logging.root.setLevel(self.LOG_LEVELS[self.config.loglevel])
         else:
-            # Imitialize logger
+            # Initialize logger
             logging.basicConfig(
                 stream=sys.stdout,
                 format=self.LOG_FORMAT,
@@ -434,7 +421,7 @@ class Service(object):
                 continue
             self.logger.info("Deregister service %s", h.name)
             yield self.consul.agent.service.deregister(h.name)
-        # Release leadership locj
+        # Release leadership lock
         if self.leader_group and self.consul_session:
             yield self.release_leadership()
         # Finally stop ioloop
@@ -488,20 +475,47 @@ class Service(object):
             msg = json.dumps(msg)
         self.nsq_writer.pub(topic, msg, callback=callback)
 
-    def open_rpc(self, api_name, level, env=None, service_name=None,
-                 pool=None, dc=None, node=None, version=1):
+    def _open_rpc(self, api_name, level, service_name=None,
+                 pool=None, dc=None, node=None):
+        """
+        Returns RPC proxy
+        """
         topic = ServiceAPI.get_service_topic(
             level=level,
             api_name=api_name,
-            env=env or self.config.env,
             service_name=service_name,
             pool=pool or self.config.pool,
             dc=dc or self.config.dc,
             node=node or self.config.node,
-            version=version
         )
         self.logger.debug("Opening RPC proxy to %s", topic)
         return RPCProxy(self, topic)
+
+    def open_rpc_global(self, api_name):
+        """
+        Returns RPC proxy for global API
+        """
+        return self._open_rpc(api_name, level=1)  # AL_GLOBAL
+
+    def open_rpc_pool(self, api_name, pool=None):
+        """
+        Returns RPC proxy for pooled service
+        """
+        return self._open_rpc(api_name, level=2, pool=pool)
+
+    def open_rpc_node(self, api_name, dc=None, node=None):
+        """
+        Returns RPC proxy for node service
+        """
+        return self._open_rpc(api_name, level=3, dc=dc, node=node)
+
+    def open_rpc_service(self, api_name, dc=None, node=None,
+                         service=None):
+        """
+        Returns RPC proxy for node service
+        """
+        return self._open_rpc(api_name, level=4, dc=dc, node=node,
+                              service=service)
 
     def subscribe_event(self, name, pool=None, callback=None):
         def on_message(message):
@@ -523,7 +537,7 @@ class Service(object):
 
     def drop_privileges(self):
         """
-        Drop root-priveleges to NOC_USER when necessary
+        Drop root-privileges to NOC_USER when necessary
         """
         uname = os.environ.get("NOC_USER")
         if not uname:
@@ -536,7 +550,7 @@ class Service(object):
         euid = os.geteuid()
         if euid == uid:
             return  # Nothing to drop
-        # Try to drop priveleges
+        # Try to drop privileges
         try:
             self.logger.info("Setting current user to %s (%s)",
                              uname, uid)

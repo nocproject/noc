@@ -26,7 +26,7 @@ class TrapCollectorService(Service):
     name = "trapcollector"
 
     #
-    leader_group_name = "trapcollector-%(env)s-%(dc)s-%(node)s"
+    leader_group_name = "trapcollector-%(dc)s-%(node)s"
     pooled = True
     # Dict parameter containing values accepted
     # via dynamic configuration
@@ -59,8 +59,8 @@ class TrapCollectorService(Service):
 
     def on_activate(self):
         # Register RPC aliases
-        self.omap = self.open_rpc("omap", 1)
-        self.fmwriter = self.open_rpc("fmwriter", 2)
+        self.omap = self.open_rpc_global("omap")
+        self.fmwriter = self.open_rpc_pool("fmwriter")
         # Set event listeners
         self.subscribe_event("objmapchange", pool=self.config.pool,
                              callback=self.on_object_map_change)
