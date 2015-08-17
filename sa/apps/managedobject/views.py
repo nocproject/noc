@@ -671,13 +671,15 @@ class ManagedObjectApplication(ExtModelApplication):
             return {
                 "ready": True,
                 "max_timeout": 0,
+                "status": t.status == "C",
                 "result": t.script_result
             }
         else:
             return {
                 "ready": False,
                 "max_timeout": (t.stop_time - datetime.datetime.now()).seconds,
-                "result": None
+                "result": None,
+                "status": False
             }
 
     @view(url="(?P<id>\d+)/caps/$", method=["GET"],
