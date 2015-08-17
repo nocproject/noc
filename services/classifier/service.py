@@ -73,7 +73,7 @@ class ClassifierService(Service):
     Events-classification service
     """
     name = "classifier"
-    leader_group_name = "classifier-%(env)s-%(pool)s"
+    leader_group_name = "classifier-%(pool)s"
     _pooled = True
 
     # Dict parameter containing values accepted

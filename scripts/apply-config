@@ -59,11 +59,6 @@ def build():
             pn = s
         elif s.startswith("program:"):
             pn = s[8:]
-            de["NOC_CONF"] = ":".join([
-                "noc/%s/config/global/%s/" % (noc_env, pn),
-                "noc/%s/config/dc/%s/node/%s/%s/" % (
-                    noc_env, noc_dc, noc_node, pn)
-            ])
         else:
             pn = None
         if pn:

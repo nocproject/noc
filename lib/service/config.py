@@ -16,18 +16,38 @@ import consul.base
 import tornado.ioloop
 import tornado.gen
 import blinker
+## NOC modules
+from noc.sa.interfaces.base import DictParameter
 
 
 class Config(object):
-    def __init__(self, consul, interface, conf="", **kwargs):
+    def __init__(self, service, **kwargs):
         self.change = blinker.signal("confchanged")
         self.ready = blinker.signal("confready")
         self._conf = kwargs.copy()
         self._raw_conf = {}  # level -> dict
         self._logger = logging.getLogger("config")
-        self._consul = consul
-        self._interface = interface
-        self._pending_configs = set(conf.split(":"))
+        self._service = service
+        self._consul = self._service.consul
+        self._interface = DictParameter(attrs=self.config_interface,
+                                        truncate=True)
+        self._pending_configs = []
+        # Global config path
+        self._pending_configs += [
+            "config/global/%s/" % self._service.name
+        ]
+        # Pool config path
+        if self._service.pooled:
+            self._pending_configs += [
+                "config/pool/%s/%s/" % (kwargs["pool"],
+                                        self._service.name)
+            ]
+        # Node config path
+        self._pending_configs += [
+            "config/dc/%s/node/%s/%s/" % (
+                kwargs["dc"], kwargs["node"], self._service.name
+            )
+        ]
         ioloop = tornado.ioloop.IOLoop.instance()
         for n, conf in enumerate(self._pending_configs):
             self._raw_conf[n] = {}

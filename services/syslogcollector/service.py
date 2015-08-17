@@ -12,6 +12,7 @@ import os
 from optparse import make_option
 import socket
 from collections import defaultdict
+import time
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
@@ -25,7 +26,7 @@ class SyslogCollectorService(Service):
     name = "syslogcollector"
 
     #
-    leader_group_name = "syslogcollector-%(env)s-%(dc)s-%(node)s"
+    leader_group_name = "syslogcollector-%(dc)s-%(node)s"
     pooled = True
     # Dict parameter containing values accepted
     # via dynamic configuration
@@ -58,8 +59,8 @@ class SyslogCollectorService(Service):
 
     def on_activate(self):
         # Register RPC aliases
-        self.omap = self.open_rpc("omap", 1)
-        self.fmwriter = self.open_rpc("fmwriter", 2)
+        self.omap = self.open_rpc_global("omap")
+        self.fmwriter = self.open_rpc_pool("fmwriter")
         # Set event listeners
         self.subscribe_event("objmapchange", pool=self.config.pool,
                              callback=self.on_object_map_change)
@@ -128,8 +129,8 @@ class SyslogCollectorService(Service):
             "ts": timestamp,
             "object": object,
             "data": {
-            "source": "syslog",
-                "collector": "???",
+                "source": "syslog",
+                "collector": self.config.pool,
                 "message": message
             }
         }]
@@ -170,6 +171,22 @@ class SyslogCollectorService(Service):
             ", ".join("%s: %s" % (s, self.invalid_sources[s])
                       for s in self.invalid_sources)
         )
+        # Generate invalid event source events
+        # t = int(time.time())
+        # for s in self.invalid_sources:
+        #     self.messages += [{
+        #         "ts": t,
+        #         "object": 0,  # @todo: Pass proper id
+        #         "data": {
+        #             "source": "system",
+        #             "component": "noc-activator",
+        #             "activator": self.config.pool,
+        #             "collector": self.config.pool,
+        #             "type": "Invalid Event Source",
+        #             "ip": s,
+        #             "count": self.invalid_sources[s]
+        #         }
+        #     }]
         self.invalid_sources = defaultdict(int)
 
     def on_object_map_change(self, data):

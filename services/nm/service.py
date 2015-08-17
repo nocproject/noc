@@ -17,7 +17,7 @@ from noc.sa.interfaces.base import StringParameter
 class NMService(Service):
     name = "nm"
     # One active Node Manager per node
-    leader_group_name = "nm-%(env)s-%(dc)s-%(node)s"
+    leader_group_name = "nm-%(dc)s-%(node)s"
 
     # Dict parameter containing values accepted
     # via dynamic configuration

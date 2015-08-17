@@ -26,7 +26,7 @@ class FMWriterService(Service):
     name = "fmwriter"
 
     #
-    leader_group_name = "fmwriter-%(env)s-%(pool)s"
+    leader_group_name = "fmwriter-%(pool)s"
     # Dict parameter containing values accepted
     # via dynamic configuration
     config_interface = {
