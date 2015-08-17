@@ -18,12 +18,9 @@ import cPickle
 import sys
 import csv
 import itertools
-import struct
 from collections import defaultdict
 ## Django modules
 from django.db import reset_queries, transaction
-# Third-party modules
-from bson import Binary
 ## NOC modules
 from noc.sa.sae.service import Service
 from noc.sa.sae.sae_socket import SAESocket
@@ -31,7 +28,6 @@ from noc.main.models import Shard
 from noc.sa.models import (Activator, ManagedObject, MapTask, ReduceTask,
                            script_registry, profile_registry,
                            ActivatorCapabilitiesCache, FailedScriptLog)
-from noc.fm.models import NewEvent
 from noc.sa.rpc import RPCSocket
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.daemon import Daemon
@@ -92,13 +88,10 @@ class SAE(Daemon):
         self.script_threads = {}
         self.script_lock = threading.Lock()
         #
-        self.blocked_pools = set()  # Blocked activator names
+        self.blocked_pools = set()  # Blocked pool.names
         #
         self.default_managed_object = None
         #
-        self.event_batch = None
-        self.batched_events = 0
-        self.prepare_event_bulk()
 
     def load_config(self):
         """
@@ -175,17 +168,18 @@ class SAE(Daemon):
         self.logger.info("%s is joining activator pool '%s'" % (repr(stream), name))
         self.activators[name].add(stream)
         c = self.update_activator_capabilities(name)
-        self.write_event({
-            "source": "system",
-            "event": "activator_join",
-            "name": name,
-            "instance": stream.instance,
-            "sessions": stream.max_scripts,
-            "pool_members": c.members,
-            "pool_sessions": c.max_scripts,
-            "min_members": c.activator.min_members,
-            "min_sessions": c.activator.min_sessions
-        })
+        # @todo: Use fmwriter API
+        # self.write_event({
+        #     "source": "system",
+        #     "event": "activator_join",
+        #     "name": name,
+        #     "instance": stream.instance,
+        #     "sessions": stream.max_scripts,
+        #     "pool_members": c.members,
+        #     "pool_sessions": c.max_scripts,
+        #     "min_members": c.activator.min_members,
+        #     "min_sessions": c.activator.min_sessions
+        # })
 
     def leave_activator_pool(self, name, stream):
         """
@@ -197,17 +191,18 @@ class SAE(Daemon):
             repr(stream), name))
         self.activators[name].remove(stream)
         c = self.update_activator_capabilities(name)
-        self.write_event({
-            "source": "system",
-            "event": "activator_leave",
-            "name": name,
-            "instance": stream.instance,
-            "sessions": stream.max_scripts,
-            "pool_members": c.members,
-            "pool_sessions": c.max_scripts,
-            "min_members": c.activator.min_members,
-            "min_sessions": c.activator.min_sessions
-        })
+        # @todo: Use fmwriter API
+        # self.write_event({
+        #     "source": "system",
+        #     "event": "activator_leave",
+        #     "name": name,
+        #     "instance": stream.instance,
+        #     "sessions": stream.max_scripts,
+        #     "pool_members": c.members,
+        #     "pool_sessions": c.max_scripts,
+        #     "min_members": c.activator.min_members,
+        #     "min_sessions": c.activator.min_sessions
+        # })
 
     def get_pool_info(self, name):
         """
@@ -237,17 +232,18 @@ class SAE(Daemon):
         for a in Activator.objects.filter(is_active=True, shard__name__in=self.shards):
             if a.min_sessions or a.min_members:
                 self.logger.info("   activator pool '%s' has lower thresholds" % a.name)
-                self.write_event({
-                    "source": "system",
-                    "event": "activator_join",
-                    "name": a.name,
-                    "instance": "0",
-                    "sessions": 0,
-                    "pool_members": 0,
-                    "pool_sessions": 0,
-                    "min_members": a.min_members,
-                    "min_sessions": a.min_sessions
-                })
+                # @todo: Use fmwriter API
+                # self.write_event({
+                #     "source": "system",
+                #     "event": "activator_join",
+                #     "name": a.name,
+                #     "instance": "0",
+                #     "sessions": 0,
+                #     "pool_members": 0,
+                #     "pool_sessions": 0,
+                #     "min_members": a.min_members,
+                #     "min_sessions": a.min_sessions
+                # })
 
     def tick(self):
         """
@@ -256,10 +252,6 @@ class SAE(Daemon):
         """
         t = time.time()
         reset_queries()  # Clear debug SQL log
-        if self.batched_events:
-            self.logger.info("Writing %d batched events", self.batched_events)
-            self.event_batch.execute({"w": 0})
-            self.prepare_event_bulk()
         if t - self.last_mrtask_check >= self.mrt_schedule_interval:
             # Check Map/Reduce task status
             self.process_mrtasks()
@@ -267,66 +259,17 @@ class SAE(Daemon):
         if t - self.last_status_refresh >= self.activator_status_interval:
             self.refresh_activator_status()
 
-    def write_event(self, data, timestamp=None, managed_object=None):
-        """
-        Write FM event to database
-
-        :param data: A list of (key, value) or dict
-        :param timestamp:
-        :param managed_object: Managed object
-        """
-        if managed_object is None:
-            # Set object to SAE, if not set
-            if not self.default_managed_object:
-                self.default_managed_object = ManagedObject.objects.get(name="SAE")
-            managed_object = self.default_managed_object
-        if timestamp is None:
-            timestamp = datetime.datetime.now()
-        if type(data) == list:
-            data = dict(data)
-        elif type(data) != dict:
-            raise ValueError("List or dict type required")
-        # Strip syslog facility if required
-        if (self.strip_syslog_facility and "source" in data
-            and data["source"] == "syslog" and "facility" in data):
-            del data["facility"]
-        # Strip syslog severity if required
-        if (self.strip_syslog_severity and "source" in data
-            and data["source"] == "syslog" and "severity" in data):
-            del data["severity"]
-        # Normalize data
-        data = dict(
-            (str(k).replace(".", "__").replace("$", "^^"), str(data[k]))
-            for k in data
-        )
-        # Generate sequental number
-        seq = Binary(struct.pack(
-            "!II",
-            int(time.time()),
-            self.event_seq.next() & 0xFFFFFFFFL
-        ))
-        # Batch event
-        self.event_batch.insert({
-            "timestamp": timestamp,
-            "managed_object": managed_object.id,
-            "raw_vars": data,
-            "log": [],
-            "seq": seq
-        })
-        self.batched_events += 1
-
     def on_stream_close(self, stream):
         self.streams.unregister(stream)
 
-    def get_activator_stream(self, name, for_script=False,
-                             can_ping=False):
+    def get_activator_stream(self, name, for_script=False):
         """
         Select activator for new task. Performs WRR load balancing
         for script tasks and random choice for other ones.
         """
         def weight(a):
             """Load balancing weight"""
-            if a.max_scripts == a.current_scripts:
+            if not a.max_scripts or a.max_scripts == a.current_scripts:
                 return 0
             return float(a.max_scripts - a.current_scripts) / a.max_scripts
 
@@ -334,16 +277,13 @@ class SAE(Daemon):
             self.blocked_pools.add(name)
             raise Exception("Activator pool '%s' is not available" % name)
         a = self.activators[name]
-        if can_ping:
-            # Restring to ping operation
-            a = [x for x in a if x.can_ping]
         if len(a) == 0:
             self.blocked_pools.add(name)
             raise Exception("No activators in pool '%s' available" % name)
         if not for_script:
             return random.choice(list(a))
         # Weighted balancing
-        a = sorted(a, lambda x, y: -cmp(weight(x), weight(y)))[0]
+        a = sorted(a, key=lambda s: -weight(s))[0]
         if a.max_scripts == a.current_scripts:
             self.blocked_pools.add(name)
             raise Exception("All activators are busy in pool '%s'" % name)
@@ -368,6 +308,9 @@ class SAE(Daemon):
                 return
             result = response.result
             result = cPickle.loads(str(result))  # De-serialize
+            if object.pool.name in self.blocked_pools:
+                self.logger.info("Unblock pool %s", object.pool.name)
+                self.blocked_pools.remove(object.pool.name)
             callback(result=result)
 
         self.logger.info("script %s(%s)" % (script_name, object))
@@ -382,7 +325,7 @@ class SAE(Daemon):
                 return
             # Validate activator is present
             try:
-                stream = self.get_activator_stream(object.activator.name, True)
+                stream = self.get_activator_stream(object.pool.name, True)
             except Exception, why:
                 e = Error(code=ERR_ACTIVATOR_NOT_AVAILABLE, text=str(why))
                 self.logger.error(e.text)
@@ -637,9 +580,9 @@ class SAE(Daemon):
                 fail_task(mt, ERR_TIMEOUT, text="Timed out")
                 continue
             # Check blocked pools
-            if mt.managed_object.activator.name in self.blocked_pools:
+            if mt.managed_object.pool.name in self.blocked_pools:
                 # Silently skip task until next round
-                self.logger.debug("Delaying task to the blocked pool '%s'" % mt.managed_object.activator.name)
+                self.logger.debug("Delaying task to the blocked pool '%s'" % mt.managed_object.pool.name)
                 continue
             # Check for global rate limit
             if self.max_mrt_rate_per_sae:
@@ -774,10 +717,6 @@ class SAE(Daemon):
                 if hasattr(stream, "last_status"):
                     r += [stream.last_status]
         return r
-
-    def prepare_event_bulk(self):
-        self.event_batch = NewEvent._get_collection().initialize_ordered_bulk_op()
-        self.batched_events = 0
 
     ##
     ## Signal handlers

@@ -173,7 +173,6 @@ message AuthRequest {
     required string digest = 2;
     required int32 max_scripts = 3;
     required string instance = 4;
-    required bool can_ping = 5;
 }
 
 message AuthResponse {
@@ -197,50 +196,6 @@ message ScriptRequest {
 message ScriptResponse {
     required string result = 1;
 }
-
-//
-// Event processing
-//
-message RefreshObjectMappingsRequest{
-}
-
-message RefreshObjectMappingsResponse{
-}
-
-message ObjectMappingsRequest {
-}
-
-message ObjectMappingsResponse {
-    message EventIgnoreRuleItem {
-        required string left_re  = 1;
-        required string right_re = 2;
-    }
-    message ObjectMappingItem {
-        required string source = 1;
-        required string object = 2;
-    }
-    message PingItem {
-        required string address = 1;
-        required int32 interval = 2;
-        optional bool current_status = 3;
-    }
-    required int32 expire  = 1;
-    repeated ObjectMappingItem mappings = 2;
-    repeated EventIgnoreRuleItem ignore_rules = 3;
-    repeated PingItem ping = 4;
-}
-
-message EventRequest {
-    message EventBodyItem {
-        required bytes key   = 1;
-        required bytes value = 2;
-    }
-    required int32         timestamp = 1;
-    required string        object    = 2;
-    repeated EventBodyItem body      = 3;
-}
-
-message EventResponse {}
 
 //
 // Ping hosts
@@ -300,9 +255,6 @@ service SAEService {
     rpc register         (RegisterRequest)        returns (RegisterResponse);
     rpc auth             (AuthRequest)            returns (AuthResponse);
     rpc script           (ScriptRequest)          returns (ScriptResponse);
-    rpc refresh_object_mappings (RefreshObjectMappingsRequest) returns (RefreshObjectMappingsResponse);
-    rpc object_mappings  (ObjectMappingsRequest)  returns (ObjectMappingsResponse);
-    rpc event            (EventRequest)           returns (EventResponse);
     rpc object_status    (ObjectStatusRequest)    returns (ObjectStatusResponse);
     rpc get_status       (StatusRequest)          returns (StatusResponse);
     rpc ping_check       (PingCheckRequest)       returns (PingCheckResponse);
