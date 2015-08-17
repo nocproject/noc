@@ -30,7 +30,8 @@ parser_registry=ParserRegistry()
 class ParserBase(type):
     def __new__(cls,name,bases,attrs):
         m=type.__new__(cls,name,bases,attrs)
-        parser_registry.register(m.name,m)
+        if m.is_enabled():
+            parser_registry.register(m.name,m)
         return m
 ##
 ## Abstract parser class
@@ -39,6 +40,9 @@ class Parser(object):
     __metaclass__=ParserBase
     name=None
     css=[] # A list of additional CSSs
+    @classmethod
+    def is_enabled(cls):
+        return True
     ##
     ## Convert wiki syntax to HTML
     ##
