@@ -44,10 +44,7 @@ periodic_registry.register_all()
 from audittrail import AuditTrail
 from noc.lib.collection import Collection
 Collection.install()
-from noc.pm.models.probeconfig import ProbeConfig
-
 AuditTrail.install()
-ProbeConfig.install()
 
 ##
 ## Initialize download registry
