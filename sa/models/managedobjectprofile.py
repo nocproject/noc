@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ManagedObjectProfile
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -14,9 +14,10 @@ from django.template import Template, Context
 from noc.main.models.style import Style
 from noc.lib.validators import is_fqdn
 from noc.lib.stencil import stencil_registry
-from noc.lib.solutions import get_probe_config
+from noc.pm.models.probeconfig import probe_config
 
 
+@probe_config
 class ManagedObjectProfile(models.Model):
 
     class Meta:
@@ -220,9 +221,4 @@ class ManagedObjectProfile(models.Model):
         return f
 
     def get_probe_config(self, config):
-        # Get via solutions
-        try:
-            return get_probe_config(self, config)
-        except ValueError:
-            pass
         raise ValueError("Invalid config parameter '%s'" % config)

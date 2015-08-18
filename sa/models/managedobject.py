@@ -40,11 +40,11 @@ from noc.lib.stencil import stencil_registry
 from noc.lib.gridvcs.manager import GridVCSField
 from noc.main.models.fts_queue import FTSQueue
 from noc.settings import config
-from noc.lib.solutions import get_probe_config
 from noc.inv.discovery.utils import get_active_discovery_methods
 from noc.lib.solutions import get_solution
 from noc.lib.debug import error_report
 from noc.main.models.fts_queue import full_text_search
+from noc.pm.models.probeconfig import probe_config
 
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
@@ -59,6 +59,7 @@ logger = logging.getLogger(__name__)
 
 
 @full_text_search
+@probe_config
 class ManagedObject(models.Model):
     """
     Managed Object
@@ -647,11 +648,6 @@ class ManagedObject(models.Model):
             return ol
 
     def get_probe_config(self, config):
-        # Get via solutions
-        try:
-            return get_probe_config(self, config)
-        except ValueError:
-            pass
         if config == "address":
             return self.address
         elif config == "snmp__ro":

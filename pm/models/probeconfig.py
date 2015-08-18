@@ -114,41 +114,6 @@ class ProbeConfig(Document):
         ).get_object()
 
     @classmethod
-    def install(cls):
-        logger.info("Installing probe config watchers")
-        mongoengine.signals.class_prepared.connect(cls.on_new_document)
-        django.db.models.signals.class_prepared.connect(cls.on_new_model)
-
-    @classmethod
-    def on_new_model(cls, sender, *args, **kwargs):
-        if hasattr(sender, "get_probe_config"):
-            cls.MODELS += [sender]
-            django.db.models.signals.post_save.connect(
-                cls.on_change_model, sender=sender)
-            django.db.models.signals.pre_delete.connect(
-                cls.on_delete_model, sender=sender)
-            p_field = getattr(sender, "PROFILE_LINK", None)
-            if p_field:
-                for f in sender._meta.fields:
-                    if f.name == p_field:
-                        pm = f.rel.to
-                        cls.PROFILES[pm] += [(sender, p_field)]
-                        break
-
-    @classmethod
-    def on_new_document(cls, sender, *args, **kwargs):
-        if hasattr(sender, "get_probe_config"):
-            cls.MODELS += [sender]
-            mongoengine.signals.post_save.connect(
-                cls.on_change_document, sender=sender)
-            mongoengine.signals.pre_delete.connect(
-                cls.on_delete_document, sender=sender)
-            p_field = getattr(sender, "PROFILE_LINK", None)
-            if p_field:
-                pm = sender._fields[p_field].document_type_obj
-                cls.PROFILES[pm] += [(sender, p_field)]
-
-    @classmethod
     def _delete_object(cls, object):
         model_id = cls.get_model_id(object)
         object_id = str(object.id)
@@ -437,6 +402,48 @@ class ProbeConfig(Document):
     @classmethod
     def rebuild(cls, model_id=None):
         pass
+
+
+def probe_config(cls):
+    """
+    Decorator to denote models/documents for probe configuration
+
+    @probe_config
+    class MyDocument(Document):
+        ...
+        def get_probe_config(self, config):
+            ...
+    """
+    if cls in ProbeConfig.MODELS:
+        return cls
+    assert hasattr(cls, "get_probe_config")
+    logger.debug("Registering model %s" % cls)
+    ProbeConfig.MODELS += [cls]
+    if isinstance(cls._meta, dict):
+        # Document
+        mongoengine.signals.post_save.connect(
+            ProbeConfig.on_change_document, sender=cls)
+        mongoengine.signals.pre_delete.connect(
+            ProbeConfig.on_delete_document, sender=cls)
+        p_field = getattr(cls, "PROFILE_LINK", None)
+        if p_field:
+            pm = cls._fields[p_field].document_type_obj
+            ProbeConfig.PROFILES[pm] += [(cls, p_field)]
+    else:
+        # Model
+        django.db.models.signals.post_save.connect(
+            ProbeConfig.on_change_model, sender=cls)
+        django.db.models.signals.pre_delete.connect(
+            ProbeConfig.on_delete_model, sender=cls)
+        p_field = getattr(cls, "PROFILE_LINK", None)
+        if p_field:
+            for f in cls._meta.fields:
+                if f.name == p_field:
+                    pm = f.rel.to
+                    ProbeConfig.PROFILES[pm] += [(cls, p_field)]
+                    break
+
+    return cls
 
 ##
 from metricset import MetricSet
