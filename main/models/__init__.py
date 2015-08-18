@@ -42,14 +42,7 @@ from noc.lib.validators import is_int
 ## Register periodics
 periodic_registry.register_all()
 from audittrail import AuditTrail
-from fts_queue import FTSQueue
-from noc.lib.collection import Collection
-Collection.install()
-from noc.pm.models.probeconfig import ProbeConfig
-
 AuditTrail.install()
-FTSQueue.install()
-ProbeConfig.install()
 
 ##
 ## Initialize download registry

@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Interface model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
-from noc.lib.solutions import get_probe_config
+from noc.pm.models.probeconfig import probe_config
 
 
 INTERFACE_TYPES = (IGetInterfaces.returns
@@ -29,6 +29,7 @@ INTERFACE_PROTOCOLS = (IGetInterfaces.returns
                        .element.choices)
 
 
+@probe_config
 class Interface(Document):
     """
     Interfaces
@@ -221,12 +222,6 @@ class Interface(Document):
         return VCDomain.get_default()
 
     def get_probe_config(self, config):
-        # Get via solutions
-        try:
-            return get_probe_config(self, config)
-        except ValueError:
-            pass
-        # Fallback
         if config == "interface__name":
             return self.name
         elif config == "interface__ifindex":

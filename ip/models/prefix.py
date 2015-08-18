@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Prefix model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -23,8 +23,10 @@ from noc.lib.app import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
 from noc.lib.ip import IP, IPv4
+from noc.main.models.fts_queue import full_text_search
 
 
+@full_text_search
 class Prefix(models.Model):
     """
     Allocated prefix

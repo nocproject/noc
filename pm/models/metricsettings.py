@@ -21,6 +21,7 @@ from effectivesettings import EffectiveSettings, EffectiveSettingsMetric
 from noc.lib.solutions import get_solution
 from noc.settings import config
 from noc.pm.probes.base import probe_registry
+from noc.lib.solutions import get_probe_config
 
 
 class MetricSettingsItem(EmbeddedDocument):
@@ -110,6 +111,14 @@ class MetricSettings(Document):
                 if isinstance(v, ValueError):
                     raise v
             else:
+                # Try solution first
+                try:
+                    v = get_probe_config(object, name)
+                    cvars[name] = v
+                    return v
+                except ValueError:
+                    pass
+                # Use object's get_probe_config
                 try:
                     v = gc(name)
                     cvars[name] = v

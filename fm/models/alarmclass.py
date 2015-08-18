@@ -22,8 +22,10 @@ from alarmclassjob import AlarmClassJob
 from alarmplugin import AlarmPlugin
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
+from noc.lib.collection import collection
 
 
+@collection
 class AlarmClass(nosql.Document):
     """
     Alarm class
