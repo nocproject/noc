@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Full-text search queue
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,8 +10,9 @@
 import logging
 ## Django modules
 from django.db.models import signals as django_signals
-## NOC modules
-from noc.lib.nosql import (Document, StringField)
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField
 
 logger = logging.getLogger(__name__)
 
@@ -83,23 +84,6 @@ class FTSQueue(Document):
         return "%s:%s" % (o._meta, o.id)
 
     @classmethod
-    def on_new_model(cls, sender, **kwargs):
-        if hasattr(sender, "get_index"):
-            logger.debug("Adding FTS index for %s", sender._meta)
-            cls.models[str(sender._meta)] = sender
-            django_signals.post_save.connect(cls.on_update_model,
-                                             sender=sender)
-            django_signals.post_delete.connect(cls.on_delete_model,
-                                               sender=sender)
-
-    @classmethod
-    def install(cls):
-        """
-        Install signal handlers
-        """
-        django_signals.class_prepared.connect(cls.on_new_model)
-
-    @classmethod
     def get_object(cls, id):
         """
         Get object by FTS id
@@ -112,3 +96,29 @@ class FTSQueue(Document):
             return model.objects.get(id=int(i))
         except model.DoesNotExist:
             return None
+
+
+def full_text_search(cls):
+    """
+    Decorator to denote models supporting full text search
+
+    @full_text_search
+    class MyModel(Model):
+        ...
+        def get_index(self):
+            return {
+                "id": ...,
+                "title": ....,
+                "content": ....,
+                "card": ....,
+                "tags": ...
+            }
+    """
+    assert hasattr(cls, "get_index")
+    logger.debug("Adding FTS index for %s", cls._meta)
+    FTSQueue.models[str(cls._meta)] = cls
+    django_signals.post_save.connect(FTSQueue.on_update_model,
+                                     sender=cls)
+    django_signals.post_delete.connect(FTSQueue.on_delete_model,
+                                       sender=cls)
+    return cls

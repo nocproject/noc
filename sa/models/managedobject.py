@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ManagedObject
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -44,6 +44,8 @@ from noc.lib.solutions import get_probe_config
 from noc.inv.discovery.utils import get_active_discovery_methods
 from noc.lib.solutions import get_solution
 from noc.lib.debug import error_report
+from noc.main.models.fts_queue import full_text_search
+
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
@@ -56,6 +58,7 @@ Version = namedtuple("Version", ["profile", "vendor", "platform", "version"])
 logger = logging.getLogger(__name__)
 
 
+@full_text_search
 class ManagedObject(models.Model):
     """
     Managed Object

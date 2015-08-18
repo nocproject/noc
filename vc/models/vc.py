@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## VC model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -19,12 +19,14 @@ from noc.main.models import ResourceState, Style
 from noc.project.models.project import Project
 from noc.lib.fields import TagsField
 from noc.lib.app.site import site
+from noc.main.models.fts_queue import full_text_search
 
 ## Regular expressions
 rx_vc_underline = re.compile("\s+")
 rx_vc_empty = re.compile(r"[^a-zA-Z0-9\-_]+")
 
 
+@full_text_search
 class VC(models.Model):
     """
     Virtual circuit
