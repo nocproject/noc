@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## VRF model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -20,8 +20,10 @@ from vrfgroup import VRFGroup
 from noc.lib.validators import check_rd, is_rd
 from noc.lib.fields import TagsField
 from noc.lib.app import site
+from noc.main.models.fts_queue import full_text_search
 
 
+@full_text_search
 class VRF(models.Model):
     """
     VRF

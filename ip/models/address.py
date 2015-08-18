@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Address model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -21,8 +21,10 @@ from noc.lib.fields import TagsField, INETField, MACField
 from noc.lib.app import site
 from noc.lib.validators import (
     ValidationError, check_fqdn, check_ipv4, check_ipv6)
+from noc.main.models.fts_queue import full_text_search
 
 
+@full_text_search
 class Address(models.Model):
     class Meta:
         verbose_name = _("Address")
