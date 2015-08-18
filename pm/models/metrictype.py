@@ -13,11 +13,12 @@ from mongoengine.document import Document
 from mongoengine.fields import (Document, StringField, BooleanField,
                                 UUIDField, ObjectIdField)
 ## NOC Modules
-from noc.main.models.doccategory import DocCategory
+from noc.main.models.doccategory import category
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 
 
+@category
 class MetricType(Document):
     meta = {
         "collection": "noc.pm.metrictypes",
@@ -57,5 +58,3 @@ class MetricType(Document):
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
-
-DocCategory.register(MetricType)

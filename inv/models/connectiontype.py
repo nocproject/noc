@@ -16,9 +16,10 @@ from mongoengine.fields import (StringField, BooleanField, DictField,
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
-from noc.main.models.doccategory import DocCategory
+from noc.main.models.doccategory import category
 
 
+@category
 class ConnectionType(Document):
     """
     Equipment vendor
@@ -159,6 +160,3 @@ class ConnectionType(Document):
                 if og in c.genders:
                     r += [c.id]
         return r
-
-##
-DocCategory.register(ConnectionType)
