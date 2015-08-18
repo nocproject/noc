@@ -524,18 +524,6 @@ class Collection(object):
                     cls.TRANSLATIONS[cn] = tr
 
     @classmethod
-    def install(cls):
-        """
-        Install collections creation hooks
-        """
-        mongoengine.signals.class_prepared.connect(cls.on_new_document)
-
-    @classmethod
-    def on_new_document(cls, sender, *args, **kwargs):
-        if "json_collection" in sender._meta:
-            cls.COLLECTIONS[sender._meta["json_collection"]] = sender
-
-    @classmethod
     def iter_collections(cls):
         """
         yield (collection name, collection class)
@@ -567,5 +555,24 @@ class Collection(object):
 
 
 Collection.setup()
+
+
+def collection(cls):
+    """
+    Decorator to denote JSON-synchronizable collections
+
+    @collection
+    class MyDocument(Document):
+        meta = {
+            "json_collection": ...
+        }
+    """
+    assert "json_collection" in cls._meta, "Class %s must have json_collection" % cls.__name__
+    cn = cls._meta["json_collection"]
+    logger.debug("Registering collection %s", cn)
+    Collection.COLLECTIONS[cn] = cls
+    return cls
+
+
 ##
 from noc.main.models.collectioncache import CollectionCache

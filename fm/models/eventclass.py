@@ -17,6 +17,7 @@ from noc.lib import nosql
 from alarmclass import AlarmClass
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
+from noc.lib.collection import collection
 
 
 class EventClassVar(EmbeddedDocument):
@@ -191,6 +192,7 @@ class EventClassCategory(nosql.Document):
         super(EventClassCategory, self).save(*args, **kwargs)
 
 
+@collection
 class EventClass(Document):
     """
     Event class

@@ -17,8 +17,10 @@ from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
 from noc.main.models.doccategory import category
+from noc.lib.collection import collection
 
 
+@collection
 @category
 class ConnectionType(Document):
     """

@@ -24,6 +24,7 @@ from noc.main.models.doccategory import category
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+from noc.lib.collection import collection
 
 
 class ObjectModelConnection(EmbeddedDocument):
@@ -82,6 +83,7 @@ class ObjectModelConnection(EmbeddedDocument):
         return r
 
 
+@collection
 @category
 class ObjectModel(Document):
     """

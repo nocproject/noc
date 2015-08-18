@@ -42,8 +42,6 @@ from noc.lib.validators import is_int
 ## Register periodics
 periodic_registry.register_all()
 from audittrail import AuditTrail
-from noc.lib.collection import Collection
-Collection.install()
 AuditTrail.install()
 
 ##
