@@ -6,8 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from storage import Storage
-from probe import Probe
 from metrictype import MetricType
 from metricset import MetricSet
 from metricsettings import MetricSettings

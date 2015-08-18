@@ -2,14 +2,11 @@
 ##----------------------------------------------------------------------
 ## MetricSettings model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.db.models import get_model
 ## Third-party modules
-from mongoengine.base import _document_registry
 import mongoengine.signals
 ## NOC Modules
 from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
@@ -22,6 +19,7 @@ from noc.lib.solutions import get_solution
 from noc.settings import config
 from noc.pm.probes.base import probe_registry
 from noc.lib.solutions import get_probe_config
+from noc.models import get_model_id, get_object
 
 
 class MetricSettingsItem(EmbeddedDocument):
@@ -45,50 +43,11 @@ class MetricSettings(Document):
     # List of metric sets
     metric_sets = ListField(EmbeddedDocumentField(MetricSettingsItem))
 
-    _model_cache = {}  # model id -> model class
-    _document_cache = {}  # model id -> document
-
     def __unicode__(self):
         return u"%s:%s" % (self.model_id, self.object_id)
 
-    def _init_document_cache(self):
-        for v in _document_registry.itervalues():
-            n = "%s.%s" % (v.__module__.split(".")[1],
-                           v.__name__)
-            self._document_cache[n] = v
-        from noc.pm.models.metricconfig import MetricConfig
-        self._document_cache["pm.MetricConfig"] = MetricConfig
-
-    def get_model(self):
-        m = self._model_cache.get(self.model_id)
-        if not m:
-            # Try django model
-            m = get_model(*self.model_id.split("."))
-            if not m:
-                if not self._document_cache:
-                    self._init_document_cache()
-                # Try mongoengine model
-                m = self._document_cache[self.model_id]
-            self._model_cache[self.model_id] = m
-        return m
-
     def get_object(self):
-        m = self.get_model()
-        try:
-            return m.objects.get(id=self.object_id)
-        except m.DoesNotExist:
-            return None
-
-    @classmethod
-    def get_model_id(cls, object):
-        if isinstance(object._meta, dict):
-            # Document
-            return u"%s.%s" % (object.__module__.split(".")[1],
-                               object.__class__.__name__)
-        else:
-            # Model
-            return u"%s.%s" % (object._meta.app_label,
-                               object._meta.object_name)
+        return get_object(self.model_id, self.object_id)
 
     @classmethod
     def get_settings(cls, object):
@@ -96,7 +55,7 @@ class MetricSettings(Document):
         Find MetricSettings instance
         """
         return cls.objects.filter(
-            model_id=cls.get_model_id(object),
+            model_id=get_model_id(object),
             object_id=str(object.pk)
         ).first()
 
@@ -138,7 +97,7 @@ class MetricSettings(Document):
 
         s_seq = []
         # Check profiles
-        model_id = cls.get_model_id(object)
+        model_id = get_model_id(object)
         p_field = getattr(object, "PROFILE_LINK", None)
         if p_field:
             p = getattr(object, p_field)
@@ -178,7 +137,7 @@ class MetricSettings(Document):
                 metric=None,
                 metric_type=m,
                 is_active=True,
-                probe=None,
+                pool=None,
                 managed_object=mo,
                 interval=mti[m],
                 thresholds=[mi.low_error, mi.low_warn,
@@ -192,16 +151,6 @@ class MetricSettings(Document):
                 continue
             if not es.metric:
                 es.error("No graphite metric found")
-                if trace:
-                    r += [es]
-                continue
-            if not es.probe:
-                es.error("Not assigned to probe daemon")
-                if trace:
-                    r += [es]
-                continue
-            if not es.probe.storage:
-                es.errors("No assigned storage")
                 if trace:
                     r += [es]
                 continue
@@ -258,11 +207,10 @@ class MetricSettings(Document):
         # Collapse around handlers
         rr = {}
         for es in r:
-            probe_id = es.probe.id if es.probe else None
             if es.handler:
-                key = (probe_id, es.handler, es.interval)
+                key = (es.handler, es.interval)
             else:
-                key = (probe_id, es.metric, es.metric_type, es.interval)
+                key = (es.metric, es.metric_type, es.interval)
             if key in rr:
                 e = rr[key]
                 e.metrics += [EffectiveSettingsMetric(

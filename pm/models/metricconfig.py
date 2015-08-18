@@ -19,7 +19,7 @@ from mongoengine.queryset.base import DENY
 ## NOC Modules
 from metrictype import MetricType
 from metricitem import MetricItem
-from probe import Probe
+from noc.main.models.pool import Pool
 from effectivesettings import EffectiveSettings, EffectiveSettingsMetric
 from noc.pm.probes.base import probe_registry
 
@@ -36,7 +36,7 @@ class MetricConfig(Document):
     handler = StringField()
     interval = IntField(default=60)
     description = StringField(required=False)
-    probe = ReferenceField(Probe, reverse_delete_rule=DENY, required=False)
+    pool = ReferenceField(Pool, reverse_delete_rule=DENY, required=True)
     metrics = ListField(EmbeddedDocumentField(MetricItem))
     config = DictField(default={})
 
@@ -105,7 +105,7 @@ class MetricConfig(Document):
                 metric=metric,
                 metric_type=mi.metric_type,
                 is_active=True,
-                probe=self.probe,
+                pool=self.pool.name,
                 interval=self.interval,
                 thresholds=[mi.low_error, mi.low_warn,
                             mi.high_warn, mi.high_error]
@@ -154,11 +154,11 @@ class MetricConfig(Document):
         # Collapse around handlers
         rr = {}
         for es in r:
-            probe_id = es.probe.id if es.probe else None
+            pool = es.pool if es.pool else None
             if es.handler:
-                key = (probe_id, es.handler, es.interval)
+                key = (pool, es.handler, es.interval)
             else:
-                key = (probe_id, es.metric, es.metric_type, es.interval)
+                key = (pool, es.metric, es.metric_type, es.interval)
             if key in rr:
                 e = rr[key]
                 e.metrics += [EffectiveSettingsMetric(

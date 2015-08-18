@@ -24,11 +24,11 @@ Ext.define("NOC.pm.metricconfig.Model", {
             type: "integer"
         },
         {
-            name: "probe",
+            name: "pool",
             type: "string"
         },
         {
-            name: "probe__label",
+            name: "pool__label",
             type: "string",
             persist: false
         },

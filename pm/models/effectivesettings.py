@@ -16,7 +16,7 @@ EffectiveSettingsMetric = namedtuple("EffectiveSettingsMetric", [
 
 class EffectiveSettings(object):
     def __init__(self, metric=None, metric_type=None, is_active=True,
-                 probe=None, interval=None,
+                 pool=None, interval=None,
                  thresholds=None, handler=None, config=None,
                  errors=None, model_id=None, object=None, convert=None,
                  scale=1.0, metrics=None, managed_object=None):
@@ -24,7 +24,7 @@ class EffectiveSettings(object):
         :param metric: Graphite metric name
         :param metric_type: MetricType object
         :param is_active: Activity mark
-        :param probe: Probe object
+        :param pool: Pool name
         :param interval: Polling interval, seconds
         :param thresholds: [low_error, low_warn, high_warn, high_error
         :param handler: Name of probe's handler to use
@@ -34,7 +34,7 @@ class EffectiveSettings(object):
         self.metric = metric
         self.metric_type = metric_type
         self.is_active = is_active
-        self.probe = probe
+        self.pool = pool
         self.interval = interval
         self.thresholds = thresholds
         self.handler = handler
@@ -87,7 +87,7 @@ class EffectiveSettings(object):
                 uuid.NAMESPACE_URL,
                 "%s-%s-%s-%s-%s" % (
                     str(self.model_id), str(self.object.id),
-                    str(self.probe.id), str(self.handler),
+                    str(self.pool), str(self.handler),
                     self.interval)
             )
         )

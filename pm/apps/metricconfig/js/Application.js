@@ -10,7 +10,7 @@ Ext.define("NOC.pm.metricconfig.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.pm.metricconfig.Model",
-        "NOC.pm.probe.LookupField",
+        "NOC.main.pool.LookupField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.ref.probehandler.LookupField"
     ],
@@ -32,6 +32,12 @@ Ext.define("NOC.pm.metricconfig.Application", {
                     dataIndex: "is_active",
                     width: 50,
                     renderer: NOC.render.Bool
+                },
+                {
+                    text: "Pool",
+                    dataIndex: "pool",
+                    width: 100,
+                    renderer: NOC.render.Lookup("pool")
                 },
                 {
                     text: "Description",
@@ -61,9 +67,9 @@ Ext.define("NOC.pm.metricconfig.Application", {
                     uiStyle: "extra"
                 },
                 {
-                    name: "probe",
-                    xtype: "pm.probe.LookupField",
-                    fieldLabel: "Probe",
+                    name: "pool",
+                    xtype: "main.pool.LookupField",
+                    fieldLabel: "Pool",
                     allowBlank: false
                 },
                 {
