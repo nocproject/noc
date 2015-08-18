@@ -51,7 +51,7 @@ class DefaultRouter(BaseRouter):
             return
         settings.metric = cls.get_metric(model_id, object,
                                          settings.metric_type)
-        settings.probe = cls.route_probe(object, settings)
+        settings.pool = cls.route_pool(object, settings)
         # Apply rules
         for r in cls._RULES:
             if r.rx.search(settings.metric):
@@ -65,9 +65,9 @@ class DefaultRouter(BaseRouter):
                 break
         logger.debug(
             "Setting metric for %s %s (%s) "
-            "to %s (probe %s)",
+            "to %s (pool %s)",
             model_id, object, settings.metric_type,
-            settings.metric, settings.probe
+            settings.metric, settings.pool
         )
 
     @classmethod
@@ -83,37 +83,34 @@ class DefaultRouter(BaseRouter):
         }))
 
     @classmethod
-    def route_probe(cls, object, settings):
+    def route_pool(cls, object, settings):
         """
-        Get probe name by object.
+        Get pool name for object.
         First, try to call model routers.
         i.e, for sa.ManagedObject model try to call
-        route_probe_sa_managedobject function
+        route_pool_sa_managedobject function
         """
         model_id = cls.get_model_id(object)
-        model_handler = "route_probe_%s" % model_id.replace(".", "_").lower()
+        model_handler = "route_pool_%s" % model_id.replace(".", "_").lower()
         if hasattr(cls, model_handler):
             pn = getattr(cls, model_handler)(object, settings)
-            if isinstance(pn, basestring):
-                return cls.get_probe(pn)
-            else:
-                return pn
+            return pn
         else:
-            return cls.get_default_probe()
+            return cls.get_default_pool()
 
     @classmethod
-    def route_probe_sa_managedobject(cls, object, settings):
+    def route_pool_sa_managedobject(cls, object, settings):
         """
         Default probe router for managed object
         """
-        return cls.get_default_probe()
+        return object.pool.name
 
     @classmethod
-    def route_probe_inv_interface(cls, object, settings):
+    def route_pool_inv_interface(cls, object, settings):
         """
         Default probe router for interface
         """
-        return cls.get_default_probe()
+        return object.managed_object.pool.name
 
     @classmethod
     def is_active(cls, model_id, object):

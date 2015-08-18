@@ -11,8 +11,7 @@ import hashlib
 import base64
 ## NOC modules
 from noc.pm.models.metricsettings import MetricSettings
-from noc.pm.models.probe import Probe
-from noc.lib.solutions import get_solution
+from noc.models import get_model_id
 
 
 class BaseRouter(object):
@@ -36,7 +35,7 @@ class BaseRouter(object):
 
     @classmethod
     def get_model_id(cls, object):
-        return MetricSettings.get_model_id(object)
+        return get_model_id(object)
 
     @classmethod
     def get_metric(cls, model_id, object, metric_type):
@@ -65,7 +64,7 @@ class BaseRouter(object):
         """
         Return
         """
-        key = "%s:%s" % (MetricSettings.get_model_id(object), object.pk)
+        key = "%s:%s" % (get_model_id(object), object.pk)
         return base64.b32encode(hashlib.sha1(key).hexdigest())
 
     @classmethod
@@ -84,18 +83,6 @@ class BaseRouter(object):
         return r
 
     @classmethod
-    def get_probe(cls, name):
-        return Probe.objects.get(name=name)
-
-    @classmethod
-    def get_default_probe(cls):
-        dp = getattr(cls, "_default_probe", None)
-        if not dp:
-            dp = Probe.objects.get(name="default")
-            cls._default_probe = dp
-        return dp
-
-    @classmethod
     def q_type(cls, metric_type, level=0):
         def q(s):
             return s.replace(" ", "_").replace("/", "-").lower()
@@ -104,3 +91,7 @@ class BaseRouter(object):
             metric_type = metric_type.name
         mt = [q(s) for s in metric_type.split(" | ")]
         return ".".join(mt[level:])
+
+    @classmethod
+    def get_default_pool(cls):
+        return "default"

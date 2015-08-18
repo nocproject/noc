@@ -25,33 +25,20 @@ from noc import settings
 logger = logging.getLogger(__name__)
 
 
-class CollectorAddress(EmbeddedDocument):
-    proto = StringField()
-    address = StringField()
-    port = IntField()
-
-
-class MetricCollectors(EmbeddedDocument):
-    policy = StringField(default="prio")
-    write_concern = IntField(default=1)
-    collectors = ListField(EmbeddedDocumentField(CollectorAddress))
-
-
 class ProbeConfigMetric(EmbeddedDocument):
     metric = StringField()
     metric_type = StringField()
     thresholds = ListField()
     convert = StringField()
     scale = FloatField(default=1.0)
-    collectors = EmbeddedDocumentField(MetricCollectors)
 
 
 class ProbeConfig(Document):
     meta = {
         "collection": "noc.pm.probeconfig",
         "indexes": [("model_id", "object_id"),
-                    ("probe_id", "instance_id"),
-                    ("probe_id", "instance_id", "expire"),
+                    "pool",
+                    ("pool", "expire"),
                     "uuid", "expire", "changed", "metrics.metric"]
     }
 
@@ -60,8 +47,7 @@ class ProbeConfig(Document):
     # Object id, converted to string
     object_id = StringField()
     #
-    probe_id = StringField()
-    instance_id = IntField()
+    pool = StringField()
     #
     managed_object = IntField(required=False)
     #
@@ -149,21 +135,6 @@ class ProbeConfig(Document):
 
     @classmethod
     def _refresh_object(cls, object):
-        def get_collectors(es):
-            c = collectors.get(es.probe.id)
-            if c:
-                return c
-            c = es.probe.storage.default_collector
-            collectors[es.probe.id] = c
-            return c
-
-        def get_instance(probe, uuid):
-            ni = probe.n_instances
-            if ni < 1:
-                return 0
-            else:
-                return int(str(uuid)[:8], 16) % ni
-
         def get_refresh_ops(bulk, o):
             model_id = cls.get_model_id(o)
             logger.debug("Bulk refresh %s %s", model_id, o)
@@ -199,8 +170,7 @@ class ProbeConfig(Document):
                             "expire": now + datetime.timedelta(seconds=cls.get_ttl()),
                             "handler": es.handler,
                             "interval": es.interval,
-                            "probe_id": str(es.probe.id),
-                            "instance_id": get_instance(es.probe, es.uuid),
+                            "pool": str(es.pool),
                             "config": es.config,
                             "managed_object": mo,
                             "metrics": [{
@@ -208,8 +178,7 @@ class ProbeConfig(Document):
                                 "metric_type": m.metric_type.name,
                                 "thresholds": m.thresholds,
                                 "convert": m.convert,
-                                "scale": m.scale,
-                                "collectors": get_collectors(es)
+                                "scale": m.scale
                             } for m in es.metrics]
                         }
                     }
@@ -219,7 +188,6 @@ class ProbeConfig(Document):
                     get_refresh_ops(bulk, obj)
 
         logger.debug("Refresh object %s", object)
-        collectors = {}  # Storage rule -> collector url
         # @todo: Make configurable
         now = datetime.datetime.now()
         bulk = cls._get_collection().initialize_ordered_bulk_op()
@@ -228,21 +196,6 @@ class ProbeConfig(Document):
 
     @classmethod
     def _refresh_config(cls, object):
-        def get_collectors(es):
-            c = collectors.get(es.probe.id)
-            if c:
-                return c
-            c = es.probe.storage.default_collector
-            collectors[es.probe.id] = c
-            return c
-
-        def get_instance(probe, uuid):
-            ni = probe.n_instances
-            if ni < 1:
-                return 0
-            else:
-                return int(str(uuid)[:8], 16) % ni
-
         def get_refresh_ops(bulk, o):
             model_id = cls.get_model_id(o)
             logger.debug("Bulk refresh %s %s", model_id, o)
@@ -274,23 +227,20 @@ class ProbeConfig(Document):
                             "expire": now + datetime.timedelta(seconds=cls.get_ttl()),
                             "handler": es.handler,
                             "interval": es.interval,
-                            "probe_id": str(es.probe.id),
-                            "instance_id": get_instance(es.probe, es.uuid),
+                            "pool": str(es.pool),
                             "config": es.config,
                             "metrics": [{
                                 "metric": m.metric,
                                 "metric_type": m.metric_type.name,
                                 "thresholds": m.thresholds,
                                 "convert": m.convert,
-                                "scale": m.scale,
-                                "collectors": get_collectors(es)
+                                "scale": m.scale
                             } for m in es.metrics]
                         }
                     }
                 )
 
         logger.debug("Refresh metric config %s", object.name)
-        collectors = {}  # Storage rule -> collector url
         # @todo: Make configurable
         now = datetime.datetime.now()
         bulk = cls._get_collection().initialize_ordered_bulk_op()
@@ -320,14 +270,6 @@ class ProbeConfig(Document):
         for m, n in cls.PROFILES[sender]:
             for obj in m.objects.filter(**{n: document.id}):
                 cls._refresh_object(obj)
-
-    @classmethod
-    def on_change_storage(cls, sender, document=None, *args, **kwargs):
-        logger.debug("Apply changed storage '%s'", document.name)
-        for p in  Probe.objects.filter(storage=document):
-            logger.info("Applying changes to Probe '%s'", p.name)
-            for pc in ProbeConfig.objects.filter(probe_id=str(p.id)):
-                pc.refresh()
 
     @classmethod
     def on_change_metric_settings(cls, sender, document=None, *args, **kwargs):
@@ -373,12 +315,6 @@ class ProbeConfig(Document):
             ms.save()  # Triggers refresh_object
 
     @classmethod
-    def on_change_probe(cls, sender, document=None, *args, **kwargs):
-        logger.info("Applying changes to Probe '%s'", document.name)
-        for pc in ProbeConfig.objects.filter(probe_id=str(document.id)):
-            pc.refresh()
-
-    @classmethod
     def on_change_auth_profile(cls, sender, instance, *args, **kwargs):
         logger.info("Applying changes to AuthProfile '%s'" % instance.name)
         for mo in instance.managedobject_set.all():
@@ -417,7 +353,7 @@ def probe_config(cls):
     if cls in ProbeConfig.MODELS:
         return cls
     assert hasattr(cls, "get_probe_config")
-    logger.debug("Registering model %s" % cls)
+    logger.debug("Registering model %s" % cls.__name__)
     ProbeConfig.MODELS += [cls]
     if isinstance(cls._meta, dict):
         # Document
@@ -446,7 +382,4 @@ def probe_config(cls):
     return cls
 
 ##
-from metricset import MetricSet
 from metricsettings import MetricSettings
-from metricconfig import MetricConfig
-from probe import Probe
