@@ -19,6 +19,8 @@ from noc.lib.escape import json_escape as q
 from noc.sa.interfaces.base import (StringParameter, BooleanParameter,
                                     FloatParameter, IntParameter,
                                     StringListParameter)
+from noc.lib.collection import collection
+
 
 T_MAP = {
     "str": StringParameter(),
@@ -81,6 +83,7 @@ class ModelInterfaceAttr(EmbeddedDocument):
             return False
 
 
+@collection
 class ModelInterface(Document):
     """
     Equipment vendor

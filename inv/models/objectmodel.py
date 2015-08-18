@@ -14,17 +14,17 @@ from mongoengine.fields import (StringField, UUIDField, DictField,
                                 ListField, EmbeddedDocumentField,
                                 ObjectIdField)
 from mongoengine import signals
-from mongoengine.queryset import Q
 import cachetools
 ## NOC modules
 from connectiontype import ConnectionType
 from connectionrule import ConnectionRule
 from unknownmodel import UnknownModel
 from vendor import Vendor
-from noc.main.models.doccategory import DocCategory
+from noc.main.models.doccategory import category
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+from noc.lib.collection import collection
 
 
 class ObjectModelConnection(EmbeddedDocument):
@@ -83,6 +83,8 @@ class ObjectModelConnection(EmbeddedDocument):
         return r
 
 
+@collection
+@category
 class ObjectModel(Document):
     """
     Equipment vendor
@@ -319,4 +321,3 @@ def clear_unknown_models(sender, document, **kwargs):
 
 
 signals.post_save.connect(clear_unknown_models, sender=ObjectModel)
-DocCategory.register(ObjectModel)

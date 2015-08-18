@@ -14,8 +14,10 @@ from mongoengine.fields import StringField, UUIDField
 ## NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+from noc.lib.collection import collection
 
 
+@collection
 class Technology(Document):
     """
     Equipment vendor

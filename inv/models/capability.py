@@ -12,11 +12,14 @@ import os
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, ObjectIdField)
 ## NOC modules
-from noc.main.models.doccategory import DocCategory
+from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+from noc.lib.collection import collection
 
 
+@collection
+@category
 class Capability(Document):
     meta = {
         "collection": "noc.inv.capabilities",
@@ -50,6 +53,3 @@ class Capability(Document):
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
-
-##
-DocCategory.register(Capability)

@@ -33,16 +33,6 @@ class DocCategory(Document):
         return self.name
 
     @classmethod
-    def register(cls, document):
-        """
-        Register document to category
-        """
-        logger.debug("Registering %s", document.__name__)
-        cls._senders[document] = document._meta["collection"]
-        signals.pre_save.connect(DocCategory.update_category,
-                                 sender=document)
-
-    @classmethod
     def update_category(cls, sender, document):
         """
         Update document category when necessary
@@ -87,6 +77,23 @@ class DocCategory(Document):
     def fix_all(cls):
         for document in cls._senders:
             cls.fix(document)
+
+
+def category(cls):
+    """
+    Decorator to register document to category
+
+    @category
+    class MyDocument(Document):
+        ...
+        category = ObjectIdField()
+    """
+    assert hasattr(cls, "category")
+    logger.debug("Registering %s", cls.__name__)
+    DocCategory._senders[cls] = cls._meta["collection"]
+    signals.pre_save.connect(DocCategory.update_category, sender=cls)
+    return cls
+
 
 ## Set up signals
 signals.pre_save.connect(DocCategory.update_parent, sender=DocCategory)

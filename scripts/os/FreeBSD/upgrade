@@ -11,4 +11,5 @@ if [ "$COMP" == "GCC" ]; then
     ## Adjust include path
     CPATH="/usr/local/include:$CPATH"
     export CPATH
-export
+fi
+

@@ -2,16 +2,17 @@
 ##----------------------------------------------------------------------
 ## Interface Profile models
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.nosql import Document, StringField, ForeignKeyField, BooleanField
 from noc.main.models import Style
-from noc.lib.solutions import get_probe_config
+from noc.pm.models.probeconfig import probe_config
 
 
+@probe_config
 class InterfaceProfile(Document):
     """
     Interface SLA profile and settings
@@ -53,8 +54,4 @@ class InterfaceProfile(Document):
             return cls._default_profile
 
     def get_probe_config(self, config):
-        try:
-            return get_probe_config(self, config)
-        except ValueError:
-            pass
         raise ValueError("Invalid config '%s'" % config)
