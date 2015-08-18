@@ -10,7 +10,7 @@
 import os
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (Document, StringField, BooleanField,
+from mongoengine.fields import (StringField, BooleanField,
                                 UUIDField, ObjectIdField)
 ## NOC Modules
 from noc.main.models.doccategory import category
