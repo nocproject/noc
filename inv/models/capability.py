@@ -15,8 +15,10 @@ from mongoengine.fields import (StringField, UUIDField, ObjectIdField)
 from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+from noc.lib.collection import collection
 
 
+@collection
 @category
 class Capability(Document):
     meta = {

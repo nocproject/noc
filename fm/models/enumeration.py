@@ -12,8 +12,10 @@ from mongoengine.fields import StringField, DictField, UUIDField
 ## Python modules
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
+from noc.lib.collection import collection
 
 
+@collection
 class Enumeration(Document):
     meta = {
         "collection": "noc.enumerations",

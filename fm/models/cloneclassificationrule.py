@@ -14,8 +14,10 @@ from mongoengine import fields
 ## NOC modules
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
+from noc.lib.collection import collection
 
 
+@collection
 class CloneClassificationRule(Document):
     """
     Classification rules cloning

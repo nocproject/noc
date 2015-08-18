@@ -16,8 +16,10 @@ from mongoengine.fields import (Document, StringField, BooleanField,
 from noc.main.models.doccategory import category
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
+from noc.lib.collection import collection
 
 
+@collection
 @category
 class MetricType(Document):
     meta = {
