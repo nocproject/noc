@@ -10,6 +10,8 @@
 import json
 ## Third-party modules
 import tornado.web
+## NOC modules
+from noc.lib.debug import error_report
 
 
 class ServiceAPIRequestHandler(tornado.web.RequestHandler):
@@ -121,6 +123,7 @@ class ServiceSubscriber(object):
         try:
             result = h(*params)
         except Exception, why:
+            error_report()
             return self.reply(reply_to, tid, "Failed: %s" % why)
         return self.reply(reply_to, tid, result=result)
 
