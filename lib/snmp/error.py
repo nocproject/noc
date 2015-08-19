@@ -56,6 +56,9 @@ NOT_WRITABLE = 17
 # a variable that does not exist.
 INCONSISTENT_NAME = 18
 
+## Virtual code
+TIMED_OUT = -1
+
 
 class SNMPError(Exception):
     def __init__(self, code, oid=None):
