@@ -34,7 +34,7 @@ def get_model(model_id):
     m = _MCACHE.get(model_id)
     if not m:
         assert model_id in _MODELS, "Invalid model id: %s" % model_id
-        logger.debug("Loading model %s")
+        logger.debug("Loading model %s", model_id)
         mp = _MODELS[model_id]
         mod_name, cls_name = mp.rsplit(".", 1)
         mod = __import__(mod_name, {}, {}, [cls_name])
