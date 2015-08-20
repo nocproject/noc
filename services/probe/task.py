@@ -2,63 +2,58 @@
 ##----------------------------------------------------------------------
 ## Probe task
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-import random
 import time
-import logging
+## Third-party modules
+import tornado.gen
 ## NOC modules
 from noc.pm.probes.base import probe_registry
 from noc.lib.debug import error_report
 from metric import Metric
 from noc.lib.log import PrefixLoggerAdapter
+from noc.lib.ioloop.timers import PeriodicOffsetCallback
 
-logger = logging.getLogger(__name__)
 
-
-class Task(object):
-    def __init__(self, daemon):
-        self.logger = logger
-        self.daemon = daemon
+class Task(PeriodicOffsetCallback):
+    def __init__(self, service, interval):
+        self.service = service
+        self.logger = None
         self.uuid = None
         self.handler = None
         self.handler_name = None
         self.interval = None
         self.config = None
-        self.offset = None
-        self.running = False
-        self.next_run = None
-        self.last_run = None
         self.probe = None
         self.metrics = []
         self.mdata = {}  # metric type -> Metric
         self.default_metric_type = None
+        super(Task, self).__init__(self.run, interval)
 
     def __repr__(self):
         return u"<Task %s>" % self.uuid
 
-    def __cmp__(self, other):
-        return cmp(self.next_run, other.next_run)
-
-    def debug(self, msg):
-        logging.debug("[%s] %s" % (self.uuid, msg))
-
+    @tornado.gen.coroutine
     def run(self):
-        self.running = True
         try:
             self.logger.debug("Running")
-            result = self.handler(self.probe, **self.config)
-            self.logger.debug("Result %s", result)
+            t0 = self.service.ioloop.time()
+            result = yield self.handler(self.probe, **self.config)
+            dt = (self.service.ioloop.time() - t0) * 1000.0
+            self.logger.debug("Result %s (%.2fms)", result, dt)
             if result is not None:
                 t = time.time()
                 if not isinstance(result, dict):
                     if self.default_metric_type:
                         result = {self.default_metric_type: result}
                     else:
-                        self.logger.error("Handler must return dict. Returned: %s", result)
+                        self.logger.error(
+                            "Handler must return dict. Returned: %s",
+                            result
+                        )
                         raise ValueError("Handler must return dict")
                 # Feed result
                 for m in result:
@@ -66,31 +61,22 @@ class Task(object):
                         v = result[m]
                         if v is not None:
                             self.mdata[m].set_value(t, v)
-            self.logger.debug("Done")
         except:
             error_report()
-        self.last_run = self.next_run
-        self.next_run = self.get_next_run()
-        self.running = False
-        self.daemon.reschedule(self)
 
     def configure(self, uuid, handler, interval, metrics,
                   config, managed_object, **kwargs):
         if not self.uuid:
-            self.logger = PrefixLoggerAdapter(logger, uuid)
+            self.logger = PrefixLoggerAdapter(self.service.logger, uuid)
         self.uuid = uuid
         self.handler_name = handler
         nh = probe_registry.get_handler(handler)
         if nh != self.handler:
             self.handler = nh
-            self.probe = nh.im_class(self.daemon, self)
+            self.probe = nh.im_class(self.service, self)
         if interval != self.interval:
-            # Change offset
-            self.offset = interval * random.random()
             self.interval = interval
-            self.next_run = self.get_next_run()
-            if not self.running:
-                self.daemon.reschedule(self)
+            self.set_callback_time(interval * 1000)
         self.config = config
         # Apply metrics
         if self.metrics != metrics:
@@ -102,7 +88,7 @@ class Task(object):
                 del self.mdata[m]
             # Create metrics
             for m in n - c:
-                self.mdata[m] = Metric(self.daemon)
+                self.mdata[m] = Metric(self)
             # Configure metrics
             for m in metrics:
                 m["managed_object"] = managed_object
@@ -111,13 +97,6 @@ class Task(object):
                 self.default_metric_type = metrics[0]["metric_type"]
             else:
                 self.default_metric_type = None
-
-    def get_next_run(self):
-        now = time.time()
-        nt = (now // self.interval) * self.interval + self.offset
-        if nt < now:
-            nt += self.interval
-        return nt
 
     def set_metric_convert(self, metric, convert=None, scale=None):
         self.mdata[metric].set_convert(convert, scale)

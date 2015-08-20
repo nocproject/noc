@@ -13,12 +13,15 @@ import time
 from collections import defaultdict
 from collections import namedtuple
 import logging
+## Third-party modules
+import tornado.gen
 ## NOC modules
 from noc.lib.solutions import solutions_roots
 from match import MatchExpr, MatchTrue, MatchCaps
 import noc.lib.snmp.consts
 from noc.lib.snmp.error import SNMPError, NO_SUCH_NAME
 from noc.lib.log import PrefixLoggerAdapter
+from noc.lib.ioloop.snmp import snmp_get, snmp_count
 
 
 HandlerItem = namedtuple("HandlerItem", [
@@ -226,6 +229,14 @@ class Probe(object):
         """
         self.task.set_metric_convert(metric, convert, scale)
 
+    @classmethod
+    def return_result(cls, result):
+        """
+        Convienent tornado.gen.Return() wrapper
+        """
+        raise tornado.gen.Return(result)
+
+    @tornado.gen.coroutine
     def snmp_get(self, oids, address, port=161,
                  community="public", version=SNMP_v2c):
         """
@@ -237,27 +248,31 @@ class Probe(object):
         """
         if isinstance(oids, basestring):
             if self.is_missed_oid(oids):
-                return None  # Missed oid
+                raise tornado.gen.Return(None)  # Missed oid
         elif isinstance(oids, dict):
-            oids = dict((k, v) for k, v in oids.iteritems() if not self.is_missed_oid(v))
+            oids = dict(
+                (k, v) for k, v in oids.iteritems()
+                if not self.is_missed_oid(v)
+            )
             if not oids:
-                return None  # All oids are missed
+                raise tornado.gen.Return(None)  # All oids are missed
         try:
-            result = self.daemon.io.snmp_get(
-                oids, address, port,
-                community=community,
-                version=version)
+            result = yield snmp_get(
+                address, oids, community=str(community),
+                port=port, version=version, timeout=3
+            )
         except SNMPError, why:
             if why.code == NO_SUCH_NAME:
                 # Disable invalid oid
                 self.set_missed_oid(why.oid)
-            return None
+            raise tornado.gen.Return(None)
         if isinstance(result, dict):
             for k in result:
                 if result[k] is None:
                     self.set_missed_oid(result[k])
-        return result
+        self.return_result(result)
 
+    @tornado.gen.coroutine
     def snmp_getnext(self, oid, address, port=161,
                      community="public", version=SNMP_v2c,
                      bulk=False
@@ -282,14 +297,12 @@ class Probe(object):
         When oid is dict of <metric type> : oid, returns
         dict of <metric type>: value
         """
-        result = self.daemon.io.snmp_count(
-            oid, address, port,
-            community=community,
-            version=version,
+        result = yield snmp_count(
+            address, oid, community=str(community),
             filter=filter,
-            bulk=bulk
+            port=port, version=version, timeout=3
         )
-        return result
+        self.return_result(result)
 
 
 class metric(object):
@@ -341,7 +354,11 @@ class metric(object):
         #
         f._required_config = rv
         f._opt_config = ov
-        return f
+        if hasattr(f, "_coroutine"):
+            return f
+        else:
+            f._coroutine = True
+            return tornado.gen.coroutine(f)
 
     def parse_match(self, match):
         """

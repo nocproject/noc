@@ -2,20 +2,16 @@
 ##----------------------------------------------------------------------
 ## Metric
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import logging
-## NOC modules
-from policy import FeedPolicy
 
 MAX31 = 0x7FFFFFFFL
 MAX32 = 0xFFFFFFFFL
 MAX64 = 0xFFFFFFFFFFFFFFFFL
-
-logger = logging.getLogger(__name__)
 
 
 class Metric(object):
@@ -34,8 +30,8 @@ class Metric(object):
         ST_HIGH_ERROR: "HIGH_ERROR"
     }
 
-    def __init__(self, daemon):
-        self.daemon = daemon
+    def __init__(self, task):
+        self.task = task
         self.managed_object= None
         self.metric_type = None
         self.metric = None
@@ -47,20 +43,18 @@ class Metric(object):
         self.convert = None
         self.scale = None
         self.cvt = None
-        self.policy = FeedPolicy()
         self.max_counter = None
         self.locked_convert = False  # Convert changed by set_convert
         self.state = self.ST_NORMAL
 
     def configure(self, metric, metric_type, thresholds, convert,
-                  collectors, scale=1.0, managed_object=None, **kwargs):
+                  scale=1.0, managed_object=None, **kwargs):
         if metric_type != self.metric_type:
             self.reset()
             self.metric_type = metric_type
         self.managed_object = managed_object
         self.metric = metric
         self.thresholds = thresholds
-        self.policy.configure(collectors)
         if not self.locked_convert:
             self.scale = scale
             if convert != self.convert:
@@ -75,7 +69,7 @@ class Metric(object):
         self.last_result = r
         if r is not None:
             r *= self.scale
-            self.daemon.sender.feed(self.policy, self.metric, int(t), r)
+            self.task.service.spool_metric(self.metric, int(t), r)
             self.check_thresholds(t, r)
 
     def reset(self):
@@ -103,8 +97,8 @@ class Metric(object):
             d_wrap = v + (self.max_counter - self.last_value)
             if d_direct < d_wrap:
                 # Possible counter stepback
-                logger.info(
-                    "Possible counter stepback for %s: %s -> %s",
+                self.task.logger.info(
+                    "[%s] Possible counter stepback: %s -> %s",
                     self.metric, self.last_value, v
                 )
                 # Repeat last result, even if None
@@ -149,11 +143,21 @@ class Metric(object):
         if state != self.state:
             old_state = self.STATES[self.state]
             new_state = self.STATES[state]
-            logger.info("[%s] state transition: %s -> %s",
-                        self.metric, old_state, new_state)
-            self.daemon.fmsender.feed_threshold(
-                self.managed_object, self.metric, self.metric_type,
-                t, v,
-                old_state, new_state
+            self.task.logger.info(
+                "[%s] state transition: %s -> %s",
+                self.metric, old_state, new_state
+            )
+            # Send event
+            self.task.service.spool_event(
+                self.managed_object,
+                t,
+                {
+                    "metric": self.metric,
+                    "metric_type": self.metric_type,
+                    "ts": t,
+                    "value": v,
+                    "old_state": old_state,
+                    "new_state": new_state
+                }
             )
             self.state = state
