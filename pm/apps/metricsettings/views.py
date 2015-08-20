@@ -86,7 +86,7 @@ class MetricSettingsApplication(ExtDocApplication):
                     "metric": m.metric or None,
                     "metric_type": m.metric_type.name,
                     "is_active": es.is_active,
-                    "probe": es.probe.name if es.probe else None,
+                    "pool": es.pool if es.pool else None,
                     "interval": es.interval if es.interval else None,
                     "thresholds": m.thresholds,
                     "handler": es.handler,
