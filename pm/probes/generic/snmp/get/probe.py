@@ -71,4 +71,5 @@ class SNMPGetProbe(Probe):
                 convert=metric.NONE, scale=1.0):
         self.set_convert("Custom | SNMP | OID",
                          convert=convert, scale=float(scale))
-        return self.snmp_get(oid, address=address, community=snmp__ro)
+        r = yield self.snmp_get(oid, address, community=snmp__ro)
+        self.return_result(r)

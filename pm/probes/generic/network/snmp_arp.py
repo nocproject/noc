@@ -16,11 +16,12 @@ class SNMPARPProbe(Probe):
             caps=["SNMP"],
             preference=metric.PREF_COMMON)
     def get_object_arp_rfc1213(self, address, snmp__ro, caps):
-        return self.snmp_count(
+        r = yield self.snmp_count(
             mib["RFC1213-MIB::ipNetToMediaPhysAddress"],
             address, community=snmp__ro,
             bulk=caps.get("SNMP | Bulk", False)
         )
+        self.return_result(r)
 
     @metric("IP | ARP | Count",
             caps=["SNMP"],
@@ -28,8 +29,9 @@ class SNMPARPProbe(Probe):
     def get_interface_arp_rfc1213(self, address, snmp__ro,
                                   interface__ifindex, caps):
         filter = lambda oid, value: int(oid.split(".")[-5]) == interface__ifindex
-        return self.snmp_count(
+        r = yield self.snmp_count(
             mib["RFC1213-MIB::ipNetToMediaPhysAddress"],
             address, community=snmp__ro, filter=filter,
             bulk=caps.get("SNMP | Bulk", False)
         )
+        self.return_result(r)

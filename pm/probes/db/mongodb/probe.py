@@ -75,7 +75,7 @@ class MongoDBProbe(Probe):
             return None
         db = mc[database]
         ss = db.command("serverStatus")
-        return {
+        r = {
             "DB | Ops | Query": ss["opcounters"]["query"],
             "DB | Ops | Command": ss["opcounters"]["command"],
             "DB | Ops | Insert": ss["opcounters"]["insert"],
@@ -92,8 +92,13 @@ class MongoDBProbe(Probe):
             "Process | Memory | Mapped": ss["mem"]["mapped"],
             "Process | Memory | Page Faults": ss.get("extra_info", {}).get("page_faults", 0),
             "MongoDB | TTL | Deleted": ss["metrics"].get("ttl", {}).get("deletedDocuments", 0),
-            "DB | Index | Access": ss["indexCounters"]["accesses"],
-            "DB | Index | Hits": ss["indexCounters"]["hits"],
-            "DB | Index | Misses": ss["indexCounters"]["misses"],
-            "DB | Transaction | Commit": ss["dur"]["commits"]
         }
+        if "dur" in ss:
+            # Missed in MongoDB 3
+            r["DB | Transaction | Commit"] = ss["dur"]["commits"]
+        if "indexCounters" in ss:
+            # Missed in MongoDB 3
+            r["DB | Index | Access"] = ss["indexCounters"]["accesses"]
+            r["DB | Index | Hits"] = ss["indexCounters"]["hits"]
+            r["DB | Index | Misses"] = ss["indexCounters"]["misses"]
+        return r

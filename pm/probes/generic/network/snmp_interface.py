@@ -18,13 +18,14 @@ class SNMPInterfaceProbe(Probe):
             preference=metric.PREF_COMMON)
     def get_interface_load32(self, address, snmp__ro,
                            interface__ifindex, caps):
-        return self.snmp_get(
+        r = yield self.snmp_get(
             {
                 "Interface | Load | In": mib["IF-MIB::ifInOctets", interface__ifindex],
                 "Interface | Load | Out": mib["IF-MIB::ifOutOctets", interface__ifindex]
             },
             address=address, community=snmp__ro
         )
+        self.return_result(r)
 
     @metric(["Interface | Errors | In", "Interface | Errors | Out"],
             caps=["SNMP", "SNMP | IF-MIB"],
@@ -32,13 +33,14 @@ class SNMPInterfaceProbe(Probe):
             preference=metric.PREF_COMMON)
     def get_interface_errors(self, address, snmp__ro,
                              interface__ifindex, caps):
-        return self.snmp_get(
+        r = yield self.snmp_get(
             {
                 "Interface | Errors | In": mib["IF-MIB::ifInErrors", interface__ifindex],
                 "Interface | Errors | Out": mib["IF-MIB::ifOutErrors", interface__ifindex]
             },
             address=address, community=snmp__ro
         )
+        self.return_result(r)
 
     @metric(["Interface | Discards | In", "Interface | Discards | Out"],
             caps=["SNMP", "SNMP | IF-MIB"],
@@ -46,13 +48,14 @@ class SNMPInterfaceProbe(Probe):
             preference=metric.PREF_COMMON)
     def get_interface_discards(self, address, snmp__ro,
                                interface__ifindex, caps):
-        return self.snmp_get(
+        r = yield self.snmp_get(
             {
                 "Interface | Discards | In": mib["IF-MIB::ifInDiscards", interface__ifindex],
                 "Interface | Discards | Out": mib["IF-MIB::ifOutDiscards", interface__ifindex]
             },
             address=address, community=snmp__ro
         )
+        self.return_result(r)
 
     @metric(["Interface | Load | In", "Interface | Load | Out"],
             caps=["SNMP", "SNMP | IF-MIB", "SNMP | IF-MIB | HC"],
@@ -61,10 +64,11 @@ class SNMPInterfaceProbe(Probe):
     )
     def get_interface_load64(self, address, snmp__ro,
                            interface__ifindex, caps):
-        return self.snmp_get(
+        r = yield self.snmp_get(
             {
                 "Interface | Load | In": mib["IF-MIB::ifHCInOctets", interface__ifindex],
                 "Interface | Load | Out": mib["IF-MIB::ifHCOutOctets", interface__ifindex]
             },
             address=address, community=snmp__ro
         )
+        self.return_result(r)

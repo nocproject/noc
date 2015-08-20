@@ -146,7 +146,7 @@ class MetricConfig(Document):
                 elif trace:
                     es.trace("Handler mismatch")
             #
-            es.is_active = bool(es.handler)
+            es.is_active = bool(es.handler) and self.is_active
             if trace and not es.handler:
                 es.error("No handler found")
             if es.is_active or trace:

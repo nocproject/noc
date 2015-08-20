@@ -17,6 +17,7 @@ import tornado.gen
 ## NOC modules
 from noc.lib.service.base import Service
 from noc.sa.interfaces.base import StringParameter
+from task import Task
 
 
 class ProbeService(Service):
@@ -47,15 +48,18 @@ class ProbeService(Service):
         self.pmwriter = None
         self.get_config_callback = None
         self.send_metrics_callback = None
+        self.send_events_callback = None
         self.last_update = None
         self.metrics = []
-        self.configs = {}  # uuid -> config
+        self.events = []
         self.changes = {}  # uuid -> change
+        self.tasks = {}  # uuid -> Task
 
     def on_activate(self):
         # Register RPC aliases
         self.probeconf = self.open_rpc_pool("probeconf")
         self.pmwriter = self.open_rpc_global("pmwriter")
+        self.fmwriter = self.open_rpc_pool("fmwriter")
         # Get probe config every 60s
         self.logger.debug("Stating configuration task")
         self.get_config_callback = tornado.ioloop.PeriodicCallback(
@@ -66,13 +70,34 @@ class ProbeService(Service):
         self.get_config_callback.start()
         self.ioloop.add_callback(self.get_probe_config)
         # Send metrics every 250ms
-        self.logger.debug("Stating sender task")
+        self.logger.debug("Stating metric sender task")
         self.send_metrics_callback = tornado.ioloop.PeriodicCallback(
             self.send_metrics,
             250,
             self.ioloop
         )
         self.send_metrics_callback.start()
+        # Send events every 250ms
+        self.logger.debug("Stating event sender task")
+        self.send_events_callback = tornado.ioloop.PeriodicCallback(
+            self.send_events,
+            250,
+            self.ioloop
+        )
+        self.send_events_callback.start()
+
+    def spool_metric(self, metric, timestamp, value):
+        self.metrics += [[metric, timestamp, value]]
+
+    def spool_event(self, object, timestamp, data):
+        """
+        Spool message to be sent
+        """
+        self.events += [{
+            "ts": timestamp,
+            "object": object,
+            "data": data
+        }]
 
     @tornado.gen.coroutine
     def send_metrics(self):
@@ -82,6 +107,15 @@ class ProbeService(Service):
         if self.metrics:
             yield self.pmwriter.metrics(self.metrics, _async=True)
             self.metrics = []
+
+    @tornado.gen.coroutine
+    def send_events(self):
+        """
+        Periodic task to send events
+        """
+        if self.events:
+            yield self.fmwriter.events(self.events, _async=True)
+            self.events = []
 
     @tornado.gen.coroutine
     def get_probe_config(self):
@@ -109,26 +143,20 @@ class ProbeService(Service):
                 self.logger.error("Configuration error: '%s' is missed" % v)
                 n_errors += 1
                 continue
-            if u_id not in self.configs:
+            if u_id not in self.tasks:
                 # Create new object
-                self.configs[u_id] = cfg
                 self.changes[u_id] = changed
-                self.logger.debug("Creating object %s: %s" % (u_id, cfg))
-                self.create_probe(**cfg)
+                self.create_task(u_id, cfg)
                 n_new += 1
             elif changed == expire:
                 # Object deleted
-                self.logger.debug("Deleting object %s" % u_id)
-                self.delete_probe(u_id)
-                del self.configs[u_id]
+                self.delete_task(u_id)
                 del self.changes[u_id]
                 n_deleted += 1
             elif self.changes[u_id] != changed:
                 # Object changed
-                self.configs[u_id] = cfg
                 self.changes[u_id] = changed
-                self.logger.debug("Changing object %s: %s" % (u_id, cfg))
-                self.change_probe(**cfg)
+                self.change_task(u_id, cfg)
                 n_changed += 1
         # Update last value
         self.logger.debug(
@@ -137,14 +165,33 @@ class ProbeService(Service):
             n, n_new, n_changed, n_deleted, n_errors
         )
 
-    def create_probe(self, **kwargs):
-        pass
+    def create_task(self, probe_id, cfg):
+        """
+        Create new task for probe
+        """
+        self.logger.debug("[%s] Creating probe: %s", probe_id, cfg)
+        self.tasks[probe_id] = Task(self, cfg["interval"] * 100)
+        self.tasks[probe_id].configure(**cfg)
+        self.tasks[probe_id].start()
 
-    def delete_probe(self, probe_id):
-        pass
+    def delete_task(self, probe_id):
+        """
+        Stop PeriodicOffsetCallback and delete probe
+        """
+        if probe_id not in self.tasks:
+            return
+        self.logger.debug("[%s] Deleting probe", probe_id)
+        # Stop periodic callback
+        if probe_id in self.tasks:
+            self.tasks[probe_id].stop()
+            del self.tasks[probe_id]
 
-    def change_probe(self, **kwargs):
-        pass
+    def change_task(self, probe_id, cfg):
+        """
+        Update probe config
+        """
+        self.logger.debug("[%s] Changing probe: %s", probe_id, cfg)
+        self.tasks[probe_id].configure(**cfg)
 
 if __name__ == "__main__":
     ProbeService().start()
