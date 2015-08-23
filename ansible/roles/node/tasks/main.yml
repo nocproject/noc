@@ -40,6 +40,21 @@
     - var/log
     - var/run
 
+- name: Check lib/python2.7
+  stat: path="{{noc_root}}/lib/python2.7"
+  register: py27s
+
+- name: Linking lib/python2.7
+  file: src={{noc_root}}/lib/python2.7 dest={{noc_root}}/lib/python state=link
+  when: py27s.stat.exists == True
+
+- name: Linking lib/python2.6
+  file: src={{noc_root}}/lib/python2.6 dest={{noc_root}}/lib/python state=link
+  when: py27s.stat.exists == False
+
+- name: Install noc.pth
+  template: src="lib/python/site-packages/noc.pth" dest="{{noc_root}}/lib/python/site-packages/noc.pth"
+
 - name: Setup supervisord
   template: src="{{item}}" dest={{noc_root}}/{{item[:-3]}}
   with_items:
