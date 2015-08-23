@@ -1,0 +1,10 @@
+---
+- include: "os/Debian/main.yml"
+  when: ansible_distribution == "Debian"
+
+# Get postgres user
+# Disable postgres service
+# set up supervisor
+# run postgres
+# create user
+# create database

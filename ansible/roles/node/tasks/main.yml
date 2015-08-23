@@ -1,0 +1,58 @@
+#
+# node role tasks
+#
+---
+- include: "os/Debian/main.yml"
+  when: ansible_distribution == "Debian"
+
+- name: Create NOC group
+  group: name="{{noc_group}}" state=present
+
+- name: Create NOC user
+  user: name="{{noc_user}}" group="{{noc_group}}" comment="NOC user" state=present
+
+- name: Pull NOC
+  hg: repo="{{noc_repo}}" dest="{{noc_root}}" revision="{{noc_branch}}"
+
+- name: Upgrade PIP
+  pip: >
+    chdir="{{noc_root}}"
+    executable="{{noc_root}}/bin/pip"
+    virtualenv="{{noc_root}}"
+    name="pip"
+
+- name: Install python packages
+  pip: >
+    chdir="{{noc_root}}"
+    executable="{{noc_root}}/bin/pip"
+    requirements="requirements/node.txt"
+    virtualenv="{{noc_root}}"
+
+- name: Create required root directories
+  file: path="{{noc_root}}/{{item}}" state="directory"
+  with_items:
+    - etc/config/env
+    - etc/config/services
+
+- name: Create required user directories
+  file: path="{{noc_root}}/{{item}}" state="directory" owner="{{noc_user}}"
+  with_items:
+    - var/log
+    - var/run
+
+- name: Setup supervisord
+  template: src="{{item}}" dest={{noc_root}}/{{item[:-3]}}
+  with_items:
+    - etc/config/env/supervisord.conf.j2
+    - etc/config/services/activator.conf.j2
+    - etc/config/env/activator.conf.j2
+    - etc/config/services/classifier.conf.j2
+    - etc/config/env/classifier.conf.j2
+    - etc/config/services/correlator.conf.j2
+    - etc/config/env/correlator.conf.j2
+    - etc/config/services/omap.conf.j2
+    - etc/config/env/omap.conf.j2
+
+# @todo: Register supervisor system service
+# @todo: Run apply-config when templates changed
+# @todo: Reread and update supervisor config
