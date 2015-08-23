@@ -1,0 +1,24 @@
+---
+- hosts: nodes
+  sudo: yes
+  roles:
+    - role: node
+      when: "'nodes' in groups"
+
+    - role: mongodb
+      when: "'svc-mongodb' in groups"
+
+    - role: postgres
+      when: "'svc-postgres' in groups"
+
+    - role: omap
+      when: "'svc-omap' in groups"
+
+    - role: activator
+      when: "'svc-activator' in groups"
+
+    - role: classifier
+      when: "'svc-classifier' in groups"
+
+    - role: correlator
+      when: "'svc-correlator' in groups"
