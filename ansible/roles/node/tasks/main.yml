@@ -53,7 +53,19 @@
   when: py27s.stat.exists == False
 
 - name: Install noc.pth
-  template: src="lib/python/site-packages/noc.pth" dest="{{noc_root}}/lib/python/site-packages/noc.pth"
+  template: src="lib/python/site-packages/noc.pth.j2" dest="{{noc_root}}/lib/python/site-packages/noc.pth"
+
+- name: Check sitecustomize
+  stat: path="{{noc_root}}/lib/python/site-packages/sitecustomize.py"
+  register: sitecustomizes
+
+- name: Install sitecustomize
+  template: src="lib/python/site-packages/sitecustomize.py.j2" dest="{{noc_root}}/lib/python/site-packages/sitecustomize.py"
+  when: sitecustomizes.stat.exists == False
+
+- name: Update sitecustomize
+  replace: dest="{{noc_root}}/lib/python/site-packages/sitecustomize.py" regexp="ascii" replace="utf-8"
+  when: sitecustomizes.stat.exists == True
 
 - name: Setup supervisord
   template: src="{{item}}" dest={{noc_root}}/{{item[:-3]}}
