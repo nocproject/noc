@@ -1,0 +1,16 @@
+---
+- include: "os/Debian/main.yml"
+  when: ansible_distribution == "Debian"
+
+# os part must set variables
+# mongo_user
+
+# Disable mongodb system service
+# Put mongodb supervisor config
+# Bind to all addresses
+# Set replica set
+# Set storage engine
+# Add to replica set
+# Create user
+# Create database
+# Start mongodb
