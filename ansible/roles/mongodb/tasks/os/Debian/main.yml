@@ -9,3 +9,6 @@
 - name: "Install MongoDB"
   apt: name="mongodb-org"
 
+- name: "Disable MongoDB system service"
+  service: name=mongodb enabled=no state=stopped
+
