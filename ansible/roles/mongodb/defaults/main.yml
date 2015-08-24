@@ -1,0 +1,3 @@
+---
+mongo_user: mongo
+mongod_path: /usr/bin/mongod
