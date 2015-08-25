@@ -16,6 +16,7 @@ import zlib
 import logging
 ## Third-party modules
 from Crypto.Cipher import XOR
+import google.protobuf.message
 ## NOC modules
 from noc.sa.protocols.sae_pb2 import Message, Error
 from google.protobuf.service import RpcController
@@ -23,6 +24,8 @@ from noc.sa.protocols.sae_pb2 import *
 from noc.lib.nbsocket import Protocol
 from noc.lib.debug import error_report
 from noc.sa.script.ssh.util import secure_random, bytes_to_long, long_to_bytes
+
+logger = logging.getLogger(__name__)
 
 PROTOCOL_NAME = "NOC SAE PROTOCOL (http://nocproject.org/)"
 PROTOCOL_VERSION = "1.0"
@@ -391,7 +394,11 @@ class RPCSocket(object):
             data = self.current_transform.decompress(data)
         # Parse message
         msg = Message()
-        msg.ParseFromString(data)
+        try:
+            msg.ParseFromString(data)
+        except google.protobuf.message.DecodeError, why:
+            logger.error("RPC Decode error: %s", why)
+            return
         # Process message
         # logging.debug("rpc_handle_message:\n%s" % msg)
         if msg.error.ByteSize():
