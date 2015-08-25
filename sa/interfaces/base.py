@@ -1085,9 +1085,9 @@ class MACAddressParameter(StringParameter):
         value = super(MACAddressParameter, self).clean(value)
         if len(value) == 6 and self.accept_bin:
             # MAC address in binary form
-            return MAC(":".join(["%02X" % ord(c) for c in value]))
+            return str(MAC(":".join(["%02X" % ord(c) for c in value])))
         try:
-            return MAC(value)
+            return str(MAC(value))
         except ValueError:
             self.raise_error(value)
 
