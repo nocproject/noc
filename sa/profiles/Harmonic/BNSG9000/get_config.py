@@ -7,11 +7,12 @@ __author__ = 'fedoseev.ns'
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-
-import urllib2
-from lxml import etree as ET
+## NOC modules
 import noc.sa.script
 from noc.sa.interfaces import IGetConfig
+## Python modules
+import urllib2
+from xml.dom.minidom import parseString
 
 data = '<PYTHON><Platform ID=\"1\" Action=\"GET_TREE\" /></PYTHON>'
 
@@ -35,5 +36,5 @@ class Script(noc.sa.script.Script):
 
         body = response.read()
         body = self.strip_first_lines(body, 1)
-        tree = ET.XML(body)
-        return ET.tostring(tree, pretty_print=True)
+        tree = parseString(body)
+        return tree.toprettyxml()
