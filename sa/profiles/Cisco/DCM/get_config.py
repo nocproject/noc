@@ -4,9 +4,9 @@ __author__ = 'boris'
 #NOC modules
 from noc.sa.script import NOCScript
 from noc.sa.interfaces import IGetConfig
-#python modules
+#Python modules
 import re
-from lxml import etree as ET
+from xml.dom.minidom import parseString
 
 rx_config = re.compile(r"=====begin=====\n"
                        r"(?P<path>\[.*?\])(?P<part>\[\d*\])\n"
@@ -33,8 +33,9 @@ class Script(NOCScript):
 
         for match in rx_config.finditer(config):
             xml = match.group("xml")
-            tree = ET.XML(xml)
-            result += (ET.tostring(tree, pretty_print=True) + "\n")
+            parsing = parseString(xml)
+            tree = parsing.toprettyxml()
+            result += self.strip_first_lines(tree, 1)
 
         result += bottom_str
         return result
