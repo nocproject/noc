@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import re
 import time
 import datetime
 import sys
-import os
 from collections import defaultdict
 import operator
+import re
+import os
 ## Django modules
 from django.db import reset_queries
 ## Third-party modules
@@ -86,11 +86,12 @@ class Classifier(Daemon):
     def __init__(self):
         self.version = get_version()
         self.rules = {}  # profile -> [rule, ..., rule]
-        self.triggers = {}  # event_class_id -> [trigger1, ..., triggerN]
+        self.triggers = defaultdict(list)  # event_class_id -> [trigger1, ..., triggerN]
         self.templates = {}  # event_class_id -> (body_template,subject_template)
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
         self.enumerations = {}  # name -> value -> enumerated
         self.suppression = {}  # event_class_id -> (condition, suppress)
+        self.alter_handlers = []  # event_class, status, handler
         self.dump_clone = False
         self.deduplication_window = 0
         self.unclassified_codebook_depth = 5
@@ -202,17 +203,32 @@ class Classifier(Daemon):
         self.triggers = {}
         n = 0
         cn = 0
+        self.alter_handlers = []
         ec = [(c.name, c.id) for c in EventClass.objects.all()]
-        for t in EventTrigger.objects.filter(is_enabled=True):
+        for t in EventTrigger.objects.all():
             self.logger.debug("Trigger '%s' for classes:", t.name)
             for c_name, c_id in ec:
                 if re.search(t.event_class_re, c_name, re.IGNORECASE):
-                    try:
-                        self.triggers[c_id] += [Trigger(t)]
-                    except KeyError:
-                        self.triggers[c_id] = [Trigger(t)]
-                    cn += 1
-                    self.logger.debug("    %s", c_name)
+                    if (
+                        t.handler and
+                        t.condition == "True" and
+                        t.selector is None and
+                        t.time_pattern is None and
+                        t.template is None and
+                        t.notification_group is None
+                    ):
+                        # Alter handlers
+                        self.alter_handlers += [
+                            (c_id, t.is_enabled, t.handler)
+                        ]
+                    elif t.is_enabled:
+                        # Register trigger
+                        h = t.handler
+                        if h:
+                            h = self.resolve_handler(h)
+                        self.triggers[c_id] += [Trigger(t, handler=h)]
+                        cn += 1
+                        self.logger.debug("    %s", c_name)
             n += 1
         self.logger.info("%d triggers has been loaded to %d classes", n, cn)
 
@@ -296,13 +312,32 @@ class Classifier(Daemon):
     def load_handlers(self):
         self.logger.info("Loading handlers")
         self.handlers = {}
+        # Process altered handlers
+        enabled = defaultdict(list)  # event class id -> [handlers]
+        disabled = defaultdict(list)  # event class id -> [handlers]
+        for ec_id, status, handler in self.alter_handlers:
+            if status:
+                if handler in disabled[ec_id]:
+                    disabled[ec_id].remove(handler)
+                if handler not in enabled[ec_id]:
+                    enabled[ec_id] += [handler]
+            else:
+                if handler not in disabled[ec_id]:
+                    disabled[ec_id] += [handler]
+                if handler in enabled[ec_id]:
+                    enabled[ec_id].remove(handler)
+        self.alter_handlers = []
+        # Load handlers
         for ec in EventClass.objects.filter():
-            handlers = get_event_class_handlers(ec)
+            handlers = get_event_class_handlers(ec) + enabled[ec.id]
             if not handlers:
                 continue
             self.logger.debug("    <%s>: %s", ec.name, ", ".join(handlers))
             hl = []
-            for h in ec.handlers:
+            for h in handlers:
+                if h in disabled[ec.id]:
+                    self.logger.debug("        disabling handler %s", h)
+                    continue
                 # Resolve handler
                 hh = self.resolve_handler(h)
                 if hh:
@@ -338,8 +373,7 @@ class Classifier(Daemon):
         NewEvent._meta["db_alias"] = "collector"
         FailedEvent._meta["db_alias"] = "collector"
 
-    @classmethod
-    def resolve_handler(cls, h):
+    def resolve_handler(self, h):
         mn, s = h.rsplit(".", 1)
         try:
             m = __import__(mn, {}, {}, s)
