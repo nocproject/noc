@@ -63,9 +63,7 @@ class Address(Document):
             # Reset other primary addresses
             Address._get_collection().update({
                 "building": document.building.id,
-                "$ne": {
-                    "id": document.id
-                }
+                "id": {"$ne": document.id}
             }, {
                 "$set": {
                     "is_primary": False
