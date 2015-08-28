@@ -5,7 +5,7 @@ import noc.sa.profiles
 from noc.sa.protocols.sae_pb2 import SSH
 
 class Profile(noc.sa.profiles.Profile):
-    name = "Cisco.DCMD9902"
+    name = "Cisco.DCM"
     supported_schemes = [SSH]
     pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
     pattern_password = "^[Pp]assword:"
