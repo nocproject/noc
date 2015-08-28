@@ -17,7 +17,7 @@ rx_version = re.compile(r"BUILD=(?P<ver>.*?)$",
                         re.DOTALL|re.MULTILINE)
 
 class Script(NOCScript):
-    name = "Cisco.DCMD9902.get_version"
+    name = "Cisco.DCM.get_version"
     implements = [IGetVersion]
 
     def execute(self):
