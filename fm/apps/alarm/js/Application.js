@@ -260,8 +260,10 @@ Ext.define("NOC.fm.alarm.Application", {
         //
         me.startPolling();
         //
-        if(me.getCmd() === "history") {
-            me.showAlarm(me.noc.cmd.args[0]);
+        switch(me.getCmd) {
+            case "history":
+                me.showAlarm(me.noc.cmd.args[0]);
+                break;
         }
     },
     //
