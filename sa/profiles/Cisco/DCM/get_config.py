@@ -21,7 +21,7 @@ head_str = """<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 bottom_str = """</boost_serialization>"""
 
 class Script(NOCScript):
-    name = "Cisco.DCMD9902.get_config"
+    name = "Cisco.DCM.get_config"
     implements = [IGetConfig]
     TIMEOUT = 240
     CLI_TIMEOUT = 240
