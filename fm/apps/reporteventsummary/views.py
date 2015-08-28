@@ -10,16 +10,17 @@
 from django import forms
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.fm.models import ActiveEvent, EventClass, ManagedObject,\
-                          NewEvent, FailedEvent, ArchivedEvent
+from noc.sa.models.managedobject import ManagedObject
+from noc.fm.models import (ActiveEvent, EventClass,
+                           NewEvent, FailedEvent, ArchivedEvent)
 
 ## Report types
 report_types = [
-            ("class", "By Event Class"),
-            ("object", "By Managed Object"),
-            ("profile", "By Profile"),
-            ("status", "By Status")
-            ]
+    ("class", "By Event Class"),
+    ("object", "By Managed Object"),
+    ("profile", "By Profile"),
+    ("status", "By Status")
+]
 
 
 class ReportForm(forms.Form):
