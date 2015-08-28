@@ -8,14 +8,14 @@ __author__ = 'fedoseev.ns'
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-import urllib2
-from lxml import etree as ET
-
-headers = {'Content-Lenght': '640'}
-data = '<AFRICA><Platform ID=\"1\" Action=\"GET_TREE\" /></AFRICA>'
-
+## NOC modules
 import noc.sa.script
 from noc.sa.interfaces import IGetConfig
+## Python modules
+import urllib2
+from xml.dom.minidom import parseString
+
+data = '<AFRICA><Platform ID=\"1\" Action=\"GET_TREE\" /></AFRICA>'
 
 class Script(noc.sa.script.Script):
     name = "Harmonic.ProStream1000.get_config"
@@ -32,10 +32,10 @@ class Script(noc.sa.script.Script):
         opener = urllib2.build_opener(auth_manager)
         urllib2.install_opener(opener)
 
-        req = urllib2.Request(url, data, headers)
+        req = urllib2.Request(url, data)
         response = urllib2.urlopen(req)
         
         body = response.read()
         body = self.strip_first_lines(body, 1)
-        tree = ET.XML(body)
-        return ET.tostring(tree, pretty_print=True)
+        tree = parseString(body)
+        return tree.toprettyxml()
