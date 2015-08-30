@@ -15,7 +15,7 @@ from noc.sa.interfaces import IGetConfig
 import os
 from ftplib import FTP
 import gzip
-from lxml import etree as ET
+from xml.dom.minidom import parseString
 
 confdir = "para"
 path_to_temp_files = "/tmp/noc"
@@ -57,8 +57,10 @@ class Script(NOCScript):
             config = f.read()
             config = self.strip_first_lines(config, 1)
             try:
-                tree = ET.XML(config)
-                result += (ET.tostring(tree, pretty_print=True) + "\n")
+                tree = parseString(config)
+                config = tree.toprettyxml()
+                config = self.strip_first_lines(config, 1)
+                result += config + "\n"
             except Exception:
                 pass
             finally:
