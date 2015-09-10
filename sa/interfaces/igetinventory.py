@@ -31,6 +31,9 @@ class IGetInventory(Interface):
         "revision": StringParameter(required=False),
         # Serial number
         "serial": StringParameter(required=False),
+        #
+        "mfg_date": REStringParameter(r"^\d{4}-\d{2}-\d{2}$",
+                                      required=False),
         # Optional description
         "description": StringParameter(required=False),
         # Optional internal crossing
