@@ -29,22 +29,37 @@ class Script(NOCScript):
     name = "Cisco.IOS.get_interfaces"
     implements = [IGetInterfaces]
 
-    rx_sh_int = re.compile(r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)\s(?:\((?:connected|notconnect|disabled|monitoring|err-disabled)\)\s*)?\n\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?(?:\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n)?[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
+    rx_sh_int = re.compile(
+        r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+"
+        r"protocol\s+is\s+(?P<oper_status>up|down)\s"
+        r"(?:\((?:connected|notconnect|disabled|monitoring|err-disabled)\)\s*)?\n"
+        r"\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?"
+        r"(?:\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n)?"
+        r"[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
        re.MULTILINE | re.IGNORECASE)
-    rx_sh_ip_int = re.compile(r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+",
-           re.IGNORECASE)
+    rx_sh_ip_int = re.compile(
+        r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+"
+        r"line\s+protocol\s+is\s+", re.IGNORECASE)
     rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
         re.MULTILINE | re.IGNORECASE)
-    rx_ip = re.compile(r"Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
-    rx_sec_ip = re.compile(r"Secondary address (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
+    rx_ip = re.compile(
+        r"Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
+        re.MULTILINE | re.IGNORECASE)
+    rx_sec_ip = re.compile(
+        r"Secondary address (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
+        re.MULTILINE | re.IGNORECASE)
     rx_ipv6 = re.compile(
         r"(?P<address>\S+), subnet is (?P<net>\S+)/(?P<mask>\d+)",
         re.MULTILINE | re.IGNORECASE)
-    rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
+    rx_vlan_line = re.compile(
+        r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+"
+        r"(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
     rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$",
         re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
-    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$", re.IGNORECASE)
+    rx_cisco_interface_name = re.compile(
+        r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(\/d+)*(A|B)?)$",
+        re.IGNORECASE)
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
     rx_lldp = re.compile("^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
         re.MULTILINE | re.DOTALL)
