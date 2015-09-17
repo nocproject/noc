@@ -58,8 +58,9 @@ class Script(NOCScript):
         re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_cisco_interface_name = re.compile(
-        r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(\/d+)*(A|B)?)$",
+        r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$",
         re.IGNORECASE)
+    rx_cisco_interface_sonet = re.compile(r"^(?P<type>Se)\s+(?P<number>\d+\S+)$")
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
     rx_lldp = re.compile("^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
         re.MULTILINE | re.DOTALL)
@@ -271,6 +272,8 @@ class Script(NOCScript):
                     sub["enabled_afi"] += ["IPv6"]
                     sub["ipv6_addresses"] = ipv6_interfaces[ifname]
             matchifn = self.rx_cisco_interface_name.match(ifname)
+            if not matchifn:
+                matchifn = self.rx_cisco_interface_sonet.match(ifname)
             shotn = (matchifn.group("type").capitalize() +
                      matchifn.group("number"))
             if shotn in ospfs:
