@@ -21,12 +21,11 @@ class Script(NOCScript):
     implements = [IGetVersion]     
     
     def execute(self):
-        #todo
-        platform = "_p01" 
-        version = "_v01"                                  
+        platform = "GT21"
+        version = "Unknown"
         
         return {
             "vendor": "Tangram",
-            "platform": platform ,
+            "platform": platform,
             "version": version 
         }
