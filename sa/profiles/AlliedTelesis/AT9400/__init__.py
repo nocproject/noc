@@ -21,5 +21,5 @@ class Profile(noc.sa.profiles.Profile):
     command_more = "c"
     command_submit = "\r"
     command_save_config = "save configuration"
-    pattern_prompt = r"^\S*[\$#] "
+    pattern_prompt = r"^\S*[\$#] $"
     command_exit = "quit"
