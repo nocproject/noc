@@ -12,7 +12,7 @@
   user: name="{{noc_user}}" group="{{noc_group}}" comment="NOC user" state=present
 
 - name: Pull NOC
-  hg: repo="{{noc_repo}}" dest="{{noc_root}}" revision="{{noc_branch}}"
+  hg: repo="{{noc_repo}}" dest="{{noc_root}}" revision="{{noc_revision}}"
 
 - name: Upgrade PIP
   pip: >
