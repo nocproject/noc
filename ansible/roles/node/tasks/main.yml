@@ -67,6 +67,9 @@
   replace: dest="{{noc_root}}/lib/python/site-packages/sitecustomize.py" regexp="ascii" replace="utf-8"
   when: sitecustomizes.stat.exists == True
 
+# @todo: Compile bytecode
+# @todo: Check hanging .pyc
+
 - name: Setup supervisord
   template: src="{{item}}" dest={{noc_root}}/{{item[:-3]}}
   with_items:
@@ -83,3 +86,4 @@
 # @todo: Register supervisor system service
 # @todo: Run apply-config when templates changed
 # @todo: Reread and update supervisor config
+
