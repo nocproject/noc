@@ -10,5 +10,5 @@
   apt: name="mongodb-org"
 
 - name: "Disable MongoDB system service"
-  service: name=mongodb enabled=no state=stopped
+  service: name=mongod enabled=no state=stopped
 
