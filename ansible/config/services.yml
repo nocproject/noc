@@ -1,0 +1,63 @@
+# NOC services description
+---
+product: "noc"
+services:
+  nm:
+    description: Node Manager
+    level: node
+
+  postgres:
+    description: PostgreSQL server
+    level: global
+
+  mongodb:
+    description: MongoDB server
+    level: global
+
+  consul:
+    description: Consul Server
+    level: global
+
+  nsqlookupd:
+    description: NSQLookupd
+    level: global
+
+  classifier:
+    description: Classifier
+    level: pool
+
+  fmwriter:
+    description: FMWriter
+    level: pool
+
+  graphitecollector:
+    description: Graphite Collector
+    level: global
+
+  omap:
+    description: OMap
+    level: global
+
+  ping:
+    description: Ping
+    level: pool
+
+  pmwriter:
+    description: PMWriter
+    level: global
+
+  probe:
+    description: Probe
+    level: pool
+
+  probeconf:
+    description: Probeconf
+    level: pool
+
+  syslogcollector:
+    description: Syslog Collector
+    level: pool
+
+  trapcollector:
+    description: SNMP Trap Collector
+    level: pool

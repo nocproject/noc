@@ -14,6 +14,15 @@
     - role: omap
       when: "'svc-omap' in groups"
 
+    - role: fmwriter
+      when: "'svc-fmwriter' in groups"
+
+    - role: pmwriter
+      when: "'svc-pmwriter' in groups"
+
+    - role: probeconf
+      when: "'svc-probeconf' in groups"
+
     - role: activator
       when: "'svc-activator' in groups"
 
@@ -22,3 +31,18 @@
 
     - role: correlator
       when: "'svc-correlator' in groups"
+
+    - role: syslogcollector
+      when: "'svc-syslogcollector' in groups"
+
+    - role: trapcollector
+      when: "'svc-trapcollector' in groups"
+
+    - role: probe
+      when: "'svc-probe' in groups"
+
+    - role: ping
+      when: "'svc-ping' in groups"
+
+    - role: graphitecollector
+      when: "'svc-graphitecollector' in groups"
