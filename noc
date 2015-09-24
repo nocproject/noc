@@ -13,11 +13,18 @@ error_exit ( ) {
     exit 1
 }
 
+CMD=$1
+if [ -f "./commands/$CMD.sh" ]; then
+    shift
+    exec /bin/sh ./commands/$CMD.sh "$@"
+fi
+
+if [ -f "./commands/$CMD.py" ]; then
+    shift
+    exec ./commands/$CMD.py "$@"
+fi
+
 case "$1" in
-    "ctl")
-        shift
-        exec ./bin/supervisorctl "$@"
-        ;;
     "conf")
         shift
         exec ./scripts/conf.py "$@"
@@ -38,12 +45,6 @@ case "$1" in
         ;;
     "upgrade")
         exec ./scripts/upgrade
-        ;;
-    "notebook")
-        if [ ! -d ".ipython" ]; then
-            mkdir .ipython || error_exit "Cannot create .ipython directory"
-        fi
-        exec ./bin/ipython notebook --notebook-dir=.ipython
         ;;
     *)
         exec ./bin/python manage.py "$@"
