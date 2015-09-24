@@ -1,0 +1,78 @@
+#!./bin/python
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Compile python bytecode
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+import sys
+import stat
+import py_compile
+import subprocess
+
+
+class BytecodeCompiler(object):
+    def __init__(self):
+        self.errors = []
+        self.changed = False
+
+    def error(self, msg):
+        self.errors += [str(msg)]
+
+    def iter_files(self):
+        """
+        Yield all python files to be compiled
+        """
+        f = subprocess.Popen(["./bin/hg", "locate"], stdout=subprocess.PIPE)
+        for l in f.stdout:
+            l = l.strip()
+            if l.endswith(".py") and "/templates/" not in l and not l.startswith("patches/"):
+                yield l
+
+    def is_changed(self, py):
+        """
+        Check file needs to be recompiled
+        """
+        pyc = py + "c"
+        if not os.path.exists(pyc):
+            return True
+        s_py = os.stat(py)
+        s_pyc = os.stat(pyc)
+        return s_py[stat.ST_MTIME] > s_pyc[stat.ST_MTIME]
+
+    def compile_file(self, f):
+        try:
+            py_compile.compile(f)
+        except (IOError, SyntaxError), why:
+            self.error(why)
+
+    def compile(self):
+        """
+        Compile all changed files
+        """
+        for f in self.iter_files():
+            if self.is_changed(f):
+                self.changed = True
+                self.compile_file(f)
+
+    def run(self):
+        self.compile()
+        if self.errors:
+            print "ERROR"
+            for e in self.errors:
+                print e
+            return 1
+        elif self.changed:
+            print "CHANGED"
+            return 0
+        else:
+            print "OK"
+            return 0
+
+
+if __name__ == "__main__":
+    sys.exit(BytecodeCompiler().run())
