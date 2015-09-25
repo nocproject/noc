@@ -1,4 +1,0 @@
-[program:mongod]
-command = {{mongod_path}} --dbpath={{noc_root}}/var/db/mongo --storageEngine={{noc_mongo_storageengine}} --replSet={{noc_mongo_replicaset}} --bind_ip=0.0.0.0 --auth --directoryperdb
-autostart = true
-user = {{mongo_user}}

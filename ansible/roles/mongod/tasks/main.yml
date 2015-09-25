@@ -1,0 +1,41 @@
+# mongodb role
+---
+- include: "os/Debian/main.yml"
+  when: ansible_distribution == "Debian"
+
+- name: Creating mongodb directories
+  file: path="{{item}}" state="directory" owner="{{mongo_user}}" mode=0700
+  with_items:
+    - "{{noc_root}}/var/db/mongo"
+    - "{{noc_root}}/var/log/mongo"
+    - "{{noc_root}}/var/etc/mongo"
+
+- name: Setting mongod config
+  template: src="mongod.conf.j2" dest="{{noc_root}}/var/etc/mongo/mongod.conf"
+  notify: restart mongod
+
+- name: Generating mongo key file
+  copy: src="{{lookup('mongo_key', tower_data + '/mongo/mongo.key')}}"
+        dest="{{noc_root}}/var/etc/mongo/mongo.key"
+        owner="{{mongo_user}}"
+        mode=0600
+  notify: restart mongod
+
+- name: Enable MongoDB system service
+  service: name="{{mongod_system_service}}" enabled=yes state=started
+
+- name: Create replica set configuration script
+  template: src="rsinit.js.j2" dest="{{noc_root}}/var/etc/mongo/rsinit.js"
+  register: status
+
+- name: Initialize replica set
+  shell: "{{mongo_path}} {{noc_root}}/var/etc/mongo/rsinit.js"
+  when: status.changed
+
+- name: Create user and database configugation script
+  template: src="userinit.js.j2" dest="{{noc_root}}/var/etc/mongo/userinit.js"
+  register: status
+
+- name: Initialize user and database
+  shell: "{{mongo_path}} {{noc_mongo_db}} {{noc_root}}/var/etc/mongo/userinit.js"
+  when: status.changed

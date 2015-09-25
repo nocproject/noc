@@ -1,0 +1,6 @@
+#
+# mongod configuation
+# Set by ansible
+# Do not edit
+#
+DAEMON_OPTS="--config {{noc_root}}/var/etc/mongod.conf --storageEngine={{noc_mongo_storageengine}} --bind_ip=0.0.0.0"

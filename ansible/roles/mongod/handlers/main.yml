@@ -1,0 +1,2 @@
+- name: restart mongod
+  service: name="{{mongod_system_service}}" state=restarted

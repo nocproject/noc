@@ -1,0 +1,27 @@
+# mongodb debian
+---
+- name: "Add MongoDB apt key"
+  apt_key: keyserver=keyserver.ubuntu.com id=7F0CEB10
+
+- name: "Add MongoDB repository"
+  apt_repository: repo="deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.0 main" state=present update_cache=yes
+
+- name: Disable Transparent Hugepages (bootloader)
+  template: src="Debian/etc/grub.d/50_disable_transparent_hugepages.j2"
+            dest=/etc/grub.d/50_disable_transparent_hugepages
+  register: dht_status
+
+- name: Disable Transparent Hugepages (runtime)
+  shell: if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+            echo never > /sys/kernel/mm/transparent_hugepage/enabled;
+            echo never > /sys/kernel/mm/transparent_hugepage/defrag;
+         fi
+  when: dht_status.changed
+  notify: restart mongod
+
+- name: "Install MongoDB"
+  apt: name="mongodb-org"
+
+- name: "Set mongod defaults"
+  template: src="Debian/etc/default/mongod.j2" dest="/etc/default/mongod"
+  notify: restart mongod

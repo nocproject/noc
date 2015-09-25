@@ -1,0 +1,25 @@
+//
+// Replica set initialization
+//
+(function() {
+    var status, config;
+
+    config = {
+        _id: "{{noc_mongo_replicaset}}",
+        version: 1,
+        members: []
+    }
+    {% for n in groups["svc-mongod"] %}
+    config.members.push({
+        _id: {{ hostvars[n]["node_id"] }},
+        host: "{{ n }}:27017",
+    });
+    {% endfor %}
+
+    status = rs.status();
+    if(status.ok) {
+        rs.reconfig(config);
+    } else {
+        rs.initiate(config);
+    }
+})();
