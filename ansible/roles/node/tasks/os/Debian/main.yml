@@ -16,3 +16,6 @@
     - quilt
     - gcc
     - libpq-dev
+
+- name: Install supervisord init script
+  template: src="Debian/etc/init.d/noc-node.j2" dest="/etc/init.d/noc-node" mode="a+rx"

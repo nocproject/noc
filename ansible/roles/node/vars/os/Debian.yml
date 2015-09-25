@@ -1,0 +1,15 @@
+# Debian settings
+---
+# Postgres settings
+postgres_system_service: postgres
+postgres_user: mongodb
+postgres_path: /usr/bin/postgres
+# Mongo settings
+mongod_system_service: mongod
+mongo_user: mongodb
+mongod_path: /usr/bin/mongod
+mongo_path: /usr/bin/mongo
+# Nginx settings
+nginx_system_service: mongod
+nginx_user: www
+nginx_path: /usr/bin/nginx
