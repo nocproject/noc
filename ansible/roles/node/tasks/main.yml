@@ -2,8 +2,17 @@
 # node role tasks
 #
 ---
+- name: "Loading system-dependend settings"
+  include_vars: "os/{{ ansible_distribution }}.yml"
+
 - include: "os/Debian/main.yml"
   when: ansible_distribution == "Debian"
+
+- name: Setup /etc/hosts
+  lineinfile: dest=/etc/hosts
+              line="{{ hostvars[item].ansible_ssh_host }} {{ item }}"
+              regexp=".*{{ item }}"
+  with_items: groups["nodes"]
 
 - name: Create NOC group
   group: name="{{noc_group}}" state=present
@@ -13,6 +22,9 @@
 
 - name: Pull NOC
   hg: repo="{{noc_repo}}" dest="{{noc_root}}" revision="{{noc_revision}}"
+
+- name: Stop NOC node
+  service: name="noc-node" state=stopped enabled=yes
 
 - name: Upgrade PIP
   pip: >
@@ -33,6 +45,7 @@
   with_items:
     - etc/config/env
     - etc/config/services
+    - var/etc
 
 - name: Create required user directories
   file: path="{{noc_root}}/{{item}}" state="directory" owner="{{noc_user}}"
@@ -67,8 +80,21 @@
   replace: dest="{{noc_root}}/lib/python/site-packages/sitecustomize.py" regexp="ascii" replace="utf-8"
   when: sitecustomizes.stat.exists == True
 
-# @todo: Compile bytecode
-# @todo: Check hanging .pyc
+- name: Compile bytecode
+  command: ./scripts/deploy/compile-bytecode
+  args:
+    chdir: "{{noc_root}}"
+  register: result
+  changed_when: "'CHANGED' in result.stdout"
+  failed_when: "'ERROR' in result.stdout"
+
+- name: Cleanup hanging .pyc files
+  command: ./scripts/deploy/cleanup-pyc
+  args:
+    chdir: "{{noc_root}}"
+  register: result
+  changed_when: "'CHANGED' in result.stdout"
+  failed_when: "'ERROR' in result.stdout"
 
 - name: Setup supervisord
   template: src="{{item}}" dest={{noc_root}}/{{item[:-3]}}
@@ -82,8 +108,5 @@
     - etc/config/env/correlator.conf.j2
     - etc/config/services/omap.conf.j2
     - etc/config/env/omap.conf.j2
-
-# @todo: Register supervisor system service
-# @todo: Run apply-config when templates changed
-# @todo: Reread and update supervisor config
-
+  notify:
+    - apply supervisor config
