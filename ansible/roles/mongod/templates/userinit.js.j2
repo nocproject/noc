@@ -1,0 +1,17 @@
+//
+// Create database and initialize users
+//
+(function() {
+    var user = "{{ noc_mongo_user }}",
+        passwd = "{{ noc_mongo_password }}",
+        du = db.getUser(user);
+    if(du) {
+        db.changeUserPassword(user, password);
+    } else {
+        db.createUser({
+            user: user,
+            pwd: passwd,
+            roles: ["readWrite", "dbAdmin"]
+        });
+    }
+})();
