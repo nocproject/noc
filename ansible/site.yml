@@ -1,48 +1,64 @@
 ---
-- hosts: nodes
+- name: Install and upgrade NOC
+  hosts: nodes
   sudo: yes
   roles:
     - role: node
-      when: "'nodes' in groups"
+      when: "'nodes' in group_names"
 
-    - role: mongodb
-      when: "'svc-mongodb' in groups"
+    - role: mongod
+      when: "'svc-mongod' in group_names"
 
     - role: postgres
-      when: "'svc-postgres' in groups"
+      when: "'svc-postgres' in group_names"
+
+    - role: nginx
+      when: "'svc-nginx' in group_names"
 
     - role: omap
-      when: "'svc-omap' in groups"
+      when: "'svc-omap' in group_names"
 
     - role: fmwriter
-      when: "'svc-fmwriter' in groups"
+      when: "'svc-fmwriter' in group_names"
 
     - role: pmwriter
-      when: "'svc-pmwriter' in groups"
+      when: "'svc-pmwriter' in group_names"
 
     - role: probeconf
-      when: "'svc-probeconf' in groups"
+      when: "'svc-probeconf' in group_names"
 
     - role: activator
-      when: "'svc-activator' in groups"
+      when: "'svc-activator' in group_names"
 
     - role: classifier
-      when: "'svc-classifier' in groups"
+      when: "'svc-classifier' in group_names"
 
     - role: correlator
-      when: "'svc-correlator' in groups"
+      when: "'svc-correlator' in group_names"
 
     - role: syslogcollector
-      when: "'svc-syslogcollector' in groups"
+      when: "'svc-syslogcollector' in group_names"
 
     - role: trapcollector
-      when: "'svc-trapcollector' in groups"
-
-    - role: probe
-      when: "'svc-probe' in groups"
-
-    - role: ping
-      when: "'svc-ping' in groups"
+      when: "'svc-trapcollector' in group_names"
 
     - role: graphitecollector
-      when: "'svc-graphitecollector' in groups"
+      when: "'svc-graphitecollector' in group_names"
+
+    - role: probe
+      when: "'svc-probe' in group_names"
+
+    - role: ping
+      when: "'svc-ping' in group_names"
+
+  tasks:
+    - name: Start NOC node
+      debug: msg="task"
+
+  handlers:
+    - name: apply supervisor config
+      debug: msg="supervisor"
+
+# @todo: Register supervisor system service
+# @todo: Run apply-config when templates changed
+# @todo: Reread and update supervisor config
