@@ -2,9 +2,35 @@
 - include: "os/Debian/main.yml"
   when: ansible_distribution == "Debian"
 
-# Get postgres user
-# Disable postgres service
-# set up supervisor
-# run postgres
-# create user
-# create database
+- name: Creating postgres directories
+  file: path="{{item}}" state="directory" owner="{{postgres_user}}" mode=0700
+  with_items:
+    - "{{noc_root}}/var/etc/postgres"
+
+- name: Setting pg_hba.conf
+  lineinfile: dest="{{postgresql_hba_path}}" line="host    all             all             0.0.0.0/32            md5"
+  notify: restart postgres
+
+- name: Including noc.conf
+  lineinfile: dest="{{postgresql_conf_path}}" line="include = '{{ noc_root }}/var/etc/postgres/noc.conf'"
+  notify: restart postgres
+
+- name: Setting config
+  template: src="noc.conf.j2" dest="{{ noc_root }}/var/etc/postgres/noc.conf"
+  notify: restart postgres
+
+- name: Enable postgres system service
+  service: name="{{postgres_system_service}}" enabled=yes state=started
+
+- name: Create user
+  postgresql_user: name="{{noc_pg_user}}"
+                   password="{{noc_pg_password}}"
+                   role_attr_flags=CREATEDB,NOSUPERUSER
+  become_user: "{{postgres_user}}"
+
+- name: Create database
+  postgresql_db: name="{{noc_pg_db}}"
+                 encoding="UTF-8"
+                 owner="{{noc_pg_user}}"
+                 state="present"
+  become_user: "{{postgres_user}}"
