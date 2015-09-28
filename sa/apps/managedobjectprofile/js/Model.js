@@ -25,7 +25,8 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "level",
-            type: "int"
+            type: "int",
+            defaultValue: 25
         },
         {
             name: "style",
@@ -75,7 +76,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_config_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "config_discovery_min_interval",
@@ -90,7 +91,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_version_inventory",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "version_inventory_min_interval",
@@ -105,7 +106,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_caps_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "caps_discovery_min_interval",
@@ -120,7 +121,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_uptime_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "uptime_discovery_min_interval",
@@ -135,7 +136,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_interface_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "interface_discovery_min_interval",
@@ -150,7 +151,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_interface_status_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "interface_status_discovery_min_interval",
@@ -165,7 +166,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_ip_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "ip_discovery_min_interval",
@@ -180,7 +181,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_prefix_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "prefix_discovery_min_interval",
@@ -210,7 +211,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_mac_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "mac_discovery_min_interval",
@@ -225,7 +226,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_id_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "id_discovery_min_interval",
@@ -240,7 +241,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_lldp_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "lldp_discovery_min_interval",
@@ -255,7 +256,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_cdp_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "cdp_discovery_min_interval",
@@ -270,7 +271,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_stp_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "stp_discovery_min_interval",
@@ -300,7 +301,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_bfd_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "bfd_discovery_min_interval",
@@ -315,7 +316,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_udld_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "udld_discovery_min_interval",
@@ -330,7 +331,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_oam_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "oam_discovery_min_interval",
@@ -345,7 +346,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "enable_asset_discovery",
             type: "boolean",
-            defaultValue: true
+            defaultValue: false
         },
         {
             name: "asset_discovery_min_interval",
