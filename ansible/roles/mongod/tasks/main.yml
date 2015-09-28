@@ -6,8 +6,6 @@
 - name: Creating mongodb directories
   file: path="{{item}}" state="directory" owner="{{mongo_user}}" mode=0700
   with_items:
-    - "{{noc_root}}/var/db/mongo"
-    - "{{noc_root}}/var/log/mongo"
     - "{{noc_root}}/var/etc/mongo"
 
 - name: Setting mongod config
