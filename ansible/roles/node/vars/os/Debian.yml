@@ -1,15 +1,28 @@
 # Debian settings
 ---
 # Postgres settings
-postgres_system_service: postgres
-postgres_user: mongodb
+postgres_system_service: postgresql
+postgres_user: postgres
 postgres_path: /usr/bin/postgres
+# postgresql_conf_path - discovered by playbook
+# postgresql_hba_path - discovered by playbook
 # Mongo settings
 mongod_system_service: mongod
 mongo_user: mongodb
 mongod_path: /usr/bin/mongod
 mongo_path: /usr/bin/mongo
+mongo_db_path: /var/lib/mongodb/
+mongo_log_path: /var/log/mongodb/mongod.log
 # Nginx settings
 nginx_system_service: mongod
 nginx_user: www
 nginx_path: /usr/bin/nginx
+# APT settings
+apt_cache_valid_time: 3600
+# NSQ settings
+nsqd_system_service: nsqd
+nsqlookupd_system_service: nsqlookupd
+nsq_user: nsq
+# Consul settings
+consul_user: consul
+consul_system_service: consul

@@ -40,18 +40,25 @@
     requirements="requirements/node.txt"
     virtualenv="{{noc_root}}"
 
-- name: Create required root directories
-  file: path="{{noc_root}}/{{item}}" state="directory"
+- name: Create required directories
+  file: path="{{noc_root}}/{{item.name}}" state="directory" owner="{{item.owner}}"
   with_items:
-    - etc/config/env
-    - etc/config/services
-    - var/etc
-
-- name: Create required user directories
-  file: path="{{noc_root}}/{{item}}" state="directory" owner="{{noc_user}}"
-  with_items:
-    - var/log
-    - var/run
+    - name: etc/config/env
+      owner: root
+    - name: etc/config/services
+      owner: root
+    - name: var/etc
+      owner: root
+    - name: var/db
+      owner: root
+    - name: var/log
+      owner: "{{noc_user}}"
+    - name: var/run
+      owner: "{{noc_user}}"
+    - name: var/db/nsq
+      owner: "{{nsq_user}}"
+    - name: var/db/consul
+      owner: "{{consul_user}}"
 
 - name: Check lib/python2.7
   stat: path="{{noc_root}}/lib/python2.7"
@@ -110,3 +117,13 @@
     - etc/config/env/omap.conf.j2
   notify:
     - apply supervisor config
+
+- name: Enable Consul
+  service: name="{{consul_system_service}}" enabled=yes state=started
+
+- name: Enable nsqlookupd
+  service: name="{{nsqlookupd_system_service}}" enabled=yes state=started
+  when: "'svc-nsqlookupd' in group_names"
+
+- name: Enable nsqd
+  service: name="{{nsqd_system_service}}" enabled=yes state=started
