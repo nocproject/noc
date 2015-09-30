@@ -1,0 +1,15 @@
+# Consul options
+EXTRA_OPTS="agent \
+    -bind={{ hostvars[ansible_nodename].ansible_ssh_host }} \
+    -node={{ ansible_nodename }} \
+    -data-dir={{ noc_root }}/var/db/consul \
+    -dc={{ noc_dc }} \
+{% if "svc-consul" in group_names %}
+    -server \
+    -bootstrap-expect={{ groups["svc-consul"] | length}} \
+{% else %}
+    {% for n in groups["svc-consul"] %}
+        -join={{ hostvars[n].ansible_ssh_host }} \
+    {% endfor %}
+{% endif %}
+"
