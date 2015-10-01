@@ -2,24 +2,79 @@
 // Replica set initialization
 //
 (function() {
-    var status, config;
+    var status, members, t, nt, config, i, memberData, m,
+        hasMaster = function(status) {
+            return status.members.filter(function(x) {
+                return x.state === 1;
+            }).length > 0;
+        };
 
-    config = {
-        _id: "{{noc_mongo_replicaset}}",
-        version: 1,
-        members: []
-    }
-    {% for n in groups["svc-mongod"] %}
-    config.members.push({
+    members = [];
+{% for n in groups["svc-mongod"] %}
+    members.push({
         _id: {{ hostvars[n]["node_id"] }},
         host: "{{ n }}:27017",
+        {% if n in groups["svc-mongod-master"] %}
+        priority: 2
+        {% else %}
+        priority: 1
+        {% endif %}
     });
-    {% endfor %}
+{% endfor %}
+{% for n in groups["svc-mongod-arbiter"] %}
+    members.push({
+        _id: 99,
+        host: "{{ n }}:27018",
+        arbiterOnly: true
+    });
+{% endfor %}
 
     status = rs.status();
     if(status.ok) {
-        rs.reconfig(config);
+        // Already exists
+        memberData = {};
+        for(i = 0; i < members.length; i++) {
+            m = members[i];
+            memberData[m._id] = m;
+        }
+        conf = rs.conf();
+        conf.members = conf.members.filter(function(x) {
+            return !!memberData[x._id];
+        });
+        // Update priorities
+        for(i = 0; i < conf.members.length; i++) {
+            member = conf.members[i];
+            if(memberData[member._id].priority) {
+                member.priority = memberData[member._id].priority;
+            }
+            member.arbiterOnly = !!memberData[member._id].arbiterOnly;
+            delete memberData[member._id];
+        }
+        rs.reconfig(conf);
+        // Create missed
+        for(i in memberData) {
+            rs.add(memberData[i]);
+        }
+        // Remove stale
     } else {
-        rs.initiate(config);
+        // New config
+        rs.initiate({
+            _id: "{{noc_mongo_replicaset}}",
+            version: 1,
+            members: members
+        });
+    }
+    // Wait for replicaset is initiated
+    t = new Date().getTime();
+    for(;;) {
+        status = rs.status();
+        if(status.ok && hasMaster(status)) {
+            break;
+        }
+        sleep(1000);
+        nt = new Date().getTime();
+        if(nt > (t + 15000)) {
+            break;
+        }
     }
 })();

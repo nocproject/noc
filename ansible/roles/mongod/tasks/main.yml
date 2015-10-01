@@ -1,10 +1,7 @@
 # mongodb role
 ---
-- include: "os/Debian/main.yml"
-  when: ansible_distribution == "Debian"
-
 - name: Creating mongodb directories
-  file: path="{{item}}" state="directory" owner="{{mongo_user}}" mode=0700
+  file: path="{{item}}" state="directory" mode=0755
   with_items:
     - "{{noc_root}}/var/etc/mongo"
 
@@ -12,28 +9,29 @@
   template: src="mongod.conf.j2" dest="{{noc_root}}/var/etc/mongo/mongod.conf"
   notify: restart mongod
 
+- name: Setting mongod-arbiter config
+  template: src="mongod-arbiter.conf.j2" dest="{{noc_root}}/var/etc/mongo/mongod-arbiter.conf"
+  notify: restart mongod-arbiter
+  when: "'svc-mongod-arbiter' in group_names"
+
 - name: Generating mongo key file
   copy: src="{{lookup('mongo_key', tower_data + '/mongo/mongo.key')}}"
         dest="{{noc_root}}/var/etc/mongo/mongo.key"
-        owner="{{mongo_user}}"
-        mode=0600
   notify: restart mongod
+
+- include: "os/Debian/main.yml"
+  when: ansible_distribution == "Debian"
 
 - name: Enable MongoDB system service
   service: name="{{mongod_system_service}}" enabled=yes state=started
 
-- name: Create replica set configuration script
-  template: src="rsinit.js.j2" dest="{{noc_root}}/var/etc/mongo/rsinit.js"
-  register: status
+- name: Create MongoDB arbiter directory
+  file: path="{{noc_root}}/var/db/mongo-arbiter" owner="{{mongo_user}}" mode=0700 state=directory
+  when: "'svc-mongod-arbiter' in group_names"
 
-- name: Initialize replica set
-  shell: "{{mongo_path}} {{noc_root}}/var/etc/mongo/rsinit.js"
-  when: status.changed
+- name: Enable MongoDB arbiter system service
+  service: name="{{mongod_arbiter_system_service}}" enabled=yes state=started
+  when: "'svc-mongod-arbiter' in group_names"
 
-- name: Create user and database configugation script
-  template: src="userinit.js.j2" dest="{{noc_root}}/var/etc/mongo/userinit.js"
-  register: status
-
-- name: Initialize user and database
-  shell: "{{mongo_path}} {{noc_mongo_db}} {{noc_root}}/var/etc/mongo/userinit.js"
-  when: status.changed
+- include: "master.yml"
+  when: "'svc-mongod-master' in group_names"
