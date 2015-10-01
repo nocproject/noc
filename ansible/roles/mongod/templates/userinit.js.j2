@@ -11,7 +11,7 @@
         db.createUser({
             user: user,
             pwd: passwd,
-            roles: ["readWrite", "dbAdmin"]
+            roles: [{role: "dbOwner", db: "{{noc_mongo_db}}"}]
         });
     }
 })();

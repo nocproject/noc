@@ -1,0 +1,10 @@
+//
+// Create admin users
+//
+
+// Create root user
+db.createUser({
+    user: "{{noc_mongo_admin_user}}",
+    pwd: "{{noc_mongo_admin_password}}",
+    roles: ["root"]
+});
