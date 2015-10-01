@@ -6,6 +6,7 @@
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+import re
 """
 """
 import noc.sa.profiles
@@ -23,3 +24,7 @@ class Profile(noc.sa.profiles.Profile):
     config_volatile = [r"^# Finished.*$", r"^# Generated.*$"]
     pattern_more = r"^Press any key to continue.*$"
     command_more = " "
+    rogue_chars = [
+        re.compile(r"\r\s+\r"),
+        "\r"
+    ]
