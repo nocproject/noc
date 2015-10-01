@@ -28,26 +28,26 @@ export PATH=$PATH:/usr/local/bin
 
 noc_chdir=/usr/local/noc
 command=/usr/local/noc/scripts/noc-launcher.py
-command_interpreter=python
+command_interpreter=./bin/python
 pidfile=/var/run/noc/noc-launcher.pid
 required_files=${noc_config}
 
 command_args=$1
 
 case "$command_args" in
-    force*)
-	command_args=${command_args#force};
-	;;
-    fast*)
+	force*)
+		command_args=${command_args#force};
+		;;
+	fast*)
 	command_args=${command_args#fast};
-	;;
-    restart)
-	command_args="stop"
-	run_rc_command "stop"
-	command_args="start"
-	run_rc_command "start"
-	exit 0
-	;;
+		;;
+	restart)
+		command_args="stop"
+		run_rc_command "stop"
+		command_args="start"
+		run_rc_command "start"
+		;;
+	*)
+		run_rc_command "$1"
+		;;
 esac
-
-run_rc_command "$1"
