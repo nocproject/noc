@@ -560,7 +560,7 @@ class Classifier(Daemon):
                 try:
                     v = decoder(event, v)
                 except InterfaceTypeError, why:
-                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s", ecv.name, ecv.type, repr(v))
+                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
             r[ecv.name] = v
         return r
 
