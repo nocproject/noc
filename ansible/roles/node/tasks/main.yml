@@ -5,14 +5,14 @@
 - name: "Loading system-dependend settings"
   include_vars: "os/{{ ansible_distribution }}.yml"
 
-- include: "os/Debian/main.yml"
-  when: ansible_distribution == "Debian"
-
 - name: Setup /etc/hosts
   lineinfile: dest=/etc/hosts
               line="{{ hostvars[item].ansible_ssh_host }} {{ item }}"
               regexp=".*{{ item }}"
   with_items: groups["nodes"]
+
+- include: "os/Debian/main.yml"
+  when: ansible_distribution == "Debian"
 
 - name: Create NOC group
   group: name="{{noc_group}}" state=present
@@ -58,6 +58,8 @@
     - name: var/db/nsq
       owner: "{{nsq_user}}"
     - name: var/db/consul
+      owner: "{{consul_user}}"
+    - name: var/etc/consul
       owner: "{{consul_user}}"
 
 - name: Check lib/python2.7
@@ -117,6 +119,10 @@
     - etc/config/env/omap.conf.j2
   notify:
     - apply supervisor config
+
+- name: Create Consul config
+  template: src="consul.json.j2" dest="{{noc_root}}/var/etc/consul/consul.json"
+  notify: restart consul
 
 - name: Enable Consul
   service: name="{{consul_system_service}}" enabled=yes state=started
