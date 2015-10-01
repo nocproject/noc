@@ -1,0 +1,34 @@
+---
+- name: Create replica set configuration script
+  template: src="rsinit.js.j2" dest="{{noc_root}}/var/etc/mongo/rsinit.js"
+  register: rs_conf_status
+
+- name: Check replica set is initialized
+  shell: "{{mongo_path}} --host {{noc_mongo_replicaset}}/{{inventory_hostname}} --eval 1"
+  register: rs_status
+  changed_when: rs_status.rc != 0
+  failed_when: False
+
+- name: Initial replica set configuration
+  shell: "{{mongo_path}} {{noc_root}}/var/etc/mongo/rsinit.js"
+  when: rs_status.rc != 0
+
+- name: Create admin user configuration script
+  template: src="admininit.js.j2" dest="{{noc_root}}/var/etc/mongo/admininit.js"
+  when: rs_status.rc != 0
+
+- name: Create admin user
+  shell: "{{mongo_path}} admin {{noc_root}}/var/etc/mongo/admininit.js"
+  when: rs_status.rc != 0
+
+- name: Create database user configuration script
+  template: src="userinit.js.j2" dest="{{noc_root}}/var/etc/mongo/userinit.js"
+  register: user_status
+
+- name: Create database user
+  shell: "{{mongo_path}} -u {{noc_mongo_admin_user}} -p {{noc_mongo_admin_password}} {{noc_mongo_db}} --authenticationDatabase admin {{noc_root}}/var/etc/mongo/userinit.js"
+  when: user_status.changed
+
+- name: Update replica set configuration
+  shell: "{{mongo_path}} -u {{noc_mongo_admin_user}} -p {{noc_mongo_admin_password}} admin {{noc_root}}/var/etc/mongo/rsinit.js"
+  when: rs_conf_status.changed and rs_status.rc == 0

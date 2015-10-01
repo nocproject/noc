@@ -8,11 +8,13 @@ postgres_path: /usr/bin/postgres
 # postgresql_hba_path - discovered by playbook
 # Mongo settings
 mongod_system_service: mongod
+mongod_arbiter_system_service: mongod-arbiter
 mongo_user: mongodb
 mongod_path: /usr/bin/mongod
 mongo_path: /usr/bin/mongo
 mongo_db_path: /var/lib/mongodb/
 mongo_log_path: /var/log/mongodb/mongod.log
+mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
 # Nginx settings
 nginx_system_service: mongod
 nginx_user: www
