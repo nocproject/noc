@@ -1,0 +1,10 @@
+{
+    "data_dir": "{{ noc_root }}/var/db/consul",
+{% if "svc-consul" in group_names %}
+    "server": true,
+    "bootstrap_expect": {{ groups["svc-consul"] | length}},
+{% else %}
+    "server": false,
+{% endif %}
+    "encrypt": "{{lookup('consul_key', tower_data + '/consul/consul.key')}}"
+}
