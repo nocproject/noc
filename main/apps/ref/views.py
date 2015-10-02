@@ -134,13 +134,14 @@ class RefAppplication(ExtApplication):
             "id": "default",
             "label": "default"
         }]
-        for f in os.listdir("static/pkg/codemirror/theme"):
-            if f.endswith(".css"):
-                t = f[:-4]
-                r += [{
-                    "id": t,
-                    "label": t
-                }]
+        if os.path.isdir("static/pkg/codemirror/theme"):
+            for f in os.listdir("static/pkg/codemirror/theme"):
+                if f.endswith(".css"):
+                    t = f[:-4]
+                    r += [{
+                        "id": t,
+                        "label": t
+                    }]
         return r
 
     def build_unotificationmethod(self):
