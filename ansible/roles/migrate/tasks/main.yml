@@ -1,0 +1,31 @@
+# Migrate database schema
+---
+- name: syncdb
+  command: ./noc syncdb --noinput
+  args:
+    chdir: "{{ noc_root }}"
+  become_user: "{{ noc_user }}"
+
+- name: Migrate
+  command: ./noc migrate --ignore-ghost-migrations
+  args:
+    chdir: "{{ noc_root }}"
+  become_user: "{{ noc_user }}"
+
+- name: Synchronize collections
+  command: ./noc collection --sync
+  args:
+    chdir: "{{ noc_root }}"
+  become_user: "{{ noc_user }}"
+
+- name: Synchronize permissions
+  command: ./noc sync-perm
+  args:
+    chdir: "{{ noc_root }}"
+  become_user: "{{ noc_user }}"
+
+- name: Synchronize MIBs
+  command: ./noc sync-mibs
+  args:
+    chdir: "{{ noc_root }}"
+  become_user: "{{ noc_user }}"

@@ -12,6 +12,9 @@
     - role: postgres
       when: "'svc-postgres' in group_names"
 
+    - role: migrate
+      when: "'svc-mongod-master' in group_names"
+
     - role: nginx
       when: "'svc-nginx' in group_names"
 
