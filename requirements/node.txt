@@ -26,3 +26,4 @@ ecdsa==0.11
 mercurial>=3.4.2
 cachetools==0.5.1
 Pygments==1.2.2
+noc-pkg-pyclips==1.0.7
