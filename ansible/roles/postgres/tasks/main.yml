@@ -8,15 +8,15 @@
     - "{{noc_root}}/var/etc/postgres"
 
 - name: Setting pg_hba.conf
-  lineinfile: dest="{{postgresql_hba_path}}" line="host    all             all             0.0.0.0/32            md5"
+  lineinfile: dest="{{postgresql_hba_path}}" line="host    all             all             0.0.0.0/0            md5"
   notify: restart postgres
 
-- name: Including noc.conf
-  lineinfile: dest="{{postgresql_conf_path}}" line="include = '{{ noc_root }}/var/etc/postgres/noc.conf'"
+- name: Including postgres.conf
+  lineinfile: dest="{{postgresql_conf_path}}" line="include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
   notify: restart postgres
 
 - name: Setting config
-  template: src="noc.conf.j2" dest="{{ noc_root }}/var/etc/postgres/noc.conf"
+  template: src="postgres.conf.j2" dest="{{ noc_root }}/var/etc/postgres/postgres.conf"
   notify: restart postgres
 
 - name: Enable postgres system service
@@ -27,6 +27,7 @@
                    password="{{noc_pg_password}}"
                    role_attr_flags=CREATEDB,NOSUPERUSER
   become_user: "{{postgres_user}}"
+  when: "'svc-postgres-master' in group_names"
 
 - name: Create database
   postgresql_db: name="{{noc_pg_db}}"
@@ -34,3 +35,4 @@
                  owner="{{noc_pg_user}}"
                  state="present"
   become_user: "{{postgres_user}}"
+  when: "'svc-postgres-master' in group_names"
