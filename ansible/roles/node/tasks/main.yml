@@ -32,6 +32,7 @@
     executable="{{noc_root}}/bin/pip"
     virtualenv="{{noc_root}}"
     name="pip"
+    state=latest
 
 - name: Install python packages
   pip: >
@@ -39,6 +40,7 @@
     executable="{{noc_root}}/bin/pip"
     requirements="requirements/node.txt"
     virtualenv="{{noc_root}}"
+    extra_args="--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"
 
 - name: Create required directories
   file: path="{{noc_root}}/{{item.name}}" state="directory" owner="{{item.owner}}"
@@ -52,6 +54,10 @@
     - name: var/db
       owner: root
     - name: var/log
+      owner: "{{noc_user}}"
+    - name: var/cp
+      owner: "{{noc_user}}"
+    - name: local
       owner: "{{noc_user}}"
     - name: var/run
       owner: "{{noc_user}}"
@@ -133,3 +139,39 @@
 
 - name: Enable nsqd
   service: name="{{nsqd_system_service}}" enabled=yes state=started
+
+- name: Set up noc.conf
+  ini_file: dest="{{noc_root}}/etc/noc.conf"
+            section="{{item.section}}"
+            option="{{item.option}}" value="{{item.value}}"
+  with_items:
+    - section: main
+      option: secret_key
+      value: "{{ lookup('django_key', tower_data + '/noc/secret.key') }}"
+    - section: database
+      option: name
+      value: "{{ noc_pg_db }}"
+    - section: database
+      option: user
+      value: "{{ noc_pg_user }}"
+    - section: database
+      option: password
+      value: "{{ noc_pg_password }}"
+    - section: database
+      option: host
+      value: "{% for n in groups['svc-postgres-master'] %}{{n}}{% endfor %}"
+    - section: nosql_database
+      option: name
+      value: "{{ noc_mongo_db }}"
+    - section: nosql_database
+      option: user
+      value: "{{ noc_mongo_user }}"
+    - section: nosql_database
+      option: password
+      value: "{{ noc_mongo_password }}"
+    - section: nosql_database
+      option: host
+      value: "{{ groups['svc-mongod'] | join(',') }}"
+    - section: nosql_database
+      option: replica_set
+      value: "{{ noc_mongo_replicaset }}"
