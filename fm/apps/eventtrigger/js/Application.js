@@ -60,6 +60,10 @@ Ext.define("NOC.fm.eventtrigger.Application", {
             text: "PyRule",
             dataIndex: "pyrule",
             renderer: NOC.render.Lookup("pyrule")
+        },
+        {
+            text: "Handler",
+            dataIndex: "handler"
         }
     ],
     fields: [
@@ -115,6 +119,12 @@ Ext.define("NOC.fm.eventtrigger.Application", {
             name: "pyrule",
             xtype: "main.pyrule.LookupField",
             fieldLabel: "pyRule",
+            allowBlank: true
+        },
+        {
+            name: "handler",
+            xtype: "textfield",
+            fieldLabel: "Handler",
             allowBlank: true
         }
     ],

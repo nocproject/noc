@@ -9,10 +9,12 @@
 ## Python modules
 import re
 import logging
+## Python modules
+from noc.lib.debug import error_report
 
 
 class Trigger(object):
-    def __init__(self, t):
+    def __init__(self, t, handler=None):
         self.name = t.name
         # Condition
         self.condition = compile(t.condition, "<string>", "eval")
@@ -22,6 +24,7 @@ class Trigger(object):
         self.notification_group = t.notification_group
         self.template = t.template
         self.pyrule = t.pyrule
+        self.handler = handler
 
     def match(self, event):
         """
@@ -50,3 +53,8 @@ class Trigger(object):
         # Call pyRule
         if self.pyrule:
             self.pyrule(event=event)
+        if self.handler:
+            try:
+                self.handler(event)
+            except:
+                error_report()

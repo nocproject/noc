@@ -74,8 +74,6 @@ class Division(Document):
 
     @property
     def full_path(self):
-        if not self.parent:
-            return ""
         r = [unicode(self)]
         p = self.parent
         while p:
