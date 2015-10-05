@@ -10,14 +10,21 @@
 - name: Setting pg_hba.conf
   lineinfile: dest="{{postgresql_hba_path}}" line="host    all             all             0.0.0.0/0            md5"
   notify: restart postgres
+  register: s1
 
 - name: Including postgres.conf
   lineinfile: dest="{{postgresql_conf_path}}" line="include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
   notify: restart postgres
+  register: s2
 
 - name: Setting config
   template: src="postgres.conf.j2" dest="{{ noc_root }}/var/etc/postgres/postgres.conf"
   notify: restart postgres
+  register: s3
+
+- name: Apply PostgreSQL config
+  service: name="{{postgres_system_service}}" state=restarted
+  when: s1.changed or s2.changed or s3.changed
 
 - name: Enable postgres system service
   service: name="{{postgres_system_service}}" enabled=yes state=started
