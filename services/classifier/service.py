@@ -113,6 +113,7 @@ class ClassifierService(Service):
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
         self.enumerations = {}  # name -> value -> enumerated
         self.suppression = {}  # event_class_id -> (condition, suppress)
+        self.alter_handlers = []
         self.unclassified_codebook_depth = 5
         self.unclassified_codebook = {}  # object id -> [<codebook>]
         self.handlers = {}  # event class id -> [<handler>]
