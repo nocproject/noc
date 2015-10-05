@@ -44,7 +44,7 @@ class AssetReport(Report):
     def submit(self, type, part_no, number=None,
                builtin=False,
                vendor=None,
-               revision=None, serial=None,
+               revision=None, serial=None, mfg_date=None,
                description=None):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
@@ -133,6 +133,8 @@ class AssetReport(Report):
             data = {"asset": {"serial": serial}}
             if revision:
                 data["asset"]["revision"] = revision
+            if mfg_date:
+                data["asset"]["mfg_date"] = mfg_date
             o = Object(model=m, data=data, container=self.lost_and_found)
             o.save()
             o.log(
@@ -151,6 +153,20 @@ class AssetReport(Report):
             o.log(
                 "Object revision changed: %s -> %s" % (
                 o.get_data("asset", "revision"), revision),
+                system="DISCOVERY", managed_object=self.object,
+                op="CHANGE"
+            )
+        # Check manufacturing date
+        if mfg_date and o.get_data("asset", "revision") != revision:
+            # Update revision
+            self.info("Object manufacturing date changed [%s %s] %s -> %s" % (
+                m.name, o.id, o.get_data("asset", "mfg_date"), mfg_date
+            ))
+            o.set_data("asset", "mfg_date", mfg_date)
+            o.save()
+            o.log(
+                "Object manufacturing date: %s -> %s" % (
+                o.get_data("asset", "mfg_date"), mfg_date),
                 system="DISCOVERY", managed_object=self.object,
                 op="CHANGE"
             )

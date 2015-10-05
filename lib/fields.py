@@ -312,7 +312,7 @@ class DocumentReferenceField(models.Field):
         return "CHAR(24)"
 
     def to_python(self, value):
-        if value is None:
+        if not value:
             return None
         elif hasattr(value, "id"):
             return value

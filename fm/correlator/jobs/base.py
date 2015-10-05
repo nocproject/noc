@@ -42,3 +42,14 @@ class AlarmJob(MultiIntervalJob):
         return {
             "interval": [(None, cfg["interval"])]
         }
+
+    def can_run(self):
+        if self.map_task:
+            mo = self.get_managed_object()
+            if not mo.is_managed:
+                self.logger.debug("Object is not managed")
+                return False
+            if not mo.get_status():
+                self.logger.debug("Object is down")
+                return False
+        return True

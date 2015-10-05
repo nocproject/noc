@@ -10,6 +10,7 @@
 import logging
 import sys
 import time
+import urllib
 ## Django modules
 from django.db.models import Model
 from django.db import IntegrityError
@@ -36,10 +37,20 @@ connection_args = {
     "username": settings.NOSQL_DATABASE_USER,
     "password": settings.NOSQL_DATABASE_PASSWORD
 }
+has_credentials = connection_args.get("username") or connection_args.get("password")
+if has_credentials:
+    connection_args["authentication_source"] = db_name
 if settings.NOSQL_DATABASE_HOST:
     if "," in settings.NOSQL_DATABASE_HOST:
         # Replica set connection
-        connection_args["host"] = "mongodb://%s" % settings.NOSQL_DATABASE_HOST
+        url = "mongodb://"
+        if has_credentials:
+            url += "%s:%s@" % (
+                urllib.quote(connection_args.get("username") or ""),
+                urllib.quote(connection_args.get("password") or "")
+            )
+        url += "%s/%s" % (settings.NOSQL_DATABASE_HOST, db_name)
+        connection_args["host"] = url
         connection_args["replicaSet"] = True
         connection_args["slave_okay"] = True
     elif ":" in settings.NOSQL_DATABASE_HOST:

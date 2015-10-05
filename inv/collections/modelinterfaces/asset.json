@@ -38,6 +38,13 @@
             "description": "Revision id",
             "required": false,
             "is_const": false
+        },
+        {
+            "name": "mfg_date",
+            "type": "str",
+            "description": "Manufacturing Date",
+            "required": false,
+            "is_const": false
         }
     ]
 }

@@ -212,12 +212,6 @@ Ext.define("NOC.gis.building.Application", {
                             editor: "numberfield"
                         },
                         {
-                            text: "Build2",
-                            dataIndex: "build2",
-                            width: 50,
-                            editor: "numberfield"
-                        },
-                        {
                             text: "Build Letter",
                             dataIndex: "build_letter",
                             width: 50,

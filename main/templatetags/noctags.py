@@ -78,8 +78,7 @@ function ts_on_search(s) {
         var seen = all_seen;
         if(!seen) {
             $r.children("td").each(function (j, d) {
-                seen = $(d).text().indexOf(search) > 0;
-                return !seen;
+                seen |= $(d).text().indexOf(search) >= 0;
             });
         }
         if(seen) {

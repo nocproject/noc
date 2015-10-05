@@ -77,6 +77,10 @@ Ext.define("NOC.fm.eventtrigger.Model", {
             name: "pyrule__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "handler",
+            type: "string"
         }
     ]
 });

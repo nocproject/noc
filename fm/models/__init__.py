@@ -8,7 +8,6 @@
 
 ## Python modules
 from __future__ import with_statement
-import datetime
 import re
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
@@ -16,10 +15,9 @@ from django.db import models
 ## NOC modules
 from error import (MIBRequiredException, MIBNotFoundException,
                    InvalidTypedef, OIDCollision)
-from noc.sa.models import ManagedObject, ManagedObjectSelector
-from noc.main.models import TimePattern, NotificationGroup, PyRule, Style, User
+from noc.sa.models import ManagedObjectSelector
+from noc.main.models import TimePattern, NotificationGroup, PyRule
 from noc.main.models import Template as NOCTemplate
-import noc.lib.nosql as nosql
 
 ##
 ## Regular expressions
@@ -131,6 +129,8 @@ class EventTrigger(models.Model):
                                verbose_name=_("pyRule"),
                                null=True, blank=True,
                                limit_choices_to={"interface": "IEventTrigger"})
+    handler = models.CharField(_("Handler"),
+                               max_length=128, null=True, blank=True)
     
     def __unicode__(self):
         return "%s <<<%s>>>" % (self.event_class_re, self.condition)
