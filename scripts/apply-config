@@ -8,10 +8,11 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import os
 import glob
 import ConfigParser
 import cStringIO
+import sys
+import subprocess
 
 CFG = "etc/supervisord.conf"
 
@@ -121,5 +122,16 @@ def build():
         with open(CFG, "w") as f:
             f.write(cfg)
 
+
+def apply():
+    """
+    Apply changes and update config
+    """
+    subprocess.check_call(["./bin/supervisorctl", "reread"])
+    subprocess.check_call(["./bin/supervisorctl", "update"])
+
+
 if __name__ == "__main__":
     build()
+    if "--apply" in sys.argv:
+        apply()
