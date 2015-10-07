@@ -19,7 +19,7 @@ rx_ver = re.compile(r"VID_WEB_VER = \"(?P<ver>.*?)\"", re.DOTALL|re.MULTILINE)
 
 
 class Script(NOCScript):
-    name = "SUMAVISION.EMR.get_version"
+    name = "Sumavision.EMR.get_version"
     implements = [IGetVersion]
 
     def execute(self):
