@@ -22,6 +22,7 @@ class Script(NOCScript):
     types = {
         "packet over sonet/sdh": "physical",
         "gigabitethernet/ieee 802.3 interface(s)": "physical",
+        "fortygige": "physical",
         "tengige": "physical",
         "gigabitethernet": "physical",
         "management ethernet": "management",
