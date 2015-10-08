@@ -103,5 +103,10 @@ class Script(NOCScript):
     ##
     @NOCScript.match()
     def execute_vlan_brief(self):
-        vlans = self.cli("show vlan brief")
+        vlans = None
+        for cmd in ("show vlan brief", "show vlan-switch brief"):
+            try:
+                vlans = self.cli(cmd)
+            except self.CLISyntaxError:
+                continue
         return self.extract_vlans(vlans)
