@@ -1,0 +1,9 @@
+# Post-deployment tasks
+---
+- name: Build supervisor config
+  command: "{{ noc_root }}/scripts/deploy/apply-config"
+  args:
+    chdir: "{{ noc_root }}"
+
+- name: Start NOC node
+  service: name="{{ noc_system_service }}" state=started enabled=yes

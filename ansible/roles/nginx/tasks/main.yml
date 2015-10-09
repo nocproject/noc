@@ -2,3 +2,7 @@
 ---
 - include: "os/Debian/main.yml"
   when: ansible_distribution == "Debian"
+
+- name: Setup nginx
+  template: src="etc/nginx/conf.d/noc.conf.j2" dest="{{ nginx_conf_path }}"
+  notify: restart nginx

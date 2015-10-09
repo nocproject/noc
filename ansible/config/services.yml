@@ -69,3 +69,7 @@ services:
   trapcollector:
     description: SNMP Trap Collector
     level: pool
+
+  web:
+    description: Legacy web interface
+    level: global
