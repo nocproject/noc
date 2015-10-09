@@ -1,0 +1,41 @@
+upstream noc-web {
+    {% for n in groups["svc-web"] %}
+    server {{ n }}:8000;
+    {% endfor %}
+}
+
+server {
+    listen 80;
+    server_name {{ noc_web_host }};
+    access_log  {{ nginx_log_dir }}/noc.access.log;
+    error_log  {{ nginx_log_dir }}/noc.error.log;
+
+    location /media/ {
+        alias /opt/noc/lib/python/site-packages/django/contrib/admin/static/;
+        gzip on;
+        gzip_types text/css text/x-js;
+    }
+
+    location /static/ {
+        alias /opt/noc/static/;
+        gzip on;
+        gzip_types text/css text/x-js;
+    }
+
+    location ~ ^([^/]+)/([^/]+)/(js|css|img)/(.+)$ {
+        root /opt/noc;
+        rewrite ^([^/]+)/([^/]+)/(js|css|img)/(.+)$
+                /$1/apps/$2/$3/$4 break;
+        gzip on;
+        gzip_types text/css text/x-js;
+    }
+
+    location / {
+        proxy_pass http://noc-web;
+        gzip on;
+        gzip_types text/css text/x-js;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+
+    }
+}

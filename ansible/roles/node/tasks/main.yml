@@ -2,9 +2,6 @@
 # node role tasks
 #
 ---
-- name: "Loading system-dependend settings"
-  include_vars: "os/{{ ansible_distribution }}.yml"
-
 - name: Setup /etc/hosts
   lineinfile: dest=/etc/hosts
               line="{{ hostvars[item].ansible_ssh_host }} {{ item }}"
@@ -23,9 +20,6 @@
 - name: Pull NOC
   hg: repo="{{noc_repo}}" dest="{{noc_root}}" revision="{{noc_revision}}"
 
-- name: Stop NOC node
-  service: name="noc-node" state=stopped enabled=yes
-
 - name: Upgrade PIP
   pip: >
     chdir="{{noc_root}}"
@@ -34,6 +28,23 @@
     name="pip"
     state=latest
 
+- name: Check lib/python2.7
+  stat: path="{{noc_root}}/lib/python2.7"
+  register: py27s
+
+- name: Linking lib/python2.7
+  file: src={{noc_root}}/lib/python2.7 dest={{noc_root}}/lib/python state=link
+  when: py27s.stat.exists == True
+
+- name: Linking lib/python2.6
+  file: src={{noc_root}}/lib/python2.6 dest={{noc_root}}/lib/python state=link
+  when: py27s.stat.exists == False
+
+- name: Revert local patches
+  command: "{{ noc_root }}/scripts/deploy/apply-patches --revert"
+  args:
+    chdir: "{{ noc_root }}"
+
 - name: Install python packages
   pip: >
     chdir="{{noc_root}}"
@@ -41,6 +52,11 @@
     requirements="requirements/node.txt"
     virtualenv="{{noc_root}}"
     extra_args="--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"
+
+- name: Apply local patches
+  command: "{{ noc_root }}/scripts/deploy/apply-patches"
+  args:
+    chdir: "{{ noc_root }}"
 
 - name: Create required directories
   file: path="{{noc_root}}/{{item.name}}" state="directory" owner="{{item.owner}}"
@@ -67,18 +83,6 @@
       owner: "{{consul_user}}"
     - name: var/etc/consul
       owner: "{{consul_user}}"
-
-- name: Check lib/python2.7
-  stat: path="{{noc_root}}/lib/python2.7"
-  register: py27s
-
-- name: Linking lib/python2.7
-  file: src={{noc_root}}/lib/python2.7 dest={{noc_root}}/lib/python state=link
-  when: py27s.stat.exists == True
-
-- name: Linking lib/python2.6
-  file: src={{noc_root}}/lib/python2.6 dest={{noc_root}}/lib/python state=link
-  when: py27s.stat.exists == False
 
 - name: Install noc.pth
   template: src="lib/python/site-packages/noc.pth.j2" dest="{{noc_root}}/lib/python/site-packages/noc.pth"
@@ -123,8 +127,8 @@
     - etc/config/env/correlator.conf.j2
     - etc/config/services/omap.conf.j2
     - etc/config/env/omap.conf.j2
-  notify:
-    - apply supervisor config
+    - etc/config/services/web.conf.j2
+    - etc/config/env/web.conf.j2
 
 - name: Create Consul config
   template: src="consul.json.j2" dest="{{noc_root}}/var/etc/consul/consul.json"

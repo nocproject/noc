@@ -1,0 +1,8 @@
+---
+- name: Install packages
+  pip: >
+    chdir="{{noc_root}}"
+    executable="{{noc_root}}/bin/pip"
+    requirements="requirements/web.txt"
+    virtualenv="{{noc_root}}"
+    extra_args="--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"

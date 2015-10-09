@@ -1,0 +1,3 @@
+---
+- name: restart nginx
+  service: name="{{nginx_system_service}}" state=restarted

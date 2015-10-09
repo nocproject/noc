@@ -1,0 +1,8 @@
+# Pre-deployment tasks
+---
+- name: "Loading system-dependend settings"
+  include_vars: "os/{{ ansible_distribution }}.yml"
+
+- name: Stop NOC node
+  service: name="{{ noc_system_service }}" state=stopped
+  failed_when: False
