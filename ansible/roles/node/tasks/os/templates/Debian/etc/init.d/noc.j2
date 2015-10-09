@@ -1,6 +1,6 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:          noc-node
+# Provides:          {{ noc_system_service }}
 # Required-Start:    $local_fs $remote_fs $networking
 # Required-Stop:     $local_fs $remote_fs $networking
 # Default-Start:     2 3 4 5
@@ -14,7 +14,7 @@
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="Run a set of applications as daemons."
-NAME=noc-node
+NAME={{ noc_system_service }}
 DAEMON={{noc_root}}/bin/supervisord
 SUPERVISORCTL={{noc_root}}/bin/supervisorctl
 CONFIG={{noc_root}}/etc/supervisor.conf

@@ -1,5 +1,7 @@
 # Debian settings
 ---
+# NOC settings
+noc_system_service: noc
 # Postgres settings
 postgres_system_service: postgresql
 postgres_user: postgres
@@ -19,6 +21,8 @@ mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
 nginx_system_service: mongod
 nginx_user: www
 nginx_path: /usr/bin/nginx
+nginx_conf_path: /etc/nginx/sites-enabled/noc.conf
+nginx_log_dir: /var/log/nginx
 # APT settings
 apt_cache_valid_time: 3600
 # NSQ settings

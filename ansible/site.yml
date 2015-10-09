@@ -3,6 +3,8 @@
   hosts: nodes
   sudo: yes
   roles:
+    - role: pre
+
     - role: node
       when: "'nodes' in group_names"
 
@@ -14,6 +16,9 @@
 
     - role: migrate
       when: "'svc-mongod-master' in group_names"
+
+    - role: web
+      when: "'svc-web' in group_names"
 
     - role: nginx
       when: "'svc-nginx' in group_names"
@@ -54,14 +59,4 @@
     - role: ping
       when: "'svc-ping' in group_names"
 
-  tasks:
-    - name: Start NOC node
-      debug: msg="task"
-
-  handlers:
-    - name: apply supervisor config
-      debug: msg="supervisor"
-
-# @todo: Register supervisor system service
-# @todo: Run apply-config when templates changed
-# @todo: Reread and update supervisor config
+    - role: post
