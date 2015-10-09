@@ -12,6 +12,7 @@ import glob
 import ConfigParser
 import cStringIO
 import sys
+import os
 import subprocess
 
 CFG = "etc/supervisord.conf"
@@ -115,8 +116,11 @@ def build():
     out.write(buffer)
     cfg = buffer.getvalue()
     # Read old config
-    with open(CFG) as f:
-        old = f.read()
+    if os.path.exists(CFG):
+        with open(CFG) as f:
+            old = f.read()
+    else:
+        old = None
     if old != cfg:
         # Rewrite
         with open(CFG, "w") as f:
