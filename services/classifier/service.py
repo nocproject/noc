@@ -14,6 +14,7 @@ import sys
 import os
 from collections import defaultdict
 import operator
+import re
 ## Third-party modules
 from cachetools import TTLCache, cachedmethod
 import tornado.gen
