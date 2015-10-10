@@ -28,3 +28,5 @@ cachetools==0.5.1
 Pygments==1.2.2
 python-cjson>=1.0.5
 noc-pkg-pyclips==1.0.7
+distribute>=0.7.3
+
