@@ -9,22 +9,27 @@ services:
   postgres:
     description: PostgreSQL server
     level: global
+    system: true
 
   mongod:
     description: Mongod server
     level: global
+    system: true
 
   nginx:
     description: Nginx server
     level: global
+    system: true
 
   consul:
     description: Consul Server
     level: global
+    system: true
 
   nsqlookupd:
     description: NSQLookupd
     level: global
+    system: true
 
   classifier:
     description: Classifier
