@@ -1,0 +1,13 @@
+[Unit]
+Description=NOC Node Service
+After=network.target
+
+[Service]
+ExecStart={{ noc_root }}/bin/supervisord -c {{ noc_root }}/etc/supervisord.conf
+ExecReload={{ noc_root }}/bin/supervisorctl restart
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=noc.service

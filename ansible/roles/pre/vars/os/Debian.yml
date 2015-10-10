@@ -2,6 +2,7 @@
 ---
 # NOC settings
 noc_system_service: noc
+noc_service_pidfile: /var/run/noc.pid
 # Postgres settings
 postgres_system_service: postgresql
 postgres_user: postgres
