@@ -28,17 +28,12 @@
     name="pip"
     state=latest
 
-- name: Check lib/python2.7
-  stat: path="{{noc_root}}/lib/python2.7"
-  register: py27s
-
-- name: Linking lib/python2.7
-  file: src={{noc_root}}/lib/python2.7 dest={{noc_root}}/lib/python state=link
-  when: py27s.stat.exists == True
-
-- name: Linking lib/python2.6
-  file: src={{noc_root}}/lib/python2.6 dest={{noc_root}}/lib/python state=link
-  when: py27s.stat.exists == False
+- name: Relink site-packages
+  command: "{{ noc_root }}/scripts/deploy/link-site-packages"
+  args:
+    chdir: "{{ noc_root }}"
+  register: s
+  changed_when: "'CHANGED' in s.stdout"
 
 - name: Revert local patches
   command: "{{ noc_root }}/scripts/deploy/apply-patches --revert"
@@ -65,6 +60,8 @@
       owner: root
     - name: etc/config/services
       owner: root
+    - name: etc/config/supervisor
+      owner: root
     - name: var/etc
       owner: root
     - name: var/db
@@ -76,6 +73,8 @@
     - name: local
       owner: "{{noc_user}}"
     - name: var/run
+      owner: "{{noc_user}}"
+    - name: var/sock
       owner: "{{noc_user}}"
     - name: var/db/nsq
       owner: "{{nsq_user}}"
@@ -115,20 +114,21 @@
   changed_when: "'CHANGED' in result.stdout"
   failed_when: "'ERROR' in result.stdout"
 
-- name: Setup supervisord
-  template: src="{{item}}" dest={{noc_root}}/{{item[:-3]}}
+- name: Setup supervisor config
+  template: src="{{ item }}" dest="{{ noc_root }}/{{ item[:-3] }}"
   with_items:
     - etc/config/env/supervisord.conf.j2
-    - etc/config/services/activator.conf.j2
-    - etc/config/env/activator.conf.j2
-    - etc/config/services/classifier.conf.j2
-    - etc/config/env/classifier.conf.j2
-    - etc/config/services/correlator.conf.j2
-    - etc/config/env/correlator.conf.j2
-    - etc/config/services/omap.conf.j2
-    - etc/config/env/omap.conf.j2
-    - etc/config/services/web.conf.j2
-    - etc/config/env/web.conf.j2
+    - etc/config/supervisor/supervisord.conf.j2
+    - etc/config/supervisor/supervisorctl.conf.j2
+    - etc/config/supervisor/unix_http_server.conf.j2
+
+- name: Setup supervisor services configs
+  template: src="etc/config/services/{{ item }}.conf.j2" dest="{{ noc_root }}/etc/config/services/{{ item }}.conf"
+  with_items: "{{ noc_all_services }}"
+
+- name: Setup supervisor services environment
+  template: src="etc/config/env/{{ item }}.conf.j2" dest="{{ noc_root }}/etc/config/env/{{ item }}.conf"
+  with_items: "{{ noc_all_services }}"
 
 - name: Create Consul config
   template: src="consul.json.j2" dest="{{noc_root}}/var/etc/consul/consul.json"
