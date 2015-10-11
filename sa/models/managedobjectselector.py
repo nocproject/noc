@@ -299,6 +299,8 @@ class ManagedObjectSelector(models.Model):
         :param scripts: optional list of scripts
         :return:
         """
+        from useraccess import UserAccess
+
         q = UserAccess.Q(user)
         if scripts:
             q &= Q(profile_name__in=self.scripts_profiles(scripts))
@@ -366,5 +368,3 @@ class ManagedObjectSelectorByAttribute(models.Model):
         return u"%s: %s = %s" % (
             self.selector.name, self.key_re, self.value_re)
 
-# Avoid circular references
-from useraccess import UserAccess
