@@ -184,13 +184,3 @@
     - section: customization
       option: installation_name
       value: "{{ noc_installation_name }}"
-
-- name: Set up pools
-  copy: content="{{ noc_all_pools }}" dest="{{ noc_root }}/var/etc/noc/pools.json"
-
-- name: Apply pools
-  command: "{{ noc_root }}/scripts/deploy/apply-pools {{ noc_root }}/var/etc/noc/pools.json"
-  args:
-    chdir: "{{ noc_root }}"
-  register: result
-  changed_when: "'CHANGED' in result.stdout"
