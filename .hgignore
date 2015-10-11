@@ -39,3 +39,4 @@ share/
 static/test/
 pip-selfcheck.json
 var/
+scripts/custom/*
