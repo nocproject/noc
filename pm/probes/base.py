@@ -21,7 +21,7 @@ from match import MatchExpr, MatchTrue, MatchCaps
 import noc.lib.snmp.consts
 from noc.lib.snmp.error import SNMPError, NO_SUCH_NAME
 from noc.lib.log import PrefixLoggerAdapter
-from noc.lib.ioloop.snmp import snmp_get, snmp_count
+from noc.core.ioloop.snmp import snmp_get, snmp_count
 
 
 HandlerItem = namedtuple("HandlerItem", [

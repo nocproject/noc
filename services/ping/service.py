@@ -17,8 +17,8 @@ import tornado.gen
 ## NOC modules
 from noc.lib.service.base import Service
 from noc.sa.interfaces.base import StringParameter
-from noc.lib.ioloop.timers import PeriodicOffsetCallback
-from noc.lib.ioloop.ping import Ping
+from noc.core.ioloop.timers import PeriodicOffsetCallback
+from noc.core.ioloop.ping import Ping
 
 
 class PingService(Service):

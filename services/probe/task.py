@@ -15,7 +15,7 @@ from noc.pm.probes.base import probe_registry
 from noc.lib.debug import error_report
 from metric import Metric
 from noc.lib.log import PrefixLoggerAdapter
-from noc.lib.ioloop.timers import PeriodicOffsetCallback
+from noc.core.ioloop.timers import PeriodicOffsetCallback
 
 
 class Task(PeriodicOffsetCallback):

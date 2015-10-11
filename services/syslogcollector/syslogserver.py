@@ -10,7 +10,7 @@
 import logging
 import time
 ## NOC modules
-from noc.lib.ioloop.udpserver import UDPServer
+from noc.core.ioloop.udpserver import UDPServer
 
 logger = logging.getLogger(__name__)
 
