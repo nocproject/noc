@@ -82,6 +82,8 @@
       owner: "{{consul_user}}"
     - name: var/etc/consul
       owner: "{{consul_user}}"
+    - name: var/etc/noc
+      owner: root
 
 - name: Install noc.pth
   template: src="lib/python/site-packages/noc.pth.j2" dest="{{noc_root}}/lib/python/site-packages/noc.pth"
@@ -182,3 +184,13 @@
     - section: customization
       option: installation_name
       value: "{{ noc_installation_name }}"
+
+- name: Set up pools
+  copy: content="{{ noc_all_pools }}" dest="{{ noc_root }}/var/etc/noc/pools.json"
+
+- name: Apply pools
+  command: "{{ noc_root }}/scripts/deploy/apply-pools {{ noc_root }}/var/etc/noc/pools.json"
+  args:
+    chdir: "{{ noc_root }}"
+  register: result
+  changed_when: "'CHANGED' in result.stdout"
