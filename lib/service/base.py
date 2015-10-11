@@ -193,7 +193,7 @@ class Service(object):
         if self.leader_group:
             self.leader_key = "service/leader/%s" % self.leader_group
         self.consul = consul.tornado.Consul(
-            dc=conf.dc or None
+            dc=conf.dc.lower() or None
         )
         self.config = Config(self, **vc)
 
