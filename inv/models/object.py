@@ -21,7 +21,7 @@ from error import ConnectionError, ModelDataError
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.utils import deep_merge
 from noc.lib.middleware import get_user
-from noc.lib.gridvcs.manager import GridVCSField
+from noc.core.gridvcs.manager import GridVCSField
 
 
 class Object(Document):

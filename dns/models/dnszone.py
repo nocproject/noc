@@ -30,7 +30,7 @@ from noc.lib.ip import IPv6
 from noc.lib.validators import is_ipv4, is_ipv6
 from noc.lib.rpsl import rpsl_format
 from noc.dns.utils.zonefile import ZoneFile
-from noc.lib.gridvcs.manager import GridVCSField
+from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.synccache import SyncCache
 
 logger = logging.getLogger(__name__)
