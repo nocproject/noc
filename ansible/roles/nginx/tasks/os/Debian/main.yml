@@ -4,3 +4,4 @@
 
 - name: Disable default site
   file: path="/etc/nginx/sites-enabled/default" state=absent
+  notify: restart nginx
