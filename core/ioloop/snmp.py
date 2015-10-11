@@ -18,7 +18,7 @@ from noc.lib.snmp.get import (get_pdu, getnext_pdu, getbulk_pdu,
                               parse_get_response)
 from noc.lib.snmp.error import (NO_ERROR, NO_SUCH_NAME,
                                 SNMPError, TIMED_OUT)
-from noc.lib.ioloop.udp import UDPSocket
+from noc.core.ioloop.udp import UDPSocket
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
 logger = logging.getLogger(__name__)
