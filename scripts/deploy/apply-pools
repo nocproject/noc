@@ -1,0 +1,41 @@
+#!./bin/python
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Create required pools
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+# Python modules
+import sys
+import json
+# NOC modules
+from noc.main.models.pool import Pool
+
+
+def main(path):
+    with open(path) as f:
+        data = json.load(f, encoding="utf-8")
+    changed = False
+    for p in data:
+        try:
+            pool = Pool.objects.get(name=p["name"])
+            if pool.description != p["description"]:
+                p.description = p["description"]
+                p.save()
+                changed = True
+        except Pool.DoesNotExist:
+            Pool(
+                name=p["name"],
+                description=p["description"]
+            ).save()
+            changed = True
+    if changed:
+        print "CHANGED"
+    else:
+        print "OK"
+
+
+if __name__ == "__main__":
+    main(sys.argv[1])
