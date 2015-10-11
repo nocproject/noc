@@ -17,7 +17,7 @@ import datetime
 from django.db import connection
 ## NOC modules
 from noc.settings import config
-from noc.lib.gridvcs.gridvcs import GridVCS
+from noc.core.gridvcs.manager import GridVCS
 
 HG = config.get("cm", "vcs_path")
 REPO = config.get("cm", "repo")

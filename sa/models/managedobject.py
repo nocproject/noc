@@ -10,10 +10,8 @@
 import difflib
 from collections import namedtuple
 import logging
-
 import os
 import re
-
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -36,7 +34,7 @@ from noc.lib.fields import INETField, TagsField, DocumentReferenceField
 from noc.lib.app.site import site
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.stencil import stencil_registry
-from noc.lib.gridvcs.manager import GridVCSField
+from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.fts_queue import FTSQueue
 from noc.settings import config
 from noc.inv.discovery.utils import get_active_discovery_methods
@@ -817,7 +815,6 @@ class ManagedObjectAttribute(models.Model):
         return u"%s: %s" % (self.managed_object, self.key)
 
 ## Avoid circular references
-from reducetask import ReduceTask, reduce_object_script
 from useraccess import UserAccess
 from groupaccess import GroupAccess
 from noc.lib.scheduler.utils import refresh_schedule

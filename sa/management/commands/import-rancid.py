@@ -23,7 +23,7 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.activator import Activator
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.gridvcs.gridvcs import GridVCS
+from noc.core.gridvcs.manager import GridVCSField
 import noc.settings
 
 logger = logging.getLogger("main")

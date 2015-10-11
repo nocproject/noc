@@ -8,11 +8,11 @@
 
 ## Django modules
 from django.db import models
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 ## NOC modules
 from rir import RIR
-from noc.lib.gridvcs.manager import GridVCSField
+from noc.core.gridvcs.manager import GridVCSField
 from noc.lib.rpsl import rpsl_format, rpsl_multiple
 
 
