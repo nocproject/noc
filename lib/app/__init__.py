@@ -9,7 +9,6 @@ from site import *
 from access import *
 from application import *
 from modelapplication import *
-from treeapplication import *
 from extapplication import *
 from extmodelapplication import *
 from extdocapplication import *
