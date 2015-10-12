@@ -354,11 +354,11 @@ class ExtModelApplication(ExtApplication):
                 o.save()
                 if m2m_attrs:
                     self.update_m2ms(o, m2m_attrs)
-            except IntegrityError:
+            except IntegrityError, why:
                 return self.render_json(
                     {
                         "status": False,
-                        "message": "Integrity error"
+                        "message": "Integrity error: %s" % why
                     }, status=self.CONFLICT)
             # Check format
             if request.is_extjs:
