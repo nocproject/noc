@@ -21,7 +21,7 @@ fi
 
 if [ -f "./commands/$CMD.py" ]; then
     shift
-    exec ./commands/$CMD.py "$@"
+    exec ./bin/python ./commands/$CMD.py "$@"
 fi
 
 case "$1" in
