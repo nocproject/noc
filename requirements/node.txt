@@ -31,3 +31,4 @@ noc-pkg-pyclips==1.0.7
 distribute>=0.7.3
 python-consul==0.4.5
 pynsq==0.6.8
+tornado-redis==2.4.18
