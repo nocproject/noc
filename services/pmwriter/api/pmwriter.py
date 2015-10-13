@@ -7,15 +7,14 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.service.api.base import ServiceAPI, api
+from noc.lib.service.api.base import API, api
 
 
-class PMWriterAPI(ServiceAPI):
+class PMWriterAPI(API):
     """
     PM collector api
     """
     name = "pmwriter"
-    level = ServiceAPI.AL_GLOBAL
 
     @api
     def metric(self, metric, timestamp, value):

@@ -75,7 +75,7 @@ class ClassifierService(Service):
     """
     name = "classifier"
     leader_group_name = "classifier-%(pool)s"
-    _pooled = True
+    pooled = True
 
     # Dict parameter containing values accepted
     # via dynamic configuration

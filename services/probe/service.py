@@ -57,9 +57,9 @@ class ProbeService(Service):
 
     def on_activate(self):
         # Register RPC aliases
-        self.probeconf = self.open_rpc_pool("probeconf")
-        self.pmwriter = self.open_rpc_global("pmwriter")
-        self.fmwriter = self.open_rpc_pool("fmwriter")
+        self.probeconf = self.open_rpc("probeconf", pool=self.config.pool)
+        self.pmwriter = self.open_rpc("pmwriter", pool=self.config.pool)
+        self.fmwriter = self.open_rpc("fmwriter", pool=self.config.pool)
         # Get probe config every 60s
         self.logger.debug("Stating configuration task")
         self.get_config_callback = tornado.ioloop.PeriodicCallback(

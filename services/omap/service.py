@@ -17,8 +17,7 @@ from api.omap import OMapAPI
 
 class OMapService(Service):
     name = "omap"
-    # One active object mapper per environment
-    leader_group_name = "omap"
+    pooled = False
 
     # Dict parameter containing values accepted
     # via dynamic configuration

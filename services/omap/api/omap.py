@@ -9,17 +9,16 @@
 ## Python modules
 import datetime
 ## NOC modules
-from noc.lib.service.api.base import ServiceAPI, api, lock
+from noc.lib.service.api.base import API, api, lock
 from noc.main.models.pool import Pool
 from noc.sa.models.objectmap import ObjectMap
 
 
-class OMapAPI(ServiceAPI):
+class OMapAPI(API):
     """
     Monitoring API
     """
     name = "omap"
-    level = ServiceAPI.AL_GLOBAL
 
     @api
     @lock("lock-omap-%(env)s")

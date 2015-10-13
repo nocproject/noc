@@ -25,8 +25,6 @@ from api.fmwriter import FMWriterAPI
 class FMWriterService(Service):
     name = "fmwriter"
 
-    #
-    leader_group_name = "fmwriter-%(pool)s"
     # Dict parameter containing values accepted
     # via dynamic configuration
     config_interface = {
