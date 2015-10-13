@@ -14,37 +14,32 @@ import logging
 ## Third-party modules
 import tornado.concurrent
 import tornado.gen
+import tornado.httpclient
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 
 logger = logging.getLogger(__name__)
 
 
+class RPCError(Exception):
+    pass
+
+
 class RPCProxy(object):
     """
     API Proxy
     """
-    def __init__(self, service, topic):
-        self._logger = PrefixLoggerAdapter(logger, topic)
+    def __init__(self, service, service_name):
+        self._logger = PrefixLoggerAdapter(logger, service_name)
         self._service = service
-        self._topic = topic
-        self._client_id = str(uuid.uuid4())
+        self._service_name = service_name
+        self._api = service_name.split("-")[0]
         self._tid = itertools.count()
         self._transactions = {}
         self._methods = {}
-        self._service.connect_writer()
-        self._reply_to = "rpc.%s#ephemeral" % self._client_id
-        self._service.subscribe(
-            self._reply_to,
-            "rpc#ephemeral",
-            self.on_response
-        )
 
     def __del__(self):
         self.close()
-
-    def close(self):
-        pass
 
     def __getattr__(self, item):
         if item.startswith("_"):
@@ -56,47 +51,40 @@ class RPCProxy(object):
                 self._methods[item] = mw
             return mw
 
+    @tornado.gen.coroutine
     def _call(self, method, *args, **kwargs):
         tid = self._tid.next()
         msg = {
-            "id": tid,
             "method": method,
             "params": list(args)
         }
-        if "_async" not in kwargs:
-            # Set response address
-            msg["from"] = self._reply_to
-        self._logger.debug("RPC Request: %s", msg)
-        self._service.publish(self._topic, msg)
-        f = tornado.concurrent.Future()
-        if "_async" in kwargs:
-            f.set_result(None)
-        else:
-            self._transactions[tid] = f
-        return f
-
-    def on_response(self, message):
-        self._logger.debug("RPC Response: %s", message.body)
-        try:
-            msg = json.loads(message.body)
-        except ValueError, why:
-            self._logger.error(
-                "Failed to decode RPC response: %s", why)
-            return True
-        tid = msg.get("id")
-        try:
-            f = self._transactions.pop(tid)
-        except KeyError:
-            self._logger.error(
-                "Invalid transaction id %s", tid
-            )
-            return True
-        error = msg.get("error")
-        if error:
-            f.set_exception(error)
-        else:
-            f.set_result(msg.get("result"))
-        return True
+        is_notify = "_notify" in kwargs
+        if not is_notify:
+            msg["id"] = tid
+        self._logger.debug("RPC Call: %s", msg)
+        services = yield self._service.resolve_service(
+            self._service_name,
+            n=1
+        )
+        if not services:
+            raise RPCError("Service not found")
+        msg = json.dumps(msg)
+        for svc in services:
+            client = tornado.httpclient.AsyncHTTPClient()
+            try:
+                response = yield client.fetch(
+                    "http://%s/api/%s/" % (svc, self._api),
+                    method="POST",
+                    body=msg
+                )
+            except Exception, why:
+                raise RPCError("RPC Call Failed: %s" % why)
+            if not is_notify:
+                result = json.loads(response.body)
+                if result.get("error"):
+                    raise RPCError("RPC Call Failed: %s" % result["error"])
+                else:
+                    raise tornado.gen.Return(result["result"])
 
 
 class RPCMethod(object):
@@ -107,5 +95,7 @@ class RPCMethod(object):
         self._proxy = proxy
         self._name = name
 
+    @tornado.gen.coroutine
     def __call__(self, *args, **kwargs):
-        return self._proxy._call(self._name, *args, **kwargs)
+        result = yield self._proxy._call(self._name, *args, **kwargs)
+        raise tornado.gen.Return(result)
