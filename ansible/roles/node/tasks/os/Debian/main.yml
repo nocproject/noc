@@ -22,14 +22,9 @@
     - gcc
     - libpq-dev
     - consul
-    - nsq
 
 - name: Install supervisord init script
   template: src="Debian/etc/init.d/noc.j2" dest="/etc/init.d/{{ noc_system_service }}" mode="a+rx"
-
-- name: Set up nsq defaults
-  template: src="Debian/etc/default/nsqd.j2" dest="/etc/default/nsqd"
-  notify: restart nsq
 
 - name: Set up consul defaults
   template: src="Debian/etc/default/consul.j2" dest="/etc/default/consul"

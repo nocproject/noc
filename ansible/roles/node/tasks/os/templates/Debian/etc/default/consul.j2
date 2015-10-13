@@ -1,5 +1,5 @@
 # Consul options
-EXTRA_OPTS="agent -config-file={{noc_root}}/var/etc/consul/consul.json\
+EXTRA_OPTS="agent -config-dir={{noc_root}}/var/etc/consul/\
     -bind={{ hostvars[ansible_nodename].ansible_ssh_host }}\
     -node={{ ansible_nodename }}\
     -dc={{noc_dc}}\
