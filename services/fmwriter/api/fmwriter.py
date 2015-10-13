@@ -9,15 +9,14 @@
 ## Python modules
 import datetime
 ## NOC modules
-from noc.lib.service.api.base import ServiceAPI, api
+from noc.lib.service.api.base import API, api
 
 
-class FMWriterAPI(ServiceAPI):
+class FMWriterAPI(API):
     """
     Monitoring API
     """
     name = "fmwriter"
-    level = ServiceAPI.AL_POOL
 
     @api
     def event(self, timestamp, managed_object, data):

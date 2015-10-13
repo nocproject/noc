@@ -17,8 +17,7 @@ from api.probeconf import ProbeConfAPI
 
 class ProbeConfService(Service):
     name = "probeconf"
-    # One active object probe conf per pool
-    leader_group_name = "probeconf-%(pool)s"
+    pooled = True
 
     # Dict parameter containing values accepted
     # via dynamic configuration

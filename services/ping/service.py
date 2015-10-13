@@ -52,8 +52,8 @@ class PingService(Service):
         # Open ping sockets
         self.ping = Ping(self.ioloop)
         # Register RPC aliases
-        self.omap = self.open_rpc_global("omap")
-        self.fmwriter = self.open_rpc_pool("fmwriter")
+        self.omap = self.open_rpc("omap")
+        self.fmwriter = self.open_rpc("fmwriter", pool=self.config.pool)
         # Set event listeners
         self.subscribe_event("objmapchange", pool=self.config.pool,
                              callback=self.on_object_map_change)

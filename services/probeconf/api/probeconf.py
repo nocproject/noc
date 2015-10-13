@@ -10,16 +10,15 @@
 import datetime
 import time
 ## NOC modules
-from noc.lib.service.api.base import ServiceAPI, api
+from noc.lib.service.api.base import API, api
 from noc.pm.models.probeconfig import ProbeConfig
 
 
-class ProbeConfAPI(ServiceAPI):
+class ProbeConfAPI(API):
     """
     PM collector api
     """
     name = "probeconf"
-    level = ServiceAPI.AL_POOL
 
     REFRESH_CHUNK = 100
     REFRESH_TIMEOUT = 100

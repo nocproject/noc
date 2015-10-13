@@ -24,7 +24,6 @@ from syslogserver import SyslogServer
 
 class SyslogCollectorService(Service):
     name = "syslogcollector"
-
     #
     leader_group_name = "syslogcollector-%(dc)s-%(node)s"
     pooled = True
@@ -59,11 +58,11 @@ class SyslogCollectorService(Service):
 
     def on_activate(self):
         # Register RPC aliases
-        self.omap = self.open_rpc_global("omap")
-        self.fmwriter = self.open_rpc_pool("fmwriter")
+        self.omap = self.open_rpc("omap")
+        self.fmwriter = self.open_rpc("fmwriter", pool=self.config.pool)
         # Set event listeners
-        self.subscribe_event("objmapchange", pool=self.config.pool,
-                             callback=self.on_object_map_change)
+#        self.subscribe_event("objmapchange", pool=self.config.pool,
+#                             callback=self.on_object_map_change)
         # Listen sockets
         server = SyslogServer(service=self)
         for l in self.config.listen:
@@ -141,7 +140,7 @@ class SyslogCollectorService(Service):
         Periodic task to send collected messages to fmwriter
         """
         if self.messages:
-            yield self.fmwriter.events(self.messages, _async=True)
+            yield self.fmwriter.events(self.messages, _notify=True)
             self.messages = []
 
     @tornado.gen.coroutine

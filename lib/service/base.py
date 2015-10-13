@@ -13,17 +13,17 @@ import logging
 from optparse import (make_option, OptionParser,
                       OptionError, OptParseError)
 import signal
-import uuid
 import socket
 import json
 import uuid
-import pwd
+import random
 ## Third-party modules
 from tornado import ioloop
 import tornado.gen
 import tornado.web
 import tornado.netutil
 import tornado.httpserver
+import tornado.httpclient
 import consul.tornado
 import consul.base
 import consul
@@ -31,9 +31,9 @@ import nsq
 ## NOC modules
 from .config import Config
 from noc.sa.interfaces.base import DictParameter, StringParameter
-from .api.base import ServiceAPI, ServiceSubscriber
-from .api.mon import MonAPI
+from .api.base import APIRequestHandler
 from .doc import DocRequestHandler
+from .mon import MonRequestHandler
 from .rpc import RPCProxy
 
 
@@ -53,9 +53,7 @@ class Service(object):
     # Pool name set in NOC_POOL parameter or --pool option.
     # May be used in conjunction with leader_group_name
     # to allow only one instance of services per node or datacenter
-    # Service became pooled whenever any of advertised APIs
-    # declared at AL_POOL level
-    _pooled = None
+    pooled = False
     #
     usage = "usage: %prog [options] arg1 arg2 ..."
     # CLI option list
@@ -114,10 +112,8 @@ class Service(object):
         )
     }
 
-    ## List of ServiceAPI instances
-    api = [
-        MonAPI
-    ]
+    ## List of API instances
+    api = []
 
     LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
 
@@ -141,14 +137,6 @@ class Service(object):
         self.consul_session = None
         self.renew_session_callback = None
         self.client_id = str(uuid.uuid4())
-
-    @property
-    def pooled(self):
-        if self._pooled is None:
-            # Any API with AL_POOL
-            self._pooled = any(x for x in self.api
-                               if x.level == ServiceAPI.AL_POOL)
-        return self._pooled
 
     @classmethod
     def die(cls, msg):
@@ -366,59 +354,41 @@ class Service(object):
             # Collect and register exposed API
             api = []
             for a in self.api:
-                url = a.get_service_url()
-                self.logger.info("Supported API: %s at %s",
-                                 a.name, url)
-                api += [
-                    (
-                        url,
-                        a.get_http_request_handler(),
-                        {"service": self, "api_class": a}
-                    )
-                ]
-                if a.level != ServiceAPI.AL_NONE:
-                    srv = ServiceSubscriber(self, a)
-                    topic = srv.get_topic()
-                    self.logger.info(
-                        "Registering NSQ RPC endpoint at %s", topic
-                    )
-                    self.subscribe(topic, "rpc", srv.on_message)
-            api += [("/", DocRequestHandler)]
+                url = "^/api/%s/$" % a.name
+                self.logger.info(
+                    "Supported API: %s at http://%s:%s/api/%s/",
+                    a.name, host, port, a.name
+                )
+                api += [(
+                    url,
+                    APIRequestHandler,
+                    {"service": self, "api_class": a}
+                )]
+                # Register service
+                if self.pooled:
+                    name = "%s-%s" % (a.name, self.config.pool)
+                else:
+                    name = a.name
+                self.logger.info("Registering service %s", name)
+                yield self.consul.agent.service.register(
+                    name=name,
+                    address=host,
+                    port=port,
+                    tags=None
+                )
+            api += [
+                (r"^/mon/$", MonRequestHandler, {"service": self}),
+                ("/", DocRequestHandler, {"service": self})
+            ]
             app = tornado.web.Application(api)
             http_server = tornado.httpserver.HTTPServer(app)
             http_server.add_socket(socks[0])
-            # Register services
-            for h in self.api:
-                if not h.level == ServiceAPI.AL_NONE:
-                    continue
-                if h.level == ServiceAPI.AL_POOL:
-                    tags = [self.config.pool]
-                else:
-                    tags = None
-                self.logger.info(
-                    "Registering service %s at %s:%s (tags: %s)",
-                    h.name, host, port, tags
-                )
-                yield self.consul.agent.service.register(
-                    name=h.name,
-                    service_id=h.name,
-                    address=host,
-                    port=port,
-                    tags=tags,
-                    check=[
-                        consul.Check.http(
-                            "http://%s:%s/" % (host, port),
-                            1, 1
-                        )
-                    ]
-                )
+        self.logger.info("Activating service")
         self.on_activate()
 
     @tornado.gen.coroutine
     def deactivate(self):
         for h in self.api:
-            if h.level == ServiceAPI.AL_NONE:
-                continue
             self.logger.info("Deregister service %s", h.name)
             yield self.consul.agent.service.deregister(h.name)
         # Release leadership lock
@@ -475,48 +445,6 @@ class Service(object):
             msg = json.dumps(msg)
         self.nsq_writer.pub(topic, msg, callback=callback)
 
-    def _open_rpc(self, api_name, level, service_name=None,
-                 pool=None, dc=None, node=None):
-        """
-        Returns RPC proxy
-        """
-        topic = ServiceAPI.get_service_topic(
-            level=level,
-            api_name=api_name,
-            service_name=service_name,
-            pool=pool or self.config.pool,
-            dc=dc or self.config.dc,
-            node=node or self.config.node,
-        )
-        self.logger.debug("Opening RPC proxy to %s", topic)
-        return RPCProxy(self, topic)
-
-    def open_rpc_global(self, api_name):
-        """
-        Returns RPC proxy for global API
-        """
-        return self._open_rpc(api_name, level=1)  # AL_GLOBAL
-
-    def open_rpc_pool(self, api_name, pool=None):
-        """
-        Returns RPC proxy for pooled service
-        """
-        return self._open_rpc(api_name, level=2, pool=pool)
-
-    def open_rpc_node(self, api_name, dc=None, node=None):
-        """
-        Returns RPC proxy for node service
-        """
-        return self._open_rpc(api_name, level=3, dc=dc, node=node)
-
-    def open_rpc_service(self, api_name, dc=None, node=None,
-                         service=None):
-        """
-        Returns RPC proxy for node service
-        """
-        return self._open_rpc(api_name, level=4, dc=dc, node=node,
-                              service=service)
-
     def subscribe_event(self, name, pool=None, callback=None):
         def on_message(message):
             try:
@@ -535,25 +463,47 @@ class Service(object):
         channel = "%s#ephemeral" % self.client_id
         self.subscribe(topic, channel, on_message)
 
-    def drop_privileges(self):
+    def open_rpc(self, name, pool=None):
         """
-        Drop root-privileges to NOC_USER when necessary
+        Returns RPC proxy object.
         """
-        uname = os.environ.get("NOC_USER")
-        if not uname:
-            return
-        try:
-            uid = pwd.getpwnam(uname)[2]
-        except KeyError:
-            self.logger.error("Invalid user: %s", uname)
-            return
-        euid = os.geteuid()
-        if euid == uid:
-            return  # Nothing to drop
-        # Try to drop privileges
-        try:
-            self.logger.info("Setting current user to %s (%s)",
-                             uname, uid)
-            os.setuid(uid)
-        except OSError, why:
-            self.logger.info("Failed to set current user: %s", why)
+        if pool:
+            svc = "%s-%s" % (name, pool)
+        else:
+            svc = name
+        return RPCProxy(self, svc)
+
+    def get_mon_data(self):
+        """
+        Returns monitoring data
+        """
+        return {
+            "status": True
+        }
+
+    @tornado.gen.coroutine
+    def resolve_service(self, service, n=1):
+        """
+        Queries consul
+
+        @todo: Wait for service
+        """
+        while True:
+            client = tornado.httpclient.AsyncHTTPClient()
+            try:
+                response = yield client.fetch(
+                    "http://127.0.0.1:8500/v1/catalog/service/%s" % service
+                )
+                candidates = ["%s:%s" % (
+                    s.get("ServiceAddress", s.get("Address")),
+                    s.get("ServicePort")
+                ) for s in json.loads(response.body)]
+            except Exception, why:
+                raise
+            if len(candidates) == 0:
+                self.logger.info("Service %s is not ready yet. Waiting")
+                yield tornado.gen.sleep(1)
+            else:
+                raise tornado.gen.Return(
+                    random.sample(candidates, n)
+                )
