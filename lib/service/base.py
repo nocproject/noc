@@ -27,7 +27,7 @@ import tornado.httpclient
 import consul.tornado
 import consul.base
 import consul
-import nsq
+import tornadoredis
 ## NOC modules
 from .config import Config
 from noc.sa.interfaces.base import DictParameter, StringParameter
@@ -136,7 +136,7 @@ class Service(object):
         self.leader_key = None
         self.consul_session = None
         self.renew_session_callback = None
-        self.client_id = str(uuid.uuid4())
+        self.redis = None
 
     @classmethod
     def die(cls, msg):
@@ -384,7 +384,7 @@ class Service(object):
             http_server = tornado.httpserver.HTTPServer(app)
             http_server.add_socket(socks[0])
         self.logger.info("Activating service")
-        self.on_activate()
+        self.ioloop.add_callback(self.on_activate)
 
     @tornado.gen.coroutine
     def deactivate(self):
@@ -404,64 +404,60 @@ class Service(object):
         """
         pass
 
-    def subscribe(self, topic, channel, handler):
+    def expand_topic(self, topic):
         """
-        Subscribe to NSQ topic and channel
+        Expand topic name with macroses:
+        * %(pool)s -- pool name
         """
-        self.logger.debug("Subscribing to %s/%s", topic, channel)
-        reader = nsq.Reader(
-            topic=topic,
-            channel=channel,
-            # lookupd_http_addresses=["http://127.0.0.1:4161"],
-            nsqd_tcp_addresses=["127.0.0.1:4150"],
-            lookupd_poll_interval=15,
-            message_handler=handler
-        )
-        return reader
+        return topic % {
+            "pool": self.config.pool
+        }
 
-    def connect_writer(self):
+    @tornado.gen.coroutine
+    def get_redis_client(self):
         """
-        Connect NSQ reader
+        Get redis client
         """
-        if self.nsq_writer:
-            return
-        self.logger.info("Opening NSQ writer")
-        self.nsq_writer = nsq.Writer(["127.0.0.1:4150"])
+        if not self.redis:
+            services = yield self.resolve_service("redis")
+            host, port = services[0].split(":")
+            self.redis = tornadoredis.Client(
+                host=host,
+                port=int(port)
+            )
+            self.redis.connect()
+        raise tornado.gen.Return(self.redis)
 
-    def publish(self, topic, msg):
+    @tornado.gen.coroutine
+    def subscribe(self, topic, callback):
         """
-        Publish to NSQ topic
+        Subscribe to topic. Topic name may contain macroses
+        accoding to expand_topic
         """
-        def callback(conn, data):
-            if isinstance(data, nsq.Error):
-                if self.nsq_writer.conns:
-                    self.logger.error("Failed to publish: %s", data)
-                else:
-                    # Retry
-                    self.ioloop.add_callback(self.publish, topic, msg)
+        topic = self.expand_topic(topic)
+        self.logger.debug("Subscribe %s", topic)
+        client = yield self.get_redis_client()
+        yield client.subscribe(topic, callback)
 
-        # Already connected
-        if not isinstance(msg, basestring):
-            msg = json.dumps(msg)
-        self.nsq_writer.pub(topic, msg, callback=callback)
+    @tornado.gen.coroutine
+    def unsubscribe(self, topic, handler):
+        """
+        Subscribe to topic. Topic name may contain macroses
+        accoding to expand_topic
+        """
+        topic = self.expand_topic(topic)
+        self.logger.debug("Unsubscribe %s", topic)
+        client = yield self.get_redis_client()
+        yield client.unsubscribe(topic)
 
-    def subscribe_event(self, name, pool=None, callback=None):
-        def on_message(message):
-            try:
-                msg = json.loads(message.body)
-            except ValueError, why:
-                self._logger.error(
-                    "Failed to decode event data: %s", why)
-                return True
-            callback(msg)
-            return True
-
-        topic = "ev.%s" % name
-        if pool:
-            topic += ".%s" % pool
-        topic += "#ephemeral"
-        channel = "%s#ephemeral" % self.client_id
-        self.subscribe(topic, channel, on_message)
+    def publish(self, topic, message):
+        """
+        Publish message to topic
+        """
+        topic = self.expand_topic(topic)
+        self.logger.debug("Publish to %s: %s", topic, message)
+        client = yield self.get_redis_client()
+        yield client.publish(topic, json.dumps(message))
 
     def open_rpc(self, name, pool=None):
         """
@@ -501,9 +497,10 @@ class Service(object):
             except Exception, why:
                 raise
             if len(candidates) == 0:
-                self.logger.info("Service %s is not ready yet. Waiting")
+                self.logger.info("Service %s is not ready yet. Waiting", service)
                 yield tornado.gen.sleep(1)
             else:
+                self.logger.debug("Service %s is ready", service)
                 raise tornado.gen.Return(
                     random.sample(candidates, n)
                 )

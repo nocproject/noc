@@ -10,25 +10,26 @@
 import json
 import logging
 ## Third-party modules
-import requests
+import tornadoredis
+## NOC modules
+from noc import settings
 
-NSQ_HTTP_ADDRESS = "127.0.0.1:4151"
 logger = logging.getLogger(__name__)
 
+_client = None
 
-def send(name, pool=None, data=None):
-    """
-    Send event notification to NSQ system
-    """
-    data = data or {}
-    if not isinstance(data, basestring):
-        data = json.dumps(data)
-    topic = "ev.%s" % name
-    if pool:
-        topic += ".%s" % pool
-    topic += "%23ephemeral"
-    url = "http://%s/put?topic=%s" % (NSQ_HTTP_ADDRESS, topic)
-    logger.debug("Event: %s" % topic)
-    r = requests.post(url, data)
-    if r.status_code != 200:
-        logger.error("Failed to send event: %s", r.text)
+def send(topic, message=None):
+    global _client
+    if not _client:
+        logger.info("Connecting to redis server %s",
+                    settings.REDIS_HOST)
+        _client = tornadoredis.Client(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT
+        )
+        _client.connect()
+    message = message or {}
+    if not isinstance(message, basestring):
+        message = json.dumps(message)
+    logger.debug("Sending message to %s: %s", topic, message)
+    _client.publish(topic, message)
