@@ -14,7 +14,7 @@ from mongoengine.document import Document
 from mongoengine.fields import ReferenceField, DictField, DateTimeField
 ## NOC modules
 from noc.main.models.pool import Pool
-from noc.lib.service.event import send
+from noc.lib.service.event import fire
 from noc.sa.models.objectstatus import ObjectStatus
 
 
@@ -170,4 +170,4 @@ class ObjectMap(Document):
                 "updated": datetime.datetime.now() - datetime.timedelta(seconds=cls.TTL)
             }
         })
-        send("objmapchange", pool=pool)
+        fire("objmapchange-%s" % pool)

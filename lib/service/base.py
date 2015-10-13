@@ -17,6 +17,7 @@ import socket
 import json
 import uuid
 import random
+from collections import defaultdict
 ## Third-party modules
 from tornado import ioloop
 import tornado.gen
@@ -27,7 +28,6 @@ import tornado.httpclient
 import consul.tornado
 import consul.base
 import consul
-import tornadoredis
 ## NOC modules
 from .config import Config
 from noc.sa.interfaces.base import DictParameter, StringParameter
@@ -136,7 +136,7 @@ class Service(object):
         self.leader_key = None
         self.consul_session = None
         self.renew_session_callback = None
-        self.redis = None
+        self.topic_callbacks = defaultdict(set)
 
     @classmethod
     def die(cls, msg):
@@ -413,51 +413,64 @@ class Service(object):
             "pool": self.config.pool
         }
 
-    @tornado.gen.coroutine
-    def get_redis_client(self):
-        """
-        Get redis client
-        """
-        if not self.redis:
-            services = yield self.resolve_service("redis")
-            host, port = services[0].split(":")
-            self.redis = tornadoredis.Client(
-                host=host,
-                port=int(port)
-            )
-            self.redis.connect()
-        raise tornado.gen.Return(self.redis)
+    def get_topic_path(self, topic):
+        return "/event/%s" % topic
 
     @tornado.gen.coroutine
+    def topic_listener(self, topic):
+        topic_path = self.get_topic_path(topic)
+        self.logger.debug("Listening topic %s", topic)
+        index = None
+        while True:
+            if not self.topic_callbacks[topic]:
+                del self.topic_callbacks[topic]
+                break
+            try:
+                index, data = yield self.consul.kv.get(topic_path,
+                                                       index=index)
+            except consul.base.Timeout:
+                continue
+            self.logger.debug("Received event on %s", topic)
+            for callback in self.topic_callbacks[topic]:
+                callback(topic)
+
+
     def subscribe(self, topic, callback):
         """
         Subscribe to topic. Topic name may contain macroses
-        accoding to expand_topic
+        according to expand_topic
         """
         topic = self.expand_topic(topic)
-        self.logger.debug("Subscribe %s", topic)
-        client = yield self.get_redis_client()
-        yield client.subscribe(topic, callback)
+        self.logger.debug("Subscribe topic %s", topic)
+        to_run = topic not in self.topic_callbacks
+        self.topic_callbacks[topic].add(callback)
+        if to_run:
+            self.ioloop.add_callback(self.topic_listener, topic)
 
-    @tornado.gen.coroutine
-    def unsubscribe(self, topic, handler):
+    def unsubscribe(self, topic, callback):
         """
         Subscribe to topic. Topic name may contain macroses
-        accoding to expand_topic
+        according to expand_topic
         """
         topic = self.expand_topic(topic)
-        self.logger.debug("Unsubscribe %s", topic)
-        client = yield self.get_redis_client()
-        yield client.unsubscribe(topic)
+        if callback in self.topic_callbacks[topic]:
+            self.logger.debug("Unsubscribe topic %s", topic)
+            self.topic_callbacks[topic].remove(callback)
 
-    def publish(self, topic, message):
+    def fire_event(self, topic):
         """
-        Publish message to topic
+        Fire event on topic. Topic macroses accordint to expand_topic
         """
+        @tornado.gen.coroutine
+        def _fire_event(topic):
+            yield self.consul.kv.put(
+                self.get_topic_path(topic),
+                None
+            )
+
         topic = self.expand_topic(topic)
-        self.logger.debug("Publish to %s: %s", topic, message)
-        client = yield self.get_redis_client()
-        yield client.publish(topic, json.dumps(message))
+        self.logger.debug("Firing event on %s", topic)
+        self.ioloop.add_callback(_fire_event, topic)
 
     def open_rpc(self, name, pool=None):
         """

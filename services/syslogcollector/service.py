@@ -62,7 +62,8 @@ class SyslogCollectorService(Service):
         self.omap = self.open_rpc("omap")
         self.fmwriter = self.open_rpc("fmwriter", pool=self.config.pool)
         # Set event listeners
-        yield self.subscribe("objmapchange.%(pool)s", self.on_object_map_change)
+        self.subscribe("objmapchange.%(pool)s",
+                       self.on_object_map_change)
         # Listen sockets
         server = SyslogServer(service=self)
         for l in self.config.listen:
@@ -188,7 +189,7 @@ class SyslogCollectorService(Service):
         #     }]
         self.invalid_sources = defaultdict(int)
 
-    def on_object_map_change(self, data):
+    def on_object_map_change(self, topic):
         self.logger.info("Object mappings changed. Rerequesting")
         self.ioloop.add_callback(self.get_object_mappings)
 
