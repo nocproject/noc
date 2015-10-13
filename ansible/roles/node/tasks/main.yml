@@ -76,8 +76,6 @@
       owner: "{{noc_user}}"
     - name: var/sock
       owner: "{{noc_user}}"
-    - name: var/db/nsq
-      owner: "{{nsq_user}}"
     - name: var/db/consul
       owner: "{{consul_user}}"
     - name: var/etc/consul
@@ -132,19 +130,16 @@
   template: src="etc/config/env/{{ item }}.conf.j2" dest="{{ noc_root }}/etc/config/env/{{ item }}.conf"
   with_items: "{{ noc_all_services }}"
 
-- name: Create Consul config
+- name: Set up Consul
   template: src="consul.json.j2" dest="{{noc_root}}/var/etc/consul/consul.json"
+  notify: restart consul
+
+- name: Set up Consul static services
+  template: src="services.json.j2" dest="{{noc_root}}/var/etc/consul/services.json"
   notify: restart consul
 
 - name: Enable Consul
   service: name="{{consul_system_service}}" enabled=yes state=started
-
-- name: Enable nsqlookupd
-  service: name="{{nsqlookupd_system_service}}" enabled=yes state=started
-  when: "'svc-nsqlookupd' in group_names"
-
-- name: Enable nsqd
-  service: name="{{nsqd_system_service}}" enabled=yes state=started
 
 - name: Set up noc.conf
   ini_file: dest="{{noc_root}}/etc/noc.conf"
@@ -184,3 +179,9 @@
     - section: customization
       option: installation_name
       value: "{{ noc_installation_name }}"
+    - section: redis
+      option: host
+      value: "{{ groups['svc-redis-master'][0] }}"
+    - secrion: redis
+      option: port
+      value: 6379

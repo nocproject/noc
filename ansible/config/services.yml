@@ -2,19 +2,19 @@
 ---
 product: "noc"
 services:
-  nm:
-    description: Node Manager
-    level: node
-
   postgres:
     description: PostgreSQL server
     level: global
     system: true
+    static_service:
+      port: 5432
 
   mongod:
     description: Mongod server
     level: global
     system: true
+    static_service:
+      port: 27017
 
   nginx:
     description: Nginx server
@@ -26,10 +26,12 @@ services:
     level: global
     system: true
 
-  nsqlookupd:
-    description: NSQLookupd
+  redis:
+    description: Redis Server
     level: global
     system: true
+    static_service:
+      port: 6379
 
   classifier:
     description: Classifier
@@ -42,10 +44,6 @@ services:
   fmwriter:
     description: FMWriter
     level: pool
-
-  graphitecollector:
-    description: Graphite Collector
-    level: global
 
   omap:
     description: OMap
