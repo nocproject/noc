@@ -1,6 +1,0 @@
-# nsqd settings
-EXTRA_OPTS="-data-path={{ noc_root }}/var/db/nsq\
-{% for n in groups["svc-nsqlookupd"]%}
-    -lookupd-tcp-address={{ hostvars[n].ansible_ssh_host }}\
-{% endfor %}\
-"
