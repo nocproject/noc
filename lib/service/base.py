@@ -309,6 +309,7 @@ class Service(object):
         self.parse_bootstrap_config()
         self.setup_logging()
         signal.signal(signal.SIGTERM, self.on_SIGTERM)
+        self.logger.warn("*" * 72)
         if self.pooled:
             self.logger.warn("Running service %s (pool: %s)",
                              self.name, self.config.pool)
