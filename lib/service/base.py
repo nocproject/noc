@@ -425,7 +425,7 @@ class Service(object):
         }
 
     def get_topic_path(self, topic):
-        return "/event/%s" % topic
+        return "event/%s" % topic
 
     @tornado.gen.coroutine
     def topic_listener(self, topic):

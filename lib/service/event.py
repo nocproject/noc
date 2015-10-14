@@ -21,5 +21,5 @@ def fire(topic):
     logger.debug("Firing on %s", topic)
     c = consul.Consul()
     c.kv.put(
-        "/event/%s" % topic
+        "event/%s" % topic
     )
