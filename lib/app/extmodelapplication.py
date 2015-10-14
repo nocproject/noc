@@ -203,6 +203,8 @@ class ExtModelApplication(ExtApplication):
                 self.only_param):
                 continue
             v = q[p]
+            if self.in_param in p:
+                v = v.split(",")
             if v == "\x00":
                 v = None
             # Pass through interface cleaners
