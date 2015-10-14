@@ -29,6 +29,7 @@ import consul.tornado
 import consul.base
 import consul
 ## NOC modules
+from noc.lib.debug import excepthook, error_report
 from .config import Config
 from noc.sa.interfaces.base import DictParameter, StringParameter
 from .api.base import APIRequestHandler
@@ -126,6 +127,9 @@ class Service(object):
     }
 
     def __init__(self):
+        sys.excepthook = excepthook
+        # Monkeypatch error reporting
+        tornado.ioloop.IOLoop.handle_callback_exception = self.handle_callback_exception
         self.ioloop = None
         self.logger = None
         self.config = None
@@ -138,10 +142,14 @@ class Service(object):
         self.renew_session_callback = None
         self.topic_callbacks = defaultdict(set)
 
+    def handle_callback_exception(self, callback):
+        sys.stdout.write("Exception in callback %r\n" % callback)
+        error_report()
+
     @classmethod
     def die(cls, msg):
-        sys.stderr.write(str(msg) + "\n")
-        sys.stderr.flush()
+        sys.stdout.write(str(msg) + "\n")
+        sys.stdout.flush()
         sys.exit(1)
 
     def get_leader_group_name(self, **config):
