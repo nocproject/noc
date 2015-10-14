@@ -524,6 +524,6 @@ class Service(object):
                 yield tornado.gen.sleep(1)
             else:
                 svc = random.sample(candidates, n)
-                self.logger.debug("Service %s is ready at %s",
-                                  service, svc)
+                self.logger.info("Service %s is ready at %s",
+                                 service, svc)
                 raise tornado.gen.Return(svc)
