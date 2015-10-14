@@ -97,5 +97,15 @@ class RPCMethod(object):
 
     @tornado.gen.coroutine
     def __call__(self, *args, **kwargs):
+        self._proxy._service.logger.debug(
+            "[REMOTE CALL>] %s.%s(%s, %s)",
+            self._proxy._service_name,
+            self._name, args, kwargs
+        )
         result = yield self._proxy._call(self._name, *args, **kwargs)
+        self._proxy._service.logger.debug(
+            "[REMOTE CALL<] %s.%s",
+            self._proxy._service_name,
+            self._name
+        )
         raise tornado.gen.Return(result)
