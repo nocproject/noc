@@ -30,7 +30,7 @@ if not logger.handlers:
 
 # CP error reporting
 ENABLE_CP = True
-CP_NEW = "local/cp/crashinfo/new"
+CP_NEW = "var/cp/crashinfo/new"
 CP_SET_UID = None
 
 if os.getuid() == 0:
@@ -255,8 +255,8 @@ def excepthook(t, v, tb):
     r += ["Working directory: %s" % os.getcwd()]
     r += [str(t), str(v)]
     r += [format_frames(get_traceback_frames(tb))]
-    sys.stderr.write("\n".join(r))
-    sys.stderr.flush()
+    sys.stdout.write("\n".join(r))
+    sys.stdout.flush()
 
 
 def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
@@ -362,5 +362,3 @@ def BQ(s):
         return unicode(s)
     except UnicodeDecodeError:
         return "(%s)" % " ".join(["%02X" % ord(c) for c in s])
-
-
