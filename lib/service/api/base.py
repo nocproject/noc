@@ -59,6 +59,10 @@ class APIRequestHandler(tornado.web.RequestHandler):
         #             id=id
         #         )
         # else:
+        self.service.logger.info(
+            "[RPC] %s.%s(%s)",
+            api.name, method, params
+        )
         try:
             result = h(*params)
         except Exception, why:
