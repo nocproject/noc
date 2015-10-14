@@ -44,6 +44,7 @@ class ExtApplication(Application):
     format_param = "__format"  # List output format
     query_param = "__query"
     only_param = "__only"
+    in_param = "__in"
     fav_status = "fav_status"
     default_ordering = []
 
