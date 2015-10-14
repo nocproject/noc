@@ -186,10 +186,13 @@ class Service(object):
         self.config = Config(self, **vc)
 
     def setup_logging(self):
-        if len(logging.root.handlers):
+        logger = logging.getLogger()
+        if len(logger.handlers):
             # Logger is already initialized
             fmt = logging.Formatter(self.LOG_FORMAT, None)
             for h in logging.root.handlers:
+                if isinstance(h, logging.StreamHandler):
+                    h.stream = sys.stdout
                 h.setFormatter(fmt)
             logging.root.setLevel(self.LOG_LEVELS[self.config.loglevel])
         else:
@@ -434,7 +437,6 @@ class Service(object):
             for callback in self.topic_callbacks[topic]:
                 callback(topic)
 
-
     def subscribe(self, topic, callback):
         """
         Subscribe to topic. Topic name may contain macroses
@@ -513,7 +515,7 @@ class Service(object):
                 self.logger.info("Service %s is not ready yet. Waiting", service)
                 yield tornado.gen.sleep(1)
             else:
-                self.logger.debug("Service %s is ready", service)
-                raise tornado.gen.Return(
-                    random.sample(candidates, n)
-                )
+                svc = random.sample(candidates, n)
+                self.logger.debug("Service %s is ready at %s",
+                                  service, svc)
+                raise tornado.gen.Return(svc)
