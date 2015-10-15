@@ -24,6 +24,7 @@ from api.fmwriter import FMWriterAPI
 
 class FMWriterService(Service):
     name = "fmwriter"
+    pooled = True
 
     # Dict parameter containing values accepted
     # via dynamic configuration
