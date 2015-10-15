@@ -14,9 +14,6 @@
     - role: postgres
       when: "'svc-postgres' in group_names"
 
-    - role: redis
-      when: "'svc-redis' in group_names"
-
     - role: migrate
       when: "'svc-mongod-master' in group_names"
 

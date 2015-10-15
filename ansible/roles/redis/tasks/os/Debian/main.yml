@@ -1,8 +1,0 @@
-- name: Install Debian system packages
-  apt: name={{item}} update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
-  with_items:
-    - redis-server
-
-- name: Set up redis defaults
-  template: src="Debian/etc/default/redis-server.j2" dest="/etc/default/redis-server"
-  notify: restart redis
