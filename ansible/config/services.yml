@@ -4,34 +4,23 @@ product: "noc"
 services:
   postgres:
     description: PostgreSQL server
-    level: global
-    system: true
+    level: system
     static_service:
       port: 5432
 
   mongod:
     description: Mongod server
-    level: global
-    system: true
+    level: system
     static_service:
       port: 27017
 
   nginx:
     description: Nginx server
-    level: global
-    system: true
+    level: system
 
   consul:
     description: Consul Server
-    level: global
-    system: true
-
-  redis:
-    description: Redis Server
-    level: global
-    system: true
-    static_service:
-      port: 6379
+    level: system
 
   classifier:
     description: Classifier
