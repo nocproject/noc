@@ -61,7 +61,6 @@ class RPCProxy(object):
         is_notify = "_notify" in kwargs
         if not is_notify:
             msg["id"] = tid
-        self._logger.debug("RPC Call: %s", msg)
         services = yield self._service.resolve_service(
             self._service_name,
             n=1
@@ -94,6 +93,7 @@ class RPCMethod(object):
     def __init__(self, proxy, name):
         self._proxy = proxy
         self._name = name
+        self._metric = "rpc_call_%s_%s" % (proxy._service_name, name)
 
     @tornado.gen.coroutine
     def __call__(self, *args, **kwargs):
@@ -102,6 +102,7 @@ class RPCMethod(object):
             self._proxy._service_name,
             self._name, args, kwargs
         )
+        self._proxy._service.metrics[self._metric] += 1
         result = yield self._proxy._call(self._name, *args, **kwargs)
         self._proxy._service.logger.debug(
             "[REMOTE CALL<] %s.%s",

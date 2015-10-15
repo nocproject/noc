@@ -141,6 +141,7 @@ class Service(object):
         self.consul_session = None
         self.renew_session_callback = None
         self.topic_callbacks = defaultdict(set)
+        self.metrics = defaultdict(int)
 
     def handle_callback_exception(self, callback):
         sys.stdout.write("Exception in callback %r\n" % callback)
@@ -497,9 +498,11 @@ class Service(object):
         """
         Returns monitoring data
         """
-        return {
+        r = {
             "status": True
         }
+        r.update(self.metrics)
+        return r
 
     @tornado.gen.coroutine
     def resolve_service(self, service, n=1):
