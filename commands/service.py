@@ -10,6 +10,7 @@
 import consul
 ## NOC modules
 from noc.core.management.base import BaseCommand
+from noc.lib.text import format_table
 
 
 class Command(BaseCommand):
@@ -19,8 +20,7 @@ class Command(BaseCommand):
         self.out("Creating Consul Client", 1)
         c = consul.Consul()
         self.out("Requesting services", 1)
-        s_mask = "%-20s %-12s %-40s %s"
-        print s_mask % ("Service", "Node", "URL", "Tags")
+        data = [["Service", "Node", "URL", "Tags"]]
         index, service = c.catalog.services()
         for sn in service:
             index, instances = c.catalog.service(sn)
@@ -32,12 +32,16 @@ class Command(BaseCommand):
                         si["Address"], si["ServicePort"],
                         si["ServiceName"]
                     )
-                print s_mask % (
+                data += [[
                     si["ServiceName"],
                     si["Node"],
                     url,
                     ",".join(si.get("ServiceTags", []) or [])
-                )
+                ]]
+        print format_table(
+            [20, 12, 40, 10],
+            data
+        )
 
 if __name__ == "__main__":
     Command().run()
