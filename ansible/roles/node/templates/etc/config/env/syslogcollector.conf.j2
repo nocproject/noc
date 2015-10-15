@@ -1,0 +1,4 @@
+[syslogcollector]
+{% if noc_svc_syslogcollector_loglevel is defined and noc_svc_syslogcollector_loglevel %}
+NOC_LOGLEVEL = {{noc_svc_syslogcollector_loglevel}}
+{% endif %}

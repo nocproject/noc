@@ -1,0 +1,6 @@
+[unix_http_server]
+# the path to the socket file
+file = {{ noc_root }}/var/sock/supervisor.sock
+username = {{ noc_user }}
+password = {{ lookup('supervisorctl_key', tower_data + '/noc/supervisorctl.key') }}
+chown = {{ noc_user }}

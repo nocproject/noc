@@ -1,0 +1,3 @@
+[program:web]
+autostart = {{'svc-web' in group_names}}
+command = ./scripts/noc-web.py --listen={{ inventory_hostname }}:8000
