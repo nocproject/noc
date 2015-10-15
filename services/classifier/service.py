@@ -94,7 +94,7 @@ class ClassifierService(Service):
         # * noc.fm.classifier.rulelookup.RuleLookup - default lookup
         # * noc.fm.classifier.xrulelookup.XRuleLookup - Accelerated (experimental)
         "lookup_solution": StringParameter(
-            default="noc.fm.classifier.rulelookup.RuleLookup"
+            default="noc.services.classifier.rulelookup.RuleLookup"
         )
     }
 
