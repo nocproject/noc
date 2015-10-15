@@ -446,7 +446,7 @@ class Engine(object):
                     severity=2000  # WARNING
                 )
             # Alarm is already exists
-            alarm.log_message("%d errors has been found", n_errors)
+            alarm.log_message("%d errors has been found" % n_errors)
         elif alarm:
             # Clear alarm
             self.logger.info("Clear alarm")
