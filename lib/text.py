@@ -369,3 +369,26 @@ def to_seconds(v):
     except ValueError:
         raise "Invalid time: %s" % v
     return v * m
+
+
+def format_table(widths, data):
+    """
+    Print formatted table.
+    widths -- list of minimal column widths
+    data -- list of rows, first row is the header
+    """
+    # Calculate column widths
+    widths = list(widths)
+    for row in data:
+        widths = [max(x, len(y)) for x, y in zip(widths, row)]
+    # Build print mask
+    mask = " ".join("%%-%ds" % w for w in widths)
+    out = [
+        # Header line
+        mask % tuple(data[0]),
+        # Header separator
+        " ".join("-" * w for w in widths)
+    ]
+    out += [mask % tuple(row) for row in data[1:]]
+    return "\n".join(out)
+
