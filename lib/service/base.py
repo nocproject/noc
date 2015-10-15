@@ -402,8 +402,12 @@ class Service(object):
     @tornado.gen.coroutine
     def deactivate(self):
         for h in self.api:
-            self.logger.info("Deregister service %s", h.name)
-            yield self.consul.agent.service.deregister(h.name)
+            if self.pooled:
+                name = "%s-%s" % (h.name, self.config.pool)
+            else:
+                name = h.name
+            self.logger.info("Deregister service %s", name)
+            yield self.consul.agent.service.deregister(name)
         # Release leadership lock
         if self.leader_group and self.consul_session:
             yield self.release_leadership()
