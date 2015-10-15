@@ -339,7 +339,8 @@ class ManagedObject(models.Model):
                 self.trap_source_type != old.trap_source_type or
                 self.trap_source_ip != old.trap_source_ip or
                 self.syslog_source_type != old.syslog_source_type or
-                self.syslog_source_ip != old.syslog_source_ip
+                self.syslog_source_ip != old.syslog_source_ip or
+                self.address != old.address
         ):
             ObjectMap.invalidate(self.pool)
 
