@@ -14,7 +14,7 @@ import json
 from noc.main.models.pool import Pool
 
 
-def main(path):
+def main():
     with open("etc/noc.json") as f:
         data = json.load(f, encoding="utf-8")
     changed = False
@@ -38,4 +38,4 @@ def main(path):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main()
