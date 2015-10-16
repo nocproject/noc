@@ -52,7 +52,8 @@ def build(node):
     ne = {
         "NOC_ENV": jcfg["nodes"][node]["environment"],
         "NOC_DC": jcfg["nodes"][node]["datacenter"],
-        "NOC_NODE": node
+        "NOC_NODE": node,
+        "NOC_USER": jcfg["config"]["noc"]["user"]
     }
     # Build config
     out = ConfigParser.ConfigParser()
