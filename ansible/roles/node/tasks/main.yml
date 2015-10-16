@@ -117,7 +117,7 @@
   failed_when: "'ERROR' in result.stdout"
 
 - name: Generate NOC config
-  copy: content="{{ noc_config | to_nice_json}}" dest="{{ noc_root }}/etc/noc.json
+  copy: content="{{ noc_config | to_nice_json}}" dest="{{ noc_root }}/etc/noc.json"
 
 - name: Setup supervisor config
   template: src="{{ item }}" dest="{{ noc_root }}/{{ item[:-3] }}"
