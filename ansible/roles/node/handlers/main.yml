@@ -1,2 +1,0 @@
-- name: restart consul
-  service: name="{{ consul_system_service }}" state=restarted
