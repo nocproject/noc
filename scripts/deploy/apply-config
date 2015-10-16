@@ -59,6 +59,11 @@ def build(node):
     out = ConfigParser.ConfigParser()
     for s in config.sections():
         if s != "supervisord" and not s.startswith("program:"):
+            # Copy section
+            out.add_section(s)
+            for o in config.options(s):
+                v = config.get(s, o)
+                out.set(s, o, v)
             continue
         se = ne.copy()
         # Read environment setting
@@ -106,6 +111,7 @@ def build(node):
                     #
                     out.set(sn, o, v)
                 out.set(sn, "environment", format_env(pe))
+                out.set(sn, "autostart", "true")
         elif s == "supervisord":
             out.add_section(s)
             # Copy config
