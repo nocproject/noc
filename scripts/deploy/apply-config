@@ -8,14 +8,23 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+import sys
 import glob
 import ConfigParser
 import cStringIO
 import sys
 import os
 import subprocess
+import json
 
-CFG = "etc/supervisord.conf"
+
+SUPERVISORD_CFG = "etc/supervisord.conf"
+NOC_CFG = "etc/noc.json"
+
+ENV_MAP = {
+    "loglevel": "NOC_LOGLEVEL",
+    "listen": "NOC_LISTEN"
+}
 
 
 def format_env(env):
@@ -27,104 +36,103 @@ def format_env(env):
     return ",".join("%s=\"%s\"" % (k, q(env[k])) for k in env)
 
 
-def build():
+def build(node):
+    with open("etc/noc.json") as f:
+        jcfg = json.load(f, encoding="utf-8")
     config = ConfigParser.RawConfigParser()
     # Read configs
     for ge in [
         "etc/defaults/supervisor/*.conf",
         "etc/defaults/services/*.conf",
         "etc/config/supervisor/*.conf",
-        "etc/config/services/*.conf"
     ]:
         for path in glob.glob(ge):
             config.read(path)
-    # Read environments
-    env = {}
-    env_config = ConfigParser.RawConfigParser()
-    env_config.optionxform = str  # Preserve case
-    for path in glob.glob("etc/config/env/*.conf"):
-        env_config.read(path)
-    for s in env_config.sections():
-        env[s] = {}
-        for o in env_config.options(s):
-            env[s][o] = env_config.get(s, o)
-    # @todo: Check for required options
-    noc_env = env["supervisord"]["NOC_ENV"]
-    noc_dc = env["supervisord"]["NOC_DC"]
-    noc_node = env["supervisord"]["NOC_NODE"]
+    # Node environment
+    ne = {
+        "NOC_ENV": jcfg["nodes"][node]["environment"],
+        "NOC_DC": jcfg["nodes"][node]["datacenter"],
+        "NOC_NODE": node
+    }
     # Build config
     out = ConfigParser.ConfigParser()
     for s in config.sections():
-        # Build service's environment
-        de = {}
-        if s == "supervisord":
-            pn = s
-        elif s.startswith("program:"):
-            pn = s[8:]
-        else:
-            pn = None
-        if pn:
-            de.update(env.get(pn, {}))
-            if de:
-                ce = ""
-                if config.has_option(s, "environment"):
-                    ce = config.get(s, "environment") + ","
-                ce += format_env(de)
-                config.set(s, "environment", ce)
-        re = de.copy()  # service + supervisor environment
-        re.update(env["supervisord"])
-        if (s.startswith("program")
-            and config.has_option(s, "pools")
-            and config.get(s, "pools")
-        ):
-            # Clone pooled configuration
-            for p in config.get(s, "pools").split(","):
-                if ":" in p:
-                    pool_name, numprocs = p.split(":")
+        if s != "supervisord" and not s.startswith("program:"):
+            continue
+        se = ne.copy()
+        # Read environment setting
+        if config.has_option(s, "environment"):
+            for ec in config.get(s, "environment").split(","):
+                k, v = ec.split("=", 1)
+                if v.startswith("\"") and v.endswith("\""):
+                    v = v[1:-1]
+                se[k] = v
+        # Process program secrion
+        if s.startswith("program:"):
+            s = s[8:]  # Strip "program:"
+            # Apply global service config
+            if s in jcfg["config"]:
+                for k in ENV_MAP:
+                    if k in jcfg["config"][s]:
+                        se[ENV_MAP[k]] = jcfg["config"][s][k]
+            # Build pools configuration
+            js = [
+                sn for sn in jcfg["config"]
+                if sn.startswith("%s-" % s) and sn.endswith("-%s" % node)
+            ]
+            for j in js:
+                # Build pool environment
+                pe = se.copy()
+                pool = j.split("-", 1)[1].rsplit("-", 1)[0]
+                if pool == "global":
+                    sn = "program:%s" % s
                 else:
-                    pool_name, numprocs = p, None
-                ns = "%s-%s" % (s, pool_name)
-                # Add NOC_POOL environment to expand
-                re["NOC_POOL"] = pool_name
-                out.add_section(ns)
-                # Non-pooled configuration
-                for o in config.options(s):
-                    if o == "pools":
-                        continue
-                    v = config.get(s, o)
+                    sn = "program:%s-%s" % (s, pool)
+                    pe["NOC_POOL"] = pool
+                # Build pool environment
+                for k in ENV_MAP:
+                    if k in jcfg["config"][j]:
+                        pe[ENV_MAP[k]] = jcfg["config"][j][k]
+                # Build configuration
+                out.add_section(sn)
+                pn = "program:%s" % s
+                # Copy config
+                for o in config.options(pn):
+                    v = config.get(pn, o)
+                    # Apply environment variables
+                    for e in pe:
+                        v = v.replace("%%(ENV_%s)s" % e, pe[e])
                     #
-                    if o == "environment":
-                        v += ","
-                        v += format_env({"NOC_POOL": pool_name})
-                    # Apply environment variables to parameters
-                    for e in re:
-                        v = v.replace("%%(ENV_%s)s" % e, re[e])
-                    out.set(ns, o, v)
-                if numprocs:
-                    # Override numprocs
-                    out.set(ns, "numprocs", numprocs)
-        else:
+                    out.set(sn, o, v)
+                out.set(sn, "environment", format_env(pe))
+        elif s == "supervisord":
             out.add_section(s)
-            # Non-pooled configuration
+            # Copy config
             for o in config.options(s):
                 v = config.get(s, o)
-                # Apply environment variables to parameters
-                for e in re:
-                    v = v.replace("%%(ENV_%s)s" % e, re[e])
+                # Apply environment variables
+                for e in se:
+                    v = v.replace("%%(ENV_%s)s" % e, se[e])
+                #
                 out.set(s, o, v)
+            out.set(s, "environment", format_env(se))
+    # Convert to .ini format
     buffer = cStringIO.StringIO()
     out.write(buffer)
     cfg = buffer.getvalue()
     # Read old config
-    if os.path.exists(CFG):
-        with open(CFG) as f:
+    if os.path.exists(SUPERVISORD_CFG):
+        with open(SUPERVISORD_CFG) as f:
             old = f.read()
     else:
         old = None
-    if old != cfg:
+    if old == cfg:
+        print "OK"
+    else:
         # Rewrite
-        with open(CFG, "w") as f:
+        with open(SUPERVISORD_CFG, "w") as f:
             f.write(cfg)
+        print "CHANGED"
 
 
 def apply():
@@ -136,6 +144,6 @@ def apply():
 
 
 if __name__ == "__main__":
-    build()
+    build(sys.argv[1])
     if "--apply" in sys.argv:
         apply()

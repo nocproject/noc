@@ -5,22 +5,17 @@ services:
   postgres:
     description: PostgreSQL server
     level: system
-    static_service:
-      port: 5432
+    port: 5432
 
   mongod:
     description: Mongod server
     level: system
-    static_service:
-      port: 27017
+    port: 27017
 
   nginx:
     description: Nginx server
     level: system
-
-  consul:
-    description: Consul Server
-    level: system
+    port: 443
 
   classifier:
     description: Classifier
