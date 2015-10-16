@@ -1,10 +1,4 @@
 ---
-- name: Add nocproject.org apt key
-  apt_key: keyserver=keyserver.ubuntu.com id=9099EB55
-
-- name: Add NOC repository
-  apt_repository: repo="deb http://cdn.nocproject.org/repo/debian {{ ansible_distribution_release }} noc" state=present update_cache=yes
-
 - name: Install Debian system packages
   apt: name={{item}} update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
   with_items:
@@ -21,11 +15,6 @@
     - quilt
     - gcc
     - libpq-dev
-    - consul
 
 - name: Install supervisord init script
   template: src="Debian/etc/init.d/noc.j2" dest="/etc/init.d/{{ noc_system_service }}" mode="a+rx"
-
-- name: Set up consul defaults
-  template: src="Debian/etc/default/consul.j2" dest="/etc/default/consul"
-  notify: restart consul

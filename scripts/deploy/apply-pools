@@ -15,20 +15,19 @@ from noc.main.models.pool import Pool
 
 
 def main(path):
-    with open(path) as f:
-        data = json.load(f, encoding="utf-8")
+    data = json.load("etc/noc.json", encoding="utf-8")
     changed = False
-    for p in data:
+    for p in data["pools"]:
         try:
-            pool = Pool.objects.get(name=p["name"])
-            if pool.description != p["description"]:
-                p.description = p["description"]
+            pool = Pool.objects.get(name=p)
+            if pool.description != data["pools"][p]["description"]:
+                p.description = data["pools"][p]["description"]
                 p.save()
                 changed = True
         except Pool.DoesNotExist:
             Pool(
                 name=p["name"],
-                description=p["description"]
+                description=data["pools"][p]["description"]
             ).save()
             changed = True
     if changed:

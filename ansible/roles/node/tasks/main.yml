@@ -56,9 +56,7 @@
 - name: Create required directories
   file: path="{{noc_root}}/{{item.name}}" state="directory" owner="{{item.owner}}"
   with_items:
-    - name: etc/config/env
-      owner: root
-    - name: etc/config/services
+    - name: etc/config/
       owner: root
     - name: etc/config/supervisor
       owner: root
@@ -118,32 +116,15 @@
   changed_when: "'CHANGED' in result.stdout"
   failed_when: "'ERROR' in result.stdout"
 
+- name: Generate NOC config
+  copy: content="{{ noc_config | to_nice_json}}" dest="{{ noc_root }}/etc/noc.json
+
 - name: Setup supervisor config
   template: src="{{ item }}" dest="{{ noc_root }}/{{ item[:-3] }}"
   with_items:
-    - etc/config/env/supervisord.conf.j2
     - etc/config/supervisor/supervisord.conf.j2
     - etc/config/supervisor/supervisorctl.conf.j2
     - etc/config/supervisor/unix_http_server.conf.j2
-
-- name: Setup supervisor services configs
-  template: src="etc/config/services/{{ item }}.conf.j2" dest="{{ noc_root }}/etc/config/services/{{ item }}.conf"
-  with_items: "{{ noc_all_services }}"
-
-- name: Setup supervisor services environment
-  template: src="etc/config/env/{{ item }}.conf.j2" dest="{{ noc_root }}/etc/config/env/{{ item }}.conf"
-  with_items: "{{ noc_all_services }}"
-
-- name: Set up Consul
-  template: src="consul.json.j2" dest="{{noc_root}}/var/etc/consul/consul.json"
-  notify: restart consul
-
-- name: Set up Consul static services
-  template: src="services.json.j2" dest="{{noc_root}}/var/etc/consul/services.json"
-  notify: restart consul
-
-- name: Enable Consul
-  service: name="{{consul_system_service}}" enabled=yes state=started
 
 - name: Set up noc.conf
   ini_file: dest="{{noc_root}}/etc/noc.conf"

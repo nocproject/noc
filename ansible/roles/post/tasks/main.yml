@@ -1,7 +1,9 @@
 # Post-deployment tasks
 ---
 - name: Build supervisor config
-  command: "{{ noc_root }}/scripts/deploy/apply-config"
+  command: "{{ noc_root }}/scripts/deploy/apply-config {{ inventory_hostname }}"
+  register: result
+  changed_when: "'CHANGED' in result.stdout"
   args:
     chdir: "{{ noc_root }}"
 

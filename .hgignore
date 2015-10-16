@@ -11,12 +11,14 @@ build/
 noc.egg-info/
 bin/*
 sbin/
+etc/noc.json
 etc/noc-*.conf
 etc/support.conf
 etc/upgrade.conf
 etc/beef.conf
 etc/noc.conf
-etc/config/
+etc/noc.json
+etc/config/**.conf
 etc/supervisord.conf
 etc/address/*.conf
 etc/certs/*
