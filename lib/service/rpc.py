@@ -61,7 +61,7 @@ class RPCProxy(object):
         is_notify = "_notify" in kwargs
         if not is_notify:
             msg["id"] = tid
-        services = yield self._service.resolve_service(
+        services = self._service.resolve_service(
             self._service_name,
             n=1
         )

@@ -7,16 +7,15 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-# Python modules
-import sys
-import json
+# Third-party modules
+import yaml
 # NOC modules
 from noc.main.models.pool import Pool
 
 
 def main():
-    with open("etc/noc.json") as f:
-        data = json.load(f, encoding="utf-8")
+    with open("etc/noc.yml") as f:
+        data = yaml.load(f)
     changed = False
     for p in data["pools"]:
         try:
@@ -35,7 +34,6 @@ def main():
         print "CHANGED"
     else:
         print "OK"
-
 
 if __name__ == "__main__":
     main()

@@ -26,9 +26,3 @@ nginx_conf_path: /etc/nginx/sites-enabled/noc.conf
 nginx_log_dir: /var/log/nginx
 # APT settings
 apt_cache_valid_time: 3600
-# Consul settings
-consul_user: consul
-consul_system_service: consul
-# Redis settings
-redis_system_service: redis-server
-redis_user: redis
