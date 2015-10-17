@@ -14,7 +14,7 @@ from mongoengine.document import Document
 from mongoengine.fields import ReferenceField, DictField, DateTimeField
 ## NOC modules
 from noc.main.models.pool import Pool
-from noc.lib.service.event import fire
+from noc.core.service.event import fire
 from noc.sa.models.objectstatus import ObjectStatus
 
 
@@ -162,7 +162,7 @@ class ObjectMap(Document):
         """
         Invalidate pool mappings
         """
-        logger.debug("Invalidation %s object mappings", pool)
+        logger.debug("Invalidating object mappings for %s", pool)
         ObjectMap._get_collection().update({
             "pool": pool.id
         }, {

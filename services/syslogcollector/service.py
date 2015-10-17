@@ -12,38 +12,18 @@ import os
 from optparse import make_option
 import socket
 from collections import defaultdict
-import time
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
 ## NOC modules
-from noc.lib.service.base import Service
-from noc.sa.interfaces.base import StringParameter
+from noc.core.service.base import Service
 from syslogserver import SyslogServer
 
 
 class SyslogCollectorService(Service):
-    name = "syslogcollector"
-    #
+    name = "syslogcollector"    #
     leader_group_name = "syslogcollector-%(dc)s-%(node)s"
     pooled = True
-    # Dict parameter containing values accepted
-    # via dynamic configuration
-    config_interface = {
-        "loglevel": StringParameter(
-            default=os.environ.get("NOC_LOGLEVEL", "info"),
-            choices=["critical", "error", "warning", "info", "debug"]
-        )
-    }
-
-    service_option_list = [
-        make_option(
-            "-l", "--listen",
-            action="append", dest="listen",
-            default=[os.environ.get("NOC_LISTEN", "0.0.0.0:514")],
-            help="Listen addresses"
-        )
-    ]
 
     def __init__(self):
         super(SyslogCollectorService, self).__init__()

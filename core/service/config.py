@@ -16,7 +16,7 @@ class Config(object):
     PATH = "etc/noc.yml"
 
     def __init__(self, service, **kwargs):
-        self._defaults = vars(kwargs)
+        self._defaults = kwargs.copy()
         self._conf = {}
         self._service = service
         self._logger = logging.getLogger(__name__)

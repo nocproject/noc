@@ -6,10 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import datetime
 ## NOC modules
-from noc.lib.service.api.base import API, api, lock
+from noc.core.service.api import API, api, lock
 from noc.main.models.pool import Pool
 from noc.sa.models.objectmap import ObjectMap
 
