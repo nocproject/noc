@@ -113,7 +113,7 @@
   failed_when: "'ERROR' in result.stdout"
 
 - name: Generate NOC config
-  copy: content="{{ noc_config | to_nice_yaml }}" dest="{{ noc_root }}/etc/noc.yml"
+  template: src="etc/noc.yml.j2" dest="{{ noc_root }}/etc/noc.yml"
 
 - name: Setup supervisor config
   template: src="{{ item }}" dest="{{ noc_root }}/{{ item[:-3] }}"
