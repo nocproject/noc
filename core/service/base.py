@@ -337,3 +337,6 @@ class Service(object):
         candidates = self.config.get_service(service)
         svc = random.sample(candidates, n)
         return svc
+
+    def subscribe(self, topic, callback):
+        pass
