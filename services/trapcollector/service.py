@@ -46,18 +46,18 @@ class TrapCollectorService(Service):
                        self.on_object_map_change)
         # Listen sockets
         server = TrapServer(service=self)
-        for l in self.config.listen:
+        for l in [self.config.listen_traps]:
             if ":" in l:
                 addr, port = l.split(":")
             else:
                 addr, port = "", l
-            self.logger.info("Starting syslog server at %s:%s",
+            self.logger.info("Starting SNMP Trap server at %s:%s",
                              addr, port)
             try:
                 server.listen(port, addr)
             except socket.error, why:
                 self.logger.error(
-                    "Failed to start syslog server at %s:%s: %s",
+                    "Failed to start SNMP Trap server at %s:%s: %s",
                     addr, port, why
                 )
         server.start()

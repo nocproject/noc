@@ -83,3 +83,15 @@ config:
       label: Deduplication window
       type: int
       default: 3
+
+  syslogcollector:
+    listen_syslog:
+      label: Listen SYSLOG
+      type: str
+      default: 0.0.0.0:514
+
+  trapcollector:
+    listen_traps:
+      label: Listen SNNP Traps
+      type: str
+      default: 0.0.0.0:162
