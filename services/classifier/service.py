@@ -45,7 +45,6 @@ from exception import InvalidPatternException, EventProcessingFailed
 from cloningrule import CloningRule
 from rule import Rule
 from noc.lib.solutions import get_event_class_handlers, get_solution
-from noc.sa.interfaces.base import StringParameter, IntParameter
 
 ##
 ## Exceptions
@@ -76,27 +75,6 @@ class ClassifierService(Service):
     name = "classifier"
     leader_group_name = "classifier-%(pool)s"
     pooled = True
-
-    # Dict parameter containing values accepted
-    # via dynamic configuration
-    config_interface = {
-        "loglevel": StringParameter(
-            default=os.environ.get("NOC_LOGLEVEL", "info"),
-            choices=["critical", "error", "warning", "info", "debug"]
-        ),
-        # Interval in seconds to find duplicated events
-        # 0 - disable deduplication
-        "deduplication_window": IntParameter(default=3),
-        # Interface profile name to use as default, when
-        # event interface is not found in inventory
-        "default_interface_profile": StringParameter(default="default"),
-        # Rule lookup solution
-        # * noc.fm.classifier.rulelookup.RuleLookup - default lookup
-        # * noc.fm.classifier.xrulelookup.XRuleLookup - Accelerated (experimental)
-        "lookup_solution": StringParameter(
-            default="noc.services.classifier.rulelookup.RuleLookup"
-        )
-    }
 
     DEFAULT_RULE = "Unknown | Default"
 

@@ -52,7 +52,7 @@ class Config(object):
 
     def load(self, path=None):
         path = path or self._PATH
-        self._service.logger.info("Loading config from %s", self.PATH)
+        self._service.logger.info("Loading config from %s", path)
         conf = self._defaults.copy()
         with open(path) as f:
             data = yaml.load(f)
