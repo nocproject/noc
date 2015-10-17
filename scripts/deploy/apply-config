@@ -64,6 +64,8 @@ def build(node):
             out.add_section(s)
             for o in config.options(s):
                 v = config.get(s, o)
+                for e in ne:
+                    v = v.replace("%%(ENV_%s)s" % e, ne[e])
                 out.set(s, o, v)
             continue
         se = ne.copy()
