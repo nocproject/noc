@@ -11,7 +11,7 @@ build/
 noc.egg-info/
 bin/*
 sbin/
-etc/noc.json
+etc/noc.yml
 etc/noc-*.conf
 etc/support.conf
 etc/upgrade.conf
