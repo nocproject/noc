@@ -60,3 +60,26 @@ services:
   web:
     description: Legacy web interface
     level: global
+
+config:
+  noc:
+    installation_name:
+      label: Installation name
+      type: str
+      default: Unconfigured installation
+
+  classifier:
+    lookup_solution:
+      label: Lookup solution
+      type: str
+      default: noc.services.classifier.rulelookup.RuleLookup
+
+    default_interface_profile:
+      label: Default interface profile
+      type: str
+      default: default
+
+    deduplication_window:
+      label: Deduplication window
+      type: int
+      default: 3
