@@ -10,6 +10,7 @@
 import os
 import json
 import argparse
+import pprint
 ## Third-party modules
 import tornado.httpclient
 ## NOC modules
@@ -27,6 +28,13 @@ class Command(BaseCommand):
             help="Configuration path"
         )
         parser.add_argument(
+            "--pretty",
+            action="store_true",
+            dest="pretty",
+            default=False,
+            help="Pretty-print output"
+        )
+        parser.add_argument(
             "rpc",
             nargs=1,
             help="RPC name in form <api>[-<pool>].<method>"
@@ -37,7 +45,8 @@ class Command(BaseCommand):
             help="Arguments passed to RPC calls"
         )
 
-    def handle(self, config, rpc, arguments, *args, **options):
+    def handle(self, config, rpc, arguments, pretty,
+               *args, **options):
         catalog = ServiceCatalog(config)
         service, method = rpc[0].split(".", 1)
         api = service.split("-")[0]
@@ -61,7 +70,12 @@ class Command(BaseCommand):
             if data.get("error"):
                 self.die("Error: %s" % data.get("error"))
             else:
-                self.stdout.write(str(data["result"]) + "\n")
+                if pretty:
+                    self.stdout.write(
+                        pprint.pformat(data["result"]) + "\n"
+                    )
+                else:
+                    self.stdout.write(str(data["result"]) + "\n")
                 return
         self.die("No active services")
 
