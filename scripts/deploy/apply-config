@@ -15,11 +15,12 @@ import cStringIO
 import sys
 import os
 import subprocess
-import json
+## Third party modules
+import yaml
 
 
 SUPERVISORD_CFG = "etc/supervisord.conf"
-NOC_CFG = "etc/noc.json"
+NOC_CFG = "etc/noc.yml"
 
 ENV_MAP = {
     "loglevel": "NOC_LOGLEVEL",
@@ -38,7 +39,7 @@ def format_env(env):
 
 def build(node):
     with open("etc/noc.json") as f:
-        jcfg = json.load(f, encoding="utf-8")
+        jcfg = yaml.load(f)
     config = ConfigParser.RawConfigParser()
     # Read configs
     for ge in [
