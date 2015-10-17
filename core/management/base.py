@@ -18,8 +18,10 @@ class CommandError(Exception):
 
 
 class BaseCommand(object):
-    def __init__(self):
+    def __init__(self, stdout=sys.stdout, stderr=sys.stderr):
         self.verbose_level = 0
+        self.stdout = stdout
+        self.stderr = stderr
 
     def run(self):
         """
@@ -46,9 +48,9 @@ class BaseCommand(object):
         try:
             return self.handle(*args, **cmd_options) or 0
         except CommandError, why:
-            sys.stderr.write(why)
-            sys.stderr.write("\n")
-            sys.stderr.flush()
+            self.stderr.write(str(why))
+            self.stderr.write("\n")
+            self.stderr.flush()
             return 1
         except Exception:
             error_report()
@@ -68,10 +70,6 @@ class BaseCommand(object):
         Apply additional parser arguments
         """
         pass
-
-    def out(self, msg, level=0):
-        if level <= self.verbose_level:
-            print out
 
     def die(self, msg):
         raise CommandError(msg)

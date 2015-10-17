@@ -9,7 +9,6 @@
 ## Python modules
 import os
 ## Third-party modules
-import yaml
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.service.catalog import ServiceCatalog
@@ -46,9 +45,11 @@ class Command(BaseCommand):
                     url
                 ]]
 
-        print format_table(
-            [0, 0, 0, 0, 0],
-            out
+        self.stdout.write(
+            format_table(
+                [0, 0, 0, 0, 0],
+                out
+            ) + "\n"
         )
 
 if __name__ == "__main__":
