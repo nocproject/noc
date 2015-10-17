@@ -1,57 +1,69 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Service documentation request handler
+## RPC cli
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-# Python modules
+## Python modules
+import os
 import json
-import sys
-import random
-# Third-party modules
+import argparse
+## Third-party modules
 import tornado.httpclient
+## NOC modules
+from noc.core.management.base import BaseCommand
+from noc.core.service.catalog import ServiceCatalog
 
 
-def die(msg):
-    print msg
-    sys.exit(1)
-
-
-def main():
-    service, method = sys.argv[1].split(".", 1)
-    # Resolve service
-    client = tornado.httpclient.HTTPClient()
-    try:
-        response = client.fetch(
-            "http://127.0.0.1:8500/v1/catalog/service/%s" % service
+class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--config",
+            action="store",
+            dest="config",
+            default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
+            help="Configuration path"
         )
-        candidates = ["%s:%s" % (
-            s.get("ServiceAddress", s.get("Address")),
-            s.get("ServicePort")
-        ) for s in json.loads(response.body)]
-    except Exception, why:
-        die("Cannot resolve service %s: %s" % (service, why))
-    if len(candidates) < 1:
-        die("Service not found")
-    tid = 1
-    api = service.split("-")[0]
-    req = {"id": tid, "method": method, "params": sys.argv[2:]}
-    svc = random.sample(candidates, 1)[0]
-    try:
-        response = client.fetch(
-            "http://%s/api/%s/" % (svc, api),
-            method="POST",
-            body=json.dumps(req)
+        parser.add_argument(
+            "rpc",
+            nargs=1,
+            help="RPC name in form <api>[-<pool>].<method>"
         )
-    except Exception, why:
-        die("Failed to call: %s" % why)
-    data = json.loads(response.body)
-    if data.get("error"):
-        die("Error: %s" % data.get("error"))
-    else:
-        print data["result"]
+        parser.add_argument(
+            "arguments",
+            nargs=argparse.REMAINDER,
+            help="Arguments passed to RPC calls"
+        )
+
+    def handle(self, config, rpc, arguments, *args, **options):
+        catalog = ServiceCatalog(config)
+        service, method = rpc[0].split(".", 1)
+        api = service.split("-")[0]
+        tid = 1
+        req = {"id": tid, "method": method, "params": arguments}
+        client = tornado.httpclient.HTTPClient()
+        for l in catalog.get_service(service).listen:
+            try:
+                response = client.fetch(
+                    "http://%s/api/%s/" % (l, api),
+                    method="POST",
+                    body=json.dumps(req)
+                )
+            except tornado.httpclient.HTTPError, why:
+                if why.code in (404, 500):
+                    self.die("Failed to call: %s" % why)
+                continue
+            except Exception, why:
+                continue
+            data = json.loads(response.body)
+            if data.get("error"):
+                self.die("Error: %s" % data.get("error"))
+            else:
+                self.stdout.write(str(data["result"]) + "\n")
+                return
+        self.die("No active services")
 
 if __name__ == "__main__":
-    main()
+    Command().run()
