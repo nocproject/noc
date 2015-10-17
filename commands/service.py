@@ -6,41 +6,49 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
 ## Third-party modules
-import consul
+import yaml
 ## NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.service.catalog import ServiceCatalog
 from noc.lib.text import format_table
 
 
 class Command(BaseCommand):
-    system_services = ["mongod", "postgres", "consul"]
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--config",
+            action="store",
+            dest="config",
+            default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
+            help="Configuration path"
+        )
 
-    def handle(self, *args, **options):
-        self.out("Creating Consul Client", 1)
-        c = consul.Consul()
-        self.out("Requesting services", 1)
-        data = [["Service", "Node", "URL", "Tags"]]
-        index, service = c.catalog.services()
-        for sn in service:
-            index, instances = c.catalog.service(sn)
-            for si in instances:
-                if si["ServiceName"] in self.system_services:
-                    url = "%s:%s" % (si["Address"], si["ServicePort"])
+    def handle(self, config, *args, **options):
+        catalog = ServiceCatalog(config)
+        # Enumerate services
+        out = [["S", "Service", "Node", "DC", "URL"]]
+        for sn in catalog.iter_services():
+            sd = catalog.get_service(sn)
+            for sn in sd.nodes:
+                if sd.external:
+                    url = sn.listen
                 else:
-                    url = "http://%s:%s/api/%s/" % (
-                        si["Address"], si["ServicePort"],
-                        si["ServiceName"]
-                    )
-                data += [[
-                    si["ServiceName"],
-                    si["Node"],
-                    url,
-                    ",".join(si.get("ServiceTags", []) or [])
+                    nsn = sd.name.split("-")[0]
+                    url = "http://%s/api/%s/" % (sn.listen, nsn)
+                out += [[
+                    " ",
+                    sd.name,
+                    sn.node,
+                    sn.dc,
+                    url
                 ]]
+
         print format_table(
-            [20, 12, 40, 10],
-            data
+            [0, 0, 0, 0, 0],
+            out
         )
 
 if __name__ == "__main__":
