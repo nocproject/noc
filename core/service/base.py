@@ -130,7 +130,7 @@ class Service(object):
             action="store",
             dest="config",
             default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
-            help="Logging level"
+            help="Configuration path"
         )
         if self.pooled:
             parser.add_argument(
