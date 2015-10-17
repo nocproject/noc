@@ -38,7 +38,7 @@ def format_env(env):
 
 
 def build(node):
-    with open("etc/noc.json") as f:
+    with open(NOC_CFG) as f:
         jcfg = yaml.load(f)
     config = ConfigParser.RawConfigParser()
     # Read configs
