@@ -12,9 +12,11 @@ import yaml
 # NOC modules
 from noc.main.models.pool import Pool
 
+CONFIG = "etc/noc.yml"
+
 
 def main():
-    with open("etc/noc.yml") as f:
+    with open(CONFIG) as f:
         data = yaml.load(f)
     changed = False
     for p in data["pools"]:
