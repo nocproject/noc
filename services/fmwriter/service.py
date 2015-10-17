@@ -16,7 +16,7 @@ import time
 from bson import Binary
 import tornado.ioloop
 ## NOC modules
-from noc.lib.service.base import Service
+from noc.core.service.base import Service
 from noc.sa.interfaces.base import StringParameter
 from noc.fm.models.newevent import NewEvent
 from api.fmwriter import FMWriterAPI

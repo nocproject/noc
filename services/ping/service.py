@@ -8,14 +8,16 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import os
 import functools
 import time
+
+import os
+
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
 ## NOC modules
-from noc.lib.service.base import Service
+from noc.core.service.base import Service
 from noc.sa.interfaces.base import StringParameter
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
@@ -27,14 +29,6 @@ class PingService(Service):
     #
     leader_group_name = "ping-%(pool)s"
     pooled = True
-    # Dict parameter containing values accepted
-    # via dynamic configuration
-    config_interface = {
-        "loglevel": StringParameter(
-            default=os.environ.get("NOC_LOGLEVEL", "info"),
-            choices=["critical", "error", "warning", "info", "debug"]
-        )
-    }
 
     def __init__(self):
         super(PingService, self).__init__()

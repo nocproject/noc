@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import json
+import core.service.api
 ## Third-party modules
-import tornado.web
+import core.service.api
 ## NOC modules
-from noc.lib.debug import error_report
+from core.service.api import error_report
 
 
-class APIRequestHandler(tornado.web.RequestHandler):
+class APIRequestHandler(core.service.api.RequestHandler):
     """
     HTTP JSON-RPC request handler
     """
@@ -27,7 +27,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
     def post(self, *args, **kwargs):
         # Parse JSON
         try:
-            req = json.loads(self.request.body)
+            req = core.service.api.loads(self.request.body)
         except ValueError, why:
             return self.api_error(why)
         # Parse request
@@ -70,7 +70,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
                 "Failed: %s" % why,
                 id=id
             )
-        self.write(json.dumps({
+        self.write(core.service.api.dumps({
             "id": id,
             "error": None,
             "result": result
@@ -83,7 +83,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
             }
             if id:
                 rsp["id"] = id
-            self.write(json.dumps(rsp))
+            self.write(core.service.api.dumps(rsp))
 
 
 class API(object):

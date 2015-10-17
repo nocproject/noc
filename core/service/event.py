@@ -8,8 +8,6 @@
 
 ## Python modules
 import logging
-## Third-party modules
-import consul
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +17,3 @@ def fire(topic):
     Firing topic message
     """
     logger.debug("Firing on %s", topic)
-    c = consul.Consul()
-    c.kv.put(
-        "event/%s" % topic,
-        ""
-    )

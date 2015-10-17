@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.service.api.base import API, api
+from core.service.api import API, api
 
 
 class PMWriterAPI(API):

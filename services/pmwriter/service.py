@@ -12,7 +12,7 @@ import os
 # Third-party modules
 import tornado.ioloop
 ## NOC modules
-from noc.lib.service.base import Service
+from noc.core.service.base import Service
 from noc.sa.interfaces.base import StringParameter, IntParameter
 from api.pmwriter import PMWriterAPI
 from noc.pm.db.base import tsdb

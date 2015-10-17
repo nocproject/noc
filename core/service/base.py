@@ -16,7 +16,6 @@ import random
 from collections import defaultdict
 import argparse
 ## Third-party modules
-from tornado import ioloop
 import tornado.gen
 import tornado.web
 import tornado.netutil
@@ -25,7 +24,7 @@ import tornado.httpclient
 ## NOC modules
 from noc.lib.debug import excepthook, error_report
 from .config import Config
-from .api.base import APIRequestHandler
+from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
 from .rpc import RPCProxy
@@ -108,7 +107,7 @@ class Service(object):
             action="store",
             choices=list(self.LOG_LEVELS),
             dest="loglevel",
-            default="info",
+            default=os.environ.get("NOC_LOGLEVEL", "info"),
             help="Logging level"
         )
         parser.add_argument(
@@ -204,7 +203,7 @@ class Service(object):
         self.setup_logging(cmd_options["loglevel"])
         self.log_separator()
         # Read
-        self.config = Config(**cmd_options)
+        self.config = Config(self, **cmd_options)
         self.setup_logging()
         #
         self.setup_signal_handlers()
@@ -219,6 +218,7 @@ class Service(object):
                 "Running service %s", self.name
             )
         try:
+            self.ioloop = tornado.ioloop.IOLoop.current()
             self.logger.warn("Activating service")
             self.activate()
             self.logger.warn("Starting IOLoop")

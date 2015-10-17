@@ -9,7 +9,7 @@
 ## Python modules
 import datetime
 ## NOC modules
-from noc.lib.service.api.base import API, api
+from noc.core.service.api import API, api
 
 
 class FMWriterAPI(API):

@@ -11,13 +11,11 @@
 import os
 from optparse import make_option
 import socket
-from collections import defaultdict
-import time
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
 ## NOC modules
-from noc.lib.service.base import Service
+from noc.core.service.base import Service
 from noc.sa.interfaces.base import StringParameter
 from collector import GraphiteCollector
 

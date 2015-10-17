@@ -20,7 +20,7 @@ from cachetools import TTLCache, cachedmethod
 import tornado.gen
 import tornado.queues
 ## NOC modules
-from noc.lib.service.base import Service
+from noc.core.service.base import Service
 from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models import (EventClassificationRule,
