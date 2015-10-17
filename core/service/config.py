@@ -13,19 +13,47 @@ import yaml
 
 
 class Config(object):
-    PATH = "etc/noc.yml"
+    _PATH = "etc/noc.yml"
+    _SVC_PATH = "ansible/config/services.yml"
 
     def __init__(self, service, **kwargs):
-        self._defaults = kwargs.copy()
+        self._defaults = self._get_defaults(kwargs)
         self._conf = {}
         self._service = service
         self._logger = logging.getLogger(__name__)
         self._catalog = {}
 
+    def _get_defaults(self, defaults):
+        def get_section(data, name):
+            config = {}
+            sc = data["config"].get(name)
+            if not sc:
+                return config
+            for k in sc:
+                d = sc[k].get("default")
+                t = sc[k].get("type", "str")
+                if t == "int":
+                    v = 0
+                    if d:
+                        v = int(d)
+                elif t == "str":
+                    v = d or ""
+                else:
+                    raise Exception("Unknown type")
+                config[k] = v
+            config.update(defaults)
+            return config
+
+        with open(self._SVC_PATH) as f:
+            data = yaml.load(f)
+        config = get_section(data, "noc")
+        config.update(get_section(data, self._service.name))
+        return config
+
     def load(self):
         self._service.logger.info("Loading config from %s", self.PATH)
         conf = self._defaults.copy()
-        with open(self.PATH) as f:
+        with open(self._PATH) as f:
             data = yaml.load(f)
         # Build config paths
         paths = [
