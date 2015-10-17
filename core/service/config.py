@@ -17,10 +17,10 @@ class Config(object):
     _SVC_PATH = "ansible/config/services.yml"
 
     def __init__(self, service, **kwargs):
-        self._defaults = self._get_defaults(kwargs)
         self._conf = {}
         self._service = service
         self._logger = logging.getLogger(__name__)
+        self._defaults = self._get_defaults(kwargs)
         self._catalog = {}
 
     def _get_defaults(self, defaults):
