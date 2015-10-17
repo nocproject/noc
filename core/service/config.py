@@ -50,10 +50,11 @@ class Config(object):
         config.update(get_section(data, self._service.name))
         return config
 
-    def load(self):
+    def load(self, path=None):
+        path = path or self._PATH
         self._service.logger.info("Loading config from %s", self.PATH)
         conf = self._defaults.copy()
-        with open(self._PATH) as f:
+        with open(path) as f:
             data = yaml.load(f)
         # Build config paths
         paths = [

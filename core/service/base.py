@@ -113,7 +113,7 @@ class Service(object):
         parser.add_argument(
             "--instance",
             action="store",
-            dest="intance",
+            dest="instance",
             type=int,
             default=0,
             help="Instance number"
@@ -124,6 +124,13 @@ class Service(object):
             dest="debug",
             default=False,
             help="Dump additional debugging info"
+        )
+        parser.add_argument(
+            "--config",
+            action="store",
+            dest="config",
+            default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
+            help="Logging level"
         )
         if self.pooled:
             parser.add_argument(
@@ -151,7 +158,8 @@ class Service(object):
         """
         Create new or setup existing logger
         """
-        loglevel = loglevel or self.config.loglevel
+        if not loglevel:
+            loglevel = self.config.loglevel
         logger = logging.getLogger()
         if len(logger.handlers):
             # Logger is already initialized
@@ -204,6 +212,7 @@ class Service(object):
         self.log_separator()
         # Read
         self.config = Config(self, **cmd_options)
+        self.config.load(self.config.config)
         self.setup_logging()
         #
         self.setup_signal_handlers()
@@ -235,7 +244,7 @@ class Service(object):
         """
         Reload config
         """
-        self.config.load()
+        self.config.load(self.config.config)
 
     def stop(self):
         self.logger.warn("Stopping")
@@ -253,7 +262,7 @@ class Service(object):
         """
         Returns an (address, port) for HTTP service listener
         """
-        addr, port = self.config.listen
+        addr, port = self.config.listen.split(":")
         port = int(port) + self.config.instance
         return addr, port
 
