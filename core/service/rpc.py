@@ -78,28 +78,30 @@ class RPCProxy(object):
                     if why.code != 499:
                         raise RPCError("RPC Call Failed: %s", why)
                     else:
-                        self._service.logger.info(
+                        self._logger.info(
                             "Service is not available at %s. Retrying",
                             svc
                         )
                         continue
                 except socket.error, why:
-                    self._service.logger.info(
+                    self._logger.info(
                         "Service is not available at %s (%s). Retrying",
                         svc, why
                     )
                     continue
                 except Exception, why:
                     # Fatal error
+                    self._logger.error("RPC Call Failed: %s", why)
                     raise RPCError("RPC Call Failed: %s" % why)
                 if not is_notify:
                     result = json.loads(response.body)
                     if result.get("error"):
+                        self._logger.error("RPC Call Failed: %s", result["error"])
                         raise RPCError("RPC Call Failed: %s" % result["error"])
                     else:
                         raise tornado.gen.Return(result["result"])
-            self._service.logger.info(
-                "All services are not available. Waiting %s seconds",
+            self._logger.info(
+                "No services available. Waiting %s seconds",
                 timeout
             )
             yield tornado.gen.sleep(timeout)
@@ -116,14 +118,14 @@ class RPCMethod(object):
 
     @tornado.gen.coroutine
     def __call__(self, *args, **kwargs):
-        self._proxy._service.logger.debug(
+        self._proxy._logger.debug(
             "[REMOTE CALL>] %s.%s(%s, %s)",
             self._proxy._service_name,
             self._name, args, kwargs
         )
         self._proxy._service.perf_metrics[self._metric] += 1
         result = yield self._proxy._call(self._name, *args, **kwargs)
-        self._proxy._service.logger.debug(
+        self._proxy._logger.debug(
             "[REMOTE CALL<] %s.%s",
             self._proxy._service_name,
             self._name
