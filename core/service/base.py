@@ -196,7 +196,7 @@ class Service(object):
         Set up signal handlers
         """
         signal.signal(signal.SIGTERM, self.on_SIGTERM)
-        signal.signal(signal.SIGTERM, self.on_SIGHUP)
+        signal.signal(signal.SIGHUP, self.on_SIGHUP)
 
     def start(self):
         """
