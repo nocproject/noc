@@ -336,8 +336,10 @@ class Service(object):
         """
         n = n or self.config.rpc_choose_services
         candidates = self.config.get_service(service)
-        svc = random.sample(candidates, n)
-        return svc
+        if not candidates:
+            return []
+        else:
+            return random.sample(candidates, min(n, len(candidates)))
 
     def iter_rpc_retry_timeout(self):
         """
