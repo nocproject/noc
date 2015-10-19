@@ -69,7 +69,7 @@ class Service(object):
         self.logger = None
         self.config = None
         self.service_id = str(uuid.uuid4())
-        self.metrics = defaultdict(int)
+        self.perf_metrics = defaultdict(int)
 
     def create_parser(self):
         """
@@ -325,7 +325,7 @@ class Service(object):
         r = {
             "status": True
         }
-        r.update(self.metrics)
+        r.update(self.perf_metrics)
         return r
 
     def resolve_service(self, service, n=None):
