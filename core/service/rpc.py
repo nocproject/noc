@@ -72,7 +72,10 @@ class RPCProxy(object):
                     response = yield client.fetch(
                         "http://%s/api/%s/" % (svc, self._api),
                         method="POST",
-                        body=msg
+                        body=msg,
+                        headers={
+                            "X-NOC-Calling-Service": self._service.name
+                        }
                     )
                 except tornado.httpclient.HTTPError, why:
                     if why.code != 499:

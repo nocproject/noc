@@ -17,6 +17,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
     HTTP JSON-RPC request handler
     """
     SUPPORTED_METHODS = ("POST",)
+    CALLING_SERVICE_HEADER = "X-NOC-Calling-Service"
 
     def initialize(self, service, api_class):
         self.service = service
@@ -57,9 +58,13 @@ class APIRequestHandler(tornado.web.RequestHandler):
         #             id=id
         #         )
         # else:
+        calling_service = self.request.headers.get(
+            self.CALLING_SERVICE_HEADER,
+            "unknown"
+        )
         self.service.logger.info(
-            "[RPC] %s.%s(%s)",
-            api.name, method, params
+            "[RPC call from %s] %s.%s(%s)",
+            calling_service, api.name, method, params
         )
         try:
             result = h(*params)
