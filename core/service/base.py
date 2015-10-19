@@ -344,7 +344,7 @@ class Service(object):
         Yield timeout to wait after unsuccessful RPC connection
         """
         for t in self.config.rpc_retry_timeout.split(","):
-            yield int(t)
+            yield float(t)
 
     def subscribe(self, topic, callback):
         pass
