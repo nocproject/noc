@@ -328,15 +328,24 @@ class Service(object):
         r.update(self.metrics)
         return r
 
-    def resolve_service(self, service, n=1):
+    def resolve_service(self, service, n=None):
         """
         Resolve service
         Returns n randomly selected choices
         @todo: Datacenter affinity
         """
+        n = n or self.config.rpc_choose_services
         candidates = self.config.get_service(service)
         svc = random.sample(candidates, n)
         return svc
 
+    def iter_rpc_retry_timeout(self):
+        """
+        Yield timeout to wait after unsuccessful RPC connection
+        """
+        for t in self.config.rpc_retry_timeout.split(","):
+            yield int(t)
+
     def subscribe(self, topic, callback):
         pass
+
