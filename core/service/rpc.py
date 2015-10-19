@@ -25,6 +25,10 @@ class RPCError(Exception):
     pass
 
 
+class RPCTimeOutError(RPCError):
+    pass
+
+
 class RPCProxy(object):
     """
     API Proxy
@@ -103,13 +107,16 @@ class RPCProxy(object):
                         raise RPCError("RPC call failed: %s" % result["error"])
                     else:
                         raise tornado.gen.Return(result["result"])
+                else:
+                    # Notifications return None
+                    raise tornado.gen.Return()
             self._logger.info(
                 "No services available. Waiting %s seconds",
                 timeout
             )
             yield tornado.gen.sleep(timeout)
         self._logger.error("RPC call failed. Timed out")
-        raise RPCError("RPC call failed. Timed out")
+        raise RPCTimeOutError("RPC call failed. Timed out")
 
 
 class RPCMethod(object):
