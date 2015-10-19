@@ -8,9 +8,9 @@
 
 ## Python modules
 import itertools
-import uuid
 import json
 import logging
+import socket
 ## Third-party modules
 import tornado.concurrent
 import tornado.gen
@@ -83,9 +83,14 @@ class RPCProxy(object):
                             svc
                         )
                         continue
+                except socket.error, why:
+                    self._service.logger.info(
+                        "Service is not available at %s (%s). Retrying",
+                        svc, why
+                    )
+                    continue
                 except Exception, why:
-                    # @todo: Grab connection refused
-                    # wait for timeout
+                    # Fatal error
                     raise RPCError("RPC Call Failed: %s" % why)
                 if not is_notify:
                     result = json.loads(response.body)
