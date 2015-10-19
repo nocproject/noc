@@ -61,29 +61,42 @@ class RPCProxy(object):
         is_notify = "_notify" in kwargs
         if not is_notify:
             msg["id"] = tid
-        services = self._service.resolve_service(
-            self._service_name,
-            n=1
-        )
-        if not services:
-            raise RPCError("Service not found")
         msg = json.dumps(msg)
-        for svc in services:
-            client = tornado.httpclient.AsyncHTTPClient()
-            try:
-                response = yield client.fetch(
-                    "http://%s/api/%s/" % (svc, self._api),
-                    method="POST",
-                    body=msg
-                )
-            except Exception, why:
-                raise RPCError("RPC Call Failed: %s" % why)
-            if not is_notify:
-                result = json.loads(response.body)
-                if result.get("error"):
-                    raise RPCError("RPC Call Failed: %s" % result["error"])
-                else:
-                    raise tornado.gen.Return(result["result"])
+        for timeout in self._service.iter_rpc_retry_timeout():
+            services = self._service.resolve_service(self._service_name)
+            if not services:
+                raise RPCError("Service not found")
+            for svc in services:
+                client = tornado.httpclient.AsyncHTTPClient()
+                try:
+                    response = yield client.fetch(
+                        "http://%s/api/%s/" % (svc, self._api),
+                        method="POST",
+                        body=msg
+                    )
+                except tornado.httpclient.HTTPError, why:
+                    if why.code != 499:
+                        raise RPCError("RPC Call Failed: %s", why)
+                    else:
+                        self._service.logger.info(
+                            "Service is not available at %s. Retrying",
+                            svc
+                        )
+                        continue
+                except Exception, why:
+                    # @todo: Grab connection refused
+                    # wait for timeout
+                    raise RPCError("RPC Call Failed: %s" % why)
+                if not is_notify:
+                    result = json.loads(response.body)
+                    if result.get("error"):
+                        raise RPCError("RPC Call Failed: %s" % result["error"])
+                    else:
+                        raise tornado.gen.Return(result["result"])
+            self._service.logger.info(
+                "All services are not available. Waiting %s seconds"
+            )
+            yield tornado.gen.sleep(timeout)
 
 
 class RPCMethod(object):
