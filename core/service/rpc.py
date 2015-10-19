@@ -99,7 +99,8 @@ class RPCProxy(object):
                     else:
                         raise tornado.gen.Return(result["result"])
             self._service.logger.info(
-                "All services are not available. Waiting %s seconds"
+                "All services are not available. Waiting %s seconds",
+                timeout
             )
             yield tornado.gen.sleep(timeout)
 
