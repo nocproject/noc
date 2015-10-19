@@ -84,7 +84,7 @@ class ProbeService(Service):
         Periodic task to send metrics
         """
         if self.metrics:
-            yield self.pmwriter.metrics(self.metrics, _async=True)
+            yield self.pmwriter.metrics(self.metrics, _notify=True)
             self.metrics = []
 
     @tornado.gen.coroutine
@@ -93,7 +93,7 @@ class ProbeService(Service):
         Periodic task to send events
         """
         if self.events:
-            yield self.fmwriter.events(self.events, _async=True)
+            yield self.fmwriter.events(self.events, _notify=True)
             self.events = []
 
     @tornado.gen.coroutine
