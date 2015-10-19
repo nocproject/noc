@@ -116,7 +116,7 @@ class TrapCollectorService(Service):
         Periodic task to send collected messages to fmwriter
         """
         if self.messages:
-            yield self.fmwriter.events(self.messages, _async=True)
+            yield self.fmwriter.events(self.messages, _notify=True)
             self.messages = []
 
     @tornado.gen.coroutine
