@@ -58,7 +58,10 @@ class Command(BaseCommand):
                 response = client.fetch(
                     "http://%s/api/%s/" % (l, api),
                     method="POST",
-                    body=json.dumps(req)
+                    body=json.dumps(req),
+                    headers={
+                        "X-NOC-Calling-Service": "cli"
+                    }
                 )
             except tornado.httpclient.HTTPError, why:
                 if why.code in (404, 500):
