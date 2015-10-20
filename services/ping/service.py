@@ -10,15 +10,11 @@
 ## Python modules
 import functools
 import time
-
-import os
-
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
 ## NOC modules
 from noc.core.service.base import Service
-from noc.sa.interfaces.base import StringParameter
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
 
@@ -86,7 +82,7 @@ class PingService(Service):
         Periodic task to send collected messages to fmwriter
         """
         if self.messages:
-            yield self.fmwriter.events(self.messages, _async=True)
+            yield self.fmwriter.events(self.messages, _notify=True)
             self.messages = []
 
     @tornado.gen.coroutine
@@ -140,8 +136,7 @@ class PingService(Service):
     def update_probe(self, ip, data):
         self.logger.info("Update probe: %s (%ds)", ip, data["interval"])
         self.source_map[ip]["interval"] = data["interval"]
-        pt = self.ping_tasks.pop(ip)
-        pt.set_callback_time(data["interval"] * 1000)
+        self.ping_tasks[ip].set_callback_time(data["interval"] * 1000)
 
     @tornado.gen.coroutine
     def ping_check(self, address):
@@ -150,15 +145,17 @@ class PingService(Service):
         """
         if address not in self.ping_tasks:
             return
+        t0 = time.time()
         s = yield self.ping.ping_check(address, count=3)
-        if s is not None and s != self.source_map[address]["status"]:
+        smd = self.source_map.get(address)
+        if s is not None and smd and s != smd["status"]:
             self.logger.debug("Changing status for %s to %s",
                               address, s)
-            self.source_map[address]["status"] = s
+            smd["status"] = s
             result = "success" if s else "failed"
             self.register_message(
-                self.source_map[address]["id"],
-                time.time(),
+                smd["id"],
+                t0,
                 {
                     "source": "system",
                     "probe": "ping",
