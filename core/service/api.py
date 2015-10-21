@@ -12,6 +12,8 @@ import functools
 ## Third-party modules
 import tornado.web
 import tornado.gen
+## NOC modules
+from noc.lib.debug import error_report
 
 
 class APIRequestHandler(tornado.web.RequestHandler):
@@ -79,7 +81,14 @@ class APIRequestHandler(tornado.web.RequestHandler):
             else:
                 # Serialized version
                 result = yield h(*params)
+        except APIError, why:
+            self.api_error(
+                "Failed: %s" % why,
+                id=id
+            )
+            raise tornado.gen.Return()
         except Exception, why:
+            error_report()
             self.api_error(
                 "Failed: %s" % why,
                 id=id
