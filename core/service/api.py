@@ -31,23 +31,26 @@ class APIRequestHandler(tornado.web.RequestHandler):
         try:
             req = json.loads(self.request.body)
         except ValueError, why:
-            return self.api_error(why)
+            self.api_error(why)
+            raise tornado.gen.Return()
         # Parse request
         id = req.get("id")
         params = req.get("params", [])
         method = req.get("method")
         if not method or not hasattr(self.api_class, method):
-            return self.api_error(
+            self.api_error(
                 "Invalid method: '%s'" % method,
                 id=id
             )
+            raise tornado.gen.Return()
         api = self.api_class(self.service, self.request)
         h = getattr(api, method)
         if not getattr(h, "api", False):
-            return self.api_error(
+            self.api_error(
                 "Method is not callable: '%s'" % method,
                 id=id
             )
+            raise tornado.gen.Return()
         # lock = getattr(h, "lock", None)
         # if lock:
         #     # Locked call
@@ -75,12 +78,13 @@ class APIRequestHandler(tornado.web.RequestHandler):
                 executor = self.service.get_executor(h.executor)
             else:
                 # Serialized version
-                result = h(*params)
+                result = yield h(*params)
         except Exception, why:
-            return self.api_error(
+            self.api_error(
                 "Failed: %s" % why,
                 id=id
             )
+            raise tornado.gen.Return()
         self.write(json.dumps({
             "id": id,
             "error": None,
