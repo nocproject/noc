@@ -61,6 +61,14 @@ services:
     description: Legacy web interface
     level: global
 
+  sae:
+    description: Service activation engine
+    level: global
+
+  activator:
+    description: Activator service
+    level: pool
+
 config:
   noc:
     installation_name:
@@ -105,3 +113,9 @@ config:
       label: Listen SNNP Traps
       type: str
       default: 0.0.0.0:162
+
+  activator:
+    script_threads:
+      label: Script threads
+      type: int
+      default: 20
