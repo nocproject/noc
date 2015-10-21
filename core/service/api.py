@@ -8,8 +8,10 @@
 
 ## Python modules
 import json
+import functools
 ## Third-party modules
 import tornado.web
+import tornado.gen
 
 
 class APIRequestHandler(tornado.web.RequestHandler):
@@ -23,6 +25,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
         self.service = service
         self.api_class = api_class
 
+    @tornado.gen.coroutine
     def post(self, *args, **kwargs):
         # Parse JSON
         try:
@@ -67,7 +70,12 @@ class APIRequestHandler(tornado.web.RequestHandler):
             calling_service, api.name, method, params
         )
         try:
-            result = h(*params)
+            if getattr(h, "executor", ""):
+                # Threadpool version
+                executor = self.service.get_executor(h.executor)
+            else:
+                # Serialized version
+                result = h(*params)
         except Exception, why:
             return self.api_error(
                 "Failed: %s" % why,
@@ -116,6 +124,21 @@ def api(method):
     return method
 
 
+def executor(name):
+    """
+    Denote API methods as been executed on threadpool executor
+
+    @executor("script")
+    @api
+    def script(....)
+    """
+    @functools.wraps
+    def wrap(f):
+        f.executor = name
+        return f
+    return wrap
+
+
 class lock(object):
     """
     Decorator to lock api method call with named lock
@@ -126,3 +149,7 @@ class lock(object):
     def __call__(self, method):
         method.lock = self.name
         return method
+
+
+class APIError(Exception):
+    pass

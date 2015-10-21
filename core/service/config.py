@@ -99,5 +99,8 @@ class Config(object):
         else:
             return self._conf.get(item)
 
+    def __getitem__(self, item):
+        return self._conf[item]
+
     def get_service(self, name):
         return self._catalog.get(name)

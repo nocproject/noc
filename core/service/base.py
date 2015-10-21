@@ -16,11 +16,13 @@ import random
 from collections import defaultdict
 import argparse
 ## Third-party modules
+import tornado.ioloop
 import tornado.gen
 import tornado.web
 import tornado.netutil
 import tornado.httpserver
 import tornado.httpclient
+from concurrent.futures import ThreadPoolExecutor
 ## NOC modules
 from noc.lib.debug import excepthook, error_report
 from .config import Config
@@ -70,6 +72,7 @@ class Service(object):
         self.config = None
         self.service_id = str(uuid.uuid4())
         self.perf_metrics = defaultdict(int)
+        self.executors = {}
 
     def create_parser(self):
         """
@@ -351,3 +354,13 @@ class Service(object):
     def subscribe(self, topic, callback):
         pass
 
+    def get_executor(self, name):
+        """
+        Return or start named executor
+        """
+        executor = self.executors.get(name)
+        if not executor:
+            xt = "%s_threads" % name
+            executor = ThreadPoolExecutor(self.config[xt])
+            self.executors[name] = executor
+        return executor
