@@ -13,6 +13,7 @@ import tornado.gen
 ## NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
+from noc.core.service.rpc import RPCError
 
 
 class SAEAPI(API):
@@ -83,7 +84,7 @@ class SAEAPI(API):
             credentials["cli_protocol"] = {
                 1: "telnet",
                 2: "ssh"
-            }
+            }[scheme]
             if port:
                 credentials["cli_port"] = port
         # Build version
@@ -102,7 +103,10 @@ class SAEAPI(API):
         # Pass call to activator
         activator = self.service.get_activator(pool)
         script_name = "%s.%s" % (profile_name, script)
-        result = yield activator.script(
-            script_name, credentials, capabilities, version, timeout
-        )
+        try:
+            result = yield activator.script(
+                script_name, credentials, capabilities, version, timeout
+            )
+        except RPCError, why:
+            raise APIError("RPC Error: %s" % why)
         raise tornado.gen.Return(result)
