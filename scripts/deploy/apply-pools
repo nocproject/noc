@@ -28,7 +28,7 @@ def main():
                 changed = True
         except Pool.DoesNotExist:
             Pool(
-                name=p["name"],
+                name=p,
                 description=data["pools"][p]["description"]
             ).save()
             changed = True
