@@ -1,69 +1,26 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Profile base class
+## SA Profile Base
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-# Python Modules
+## Python modules
 import re
-import functools
-# NOC Modules
-from noc.lib.registry import Registry
+## NOC modules
+from noc.lib.ip import IPv4
+from noc.sa.interfaces.base import InterfaceTypeError
 from noc.lib.ecma48 import strip_control_sequences
-from noc.sa.interfaces import InterfaceTypeError
-from noc.lib.ip import *
-
-from noc.core.profile.base import BaseProfile as Profile
+import functools
 
 
-class ProfileRegistry(Registry):
-    """
-    Registry for Profile classes
-    """
-    name = "ProfileRegistry"
-    subdir = "profiles"
-    classname = "Profile"
-    apps = ["noc.sa"]
-    exclude = ["highlight"]
-
-profile_registry = ProfileRegistry()
-
-
-class ProfileBase(type):
-    """
-    Metaclass for Profile. Register created Profile class
-    with profile_registry
-    """
-    def __new__(cls, name, bases, attrs):
-        m = type.__new__(cls, name, bases, attrs)
-        m.scripts = {}
-        # Compile patterns
-        if m.pattern_syntax_error:
-            m.rx_pattern_syntax_error = re.compile(m.pattern_syntax_error)
-        else:
-            m.rx_pattern_syntax_error = None
-        if m.pattern_operation_error:
-            m.rx_pattern_operation_error = re.compile(m.pattern_operation_error)
-        else:
-            m.rx_pattern_operation_error = None
-        # Register
-        profile_registry.register(m.name, m)
-        return m
-
-
-class _Profile(object):
+class BaseProfile(object):
     """
     Equipment profile. Contains all equipment personality and specific
     """
-    __metaclass__ = ProfileBase
-    # Profile name
+    # Profile name in form <vendor>.<system>
     name = None
-    # Access schemes
-    TELNET = 0
-    SSH = 1
-    HTTP = 2
     #
     # Device capabilities
     #
@@ -167,32 +124,33 @@ class _Profile(object):
     # i.e noc.cm.parsers.Cisco.IOS.switch.IOSSwitchParser
     # Can be overriden in get_parser method
     default_parser = None
-    #
-    # Converts ip prefix to the format acceptable by router
-    #
+
     def convert_prefix(self, prefix):
+        """
+        Convert ip prefix to the format accepted by router's CLI
+        """
         if "/" in prefix and self.requires_netmask_conversion:
-            p = IPv4(prefix)
+            prefix = IPv4(prefix)
             return "%s %s" % (prefix.address, prefix.netmask.address)
         return prefix
 
-    #
-    # Leave 00:11:22:33:44:55 style MAC-address untouched
-    #
     def convert_mac_to_colon(self, mac):
+        """
+        Leave 00:11:22:33:44:55 style MAC-address untouched
+        """
         return mac
 
-    #
-    # Convert 00:11:22:33:44:55 style MAC-address to 0011.2233.4455
-    #
     def convert_mac_to_cisco(self, mac):
+        """
+        Convert 00:11:22:33:44:55 style MAC-address to 0011.2233.4455
+        """
         v = mac.replace(":", "").lower()
         return "%s.%s.%s" % (v[:4], v[4:8], v[8:])
 
-    #
-    # Convert 00:11:22:33:44:55 style MAC-address to 00-11-22-33-44-55
-    #
     def convert_mac_to_dashed(self, mac):
+        """
+        Convert 00:11:22:33:44:55 style MAC-address to 00-11-22-33-44-55
+        """
         v = mac.replace(":", "").lower()
         return "%s-%s-%s-%s-%s-%s" % (v[:2], v[2:4], v[4:6],
                                       v[6:8], v[8:10], v[10:])
@@ -202,16 +160,18 @@ class _Profile(object):
     # Can be changed in derived classes
     #
     convert_mac = convert_mac_to_colon
-    #
-    # Interface name normalization
-    #
 
-    # Dumb translation
     def convert_interface_name(self, s):
+        """
+        Normalize interface name
+        """
         return s
 
     # Cisco-like translation
-    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$", re.IGNORECASE)
+    rx_cisco_interface_name = re.compile(
+        r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$",
+        re.IGNORECASE
+    )
 
     def convert_interface_name_cisco(self, s):
         """
@@ -279,17 +239,14 @@ class _Profile(object):
         else:
             return None
 
-    #
-    # Configuration generators
-    #
-
-    # Generate prefix list:
-    # name - name of prefix list
-    # pl -  is a list of (prefix, min_len, max_len)
-    # Strict - should tested prefix be exactly matched
-    # or should be more specific as well
-    #
     def generate_prefix_list(self, name, pl):
+        """
+        Generate prefix list:
+        name - name of prefix list
+        pl -  is a list of (prefix, min_len, max_len)
+        Strict - should tested prefix be exactly matched
+        or should be more specific as well
+        """
         raise NotImplementedError()
     #
     # Volatile strings:
@@ -299,18 +256,18 @@ class _Profile(object):
     #
     config_volatile = None
 
-    #
-    # Preprocessor to clean up and normalize input from device.
-    # Delete ASCII sequences by default.
-    # Can be overriden to achieve desired behavior
-    #
     def cleaned_input(self, input):
+        """
+        Preprocessor to clean up and normalize input from device.
+        Delete ASCII sequences by default.
+        Can be overriden to achieve desired behavior
+        """
         return strip_control_sequences(input)
 
-    #
-    # Clean up config
-    #
     def cleaned_config(self, cfg):
+        """
+        Clean up config
+        """
         if self.config_volatile:
             # Wipe out volatile strings before returning result
             for r in self.config_volatile:
@@ -319,64 +276,27 @@ class _Profile(object):
         # Prevent serialization errors
         return unicode(cfg, "utf8", "ignore").encode("utf8")
 
-    #
     def add_script_method(self, script, name, method):
         f = functools.partial(method, script)
         if not hasattr(f, "__name__"):
             setattr(f, "__name__", name)
         setattr(script, name, f)
 
-    #
-    # Compare two lists
-    #
-    #
-    # Compare two versions.
-    # Must return:
-    #    <0 , if v1<v2
-    #     0 , if v1==v2
-    #    >0 , if v1>v2
-    #  None , if v1 and v2 cannot be compared
-    #
-    # Default implementation compares a versions in format
-    # N1. .. .NM
-    #
     @classmethod
     def cmp_version(self, v1, v2):
+        """
+        Compare two versions.
+        Must return:
+           <0 , if v1<v2
+            0 , if v1==v2
+           >0 , if v1>v2
+         None , if v1 and v2 cannot be compared
+
+        Default implementation compares a versions in format
+        N1. .. .NM
+        """
         return cmp([int(x) for x in v1.split(".")],
                    [int(x) for x in v2.split(".")])
-
-    #
-    # Highligh config
-    # Try to include profile's highlight module and use its ConfigLexer
-    # Returns escaped HTML
-    #
-    def highlight_config(self, cfg):
-        # Check for pygments available
-        try:
-            from pygments import highlight
-        except ImportError:
-            # No pygments, no highlighting. Return escaped HTML
-            from django.utils.html import escape
-            return "<pre><!--no pygments-->%s</pre>" % escape(cfg).replace("\n", "<br/>")
-        # Check for lexer available
-        from pygments.lexers import TextLexer
-        from noc.lib.highlight import NOCHtmlFormatter
-
-        lexer = None
-        for l in ["local.", ""]:  # Try to import local/ version first
-            h_mod = "noc.%ssa.profiles.%s.highlight" % (l, self.name)
-            try:
-                m = __import__(h_mod, {}, {}, "ConfigLexer")
-                lexer = m.ConfigLexer
-                break
-            except ImportError:
-                continue
-            except AttributeError:
-                continue
-        if not lexer:
-            lexer = TextLexer
-        # Return highlighted text
-        return highlight(cfg, lexer(), NOCHtmlFormatter())
 
     @classmethod
     def get_parser(cls, vendor, platform, version):

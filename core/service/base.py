@@ -180,6 +180,7 @@ class Service(object):
                 level=self.LOG_LEVELS[loglevel]
             )
         self.logger = logging.getLogger(self.name)
+        logging.captureWarnings(True)
 
     def on_change_loglevel(self, old_value, new_value):
         if new_value not in self.LOG_LEVELS:

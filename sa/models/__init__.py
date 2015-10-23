@@ -15,8 +15,8 @@ from noc.sa.script import script_registry
 ##
 ## Register objects
 ##
-profile_registry.register_all()
-script_registry.register_all()
+#profile_registry.register_all()
+#script_registry.register_all()
 
 ## Import models
 from administrativedomain import AdministrativeDomain

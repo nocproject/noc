@@ -78,27 +78,28 @@ class APIRequestHandler(tornado.web.RequestHandler):
             if getattr(h, "executor", ""):
                 # Threadpool version
                 executor = self.service.get_executor(h.executor)
+                result = executor.submit(h, *params)
             else:
                 # Serialized version
-                result = yield h(*params)
+                result = h(*params)
+            if tornado.gen.is_future(result):
+                result = yield result
+            self.write(json.dumps({
+                "id": id,
+                "error": None,
+                "result": result
+            }))
         except APIError, why:
             self.api_error(
                 "Failed: %s" % why,
                 id=id
             )
-            raise tornado.gen.Return()
         except Exception, why:
             error_report()
             self.api_error(
                 "Failed: %s" % why,
                 id=id
             )
-            raise tornado.gen.Return()
-        self.write(json.dumps({
-            "id": id,
-            "error": None,
-            "result": result
-        }))
 
     def api_error(self, msg, id=None):
         if id is not None:
@@ -145,7 +146,6 @@ def executor(name):
     @api
     def script(....)
     """
-    @functools.wraps
     def wrap(f):
         f.executor = name
         return f
