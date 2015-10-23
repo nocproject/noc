@@ -226,7 +226,10 @@ class Classifier(Daemon):
                         h = t.handler
                         if h:
                             h = self.resolve_handler(h)
-                        self.triggers[c_id] += [Trigger(t, handler=h)]
+                        if c_id in self.triggers:
+                            self.triggers[c_id] += [Trigger(t, handler=h)]
+                        else:
+                            self.triggers[c_id] = [Trigger(t, handler=h)]
                         cn += 1
                         self.logger.debug("    %s", c_name)
             n += 1
