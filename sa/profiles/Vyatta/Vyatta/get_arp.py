@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Vyatta.Vyatta.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     
     rx_line = re.compile(
         r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+\S+\s+"
