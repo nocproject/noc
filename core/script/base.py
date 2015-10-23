@@ -16,6 +16,8 @@ import warnings
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
 from context import ConfigurationContextManager, CacheContextManager
+from noc.core.profile.loader import loader as profile_loader
+from noc.lib.solutions import get_solution
 
 
 class BaseScript(object):
@@ -51,13 +53,17 @@ class BaseScript(object):
     # CLIDisconnectedError = CLIDisconnectedError
     # TimeOutError = TimeOutError
     # NotSupportedError = NotSupportedError
-    # UnexpectedResultError = UnexpectedResultError
+    class UnexpectedResultError(Exception): pass
 
     hexbin = {
         "0": "0000", "1": "0001", "2": "0010", "3": "0011",
         "4": "0100", "5": "0101", "6": "0110", "7": "0111",
         "8": "1000", "9": "1001", "a": "1010", "b": "1011",
         "c": "1100", "d": "1101", "e": "1110", "f": "1111"
+    }
+
+    cli_protocols = {
+        "telnet": "noc.core.script.cli.telnet.TelnetCLI"
     }
 
     def __init__(self, credentials, args=None, capabilities=None,
@@ -68,27 +74,34 @@ class BaseScript(object):
                 "with Script.interface",
                 DeprecationWarning
             )
+            self.interface = self.implements[0]
         self.parent = parent
-        self.logger = PrefixLoggerAdapter(self.base_logger, "<ADDRESS>")
-        self.profile = None
+        self.logger = PrefixLoggerAdapter(
+            self.base_logger,
+            "%s] [%s" % (self.name, credentials.get("address", "-"))
+        )
+        self.profile = profile_loader.get_profile(
+            ".".join(self.name.split(".")[:2])
+        )()
         self.credentials = credentials or {}
         self.version = version or {}
         self.capabilities = capabilities
         self.timeout = timeout or self.get_timeout()
         self.start_time = None
         self.args = self.clean_input(args or {})
+        self.cli_stream = None
 
     def clean_input(self, args):
         """
         Cleanup input parameters against interface
         """
-        return self.interface.script_clean_input(self.profile, args)
+        return self.interface().script_clean_input(self.profile, **args)
 
     def clean_output(self, result):
         """
         Clean script result against interface
         """
-        return self.interface.script_clean_result(self.profile, result)
+        return self.interface().script_clean_result(self.profile, result)
 
     def run(self):
         """
@@ -468,4 +481,46 @@ class BaseScript(object):
 
     @classmethod
     def get_timeout(cls):
-        return script_registry.get_timeout(cls.name)
+        return 120
+
+    def cli(self, cmd, command_submit=None, bulk_lines=None,
+            list_re=None, cached=False, file=None, ignore_errors=False,
+            nowait=False):
+        """
+        Execute CLI command and return result. Initiate cli session
+        when necessary
+        :param cmd: CLI command to execute
+        :param command_submit:
+        :param bulk_lines:
+        :param list_re:
+        :param cached:
+        :param file:
+        :param ignore_errors:
+        :param nowait:
+
+        Execute CLI command and return a result.
+        if list_re is None, return a string
+        if list_re is regular expression object, return a list of dicts (group name -> value),
+            one dict per matched line
+        """
+        command_submit = command_submit or self.profile.command_submit
+        stream = self.get_cli_stream()
+        r = stream.execute(cmd + command_submit)
+        # Convert to list of dicts if list_re is defined
+        if list_re:
+            x = []
+            for l in r.splitlines():
+                match = list_re.match(l.strip())
+                if match:
+                    x += [match.groupdict()]
+            r = x
+        return r
+
+    def get_cli_stream(self):
+        if not self.cli_stream:
+            protocol = self.credentials.get("cli_protocol", "telnet")
+            self.logger.debug("Open %s CLI", protocol)
+            self.cli_stream = get_solution(
+                self.cli_protocols[protocol]
+            )(self)
+        return self.cli_stream

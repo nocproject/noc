@@ -27,8 +27,8 @@ from noc.main.models import NotificationGroup
 from noc.lib.app.site import site
 
 
-profile_registry.register_all()
-vcs_registry.register_all()
+#profile_registry.register_all()
+#vcs_registry.register_all()
 
 from objectnotify import ObjectNotify, OBJECT_TYPE_CHOICES, OBJECT_TYPES
 from object import Object

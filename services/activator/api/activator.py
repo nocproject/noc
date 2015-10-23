@@ -50,4 +50,5 @@ class ActivatorAPI(API):
             version=version,
             timeout=timeout
         )
-        script.run()
+        result = script.run()
+        return result

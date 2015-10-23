@@ -33,6 +33,11 @@ from noc.sa.script.http import HTTPProvider
 from noc.sa.script.snmp import SNMPProvider
 from noc.lib.validators import is_int
 
+warnings.warn("Using deprecated Script interface", DeprecationWarning)
+from noc.core.script.base import BaseScript as Script
+
+
+
 ## Module constants
 rx_nohex = re.compile("[^0-9a-f]+")  # non-hexadecimal
 hexbin = {
@@ -157,7 +162,7 @@ class ScriptBase(type):
         return m
 
 
-class Script(threading.Thread):
+class _Script(threading.Thread):
     """Service activation script"""
     __metaclass__ = ScriptBase
     name = None
