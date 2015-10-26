@@ -26,7 +26,7 @@ class Migration:
             ('next_pull', models.DateTimeField("Next Pull",blank=True,null=True)),
             ('last_pull', models.DateTimeField("Last Pull",blank=True,null=True)),
             ('activator',models.ForeignKey(Activator,verbose_name="Activator")),
-            ('profile_name', models.CharField("Profile",max_length=128,choices=profile_registry.choices)),
+            ('profile_name', models.CharField("Profile",max_length=128)),
             ('scheme', models.IntegerField("Scheme",choices=[(0,"telnet"),(1,"ssh")])),
             ('address', models.CharField("Address",max_length=64)),
             ('port', models.PositiveIntegerField("Port",blank=True,null=True)),

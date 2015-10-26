@@ -8,8 +8,6 @@
 from django.db import models
 ## Third-party modules
 from south.db import db
-## NOC modules
-from noc.sa.models import profile_registry
 
 class Migration:
     def forwards(self):
@@ -37,8 +35,7 @@ class Migration:
                  null=True, blank=True)),
             ('filter_profile',
              models.CharField("Filter by Profile", max_length=64,
-                 null=True, blank=True,
-                 choices=profile_registry.choices)),
+                 null=True, blank=True)),
             ('filter_address',
              models.CharField("Filter by Address (REGEXP)",
                  max_length=256, null=True, blank=True)),

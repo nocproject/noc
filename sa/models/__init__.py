@@ -6,18 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-## Django modules
-## Third-party modules
-## NOC modules
-from noc.sa.profiles import profile_registry
-from noc.sa.script import script_registry
-##
-## Register objects
-##
-#profile_registry.register_all()
-#script_registry.register_all()
-
 ## Import models
 from administrativedomain import AdministrativeDomain
 from activator import Activator

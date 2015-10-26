@@ -19,7 +19,7 @@ from activator import Activator
 from terminationgroup import TerminationGroup
 from noc.main.models import Shard
 from noc.main.models.prefixtable import PrefixTable
-from noc.sa.profiles import profile_registry
+from noc.core.profile.loader import loader as profile_loader
 from noc.lib.fields import TagsField
 from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.lib.db import SQL, QTags
@@ -44,7 +44,7 @@ class ManagedObjectSelector(models.Model):
         null=True, blank=True, default=True)
     filter_profile = models.CharField(_("Filter by Profile"),
             max_length=64, null=True, blank=True,
-            choices=profile_registry.choices)
+            choices=profile_loader.choices())
     filter_object_profile = models.ForeignKey(ManagedObjectProfile,
             verbose_name=_("Filter by Object's Profile"), null=True, blank=True)
     filter_address = models.CharField(_("Filter by Address (REGEXP)"),

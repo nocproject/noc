@@ -29,7 +29,7 @@ from noc.fm.models import (EventClassificationRule,
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.fm.correlator.scheduler import CorrelatorScheduler
 import noc.inv.models.interface
-from noc.sa.models import profile_registry
+from noc.core.profile.loader import loader as profile_loader
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
@@ -127,7 +127,7 @@ class ClassifierService(Service):
         self.logger.info("Loading rules")
         n = 0
         cn = 0
-        profiles = list(profile_registry.classes)
+        profiles = list(profile_loader.iter_profiles())
         self.rules = {}
         # Initialize profiles
         for p in profiles:

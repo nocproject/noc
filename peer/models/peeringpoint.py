@@ -11,7 +11,7 @@ from django.db import models
 ## NOC modules
 from noc.main.models import NotificationGroup
 from asn import AS
-from noc.sa.models import profile_registry
+from noc.core.profile.loader import loader as profile_loader
 from noc.lib.rpsl import rpsl_format
 
 
@@ -30,7 +30,7 @@ class PeeringPoint(models.Model):
     router_id = models.IPAddressField("Router-ID", unique=True)
     # @todo: Replace with managed object
     profile_name = models.CharField("Profile", max_length=128,
-                                    choices=profile_registry.choices)
+                                    choices=profile_loader.choices())
     communities = models.CharField(
         "Import Communities", max_length=128,
         blank=True, null=True)

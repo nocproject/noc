@@ -11,12 +11,6 @@ from django.db import models, connection
 ## NOC modules
 from noc.settings import config
 from noc.lib.validators import is_asn
-from noc.lib.tt import tt_url
-from noc.lib.rpsl import rpsl_format
-from noc.lib.fields import INETField, TagsField
-from noc.sa.profiles import profile_registry
-from noc.main.models import NotificationGroup
-from noc.lib.app.site import site
 from noc.lib.ip import IP
 from noc.peer.tree import optimize_prefix_list, optimize_prefix_list_maxlen
 from noc.lib import nosql
