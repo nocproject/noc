@@ -1,1 +1,2 @@
-pycrypto>=2.6
+pylibssh2>=1.0.1
+
