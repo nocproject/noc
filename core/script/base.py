@@ -13,6 +13,7 @@ import functools
 import time
 import warnings
 ## NOC modules
+from snmp.base import SNMP
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
 from context import ConfigurationContextManager, CacheContextManager
@@ -53,7 +54,8 @@ class BaseScript(object):
     # CLIDisconnectedError = CLIDisconnectedError
     # TimeOutError = TimeOutError
     # NotSupportedError = NotSupportedError
-    class UnexpectedResultError(Exception): pass
+    class UnexpectedResultError(Exception):
+        pass
 
     hexbin = {
         "0": "0000", "1": "0001", "2": "0010", "3": "0011",
@@ -90,6 +92,7 @@ class BaseScript(object):
         self.start_time = None
         self.args = self.clean_input(args or {})
         self.cli_stream = None
+        self.snmp = SNMP(self)
 
     def clean_input(self, args):
         """
@@ -524,3 +527,15 @@ class BaseScript(object):
                 self.cli_protocols[protocol]
             )(self)
         return self.cli_stream
+
+    def has_snmp(self):
+        """
+        Check wherher equipment has SNMP enabled
+        """
+        return True
+
+    def has_snmp_bulk(self):
+        """
+        Check wherher equipment supports SNMP BULK
+        """
+        return True
