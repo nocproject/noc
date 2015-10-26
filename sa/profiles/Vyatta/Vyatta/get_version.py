@@ -12,6 +12,7 @@ import re
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.lib.mib import mib
 
 
 class Script(BaseScript):
@@ -19,15 +20,31 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_ver = re.compile(r"^Version:\s+(?P<version>(?:VyOS )?\S+)",
-                        re.MULTILINE)
+    rx_ver = re.compile(
+        r"^Version:\s+(?P<version>(?:VyOS )?\S+)",
+        re.MULTILINE
+    )
+    rx_snmp_ver = re.compile(
+        r"^Vyatta\s+(?P<version>(?:VyOS )?\S+)$"
+    )
 
     def execute(self):
-        v = self.cli("show version")
-        match = self.re_search(self.rx_ver, v)
-        version = match.group("version")
+        version = None
+        if self.has_snmp():
+            try:
+                v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0])
+                match = self.re_match(self.rx_snmp_ver, v)
+                version = match.group("version")
+            except self.snmp.TimeOutError:
+                pass  # Fallback to CLI
+
+        if not version:
+            v = self.cli("show version")
+            match = self.re_search(self.rx_ver, v)
+            version = match.group("version")
+
         if "VyOS" in version:
-            vendor, version = match.group("version").split(" ")
+            vendor, version = version.split(" ")
             platform = "VyOS"
         else:
             vendor = "Vyatta"

@@ -71,7 +71,7 @@ def snmp_get(address, oids, port=161,
                     result[oid_map[k]] = v
         else:
             result = resp.varbinds[0][1]
-        logger.debug("[%s] GET result %s", address, result)
+        logger.debug("[%s] GET result: %s", address, result)
         raise Return(result)
 
 
@@ -124,6 +124,6 @@ def snmp_count(address, oid, port=161,
                     if filter(oid, v):
                         result += 1
                 else:
-                    logger.debug("[%s] COUNT result %s",
+                    logger.debug("[%s] COUNT result: %s",
                                  address, result)
                     raise Return(result)
