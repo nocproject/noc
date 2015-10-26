@@ -55,7 +55,7 @@ class Migration:
             ('activator',
              models.ForeignKey(Activator, verbose_name=Activator)),
             ('profile_name', models.CharField("Profile", max_length=128)),
-            ('scheme', models.IntegerField("Scheme"),
+            ('scheme', models.IntegerField("Scheme")),
             ('address', models.CharField("Address", max_length=64)),
             ('port',
              models.PositiveIntegerField("Port", blank=True, null=True))
