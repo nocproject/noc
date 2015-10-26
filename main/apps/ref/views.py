@@ -15,13 +15,13 @@ from mongoengine.base.common import _document_registry
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces import interface_registry
-from noc.sa.models import profile_registry
 from noc.lib.stencil import stencil_registry
 from noc import settings
 from noc.main.models.notification import USER_NOTIFICATION_METHOD_CHOICES
 from noc.pm.probes.base import probe_registry
 from noc.pm.models.metrictype import MetricType
 from noc.cm.validators.base import validator_registry
+from noc.core.profile.loader import loader as profile_loader
 
 
 class RefAppplication(ExtApplication):
@@ -57,8 +57,10 @@ class RefAppplication(ExtApplication):
         Profile names
         :return: (profile name, profile name)
         """
-        return sorted(({"id": n, "label": n} for n in profile_registry.classes),
-                      key=lambda x: x["label"])
+        return [{
+            "id": n,
+            "label": n
+        } for n in profile_loader.iter_profiles()]
 
     def build_stencil(self):
         """
