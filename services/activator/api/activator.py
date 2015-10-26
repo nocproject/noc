@@ -45,6 +45,7 @@ class ActivatorAPI(API):
         if not script_class:
             raise APIError("Invalid script: %s" % name)
         script = script_class(
+            service=self.service,
             credentials=credentials,
             capabilities=capabilities,
             version=version,

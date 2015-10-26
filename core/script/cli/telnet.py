@@ -8,6 +8,7 @@
 
 ## Tornado modules
 from tornado.iostream import IOStream
+import tornado.gen
 ## NOC modules
 from base import CLI
 
@@ -76,12 +77,16 @@ ACCEPTED_TELNET_OPTIONS = "\x01\x03\x18\x1f"
 
 
 class TelnetIOStream(IOStream):
-    def __init__(self, sock, cli):
-        super(TelnetIOStream, self).__init__(sock)
+    def __init__(self, sock, cli, *args, **kwargs):
+        super(TelnetIOStream, self).__init__(sock, *args, **kwargs)
         self.cli = cli
         self.logger = cli.logger
         self.iac_seq = ""
         self.naws = "\x00\x80\x00\x80"
+
+    @tornado.gen.coroutine
+    def startup(self):
+        pass
 
     def read_from_fd(self):
         chunk = super(TelnetIOStream, self).read_from_fd()
