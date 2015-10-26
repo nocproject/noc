@@ -65,10 +65,12 @@ class BaseScript(object):
     }
 
     cli_protocols = {
-        "telnet": "noc.core.script.cli.telnet.TelnetCLI"
+        "telnet": "noc.core.script.cli.telnet.TelnetCLI",
+        "ssh": "noc.core.script.cli.ssh.SSHCLI"
     }
 
-    def __init__(self, credentials, args=None, capabilities=None,
+    def __init__(self, service, credentials,
+                 args=None, capabilities=None,
                  version=None, parent=None, timeout=None):
         if not self.interface and self.implements:
             warnings.warn(
@@ -77,6 +79,8 @@ class BaseScript(object):
                 DeprecationWarning
             )
             self.interface = self.implements[0]
+        self.service = service
+        self.pool = self.service.config.pool
         self.parent = parent
         self.logger = PrefixLoggerAdapter(
             self.base_logger,
@@ -532,7 +536,7 @@ class BaseScript(object):
         """
         Check wherher equipment has SNMP enabled
         """
-        return True
+        return bool(self.credentials.get("snmp_ro"))
 
     def has_snmp_bulk(self):
         """

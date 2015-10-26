@@ -65,6 +65,7 @@ class CLI(object):
             self.logger.debug("Connecting %s", address)
             yield self.iostream.connect(address)
             self.logger.debug("Connected")
+            yield self.iostream.startup()
         # Perform all necessary login procedures
         if not self.is_started:
             self.on_start()
