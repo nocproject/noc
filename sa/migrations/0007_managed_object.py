@@ -9,9 +9,7 @@ from django.db import models
 ## Third-party modules
 from south.db import db
 ## NOC modules
-from noc.sa.models import profile_registry
-from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
-
+from noc.core.profile.loader import loader as profile_loader
 
 class Migration:
     def forwards(self):
@@ -56,11 +54,8 @@ class Migration:
                  verbose_name=AdministrativeDomain)),
             ('activator',
              models.ForeignKey(Activator, verbose_name=Activator)),
-            ('profile_name', models.CharField("Profile", max_length=128,
-                choices=profile_registry.choices)),
-            ('scheme', models.IntegerField("Scheme",
-                choices=[(TELNET, "telnet"), (SSH, "ssh"),
-                    (HTTP, "http")])),
+            ('profile_name', models.CharField("Profile", max_length=128)),
+            ('scheme', models.IntegerField("Scheme"),
             ('address', models.CharField("Address", max_length=64)),
             ('port',
              models.PositiveIntegerField("Port", blank=True, null=True))

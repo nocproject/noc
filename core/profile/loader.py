@@ -100,5 +100,9 @@ class ProfileLoader(object):
             self.find_profiles()
         return name in self.all_profiles
 
+    def choices(self):
+        return [(p, p) for p in self.iter_profiles()]
+
+
 # Create singleton object
 loader = ProfileLoader()

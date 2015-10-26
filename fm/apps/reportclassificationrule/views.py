@@ -13,12 +13,12 @@ from django import forms
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow
 from noc.fm.models import EventClassificationRule
-from noc.sa.models import profile_registry
+from noc.core.profile.loader import loader as profile_loader
 
 
 class ReportForm(forms.Form):
     profile = forms.ChoiceField(label="Profile",
-                                choices=profile_registry.choices)
+                                choices=profile_loader.choices())
 
 class ReportClassificationRules(SimpleReport):
     title="Classification Rules"

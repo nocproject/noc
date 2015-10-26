@@ -29,10 +29,9 @@ from noc.main.models.pool import Pool
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.networksegment import NetworkSegment
-from noc.sa.profiles import profile_registry
+from noc.core.profile.loader import loader as profile_loader
 from noc.lib.fields import INETField, TagsField, DocumentReferenceField
 from noc.lib.app.site import site
-from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.stencil import stencil_registry
 from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.fts_queue import FTSQueue
@@ -44,7 +43,7 @@ from noc.main.models.fts_queue import full_text_search
 from noc.pm.models.probeconfig import probe_config
 
 
-scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
+scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http")]
 
 CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
 Credentials = namedtuple("Credentials", [
@@ -80,7 +79,7 @@ class ManagedObject(models.Model):
         null=False, blank=False
     )
     profile_name = models.CharField(_("SA Profile"),
-            max_length=128, choices=profile_registry.choices)
+            max_length=128, choices=profile_loader.choices())
     object_profile = models.ForeignKey(ManagedObjectProfile,
         verbose_name=_("Object Profile"))
     description = models.CharField(_("Description"),
@@ -265,11 +264,11 @@ class ManagedObject(models.Model):
 
         :rtype: Profile instance
         """
-        try:
-            return self._cached_profile
-        except AttributeError:
-            self._cached_profile = profile_registry[self.profile_name]()
-            return self._cached_profile
+        cp = getattr(self, "_cached_profile", None)
+        if not cp:
+            cp = profile_loader.get_profile(self.profile_name)()
+            self._cached_profile = cp
+        return cp
 
     @classmethod
     def user_objects(cls, user):

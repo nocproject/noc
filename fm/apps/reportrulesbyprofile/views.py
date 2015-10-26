@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.sa.models import profile_registry
+from noc.core.profile.loader import loader as profile_loader
 from noc.fm.models import EventClassificationRule
 
 
@@ -19,7 +19,7 @@ class Reportreportrulesbyprofile(SimpleReport):
 
     def get_data(self,**kwargs):
         # profile -> (syslog, snmp, other)
-        r = dict([(p, [0, 0, 0]) for p in profile_registry.classes])
+        r = dict([(p, [0, 0, 0]) for p in profile_loader.iter_profiles()])
         for rule in EventClassificationRule.objects.all():
             profile = None
             source = None

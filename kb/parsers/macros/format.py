@@ -9,7 +9,7 @@ from noc.kb.parsers.macros import Macro as MacroBase
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from noc.lib.highlight import NOCHtmlFormatter
-from noc.sa.models import profile_registry
+from noc.core.profile.loader import loader as profile_loader
 ##
 ## Format macro:
 ## Formats and highlights text
@@ -27,7 +27,7 @@ class Macro(MacroBase):
         if format.startswith("noc."):
             profile_name=format[4:]
             try:
-                profile=profile_registry[profile_name]
+                profile=profile_loader.get_profile(profile_name)
             except:
                 profile=None
                 format="text"

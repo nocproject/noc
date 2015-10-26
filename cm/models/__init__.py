@@ -17,7 +17,6 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
 ## NOC modules
-from noc.sa.profiles import profile_registry
 from noc.settings import config
 from noc.lib.fileutils import rewrite_when_differ, read_file, is_differ, in_dir
 from noc.lib.validators import is_int
@@ -26,9 +25,6 @@ from noc.sa.models import AdministrativeDomain, ManagedObject
 from noc.main.models import NotificationGroup
 from noc.lib.app.site import site
 
-
-#profile_registry.register_all()
-#vcs_registry.register_all()
 
 from objectnotify import ObjectNotify, OBJECT_TYPE_CHOICES, OBJECT_TYPES
 from object import Object
