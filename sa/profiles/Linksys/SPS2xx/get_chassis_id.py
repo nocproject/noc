@@ -23,7 +23,7 @@ class Script(NOCScript):
     def execute(self):
         # BUG http://bt.nocproject.org/browse/NOC-36
         # Try snmp first
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 mac = self.snmp.get("1.3.6.1.2.1.17.1.1.0", cached=True)
                 return {

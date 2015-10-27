@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Vyatta.Vyatta"
-    supported_schemes = [TELNET, SSH]
     pattern_username = r"[Ll]ogin: (?!\S+)"
     pattern_prompt = r"^(?P<username>\S+)@(?P<hostname>\S+):[^$]+\$ "
     pattern_more = [

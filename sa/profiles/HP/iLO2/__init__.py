@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "HP.iLO2"
-    supported_schemes = [TELNET, SSH]
     pattern_username = r"Login Name:"
     pattern_prompt = r"hpiLO->"
     command_submit = "\r"

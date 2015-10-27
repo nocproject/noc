@@ -43,7 +43,7 @@ class Script(NOCScript):
                 re.MULTILINE)
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 # Get platform from sys.Descr.0
                 platform = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)

@@ -8,17 +8,15 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Cisco.CatOS"
-    supported_schemes = [TELNET, SSH]
     pattern_unpriveleged_prompt = r"^\S+?>"
     command_super = "enable"
     pattern_prompt = r"^\S+?\s+\(enable\)\s+"
-    convert_mac = noc.sa.profiles.Profile.convert_mac_to_dashed
+    convert_mac = BaseProfile.convert_mac_to_dashed
     pattern_more = [
                     ("^--More--$", " "),
                     ("^Do you wish to continue y/n [n]?", "y\n")

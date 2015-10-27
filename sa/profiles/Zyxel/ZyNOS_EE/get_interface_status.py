@@ -25,7 +25,7 @@ class Script(NOCScript):
         r = []
 
         # Try SNMP first
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 if interface is None:
                     # Join # IF-MIB::ifIndex, IF-MIB::ifOperStatus

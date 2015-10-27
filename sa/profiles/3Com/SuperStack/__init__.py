@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "3Com.SuperStack"
-    supported_schemes = [TELNET]
     pattern_username = "Login:"
     pattern_password = "Password:"
     pattern_prompt = r"^Select menu option.*:"
@@ -23,4 +21,4 @@ class Profile(noc.sa.profiles.Profile):
     ]
     command_submit = "\r"
     telnet_send_on_connect = "\r"
-    convert_mac = noc.sa.profiles.Profile.convert_mac_to_dashed
+    convert_mac = BaseProfile.convert_mac_to_dashed

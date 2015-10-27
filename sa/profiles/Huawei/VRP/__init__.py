@@ -8,14 +8,13 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
+from noc.core.profile.base import BaseProfile
 from noc.sa.profiles import Profile as NOCProfile
 import re
 
 
 class Profile(NOCProfile):
     name = "Huawei.VRP"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_more = [
         (r"^  ---- More ----", " "),
         (r"[Cc]ontinue?\S+", "y\n\r"),

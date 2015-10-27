@@ -19,7 +19,7 @@ class Script(NOCScript):
     rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s")
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             # Try SNMP first
             try:
                 oids = {}

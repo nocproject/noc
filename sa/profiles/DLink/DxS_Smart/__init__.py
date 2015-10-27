@@ -10,13 +10,11 @@
 """
 """
 import re
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "DLink.DxS_Smart"
-    supported_schemes = [TELNET]
     pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
     pattern_password = "[Pp]ass[Ww]ord:"
     pattern_more = [

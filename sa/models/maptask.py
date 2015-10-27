@@ -15,7 +15,6 @@ from django.db import models, connection
 ## NOC modules
 from managedobject import ManagedObject
 from noc.lib.fields import PickledField
-from noc.sa.protocols.sae_pb2 import ERR_INVALID_SCRIPT
 
 
 class MapTask(models.Model):

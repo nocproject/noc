@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Extreme.XOS"
-    supported_schemes = [TELNET, SSH]
     pattern_prompt = r"^(\*\s)?\S+? #"
     pattern_more = "^Press <SPACE> to continue or <Q> to quit:"
     command_more = " "

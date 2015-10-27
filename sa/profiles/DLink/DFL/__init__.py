@@ -16,7 +16,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "DLink.DFL"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
     pattern_password = "[Pp]ass[Ww]ord:"
     pattern_syntax_error = r"Error: Unknown command:"

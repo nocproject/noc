@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Huawei.UMG8900"
-    supported_schemes = [TELNET]
     pattern_username = "Login :"
     pattern_password = "Password :"
     pattern_more = r"^Press CTRL\+C to break, other key to continue\.\.\."

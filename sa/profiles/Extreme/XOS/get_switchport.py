@@ -39,7 +39,7 @@ class Script(NOCScript):
 
     def get_description(self):
         r = []
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 for pr in self.snmp.get_tables([
                     "1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.31.1.1.1.18"

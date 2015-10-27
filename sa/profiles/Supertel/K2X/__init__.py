@@ -13,7 +13,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "Supertel.K2X"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = r"^User Name:"
     pattern_password = r"^Password:"
     pattern_more = [

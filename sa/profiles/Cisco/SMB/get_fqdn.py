@@ -19,7 +19,7 @@ class Script(NOCScript):
     rx_hostname = re.compile(r"System Name:\s+(?P<hostname>\S+)")
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 # sysName.0
                 v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)

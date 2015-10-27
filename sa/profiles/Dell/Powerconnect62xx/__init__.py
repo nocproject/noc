@@ -16,7 +16,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "Dell.Powerconnect62xx"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = "[Uu]ser( [Nn]ame)?:"
     pattern_password = "[Pp]ass[Ww]ord:"
     pattern_more = "--More--"

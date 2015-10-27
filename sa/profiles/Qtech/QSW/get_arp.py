@@ -32,7 +32,7 @@ class Script(noc.sa.script.Script):
         """
         # Working but give interfase name "system"!!!
 
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 for v in self.snmp.get_tables(
                     ["1.3.6.1.2.1.4.22.1.1", "1.3.6.1.2.1.4.22.1.2",

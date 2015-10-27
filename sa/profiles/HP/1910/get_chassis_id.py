@@ -22,7 +22,7 @@ class Script(NOCScript):
 
     def execute(self):
         # Try SNMP first
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 macs = []
                 for v in self.snmp.get_tables(

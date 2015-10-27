@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Alcatel.AOS"
-    supported_schemes = [TELNET, SSH]
     pattern_username = "[Ll]ogin :"
     pattern_password = "[Pp]assword :"
     pattern_prompt = r"^(\S*->|(?P<hostname>\S+)# )"

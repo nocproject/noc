@@ -54,7 +54,7 @@ class Script(NOCScript):
         """
 
         # Try snmp first
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
 
                 # Get interafces status

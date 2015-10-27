@@ -13,7 +13,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "Force10.FTOS"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_more = "^ ?--More--"
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Error: Invalid input at"

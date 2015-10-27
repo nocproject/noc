@@ -9,13 +9,11 @@
 """
 """
 ## NOC modules
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "ZTE.ZXR10"
-    supported_schemes = [TELNET, SSH]
     pattern_more = r"^ --More--"
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at"
@@ -26,6 +24,6 @@ class Profile(noc.sa.profiles.Profile):
     command_save_config = "write\n"
     pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
-    convert_mac = noc.sa.profiles.Profile.convert_mac_to_cisco
+    convert_mac = BaseProfile.convert_mac_to_cisco
     config_volatile = [r"^ntp clock-period .*?^"]
     telnet_naws = "\x7f\x7f\x7f\x7f"

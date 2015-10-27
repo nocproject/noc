@@ -46,7 +46,7 @@ class Script(NOCScript):
 #            pass
 
         # Try snmp first
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 # Get switchport index, name and description
                 iface_name = {}

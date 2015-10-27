@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, HTTP
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "ZTE.ZXDSL531"
-    supported_schemes = [TELNET, HTTP]
     pattern_username = "Login name:"
     pattern_password = "Password:"
     pattern_prompt = "^>"

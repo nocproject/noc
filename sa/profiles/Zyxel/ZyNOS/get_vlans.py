@@ -23,7 +23,7 @@ class Script(NOCScript):
                 re.MULTILINE)
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 r = []
                 for vid, name in self.snmp.join_tables(

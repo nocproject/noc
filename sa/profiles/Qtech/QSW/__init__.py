@@ -11,12 +11,10 @@
 import re
 ## NOC modules
 from noc.sa.profiles import Profile as NOCProfile
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
 
 
 class Profile(NOCProfile):
     name = "Qtech.QSW"
-    supported_schemes = [TELNET, SSH]
     pattern_username = r"^(Username\(1-32 chars\)|[Ll]ogin):"
     pattern_password = r"^Password(\(1-16 chars\)|):"
     pattern_more = [

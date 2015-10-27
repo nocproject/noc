@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC Modules
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Zyxel.ZyNOS_EE"
-    supported_schemes = [TELNET, SSH]
 #    pattern_username="User name:"
     pattern_password = "Password: "
     pattern_prompt = r"^\S+?> "

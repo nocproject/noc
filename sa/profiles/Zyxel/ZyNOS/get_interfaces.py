@@ -51,7 +51,7 @@ class Script(NOCScript):
         """
         Returns admin status of the interface
         """
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 # IF-MIB::ifAdminStatus
                 s = self.snmp.get("1.3.6.1.2.1.2.2.1.7.%d" % int(iface))

@@ -18,7 +18,6 @@ from django.utils import unittest  # unittest2 backport
 ## NOC lib modules
 from noc.sa.models import script_registry, profile_registry
 from noc.lib.test.activatorstub import ActivatorStub
-from noc.sa.protocols.sae_pb2 import AccessProfile
 from noc.lib.fileutils import safe_rewrite, read_file
 from noc.lib.serialize import json_encode, json_decode
 import noc.settings

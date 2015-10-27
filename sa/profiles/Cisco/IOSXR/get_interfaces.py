@@ -200,7 +200,7 @@ class Script(NOCScript):
         Retrieve name -> ifindex map
         """
         m = {}
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 # IF-MIB::ifDescr
                 t = self.snmp.get_table("1.3.6.1.2.1.2.2.1.2", bulk=True)

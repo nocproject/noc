@@ -13,7 +13,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "APC.AOS"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = r"^User Name\s+:"
     pattern_password = r"^Password\s+:"
     pattern_prompt = r"^(\S+)?>"

@@ -13,7 +13,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "Nortel.BayStack425"
-    supported_schemes = [NOCProfile.TELNET]
     pattern_username = "Enter Username:"
     pattern_password = "Enter Password:"
     pattern_prompt = r"^\S+?#"

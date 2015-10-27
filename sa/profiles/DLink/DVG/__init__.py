@@ -13,7 +13,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "DLink.DVG"
-    supported_schemes = [NOCProfile.TELNET]
     submit_command = "\r"
     username_submit = "\n\r"
     password_submit = "\r\n"

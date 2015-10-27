@@ -9,7 +9,6 @@
 
 ## NOC modules
 from noc.sa.profiles import Profile as NOCProfile
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
 
 
 class Profile(NOCProfile):
@@ -17,7 +16,6 @@ class Profile(NOCProfile):
     Juniper.JUNOSe profile
     """
     name = "Juniper.JUNOSe"
-    supported_schemes = [TELNET, SSH]
     pattern_unpriveleged_prompt = r"^\S+?>"
     command_super = "enable"
     command_disable_pager = "terminal length 0"

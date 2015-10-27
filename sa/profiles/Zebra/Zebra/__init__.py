@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Zebra.Zebra"
-    supported_schemes = [TELNET, SSH]
     pattern_more = "^--More-- "
     pattern_unpriveleged_prompt = r"^\S+?>"
     command_super = "enable"

@@ -10,13 +10,11 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "EdgeCore.ES"
-    supported_schemes = [TELNET, SSH]
     pattern_unpriveleged_prompt = r"^(?P<hostname>[^\n]+)>"
     pattern_syntax_error = r"% Invalid input detected at|% Incomplete command"
     command_super = "enable"
@@ -32,7 +30,7 @@ class Profile(noc.sa.profiles.Profile):
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
-    convert_mac = noc.sa.profiles.Profile.convert_mac_to_dashed
+    convert_mac = BaseProfile.convert_mac_to_dashed
 
     rx_if_snmp_eth = re.compile(
         r"^Ethernet Port on Unit (?P<unit>\d+), port (?P<port>\d+)$",

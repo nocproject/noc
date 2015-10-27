@@ -9,13 +9,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "DLink.DES21xx"
-    supported_schemes = [TELNET]
     pattern_password = "[Pp]assword:"
     pattern_prompt = r"^\S+?>"
     command_exit = "logout"

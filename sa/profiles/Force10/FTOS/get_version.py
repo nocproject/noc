@@ -49,7 +49,7 @@ class Script(NOCScript):
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 # Get version from sysDescr.0
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)

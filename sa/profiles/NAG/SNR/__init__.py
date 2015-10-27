@@ -13,4 +13,3 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "NAG.SNR"
-    supported_schemes = [NOCProfile.HTTP, NOCProfile.SSH, NOCProfile.TELNET]

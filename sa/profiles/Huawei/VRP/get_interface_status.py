@@ -26,7 +26,7 @@ class Script(NOCScript):
     implements = [IGetInterfaceStatus]
 
     def execute(self, interface=None):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 # Get interface status
                 r = []

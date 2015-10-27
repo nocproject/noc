@@ -27,7 +27,6 @@ from noc.sa.script import script_registry, Script
 from noc.sa.script.ssh.keys import Key
 from noc.sa.activator.service import Service
 from noc.sa.activator.servers import ServersHub
-from noc.sa.protocols.sae_pb2 import *
 from noc.sa.rpc import TransactionFactory
 from noc.lib.url import URL
 from noc.lib.nbsocket import SocketFactory, UDPSocket

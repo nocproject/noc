@@ -18,7 +18,7 @@ class Script(noc.sa.script.Script):
     implements = [IGetVlans]
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 oids = {}
                 # Get OID -> VLAN ID mapping

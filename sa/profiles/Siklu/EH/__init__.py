@@ -9,13 +9,11 @@
 """
 """
 import re
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Siklu.EH"
-    supported_schemes = [SSH]
     pattern_username = "[Ll]ogin: "
     pattern_password = "[Pp]assword: "
     pattern_prompt = r"^\S+?>"

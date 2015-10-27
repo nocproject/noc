@@ -8,10 +8,9 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name="NOC.SAE"
-    supported_schemes = [0]  # Fake telnet
 

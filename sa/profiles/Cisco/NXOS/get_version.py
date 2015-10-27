@@ -20,7 +20,7 @@ class Script(noc.sa.script.Script):
     rx_snmp_platform = re.compile(r"^Nexus\d+ (?P<platform>C\d+) .+Chassis$")
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0")  # sysDescr.0
                 match = self.rx_snmp_ver.search(v)

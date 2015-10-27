@@ -23,7 +23,7 @@ class Script(NOCScript):
     rx_snmp_ver = re.compile(r"(?P<platform>\S+)+\ (?P<version>\S+)")
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 v = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.1", cached=True)
                 match = self.re_search(self.rx_snmp_ver, v)

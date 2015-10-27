@@ -23,7 +23,7 @@ class Script(NOCScript):
     rx_snmp_ver = re.compile(r"ROS Version (?P<ros>.+?) (?P<platform>.+?) Software, Version (?P<version>[^,]+) Copyright")
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0")  # sysDescr.0
                 match = self.rx_snmp_ver.search(v)

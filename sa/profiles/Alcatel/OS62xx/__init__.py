@@ -9,13 +9,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Alcatel.OS62xx"
-    supported_schemes = [TELNET, SSH]
     pattern_username = "User Name:"
     pattern_more = "^More: .*?$"
     command_more = " "

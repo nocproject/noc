@@ -8,12 +8,10 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Zyxel.ZyNOSv2"
-    supported_schemes = [TELNET]
     pattern_prompt = r"^\S+?>"
     command_more = " "

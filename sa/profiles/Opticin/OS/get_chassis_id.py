@@ -21,7 +21,7 @@ class Script(NOCScript):
         re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 # Get interface physAddress
                 # IF-MIB::ifPhysAddress

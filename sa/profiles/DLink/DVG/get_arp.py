@@ -20,7 +20,7 @@ class Script(noc.sa.script.Script):
         r = []
         # BUG http://bt.nocproject.org/browse/NOC-36
         # Only one way: SNMP.
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 for ip, mac, i in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.3",
                                                         "1.3.6.1.2.1.4.22.1.2",

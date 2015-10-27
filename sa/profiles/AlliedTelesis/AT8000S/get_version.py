@@ -21,7 +21,7 @@ class Script(NOCScript):
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 ver = self.snmp.get("1.3.6.1.4.1.89.2.4.0")
                 return {

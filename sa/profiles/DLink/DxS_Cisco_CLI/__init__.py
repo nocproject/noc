@@ -8,13 +8,12 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
+from noc.core.profile.base import BaseProfile
 from noc.sa.profiles import Profile as NOCProfile
 
 
 class Profile(NOCProfile):
     name = "DLink.DxS_Cisco_CLI"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = "([Uu]ser[Nn]ame|[Ll]ogin):"
     pattern_password = "[Pp]ass[Ww]ord:"
     pattern_more = "^ --More--"
@@ -28,7 +27,7 @@ class Profile(NOCProfile):
     pattern_prompt = r"^(?P<hostname>\S+?)#"
     # Don't sure. Below this line obtained from Cisco.IOS profile
     requires_netmask_conversion = True
-    convert_mac = noc.sa.profiles.Profile.convert_mac_to_cisco
+    convert_mac = BaseProfile.convert_mac_to_cisco
     convert_interface_name = NOCProfile.convert_interface_name_cisco
     config_volatile = ["^ntp clock-period .*?^"]
 

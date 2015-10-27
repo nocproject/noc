@@ -1,12 +1,10 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 __author__ = 'boris'
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import SSH
+from noc.core.profile.base import BaseProfile
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Cisco.DCM"
-    supported_schemes = [SSH]
     pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
     pattern_password = "^[Pp]assword:"
     pattern_prompt = "^holding+@.*:"
