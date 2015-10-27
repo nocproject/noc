@@ -2,6 +2,9 @@
 - include: "os/Debian/main.yml"
   when: ansible_distribution == "Debian"
 
+- include: "os/CentOS/main.yml"
+  when: ansible_distribution == "CentOS"
+
 - name: Install python packages
   pip: >
     chdir="{{noc_root}}"
