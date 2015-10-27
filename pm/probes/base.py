@@ -18,8 +18,8 @@ import tornado.gen
 ## NOC modules
 from noc.lib.solutions import solutions_roots
 from match import MatchExpr, MatchTrue, MatchCaps
-import noc.lib.snmp.consts
-from noc.lib.snmp.error import SNMPError, NO_SUCH_NAME
+import noc.core.snmp.consts
+from noc.core.snmp.error import SNMPError, NO_SUCH_NAME
 from noc.lib.log import PrefixLoggerAdapter
 from noc.core.ioloop.snmp import snmp_get, snmp_count
 
@@ -194,7 +194,7 @@ class Probe(object):
     # Means only for human-configurable probes
     CONFIG_FORM = None
 
-    SNMP_v2c = noc.lib.snmp.consts.SNMP_v2c
+    SNMP_v2c = noc.core.snmp.consts.SNMP_v2c
 
     INVALID_OID_TTL = 3600
 

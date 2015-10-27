@@ -12,8 +12,8 @@ import time
 ## NOC modules
 from noc.core.ioloop.udpserver import UDPServer
 from noc.lib.escape import fm_escape
-from noc.lib.snmp.trap import decode_trap
-from noc.lib.snmp.ber import DecodeError
+from noc.core.snmp.trap import decode_trap
+from noc.core.snmp.ber import DecodeError
 
 
 logger = logging.getLogger(__name__)
