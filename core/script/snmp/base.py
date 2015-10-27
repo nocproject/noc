@@ -11,7 +11,7 @@ import tornado.ioloop
 import tornado.gen
 ## NOC modules
 from noc.core.ioloop.snmp import snmp_get, snmp_count
-from noc.lib.snmp.error import SNMPError, TIMED_OUT
+from noc.core.snmp.error import SNMPError, TIMED_OUT
 from noc.lib.log import PrefixLoggerAdapter
 
 
