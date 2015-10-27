@@ -10,7 +10,7 @@
 import tornado.ioloop
 import tornado.gen
 ## NOC modules
-from noc.core.ioloop.snmp import snmp_get, snmp_count
+from noc.core.ioloop.snmp import snmp_get, snmp_count, snmp_getnext
 from noc.core.snmp.error import SNMPError, TIMED_OUT
 from noc.lib.log import PrefixLoggerAdapter
 
@@ -56,7 +56,7 @@ class SNMP(object):
 
     def count(self, oid, filter=None):
         """
-        Iterate MIB subtree and count matchinf instances
+        Iterate MIB subtree and count matching instances
         :param oid: OID
         :param filter: Callable accepting oid and value and returning boolean
         """
@@ -79,32 +79,46 @@ class SNMP(object):
         self.get_ioloop().run_sync(run)
         return self.result
 
-    def getnext(self, oid, community_suffix=None, bulk=None, min_index=None,
-                max_index=None, cached=False, only_first=False):
-        pass
+    def getnext(self, oid, community_suffix=None,
+                filter=None, cached=False, only_first=False):
+        @tornado.gen.coroutine
+        def run():
+            try:
+                self.result = yield snmp_getnext(
+                    address=self.script.credentials["address"],
+                    oid=oid,
+                    bulk=self.script.has_snmp_bulk,
+                    filter=filter,
+                    only_first=only_first,
+                    ioloop=self.get_ioloop()
+                )
+            except SNMPError, why:
+                if why.code == TIMED_OUT:
+                    raise self.TimeOutError()
+                else:
+                    raise
 
-    def get_table(self, oid, community_suffix=None, bulk=False,
-                  min_index=None, max_index=None, cached=False):
+        self.get_ioloop().run_sync(run)
+        return self.result
+
+    def get_table(self, oid, community_suffix=None, cached=False):
         """
         GETNEXT wrapper. Returns a hash of <index> -> <value>
         """
         r = {}
         for o, v in self.getnext(oid, community_suffix=community_suffix,
-                                 bulk=bulk, min_index=min_index,
-                                 max_index=max_index, cached=cached):
+                                 cached=cached):
             r[int(o.split(".")[-1])] = v
         return r
 
-    def join_tables(self, oid1, oid2, community_suffix=None, bulk=False,
-                    min_index=None, max_index=None, cached=False):
+    def join_tables(self, oid1, oid2, community_suffix=None,
+                    cached=False):
         """
         Generator returning a rows of two snmp tables joined by index
         """
-        t1 = self.get_table(oid1, community_suffix=community_suffix, bulk=bulk,
-                            min_index=min_index, max_index=max_index,
+        t1 = self.get_table(oid1, community_suffix=community_suffix,
                             cached=cached)
-        t2 = self.get_table(oid2, community_suffix=community_suffix, bulk=bulk,
-                            min_index=min_index, max_index=max_index,
+        t2 = self.get_table(oid2, community_suffix=community_suffix,
                             cached=cached)
         for k1, v1 in t1.items():
             try:
