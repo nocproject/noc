@@ -9,13 +9,21 @@
     requirements="requirements/activator.txt"
     virtualenv="{{noc_root}}"
 
-- name: Install ssh keys
-  synchronize:
-    src: "{{ tower_ssh_keys }}/{{ item.name }}"
-    dest: "{{ noc_root }}/var/etc/ssh"
-    recursive: yes
-    owner: no
-    perms: no
-    rsync_opts:
-      - "--chmod=a+r"
+- name: Create ssh keys directories
+  file:
+    path: "{{ noc_root }}/var/etc/ssh/{{ item.name }}"
+    state: directory
+    owner: root
+    group: "{{ noc_group }}"
+    mode: 0550
   with_items: "{{ noc_all_pools }}"
+
+- name: Install ssh keys
+  copy:
+    src: "{{ item }}"
+    dest: "{{ noc_root }}/var/etc/ssh/{{ '/'.join(item.split('/')[-2:]) }}"
+    owner: root
+    group: "{{ noc_group }}"
+    mode: 0440
+  with_fileglob:
+    - "{{ tower_ssh_keys }}/*/id_*"
