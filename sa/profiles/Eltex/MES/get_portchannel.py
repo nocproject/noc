@@ -29,7 +29,7 @@ class Script(NOCScript):
         r = []
         """ Detect only active links
         # Try SNMP first
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 for v in self.snmp.get_tables(
                     ["1.2.840.10006.300.43.1.1.1.1.6",

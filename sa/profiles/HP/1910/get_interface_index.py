@@ -20,7 +20,7 @@ class Script(NOCScript):
     def execute(self, interface):
 
         # Try SNMP first
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 interface = interface.replace('Gi ', 'GigabitEthernet')
                 interface = interface.replace('Vl ', 'Vlan-interface')

@@ -10,14 +10,12 @@
 """
 """
 import re
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 from noc.sa.interfaces import InterfaceTypeError
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "DLink.DGS3100"
-    supported_schemes = [TELNET, SSH]
     pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
     pattern_password = "[Pp]ass[Ww]ord:"
     pattern_more = [

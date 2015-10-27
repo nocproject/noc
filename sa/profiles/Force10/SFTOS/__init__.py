@@ -13,7 +13,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "Force10.SFTOS"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_more = r"^--More-- or \(q\)uit"
     pattern_unpriveleged_prompt = r"^(?P<host>\S+?)>"
     pattern_prompt = r"^(?P<host>\S+?)#"

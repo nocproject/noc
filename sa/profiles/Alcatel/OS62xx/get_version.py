@@ -24,7 +24,7 @@ class Script(NOCScript):
                         re.MULTILINE | re.DOTALL)
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 platform = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.7.68420352",
                                          cached=True)  # Platform

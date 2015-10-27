@@ -82,7 +82,7 @@ class Script(NOCScript):
         """
         # SNMP working but without IP
         
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 # Get mac
                 mac = self.scripts.get_chassis_id()

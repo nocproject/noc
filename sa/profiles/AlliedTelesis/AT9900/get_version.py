@@ -21,7 +21,7 @@ class Script(NOCScript):
     rx_ver = re.compile(r"^Allied Telesis (?P<platform>AT[/\w-]+) version (?P<version>[\d.]+-[\d]+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 pl = self.snmp.get("1.3.6.1.4.1.207.8.17.1.3.1.6.1")
                 ver = self.snmp.get("1.3.6.1.4.1.207.8.17.1.3.1.5.1")

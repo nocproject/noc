@@ -13,7 +13,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = 'Brocade.CER-ADV'
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_more = '--More--'
     pattern_prompt = '\\S+?(\\(\\S+\\))?#'
     pattern_unpriveleged_prompt = '^\\S+?>'

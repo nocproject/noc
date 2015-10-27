@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "HP.ProCurve"
-    supported_schemes = [TELNET, SSH]
     pattern_prompt = r"^[a-zA-Z0-9- _/.]+?(\(\S+\))?# "
     pattern_unpriveleged_prompt = r"^[a-zA-Z0-9- _/.]+?> "
     pattern_more = [

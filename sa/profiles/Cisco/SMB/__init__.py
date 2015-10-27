@@ -15,7 +15,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "Cisco.SMB"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_more = [
         (r"^More:", " "),
         (r"^Overwrite file \[startup-config\]", "y")

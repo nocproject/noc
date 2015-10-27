@@ -13,4 +13,3 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "HP.1905"
-    supported_schemes = [NOCProfile.HTTP, NOCProfile.TELNET]

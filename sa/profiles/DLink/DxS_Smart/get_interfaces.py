@@ -37,7 +37,7 @@ class Script(noc.sa.script.Script):
         #        for m in pc["members"]:
         #            portchannel_members[m] = (i, t)
         admin_status = {}
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 for n, s in self.snmp.join_tables(
                         "1.3.6.1.2.1.31.1.1.1.1",

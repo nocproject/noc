@@ -9,13 +9,11 @@
 import re
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Alcatel.TIMOS"
-    supported_schemes = [TELNET, SSH]
     pattern_username = "[Ll]ogin: "
     pattern_password = "[Pp]assword: "
     command_disable_pager = "environment no more"

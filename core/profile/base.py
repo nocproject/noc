@@ -30,6 +30,7 @@ class BaseProfile(object):
     # Access schemes constants are defined
     # in noc.sa.protocols.sae_pb2
     # (TELNET, SSH, HTTP, etc)
+    # @todo: Deprecated
     #
     supported_schemes = []
     # Regular expression to catch user name prompt

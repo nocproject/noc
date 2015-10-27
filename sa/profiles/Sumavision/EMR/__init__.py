@@ -3,10 +3,8 @@
 __author__ = 'feniks'
 
 #NOC modules
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "SUMAVISION.EMR"
-    supported_schemes = [SSH]

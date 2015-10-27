@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "HP.GbE2"
-    supported_schemes = [TELNET, SSH]
     pattern_more = "Press q to quit, any other key to continue"
     pattern_prompt = r"^>> [^#]+# "
     command_more = " "

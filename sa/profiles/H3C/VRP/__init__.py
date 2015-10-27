@@ -9,14 +9,12 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 import re
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "H3C.VRP"
-    supported_schemes = [TELNET, SSH]
     pattern_more = "^  ---- More ----"
     pattern_prompt = r"^[<#]\S+?[>#]"
     command_more = " "

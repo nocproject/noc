@@ -25,7 +25,7 @@ class Script(NOCScript):
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
         # Try SNMP first
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 vlan_oid = []
                 if mac is not None:

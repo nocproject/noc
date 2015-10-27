@@ -13,7 +13,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "HP.1910"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = r"^Username:"
     pattern_password = r"^(Password:|Please input password:)"
     pattern_more = [

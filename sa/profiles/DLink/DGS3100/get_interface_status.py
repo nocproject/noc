@@ -22,7 +22,7 @@ class Script(NOCScript):
 
     def execute(self, interface=None):
         # Not tested. Must be identical in different vendors
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 # Get interface status
                 r = []

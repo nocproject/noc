@@ -16,7 +16,6 @@ from noc.sa.interfaces import InterfaceTypeError
 
 class Profile(NOCProfile):
     name = "Cisco.IOSXR"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_more = r"^ --More--"
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at"

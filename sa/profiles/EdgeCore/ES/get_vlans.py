@@ -20,7 +20,7 @@ class Script(NOCScript):
     implements = [IGetVlans]
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             # Try SNMP first
             try:
                 oids = {}

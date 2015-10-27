@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "InfiNet.WANFlexX"
-    supported_schemes = [TELNET]
     pattern_more = "^-- more --"
     pattern_prompt = r"\S+?#\d+>"
     command_submit = "\r"

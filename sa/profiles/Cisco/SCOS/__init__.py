@@ -15,7 +15,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "Cisco.SCOS"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_more = [
         (r"--More--", " "),
         (r"\?\s*\[confirm\]", "\n")

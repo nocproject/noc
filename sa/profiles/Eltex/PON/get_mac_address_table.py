@@ -29,7 +29,7 @@ class Script(noc.sa.script.Script):
         r = []
         """
         # Try SNMP first
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 vlan_oid = []
                 if mac is not None:

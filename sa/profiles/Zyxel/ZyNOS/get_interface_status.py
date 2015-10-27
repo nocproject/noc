@@ -21,7 +21,7 @@ class Script(NOCScript):
                     re.MULTILINE | re.IGNORECASE)
 
     def execute(self, interface=None):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 r = []
                 if interface is None:

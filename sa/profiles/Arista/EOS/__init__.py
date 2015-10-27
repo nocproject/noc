@@ -16,7 +16,6 @@ from noc.sa.interfaces import InterfaceTypeError
 
 class Profile(NOCProfile):
     name = "Arista.EOS"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = r"% Invalid input"

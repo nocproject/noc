@@ -15,7 +15,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "Qtech.QSW2800"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = r"^login:"
     pattern_password = r"^Password:"
     pattern_more = [

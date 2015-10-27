@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Cisco.NXOS"
-    supported_schemes = [TELNET, SSH]
     pattern_more = "^--More--"
     pattern_unpriveleged_prompt = r"^\S+?>"
     command_super = "enable"
@@ -23,7 +21,7 @@ class Profile(noc.sa.profiles.Profile):
     command_save_config = "copy running-config startup-config\n"
     pattern_prompt = r"^\S+?#"
     requires_netmask_conversion = True
-    convert_mac = noc.sa.profiles.Profile.convert_mac_to_cisco
+    convert_mac = BaseProfile.convert_mac_to_cisco
 
     def convert_interface_name(self, interface):
         il = interface.lower()

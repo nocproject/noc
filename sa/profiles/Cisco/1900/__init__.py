@@ -8,12 +8,10 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET
+from noc.core.profile.base import BaseProfile
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name="Cisco.1900"
-    supported_schemes=[TELNET]
 
     pattern_more=[  ("\[K\] Command Line", "K"),
                     ("--More--$", " ")
@@ -21,4 +19,4 @@ class Profile(noc.sa.profiles.Profile):
 
     pattern_unpriveleged_prompt=r"^\S+?>"
     command_super="enable"
-    convert_mac = noc.sa.profiles.Profile.convert_mac_to_cisco
+    convert_mac = BaseProfile.convert_mac_to_cisco

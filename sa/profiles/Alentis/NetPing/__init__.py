@@ -12,12 +12,10 @@ import json
 import re
 ## NOC modules
 from noc.sa.profiles import Profile as NOCProfile
-from noc.sa.protocols.sae_pb2 import HTTP
 
 
 class Profile(NOCProfile):
     name = "Alentis.NetPing"
-    supported_schemes = [NOCProfile.HTTP]
 
     rx_data = re.compile(
         r"^var data\s*=\s*(?P<var_data>{.+})",

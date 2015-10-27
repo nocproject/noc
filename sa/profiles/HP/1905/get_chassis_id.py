@@ -18,7 +18,7 @@ class Script(NOCScript):
 
     def execute(self):
         # Try SNMP first
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6.3718", cached=True)
                 return {

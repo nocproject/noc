@@ -31,7 +31,7 @@ class Script(NOCScript):
         """
         # SNMP not working
         
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
 
 # lldpRemLocalPortNum

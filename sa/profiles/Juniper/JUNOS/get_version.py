@@ -22,7 +22,7 @@ class Script(noc.sa.script.Script):
     implements = [IGetVersion]
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0")  # sysDescr.0
                 match = rx_snmp_ver.search(v)

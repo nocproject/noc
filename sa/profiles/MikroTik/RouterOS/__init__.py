@@ -16,7 +16,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "MikroTik.RouterOS"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     command_submit = "\r"
     pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] > "
     pattern_more = [

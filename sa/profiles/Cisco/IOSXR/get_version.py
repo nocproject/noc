@@ -26,7 +26,7 @@ class Script(NOCScript):
     rx_snmp_ver = re.compile(r"Cisco IOS XR Software \(Cisco (?P<platform>\S+)\s+\w+\).+\s+Version\s+(?P<version>\S+)\[\S+\]")
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)  # sysDescr.0
                 match = self.re_search(self.rx_snmp_ver, v)

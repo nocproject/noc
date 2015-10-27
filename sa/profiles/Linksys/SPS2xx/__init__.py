@@ -13,7 +13,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "Linksys.SPS2xx"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = r"^User Name:"
     pattern_password = r"^Password:"
     pattern_more = r"^More: <space>,  Quit: q, One line: <return>$"

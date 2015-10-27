@@ -21,7 +21,7 @@ class Script(NOCScript):
     requires = []
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 su = self.snmp.get(mib["SNMPv2-MIB::sysUpTime", 0])
                 return float(su) / 100.0

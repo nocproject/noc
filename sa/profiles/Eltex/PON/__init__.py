@@ -15,7 +15,6 @@ from noc.sa.script import script
 
 class Profile(NOCProfile):
     name = "Eltex.PON"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = r"^Login:"
     pattern_password = r"^Password:"
     pattern_more = [

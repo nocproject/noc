@@ -9,14 +9,12 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 import re
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Huawei.VRP3"
-    supported_schemes = [TELNET, SSH]
     pattern_username = r"^> User name \(<\d+ chars\): "
     pattern_password = r"^> Password \(<\d+ chars\): "
     pattern_more = [

@@ -22,7 +22,6 @@ from django.db import models
 from noc.main.models import PyRule
 from managedobject import ManagedObject
 from managedobjectselector import ManagedObjectSelector
-from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fields import PickledField
 
 

@@ -25,7 +25,7 @@ class Script(NOCScript):
     rx_snmp_ver = re.compile('Brocade\\sNetIron\\s(?P<platform>\\S+)\\,.*Version\\s+V(?P<version>\\S+).+$')
 
     def execute(self):
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 v = self.snmp.get('1.3.6.1.2.1.1.1.0')
                 match = self.re_search(self.rx_snmp_ver, v)

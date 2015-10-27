@@ -13,6 +13,5 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "Audiocodes.Mediant2000"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH, NOCProfile.HTTP]
     pattern_more = "^ -- More --"
 

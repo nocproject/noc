@@ -13,7 +13,6 @@ from noc.sa.profiles import Profile as NOCProfile
 
 class Profile(NOCProfile):
     name = "Brocade.IronWare"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_prompt = r"\S+?(\(\S+\))?#"
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_username = r"User"

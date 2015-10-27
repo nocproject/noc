@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "AddPac.APOS"
-    supported_schemes = [TELNET, SSH]
     pattern_more = "^-- more --"
     pattern_prompt = r"^\S+?#"
     command_more = " \n"

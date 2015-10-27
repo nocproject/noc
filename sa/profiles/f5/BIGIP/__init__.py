@@ -8,13 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "f5.BIGIP"
-    supported_schemes = [SSH]
     pattern_username = "^([Uu]sername|[Ll]ogin):"
     pattern_prompt = r"^(?P<user>\S+?)@(?P<part>\(.+?\))\(tmos\)# "
     pattern_more = [

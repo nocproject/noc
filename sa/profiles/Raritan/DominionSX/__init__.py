@@ -8,12 +8,10 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Raritan.DominionSX"
-    supported_schemes = [SSH]
     pattern_prompt = r"^(\S+ > )+"
     pattern_more = "--More-- Press <ENTER> to continue."

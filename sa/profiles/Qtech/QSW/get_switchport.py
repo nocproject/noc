@@ -64,7 +64,7 @@ class Script(NOCScript):
         # Try snmp first
         """
         # SNMP not working!
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             def hex2bin(ports):
                 bin = [
                     '0000', '0001', '0010', '0011',
