@@ -8,3 +8,14 @@
     executable="{{noc_root}}/bin/pip"
     requirements="requirements/activator.txt"
     virtualenv="{{noc_root}}"
+
+- name: Install ssh keys
+  synchronize:
+    src: "{{ tower_ssh_keys }}/{{ item.name }}"
+    dest: "{{ noc_root }}/var/etc/ssh"
+    recursive: yes
+    owner: no
+    perms: no
+    rsync_opts:
+      - "--chmod=a+r"
+  with_items: "{{ noc_all_pools }}"

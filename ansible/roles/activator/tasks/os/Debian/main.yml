@@ -3,5 +3,5 @@
   apt: name={{item}} update_cache=yes cache_valid_time=3600
   sudo: true
   with_items:
-    - libgmp10
-    - libgmp-dev
+    - libssh2-1
+    - libssh2-1-dev
