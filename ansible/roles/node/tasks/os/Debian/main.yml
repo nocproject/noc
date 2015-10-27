@@ -8,13 +8,12 @@
     - python
     - python-dev
     - python-virtualenv
-    - libgmp10
-    - libgmp-dev
     - mercurial
     - sudo
     - quilt
     - gcc
     - libpq-dev
+    - rsync
 
 - name: Install supervisord init script
   template: src="Debian/etc/init.d/noc.j2" dest="/etc/init.d/{{ noc_system_service }}" mode="a+rx"
