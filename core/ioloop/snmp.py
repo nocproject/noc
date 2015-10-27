@@ -16,6 +16,7 @@ from tornado.gen import coroutine, Return
 from noc.core.snmp.version import SNMP_v2c
 from noc.core.snmp.get import (get_pdu, getnext_pdu, getbulk_pdu,
                                parse_get_response)
+from noc.core.snmp.set import set_pdu
 from noc.core.snmp.error import (NO_ERROR, NO_SUCH_NAME,
                                  SNMPError, TIMED_OUT)
 from noc.core.ioloop.udp import UDPSocket
@@ -182,3 +183,36 @@ def snmp_getnext(address, oid, port=161,
                     logger.debug("[%s] GETNEXT result: %s",
                                  address, result)
                     raise Return(result)
+
+@coroutine
+def snmp_set(address, varbinds, port=161,
+             community="public",
+             version=SNMP_v2c,
+             timeout=10,
+             ioloop=None):
+    """
+    Perform SNMP set request and returns Future to be used
+    inside @tornado.gen.coroutine
+    """
+    logger.debug("[%s] SNMP SET %s", address, varbinds)
+    sock = UDPSocket(ioloop=ioloop)
+    sock.settimeout(timeout)
+    # Send GET PDU
+    pdu = set_pdu(community=community, varbinds=varbinds)
+    # Wait for result
+    try:
+        yield sock.sendto(pdu, (address, port))
+        data, addr = yield sock.recvfrom(4096)
+    except socket.timeout:
+        raise SNMPError(code=TIMED_OUT, oid=varbinds[0][0])
+    resp = parse_get_response(data)
+    if resp.error_status != NO_ERROR:
+        oid = None
+        if resp.error_index and resp.varbinds:
+            oid = resp.varbinds[resp.error_index - 1][0]
+        logger.debug("[%s] SNMP error: %s %s",
+                     address, oid, resp.error_status)
+        raise SNMPError(code=resp.error_status, oid=oid)
+    else:
+        logger.debug("[%s] SET result: OK", address)
+        raise Return(True)

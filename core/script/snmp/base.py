@@ -10,7 +10,8 @@
 import tornado.ioloop
 import tornado.gen
 ## NOC modules
-from noc.core.ioloop.snmp import snmp_get, snmp_count, snmp_getnext
+from noc.core.ioloop.snmp import (snmp_get, snmp_count, snmp_getnext,
+                                  snmp_set)
 from noc.core.snmp.error import SNMPError, TIMED_OUT
 from noc.lib.log import PrefixLoggerAdapter
 
@@ -51,6 +52,36 @@ class SNMP(object):
                 else:
                     raise
 
+        self.get_ioloop().run_sync(run)
+        return self.result
+
+    def set(self, *args):
+        """
+        Perform SNMP GET request
+        :param oid: string or list of oids
+        :returns: eighter result scalar or dict of name -> value
+        """
+        @tornado.gen.coroutine
+        def run():
+            try:
+                self.result = yield snmp_set(
+                    address=self.script.credentials["address"],
+                    varbinds=varbinds,
+                    community=str(self.script.credentials["snmp_rw"]),
+                    ioloop=self.get_ioloop()
+                )
+            except SNMPError, why:
+                if why.code == TIMED_OUT:
+                    raise self.TimeOutError()
+                else:
+                    raise
+
+        if len(args) == 1:
+            varbinds = args
+        elif len(args) == 2:
+            varbinds = [(args[0], args[1])]
+        else:
+            raise ValueError("Invalid varbinds")
         self.get_ioloop().run_sync(run)
         return self.result
 
@@ -143,8 +174,7 @@ class SNMP(object):
         def gen_table(oid):
             l = len(oid) + 1
             for o, v in self.getnext(oid, community_suffix=community_suffix,
-                                     bulk=bulk, min_index=min_index,
-                                     max_index=max_index, cached=cached):
+                                     cached=cached):
                 yield tuple([int(x) for x in o[l:].split(".")]), v
 
         # Retrieve tables
