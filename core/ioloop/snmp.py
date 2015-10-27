@@ -127,3 +127,58 @@ def snmp_count(address, oid, port=161,
                     logger.debug("[%s] COUNT result: %s",
                                  address, result)
                     raise Return(result)
+
+
+@coroutine
+def snmp_getnext(address, oid, port=161,
+                 community="public",
+                 version=SNMP_v2c,
+                 timeout=10,
+                 bulk=False,
+                 filter=None,
+                 max_repetitions=BULK_MAX_REPETITIONS,
+                 only_first=False,
+                 ioloop=None):
+    """
+    Perform SNMP GETNEXT/BULK request and returns Future to be used
+    inside @tornado.gen.coroutine
+    """
+    logger.debug("[%s] SNMP GETNEXT %s", address, oid)
+    if not filter:
+        filter = lambda x, y: True
+    poid = oid + "."
+    result = []
+    sock = UDPSocket(ioloop=ioloop)
+    sock.settimeout(timeout)
+    while True:
+        # Get PDU
+        if bulk:
+            pdu = getbulk_pdu(community, oid,
+                              max_repetitions=max_repetitions)
+        else:
+            pdu = getnext_pdu(community, oid)
+        # Send request and wait for response
+        try:
+            yield sock.sendto(pdu, (address, port))
+            data, addr = yield sock.recvfrom(4096)
+        except socket.timeout:
+            raise SNMPError(code=TIMED_OUT, oid=oid)
+        # Parse response
+        resp = parse_get_response(data)
+        if resp.error_status == NO_SUCH_NAME:
+            # NULL result
+            break
+        elif resp.error_status != NO_ERROR:
+            # Error
+            raise SNMPError(code=resp.error_status, oid=oid)
+        else:
+            # Success value
+            for oid, v in resp.varbinds:
+                if oid.startswith(poid) and not (only_first and result):
+                    # Next value
+                    if filter(oid, v):
+                        result += [(oid, v)]
+                else:
+                    logger.debug("[%s] GETNEXT result: %s",
+                                 address, result)
+                    raise Return(result)
