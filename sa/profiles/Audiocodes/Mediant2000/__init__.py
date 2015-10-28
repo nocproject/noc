@@ -8,10 +8,10 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Audiocodes.Mediant2000"
     pattern_more = "^ -- More --"
 

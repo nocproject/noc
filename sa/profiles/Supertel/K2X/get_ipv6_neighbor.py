@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetIPv6Neighbor
+from noc.sa.interfaces.igetipv6neighbor import IGetIPv6Neighbor
 
 
 class Script(BaseScript):

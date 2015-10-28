@@ -9,7 +9,7 @@
 """
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetSNMPGetNext
+from noc.sa.interfaces.igetsnmpget import IGetSNMPGetNext
 
 
 class Script(BaseScript):

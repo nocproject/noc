@@ -8,7 +8,7 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetFQDN
+from noc.sa.interfaces.igetfqdn import IGetFQDN
 import re
 
 

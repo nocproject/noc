@@ -6,7 +6,7 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IHasVlan, IGetVlans
+from noc.sa.interfaces.ihasvlan import IHasVlan, IGetVlans
 import re
 
 

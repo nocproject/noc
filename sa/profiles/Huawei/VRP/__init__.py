@@ -9,11 +9,11 @@
 """
 """
 from noc.core.profile.base import BaseProfile
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 import re
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Huawei.VRP"
     pattern_more = [
         (r"^  ---- More ----", " "),

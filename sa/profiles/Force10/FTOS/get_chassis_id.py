@@ -11,7 +11,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetChassisID
+from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.sa.profiles.Force10.FTOS import SSeries
 
 

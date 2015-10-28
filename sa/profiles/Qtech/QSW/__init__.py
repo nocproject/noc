@@ -10,10 +10,10 @@
 # Python modules
 import re
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Qtech.QSW"
     pattern_username = r"^(Username\(1-32 chars\)|[Ll]ogin):"
     pattern_password = r"^Password(\(1-16 chars\)|):"

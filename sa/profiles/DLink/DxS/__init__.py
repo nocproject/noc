@@ -11,10 +11,10 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "DLink.DxS"
     pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
     pattern_password = "[Pp]ass[Ww]ord:"

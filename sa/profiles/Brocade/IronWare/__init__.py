@@ -8,10 +8,10 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Brocade.IronWare"
     pattern_prompt = r"\S+?(\(\S+\))?#"
     pattern_unpriveleged_prompt = r"^\S+?>"

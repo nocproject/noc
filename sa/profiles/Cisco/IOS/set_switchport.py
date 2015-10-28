@@ -10,7 +10,7 @@
 from __future__ import with_statement
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import ISetSwitchport
+from noc.sa.interfaces.isetswitchport import ISetSwitchport
 from noc.lib.text import list_to_ranges
 from noc.sa.profiles.Cisco.IOS import MESeries
 

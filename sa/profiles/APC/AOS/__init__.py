@@ -8,10 +8,10 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "APC.AOS"
     pattern_username = r"^User Name\s+:"
     pattern_password = r"^Password\s+:"

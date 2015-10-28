@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetOAMStatus
+from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
 from noc.sa.interfaces.base import MACAddressParameter
 
 

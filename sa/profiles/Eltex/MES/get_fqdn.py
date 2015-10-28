@@ -10,7 +10,7 @@
 import re
 from noc.core.script.base import BaseScript
 ## NOC modules
-from noc.sa.interfaces import IGetFQDN
+from noc.sa.interfaces.igetfqdn import IGetFQDN
 
 
 class Script(BaseScript):

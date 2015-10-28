@@ -11,7 +11,7 @@ import re
 import string
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetInterfaceStatus
+from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 rx_interface_status = re.compile('^(?P<interface>\\S+)\\s+(?P<status>\\S+).+$', re.IGNORECASE)
 
 

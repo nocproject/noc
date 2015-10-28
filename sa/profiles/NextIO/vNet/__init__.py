@@ -8,10 +8,10 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "NextIO.vNet"
     pattern_syntax_error = r"^ERROR: Invalid command -"
     pattern_operation_error = r"^ERROR: "

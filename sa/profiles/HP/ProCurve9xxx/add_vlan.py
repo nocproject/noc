@@ -11,7 +11,7 @@
 from __future__ import with_statement
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IAddVlan
+from noc.sa.interfaces.iaddvlan import IAddVlan
 
 
 class Script(BaseScript):

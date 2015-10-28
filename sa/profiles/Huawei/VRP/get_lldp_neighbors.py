@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetLLDPNeighbors, MACAddressParameter
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors, MACAddressParameter
 from noc.lib.text import parse_kv
 
 

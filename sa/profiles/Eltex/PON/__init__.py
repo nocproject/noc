@@ -9,11 +9,10 @@
 
 ## Python modules
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
-from noc.sa.script import script
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Eltex.PON"
     pattern_username = r"^Login:"
     pattern_password = r"^Password:"
@@ -30,7 +29,7 @@ class Profile(NOCProfile):
     command_leave_config = "exit"
     command_save_config = "save"
     pattern_prompt = r"^\S+#"
-#    convert_interface_name = NOCProfile.convert_interface_name_cisco
+#    convert_interface_name = BaseProfile.convert_interface_name_cisco
 
     class switch(object):
         """Switch context manager to use with "with" statement"""

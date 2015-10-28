@@ -8,8 +8,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "HP.1905"

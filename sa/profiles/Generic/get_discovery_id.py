@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetDiscoveryID
+from noc.sa.interfaces.igetdiscoveryid import IGetDiscoveryID
 
 
 class Script(BaseScript):

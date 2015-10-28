@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetPortchannel
+from noc.sa.interfaces.igetportchannel import IGetPortchannel
 
 
 class Script(BaseScript):
