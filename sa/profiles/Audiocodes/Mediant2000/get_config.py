@@ -10,7 +10,7 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 
 class Script(BaseScript):
     name="Audiocodes.Mediant2000.get_config"
-    implements=[IGetConfig]
+    interface = IGetConfig
     def execute(self):
         if self.access_profile.scheme in [self.TELNET,self.SSH]:
             self.cli("conf")

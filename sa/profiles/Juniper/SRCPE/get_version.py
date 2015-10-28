@@ -14,7 +14,7 @@ rx_ver=re.compile(r"Product Name\s+(?P<platform>\S+).+Software version\[(?P<vers
 class Script(BaseScript):
     name="Juniper.SRCPE.get_version"
     cache=True
-    implements=[IGetVersion]
+    interface = IGetVersion
     def execute(self):
         v=self.cli("show version information")
         match=rx_ver.search(v)
