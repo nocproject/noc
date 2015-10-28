@@ -41,6 +41,8 @@ from noc.lib.solutions import get_solution
 from noc.lib.debug import error_report
 from noc.main.models.fts_queue import full_text_search
 from noc.pm.models.probeconfig import probe_config
+from noc.sa.mtmanager import MTManager
+from noc.core.script.loader import loader as script_loader
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http")]
@@ -204,8 +206,7 @@ class ManagedObject(models.Model):
                 self.object = obj
 
             def __call__(self, **kwargs):
-                from maptask import MapTask
-                return MapTask.run(self.object, self.name, **kwargs)
+                return MTManager.run(self.object, self.name, kwargs)
 
         def __init__(self, obj):
             self._object = obj
@@ -214,8 +215,9 @@ class ManagedObject(models.Model):
         def __getattr__(self, name):
             if name in self._cache:
                 return self._cache[name]
-            if name not in self._object.profile.scripts:
-                raise AttributeError(name)
+            if not script_loader.has_script("%s.%s" % (
+                    self._object.profile_name, name)):
+                raise AttributeError("Invalid script %s" % name)
             cw = ManagedObject.ScriptsProxy.CallWrapper(self._object, name)
             self._cache[name] = cw
             return cw
