@@ -25,6 +25,9 @@
 - include: "os/CentOS/main.yml"
   when: ansible_distribution == "CentOS"
 
+- include: "os/Ubuntu/main.yml"
+  when: ansible_distribution == "Ubuntu"
+
 - name: Enable MongoDB system service
   service: name="{{mongod_system_service}}" enabled=yes state=started
 
