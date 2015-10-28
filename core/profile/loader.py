@@ -49,7 +49,9 @@ class ProfileLoader(object):
                         ):
                             profile = o
                             break
-                    if not profile:
+                    if profile:
+                        profile.initialize()
+                    else:
                         logger.error("Profile not found: %s", name)
                 except Exception, why:
                     logger.error("Failed to load profile %s: %s", name, why)
