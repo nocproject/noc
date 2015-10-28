@@ -8,10 +8,10 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Force10.SFTOS"
     pattern_more = r"^--More-- or \(q\)uit"
     pattern_unpriveleged_prompt = r"^(?P<host>\S+?)>"
@@ -24,4 +24,4 @@ class Profile(NOCProfile):
     command_leave_config = "exit"
     command_save_config = "write memory"
     command_submit = "\r"
-    convert_interface_name = NOCProfile.convert_interface_name_cisco
+    convert_interface_name = BaseProfile.convert_interface_name_cisco

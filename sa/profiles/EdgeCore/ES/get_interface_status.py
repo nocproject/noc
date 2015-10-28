@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetInterfaceStatus, MACAddressParameter
+from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus, MACAddressParameter
 ##
 ## @todo: ["mac"] support by SNMP
 ##

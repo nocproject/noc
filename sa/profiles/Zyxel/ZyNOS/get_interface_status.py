@@ -10,7 +10,7 @@
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetInterfaceStatus
+from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
 
 class Script(BaseScript):

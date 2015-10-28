@@ -8,10 +8,10 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 #from noc.sa.models import ManagedObject
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "HP.1910"
     pattern_username = r"^Username:"
     pattern_password = r"^(Password:|Please input password:)"
@@ -27,7 +27,7 @@ class Profile(NOCProfile):
     command_enter_config = "system-view"
     command_leave_config = "return"
     command_exit = "quit"
-    convert_interface_name = NOCProfile.convert_interface_name_cisco
+    convert_interface_name = BaseProfile.convert_interface_name_cisco
 
     def setup_session(self, script):
         # Yuo may change password instead 512900

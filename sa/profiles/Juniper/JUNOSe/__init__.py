@@ -8,10 +8,10 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     """
     Juniper.JUNOSe profile
     """
@@ -44,7 +44,7 @@ class Profile(NOCProfile):
         def convert(v):
             return v.replace(" patch-", ".").replace(" release-", ".")
 
-        return NOCProfile.cmp_version(convert(v1), convert(v2))
+        return BaseProfile.cmp_version(convert(v1), convert(v2))
 
     def generate_prefix_list(self, name, pl):
         """

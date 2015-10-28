@@ -9,10 +9,10 @@
 """
 """
 from noc.core.profile.base import BaseProfile
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "DLink.DxS_Cisco_CLI"
     pattern_username = "([Uu]ser[Nn]ame|[Ll]ogin):"
     pattern_password = "[Pp]ass[Ww]ord:"
@@ -28,7 +28,7 @@ class Profile(NOCProfile):
     # Don't sure. Below this line obtained from Cisco.IOS profile
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
-    convert_interface_name = NOCProfile.convert_interface_name_cisco
+    convert_interface_name = BaseProfile.convert_interface_name_cisco
     config_volatile = ["^ntp clock-period .*?^"]
 
     def generate_prefix_list(self, name, pl):

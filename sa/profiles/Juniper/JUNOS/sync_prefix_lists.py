@@ -9,7 +9,7 @@
 """
 from __future__ import with_statement
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import ISyncPrefixLists
+from noc.sa.interfaces.isyncprefixlists import ISyncPrefixLists
 import re
 
 rx_pl = re.compile(r"^set policy-options policy-statement \S+ term pass from route-filter (\S+) (\S+)$")

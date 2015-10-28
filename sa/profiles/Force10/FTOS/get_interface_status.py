@@ -8,7 +8,7 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetInterfaceStatus
+from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 import re
 
 rx_interface_status = re.compile(r"^(?P<interface>\S+\s+\S+)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*$", re.IGNORECASE)

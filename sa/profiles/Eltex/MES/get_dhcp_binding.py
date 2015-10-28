@@ -11,7 +11,7 @@ import datetime
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetDHCPBinding
+from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
 
 
 class Script(BaseScript):

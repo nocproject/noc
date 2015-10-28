@@ -11,10 +11,10 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Dell.Powerconnect62xx"
     pattern_username = "[Uu]ser( [Nn]ame)?:"
     pattern_password = "[Pp]ass[Ww]ord:"

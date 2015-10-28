@@ -11,7 +11,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetCopperTDRDiag
+from noc.sa.interfaces.igetcoppertdrdiag import IGetCopperTDRDiag
 from noc.sa.profiles.DLink.DGS3100 import DGS3100
 
 

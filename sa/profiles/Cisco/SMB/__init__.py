@@ -10,10 +10,10 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Cisco.SMB"
     pattern_more = [
         (r"^More:", " "),
@@ -31,8 +31,8 @@ class Profile(NOCProfile):
     pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
     pattern_username = "User Name:"
     requires_netmask_conversion = True
-    convert_mac = NOCProfile.convert_mac_to_colon
-    convert_interface_name = NOCProfile.convert_interface_name_cisco
+    convert_mac = BaseProfile.convert_mac_to_colon
+    convert_interface_name = BaseProfile.convert_interface_name_cisco
     config_volatile = None
 
     def setup_session(self, script):

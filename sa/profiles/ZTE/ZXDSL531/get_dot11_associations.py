@@ -6,7 +6,7 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetDot11Associations
+from noc.sa.interfaces.igetdot11associations import IGetDot11Associations
 from noc.lib.text import strip_html_tags
 import re
 

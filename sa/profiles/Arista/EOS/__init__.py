@@ -10,11 +10,11 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
-from noc.sa.interfaces import InterfaceTypeError
+from noc.core.profile.base import BaseProfile
+from noc.sa.interfaces.base import InterfaceTypeError
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Arista.EOS"
     pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
@@ -27,7 +27,7 @@ class Profile(NOCProfile):
     command_submit = "\r"
     command_super = "enable"
     command_disable_pager = "terminal length 0"
-    convert_mac = NOCProfile.convert_mac_to_cisco
+    convert_mac = BaseProfile.convert_mac_to_cisco
 
     rx_interface_name = re.compile("^(?P<type>\S+?)(?P<number>\d+)$")
 

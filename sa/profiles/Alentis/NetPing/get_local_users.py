@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetLocalUsers
+from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
 
 
 class Script(BaseScript):

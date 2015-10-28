@@ -8,7 +8,7 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetDOMStatus
+from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 import re
 
 

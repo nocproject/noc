@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetREPTopology
+from noc.sa.interfaces.igetreptopology import IGetREPTopology
 
 
 class Script(BaseScript):

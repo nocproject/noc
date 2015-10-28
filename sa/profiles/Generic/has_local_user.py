@@ -8,7 +8,7 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import *
+from noc.sa.interfaces.base import *
 import re
 
 

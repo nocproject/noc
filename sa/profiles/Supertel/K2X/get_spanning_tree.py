@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetSpanningTree
+from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 from noc.lib.text import parse_table
 
 

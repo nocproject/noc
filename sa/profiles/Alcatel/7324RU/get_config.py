@@ -17,5 +17,6 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self):
-        config = self.http.get("/config-0_20200101_0101.dat")
-        return self.cleaned_config(config)
+        response = self.http.fetch("/config-0_20200101_0101.dat")
+        # @todo: Auth
+        return self.cleaned_config(response.body)

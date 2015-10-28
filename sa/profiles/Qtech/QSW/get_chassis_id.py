@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetChassisID
+from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 rx_mac = re.compile(r"^MAC address\s+:\s+(?P<mac>\S+)$", re.MULTILINE)
 rx_mac1 = re.compile(

@@ -8,10 +8,10 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Eltex.MES"
     pattern_username = r"^User Name:"
     pattern_password = r"^Password:"
@@ -27,4 +27,4 @@ class Profile(NOCProfile):
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
     pattern_prompt = r"^\S+#"
-    convert_interface_name = NOCProfile.convert_interface_name_cisco
+    convert_interface_name = BaseProfile.convert_interface_name_cisco

@@ -10,8 +10,10 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import (IGetLLDPNeighbors, IntParameter,
-                               MACAddressParameter, InterfaceTypeError)
+from noc.sa.interfaces.base import (IntParameter,
+                                    MACAddressParameter,
+                                    InterfaceTypeError)
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
 class Script(BaseScript):

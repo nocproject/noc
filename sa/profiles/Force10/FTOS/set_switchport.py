@@ -11,7 +11,7 @@ from __future__ import with_statement
 from collections import defaultdict
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import ISetSwitchport
+from noc.sa.interfaces.isetswitchport import ISetSwitchport
 
 
 class Script(BaseScript):

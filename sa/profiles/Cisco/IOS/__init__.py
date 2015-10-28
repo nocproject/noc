@@ -10,10 +10,10 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Cisco.IOS"
     pattern_more = [
         (r"^ --More--", "\n"),
@@ -30,7 +30,7 @@ class Profile(NOCProfile):
     pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
     can_strip_hostname_to = 20
     requires_netmask_conversion = True
-    convert_mac = NOCProfile.convert_mac_to_cisco
+    convert_mac = BaseProfile.convert_mac_to_cisco
     config_volatile = ["^ntp clock-period .*?^"]
 
     rx_cable_if = re.compile(r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)", re.IGNORECASE)

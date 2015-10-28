@@ -10,10 +10,10 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "Cisco.SCOS"
     pattern_more = [
         (r"--More--", " "),
@@ -28,7 +28,7 @@ class Profile(NOCProfile):
     command_save_config = "copy running-config startup-config\n"
     pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S*?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
-    convert_mac = NOCProfile.convert_mac_to_cisco
+    convert_mac = BaseProfile.convert_mac_to_cisco
 
     def convert_interface_name(self, interface):
         if interface.startswith("Fast"):

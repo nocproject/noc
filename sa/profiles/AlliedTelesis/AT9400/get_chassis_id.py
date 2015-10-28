@@ -8,7 +8,7 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetChassisID
+from noc.sa.interfaces.igetchassisid import IGetChassisID
 import re
 
 

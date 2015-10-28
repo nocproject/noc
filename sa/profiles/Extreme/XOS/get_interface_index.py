@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetIfIndex
+from noc.sa.interfaces.igetifindex import IGetIfIndex
 
 
 class Script(BaseScript):

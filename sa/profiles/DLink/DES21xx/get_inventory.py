@@ -8,7 +8,7 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetInventory
+from noc.sa.interfaces.igetinventory import IGetInventory
 import re
 
 

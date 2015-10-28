@@ -10,7 +10,7 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetInventory
+from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):
@@ -45,10 +45,10 @@ class Script(BaseScript):
                 pass
 
         # Fallback to HTTP
-        data = self.http.get("/devname.cgi")
-        match = self.rx_plat.search(data)
+        response = self.http.fetch("/devname.cgi")
+        match = self.rx_plat.search(response.body)
         platform = match.group("platform")
-        match = self.rx_rev.search(data)
+        match = self.rx_rev.search(response.body)
         revision = match.group("revision")
 
         data = self.profile.var_data(self, "/setup_get.cgi")

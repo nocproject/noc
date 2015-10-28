@@ -11,10 +11,10 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.profiles import Profile as NOCProfile
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(NOCProfile):
+class Profile(BaseProfile):
     name = "MikroTik.RouterOS"
     command_submit = "\r"
     pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] > "

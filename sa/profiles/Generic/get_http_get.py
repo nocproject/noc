@@ -11,7 +11,7 @@
 import urlparse
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetHTTPGet
+from noc.sa.interfaces.igethttpget import IGetHTTPGet
 
 
 class Script(BaseScript):

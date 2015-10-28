@@ -8,7 +8,7 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetDHCPBinding
+from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
 import re
 import datetime
 import time
