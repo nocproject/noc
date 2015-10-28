@@ -33,10 +33,6 @@ class BaseScript(object):
     cache = False
     # Implemented interface
     interface = None
-    # @todo: Remove
-    # Legacy list of implemented interface
-    # Replaced with *interface*
-    implements = None
     # Scripts required by generic script.
     # For common scripts - empty list
     # For generics - list of pairs (script_name, interface)
@@ -48,12 +44,18 @@ class BaseScript(object):
 
     # Common errors
     # LoginError = LoginError
-    # CLISyntaxError = CLISyntaxError
-    # CLIOperationError = CLIOperationError
+    class CLISyntaxError(Exception):
+        pass
+
+    class CLIOperationError(Exception):
+        pass
     # CLITransportError = CLITransportError
     # CLIDisconnectedError = CLIDisconnectedError
     # TimeOutError = TimeOutError
-    # NotSupportedError = NotSupportedError
+
+    class NotSupportedError(Exception):
+        pass
+
     class UnexpectedResultError(Exception):
         pass
 
@@ -72,13 +74,6 @@ class BaseScript(object):
     def __init__(self, service, credentials,
                  args=None, capabilities=None,
                  version=None, parent=None, timeout=None):
-        if not self.interface and self.implements:
-            warnings.warn(
-                "Option Script.implements is obsolete and replaced "
-                "with Script.interface",
-                DeprecationWarning
-            )
-            self.interface = self.implements[0]
         self.service = service
         self.pool = self.service.config.pool
         self.parent = parent
@@ -247,7 +242,9 @@ class BaseScript(object):
         return self.profile.cleaned_config(config)
 
     def strip_first_lines(self, text, lines=1):
-        """Strip first lines"""
+        """
+        Strip first *lines*
+        """
         t = text.split("\n")
         if len(t) <= lines:
             return ""
@@ -513,6 +510,25 @@ class BaseScript(object):
         command_submit = command_submit or self.profile.command_submit
         stream = self.get_cli_stream()
         r = stream.execute(cmd + command_submit)
+        # Check for syntax errors
+        if not ignore_errors:
+            # Check for syntax error
+            if (self.profile.rx_pattern_syntax_error and
+                self.profile.rx_pattern_syntax_error.search(r)):
+                raise self.CLISyntaxError(r)
+            # Then check for operaion error
+            if (self.profile.rx_pattern_operation_error and
+                self.profile.rx_pattern_operation_error.search(r)):
+                raise self.CLIOperationError(r)
+        # Echo cancelation
+        if r[:4096].lstrip().startswith(cmd):
+            r = r.lstrip()
+            if r.startswith(cmd + "\n"):
+                # Remove first line
+                r = self.strip_first_lines(r.lstrip())
+            else:
+                # Some switches, like ProCurve do not send \n after the echo
+                r = r[len(cmd):]
         # Convert to list of dicts if list_re is defined
         if list_re:
             x = []
