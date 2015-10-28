@@ -9,7 +9,7 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.fm.models import IgnoreEventRules
-from noc.sa.interfaces import REParameter
+from noc.sa.interfaces.base import REParameter
 
 
 class IgnoreEventRuleApplication(ExtModelApplication):

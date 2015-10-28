@@ -9,7 +9,7 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.vc.models import VCFilter
-from noc.sa.interfaces import IntParameter
+from noc.sa.interfaces.base import IntParameter
 
 
 class VCFilterApplication(ExtModelApplication):

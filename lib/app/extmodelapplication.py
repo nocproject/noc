@@ -18,15 +18,15 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.utils import IntegrityError
 ## NOC modules
 from extapplication import ExtApplication, view
-from noc.sa.interfaces import (BooleanParameter, IntParameter,
-                               FloatParameter, ModelParameter,
-                               StringParameter, TagsParameter,
-                               NoneParameter, StringListParameter,
-                               DictParameter, ListOfParameter,
-                               ModelParameter)
+from noc.sa.interfaces.base import (
+    BooleanParameter, IntParameter,
+    FloatParameter, ModelParameter,
+    StringParameter, TagsParameter,
+    NoneParameter, StringListParameter,
+    DictParameter, ListOfParameter,
+    ModelParameter, InterfaceTypeError)
 from interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
-from noc.sa.interfaces import InterfaceTypeError
 from noc.lib.db import QTags
 from noc.main.models.slowop import SlowOp
 

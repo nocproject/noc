@@ -14,7 +14,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.sa.interfaces import (StringParameter, ListOfParameter,
+from noc.sa.interfaces.base import (StringParameter, ListOfParameter,
     DocumentParameter, ModelParameter)
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project

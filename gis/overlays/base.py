@@ -7,7 +7,6 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.interfaces import *
 
 
 class OverlayHandler(object):

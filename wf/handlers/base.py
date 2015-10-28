@@ -11,7 +11,7 @@ import logging
 import math
 import random
 ## NOC modules
-from noc.sa.interfaces import Parameter
+from noc.sa.interfaces.base import Parameter
 
 
 class ExprParameter(Parameter):

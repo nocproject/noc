@@ -13,7 +13,7 @@ from noc.lib.app import ExtModelApplication, view
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.timepatternterm import TimePatternTerm
 from noc.lib.app.modelinline import ModelInline
-from noc.sa.interfaces import ModelParameter, ListOfParameter, StringParameter
+from noc.sa.interfaces.base import ModelParameter, ListOfParameter, StringParameter
 
 
 class TimePatternApplication(ExtModelApplication):

@@ -21,7 +21,7 @@ from noc.lib.ip import *
 from noc.lib.forms import NOCForm
 from noc.lib.widgets import *
 from noc.lib.colors import *
-from noc.sa.interfaces import MACAddressParameter, InterfaceTypeError
+from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 from noc.ip.models import *
 from noc.main.models import Permission, Style, CustomField, ResourceState
 from noc.project.models.project import Project

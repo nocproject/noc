@@ -14,7 +14,7 @@ from mongoengine import Q
 from noc.lib.app import ExtModelApplication, view
 from noc.vc.models import VC, VCDomain, VCFilter
 from noc.inv.models.subinterface import SubInterface
-from noc.sa.interfaces import DictParameter, ModelParameter, ListOfParameter,\
+from noc.sa.interfaces.base import DictParameter, ModelParameter, ListOfParameter,\
     IntParameter, StringParameter
 from noc.vc.caches import vcinterfacescount, vcprefixes
 
