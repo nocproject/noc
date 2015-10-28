@@ -8,13 +8,13 @@
 
 ## Python modules
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IAddVlan
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.1905.add_vlan"
-    implements = [IAddVlan]
+    interface = IAddVlan
 
     def execute(self, vlan_id, name, tagged_ports=[]):
         a = ''

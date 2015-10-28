@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetIfIndex
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Extreme.XOS.get_interface_index
     """
     name = "Extreme.XOS.get_interface_index"
-    implements = [IGetIfIndex]
+    interface = IGetIfIndex
 
     rx_ifidx_phys = re.compile("^X\S+\s+Port\s+(?P<port>\d+)", re.IGNORECASE )
     rx_ifidx_vlan = re.compile("^VLAN\s+\S+\s+\((?P<port>\S+)\)", re.IGNORECASE )

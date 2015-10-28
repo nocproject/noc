@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetDOMStatus
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS.get_dom_status"
-    implements = [IGetDOMStatus]
+    interface = IGetDOMStatus
 
     rx_port = re.compile(r"^\s+(?P<port>\d+\S*)\s+(?P<temp>\S+)\s+(?P<volt>\S+)\s+(?P<bias>\S+)\s+(?P<txpw>\S+)\s+(?P<rxpw>\S+)\s*$", re.MULTILINE)
 

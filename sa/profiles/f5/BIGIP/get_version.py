@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 rx_ver = re.compile("BIG-IP Version (?P<version>.+?)$", re.MULTILINE)
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "f5.BIGIP.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     rx_version = re.compile(
         r"Product\s+(?P<platform>\S+).+"

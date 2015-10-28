@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcapabilitiesex import IGetCapabilitiesEx
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "MikroTik.RouterOS.get_capabilities_ex"
     cache = True
-    implements = [IGetCapabilitiesEx]
+    interface = IGetCapabilitiesEx
 
     def check_license(self, caps):
         v = self.cli("/system license print")

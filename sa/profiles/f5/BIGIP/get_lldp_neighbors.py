@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "f5.BIGIP.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
     def execute(self):
         r = []

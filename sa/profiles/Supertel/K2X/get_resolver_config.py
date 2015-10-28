@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetResolverConfig
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Supertel.K2X.get_resolver_config"
-    implements = [IGetResolverConfig]
+    interface = IGetResolverConfig
 
     rx_search = re.compile(r"^Default domain:\s+(?P<search>\S+)\s*$",
                            re.MULTILINE)

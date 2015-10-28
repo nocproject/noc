@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.AOS.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
     rx_line = re.compile(
         r"^\s+(?P<port>\d+)\s+(Static|Dynamic)",
         re.MULTILINE)

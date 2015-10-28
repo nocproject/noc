@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Extreme.XOS.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
     rx_trunk = re.compile(r"Group ID\s+:\s+(?P<trunk>\d+).+?Type\s+:\s+(?P<type>\S+).+?Member Port\s+:\s+(?P<members>\S+).+?Status\s+:\s+(?P<status>\S+)", re.MULTILINE | re.DOTALL)
     rx_sh_master = re.compile(r"^\s+(?P<trunk>\d+)+\s+(\d+\s+)?(?P<type>\S+)\s+\S+\s+(?P<member>\d+)\s+\S\s+(?P<status>\S).+", re.IGNORECASE | re.DOTALL)
     rx_sh_member = re.compile(r"^\s+Members:\s+(?P<members>\S+).+", re.IGNORECASE | re.DOTALL)

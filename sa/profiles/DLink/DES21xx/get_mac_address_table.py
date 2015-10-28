@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.sa.interfaces.base import MACAddressParameter
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "DLink.DES21xx.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
     rx_line = re.compile(
         r"^\d+\s+(?P<interfaces>\S+)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)$")
     rx_line1 = re.compile(

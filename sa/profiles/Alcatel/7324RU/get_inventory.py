@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.sa.interfaces.base import InterfaceTypeError
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.7324RU.get_inventory"
-    implements = [IGetInventory]
+    interface = IGetInventory
 
     rx_info = re.compile(r"Model:\s+7324\sRU\s(?P<hw1>\S+)\n.+Hardware\s"
         r"version:\s+(?P<hw2>\w+)\n\s+Serial\snumber:\s(?P<serial>\w+)",

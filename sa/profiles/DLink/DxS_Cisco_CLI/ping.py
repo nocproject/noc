@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IPing
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.iping import IPing
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.ping"
-    implements = [IPing]
+    interface = IPing
     rx_result = re.compile(
         r"^Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\)"
         r"(, round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)"

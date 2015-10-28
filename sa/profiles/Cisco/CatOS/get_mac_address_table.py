@@ -7,17 +7,17 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 import noc.sa.profiles
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
 
 rx_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<mac>\S+)\s+(?:(?P<type>\S+)\s)?(?P<interfaces>(?:\d|\/|-|,)+)\s+\S+$")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.CatOS.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show cam"

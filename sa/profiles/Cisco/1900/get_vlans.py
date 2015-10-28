@@ -7,16 +7,16 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 import re
 
 rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+[a-zA-Z]")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.1900.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
 
     def execute(self):
         vlans = self.cli("show vlan")

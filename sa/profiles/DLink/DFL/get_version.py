@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DFL.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         rx_ver = re.compile(r"^D-Link Firewall (?P<version>\S+)",

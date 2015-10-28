@@ -10,14 +10,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.SCOS.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     rx_version = re.compile(r"^System version: Version (?P<version>[^\n]+)",
         re.MULTILINE | re.DOTALL)

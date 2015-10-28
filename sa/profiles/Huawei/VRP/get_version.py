@@ -7,14 +7,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Huawei.VRP.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     rx_ver = re.compile(
         r"^VRP.+Software, Version (?P<version>[^ ,]+),? .*?\n"

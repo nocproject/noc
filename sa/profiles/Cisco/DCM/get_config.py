@@ -2,8 +2,8 @@
 __author__ = 'boris'
 
 #NOC modules
-from noc.sa.script import NOCScript
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 #Python modules
 import re
 from xml.dom.minidom import parseString
@@ -20,9 +20,9 @@ head_str = """<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 """
 bottom_str = """</boost_serialization>"""
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.DCM.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
     TIMEOUT = 240
     CLI_TIMEOUT = 240
 

@@ -9,15 +9,15 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Qtech.QSW.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
     rx_line = re.compile(
         r"^Interface Ethernet (?P<interface>\S+)\s*.Port\s+LLDP:\s+\S+\s+Pkt\s+Tx:\s+\d+\s+Pkt\s+Rx:\s+\d+\s*.Total neighbor count: \d+\s*.\s*.Neighbor \(\d+\):\s*.TTL: \d+\(s\)\s*.Chassis ID:\s+(?P<chassis_id>\S+)\s*.Port ID: port (?P<port_id>\S+)\s*.System Name: (?P<name>\S+)",

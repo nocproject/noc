@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "AlliedTelesis.AT9400.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
     rx_line = re.compile(r"ifIndex\.+ ", re.IGNORECASE | re.MULTILINE)
     rx_if = re.compile(r"(?P<interface>\d+)", re.IGNORECASE | re.MULTILINE)
     rx_oper = re.compile(r"ifOperStatus\.+ (?P<status>Up|Down)", re.IGNORECASE | re.MULTILINE)

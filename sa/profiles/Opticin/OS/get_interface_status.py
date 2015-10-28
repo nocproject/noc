@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus, MACAddressParameter
 ##
 ## @todo: ["mac"] support by SNMP
 ##
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Opticin.OS.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
     cache = True
 
     rx_interface = re.compile(r"(?P<interface>Port(\s|)\d{1,2})\s+(?P<admstatus>enable|disable)\s+(?P<status>up|down)",

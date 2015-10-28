@@ -10,15 +10,15 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 # @todo: only SNMP version, vrf support
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Extreme.XOS.get_switchport"
     cache = True
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
 
     rx_cont = re.compile(r",\s*$\s+", re.MULTILINE)
     rx_line = re.compile(r"\n+Port:\s+", re.MULTILINE)

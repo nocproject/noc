@@ -7,15 +7,15 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 from noc.lib.text import strip_html_tags
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Audiocodes.Mediant2000.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     rx_ver = re.compile(
         r"^Board type: (?P<platform>.+), firmware version (?P<version>\S+)",

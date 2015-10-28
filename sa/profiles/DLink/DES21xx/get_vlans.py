@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DES21xx.get_vlans"
     cache = True
-    implements = [IGetVlans]
+    interface = IGetVlans
     rx_vlan = re.compile(
         r"VLAN_ID:(?P<vlanid>\d+)\n(VLAN name:(?P<vlanname>\S+)\n)*",
         re.MULTILINE | re.DOTALL)

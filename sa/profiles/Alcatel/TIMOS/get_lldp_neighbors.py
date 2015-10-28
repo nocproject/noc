@@ -9,14 +9,14 @@ __author__ = 'shirokih'
 """
 """
 
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.TIMOS.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
     rx_some = re.compile(r"^(?P<port>\w/\w/\w+)\s+")
 
     def fixcaps(self, caps):

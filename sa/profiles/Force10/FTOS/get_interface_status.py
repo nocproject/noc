@@ -7,16 +7,16 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 import re
 
 rx_interface_status = re.compile(r"^(?P<interface>\S+\s+\S+)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*$", re.IGNORECASE)
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Force10.FTOS.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
 
     def execute(self, interface=None):
         if self.has_snmp():

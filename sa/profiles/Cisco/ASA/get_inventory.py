@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.ASA.get_inventory"
-    implements = [IGetInventory]
+    interface = IGetInventory
 
     rx_item = re.compile(
         r"^Name:\s*\"(?P<name>[^\"]+)\", DESCR:\s*\"(?P<descr>[^\"]+)\"\n"

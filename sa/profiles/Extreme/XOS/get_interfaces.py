@@ -10,20 +10,20 @@
 import re
 from collections import defaultdict
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 ##
 ## @todo: IPv6 Support, only SNMP version, vrf support
 ##
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Extreme.XOS.get_interfaces
     """
     name = "Extreme.XOS.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_ifidx_phys = re.compile("^X\S+\s+Port\s+(?P<port>\d+)", re.IGNORECASE)
     rx_ifidx_vlan = re.compile(

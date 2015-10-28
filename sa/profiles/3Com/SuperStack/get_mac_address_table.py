@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "3Com.SuperStack.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
 
     rx_line = re.compile(r"^Port\s+(?P<interfaces>\d+)\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)$", re.MULTILINE)
     rx_line2 = re.compile(r"^Unit\s+(?P<unit>\d+)\s+Port\s+(?P<interfaces>\d+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)$", re.MULTILINE)

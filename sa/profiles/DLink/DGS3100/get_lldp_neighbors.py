@@ -12,16 +12,16 @@
 ##  I need to find some missing values
 ##
 
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DGS3100.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
     rx_line = re.compile(r"\n\n\s*Port ID\s+:\s+", re.MULTILINE)
     rx_id = re.compile(r"^(?P<port_id>\S+)", re.MULTILINE)

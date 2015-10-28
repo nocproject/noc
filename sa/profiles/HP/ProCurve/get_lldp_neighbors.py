@@ -10,14 +10,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 from noc.lib.text import parse_table
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.ProCurve.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
     rx_localport = re.compile(r"^\s*(\S+)\s*\|\s*local\s+(\d+)\s+.+?$", re.MULTILINE)
     rx_split = re.compile(r"^\s*----.+?\n", re.MULTILINE | re.DOTALL)

@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.NXOS.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     rx_line = re.compile(r"(?P<ip>([0-9]{1,3}\.){3}[0-9]{1,3})\s+\S+\s+(?P<mac>\S+)\s+(?P<interface>\S+)")
 
     def execute(self, vrf=None):

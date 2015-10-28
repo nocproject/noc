@@ -10,13 +10,13 @@
 # Python modules
 import re
 # NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_sh_int = re.compile(r"^(?P<interface>.+?)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)", re.MULTILINE | re.IGNORECASE)
     rx_int_alias = re.compile(r"^(Description|Vlan alias name is)\s*(?P<alias>.*?)$", re.MULTILINE | re.IGNORECASE)

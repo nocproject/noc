@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.SMB.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
 
     rx_po = re.compile(r"^(?P<pcname>Po\d+)\s*(?P<aports>Active: \S+)?[, ]*(?P<iports>Inactive: \S+)?")
 

@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Qtech.QSW2800.get_version"
-    implements = [IGetVersion]
+    interface = IGetVersion
     cache = True
 
     rx_ver = re.compile(r"^\s*(?P<platform>\S+) Device.+"

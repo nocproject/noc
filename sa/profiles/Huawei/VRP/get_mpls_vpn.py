@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetMPLSVPN
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Huawei.VRP.get_mpls_vpn"
-    implements = [IGetMPLSVPN]
+    interface = IGetMPLSVPN
 
     rx_line = re.compile(r"^\s+VPN\-Instance Name and ID :\s+(?P<vrf>\S+?),", re.IGNORECASE)
     rx_rd = re.compile(r"^\s+Route Distinguisher :\s+(?P<rd>\S+:\S+|<not set>)\s*", re.IGNORECASE)

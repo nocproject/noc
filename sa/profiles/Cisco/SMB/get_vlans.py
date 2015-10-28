@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.SMB.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
 
     rx_vlan_line = re.compile(
         r"^\s*(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+.*$", re.MULTILINE)
@@ -30,7 +30,7 @@ class Script(NOCScript):
             for match in self.rx_vlan_line.finditer(data)
         ]
 
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_vlan_brief(self):
         vlans = self.cli("show vlan")
         return self.extract_vlans(vlans)

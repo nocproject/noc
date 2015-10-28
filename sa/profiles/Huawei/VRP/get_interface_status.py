@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 import re
 
@@ -21,9 +21,9 @@ rx_ifc_br_status = re.compile(
     r"^\s*(?P<interface>[^ ]+)\s+(?P<status>up|down|\*down).*$", re.IGNORECASE)
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Huawei.VRP.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
 
     def execute(self, interface=None):
         if self.has_snmp():

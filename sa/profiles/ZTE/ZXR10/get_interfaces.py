@@ -11,16 +11,16 @@ import re
 import copy
 from collections import defaultdict
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     ZTE.ZXR10.get_interfaces
     """
     name = "ZTE.ZXR10.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_int = re.compile(r"^(?P<name>.+?)\sis\s(?P<status>(?:administratively )?\S+),.+\sline.+$")
     rx_descr = re.compile(r"^\s+Description\sis\s+(?P<descr>.+?)\s*$")

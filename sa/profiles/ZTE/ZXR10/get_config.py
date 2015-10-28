@@ -8,13 +8,13 @@
 """
 """
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "ZTE.ZXR10.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
 
     def execute(self):
         config = self.cli("show running-config")

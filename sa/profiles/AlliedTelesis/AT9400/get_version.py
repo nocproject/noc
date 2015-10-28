@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "AlliedTelesis.AT9400.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
     rx_platform = re.compile(r"Model Name \.+ (?P<platform>AT\S+)", re.MULTILINE | re.DOTALL)
     rx_version = re.compile(r"^Application \.+ ATS63 v(?P<version>\S+(\s\S+)*)\s\s", re.MULTILINE | re.DOTALL)
     rx_serial = re.compile(r"^Serial Number \.+ (?P<serial>\S+)", re.MULTILINE | re.DOTALL)

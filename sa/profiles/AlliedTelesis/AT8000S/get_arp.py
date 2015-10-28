@@ -8,14 +8,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "AlliedTelesis.AT8000S.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     rx_line = re.compile(r"^vlan \d+\s+(?P<interface>(?:\d/)?[ge]\d+)\s+(?P<ip>\S+)\s+(?P<mac>[\d:a-f]+)\s+")
 
     def execute(self):

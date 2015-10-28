@@ -8,16 +8,16 @@
 """
 """
 from __future__ import with_statement
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import ISyncPrefixLists
 import re
 
 rx_pl = re.compile(r"^set policy-options policy-statement \S+ term pass from route-filter (\S+) (\S+)$")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Juniper.JUNOS.sync_prefix_lists"
-    implements = [ISyncPrefixLists]
+    interface = ISyncPrefixLists
 
     def execute(self, changed_prefix_lists):
         actions = []

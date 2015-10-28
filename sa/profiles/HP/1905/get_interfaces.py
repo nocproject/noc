@@ -10,14 +10,14 @@
 from __future__ import with_statement
 import re
 # NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "HP.1905.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*"
                                 "Active\s+:(?P<admin>(Yes|No)).*$",

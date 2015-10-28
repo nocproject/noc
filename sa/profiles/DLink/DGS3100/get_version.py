@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "DLink.DGS3100.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
     rx_ver = re.compile(
         r"Device Type\s+:\s+(?P<platform>\S+).+Boot PROM Version\s+:\s+"
         r"(?:Build\s+)?(?P<bootprom>\S+).+Firmware Version\s+:\s+"

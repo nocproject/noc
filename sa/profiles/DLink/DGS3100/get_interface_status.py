@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DGS3100.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
     rx_line = re.compile(
         r"^\s*(?P<interface>\S+)\s+(Enabled|Disabled)\s+\S+\s+"
         r"(?P<status>.+)\s+(Enabled|Disabled)\s*$",

@@ -7,16 +7,16 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import ICommands
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Execute a list of CLI commands and return a list of results
     """
     name = "Generic.commands"
-    implements = [ICommands]
+    interface = ICommands
     requires = []
 
     def execute(self, commands, ignore_cli_errors=False):

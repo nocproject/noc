@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IPing
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.iping import IPing
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Zyxel.ZyNOS_EE.ping"
-    implements = [IPing]
+    interface = IPing
     rx_result = re.compile(
         r"^\s+(?P<count>\d+)\s+(?P<success>\d+)\s+\d+\s+\d+\s+(?P<avg>\d+)\s+\d+\s+(?P<max>\d+)\s+(?P<min>\d+)",
         re.MULTILINE)

@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Huawei.VRP3.get_chassis_id"
-    implements = [IGetChassisID]
+    interface = IGetChassisID
     rx_mac = re.compile(r"^\s*MAC address:\s+(?P<mac>\S+)")
 
     def execute(self):

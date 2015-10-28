@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetResolverConfig
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS.get_resolver_config"
-    implements = [IGetResolverConfig]
+    interface = IGetResolverConfig
     rx_res = re.compile(r"\s*(?P<server>\d+\S+)")
 
     def execute(self):

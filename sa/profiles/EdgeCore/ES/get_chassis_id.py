@@ -10,14 +10,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "EdgeCore.ES.get_chassis_id"
     cache = True
-    implements = [IGetChassisID]
+    interface = IGetChassisID
     rx_mac_4626 = re.compile(r"\d+\s+(?P<id>\S+).*?System\s+CPU",
         re.IGNORECASE | re.MULTILINE)
     rx_mac_3528mv2 = re.compile(
@@ -29,7 +29,7 @@ class Script(NOCScript):
     ##
     ## ES4626
     ##
-    @NOCScript.match(platform__contains="4626")
+    @BaseScript.match(platform__contains="4626")
     def execute_4626(self):
         v = self.cli("show mac-address-table static")
         match = self.re_search(self.rx_mac_4626, v)
@@ -42,7 +42,7 @@ class Script(NOCScript):
     ##
     ## Other
     ##
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_other(self):
         if self.match_version(platform__contains="3528MV2"):
             v = self.cli("show system\n")               # ES-3538MV2

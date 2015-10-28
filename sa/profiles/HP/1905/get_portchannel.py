@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.1905.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
 
     def execute(self):
         r = []

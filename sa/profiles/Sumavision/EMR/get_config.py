@@ -9,8 +9,8 @@ __author__ = 'boris'
 ##----------------------------------------------------------------------
 
 #NOC modules
-from noc.sa.script import NOCScript
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 #Python modules
 import os
 from ftplib import FTP
@@ -21,9 +21,9 @@ confdir = "para"
 path_to_temp_files = "/tmp/noc"
 path_to_files = "/tmp/noc/for_sumavision/"
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "SUMAVISION.EMR.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
 
     def execute(self):
         host = self.access_profile.address

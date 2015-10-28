@@ -7,17 +7,17 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 rx_ver = re.compile(r'FWSM Firewall Version (?P<version>\S+).*Hardware:\s+(?P<platform>\S+),', re.MULTILINE | re.DOTALL)
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.FWSM.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         self.cli("terminal pager 0")

@@ -8,14 +8,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "NSN.hiX56xx.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     rx_line = re.compile(
         "^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)$")
 

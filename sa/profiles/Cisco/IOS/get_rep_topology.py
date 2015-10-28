@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetREPTopology
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.get_rep_topology"
-    implements = [IGetREPTopology]
+    interface = IGetREPTopology
     rx_port = re.compile("^(?P<host>\S+), (?P<port>\S+)\s+\((?P<role>[^)]+)\)\n"
                          "\s+(?P<state>Open|Alternate|Failed) Port,.+?\n"
                          "\s+Bridge MAC: (?P<mac>\S+)\n"

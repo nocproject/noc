@@ -9,7 +9,7 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 
 
@@ -35,9 +35,9 @@ rx_remote_capabilities = re.compile(
     re.IGNORECASE | re.MULTILINE)
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Force10.FTOS.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
     def execute(self):
         r = []

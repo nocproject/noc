@@ -10,24 +10,24 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "EdgeCore.ES.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
     cache = True
 
     rx_chan_line_3526 = re.compile(r"Information of (?P<interface>Trunk \d+).*?Member Ports(|\s+): (?P<members_str>[^\n]+)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
-    @NOCScript.match(platform__contains="4612")
-    @NOCScript.match(platform__contains="3526")
-    @NOCScript.match(platform__contains="3510")
-    @NOCScript.match(platform__contains="2228N")
-    @NOCScript.match(platform__contains="3528")
-    @NOCScript.match(platform__contains="3552")
-    @NOCScript.match(platform__contains="ECS4210")
+    @BaseScript.match(platform__contains="4612")
+    @BaseScript.match(platform__contains="3526")
+    @BaseScript.match(platform__contains="3510")
+    @BaseScript.match(platform__contains="2228N")
+    @BaseScript.match(platform__contains="3528")
+    @BaseScript.match(platform__contains="3552")
+    @BaseScript.match(platform__contains="ECS4210")
     def execute_3526(self):
         status = self.cli("show interface status")
         r = []
@@ -43,7 +43,7 @@ class Script(NOCScript):
     rx_chan_line_4626 = re.compile(r"Port-group number : (?P<number>\d+)", re.IGNORECASE | re.MULTILINE)
     rx_memb_line_4626 = re.compile(r"\n\d+\s+(?P<member>\S+)\s+(?P<mode>[^\n]+)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
-    @NOCScript.match(platform__contains="4626")
+    @BaseScript.match(platform__contains="4626")
     def execute_4626(self):
         channels = self.cli("show port-group brief")
         r = []
@@ -56,6 +56,6 @@ class Script(NOCScript):
             }]
         return r
 
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_other(self):
         raise self.NotSupportedError()

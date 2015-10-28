@@ -5,16 +5,16 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.NXOS.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
     rx_ver = re.compile(r"^Cisco Nexus Operating System \(NX-OS\) Software.+?Software.+?system:\s+version\s+(?P<version>\S+).+?Hardware\s+cisco\s+\S+\s+(?P<platform>\S+)", re.MULTILINE | re.DOTALL)
     rx_snmp_ver = re.compile(r"^Cisco NX-OS\(tm\) .*?Version (?P<version>[^,]+),", re.IGNORECASE)
     rx_snmp_platform = re.compile(r"^Nexus\d+ (?P<platform>C\d+) .+Chassis$")

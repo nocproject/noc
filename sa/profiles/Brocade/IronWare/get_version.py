@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Brocade.IronWare.get_version
     """
     name = "Brocade.IronWare.get_version"
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     rx_sw_ver = re.compile(r"SW:\sVersion\s(?P<version>\S+)",
                            re.MULTILINE | re.DOTALL)

@@ -7,16 +7,16 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 import re
 
 rx_line = re.compile(r"^\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+\d+\s+(?P<interface>\S+)")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
 
     def execute(self):
         s = self.cli("show arp")

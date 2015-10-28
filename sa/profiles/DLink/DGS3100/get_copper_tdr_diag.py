@@ -10,14 +10,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetCopperTDRDiag
 from noc.sa.profiles.DLink.DGS3100 import DGS3100
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DGS3100.get_copper_tdr_diag"
-    implements = [IGetCopperTDRDiag]
+    interface = IGetCopperTDRDiag
     rx_link_ok = re.compile(
         r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+"
         r"(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link Up\s+"

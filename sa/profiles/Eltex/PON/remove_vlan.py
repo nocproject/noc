@@ -6,16 +6,14 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-from __future__ import with_statement
 ## NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IRemoveVlan
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.iremovevlan import IRemoveVlan
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Eltex.PON.remove_vlan"
-    implements = [IRemoveVlan]
+    interface = IRemoveVlan
 
     def execute(self, vlan_id):
         if not self.scripts.has_vlan(vlan_id=vlan_id):

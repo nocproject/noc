@@ -9,13 +9,13 @@
 ## Python modules
 from __future__ import with_statement
 ## NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Eltex.PON.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
 
     def execute(self):
         """

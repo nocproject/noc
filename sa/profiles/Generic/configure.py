@@ -9,17 +9,17 @@
 ## Python modules
 from __future__ import with_statement
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import ICommands
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Enter a configuration mode and execute a list of CLI commands.
     return a list of results
     """
     name = "Generic.configure"
-    implements = [ICommands]
+    interface = ICommands
     requires = []
 
     def execute(self, commands, ignore_cli_errors=False):

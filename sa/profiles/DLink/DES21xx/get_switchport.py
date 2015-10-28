@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DES21xx.get_switchport"
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
     rx_vlan_ports = re.compile(
         r"VLAN_ID:(?P<vid>\d+).+?TAG PORT:(?P<tagged>[0-9 ]*).+?"
         r"UNTAG PORT:(?P<untagged>[0-9 ]*)\s*", re.MULTILINE | re.DOTALL)

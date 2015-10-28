@@ -10,18 +10,18 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors, MACAddressParameter
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "H3C.VRP.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
     ##
     ## No lldp on 3.02 and older
     ##
-    @NOCScript.match(version__startswith="3.02")
+    @BaseScript.match(version__startswith="3.02")
     def execute_old(self):
         raise self.NotSupportedError()
 
@@ -30,7 +30,7 @@ class Script(NOCScript):
     ##
     rx_ifc_line = re.compile(r"\w*LLDP neighbor-information of port \d+\[(?P<local_if>[^\n]+)\]:\n(?P<tail>.*)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_other(self):
         r = []
         i = {}

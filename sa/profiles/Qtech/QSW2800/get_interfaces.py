@@ -9,19 +9,19 @@
 # Python modules
 import re
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     @todo: STP, CTP, GVRP, LLDP, UDLD
     @todo: IGMP
     @todo: IPv6
     """
     name = "Qtech.QSW2800.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_interface = re.compile(r"^\s*(?P<interface>\S+) is "
                     r"(?P<admin_status>\S*\s*\S+), "

@@ -8,16 +8,16 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 import string
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "AlliedTelesis.AT8500.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
     rx_ver = re.compile(r"^Model Name \.+ (?P<platform>AT[/\w-]+).+^Application \.+ ATS62 v(?P<version>[\d.]+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):

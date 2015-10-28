@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOSXR.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     rx_line = re.compile(r"(?P<ip>\S+)\s+\S+\s+"
                          r"(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+"
                          r"Dynamic\s+"

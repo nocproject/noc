@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Arista.EOS.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     rx_line = re.compile(
         r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
         r"\d+\s+"

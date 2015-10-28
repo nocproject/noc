@@ -9,7 +9,7 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 
 rx_interface_status = re.compile(
@@ -17,9 +17,9 @@ rx_interface_status = re.compile(
     r"(?P<status>up|down).*$", re.IGNORECASE)
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
 
     def execute(self, interface=None):
         if self.has_snmp():

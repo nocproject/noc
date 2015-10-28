@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 import re
  
  
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.AOS.get_switchport"
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
     rx_line = re.compile(r"\n\s+(?P<interface>\S+)\s+(?P<status>\S+)\s+(10000|1000|-)\s+",
                          re.MULTILINE)
     rx_line_vlan = re.compile(r"^\s+(?P<vlan>\d+)\s+(?P<interface>\S+)\s+(?P<vlan_type>\S+)\s+(?P<status>\S+)$",

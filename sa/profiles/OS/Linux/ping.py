@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IPing
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.iping import IPing
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "OS.Linux.ping"
-    implements = [IPing]
+    interface = IPing
 
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received),+( |\+\d+ errors, )+\d+% packet loss",

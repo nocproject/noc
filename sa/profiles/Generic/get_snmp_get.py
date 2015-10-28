@@ -8,13 +8,13 @@
 """
 """
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetSNMPGet
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Generic.get_snmp_get"
-    implements = [IGetSNMPGet]
+    interface = IGetSNMPGet
     requires = []
 
     def execute(self, oid, community_suffix=None):

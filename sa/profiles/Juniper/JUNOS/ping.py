@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IPing
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.iping import IPing
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Juniper.JUNOS.ping"
-    implements = [IPing]
+    interface = IPing
     rx_result = re.compile(
         r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets "
         r"received, (\d+\.)?\d+% packet loss\nround-trip min/avg/max/stddev "

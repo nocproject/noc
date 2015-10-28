@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus, MACAddressParameter
 
 ##
 ## Only SNMP implementation
 ##
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.SCOS.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
 
     def execute(self, interface=None):
         if self.has_snmp():

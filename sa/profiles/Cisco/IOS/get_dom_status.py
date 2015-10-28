@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetDOMStatus
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.get_dom_status"
-    implements = [IGetDOMStatus]
+    interface = IGetDOMStatus
     rx_line = re.compile(r"^(?P<interface>\S+)\s+(?P<temp_c>\S+)(?:\s+(?P<voltage_v>\S+))?\s+(?P<current_ma>\S+)\s+(?P<optical_rx_dbm>\S+)\s+(?P<optical_tx_dbm>\S+)$")
 
     def execute(self, interface=None):

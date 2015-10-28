@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetIPv6Neighbor
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = 'Brocade.CER.get_ipv6_neighbor'
-    implements = [IGetIPv6Neighbor]
+    interface = IGetIPv6Neighbor
     rx_line = re.compile('^(?P<index>\\d+)\\s+(?P<ip>[0-9a-fA-F:\\.]+)\\s+\\d+\\s+(?P<mac>[0-9a-f]{4}\\.[0-9a-f]{4}\\.[0-9a-f]{4})\\s+(?P<state>\\S+)\\s+(?P<age>\\d+)\\s+(?P<interface>\\S+).*$')
     s_map = {'INCOMP': 'incomplete',
      'REACH': 'reachable',

@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 from noc.lib.text import *
 from collections import defaultdict
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.7324RU.get_switchport"
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
     rx_vlan = re.compile(
         r"[ ]*(?P<vid>\d+)[ ]*(?P<vname>[A-Za-z0-9\-\.]+)\n"
         r"([ 0-9]+)\n[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"

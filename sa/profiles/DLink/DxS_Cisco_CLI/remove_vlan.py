@@ -8,13 +8,13 @@
 """
 """
 from __future__ import with_statement
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IRemoveVlan
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.remove_vlan"
-    implements = [IRemoveVlan]
+    interface = IRemoveVlan
 
     def execute(self, vlan_id):
         if not self.scripts.has_vlan(vlan_id=vlan_id):

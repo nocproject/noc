@@ -7,17 +7,17 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetuptime import IGetUptime
 from noc.lib.mib import mib
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Returns system uptime in seconds
     """
     name = "Generic.get_uptime"
-    implements = [IGetUptime]
+    interface = IGetUptime
     requires = []
 
     def execute(self):

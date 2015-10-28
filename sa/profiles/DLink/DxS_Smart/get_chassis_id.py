@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS_Smart.get_chassis_id"
     cache = True
-    implements = [IGetChassisID]
+    interface = IGetChassisID
 
     rx_ver = re.compile(r"^MAC Address\s+:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)

@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetCopperTDRDiag
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_copper_tdr_diag"
-    implements = [IGetCopperTDRDiag]
+    interface = IGetCopperTDRDiag
 
     rx_link = re.compile(r"^port (?P<interface>fe\d+): cable\s+(?:\S+)\s+"
                         "\(2 pairs.*\).\s+pair A (?P<status_p1>\S+), "

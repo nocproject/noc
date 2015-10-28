@@ -9,15 +9,15 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 from noc.lib.text import strip_html_tags
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Linksys.VoIP.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     rx_platform = re.compile(
         r"^Product Name:+(?P<platform>\S+)+Serial Number:+(?P<serial>\S+)$",

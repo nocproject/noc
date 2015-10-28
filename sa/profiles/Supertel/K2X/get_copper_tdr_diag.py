@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetCopperTDRDiag
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Supertel.K2X.get_copper_tdr_diag"
-    implements = [IGetCopperTDRDiag]
+    interface = IGetCopperTDRDiag
 
     variance = 100
 

@@ -5,10 +5,10 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name="Audiocodes.Mediant2000.get_config"
     implements=[IGetConfig]
     def execute(self):

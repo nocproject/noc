@@ -9,13 +9,13 @@
 """
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Ubiquiti.AirOS.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
     rx_vlan = re.compile(r"vlan.\d+.id=(?P<vlan>\d+)", re.MULTILINE)
 
     def execute(self):

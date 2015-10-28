@@ -9,15 +9,15 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.lib.text import parse_table
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Arista.EOS.get_inventory"
     cache = True
-    implements = [IGetInventory]
+    interface = IGetInventory
 
     rx_section = re.compile("System has (\d+) (.+?)$", re.MULTILINE)
 

@@ -9,15 +9,15 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 from noc.lib.mac import MAC
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOSXR.get_chassis_id"
     cache = True
-    implements = [IGetChassisID]
+    interface = IGetChassisID
 
     rx_range = re.compile(
         r"Base MAC Address\s*:\s*(?P<mac>\S+)\s+"

@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 import re
 
 rx_line = re.compile(
@@ -16,9 +16,9 @@ rx_line = re.compile(
     r"(?P<interface>\d\S+)", re.MULTILINE)
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.AOS.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
 
     def execute(self):
         r = []

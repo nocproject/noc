@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetudldneighbors import IGetUDLDNeighbors
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOSXR.get_udld_neighbors"
-    implements = [IGetUDLDNeighbors]
+    interface = IGetUDLDNeighbors
 
     rx_split = re.compile(r"^Interface\s+", re.MULTILINE | re.IGNORECASE)
     rx_entry = re.compile(

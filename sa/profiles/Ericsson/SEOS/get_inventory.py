@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.sa.interfaces.base import InterfaceTypeError
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Ericsson.SEOS.get_inventory"
-    implements = [IGetInventory]
+    interface = IGetInventory
 
     rx_trans = re.compile(
         r"Port\s*:\s*(\S+)\s*XFP\s*\S+\s*Media\s*"

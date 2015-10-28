@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetSpanningTree
 from noc.lib.text import parse_table
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_spanning_tree"
-    implements = [IGetSpanningTree]
+    interface = IGetSpanningTree
 
     def process_pvst(self, cli_stp, proto):
         sep = "Global STP (IEEE 802.1D) Parameters:"

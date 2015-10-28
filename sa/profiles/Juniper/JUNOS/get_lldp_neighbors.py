@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import (IGetLLDPNeighbors, IntParameter,
                                MACAddressParameter, InterfaceTypeError)
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Juniper.JUNOS.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
     ##
     ## EX Series
     ##
@@ -46,7 +46,7 @@ class Script(NOCScript):
          r"Port \S+\s+:\s(?P<p_id>.+)"
     ]
 
-    @NOCScript.match(platform__regex="[em]x")
+    @BaseScript.match(platform__regex="[em]x")
     def execute_ex(self):
         r = []
         # Collect data
@@ -149,6 +149,6 @@ class Script(NOCScript):
     ##
     ## No lldp on M/T
     ##
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_other(self):
         raise self.NotSupportedError()

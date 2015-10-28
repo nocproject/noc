@@ -8,14 +8,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Huawei.VRP3.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
     rx_vlan = re.compile(r"^\s+(?P<vlanid>\d+)\s+\d+\s+\d+\s+\S+",
         re.MULTILINE | re.DOTALL)
 

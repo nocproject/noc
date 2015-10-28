@@ -9,13 +9,13 @@
 ## NOC modules
 import re
 ## Python modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Arista.EOS.get_switchport"
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
 
     rx_line = re.compile(
         r"^(?P<port>\S\S\d+)\s+"

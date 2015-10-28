@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID, MACAddressParameter
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Opticin.OS.get_chassis_id"
     cache = True
-    implements = [IGetChassisID]
+    interface = IGetChassisID
     rx_mac = re.compile(r"System MAC[^:]*?:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 

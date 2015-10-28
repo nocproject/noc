@@ -10,14 +10,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "f5.BIGIP.get_vlans"
     cache = True
-    implements = [IGetVlans]
+    interface = IGetVlans
 
     rx_tag = re.compile("Tag\s+(?P<tag>\d+)", re.MULTILINE)
 

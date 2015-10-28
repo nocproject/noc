@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.sa.interfaces.base import InterfaceTypeError
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DGS3100.get_inventory"
-    implements = [IGetInventory]
+    interface = IGetInventory
 
     rx_dev = re.compile(
         r"Device Type\s+:\s+(?P<part_no>\S+).+Boot PROM Version\s+:\s+"

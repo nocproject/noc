@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetFQDN
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "MikroTik.RouterOS.get_fqdn"
-    implements = [IGetFQDN]
+    interface = IGetFQDN
 
     def execute(self):
         s = self.cli("/system identity print")

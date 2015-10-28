@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.interfaces import IGetVlans
-from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetvlans import IGetVlans
+from noc.core.script.base import BaseScript
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Zyxel.ZyNOS_EE.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
     rx_vlan = re.compile(r"^\s+\d+\s+(?P<vlanname>\S+)\s+(?P<vlanid>\S+).",
                          re.MULTILINE | re.DOTALL)
 

@@ -9,7 +9,7 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4
@@ -18,9 +18,9 @@ from noc.lib.validators import is_int, is_ipv4
 ##
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Extreme.XOS.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
     rx_lldp_nei = re.compile(r"^(?P<interface>\d+)\s+(?P<chassis_id>\S+)\s+(?P<port_id>\S+)\s+\d+\s+\d+",  re.DOTALL|re.MULTILINE)
     rx_edp_nei = re.compile(r"^(?P<interface>\d+)\s+(?P<name>\S+)\s+[0-9a-f]{2}:[0-9a-f]{2}:(?P<chassis_id>\S+)\s+\d:(?P<port_id>\d+)\s+\d+\s+\d+",  re.DOTALL|re.MULTILINE)

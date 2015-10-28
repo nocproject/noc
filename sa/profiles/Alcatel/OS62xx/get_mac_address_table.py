@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.lib.text import parse_table
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Alcatel.OS62xx.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show bridge address-table"

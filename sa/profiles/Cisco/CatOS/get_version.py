@@ -7,18 +7,18 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 rx_platform = re.compile(r"^Hardware\s+Version:\s+(?:\d|\.)+\s+Model:\s+(?P<platform>\S+)\s+Serial\s+#:\s+\S+$", re.MULTILINE | re.DOTALL)
 rx_version = re.compile(r"^\S+\s+Software,\s+Version\s+\S+:\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL)
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.CatOS.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         v = self.cli("show version")

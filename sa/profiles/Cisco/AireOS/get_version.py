@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 rx_ver = re.compile(r"^Product Version\.+\s+(?P<version>\S+)",
@@ -17,10 +17,10 @@ rx_inv = re.compile("^PID:\s+(?P<platform>\S+)",
     re.MULTILINE | re.DOTALL)
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.AireOS.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         v = self.cli("show sysinfo")

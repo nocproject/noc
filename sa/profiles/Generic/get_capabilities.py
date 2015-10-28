@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcapabilities import IGetCapabilities
 from noc.lib.mib import mib
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Generic.get_capabilities"
-    implements = [IGetCapabilities]
+    interface = IGetCapabilities
     requires = []
 
     def check_ifmib_hc(self, caps):

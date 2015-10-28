@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
     rx_line = re.compile(
         r"^AggregatePort (?P<port>\d+)\s+(up|down)\s+\d+\s+\S+\s+\S+\s+\S+$",
         re.MULTILINE)

@@ -8,14 +8,14 @@
 
 ## Python modules
 import re
-import noc.sa.script
+from noc.core.script.base import BaseScript
 ## NOC modules
 from noc.sa.interfaces import IGetFQDN
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Qtech.QSW.get_fqdn"
-    implements = [IGetFQDN]
+    interface = IGetFQDN
 
     rx_hostname = re.compile(r"^hostname (?P<hostname>\S+)$", re.MULTILINE)
     rx_domain_name = re.compile(

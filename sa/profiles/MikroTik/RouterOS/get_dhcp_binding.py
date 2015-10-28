@@ -9,13 +9,13 @@
 ## Python modules
 import datetime
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetDHCPBinding
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "MikroTik.RouterOS.get_dhcp_binding"
-    implements = [IGetDHCPBinding]
+    interface = IGetDHCPBinding
 
     def execute(self):
         r = []

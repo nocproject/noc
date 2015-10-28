@@ -9,13 +9,13 @@
 """
 ## Python modules
 import re
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Dell.Powerconnect62xx.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
     rx_vlan = re.compile(r"^(?P<vlan_id>\d+)\s+(?P<vlan_name>\S+)",
         re.MULTILINE | re.DOTALL)
 

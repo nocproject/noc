@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 rx_sys = re.compile(r"Module in slot.+?Model.*?Name:\s+(?P<platform>.+?),$",
@@ -20,10 +20,10 @@ rx_ver1 = re.compile(
     re.MULTILINE | re.DOTALL)
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Alcatel.AOS.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         v = self.cli("show ni")

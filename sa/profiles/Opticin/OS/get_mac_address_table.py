@@ -10,12 +10,12 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetMACAddressTable, MACAddressParameter
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable, MACAddressParameter
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Opticin.OS.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
 
     rx_macs = re.compile(r"^(?P<mac>\S+)\s+(?P<type>\S+)$", re.MULTILINE | re.IGNORECASE | re.DOTALL)
 

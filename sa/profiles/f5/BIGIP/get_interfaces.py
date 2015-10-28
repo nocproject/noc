@@ -10,14 +10,14 @@
 import re
 from collections import defaultdict
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "f5.BIGIP.get_interfaces"
     cache = True
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_self = re.compile(r"^net self \S+ {", re.MULTILINE | re.DOTALL)
     rx_self_a = re.compile(

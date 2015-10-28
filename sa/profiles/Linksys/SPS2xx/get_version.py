@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Linksys.SPS2xx.get_version"
-    implements = [IGetVersion]
+    interface = IGetVersion
     cache = True
 
     rx_version = re.compile(r"^SW version\s+(?P<version>\S+)\s+\(.+\)$",

@@ -9,15 +9,15 @@
 ## Python modules
 from __future__ import with_statement
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import ISetSwitchport
 from noc.lib.text import list_to_ranges
 from noc.sa.profiles.Cisco.IOS import MESeries
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.set_switchport"
-    implements = [ISetSwitchport]
+    interface = ISetSwitchport
 
     def execute(self, configs, protect_switchport=True, protect_type=True,
                 debug=False):

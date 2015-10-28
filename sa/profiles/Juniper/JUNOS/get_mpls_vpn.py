@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetMPLSVPN
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Juniper.JUNOS.get_mpls_vpn"
-    implements = [IGetMPLSVPN]
+    interface = IGetMPLSVPN
 
     rx_ri = re.compile(r"(?P<name>\S+?):\n"
                        r"(?:  Description: (?P<description>.+?)\n)?"

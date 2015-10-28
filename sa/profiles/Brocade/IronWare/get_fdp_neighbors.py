@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetFDPNeighbors
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Brocade.IronWare.get_fdp_neighbors
     """
     name = "Brocade.IronWare.get_fdp_neighbors"
-    implements = [IGetFDPNeighbors]
+    interface = IGetFDPNeighbors
 
     rx_entry = re.compile(r"Device ID: (?P<device_id>\S+).+?"
                           "Interface:\s(?P<local_interface>\S+)\s+Port ID \(outgoing port\): (?P<remote_interface>\S+)",

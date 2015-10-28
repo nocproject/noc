@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetCDPNeighbors
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.NXOS.get_cdp_neighbors"
-    implements = [IGetCDPNeighbors]
+    interface = IGetCDPNeighbors
     rx_entry = re.compile(r"Device ID:\s?(?P<device_id>\S+).+?"
         r"Interface: (?P<local_interface>\S+),\s+Port ID "
         r"\(outgoing port\): (?P<remote_interface>\S+)",

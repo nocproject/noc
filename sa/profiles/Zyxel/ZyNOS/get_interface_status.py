@@ -9,13 +9,13 @@
 # Python modules
 import re
 # NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
     rx_link = re.compile(r"Port Info\s+Port NO\.\s+:(?P<interface>\d+)\s*Link"
                     r"\s+:(?P<status>(1[02]+[MG]/[FH]\s*(Copper|SFP)?)|Down)",
                     re.MULTILINE | re.IGNORECASE)

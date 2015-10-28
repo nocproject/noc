@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import *
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Generic.has_local_user"
-    implements = [IHasLocalUser]
+    interface = IHasLocalUser
     requires = [("get_local_users", IGetLocalUsers)]
 
     def execute(self, username):

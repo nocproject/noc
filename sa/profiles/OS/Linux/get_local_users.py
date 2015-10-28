@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLocalUsers
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "OS.Linux.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
 
     def execute(self):
         data = self.cli("cat /etc/passwd")

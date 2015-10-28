@@ -10,17 +10,17 @@
 import re
 # NOC modules
 from noc.lib.ip import IPv4
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces, MACAddressParameter
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces, MACAddressParameter
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Cisco.SCOS.get_interfaces
 
     """
     name = "Cisco.SCOS.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_int = re.compile(r"ifIndex.\d+\s+=\s+(?P<ifindex>\d+)\n"
         r"\s*ifDescr.\d+\s+=\s+(?P<ifname>\S+)\n",

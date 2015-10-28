@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC Modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.ProCurve.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
 
     rx_fdb_vlan = re.compile(r"dot1qVlanFdbId\.\d+\.(\d+)\s*=\s*(\d+)")
     rx_line = re.compile(r"dot1qTpFdbPort\.(\d+)\.(\S+)\s*=\s*(\d+)")

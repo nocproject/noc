@@ -7,16 +7,16 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 import re
 
 rx_portchannel_member = re.compile(r"^(\S+\s+\S+)\s+\((Port-channel\s+\d+)\)")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Force10.FTOS.get_switchport"
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
 
     def execute(self):
         r = []

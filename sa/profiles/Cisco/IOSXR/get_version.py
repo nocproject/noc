@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOSXR.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     rx_ver = re.compile(
         r"^Cisco IOS XR Software, Version\s+(?P<version>\S+)\[\S+\].+"

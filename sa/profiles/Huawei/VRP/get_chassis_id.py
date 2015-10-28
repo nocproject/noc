@@ -10,14 +10,14 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Huawei.VRP.get_chassis_id"
     cache = True
-    implements = [IGetChassisID]
+    interface = IGetChassisID
 
     rx_mac = re.compile(r"MAC address[^:]*?:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)

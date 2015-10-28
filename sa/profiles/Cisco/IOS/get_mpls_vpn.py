@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.get_mpls_vpn"
-    implements = [IGetMPLSVPN]
+    interface = IGetMPLSVPN
 
     rx_line = re.compile(r"^\s+(?P<vrf>.+?)\s+"
                          r"(?P<rd>\S+:\S+|<not set>)\s+"

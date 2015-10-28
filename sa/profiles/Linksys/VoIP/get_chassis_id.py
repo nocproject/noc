@@ -9,15 +9,15 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 from noc.lib.text import strip_html_tags
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Linksys.VoIP.get_chassis_id"
     cache = True
-    implements = [IGetChassisID]
+    interface = IGetChassisID
 
     rx_mac = re.compile(r"^MAC Address:+(?P<mac>\S+)+Client Certificate:",
                         re.MULTILINE)

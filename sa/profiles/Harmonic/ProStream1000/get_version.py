@@ -11,14 +11,14 @@ __author__ = 'FeNikS'
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 rx_version = re.compile(r" SwVersion=\"(?P<ver>.*?)\"", re.DOTALL|re.MULTILINE)
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Harmonic.ProStream1000.get_version"
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         version = ''

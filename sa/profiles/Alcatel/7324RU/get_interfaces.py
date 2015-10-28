@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.text import *
 from noc.lib.ip import *
 from collections import defaultdict
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.7324RU.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
     rx_vlan = re.compile(
         r" *(?P<vid>\d+)[ ]*(?P<vname>\S+)\n[ 0-9\n]+"
         r" +(?P<vstatus>enabled|disabled)[ 0-9]+\n([ \-xnf]+)\n"

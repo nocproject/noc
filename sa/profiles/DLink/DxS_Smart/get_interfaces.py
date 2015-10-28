@@ -10,14 +10,14 @@
 from __future__ import with_statement
 import re
 # NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "DLink.DxS_Smart.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_ipif = re.compile(r"IP Address\s+:\s+(?P<ip_address>\S+)\s*\n"
     r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n",

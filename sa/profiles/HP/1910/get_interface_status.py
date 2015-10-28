@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "HP.1910.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
 
     rx_interface_status = re.compile(
         r"^(?P<interface>\S+)\s+(?P<status>UP|DOWN)\s+\S+\s+\S+\s+\S+\s+\d+\s*$",

@@ -9,13 +9,13 @@
 ## Python modules
 from __future__ import with_statement
 ## NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IAddVlan
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.iaddvlan import IAddVlan
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Eltex.PON.add_vlan"
-    implements = [IAddVlan]
+    interface = IAddVlan
 
     def execute(self, vlan_id, name, tagged_ports):
         """

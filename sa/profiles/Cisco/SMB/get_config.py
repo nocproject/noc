@@ -7,10 +7,10 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
-class Script(NOCScript):
+class Script(BaseScript):
     name="Cisco.SMB.get_config"
     implements=[IGetConfig]
     def execute(self):

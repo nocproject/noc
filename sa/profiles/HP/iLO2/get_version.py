@@ -7,17 +7,17 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 rx_ver = re.compile(r"version=(?P<version>\S+)")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "HP.iLO2.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         v = self.cli("show /map1/firmware1/ version")

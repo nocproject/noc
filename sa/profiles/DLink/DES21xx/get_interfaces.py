@@ -10,14 +10,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DES21xx.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
     rx_swi = re.compile(
         r"IP Address:(?P<ip>\S+)\s*\nSubnet mask:(?P<mask>\S+)\s*\n"
         r".+?MAC address:(?P<mac>\S+)\s*\n", re.DOTALL)

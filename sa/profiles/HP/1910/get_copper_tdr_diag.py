@@ -10,13 +10,13 @@
 from __future__ import with_statement
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetCopperTDRDiag
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.1910.get_copper_tdr_diag"
-    implements = [IGetCopperTDRDiag]
+    interface = IGetCopperTDRDiag
     TIMEOUT = 600
 
     rx_diag = re.compile(

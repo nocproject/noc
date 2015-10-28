@@ -9,8 +9,8 @@
 # Python modules
 import re
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 ##
 ## SNMP OIDs to get FW version for some platforms
 ##
@@ -30,10 +30,10 @@ FW_OIDS = {
 }
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     rx_fwver = re.compile(r"^ZyNOS F/W Version\s+:\s+V?(?P<version>\S+).+$",
                 re.MULTILINE)

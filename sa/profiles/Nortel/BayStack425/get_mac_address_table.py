@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Nortel.BayStack425.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
 
     rx_dynamic = re.compile(r"^(?P<mac1>\S+)\s+Port:\s+(?P<port1>\d+)\s*"
                             r"((?P<mac2>\S+)\s+Port:\s+(?P<port2>\d+))*")
