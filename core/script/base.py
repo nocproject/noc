@@ -11,7 +11,8 @@ import re
 import logging
 import functools
 import time
-import warnings
+## Third-party modules
+from tornado.httpclient import HTTPClient, HTTPError
 ## NOC modules
 from snmp.base import SNMP
 from noc.lib.log import PrefixLoggerAdapter
@@ -59,6 +60,8 @@ class BaseScript(object):
     class UnexpectedResultError(Exception):
         pass
 
+    HTTPError = HTTPError
+
     hexbin = {
         "0": "0000", "1": "0001", "2": "0010", "3": "0011",
         "4": "0100", "5": "0101", "6": "0110", "7": "0111",
@@ -92,6 +95,7 @@ class BaseScript(object):
         self.args = self.clean_input(args or {})
         self.cli_stream = None
         self.snmp = SNMP(self)
+        self.http = HTTPClient()
 
     def clean_input(self, args):
         """
@@ -514,11 +518,11 @@ class BaseScript(object):
         if not ignore_errors:
             # Check for syntax error
             if (self.profile.rx_pattern_syntax_error and
-                self.profile.rx_pattern_syntax_error.search(r)):
+                    self.profile.rx_pattern_syntax_error.search(r)):
                 raise self.CLISyntaxError(r)
             # Then check for operaion error
             if (self.profile.rx_pattern_operation_error and
-                self.profile.rx_pattern_operation_error.search(r)):
+                    self.profile.rx_pattern_operation_error.search(r)):
                 raise self.CLIOperationError(r)
         # Echo cancelation
         if r[:4096].lstrip().startswith(cmd):
