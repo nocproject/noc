@@ -1,5 +1,5 @@
 ---
-- name: Install Debian system packages
+- name: Install Ubuntu system packages
   apt: name={{item}} update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
   with_items:
     - less
@@ -15,4 +15,4 @@
     - libpq-dev
 
 - name: Install supervisord init script
-  template: src="Debian/etc/init.d/noc.j2" dest="/etc/init.d/{{ noc_system_service }}" mode="a+rx"
+  template: src="Ubuntu/etc/init.d/noc.j2" dest="/etc/init.d/{{ noc_system_service }}" mode="a+rx"
