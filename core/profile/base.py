@@ -253,7 +253,7 @@ class BaseProfile(object):
     # Volatile strings:
     # A list of strings can be changed over time, which
     # can be sweeped out of config safely or None
-    # Strings are regexpes, compuled with re.DOTALL|re.MULTILINE
+    # Strings are regexpes, compiled with re.DOTALL|re.MULTILINE
     #
     config_volatile = None
 
@@ -284,7 +284,7 @@ class BaseProfile(object):
         setattr(script, name, f)
 
     @classmethod
-    def cmp_version(self, v1, v2):
+    def cmp_version(cls, v1, v2):
         """
         Compare two versions.
         Must return:
