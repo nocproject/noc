@@ -6,13 +6,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "DLink.DVG.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
 
     def execute(self, interface=None):
         r = []

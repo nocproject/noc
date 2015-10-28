@@ -9,8 +9,8 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 from noc.sa.profiles.DLink.DxS import DxS_L2
 from noc.sa.profiles.DLink.DxS import DGS3120
@@ -18,9 +18,9 @@ from noc.sa.profiles.DLink.DxS import DGS3620
 from noc.sa.profiles.DLink.DxS import DES3x2x
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_ipif1 = re.compile(r"Interface Name\s+:\s+(?P<ifname>.+?)\s*\n"
     r"IP Address\s+:\s+(?P<ip_address>\S+)\s+\(\S+\)\s*\n"

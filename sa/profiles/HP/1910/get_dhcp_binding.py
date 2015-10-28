@@ -10,13 +10,13 @@
 import datetime
 import re
 ## NOC modules
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetDHCPBinding
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "HP.1910.get_dhcp_binding"
-    implements = [IGetDHCPBinding]
+    interface = IGetDHCPBinding
 
     # TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     rx_line = re.compile(

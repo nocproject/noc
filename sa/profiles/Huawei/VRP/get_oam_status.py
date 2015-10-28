@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetOAMStatus
 from noc.sa.interfaces.base import MACAddressParameter
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Huawei.VRP.get_oam_status"
-    implements = [IGetOAMStatus]
+    interface = IGetOAMStatus
 
     rx_line = re.compile(r"""
     \s+Interface:\s+(?P<interface>.+?)\n

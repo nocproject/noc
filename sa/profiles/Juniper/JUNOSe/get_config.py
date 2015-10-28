@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Junos.JUNOSe.get_config
     """
     name = "Juniper.JUNOSe.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
     rx_service = re.compile("^(?P<service>\w+\.mac)", re.MULTILINE)
 
     def execute(self):

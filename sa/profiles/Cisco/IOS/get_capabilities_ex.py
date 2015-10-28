@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcapabilitiesex import IGetCapabilitiesEx
 from noc.lib.mib import mib
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.get_capabilities_ex"
     cache = True
-    implements = [IGetCapabilitiesEx]
+    interface = IGetCapabilitiesEx
 
     CAPS_OIDS = {
         "BRAS | PPPoE": mib["CISCO-PPPOE-MIB::cPppoeSystemCurrSessions", 0],

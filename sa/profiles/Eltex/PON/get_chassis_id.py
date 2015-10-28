@@ -10,13 +10,13 @@
 from __future__ import with_statement
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetChassisID
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Eltex.PON.get_chassis_id"
-    implements = [IGetChassisID]
+    interface = IGetChassisID
     cache = True
 
     rx_mac = re.compile(r"^\s+MAC address:\s+(?P<mac>\S+)$", re.MULTILINE)

@@ -8,13 +8,13 @@
 """
 """
 from __future__ import with_statement
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IRemoveVlan
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Dell.Powerconnect55xx.remove_vlan"
-    implements = [IRemoveVlan]
+    interface = IRemoveVlan
 
     def execute(self, vlan_id):
         if not self.scripts.has_vlan(vlan_id=vlan_id):

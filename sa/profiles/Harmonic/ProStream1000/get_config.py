@@ -9,17 +9,17 @@ __author__ = 'fedoseev.ns'
 ##----------------------------------------------------------------------
 
 ## NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 ## Python modules
 import urllib2
 from xml.dom.minidom import parseString
 
 data = '<AFRICA><Platform ID=\"1\" Action=\"GET_TREE\" /></AFRICA>'
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Harmonic.ProStream1000.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
 
     def execute(self):
         url = 'http://' + self.access_profile.address + '/BrowseConfig'

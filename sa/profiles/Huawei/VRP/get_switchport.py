@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Huawei.VRP.get_switchport"
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
     rx_line = re.compile(
         r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid|trunking)\s+(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)", re.MULTILINE)
     rx_descr = re.compile(

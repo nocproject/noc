@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInventory
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DES21xx.get_inventory"
     cache = True
-    implements = [IGetInventory]
+    interface = IGetInventory
     rx_ver = re.compile(r"Product Name:(?P<platform>\S+).+Firmware Version:(?P<version>\S+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):

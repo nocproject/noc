@@ -5,13 +5,13 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Alcatel.OS62xx.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
 
     def execute(self):
         vlans = self.cli("show vlan")

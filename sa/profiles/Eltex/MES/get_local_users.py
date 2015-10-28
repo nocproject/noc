@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLocalUsers
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Eltex.MES.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
 
     rx_name = re.compile(
         r"^username\s+(?P<username>\S+)\s+password encrypted (\S+\s+privilege\s+(?P<privilege>\d+)|.*)")

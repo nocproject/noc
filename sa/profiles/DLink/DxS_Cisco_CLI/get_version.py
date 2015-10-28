@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
     rx_ver = re.compile(
         r"System description\s+:\s+(?P<platform>\S+).+System hardware version"
         r"\s+:\s+(?P<hversion>\S+?),?\s+System software version"

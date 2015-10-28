@@ -8,13 +8,13 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.7302.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
 
     CLI_TIMEOUT = 600
 

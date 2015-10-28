@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Arista.EOS.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     type_map = {
         "et": "physical",

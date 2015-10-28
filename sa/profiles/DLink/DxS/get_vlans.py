@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
 
     def execute(self):
         r = []

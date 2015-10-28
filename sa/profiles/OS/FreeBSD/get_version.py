@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "OS.FreeBSD.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
     rx_ver = re.compile(r"(?P<version>\S+)\s+(?P<platform>\S+)")
 
     def execute(self):

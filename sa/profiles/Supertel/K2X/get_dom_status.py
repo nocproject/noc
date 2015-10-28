@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetDOMStatus
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Supertel.K2X.get_dom_status"
-    implements = [IGetDOMStatus]
+    interface = IGetDOMStatus
 
     rx_line = re.compile(
         r"^\s*(?P<interface>g\d+)\s+(?P<temp_c>(\d+|N/A|N/S))\s+"

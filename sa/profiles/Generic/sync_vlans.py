@@ -5,13 +5,13 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import ISyncVlans, IGetVlans, IAddVlan, IRemoveVlan
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Generic.sync_vlans"
-    implements = [ISyncVlans]
+    interface = ISyncVlans
     requires = [
         ("get_vlans", IGetVlans),
         ("add_vlan", IAddVlan),

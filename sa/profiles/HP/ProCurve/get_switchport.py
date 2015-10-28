@@ -10,14 +10,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.ProCurve.get_switchport"
     cache = True
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
 
     objstr = {"ifName": "interface",
               "ifDescr": "description",

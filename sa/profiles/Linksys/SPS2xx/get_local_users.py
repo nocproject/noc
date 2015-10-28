@@ -10,13 +10,13 @@
 import re
 import datetime
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLocalUsers
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Linksys.SPS2xx.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
 
     rx_name = re.compile(
         r"^username\s+(?P<username>\S+)\s+password .* level (?P<privilege>\d+) encrypted$")

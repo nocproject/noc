@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "OS.Linux.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
 
     rx_if_name = re.compile(r"^(?P<ifname>\S+)\s+Link encap:")
     rx_if_status = re.compile(r"^\s+UP+(\s|BROADCAST\s)+(?P<status>.+)+\s")

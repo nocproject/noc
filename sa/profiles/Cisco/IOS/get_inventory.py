@@ -10,14 +10,14 @@
 import re
 from itertools import groupby
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.sa.interfaces.base import InterfaceTypeError
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.get_inventory"
-    implements = [IGetInventory]
+    interface = IGetInventory
 
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
@@ -360,13 +360,13 @@ class Script(NOCScript):
             return "Unknown | Transceiver | %s" % match.group(1).upper()
         return None
 
-    @NOCScript.match(platform__regex=r"C2960")
+    @BaseScript.match(platform__regex=r"C2960")
     def execute_2960(self):
         objects = self.get_inv()
         objects += self.get_transceivers("show int status")
         return objects
 
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_others(self):
         objects = self.get_inv()
         return objects

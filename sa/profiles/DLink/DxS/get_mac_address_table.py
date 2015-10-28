@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.sa.profiles.DLink.DxS import DES3200
 from noc.sa.profiles.DLink.DxS import DES3500
 from noc.sa.profiles.DLink.DxS import DGS3120
@@ -19,9 +19,9 @@ from noc.sa.profiles.DLink.DxS import DGS3620
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(\S+\s+)?"
         r"(?P<mac>[0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-"

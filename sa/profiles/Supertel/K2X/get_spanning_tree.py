@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetSpanningTree
 from noc.lib.text import parse_table
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Supertel.K2X.get_spanning_tree"
-    implements = [IGetSpanningTree]
+    interface = IGetSpanningTree
 
     TIMEOUT = 240
 

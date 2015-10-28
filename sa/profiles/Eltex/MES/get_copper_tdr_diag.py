@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetCopperTDRDiag
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Eltex.MES.get_copper_tdr_diag"
-    implements = [IGetCopperTDRDiag]
+    interface = IGetCopperTDRDiag
     rx_diag = re.compile(
         r"Cable on port\s+(?P<interface>\S+)\s+(?P<status>(is open|has short circuit))\s+at\s+(?P<length>\d+)\s+m",
         re.IGNORECASE)

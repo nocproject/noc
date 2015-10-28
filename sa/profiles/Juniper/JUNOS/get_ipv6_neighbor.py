@@ -9,12 +9,12 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetIPv6Neighbor
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Juniper.JUNOS.get_ipv6_neighbor"
-    implements = [IGetIPv6Neighbor]
+    interface = IGetIPv6Neighbor
 
     rx_line = re.compile(
         r"^(?P<ip>[0-9a-f:]+)\s+"

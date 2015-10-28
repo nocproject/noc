@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetFQDN
 import re
 
@@ -16,9 +16,9 @@ import re
 ## Get switch FQDN
 ## @todo: find more clean way
 ##
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_fqdn"
-    implements = [IGetFQDN]
+    interface = IGetFQDN
 
     rx_hostname = re.compile(r"^hostname\s+(?P<hostname>\S+)", re.MULTILINE)
     rx_domain_name = re.compile(r"^ip domain-name\s+(?P<domain>\S+)",

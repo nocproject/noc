@@ -11,18 +11,18 @@
 import re
 import binascii
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors, MACAddressParameter
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "EdgeCore.ES.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
     ##
     ## No lldp on 46xx
     ##
-    @NOCScript.match(platform__contains="46")
+    @BaseScript.match(platform__contains="46")
     def execute_46(self):
         raise self.NotSupportedError()
 
@@ -42,7 +42,7 @@ class Script(NOCScript):
         r"(SystemCapSupported|System\sCapabilities)\s+:\s"
         r"(?P<capability>[^\n]+).*", re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_35(self):
         ifs = []
         r = []

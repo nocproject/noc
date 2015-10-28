@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 rx_ver = re.compile(
@@ -16,10 +16,10 @@ rx_ver = re.compile(
     re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "AddPac.APOS.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         v = self.cli("show version")

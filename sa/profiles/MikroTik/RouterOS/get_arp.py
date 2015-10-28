@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "MikroTik.RouterOS.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
 
     def execute(self):
         return [{

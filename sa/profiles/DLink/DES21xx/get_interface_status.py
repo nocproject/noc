@@ -10,14 +10,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DES21xx.get_interface_status"
     cache = True
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
     rx_link = re.compile(r"^(?P<interface>\d+)\s+([01M HFaulf]+|Auto)\s+" \
                           "\S+\s+\S+\s+(?P<status>([01M HFaulf]+|Down))$",
                           re.MULTILINE | re.IGNORECASE)

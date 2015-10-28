@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.1910.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
 
     rx_vlan = re.compile(r"^\s*VLAN ID: (?P<vlan>\d+)$")
     rx_name = re.compile(r"^\s*Name: (?P<name>.+)$")

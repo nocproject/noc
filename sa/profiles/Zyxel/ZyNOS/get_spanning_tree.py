@@ -9,13 +9,13 @@
 # Python modules
 import re
 # NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetSpanningTree
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_spanning_tree"
-    implements = [IGetSpanningTree]
+    interface = IGetSpanningTree
 
     rx_config = re.compile(r"Configuration Name:\s+(?P<region>\S+)$\s+"
             r"Reve?ision Number:\s+(?P<revision>\d+)",

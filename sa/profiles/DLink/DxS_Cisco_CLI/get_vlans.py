@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
     rx_vlan_line = re.compile(
         r"^(?P<vlan_id>\s{1,3}\d{1,4})\s+(?P<name>\S+)\s", re.MULTILINE)
 

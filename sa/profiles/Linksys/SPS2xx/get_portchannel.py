@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Linksys.SPS2xx.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
 
     rx_trunk = re.compile(
         r"^(?P<port>ch\d+)\s+(?P<type1>\S+):\s+(?P<interfaces1>\S+)+(\s+(?P<type2>\S+):\s+(?P<interfaces2>\S+)$|$)",

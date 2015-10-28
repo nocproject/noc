@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLocalUsers
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
     rx_line = re.compile(
         r"^username (?P<username>\S+) password( \d)? \S+\nusername \S+ "
         r"privilege (?P<privilege>\d+)$", re.MULTILINE)

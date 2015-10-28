@@ -10,13 +10,13 @@
 ## Python modules
 import urlparse
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetHTTPGet
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Generic.get_http_get"
-    implements = [IGetHTTPGet]
+    interface = IGetHTTPGet
     requires = []
 
     def execute(self, url):

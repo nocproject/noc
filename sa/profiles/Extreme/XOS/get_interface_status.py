@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus, MACAddressParameter
 ##
 ## @todo: CLI Support
 ##
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Extreme.XOS.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
     cache = True
 
     rx_snmp_name_eth = re.compile(r"^X\S+\s+Port\s+(?P<port>\d+)", re.MULTILINE | re.IGNORECASE | re.DOTALL)

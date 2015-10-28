@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Force10.FTOS.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
 
     rx_first = re.compile(
         r"^\s*(?P<lacp>L?)\s+(?P<port>\d+)\s+\S+\s+(?:up|down)\s+\S+\s+(?P<interface>\S+\s+\S+)\s+\((Up|Down)\)\s*\*?$")

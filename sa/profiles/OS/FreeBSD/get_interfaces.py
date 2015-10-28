@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "OS.FreeBSD.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
     rx_if_name = re.compile(
         r"^(?P<ifname>\S+): flags=[0-9a-f]+<(?P<flags>\S+)>( metric \d+)?"
         r" mtu (?P<mtu>\d+)$")

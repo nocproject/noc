@@ -8,16 +8,14 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.protocols.sae_pb2 import HTTP
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Alcatel.7324RU.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
 
     def execute(self):
-        self.access_profile.scheme == self.HTTP
         config = self.http.get("/config-0_20200101_0101.dat")
         return self.cleaned_config(config)

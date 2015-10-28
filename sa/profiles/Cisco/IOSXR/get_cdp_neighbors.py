@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcdpneighbors import IGetCDPNeighbors
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOSXR.get_cdp_neighbors"
-    implements = [IGetCDPNeighbors]
+    interface = IGetCDPNeighbors
     rx_split = re.compile("^--------+\n", re.MULTILINE)
 
     def execute(self):

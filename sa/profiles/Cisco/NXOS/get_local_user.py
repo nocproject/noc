@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLocalUsers
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.NXOS.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
 
     def execute(self):
         data = self.cli("show user-account | no-more")

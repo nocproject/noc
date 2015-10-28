@@ -7,18 +7,18 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 rx_version = re.compile(r"Fabric OS:\s+v?(?P<version>\S+)", re.MULTILINE)
 rx_platform = re.compile(r"^Part Num:\s+(?P<platform>\S+)", re.MULTILINE)
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Brocade.FabricOS.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         v = self.cli("version")

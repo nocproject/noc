@@ -10,16 +10,16 @@
 import re
 from collections import defaultdict
 # NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Vyatta.Vyatta.get_interfaces
     """
     name = "Vyatta.Vyatta.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_int = re.compile(r"^(?P<name>.+?):\s+<.+?> mtu \d+ .+state")
     rx_descr = re.compile(r"^\s+Description:\s+(?P<descr>.+?)\s*$")

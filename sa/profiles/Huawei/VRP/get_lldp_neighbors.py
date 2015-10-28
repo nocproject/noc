@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors, MACAddressParameter
 from noc.lib.text import parse_kv
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Huawei.VRP.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
-    @NOCScript.match(version__startswith="3.")
+    @BaseScript.match(version__startswith="3.")
     def execute_vrp3(self):
         """
         No LLDP on VRP3
@@ -54,7 +54,7 @@ class Script(NOCScript):
         "cable": 64, "station": 128
     }
 
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_other(self):
         """
         VRP5 style

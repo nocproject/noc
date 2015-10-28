@@ -9,11 +9,11 @@
 # Python modules
 import re
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Juniper.JUNOS.get_interfaces
 
@@ -22,7 +22,7 @@ class Script(NOCScript):
     @todo: vlan ids of the units
     """
     name = "Juniper.JUNOS.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_phy_split = re.compile(r"^Physical interface:\s+", re.MULTILINE)
     rx_phy_name = re.compile(

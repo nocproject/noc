@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetDOMStatus
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.NXOS.get_dom_status"
-    implements = [IGetDOMStatus]
+    interface = IGetDOMStatus
     rx_xcvr = re.compile(r"(?P<interface>Ethernet\S+)\n.+\s+Temperature"
         r"\s+(?P<temp_c>\S+).+\n\s+Voltage\s+(?P<voltage_v>\S+).+\n\s+"
         r"Current\s+(?P<current_ma>\S+).+\n\s+Tx Power\s+"

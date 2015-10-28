@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4
 from noc.lib.text import parse_table
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Eltex.MES.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 

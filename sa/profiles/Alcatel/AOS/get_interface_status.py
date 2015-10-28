@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.AOS.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
     rx_line = re.compile(
         r"(?P<interface>\S+)\s+\S+\s+(?P<status>up|down)\s+\S+\d*\s+\d*",
         re.IGNORECASE | re.MULTILINE)

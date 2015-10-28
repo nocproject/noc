@@ -7,17 +7,17 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Huawei.VRP.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
 
-    @NOCScript.match(version__startswith="3.")
+    @BaseScript.match(version__startswith="3.")
     def execute_vrp3(self):
         raise self.NotSupportedError()
 
@@ -27,7 +27,7 @@ class Script(NOCScript):
         r"(?:Actor)?PortName[^\n]+(?P<members>.*?)(\n\s*\n|\n\s\s)",
         re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_other(self):
         r = []
         try:

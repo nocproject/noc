@@ -11,13 +11,13 @@ import re
 import datetime
 import time
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetDHCPBinding
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Juniper.JUNOS.get_dhcp_binding"
-    implements = [IGetDHCPBinding]
+    interface = IGetDHCPBinding
 
     rx_line = re.compile(
         r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+\d+\s+(?P<mac>\S+)\s+"

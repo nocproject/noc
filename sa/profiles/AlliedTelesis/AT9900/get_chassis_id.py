@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "AlliedTelesis.AT9900.get_chassis_id"
     cache = True
-    implements = [IGetChassisID]
+    interface = IGetChassisID
     rx_ver = re.compile(r" Switch Address \.+ (?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
 
     def execute(self):

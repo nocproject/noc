@@ -10,18 +10,18 @@
 # Python modules
 import re
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     EdgeCore.ES.get_switchport
     @todo: ES4626 support
     @todo: QinQ
     """
     name = "EdgeCore.ES.get_switchport"
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
     cache = True
 
     rx_interface_3526 = re.compile(r"Information of (?P<interface>[^\n]+?)\n",

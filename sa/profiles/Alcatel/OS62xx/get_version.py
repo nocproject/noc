@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.OS62xx.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     rx_sys = re.compile(r"System Description:\s+(?P<platform>.+?)$",
                         re.MULTILINE | re.DOTALL)

@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetLocalUsers
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Eltex.PON.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
 
     rx_name = re.compile(
         r"^(?P<username>\S+)\s+\((?P<privilege>\S+)\)$")

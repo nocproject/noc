@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_chassis_id"
-    implements = [IGetChassisID]
+    interface = IGetChassisID
     rx_mac = re.compile(r"([0-9a-f]{4}.[0-9a-f]{4}.[0-9a-f]{4})",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
 

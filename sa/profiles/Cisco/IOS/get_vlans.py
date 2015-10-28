@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
 
     ##
     ## Extract vlan information
@@ -40,7 +40,7 @@ class Script(NOCScript):
     rx_vlan_ubr = re.compile(
         r"^(\S+\s+){4}(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)", re.MULTILINE)
 
-    @NOCScript.match(version__contains="BC")
+    @BaseScript.match(version__contains="BC")
     def execute_ubr(self):
         vlans = self.cli("show running-config | include cable dot1q-vc-map")
         r = []
@@ -59,7 +59,7 @@ class Script(NOCScript):
         r"^Total statistics for 802.1Q VLAN (?P<vlan_id>\d{1,4}):",
         re.MULTILINE)
 
-    @NOCScript.match(platform__regex=r"^([123][678]\d\d|7[235]\d\d|107\d\d|"
+    @BaseScript.match(platform__regex=r"^([123][678]\d\d|7[235]\d\d|107\d\d|"
         r"C[23][69]00[a-z]?$|C8[7859]0|C1700|C18[01]X|C1900|C2951|ASR\d+)")
     def execute_vlan_switch(self):
         try:
@@ -84,7 +84,7 @@ class Script(NOCScript):
         re.MULTILINE)
 
     # Cisco 5350/5350XM:
-    @NOCScript.match(platform__regex=r"^5350")
+    @BaseScript.match(platform__regex=r"^5350")
     def execute_vlans(self):
         r = []
         try:
@@ -101,7 +101,7 @@ class Script(NOCScript):
     ##
     ## Other
     ##
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_vlan_brief(self):
         vlans = self.cli("show vlan brief")
         return self.extract_vlans(vlans)

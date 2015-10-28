@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLocalUsers
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Supertel.K2X.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
 
     rx_users = re.compile(
         r"(?P<name>\S+)\s+(?P<privilege>\d+)",

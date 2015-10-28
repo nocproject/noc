@@ -11,13 +11,13 @@
 import re
 from collections import defaultdict
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Huawei.VRP.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_iface_sep = re.compile(r"^(\S+) current state\s*:\s+",
                               re.MULTILINE)

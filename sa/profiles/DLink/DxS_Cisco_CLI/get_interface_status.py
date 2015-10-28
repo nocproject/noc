@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
     rx_line = re.compile(
         r"^(?P<interface>\S+\s*\d+(\/\d+)?)\s+(?P<status>up|down)\s+\d+\s+"
         r"(Unknown|Half|Full)\s+\S+\s+(copper|fiber)\s*$",

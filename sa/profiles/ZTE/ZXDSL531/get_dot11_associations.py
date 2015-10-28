@@ -5,7 +5,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetDot11Associations
 from noc.lib.text import strip_html_tags
 import re
@@ -13,9 +13,9 @@ import re
 rx_mac = re.compile("(?P<mac>[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2})")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "ZTE.ZXDSL531.get_dot11_associations"
-    implements = [IGetDot11Associations]
+    interface = IGetDot11Associations
 
     def execute(self):
         if self.access_profile.scheme == self.TELNET:

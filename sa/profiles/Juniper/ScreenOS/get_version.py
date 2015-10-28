@@ -5,13 +5,13 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 rx=re.compile(r"Product Name:\s+(?P<platform>\S+)$.+Software Version:\s+(?P<version>.+?)\s*\,",re.MULTILINE|re.DOTALL)
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name="Juniper.ScreenOS.get_version"
     cache=True
     implements=[IGetVersion]

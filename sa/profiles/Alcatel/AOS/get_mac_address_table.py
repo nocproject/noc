@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
 
 rx_line = re.compile(
@@ -16,9 +16,9 @@ rx_line = re.compile(
     r"\s+\S+\s+\S+\s+(?P<interfaces>\S+)", re.MULTILINE)
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.AOS.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
 
     def execute(self):
         v = self.cli("show mac-address-table")

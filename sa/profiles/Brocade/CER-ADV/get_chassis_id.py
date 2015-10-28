@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Brocade.CER-ADV.get_chassis_id
     """
     name = 'Brocade.CER-ADV.get_chassis_id'
-    implements = [IGetChassisID]
+    interface = IGetChassisID
     rx_mac = re.compile('([0-9a-f]{4}\\.[0-9a-f]{4}\\.[0-9a-f]{4})', re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def execute(self):

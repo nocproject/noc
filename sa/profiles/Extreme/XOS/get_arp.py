@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 
 rx_line = re.compile(
     r"^\S+\s+(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+\S+\s+(?P<interface>\S+).+$")
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Extreme.XOS.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
 
     def execute(self):
         return self.cli("sh iparp", list_re=rx_line)

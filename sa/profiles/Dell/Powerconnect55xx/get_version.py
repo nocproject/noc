@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Dell.Powerconnect55xx.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
     rx_55xx_hw = re.compile(
         r"^Type:\s+PowerConnect (?P<platform>\S+)", re.MULTILINE)
     rx_55xx_fw = re.compile(

@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 from noc.lib.text import parse_table
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Force10.SFTOS.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
 
     def execute(self):
         return [{

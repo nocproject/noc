@@ -4,14 +4,14 @@
 ##----------------------------------------------------------------------
 ## Writen by Boba boba@boba.su
 
-import noc.sa.script
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = 'Alcatel.TIMOS.get_arp'
-    implements = [IGetARP]
+    interface = IGetARP
     rx_line = re.compile(
         '^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)'
         '\s+\d+\S+\s+\S+\s+(?P<iface>.+)$'

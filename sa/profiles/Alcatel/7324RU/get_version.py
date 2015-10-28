@@ -8,8 +8,8 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 rx_sys = re.compile(r"Model\s*:\s*(?P<platform>.+?)\s*$",
@@ -17,10 +17,10 @@ rx_sys = re.compile(r"Model\s*:\s*(?P<platform>.+?)\s*$",
 rx_ver = re.compile(r".+?version\s*:\s*(?P<version>.+?)\s+\|.*$",
     re.MULTILINE | re.DOTALL)
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Alcatel.7324RU.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         v = self.cli("sys info show")

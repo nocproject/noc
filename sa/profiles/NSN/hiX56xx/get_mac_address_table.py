@@ -8,14 +8,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "NSN.hiX56xx.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
     rx_line = re.compile("^(?P<interfaces>\d+/\d+(?:/\d+)?)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(\S+)\s+(?P<type>\S+)\s+", re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):

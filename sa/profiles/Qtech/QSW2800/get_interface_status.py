@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Qtech.QSW2800.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
 
     rx_interface_status = re.compile(
         r"^\s*(?P<interface>\S+)\s+is\s+(?:administratively\s+)?"

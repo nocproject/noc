@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Zyxel.ZyNOS_EE.get_chassis_id"
-    implements = [IGetChassisID]
+    interface = IGetChassisID
     cache = True
 
     rx_ver = re.compile(

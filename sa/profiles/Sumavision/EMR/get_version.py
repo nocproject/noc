@@ -12,15 +12,15 @@ __author__ = 'FeNikS'
 import re
 import urllib2
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 rx_ver = re.compile(r"VID_WEB_VER = \"(?P<ver>.*?)\"", re.DOTALL|re.MULTILINE)
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "SUMAVISION.EMR.get_version"
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         version = ''

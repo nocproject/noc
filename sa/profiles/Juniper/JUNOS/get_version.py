@@ -5,8 +5,8 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 rx_ver = re.compile(
@@ -16,10 +16,10 @@ rx_snmp_ver = re.compile(
     r"Juniper Networks, Inc.\s+(?P<platform>\S+).+?JUNOS\s+(?P<version>\S+)")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Juniper.JUNOS.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         if self.has_snmp():

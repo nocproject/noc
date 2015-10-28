@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "OS.Linux.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
 
     rx_vlan = re.compile(
         r"^(?P<interface>\S+)\s+\|+\s+(?P<vlan>\d+)\s+\|+\s+\S+$",

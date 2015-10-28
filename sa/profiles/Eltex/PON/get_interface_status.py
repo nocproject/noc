@@ -10,13 +10,13 @@
 from __future__ import with_statement
 import re
 ## NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetInterfaceStatus
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Eltex.PON.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
 
     rx_uplink = re.compile(
         r"^\s+(?P<interface>\S+ \d+)$",

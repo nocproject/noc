@@ -8,13 +8,13 @@
 """
 """
 from __future__ import with_statement
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IAddVlan
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "HP.GbE2.add_vlan"
-    implements = [IAddVlan]
+    interface = IAddVlan
 
     def execute(self, vlan_id, name, tagged_ports):
         with self.configure():

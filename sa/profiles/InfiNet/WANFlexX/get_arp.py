@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.interfaces import IGetARP
-from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetarp import IGetARP
+from noc.core.script.base import BaseScript
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "InfiNet.WANFlexX.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     rx_arp = re.compile(r"^(?P<ip>\S+)\s+at\s+(?P<mac>[0-9a-f]+)\s+via\s+"
                         r"(?P<interface>\S+)$", re.MULTILINE)
 

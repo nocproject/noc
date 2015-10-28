@@ -9,16 +9,16 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Brocade.CER.get_portchannel
     """
     name = 'Brocade.CER.get_portchannel'
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
     rx_trunk = re.compile('^(?P<name>\\S+)\\s+(?P<type>\\S+)\\s+(?P<deploy>\\S+)\\s+(?P<id>\\d+)\\s+(?P<pri>\\d+\\/\\d+)\\s+(?P<ports>.*)$', re.MULTILINE)
 
     def execute(self):

@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.IOS.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
 
     # Member 0 : GigabitEthernet0/2 , Full-duplex, 1000Mb/s
     rx_po2_members = re.compile(

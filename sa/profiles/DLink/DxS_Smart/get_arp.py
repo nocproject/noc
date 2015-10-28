@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS_Smart.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     cache = True
     rx_line = re.compile(
         r"(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s+"

@@ -9,13 +9,13 @@
 # Python modules
 import re
 # NOC modules
-from noc.sa.interfaces import IGetARP
-from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetarp import IGetARP
+from noc.core.script.base import BaseScript
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     rx_arp = re.compile(r"^\s+\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+"
                         r"(?P<interface>\d+).*$",
                         re.MULTILINE)

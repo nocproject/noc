@@ -9,15 +9,15 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 from noc.lib.mac import MAC
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.get_chassis_id"
     cache = True
-    implements = [IGetChassisID]
+    interface = IGetChassisID
 
     ##
     ## Catalyst 2960/3560/3750/3120 on IOS SE
@@ -28,7 +28,7 @@ class Script(NOCScript):
         r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    @NOCScript.match(version__regex=r"SE|EA|EZ")
+    @BaseScript.match(version__regex=r"SE|EA|EZ")
     def execute_small_cat(self):
         v = self.cli("show version")
         match = self.re_search(self.rx_small_cat, v)
@@ -44,7 +44,7 @@ class Script(NOCScript):
     rx_cat4000 = re.compile(r"MAC Base = (?P<id>\S+).+MAC Count = (?P<count>\d+)",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
-    @NOCScript.match(version__regex=r"SG")
+    @BaseScript.match(version__regex=r"SG")
     def execute_cat4000(self):
         try:
             v = self.cli("show idprom chassis")
@@ -65,7 +65,7 @@ class Script(NOCScript):
         r"chassis MAC addresses:.+from\s+(?P<from_id>\S+)\s+to\s+(?P<to_id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    @NOCScript.match(version__regex=r"S[YXR]")
+    @BaseScript.match(version__regex=r"S[YXR]")
     def execute_cat6000(self):
         v = self.cli("show catalyst6000 chassis-mac-addresses")
         match = self.re_search(self.rx_cat6000, v)
@@ -77,6 +77,6 @@ class Script(NOCScript):
     ##
     ## Other
     ##
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_not_supported(self):
         raise self.NotSupportedError()

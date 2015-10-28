@@ -10,14 +10,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 from noc.lib.text import parse_table
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.SMB.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     rx_line_l2 = re.compile(r"^vlan\s(?P<vlanid>\d+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
     rx_line_l3 = re.compile(r"^vlan\s(?P<vlanid>\d+)\s+(?P<interface>\S+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
 

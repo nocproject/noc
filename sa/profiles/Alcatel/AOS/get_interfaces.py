@@ -11,8 +11,8 @@
 import re
 from collections import defaultdict
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces, InterfaceTypeError
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces, InterfaceTypeError
 from noc.lib.ip import IPv4
 
 
@@ -41,9 +41,9 @@ def ranges_to_list_str(s):
     return (r)
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Alcatel.AOS.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_line = re.compile(r"\w*Slot/Port", re.MULTILINE)
     rx_name = re.compile(r"\s+(?P<name>.\S+)\s+:", re.MULTILINE)

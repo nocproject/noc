@@ -11,14 +11,14 @@ import re
 from collections import defaultdict
 # NOC modules
 from noc.lib.ip import IPv4
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces, InterfaceTypeError, \
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces, InterfaceTypeError, \
     MACAddressParameter
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "EdgeCore.ES.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     cache = True
     types = {

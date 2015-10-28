@@ -8,13 +8,13 @@
 
 ## Python modules
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.1905.get_version"
-    implements = [IGetVersion]
+    interface = IGetVersion
     cache = True
 
     def execute(self):

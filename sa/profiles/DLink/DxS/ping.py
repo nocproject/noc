@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IPing
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.iping import IPing
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS.ping"
-    implements = [IPing]
+    interface = IPing
     rx_result = re.compile(r"^\s*Packets: Sent =\s*(?P<count>\d+), Received =\s*(?P<success>\d+), Lost =\s*\d+", re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self, address, count=None, source_address=None, size=None,

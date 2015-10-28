@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLocalUsers
 import re
 import datetime
@@ -16,9 +16,9 @@ rx_line = re.compile(
 r"^username\s+(?P<username>\S+)(?:\s+.*privilege\s+(?P<privilege>\d+))?.*$")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Force10.FTOS.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
 
     def execute(self):
         data = self.cli("show running-config | grep ^username")

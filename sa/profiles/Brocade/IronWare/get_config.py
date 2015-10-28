@@ -7,16 +7,16 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Brocade.IronWare.get_config
     """
     name = "Brocade.IronWare.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
 
     def execute(self):
         config = self.cli("show config")

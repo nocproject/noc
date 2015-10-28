@@ -8,16 +8,16 @@
 """
 """
 
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 # from noc.lib.validators import is_int, is_ipv4
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Dell.Powerconnect62xx.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
     rx_line = re.compile(
         r"^(?P<interface>\d+\S+)\s+(?P<rem_id>\d+)\s+(?P<chassis_id>\S+)\s+"

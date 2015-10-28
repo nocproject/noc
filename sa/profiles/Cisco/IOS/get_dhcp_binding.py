@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetDHCPBinding
 import re
 import datetime
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.IOS.get_dhcp_binding"
-    implements = [IGetDHCPBinding]
+    interface = IGetDHCPBinding
     rx_line = re.compile(r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<expire>.+?)\s+(?P<type>Automatic|Manual)$", re.IGNORECASE)
 
     def execute(self):

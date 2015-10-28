@@ -7,16 +7,16 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 from noc.sa.profiles.DLink.DxS_Smart import (DES1210, DGS121048, DGS121052)
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "DLink.DxS_Smart.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     rx_ver = re.compile(
         r"system hardware version\s+:\s+(?P<hardware>\S+).+"

@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "EdgeCore.ES.get_inventory"
-    implements = [IGetInventory]
+    interface = IGetInventory
 
     rx_trans_no = re.compile(
         r"\s+(?P<number>\d/\d+)\n")

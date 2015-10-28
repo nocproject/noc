@@ -10,13 +10,13 @@
 from __future__ import with_statement
 from collections import defaultdict
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import ISetSwitchport
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Force10.FTOS.set_switchport"
-    implements = [ISetSwitchport]
+    interface = ISetSwitchport
 
     def execute(self, configs, protect_switchport=True, protect_type=True,
                 debug=False):

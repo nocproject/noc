@@ -12,14 +12,14 @@
 import re
 import string
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = 'Brocade.CER-ADV.get_interfaces'
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
     rx_sh_int = re.compile('^(?P<interface>.+?)\\s+is\\s+(?P<admin_status>up|down),\\s+line\\s+protocol\\s+is\\s+(?P<oper_status>up|down)', re.MULTILINE | re.IGNORECASE)
     rx_int_alias = re.compile('^(Description|Vlan alias name is)\\s*(?P<alias>.*?)$', re.MULTILINE | re.IGNORECASE)
     rx_int_mac = re.compile('address\\s+is\\s+(?P<mac>\\S+)', re.MULTILINE | re.IGNORECASE)

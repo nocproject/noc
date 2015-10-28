@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Qtech.QSW.get_switchport"
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
 
     rx_interface = re.compile(
         r"^\s*Ethernet\s+(?P<interface>\S+)\s+is\s+(enabled|disabled),\s+port\s+link\s+is\s+(up|down)")

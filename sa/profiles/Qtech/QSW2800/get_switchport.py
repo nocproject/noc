@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Qtech.QSW2800.get_switchport"
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
 
     rx_interface = re.compile(r"^(?P<interface>\d+/\d+)\s+\S+\s+\S+\s+\S+\s+"
                     r"(?P<vlan>\S+)\s+\S+\s+(?P<description>.*)", re.MULTILINE)

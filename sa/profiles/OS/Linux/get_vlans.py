@@ -9,13 +9,13 @@
 ## NOC modules
 import re
 ## Python modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "OS.Linux.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
 
     rx_vlan = re.compile(
         r"^(?P<interface>\S+)\s+\|+\s+(?P<vlan>\d+)\s+\|+\s+\S+$",

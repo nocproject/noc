@@ -8,13 +8,13 @@
 
 ## Python modules
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.1905.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
     cached = True
 
     def execute(self, interface=None, vlan=None, mac=None):

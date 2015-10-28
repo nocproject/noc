@@ -5,14 +5,14 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IHasVlan, IGetVlans
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Generic.has_vlan"
-    implements = [IHasVlan]
+    interface = IHasVlan
     requires = [("get_vlans", IGetVlans)]
 
     def execute(self, vlan_id):

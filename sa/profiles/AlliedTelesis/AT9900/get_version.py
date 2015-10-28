@@ -10,14 +10,14 @@
 import re
 import string
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "AlliedTelesis.AT9900.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
     rx_ver = re.compile(r"^Allied Telesis (?P<platform>AT[/\w-]+) version (?P<version>[\d.]+-[\d]+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):

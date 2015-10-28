@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.get_chassis_id"
-    implements = [IGetChassisID]
+    interface = IGetChassisID
     rx_ver = re.compile(r"^Hardware is  VLAN, address is (?P<id>\S+)\s+",
                         re.IGNORECASE | re.MULTILINE)
     rx_mac_from = re.compile(r"^\s+Chassis\s+ID\s+:\s+(?P<mac_from>\S+)",

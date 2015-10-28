@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "OS.Linux.get_chassis_id"
     cache = True
-    implements = [IGetChassisID]
+    interface = IGetChassisID
 
     rx_bridge = re.compile(
         r"^\S+(\s|\t)+\d+\.(?P<mac>\S+)+(\s|\t)+(no|yes)+(\s|\t)+\S",

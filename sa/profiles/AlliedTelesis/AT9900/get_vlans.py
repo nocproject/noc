@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "AlliedTelesis.AT9900.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
     rx_vlan = re.compile(r"Name \.+ (?P<vlanname>\S+)\n Identifier \.+ (?P<vlanid>\d+)\n")
 
     def execute(self):

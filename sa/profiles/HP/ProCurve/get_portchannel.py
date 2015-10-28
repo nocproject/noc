@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.ProCurve.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
 
     rx_trunk = re.compile(r"^\s*(?P<port>\S+)\s+\|.+?\|"
                           "\s+(?P<trunk>\S+)\s+(?P<type>(\S+)?"

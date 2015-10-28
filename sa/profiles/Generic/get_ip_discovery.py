@@ -9,16 +9,16 @@
 ## Python modules
 from __future__ import with_statement
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetIPDiscovery, IGetARP
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Retrieve data for IP discovery
     """
     name = "Generic.get_ip_discovery"
-    implements = [IGetIPDiscovery]
+    interface = IGetIPDiscovery
     requires = []
     requires = [("get_arp", IGetARP)]
 

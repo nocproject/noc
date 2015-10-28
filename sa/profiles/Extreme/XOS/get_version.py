@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
 rx_platform = re.compile(r"Card type:\s+(?P<platform>\S+)",
@@ -17,10 +17,10 @@ rx_version = re.compile(r"EXOS version:\s+(?P<version>\S+)",
     re.MULTILINE | re.DOTALL)
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Extreme.XOS.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     def execute(self):
         v = self.cli("debug hal show version")

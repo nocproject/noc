@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Supertel.K2X.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
 
     rx_lag = re.compile(
         r"^(?P<port>ch\d+)(\s+Active:\s+(?P<interfaces1>\S+)|)+"

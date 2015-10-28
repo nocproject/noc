@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "OS.FreeBSD.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
     rx_not_found = re.compile(r"^cat:.+?No (?:match|such file or directory)")
     configs = ["/etc/rc.conf", "/etc/rc.conf.d/*",
         "/usr/local/etc/rc.conf.d/*", "/etc/rc.local"]

@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.lib.text import parse_table
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Force10.FTOS.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
 
     def execute(self):
         if self.has_snmp():

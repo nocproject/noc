@@ -11,12 +11,12 @@
 import re
 from collections import defaultdict
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces, InterfaceTypeError
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces, InterfaceTypeError
 from noc.sa.profiles.Cisco.IOS import uBR
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Cisco.IOS.get_interfaces
     @todo: VRF support
@@ -27,7 +27,7 @@ class Script(NOCScript):
     @todo: Q-in-Q
     """
     name = "Cisco.IOS.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+"

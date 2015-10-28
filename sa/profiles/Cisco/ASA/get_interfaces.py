@@ -9,14 +9,14 @@
 ## Python modules
 import re
 # NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.ASA.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_int = re.compile(r"(?P<interface>\S+)\s\"(?P<alias>[\w-]*)\"\,\sis(\sadministratively)?\s(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)", re.MULTILINE | re.IGNORECASE)
     rx_mac = re.compile(r"MAC\saddress\s(?P<mac>\w{4}\.\w{4}\.\w{4})",

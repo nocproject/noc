@@ -11,13 +11,13 @@ from __future__ import with_statement
 import re
 from collections import defaultdict
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 from noc.lib.ip import IPv6
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Qtech.QSW.get_interfaces
     @todo: VRF support
@@ -28,7 +28,7 @@ class Script(NOCScript):
     @todo: Q-in-Q
     """
     name = "Qtech.QSW.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_mac = re.compile(r"^The mac-address of interface is\s+(?P<mac>\S+)$",
         re.MULTILINE)

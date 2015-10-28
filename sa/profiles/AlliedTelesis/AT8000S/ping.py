@@ -8,14 +8,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IPing
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.iping import IPing
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "AlliedTelesis.AT8000S.ping"
-    implements = [IPing]
+    interface = IPing
     rx_result = re.compile(r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss\nround-trip \(ms\) min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)?", re.MULTILINE | re.DOTALL)
 
     def execute(self, address, size=None, count=None, timeout=None):

@@ -10,14 +10,14 @@
 ## Python modules
 import re
 ## NOC modiles
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetLicense
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetlicense import IGetLicense
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "MikroTik.RouterOS.get_license"
     cache = True
-    implements = [IGetLicense]
+    interface = IGetLicense
     rx_lic = re.compile(
         r"^\s*software-id: (?P<sid>\S+)\n"
         r"(^\s*upgradable-to: (?P<upto>\S+)\n)?"

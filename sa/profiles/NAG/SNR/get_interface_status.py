@@ -9,13 +9,13 @@
 ## Python modules
 import time
 ## NOC modules
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetInterfaceStatus
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "NAG.SNR.get_interface_status"
-    implements = [IGetInterfaceStatus]
+    interface = IGetInterfaceStatus
 
     def execute(self, interface=None):
         r = []

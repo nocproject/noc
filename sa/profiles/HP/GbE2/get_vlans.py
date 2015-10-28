@@ -7,16 +7,16 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVlans
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetvlans import IGetVlans
 import re
 
 rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "HP.GbE2.get_vlans"
-    implements = [IGetVlans]
+    interface = IGetVlans
 
     def execute(self):
         r = self.cli("/i/l2/vlan", list_re=rx_vlan_line)

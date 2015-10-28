@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetOAMStatus
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Juniper.JUNOS.get_oam_status"
-    implements = [IGetOAMStatus]
+    interface = IGetOAMStatus
 
     rx_line = re.compile(r"^  Interface:\s+", re.MULTILINE)
     rx_interface = re.compile(r"^(?P<interface>\S+)", re.MULTILINE)

@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Aruba.ArubaOS.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
 
     def execute(self):
         v = self.cli("show running-config")

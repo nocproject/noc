@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Eltex.MES.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     cache = True
 
     rx_line = re.compile(

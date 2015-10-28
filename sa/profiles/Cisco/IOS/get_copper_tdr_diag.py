@@ -11,13 +11,13 @@
 import re
 import time
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetCopperTDRDiag
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.get_copper_tdr_diag"
-    implements = [IGetCopperTDRDiag]
+    interface = IGetCopperTDRDiag
     rx_link = re.compile(r"^(?P<interface>\S+)\s+(auto|10M|100M|1000M)\s+Pair (?P<pair>A|B|C|D)\s+(?P<length>\d+)\s+\+/\- (?P<variance>\d+)\s+meters (?:Pair (?:A|B|C|D)|N/A)\s+(?P<status>Normal|Open|Short)")
     rx_pair = re.compile(r"^\s+Pair (?P<pair>A|B|C|D)\s+(?P<length>\d+)\s+\+/\- (?P<variance>\d+)\s+meters (?:Pair (?:A|B|C|D)|N/A)\s+(?P<status>Normal|Open|Short)")
     rx_link_nc = re.compile(r"^(?P<interface>\S+)\s+(auto|10M|100M|1000M)\s+Pair (?P<pair>A|B|C|D)\s+N/A\s+N/A\s+(?P<status>Not Completed)")

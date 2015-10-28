@@ -7,15 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLocalUsers
 import re
 import datetime
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.IOS.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
     rx_line = re.compile(r"^username\s+(?P<username>\S+)(?:\s+.*privilege\s+(?P<privilege>\d+))?.*$")
 
     def execute(self):

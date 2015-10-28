@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetResolverConfig
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "OS.FreeBSD.get_resolver_config"
-    implements = [IGetResolverConfig]
+    interface = IGetResolverConfig
     rx_domain = re.compile(r"^\s*domain\s+(?P<domain>\S+)")
     rx_search = re.compile(r"^\s*search\s+(?P<search>.+)")
     rx_nameserver = re.compile(r"^\s*nameserver\s+(?P<server>\S+)")

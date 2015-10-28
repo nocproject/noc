@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.ireboot import IReboot
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Juniper.JUNOS.reboot"
-    implements = [IReboot]
+    interface = IReboot
 
     def execute(self):
         self.cli("request system reboot")

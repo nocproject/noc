@@ -7,16 +7,16 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
 
 rx_line = re.compile(r"^(?P<mac>\S+)\s+\S+\((?P<vlan_id>\d+)\)\s+\d+\s+(?P<type>([dhmis\s]+))\s+?(?:\S+)?\s+(?P<interfaces>\d+)(?:\S+)?$")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Extreme.XOS.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
     TIMEOUT = 1900
 
     def execute(self, interface=None, vlan=None, mac=None):

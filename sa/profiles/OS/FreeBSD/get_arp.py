@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "OS.FreeBSD.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
     rx_line = re.compile(
         r"^\S+\s+\((?P<ip>\S+)\)\s+\S+\s+(?P<mac>[0-9a-fA-F:]+)\s+\S+\s+"
         r"(?P<interface>\S+)", re.MULTILINE | re.DOTALL)

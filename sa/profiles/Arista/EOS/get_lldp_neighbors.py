@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Arista.EOS.get_lldp_neighbors"
-    implements = [IGetLLDPNeighbors]
+    interface = IGetLLDPNeighbors
 
     rx_isep = re.compile(r"^Interface\s+", re.MULTILINE)
     rx_nsep = re.compile(r"^\s+Neighbor\s+", re.MULTILINE)

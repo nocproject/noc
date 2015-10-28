@@ -10,13 +10,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "EdgeCore.ES.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
 
     # ES3526 mac-address-table
     rx_line1 = re.compile(r"^\s*(?P<interface>(Eth\s*\d+/\s*\S+)|(Trunk\s*\d+))\s+"

@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DGS3100.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
     rx_trunk = re.compile(
         r"Group ID\s+:\s+(?P<trunk>\d+)\n"
         r"Member Port\s+:\s*(?P<members>\S+)*\n"

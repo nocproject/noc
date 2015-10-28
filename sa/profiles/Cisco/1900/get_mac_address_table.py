@@ -7,18 +7,18 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 import noc.sa.profiles
-from noc.sa.interfaces import IGetMACAddressTable
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
 
 rx_line = re.compile(
     r"^(?P<mac>\S+)\s+(?P<interface>\S+ \d\/\d+)\s+(?P<type>\S+)\s+All")
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Cisco.1900.get_mac_address_table"
-    implements = [IGetMACAddressTable]
+    interface = IGetMACAddressTable
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac-address-table"

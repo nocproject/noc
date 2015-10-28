@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.ireboot import IReboot
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Arista.EOS.reboot"
-    implements = [IReboot]
+    interface = IReboot
 
     def execute(self):
         self.cli("reload now", nowait=True)

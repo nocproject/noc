@@ -9,13 +9,13 @@
 # Python modules
 import re
 # NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetSpanningTree
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Qtech.QSW2800.get_spanning_tree"
-    implements = [IGetSpanningTree]
+    interface = IGetSpanningTree
 
     rx_mode = re.compile(r"^Standard\s+:\s+IEEE (?P<mode>\S+)",
                         re.MULTILINE)

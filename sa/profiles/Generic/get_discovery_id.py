@@ -7,16 +7,16 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetDiscoveryID
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Retrieve data for topology discovery
     """
     name = "Generic.get_discovery_id"
-    implements = [IGetDiscoveryID]
+    interface = IGetDiscoveryID
     requires = []
 
     def execute(self):

@@ -10,20 +10,20 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetPortchannel
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_portchannel"
-    implements = [IGetPortchannel]
+    interface = IGetPortchannel
 
     ##
     ## 3.70 firmware
     ##
     rx_trunk_370 = re.compile(r"^Group ID\s+(?P<trunk>\d+):\s+active\s*.\s*Member number:\s+\d+\s+Member:(?P<ports>(\d+\s+)*)$", re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
-    @NOCScript.match(version__startswith="3.70")
+    @BaseScript.match(version__startswith="3.70")
     def execute_370(self):
         r = []
         for match in self.rx_trunk_370.finditer(self.cli("show trunk")):
@@ -39,7 +39,7 @@ class Script(NOCScript):
     ##
     rx_trunk = re.compile(r"^Group ID\s+(?P<trunk>\d+):\s+active\s*.\s*Status:\s+(?P<lacp>(Static|LACP))\s*.\s*Member number:\s+\d+\s+Member:(?P<ports>(\d+\s+)*)$", re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
-    @NOCScript.match()
+    @BaseScript.match()
     def execute_other(self):
         r = []
         for match in self.rx_trunk.finditer(self.cli("show trunk")):

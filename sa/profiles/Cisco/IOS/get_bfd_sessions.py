@@ -9,12 +9,12 @@
 # Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbfdsessions import IGetBFDSessions
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.get_bfd_sessions"
-    implements = [IGetBFDSessions]
+    interface = IGetBFDSessions
 
     rx_session_sep = re.compile(
         r"^OurAddr\s+NeighAddr\s+LD/RD\s+RH/RS\s+Holdown\(mult\)\s+State\s+Int\n",

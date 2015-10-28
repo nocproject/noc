@@ -11,17 +11,17 @@
 import re
 from collections import defaultdict
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.text import parse_table
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Cisco.SMB.get_interfaces
     """
     name = "Cisco.SMB.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     inttypes = {
            "Et": "physical",    # Ethernet

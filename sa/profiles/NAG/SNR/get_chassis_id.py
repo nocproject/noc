@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "NAG.SNR.get_chassis_id"
-    implements = [IGetChassisID]
+    interface = IGetChassisID
     cache = True
 
     def execute(self):

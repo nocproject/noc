@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.lib.text import parse_table
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_inventory"
-    implements = [IGetInventory]
+    interface = IGetInventory
 
     rx_trans = re.compile(r"Port\s+:\s+(?P<number>\d+)\s+\S+."
                 r"Vendor\s+:\s+(?P<vendor>\S+)\s*."

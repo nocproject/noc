@@ -9,16 +9,16 @@
 ## Python modules
 from __future__ import with_statement
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IAddVlan
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     Brocade.IronWare.add_vlan
     """
     name = "Brocade.IronWare.add_vlan"
-    implements = [IAddVlan]
+    interface = IAddVlan
 
     def execute(self, vlan_id, name, tagged_ports):
         with self.configure():

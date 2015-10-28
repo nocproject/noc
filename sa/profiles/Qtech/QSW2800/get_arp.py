@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetARP
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Qtech.QSW2800.get_arp"
-    implements = [IGetARP]
+    interface = IGetARP
 
     rx_line = re.compile(r"^(?P<ip>\S+)\s+(?P<mac>[0-9a-f\-]+)\s+\S+\s+"
                         r"(?P<iface>\S+)\s+\S+\s+\d+", re.MULTILINE)

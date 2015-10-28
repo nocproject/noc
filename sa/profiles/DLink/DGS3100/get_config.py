@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DGS3100.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
 
     def execute(self):
         return self.cleaned_config(self.cli("show configuration running"))

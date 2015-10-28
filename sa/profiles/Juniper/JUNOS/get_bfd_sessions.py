@@ -9,14 +9,14 @@
 # Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetBFDSessions
 from noc.lib.text import find_indented
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Juniper.JUNOS.get_bfd_sessions"
-    implements = [IGetBFDSessions]
+    interface = IGetBFDSessions
 
     # JUNOS to interface client type mappings
     client_map = {

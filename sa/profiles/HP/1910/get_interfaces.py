@@ -9,12 +9,12 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 from noc.lib.ip import IPv6
 
-class Script(NOCScript):
+class Script(BaseScript):
     """
     HP.1910.get_interfaces
     @todo: VRF support
@@ -26,7 +26,7 @@ class Script(NOCScript):
     """
 
     name = "HP.1910.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
     TIMEOUT = 120
 
     rx_sh_svi = re.compile(

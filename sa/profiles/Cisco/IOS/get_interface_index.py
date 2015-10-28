@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetIfIndex
 import re
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOS.get_interface_index"
-    implements = [IGetIfIndex]
+    interface = IGetIfIndex
     rx_line = re.compile(
         r"Interface = \S+, Ifindex = (?P<index>\d+)")
 

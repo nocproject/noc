@@ -9,14 +9,14 @@
 # Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.lib.validators import is_int
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Juniper.JUNOS.get_inventory"
-    implements = [IGetInventory]
+    interface = IGetInventory
 
     UNKNOWN_XCVR = "NoName | Transceiver | Unknown"
 

@@ -9,14 +9,14 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "DLink.DGS3100.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     rx_ipif = re.compile(
         r"Interface\s*Name\s*: System\s*\nIP\s*Address\s*:\s*"

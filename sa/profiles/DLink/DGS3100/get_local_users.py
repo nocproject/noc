@@ -7,14 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetLocalUsers
 import re
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "DLink.DGS3100.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
     rx_line = re.compile(
         r"^\s*(?P<username>\S+)\s+"
         r"(?P<privilege>Admin|Operator|User|Power_User)\s*$",

@@ -11,13 +11,13 @@
 import re
 from collections import defaultdict
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces, InterfaceTypeError
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces, InterfaceTypeError
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Cisco.IOSXR.get_interfaces"
-    implements = [IGetInterfaces]
+    interface = IGetInterfaces
 
     types = {
         "packet over sonet/sdh": "physical",

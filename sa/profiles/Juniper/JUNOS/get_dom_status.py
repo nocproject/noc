@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Juniper.JUNOS.get_dom_status"
-    implements = [IGetDOMStatus]
+    interface = IGetDOMStatus
 
     rx_phy_split = re.compile(r"^Physical interface:\s+", re.MULTILINE)
     rx_phy_name = re.compile(r"^(?P<ifname>\S+)")

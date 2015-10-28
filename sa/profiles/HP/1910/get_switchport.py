@@ -9,13 +9,13 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetSwitchport
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "HP.1910.get_switchport"
-    implements = [IGetSwitchport]
+    interface = IGetSwitchport
 
     rx_iface = re.compile(
         r"^\s*(?P<iface>\S+Ethernet\S+) current state:\s+(?P<status>(UP|DOWN|Administratively DOWN))\s*$",

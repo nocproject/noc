@@ -9,15 +9,15 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces import IGetChassisID
 
 rx_mac = re.compile(r"^System MAC:\s+(?P<mac>\S+)$", re.MULTILINE)
 
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Extreme.XOS.get_chassis_id"
-    implements = [IGetChassisID]
+    interface = IGetChassisID
     cache = True
 
 
