@@ -1,0 +1,20 @@
+---
+- name: "Install PostgreSQL"
+  apt: name="{{item}}" update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
+  with_items:
+    - postgresql
+    - python-psycopg2
+
+- name: Find suitable PostgreSQL cluster
+  shell: /usr/bin/pg_lsclusters -h | grep 5432 | awk '{print $1 " " $2}'
+  register: pgcluster
+
+- name: Using PostgreSQL version
+  set_fact:
+    pg_cluster_version: "{{ pgcluster.stdout.split()[0].strip() }}"
+    pg_cluster_name: "{{ pgcluster.stdout.split()[1].strip() }}"
+
+- name: Set config paths
+  set_fact:
+    postgresql_conf_path: "/etc/postgresql/{{pg_cluster_version}}/{{pg_cluster_name}}/postgresql.conf"
+    postgresql_hba_path: "/etc/postgresql/{{pg_cluster_version}}/{{pg_cluster_name}}/pg_hba.conf"
