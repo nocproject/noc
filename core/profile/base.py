@@ -314,3 +314,17 @@ class BaseProfile(object):
         :param Name: Normalized interface name
         """
         return None
+
+    @classmethod
+    def initialize(cls):
+        """
+        Called once by profile loader
+        """
+        if cls.pattern_syntax_error:
+            cls.rx_pattern_syntax_error = re.compile(cls.pattern_syntax_error)
+        else:
+            cls.rx_pattern_syntax_error = None
+        if cls.pattern_operation_error:
+            cls.rx_pattern_operation_error = re.compile(cls.pattern_operation_error)
+        else:
+            cls.rx_pattern_operation_error = None
