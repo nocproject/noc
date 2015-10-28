@@ -1,4 +1,4 @@
-# mongodb ubuntu
+# mongodb  ubuntu
 ---
 - name: "Add MongoDB apt key"
   apt_key: keyserver=keyserver.ubuntu.com id=7F0CEB10
