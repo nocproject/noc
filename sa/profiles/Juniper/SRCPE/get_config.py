@@ -10,7 +10,7 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 
 class Script(BaseScript):
     name="Juniper.SRCPE.get_config"
-    implements=[IGetConfig]
+    interface = IGetConfig
     def execute(self):
         config=self.cli("show configuration")
         return self.cleaned_config(config)

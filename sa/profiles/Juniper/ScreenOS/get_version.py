@@ -14,7 +14,7 @@ rx=re.compile(r"Product Name:\s+(?P<platform>\S+)$.+Software Version:\s+(?P<vers
 class Script(BaseScript):
     name="Juniper.ScreenOS.get_version"
     cache=True
-    implements=[IGetVersion]
+    interface = IGetVersion
     def execute(self):
         v=self.cli("get system")
         match=rx.search(v)

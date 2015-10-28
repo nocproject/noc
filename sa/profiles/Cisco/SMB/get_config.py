@@ -12,7 +12,7 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 
 class Script(BaseScript):
     name="Cisco.SMB.get_config"
-    implements=[IGetConfig]
+    interface = IGetConfig
     def execute(self):
         config=self.cli("show running-config")
         # config=self.strip_first_lines(config,4)

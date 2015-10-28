@@ -18,7 +18,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 class Script(BaseScript):
     name="Juniper.JUNOSe.get_version"
     cache=True
-    implements=[IGetVersion]
+    interface = IGetVersion
     
     rx_ver=re.compile(r"Juniper\s+(Edge Routing Switch )?(?P<platform>.+?)$.+Version\s+(?P<version>.+?)\s*\[",re.MULTILINE|re.DOTALL)
     def execute(self):
