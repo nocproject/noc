@@ -1,0 +1,8 @@
+#
+# mongod-arbiter configuation
+# Set by ansible
+# Do not edit
+#
+DAEMON_OPTS="--config {{noc_root}}/var/etc/mongo/mongod-arbiter.conf --storageEngine={{noc_mongo_storageengine}} --bind_ip=0.0.0.0"
+chown {{mongo_user}} {{noc_root}}/var/etc/mongo/mongo.key
+chmod 0400 {{noc_root}}/var/etc/mongo/mongo.key
