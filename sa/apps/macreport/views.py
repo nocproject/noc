@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from noc.lib.app.saapplication import SAApplication
 from django import forms
-from noc.sa.interfaces import VLANIDParameter,MACAddressParameter
+from noc.sa.interfaces.base import VLANIDParameter,MACAddressParameter
 from noc.vc.models import VCDomain
 ##
 ##

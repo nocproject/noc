@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from noc.lib.test import ModelTestCase
 from noc.main.models import *
-from noc.sa.interfaces import InterfaceTypeError
+from noc.sa.interfaces.base import InterfaceTypeError
 ##
 ##
 ##

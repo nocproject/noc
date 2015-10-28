@@ -14,7 +14,7 @@ from django.db import models
 from mongoengine.base.common import _document_registry
 ## NOC modules
 from noc.lib.app import ExtApplication, view
-from noc.sa.interfaces import interface_registry
+from noc.sa.interfaces.base import interface_registry
 from noc.lib.stencil import stencil_registry
 from noc import settings
 from noc.main.models.notification import USER_NOTIFICATION_METHOD_CHOICES

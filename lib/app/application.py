@@ -34,7 +34,7 @@ from site import site
 from noc.lib.forms import NOCForm
 from noc import settings
 from noc.lib.serialize import json_encode, json_decode
-from noc.sa.interfaces import DictParameter
+from noc.sa.interfaces.base import DictParameter
 from noc.lib.perf import MetricsHub
 from noc.lib.daemon.base import _daemon
 from noc.lib.fileutils import safe_append

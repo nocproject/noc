@@ -12,7 +12,7 @@ import logging
 from django.template import Template, Context
 # NOC modules
 from base import BaseHandler
-from noc.sa.interfaces import StringParameter
+from noc.sa.interfaces.base import StringParameter
 
 
 class LogHandler(BaseHandler):

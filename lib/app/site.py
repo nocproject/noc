@@ -291,7 +291,7 @@ class Site(object):
 
         from access import PermissionDenied
         from django.forms import Form
-        from noc.sa.interfaces import DictParameter, InterfaceTypeError
+        from noc.sa.interfaces.base import DictParameter, InterfaceTypeError
         return inner
 
     def add_to_menu(self, app, v):

@@ -12,7 +12,7 @@ from django.db.models.fields import CharField, BooleanField, IntegerField,\
 from django.db.models import Q
 from django.db.utils import IntegrityError
 ## NOC modules
-from noc.sa.interfaces import (BooleanParameter, IntParameter,
+from noc.sa.interfaces.base import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
                                StringListParameter,

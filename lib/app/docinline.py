@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.interfaces import (BooleanParameter, IntParameter,
+from noc.sa.interfaces.base import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
                                NoneParameter, InterfaceTypeError,

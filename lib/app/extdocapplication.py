@@ -18,10 +18,11 @@ from mongoengine.fields import (StringField, BooleanField, ListField,
 from extapplication import ExtApplication, view
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
                            PlainReferenceField, Q)
-from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
-                               ModelParameter, ListOfParameter,
-                               EmbeddedDocumentParameter, DictParameter,
-                               InterfaceTypeError, DocumentParameter)
+from noc.sa.interfaces.base import (
+    BooleanParameter, GeoPointParameter,
+    ModelParameter, ListOfParameter,
+    EmbeddedDocumentParameter, DictParameter,
+    InterfaceTypeError, DocumentParameter)
 from noc.lib.validators import is_int, is_uuid
 from noc.lib.serialize import json_decode
 from noc.main.models.collectioncache import CollectionCache

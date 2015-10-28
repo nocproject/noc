@@ -12,7 +12,7 @@ from noc.lib.nosql import (Document, ForeignKeyField, StringField,
 from interfaceprofile import InterfaceProfile
 from coverage import Coverage
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces import MACAddressParameter
+from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
