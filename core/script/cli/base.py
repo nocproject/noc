@@ -49,6 +49,7 @@ class CLI(object):
         return self.iostream_class(s, self)
 
     def execute(self, cmd):
+        self.buffer = ""
         self.command = cmd
         self.ioloop.run_sync(self.submit)
         return self.result

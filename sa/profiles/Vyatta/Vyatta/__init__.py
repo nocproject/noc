@@ -19,7 +19,7 @@ class Profile(BaseProfile):
         (r"^:", " "),
         (r"\[confirm\]", "\n")
     ]
-    command_disable_pager = "terminal length 0"
+    command_disable_pager = "set terminal length 0"
     command_enter_config = "configure"
     command_leave_config = "commit\nexit"
 
