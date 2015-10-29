@@ -96,6 +96,7 @@ class BaseScript(object):
         self.cli_stream = None
         self.snmp = SNMP(self)
         self.http = HTTPClient()
+        self.to_disable_pager = not self.parent and self.profile.command_disable_pager
 
     def clean_input(self, args):
         """
@@ -550,6 +551,16 @@ class BaseScript(object):
             self.cli_stream = get_solution(
                 self.cli_protocols[protocol]
             )(self)
+            # Run session setup
+            if self.profile.setup_session:
+                self.logger.debug("Setup session")
+                self.profile.setup_session(self)
+            # Disable pager when nesessary
+            if self.to_disable_pager:
+                self.logger.debug("Disable paging")
+                self.to_disable_pager = False
+                self.cli(self.profile.command_disable_pager,
+                         ignore_errors=True)
         return self.cli_stream
 
     def has_snmp(self):
