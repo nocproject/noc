@@ -13,8 +13,8 @@ Ext.define("NOC.sa.managedobject.SchemeLookupField", {
     valueField: "id",
     displayField: "label",
     store: [
-        [0, "TELNET"],
-        [1, "SSH"],
-        [2, "HTTP"]
+        [1, "TELNET"],
+        [2, "SSH"],
+        [3, "HTTP"]
     ]
 });
