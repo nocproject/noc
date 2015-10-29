@@ -59,6 +59,14 @@ def load_models():
         get_model(alias)
 
 
+def iter_model_id():
+    """
+    Iterate all model ids
+    """
+    for m in _MODELS:
+        yield m
+
+
 ## Model cache: model_id -> class
 _MCACHE = {}
 
