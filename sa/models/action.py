@@ -132,25 +132,11 @@ class Action(Document):
         if not ac:
             return None
         ctx = Context(self.clean_args(obj, **kwargs))
-        commands = Template(ac.commands).render(ctx)
-        script = "configure" if ac.config_mode else "commands"
-        t = MapTask.create_task(obj, script, {
-            "commands": commands.splitlines()
-        }, timeout=ac.timeout)
-        while True:
-            t = MapTask.objects.get(id=t.id)
-            if t.status == "C":
-                # Success
-                t.delete()
-                result = t.script_result
-                if isinstance(result, list):
-                    result = "\n".join(result)
-                return result
-            elif t.status == "F":
-                # Failure
-                t.delete()
-                return t.script_result
-            time.sleep(1)
+        commands = Template(ac.commands).render(ctx).splitlines()
+        if ac.config_mode:
+            return obj.scripts.configure(commands=commands)
+        else:
+            return obj.scripts.commands(commands=commands)
 
     def clean_args(self, obj, **kwargs):
         args = {}
@@ -224,5 +210,4 @@ class Action(Document):
 
 ##
 from actioncommands import ActionCommands
-from maptask import MapTask
 from noc.ip.models.vrf import VRF
