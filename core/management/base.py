@@ -41,10 +41,14 @@ class BaseCommand(object):
             sys.exit(Command.run_from_argv())
         """
         parser = self.create_parser()
+        self.add_default_arguments(parser)
         self.add_arguments(parser)
         options = parser.parse_args(argv)
         cmd_options = vars(options)
         args = cmd_options.pop("args", ())
+        loglevel = cmd_options.pop("loglevel")
+        if loglevel:
+            self.setup_logging(loglevel)
         try:
             return self.handle(*args, **cmd_options) or 0
         except CommandError, why:
@@ -65,6 +69,35 @@ class BaseCommand(object):
         """
         pass
 
+    def add_default_arguments(self, parser):
+        """
+        Apply default parser arguments
+        """
+        parser.add_argument(
+            "--loglevel",
+            action="store",
+            dest="loglevel",
+            help="Set loglevel",
+            choices=[
+                "critical", "error", "warning", "info", "debug", "none"
+            ],
+            default="info"
+        )
+        parser.add_argument(
+            "--quiet",
+            action="store_const",
+            dest="loglevel",
+            const="none",
+            help="Suppress logging"
+        )
+        parser.add_argument(
+            "--debug",
+            action="store_const",
+            dest="loglevel",
+            const="debug",
+            help="Debugging output"
+        )
+
     def add_arguments(self, parser):
         """
         Apply additional parser arguments
@@ -73,3 +106,20 @@ class BaseCommand(object):
 
     def die(self, msg):
         raise CommandError(msg)
+
+    def setup_logging(self, loglevel):
+        """
+        Set loglevel
+        """
+        import logging
+        logger = logging.getLogger()
+        for l in logger.manager.loggerDict.itervalues():
+            if hasattr(l, "setLevel"):
+                l.setLevel({
+                    "critical": logging.CRITICAL,
+                    "error": logging.ERROR,
+                    "warning": logging.WARNING,
+                    "info": logging.INFO,
+                    "debug": logging.DEBUG,
+                    "none": logging.NOTSET
+                }[loglevel])
