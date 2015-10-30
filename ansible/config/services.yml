@@ -69,6 +69,14 @@ services:
     description: Activator service
     level: pool
 
+  discovery:
+    description: Service and resource discovery
+    level: pool
+
+  scheduler:
+    description: Scheduler and Cron
+    level: global
+
 config:
   noc:
     installation_name:
@@ -119,3 +127,15 @@ config:
       label: Script threads
       type: int
       default: 20
+
+  discovery:
+    max_threads:
+      label: Discovery threads
+      type: int
+      default: 10
+
+  scheduler:
+    max_threads:
+      label: Scheduler threads
+      type: int
+      default: 10
