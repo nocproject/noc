@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Test nodel loader
+## Test model loader
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import unittest
 ## Third-party modules
 from nose2.tools import params
 ## NOC modules
