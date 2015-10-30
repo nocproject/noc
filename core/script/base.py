@@ -97,6 +97,7 @@ class BaseScript(object):
         self.snmp = SNMP(self)
         self.http = HTTPClient()
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
+        self.to_shutdown_session = False
 
     def clean_input(self, args):
         """
@@ -129,6 +130,9 @@ class BaseScript(object):
         # Execute script
         if not cache_hit:
             result = self.execute()
+            if self.to_shutdown_session:
+                self.logger.debug("Shutdown session")
+                self.profile.shutdown_session(self)
         # Clean result
         result = self.clean_output(result)
         self.logger.debug("Result: %s", result)
@@ -555,6 +559,7 @@ class BaseScript(object):
             if self.profile.setup_session:
                 self.logger.debug("Setup session")
                 self.profile.setup_session(self)
+            self.to_shutdown_session = bool(self.profile.shutdown_session)
             # Disable pager when nesessary
             if self.to_disable_pager:
                 self.logger.debug("Disable paging")
