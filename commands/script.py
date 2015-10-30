@@ -51,8 +51,6 @@ class Command(BaseCommand):
 
     def handle(self, config, script, object_name, arguments, pretty,
                *args, **options):
-        # @todo: --quiet and --debug options
-        logging.getLogger().setLevel(logging.DEBUG)
         # Get object
         obj = self.get_object(object_name[0])
         # Build credentials
