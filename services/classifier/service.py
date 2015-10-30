@@ -27,7 +27,6 @@ from noc.fm.models import (EventClassificationRule,
                            EventClass, MIB, EventLog, CloneClassificationRule,
                            ActiveEvent, EventTrigger, Enumeration)
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.fm.correlator.scheduler import CorrelatorScheduler
 import noc.inv.models.interface
 from noc.core.profile.loader import loader as profile_loader
 from noc.sa.models.managedobject import ManagedObject
@@ -45,6 +44,7 @@ from exception import InvalidPatternException, EventProcessingFailed
 from cloningrule import CloningRule
 from rule import Rule
 from noc.lib.solutions import get_event_class_handlers, get_solution
+from noc.core.scheduler.job import Job
 
 ##
 ## Exceptions
@@ -101,7 +101,6 @@ class ClassifierService(Service):
         self.default_link_action = None
         # Lookup solution setup
         self.lookup_cls = None
-        self.correlator_scheduler = CorrelatorScheduler()
         #
         self.ev_queue = tornado.queues.Queue(maxsize=1)
 
@@ -685,9 +684,13 @@ class ClassifierService(Service):
                     event.id = event_id  # Restore event id
                     event.delete()
                     return CR_DELETED
-        # Finally dispose event to further processing by noc-correlator
+        # Finally dispose event to further processing by correlator
         if disposable and rule.to_dispose:
-            self.correlator_scheduler.submit_event(event)
+            Job.submit(
+                "correlator",
+                "noc.services.correlator.jobs.dispose.DisposeJob",
+                key=str(event.id)
+            )
             return CR_DISPOSED
         elif rule.is_unknown:
             return CR_UNKNOWN
