@@ -216,8 +216,7 @@ class Service(object):
         self.log_separator()
         # Read
         self.config = Config(self, **cmd_options)
-        self.config.load(self.config.config)
-        self.setup_logging()
+        self.load_config()
         #
         self.setup_signal_handlers()
         # Starting IOLoop
@@ -249,6 +248,7 @@ class Service(object):
         Reload config
         """
         self.config.load(self.config.config)
+        self.setup_logging()
 
     def stop(self):
         self.logger.warn("Stopping")
