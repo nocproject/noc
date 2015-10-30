@@ -1,3 +1,4 @@
+#!./bin/python
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
 ## noc-correlator daemon
@@ -49,7 +50,9 @@ class CorrelatorService(Service):
             reset_running=True,
             ioloop=self.ioloop
         )
+        self.scheduler.correlator = self
         ActiveAlarm.enable_caching(600)
+        self.scheduler.run()
 
     def load_config(self):
         """
@@ -137,6 +140,7 @@ class CorrelatorService(Service):
         n = 0
         self.alarm_jobs = {}  # class id ->
         for ac in AlarmClass.objects.all():
+            continue  # @todo: Port jobs properly
             jobs = get_alarm_jobs(ac)
             if not jobs:
                 continue

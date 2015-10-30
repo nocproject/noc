@@ -258,6 +258,20 @@ Ext.define("NOC.fm.eventclass.Application", {
                             title: "Suppression",
                             items: [
                                 {
+                                    name: "deduplication_window",
+                                    xtype: "numberfield",
+                                    uiStyle: "small",
+                                    fieldLabel: "Deduplication Window",
+                                    allowBlank: false
+                                },
+                                {
+                                    name: "ttl",
+                                    xtype: "numberfield",
+                                    uiStyle: "small",
+                                    fieldLabel: "Event TTL",
+                                    allowBlank: false
+                                },
+                                {
                                     name: "repeat_suppression",
                                     xtype: "gridfield",
                                     fieldLabel: "Repeat Suppression",

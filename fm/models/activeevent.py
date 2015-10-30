@@ -29,7 +29,11 @@ class ActiveEvent(document.Document):
         "allow_inheritance": False,
         "indexes": [
             "timestamp", "discriminator", "alarms",
-            ("timestamp", "event_class", "managed_object")
+            ("timestamp", "event_class", "managed_object"),
+            {
+                "fields": ["expires"],
+                "expireAfterSeconds": 0
+            }
         ]
     }
     status = "A"
@@ -45,6 +49,7 @@ class ActiveEvent(document.Document):
     log = fields.ListField(fields.EmbeddedDocumentField(EventLog))
     discriminator = fields.StringField(required=False)
     alarms = fields.ListField(nosql.ObjectIdField())
+    expires = fields.DateTimeField(required=False)
 
     def __unicode__(self):
         return u"%s" % self.id

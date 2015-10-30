@@ -606,7 +606,7 @@ class ClassifierService(Service):
                     self.logger.info("Event %s has been marked as not disposable by default interface", event.id)
                 disposable = False
         # Deduplication
-        if self.config.deduplication_window:
+        if event_class.deduplication_window:
             de = self.find_duplicated_event(event, event_class, vars)
             if de:
                 self.logger.debug(
@@ -645,7 +645,8 @@ class ClassifierService(Service):
             raw_vars=event.raw_vars,
             resolved_vars=resolved_vars,
             vars=vars,
-            log=log
+            log=log,
+            expires=event.timestamp + datetime.timedelta(seconds=event_class.ttl)
         )
         a_event.save()
         event.delete()
@@ -701,7 +702,7 @@ class ClassifierService(Service):
         """
         Returns duplicated event if exists
         """
-        t0 = event.timestamp - datetime.timedelta(seconds=self.config.deduplication_window)
+        t0 = event.timestamp - datetime.timedelta(seconds=event_class.deduplication_window)
         q = {
             "managed_object": event.managed_object.id,
             "timestamp__gte": t0,

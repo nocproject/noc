@@ -128,6 +128,7 @@ class ActiveAlarm(nosql.Document):
         # Update event's list of alarms
         if self.id not in e.alarms:
             e.alarms.append(self.id)
+            e.expires = None
             e.save()
 
     def clear_alarm(self, message):
