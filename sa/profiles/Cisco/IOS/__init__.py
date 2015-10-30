@@ -113,15 +113,17 @@ class Profile(BaseProfile):
         Process specific path parameters:
         cluster:id - switch to cluster member
         """
-        cluster_member = None
-        # Parse path parameters
-        for p in script.access_profile.path.split("/"):
-            if p.startswith("cluster:"):
-                cluster_member = p[8:].strip()
-        # Switch to cluster member, if necessary
-        if cluster_member:
-            script.debug("Switching to cluster member '%s'" % cluster_member)
-            script.cli("rc %s" % cluster_member)
+        path = script.credentials.get("path")
+        if path:
+            cluster_member = None
+            # Parse path parameters
+            for p in script.access_profile.path.split("/"):
+                if p.startswith("cluster:"):
+                    cluster_member = p[8:].strip()
+            # Switch to cluster member, if necessary
+            if cluster_member:
+                script.debug("Switching to cluster member '%s'" % cluster_member)
+                script.cli("rc %s" % cluster_member)
 
     INTERFACE_TYPES = {
         "As": "physical",  # Async
