@@ -105,11 +105,6 @@ config:
       type: str
       default: default
 
-    deduplication_window:
-      label: Deduplication window
-      type: int
-      default: 3
-
   syslogcollector:
     listen_syslog:
       label: Listen SYSLOG
