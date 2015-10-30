@@ -74,7 +74,7 @@ class CLI(object):
             self.is_started = True
         # Send command
         # @todo: encode to object's encoding
-        self.send(self.command + self.profile.command_submit)
+        self.send(self.command)
         result = yield self.read_until_prompt()
         self.logger.debug("Command: %s\n%s",
                           self.command.strip(), result)
