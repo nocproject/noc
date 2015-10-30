@@ -7,37 +7,32 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 import sys
 import datetime
-import time
 import logging
 import re
 from collections import defaultdict
-## Django modules
-from django.db import reset_queries
 ## NOC modules
+from noc.core.service.base import Service
+from noc.core.scheduler.scheduler import Scheduler
 from rule import Rule
 from rcacondition import RCACondition
 from trigger import Trigger
-from scheduler import CorrelatorScheduler
 from joblauncher import JobLauncher
-from noc.fm.correlator.jobs.performance_report import PerformanceReportJob
-from noc.lib.daemon import Daemon
 from noc.fm.models import ActiveEvent, EventClass,\
                           ActiveAlarm, AlarmLog, AlarmTrigger, AlarmClass
 from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.main.models import PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.solutions import get_alarm_class_handlers, get_alarm_jobs
 import utils
 
 
-class Correlator(Daemon):
-    daemon_name = "noc-correlator"
+class CorrelatorService(Service):
+    name = "correlator"
 
     def __init__(self):
+        super(CorrelatorService, self).__init__()
         self.version = get_version()
         self.rules = {}  # event_class -> [Rule]
         self.back_rules = {}  # event_class -> [Rule]
@@ -46,35 +41,26 @@ class Correlator(Daemon):
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
         self.alarm_jobs = {}  # alarm_class -> [JobLauncher, ..]
         self.handlers = {}  # alamr class id -> [<handler>]
-        logging.info("Running noc-correlator")
-        self.scheduler = CorrelatorScheduler(self,
-            cleanup=reset_queries)
-        self.scheduler.register_job_class(PerformanceReportJob)
-        try:
-            PerformanceReportJob.submit(self.scheduler,
-                key="report", interval=60)
-        except self.scheduler.JobExists:
-            pass
-        #
-        Daemon.__init__(self)
-        # Tables
-        self.NOC_ACTIVATORS = self.get_activators()  # NOC::Activators prefix table
+        self.scheduler = None
+
+    def on_activate(self):
+        self.scheduler = Scheduler(
+            self.name,
+            reset_running=True,
+            ioloop=self.ioloop
+        )
+        ActiveAlarm.enable_caching(600)
 
     def load_config(self):
         """
         Load rules from database just after loading config
         """
-        super(Correlator, self).load_config()
+        super(CorrelatorService, self).load_config()
         self.load_rules()
         self.load_triggers()
         self.load_rca_rules()
         self.load_alarm_jobs()
         self.load_handlers()
-        max_faults = self.config.getint("main", "max_job_faults")
-        self.scheduler.max_faults = max_faults or None
-        mrt_limit = self.config.getint("main", "mrt_limit")
-        self.scheduler.mrt_limit = mrt_limit or None
-
 
     def load_rules(self):
         """
@@ -421,7 +407,6 @@ class Correlator(Daemon):
         Evaluate expression in given context
         """
         env = {
-            "NOC_ACTIVATORS": self.NOC_ACTIVATORS,
             "re": re,
             "utils": utils
         }
@@ -470,40 +455,5 @@ class Correlator(Daemon):
                 if r.stop_disposition:
                     break
 
-    def get_activators(self):
-        """
-        Get SELF_ADDRESSES instance, or create
-        and populate with activator addresses
-        and local interface addresses
-        """
-        try:
-            return PrefixTable.objects.get(name="NOC::Activators")
-        except PrefixTable.DoesNotExist:
-            pass
-        # Get prefixes
-        prefixes = ["127.0.0.1/32"]
-        # Save prefixes
-        t = PrefixTable(name="NOC::Activators",
-                        description="NOC's activators IP addresses")
-        t.save()
-        for p in prefixes:
-            PrefixTablePrefix(table=t, prefix=p).save()
-        return t
-
-    def reset_stats(self):
-        self.stat_start = time.time()
-        self.stat_count = 0
-        self.stat_success_count = 0
-
-    def update_stats(self, success=False):
-        self.stat_count += 1
-        if success:
-            self.stat_success_count += 1
-
-    def run(self):
-        """
-        Main daemon loop
-        """
-        ActiveAlarm.enable_caching(600)
-        self.reset_stats()
-        self.scheduler.run()
+if __name__ == "__main__":
+    CorrelatorService().start()
