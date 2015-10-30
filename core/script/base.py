@@ -98,6 +98,11 @@ class BaseScript(object):
         self.http = HTTPClient()
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.to_shutdown_session = False
+        self.scripts = ScriptsHub(self)
+
+    def __call__(self, *args, **kwargs):
+        self.args = kwargs
+        return self.run()
 
     def clean_input(self, args):
         """
@@ -579,3 +584,32 @@ class BaseScript(object):
         Check wherher equipment supports SNMP BULK
         """
         return True
+
+
+class ScriptsHub(object):
+    """
+    Object representing Script.scripts structure.
+    Returns initialized child script which can be used ans callable
+    """
+    def __init__(self, script):
+        self._script = script
+
+    def __getattr__(self, item):
+        if item.startswith("_"):
+            return self.__dict__[item]
+        else:
+            from loader import loader as script_loader
+
+            sc = script_loader("name")
+            if sc:
+                parent = self._script
+                return sc(
+                    parent=parent,
+                    service=parent.service,
+                    credentials=parent.credentials,
+                    capabilities=parent.capabilities,
+                    version=parent.version,
+                    timeout=parent.timeout
+                )
+            else:
+                raise AttributeError(item)
