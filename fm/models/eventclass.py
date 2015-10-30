@@ -232,6 +232,12 @@ class EventClass(Document):
         fields.EmbeddedDocumentField(EventDispositionRule))
     repeat_suppression = fields.ListField(
         fields.EmbeddedDocumentField(EventSuppressionRule))
+    # Window to suppress duplicated events (in seconds)
+    # 0 means no deduplication
+    deduplication_window = fields.IntField(default=3)
+    # Time to live in active window, unless not belonging to any alarm
+    # (in seconds)
+    ttl = fields.IntField(default=86400)
     # True if event processing is regulated by
     # Interface Profile.link_events setting
     link_event = fields.BooleanField(default=False)
@@ -290,6 +296,8 @@ class EventClass(Document):
         r += ["    ],"]
         if self.link_event:
             r += ["    \"link_event\": true,"]
+        r += ["    \"deduplication_window\": %d," % self.deduplication_window]
+        r += ["    \"ttl\": %d," % self.ttl]
         # Handlers
         if self.handlers:
             hh = ["        \"%s\"" % h for h in self.handlers]
