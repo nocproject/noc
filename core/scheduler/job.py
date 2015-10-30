@@ -193,3 +193,30 @@ class Job(object):
         Drop job by default
         """
         self.remove_job()
+
+    @classmethod
+    def submit(cls, scheduler, name=None,
+               key=None, data=None, pool=None,
+               ts=None, delta=None):
+        """
+        Submit new job or change schedule for existing one
+        :param scheduler: scheduler name
+        :param name: Job full name
+        :param key: Job key
+        :param data: Job data
+        :param pool: Pool name
+        :param ts: Next run timestamp
+        :param delta: Run after *delta* seconds
+        """
+        from scheduler import Scheduler
+        scheduler = Scheduler(
+            name=scheduler,
+            pool=pool
+        )
+        scheduler.submit(
+            name,
+            key=key,
+            data=data,
+            ts=ts,
+            delta=delta
+        )
