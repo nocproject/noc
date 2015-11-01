@@ -7,8 +7,7 @@
   apt_repository: repo="deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.0 main" state=present update_cache=yes
 
 - name: Disable Transparent Hugepages (bootloader)
-  template: src="Debian/etc/grub.d/50_disable_transparent_hugepages.j2"
-            dest=/etc/grub.d/50_disable_transparent_hugepages
+  lineinfile: "dest=/etc/default/grub state=present backrefs=yes regexp='^GRUB_CMDLINE_LINUX_DEFAULT=\"\"' line='GRUB_CMDLINE_LINUX_DEFAULT=\"transparent_hugepage=never\"'"
   register: dht_status
 
 - name: Disable Transparent Hugepages (runtime)
@@ -17,6 +16,7 @@
             echo never > /sys/kernel/mm/transparent_hugepage/defrag;
          fi
   when: dht_status.changed
+  shell: update-grub
   notify: restart mongod
 
 - name: Set mongod defaults

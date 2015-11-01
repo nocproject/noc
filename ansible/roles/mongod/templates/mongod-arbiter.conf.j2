@@ -1,75 +1,34 @@
 # NOC mongod-arbiter.conf
 
-# Where to store the data.
 
-# Note: if you run mongodb as a non-root user (recommended) you may
-# need to create and set permissions for this directory manually,
-# e.g., if the parent directory isn't mutable by the mongodb user.
-dbpath={{noc_root}}/var/db/mongo-arbiter
+storage:
+  dbPath: {{ noc_root }}/var/db/mongo-arbiter
+  journal:
+    enabled: false
+  engine: {{ noc_mongo_storageengine }}
+     
+systemLog:
+  verbosity: 0
+  destination: file
+  logAppend: true
+  path: {{ mongo_arbiter_log_path }}
 
-#where to log
-logpath={{mongo_arbiter_log_path}}
+net:
+  port: 27018
+  bindIp: 0.0.0.0
 
-logappend=true
+processManagement:
+  fork: {{ mongo_fork }}
+  pidFilePath: {{ mongo_arbiter_pid }}
 
-port = 27018
+security:
+  keyFile: {{ noc_root }}/var/etc/mongo/mongo.key
+  clusterAuthMode: keyFile
+  authorization: enabled
 
-# Listen to local interface only. Comment out to listen on all interfaces.
-# bind_ip = 0.0.0.0
+replication:
+  replSetName: {{ noc_mongo_replicaset }}
 
-# Disables write-ahead journaling
-nojournal = true
+#operationProfiling:
 
-# Enables periodic logging of CPU utilization and I/O wait
-cpu = true
-
-# Turn on/off security.  Off is currently the default
-#noauth = true
-auth = true
-
-# Verbose logging output.
-#verbose = true
-
-# Inspect all client data for validity on receipt (useful for
-# developing drivers)
-#objcheck = true
-
-# Enable db quota management
-#quota = true
-
-# Set oplogging level where n is
-#   0=off (default)
-#   1=W
-#   2=R
-#   3=both
-#   7=W+some reads
-#diaglog = 0
-
-# Ignore query hints
-#nohints = true
-
-# Enable the HTTP interface (Defaults to port 28017).
-#httpinterface = true
-
-# Turns off server-side scripting.  This will result in greatly limited
-# functionality
-#noscripting = true
-
-# Turns off table scans.  Any query that would do a table scan fails.
-#notablescan = true
-
-# Disable data file preallocation.
-noprealloc = true
-
-# Specify .ns file size for new databases.
-# nssize = <size>
-
-# Replication Options
-
-# in replicated mongo databases, specify the replica set name here
-replSet={{noc_mongo_replicaset}}
-# maximum size in megabytes for replication operation log
-#oplogSize=1024
-# path to a key file storing authentication info for connections
-# between replica set members
-keyFile={{noc_root}}/var/etc/mongo/mongo.key
+#sharding:

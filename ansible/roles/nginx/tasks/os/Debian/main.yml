@@ -1,7 +1,13 @@
 ---
-- name: "Install Nginx"
+- name: Add Nginx key Debian
+  apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
+
+- name: Add Debian Nginx repo
+  apt_repository: repo='deb http://nginx.org/packages/debian/ {{ ansible_distribution_release }} nginx' state=present  update_cache=yes
+
+- name: Install Nginx
   apt: name="nginx" update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
 
-- name: Disable default site
-  file: path="/etc/nginx/sites-enabled/default" state=absent
+- name: Remove default.conf site
+  file: path=/etc/nginx/conf.d/default.conf state=absent
   notify: restart nginx
