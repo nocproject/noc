@@ -1,4 +1,4 @@
-# Debian settings
+# CentOS settings
 ---
 # NOC settings
 noc_system_service: noc
@@ -7,20 +7,23 @@ noc_service_pidfile: /var/run/noc.pid
 postgres_system_service: postgresql
 postgres_user: postgres
 postgres_path: /usr/bin/postgres
-# postgresql_conf_path - discovered by playbook
-# postgresql_hba_path - discovered by playbook
+postgresql_conf_path: /var/lib/pgsql/data/postgresql.conf
+postgresql_hba_path: /var/lib/pgsql/data/pg_hba.conf
 # Mongo settings
 mongod_system_service: mongod
 mongod_arbiter_system_service: mongod-arbiter
-mongo_user: mongodb
+mongo_user: mongod
 mongod_path: /usr/bin/mongod
 mongo_path: /usr/bin/mongo
-mongo_db_path: /var/lib/mongodb/
+mongo_db_path: /var/lib/mongo/
 mongo_log_path: /var/log/mongodb/mongod.log
 mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
+mongo_pid: /var/run/mongodb/mongod.pid
+mongo_arbiter_pid: /var/run/mongodb/mongod-arbiter.pid
+mongo_fork: "true"
 # Nginx settings
 nginx_system_service: nginx
-nginx_user: www
-nginx_path: /usr/bin/nginx
-nginx_conf_path: /etc/nginx/sites-enabled/noc.conf
+nginx_user: nginx
+nginx_path: /usr/sbin/nginx
+nginx_conf_path: /etc/nginx/conf.d/noc.conf
 nginx_log_dir: /var/log/nginx

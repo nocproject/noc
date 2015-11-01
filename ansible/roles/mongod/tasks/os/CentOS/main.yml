@@ -4,7 +4,7 @@
   template: src=CentOS/etc/yum.repos.d/mongodb-org-3.0.repo.j2 dest=/etc/yum.repos.d/mongodb-org-3.0.repo
 
 - name: Disable Transparent Hugepages (bootloader)
-  template: src="Debian/etc/grub.d/50_disable_transparent_hugepages.j2"
+  template: src="CentOS/etc/grub.d/50_disable_transparent_hugepages.j2"
             dest=/etc/grub.d/50_disable_transparent_hugepages
   register: dht_status
 
@@ -16,12 +16,12 @@
   when: dht_status.changed
   notify: restart mongod
 
-- name: Set mongod defaults
-  template: src="CentOS/etc/default/mongod.j2" dest="/etc/default/mongod"
-  notify: restart mongod
-
 - name: Install MongoDB
   yum: name="mongodb-org" state=present update_cache=yes
+
+- name: Set mongod defaults
+  template: src="CentOS/etc/sysconfig/mongod.j2" dest="/etc/sysconfig/mongod"
+  notify: restart mongod
 
 - include: "arbiter.yml"
   when: "'svc-mongod-arbiter' in group_names"

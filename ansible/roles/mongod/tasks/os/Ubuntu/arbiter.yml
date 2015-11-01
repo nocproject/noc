@@ -4,9 +4,12 @@
   notify: restart mongod-arbiter
 
 - name: Check mongod-arbiter init file
-  stat: path=/etc/init.d/mongod-arbiter
+  stat: path=/etc/init/mongod-arbiter.conf
   register: s
 
 - name: Create mongod-arbiter init file
-  shell: "sed -e 's/^NAME=mongod/NAME=mongod-arbiter/' -e 's/Provides: \\+mongod/Provides:          mongod-arbiter/' < /etc/init.d/mongod > /etc/init.d/mongod-arbiter && chmod a+x /etc/init.d/mongod-arbiter"
+  shell: "sed -e 's/\\/var\\/lib\\/mongodb/\\/opt\\/noc\\/var\\/db\\/mongo-arbiter/g' -e 's/mongodb\\.pid/mongodb-arbiter\\.pid/g' -e 's/\\/etc\\/default\\/mongod/\\/etc\\/default\\/mongod-arbiter/g' < /etc/init/mongod.conf > /etc/init/mongod-arbiter.conf"
   when: s.stat.isfile is not defined
+
+- name: Create symlink mongod-arbiter init.d file to upstart-job
+  file: src=/lib/init/upstart-job dest=/etc/init.d/mongod-arbiter state=link

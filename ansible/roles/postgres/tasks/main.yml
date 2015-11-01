@@ -5,6 +5,9 @@
 - include: "os/Ubuntu/main.yml"
   when: ansible_distribution == "Ubuntu"
 
+- include: "os/CentOS/main.yml"
+  when: ansible_distribution == "CentOS"
+
 - name: Creating postgres directories
   file: path="{{item}}" state="directory" owner="{{postgres_user}}" mode=0700
   with_items:
