@@ -18,6 +18,8 @@ class CommandError(Exception):
 
 
 class BaseCommand(object):
+    LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
+
     def __init__(self, stdout=sys.stdout, stderr=sys.stderr):
         self.verbose_level = 0
         self.stdout = stdout
@@ -113,6 +115,8 @@ class BaseCommand(object):
         """
         import logging
         logger = logging.getLogger()
+        logging.captureWarnings(True)
+        fmt = logging.Formatter(self.LOG_FORMAT, None)
         for l in logger.manager.loggerDict.itervalues():
             if hasattr(l, "setLevel"):
                 l.setLevel({
@@ -123,3 +127,5 @@ class BaseCommand(object):
                     "debug": logging.DEBUG,
                     "none": logging.NOTSET
                 }[loglevel])
+        for h in logger.handlers:
+            h.setFormatter(fmt)
