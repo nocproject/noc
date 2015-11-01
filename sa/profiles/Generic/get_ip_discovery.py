@@ -10,7 +10,7 @@
 from __future__ import with_statement
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetipdiscovery import IGetIPDiscovery, IGetARP
+from noc.sa.interfaces.igetipdiscovery import IGetIPDiscovery
 
 
 class Script(BaseScript):
@@ -19,7 +19,7 @@ class Script(BaseScript):
     """
     name = "Generic.get_ip_discovery"
     interface = IGetIPDiscovery
-    requires = [("get_arp", IGetARP)]
+    requires = ["get_arp"]
 
     def execute(self):
         # Prepare VRFs

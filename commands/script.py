@@ -69,7 +69,8 @@ class Command(BaseCommand):
             credentials=credentials,
             capabilities=obj.get_caps(),
             version=None,
-            timeout=3600
+            timeout=3600,
+            name=script
         )
         result = scr.run()
         if pretty:

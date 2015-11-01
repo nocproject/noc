@@ -19,6 +19,6 @@ class Script(BaseScript):
 
     def execute(self, oid, community_suffix=None):
         try:
-            return self.snmp.get(oid, community_suffix)
+            return self.snmp.get(oid, community_suffix=community_suffix)
         except self.snmp.TimeOutError:
             return None
