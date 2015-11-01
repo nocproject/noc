@@ -65,6 +65,6 @@ class Script(BaseScript):
     def execute(self):
         caps = {}
         self.check_snmp(caps)
-        if self.scripts.has_script("get_capabilities_ex"):
+        if "get_capabilities_ex" in self.scripts:
             caps = self.scripts.get_capabilities_ex(caps=caps)
         return caps

@@ -619,3 +619,13 @@ class ScriptsHub(object):
                 )
             else:
                 raise AttributeError(item)
+
+    def __contains__(self, item):
+        """
+        Check object has script name
+        """
+        from loader import loader as script_loader
+        if "." not in item:
+            # Normalize to full name
+            item = "%s.%s" % (self._script.profile, item)
+        return script_loader.has_script(item)

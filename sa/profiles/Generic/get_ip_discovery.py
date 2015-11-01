@@ -19,7 +19,6 @@ class Script(BaseScript):
     """
     name = "Generic.get_ip_discovery"
     interface = IGetIPDiscovery
-    requires = []
     requires = [("get_arp", IGetARP)]
 
     def execute(self):
@@ -30,7 +29,7 @@ class Script(BaseScript):
                 "addresses": []
             }
         }
-        if self.scripts.has_script("get_mpls_vpn"):
+        if "get_mpls_vpn" in self.scripts:
             try:
                 r = self.scripts.get_mpls_vpn()
             except self.CLISyntaxError:
@@ -45,7 +44,7 @@ class Script(BaseScript):
                         vrf["rd"] = v["rd"]
                     vrfs[v["name"]] = vrf
         # Get IPv6 neighbors (global?)
-        if self.scripts.has_script("get_ipv6_neighbor"):
+        if "get_ipv6_neighbor" in self.scripts:
             try:
                 r = self.scripts.get_ipv6_neighbor()
             except self.CLISyntaxError:
