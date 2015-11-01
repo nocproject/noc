@@ -37,3 +37,18 @@ class CacheContextManager(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.changed:
             self.script.root.is_cached = False
+
+
+class IgnoredExceptionsContextManager(object):
+    """
+    Silently ignore specific exceptions
+    """
+    def __init__(self, iterable):
+        self.exceptions = set(iterable)
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type and exc_type in self.exceptions:
+            return True  # Suppress exception
