@@ -13,7 +13,7 @@ import re
 class Script(BaseScript):
     name = "Generic.has_vlan"
     interface = IHasVlan
-    requires = [("get_vlans", IGetVlans)]
+    requires = ["get_vlans"]
 
     def execute(self, vlan_id):
         for v in self.scripts.get_vlans():

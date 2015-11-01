@@ -52,7 +52,7 @@ class Script(BaseScript):
         """
         Check basic SNMP support
         """
-        if not self.snmp and self.access_profile.snmp_ro:
+        if not self.credentials.get("snmp_ro"):
             return
         try:
             self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0])

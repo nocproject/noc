@@ -1,22 +1,18 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.isyncvlans import ISyncVlans, IGetVlans, IAddVlan, IRemoveVlan
+from noc.sa.interfaces.isyncvlans import ISyncVlans
 
 
 class Script(BaseScript):
     name = "Generic.sync_vlans"
     interface = ISyncVlans
-    requires = [
-        ("get_vlans", IGetVlans),
-        ("add_vlan", IAddVlan),
-        ("remove_vlan", IRemoveVlan)
-    ]
+    requires = ["get_vlans", "add_vlan", "remove_vlan"]
 
     def execute(self, vlans, tagged_ports):
         v_map = {}

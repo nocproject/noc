@@ -49,7 +49,8 @@ class ActivatorAPI(API):
             credentials=credentials,
             capabilities=capabilities,
             version=version,
-            timeout=timeout
+            timeout=timeout,
+            name=name
         )
         result = script.run()
         return result

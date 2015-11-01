@@ -77,16 +77,18 @@ class BaseScript(object):
 
     def __init__(self, service, credentials,
                  args=None, capabilities=None,
-                 version=None, parent=None, timeout=None):
+                 version=None, parent=None, timeout=None,
+                 name = None):
         self.service = service
         self.pool = self.service.config.pool
         self.parent = parent
+        name = name or self.name
         self.logger = PrefixLoggerAdapter(
             self.base_logger,
             "%s] [%s" % (self.name, credentials.get("address", "-"))
         )
         self.profile = profile_loader.get_profile(
-            ".".join(self.name.split(".")[:2])
+            ".".join(name.split(".")[:2])
         )()
         self.credentials = credentials or {}
         self.version = version or {}
