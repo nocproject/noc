@@ -482,11 +482,10 @@ class BaseScript(object):
         )
 
     def push_prompt_pattern(self, pattern):
-        self.request_cli_provider()
-        self.cli_provider.push_prompt_pattern(pattern)
+        self.get_cli_stream().push_prompt_pattern(pattern)
 
     def pop_prompt_pattern(self):
-        self.cli_provider.pop_prompt_pattern()
+        self.get_cli_stream().pop_prompt_pattern()
 
     def has_oid(self, oid):
         """
