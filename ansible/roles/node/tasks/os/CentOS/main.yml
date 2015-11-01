@@ -4,8 +4,6 @@
    - tcpdump
    - net-tools
    - man
-   - wget
-   - whois
    - mercurial
    - python-virtualenv
    - telnet
