@@ -5,6 +5,9 @@
 - include: "os/CentOS/main.yml"
   when: ansible_distribution == "CentOS"
 
+- include: "os/Ubuntu/main.yml"
+  when: ansible_distribution == "Ubuntu"
+
 - name: Install python packages
   pip: >
     chdir="{{noc_root}}"
