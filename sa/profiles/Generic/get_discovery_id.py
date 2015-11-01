@@ -25,12 +25,12 @@ class Script(BaseScript):
             x_list = (self.CLISyntaxError, self.NotSupportedError,
                       self.UnexpectedResultError)
             # Get Chassis Id
-            if self.scripts.has_script("get_chassis_id"):
+            if "get_chassis_id" in self.scripts:
                 with self.ignored_exceptions(x_list):
                     r = self.scripts.get_chassis_id()
                     data["chassis_mac"] = r
             # Get fqdn
-            if self.scripts.has_script("get_fqdn"):
+            if "get_fqdn" in self.scripts:
                 with self.ignored_exceptions(x_list):
                     r = self.scripts.get_fqdn()
                     data["hostname"] = r
