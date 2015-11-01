@@ -17,7 +17,8 @@ from tornado.httpclient import HTTPClient, HTTPError
 from snmp.base import SNMP
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
-from context import ConfigurationContextManager, CacheContextManager
+from context import (ConfigurationContextManager, CacheContextManager,
+                     IgnoredExceptionsContextManager)
 from noc.core.profile.loader import loader as profile_loader
 from noc.lib.solutions import get_solution
 
@@ -492,10 +493,9 @@ class BaseScript(object):
         Check object responses to oid
         """
         try:
-            n = self.snmp.get(oid)
+            return bool(self.snmp.get(oid))
         except self.snmp.TimeOutError:
-            return
-        return n is not None and n != ""
+            return False
 
     @classmethod
     def get_timeout(cls):
@@ -584,6 +584,12 @@ class BaseScript(object):
         Check wherher equipment supports SNMP BULK
         """
         return True
+
+    def ignored_exceptions(self, iterable):
+        """
+        Context manager to silently ignore specified exceptions
+        """
+        return IgnoredExceptionsContextManager(iterable)
 
 
 class ScriptsHub(object):
