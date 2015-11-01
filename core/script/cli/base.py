@@ -37,6 +37,7 @@ class CLI(object):
         self.command = None
         self.more_patterns = []
         self.more_commands = []
+        self.prompt_stack = []
         self.patterns = self.build_patterns()
         self.buffer = ""
         self.is_started = False
@@ -307,3 +308,25 @@ class CLI(object):
                               )
         self.patterns["prompt"] = re.compile(pattern_prompt,
                                              re.DOTALL | re.MULTILINE)
+
+    def push_prompt_pattern(self, pattern):
+        """
+        Override prompt pattern
+        """
+        self.logger.debug("New prompt pattern: %s", pattern)
+        self.prompt_stack += [
+            self.patterns["prompt"]
+        ]
+        self.patterns["prompt"] = re.compile(
+            pattern, re.DOTALL | re.MULTILINE
+        )
+
+    def pop_prompt_pattern(self):
+        """
+        Restore prompt pattern
+        """
+        self.logger.debug("Restore prompt pattern")
+        pattern = self.prompt_stack.pop(-1)
+        self.patterns["prompt"] = re.compile(
+            pattern, re.DOTALL | re.MULTILINE
+        )
