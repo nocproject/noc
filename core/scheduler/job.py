@@ -158,7 +158,7 @@ class Job(object):
         Return dereferenced key name
         """
         if self.object:
-            return unicode(object)
+            return unicode(self.object)
         else:
             return self.attrs[self.ATTR_KEY]
 
