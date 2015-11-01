@@ -8,7 +8,7 @@
     - python-psycopg2
 
 - name: PostgreSQL init db
-  shell: if [ ! "$(ls -A /var/lib/pgsql/data/)" ]; then postgresql-setup initdb; fi
+  command: postgresql-setup initdb creates=/var/lib/pgsql/data/
 
 - name: Set config paths
   set_fact:
