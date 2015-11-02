@@ -33,9 +33,9 @@ class PeriodicJob(Job):
     def schedule_next(self, status):
         interval = None
         if status in (self.E_SUCCESS, self.E_EXCEPTION):
-            interval = self.interval
+            interval = self.get_interval()
         elif status in (self.E_FAILED, self.E_DEFERRED):
-            interval = self.failed_interval
+            interval = self.get_failed_interval()
         if interval:
             now = datetime.datetime.now()
             # Get amount of full intervals passed
