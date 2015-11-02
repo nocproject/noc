@@ -19,4 +19,7 @@ class Profile(noc.sa.profiles.Profile):
     command_more = " "
     pattern_prompt = r"^[<\[]\S+[>\]]"
     command_exit = "quit"
-    config_volatile = [r"^                "]
+    rogue_chars = [
+        re.compile(r"                "),
+        "\r"
+    ]
