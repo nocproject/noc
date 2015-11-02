@@ -17,7 +17,6 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
-from noc.inv.models.discoveryjob import DiscoveryJob
 from noc.sa.models.maptask import MapTask
 
 

@@ -6,7 +6,5 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Inv hooks
-from noc.inv.models.discoveryjob import DiscoveryJob
 ## PM hooks
 from noc.pm.models.probeconfig import ProbeConfig
