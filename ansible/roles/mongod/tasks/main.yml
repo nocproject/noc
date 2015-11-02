@@ -17,7 +17,6 @@
 - name: Generating mongo key file
   copy: src="{{lookup('mongo_key', tower_data + '/mongo/mongo.key')}}"
         dest="{{noc_root}}/var/etc/mongo/mongo.key"
-  notify: restart mongod
 
 - include: "os/Debian/main.yml"
   when: ansible_distribution == "Debian"

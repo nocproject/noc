@@ -14,6 +14,9 @@
 - include: "os/Ubuntu/main.yml"
   when: ansible_distribution == "Ubuntu"
 
+- include: "os/CentOS/main.yml"
+  when: ansible_distribution == "CentOS"
+
 - name: Create NOC group
   group: name="{{noc_group}}" state=present
 

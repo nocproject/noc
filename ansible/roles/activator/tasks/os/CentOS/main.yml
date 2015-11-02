@@ -1,6 +1,6 @@
 ---
 - name: Install CentOS system packages
-  apt: name={{item}} update_cache=yes
+  yum: name={{item}} update_cache=yes
   sudo: true
   with_items:
     - libssh2

@@ -1,8 +1,5 @@
-#
-# mongod configuation
-# Set by ansible
-# Do not edit
-#
-CONF={{ noc_root }}/var/etc/mongo/mongod.conf
+CONFIGFILE="{{ noc_root }}/var/etc/mongo/mongod.conf"
+OPTIONS=" -f $CONFIGFILE"
+PIDFILEPATH={{ mongo_pid }}
 chown {{ mongo_user }} {{ noc_root }}/var/etc/mongo/mongo.key
 chmod 0400 {{ noc_root }}/var/etc/mongo/mongo.key
