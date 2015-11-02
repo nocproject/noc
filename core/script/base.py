@@ -584,7 +584,7 @@ class BaseScript(object):
         """
         Check wherher equipment supports SNMP BULK
         """
-        return True
+        return "SNMP | Bulk" in self.capabilities
 
     def ignored_exceptions(self, iterable):
         """
