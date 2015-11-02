@@ -14,6 +14,7 @@ import tornado.gen
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
 from noc.core.service.rpc import RPCError
+from noc.sa.models.objectcapabilities import ObjectCapabilities
 
 
 class SAEAPI(API):
@@ -98,8 +99,16 @@ class SAEAPI(API):
         else:
             version = None
         # Build capabilities
-        # @todo: Fetch real capabilities
-        capabilities = {}
+        oc = ObjectCapabilities.objects.filter(object=object_id).first()
+        if oc:
+            capabilities = {}
+            for c in oc.caps:
+                v = c.local_value if c.local_value is not None else c.discovered_value
+                if v is None:
+                    continue
+                capabilities[c.capability.name] = v
+        else:
+            capabilities = {}
         # Pass call to activator
         activator = self.service.get_activator(pool)
         script_name = "%s.%s" % (profile_name, script)

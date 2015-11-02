@@ -37,18 +37,9 @@ class ObjectCapabilities(Document):
     def __unicode__(self):
         return "%s caps" % self.object.name
 
-    @classmethod
-    def on_change_object_caps(cls, sender, document=None, *args, **kwargs):
-        from noc.inv.discovery.scheduler import get_scheduler
-        get_scheduler().on_change_object_caps(document.object)
-
 ##
 from noc.pm.models.probeconfig import ProbeConfig
 mongoengine.signals.post_save.connect(
     ProbeConfig.on_change_object_caps,
-    sender=ObjectCapabilities
-)
-mongoengine.signals.post_save.connect(
-    ObjectCapabilities.on_change_object_caps,
     sender=ObjectCapabilities
 )
