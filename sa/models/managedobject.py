@@ -875,7 +875,6 @@ class ManagedObjectAttribute(models.Model):
 ## Avoid circular references
 from useraccess import UserAccess
 from groupaccess import GroupAccess
-from noc.lib.scheduler.utils import refresh_schedule
 from objectnotification import ObjectNotification
 from selectorcache import SelectorCache
 from objectcapabilities import ObjectCapabilities, CapsItem
