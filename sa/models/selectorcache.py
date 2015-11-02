@@ -9,7 +9,6 @@
 
 ## NOC modules
 from noc.lib.nosql import Document, IntField
-from noc.lib.scheduler.utils import sliding_job
 
 
 class SelectorCache(Document):
