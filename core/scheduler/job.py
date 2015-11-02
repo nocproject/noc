@@ -220,3 +220,12 @@ class Job(object):
             ts=ts,
             delta=delta
         )
+
+    @classmethod
+    def remove(cls, scheduler, name=None, key=None, pool=None):
+        from scheduler import Scheduler
+        scheduler = Scheduler(
+            name=scheduler,
+            pool=pool
+        )
+        scheduler.remove_job(name, key=key)
