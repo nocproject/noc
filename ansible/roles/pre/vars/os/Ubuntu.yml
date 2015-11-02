@@ -18,11 +18,14 @@ mongo_path: /usr/bin/mongo
 mongo_db_path: /var/lib/mongodb/
 mongo_log_path: /var/log/mongodb/mongod.log
 mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
+mongo_pid: /var/run/mongodb.pid
+mongo_arbiter_pid: /var/run/mongodb-arbiter.pid
+mongo_fork: "false"
 # Nginx settings
 nginx_system_service: nginx
-nginx_user: www
-nginx_path: /usr/bin/nginx
-nginx_conf_path: /etc/nginx/sites-enabled/noc.conf
+nginx_user: nginx
+nginx_path: /usr/sbin/nginx
+nginx_conf_path: /etc/nginx/conf.d/noc.conf
 nginx_log_dir: /var/log/nginx
 # APT settings
 apt_cache_valid_time: 3600

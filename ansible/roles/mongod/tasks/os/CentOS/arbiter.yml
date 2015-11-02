@@ -1,6 +1,6 @@
 ---
 - name: Set mongod-arbiter defaults
-  template: src="CentOS/etc/default/mongod-arbiter.j2" dest="/etc/default/mongod-arbiter"
+  template: src="CentOS/etc/sysconfig/mongod-arbiter.j2" dest="/etc/sysconfig/mongod-arbiter"
   notify: restart mongod-arbiter
 
 - name: Check mongod-arbiter init file
@@ -8,5 +8,5 @@
   register: s
 
 - name: Create mongod-arbiter init file
-  shell: "sed -e 's/^NAME=mongod/NAME=mongod-arbiter/' -e 's/Provides: \\+mongod/Provides:          mongod-arbiter/' < /etc/init.d/mongod > /etc/init.d/mongod-arbiter && chmod a+x /etc/init.d/mongod-arbiter"
+  shell: "sed -e 's/sysconfig\\/mongod/sysconfig\\/mongod-arbiter/' < /etc/init.d/mongod > /etc/init.d/mongod-arbiter && chmod a+x /etc/init.d/mongod-arbiter"
   when: s.stat.isfile is not defined
