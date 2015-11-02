@@ -59,6 +59,8 @@ class MTManagerImplementation(object):
         if not response:
             raise Exception("No SAE service found")
         data = json.loads(response.body)
+        if data.get("error"):
+            raise Exception(data["error"])
         return data["result"]
 
 
