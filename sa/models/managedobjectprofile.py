@@ -61,147 +61,64 @@ class ManagedObjectProfile(models.Model):
         max_length=256, blank=True, null=True,
         default=",60"
     )
-    ## Config polling
-    enable_config_discovery  = models.BooleanField(
-        _("Enable config polling"), default=True)
-    config_discovery_min_interval = models.IntegerField(
-        _("Min. config polling interval"), default=600)
-    config_discovery_max_interval = models.IntegerField(
-        _("Max. config polling interval"), default=86400)
-    ## Discovery settings
-    # Version inventory
-    enable_version_inventory = models.BooleanField(
-        _("Enable version inventory"), default=True)
-    version_inventory_min_interval = models.IntegerField(
-        _("Min. version inventory interval"), default=600)
-    version_inventory_max_interval = models.IntegerField(
-        _("Max. version inventory interval"), default=86400)
-    # Caps discovery
-    enable_caps_discovery = models.BooleanField(
-        _("Enable caps discovery"), default=True)
-    caps_discovery_min_interval = models.IntegerField(
-        _("Min. caps discovery interval"), default=600)
-    caps_discovery_max_interval = models.IntegerField(
-        _("Max. caps discovery interval"), default=86400)
-    # Uptime discovery
-    enable_uptime_discovery = models.BooleanField(
-        _("Enable uptime discovery"), default=True)
-    uptime_discovery_min_interval = models.IntegerField(
-        _("Min. uptime discovery interval"), default=60)
-    uptime_discovery_max_interval = models.IntegerField(
-        _("Max. uptime discovery interval"), default=300)
-    # Interface discovery
-    enable_interface_discovery = models.BooleanField(
-        _("Enable interface discovery"), default=True)
-    interface_discovery_min_interval = models.IntegerField(
-        _("Min. interface discovery interval"), default=600)
-    interface_discovery_max_interval = models.IntegerField(
-        _("Max. interface discovery interval"), default=86400)
-    # Interface status discovery
-    enable_interface_status_discovery = models.BooleanField(
-        _("Enable interface status_discovery"), default=True)
-    interface_status_discovery_min_interval = models.IntegerField(
-        _("Min. interface status discovery interval"), default=60)
-    interface_status_discovery_max_interval = models.IntegerField(
-        _("Max. interface status discovery interval"), default=600)
-    # IP discovery
-    enable_ip_discovery = models.BooleanField(
-        _("Enable IP discovery"), default=True)
-    ip_discovery_min_interval = models.IntegerField(
-        _("Min. IP discovery interval"), default=600)
-    ip_discovery_max_interval = models.IntegerField(
-        _("Max. IP discovery interval"), default=86400)
-    # Prefix discovery
-    enable_prefix_discovery = models.BooleanField(
-        _("Enable prefix discovery"), default=True)
-    prefix_discovery_min_interval = models.IntegerField(
-        _("Min. prefix discovery interval"), default=600)
-    prefix_discovery_max_interval = models.IntegerField(
-        _("Max. prefix discovery interval"), default=86400)
-    # VLAN discovery
-    enable_vlan_discovery = models.BooleanField(
-        _("Enable VLAN discovery"), default=False)
-    vlan_discovery_min_interval = models.IntegerField(
-        _("Min. VLAN discovery interval"), default=600)
-    vlan_discovery_max_interval = models.IntegerField(
-        _("Max. VLAN discovery interval"), default=86400)
-    # MAC discovery
-    enable_mac_discovery = models.BooleanField(
-            _("Enable MAC discovery"), default=True)
-    mac_discovery_min_interval = models.IntegerField(
-        _("Min. MAC discovery interval"), default=600)
-    mac_discovery_max_interval = models.IntegerField(
-        _("Max. MAC discovery interval"), default=86400)
-    # ID Discovery
-    enable_id_discovery = models.BooleanField(
-            _("Enable ID discovery"), default=True)
-    id_discovery_min_interval = models.IntegerField(
-        _("Min. ID discovery interval"), default=600)
-    id_discovery_max_interval = models.IntegerField(
-        _("Max. ID discovery interval"), default=86400)
-    # LLDP Topology discovery
-    enable_lldp_discovery = models.BooleanField(
-            _("Enable LLDP discovery"), default=True)
-    lldp_discovery_min_interval = models.IntegerField(
-        _("Min. LLDP discovery interval"), default=600)
-    lldp_discovery_max_interval = models.IntegerField(
-        _("Max. LLDP discovery interval"), default=86400)
-    # CDP Topology discovery
-    enable_cdp_discovery = models.BooleanField(
-            _("Enable CDP discovery"), default=True)
-    cdp_discovery_min_interval = models.IntegerField(
-        _("Min. CDP discovery interval"), default=600)
-    cdp_discovery_max_interval = models.IntegerField(
-        _("Max. CDP discovery interval"), default=86400)
-    # FDP Topology discovery
-    enable_fdp_discovery = models.BooleanField(
-            _("Enable FDP discovery"), default=True)
-    fdp_discovery_min_interval = models.IntegerField(
-        _("Min. FDP discovery interval"), default=600)
-    fdp_discovery_max_interval = models.IntegerField(
-        _("Max. FDP discovery interval"), default=86400)
-    # STP Topology discovery
-    enable_stp_discovery = models.BooleanField(
-            _("Enable STP discovery"), default=True)
-    stp_discovery_min_interval = models.IntegerField(
-        _("Min. STP discovery interval"), default=600)
-    stp_discovery_max_interval = models.IntegerField(
-        _("Max. STP discovery interval"), default=86400)
-    # REP Topology discovery
-    enable_rep_discovery = models.BooleanField(
-            _("Enable REP discovery"), default=True)
-    rep_discovery_min_interval = models.IntegerField(
-        _("Min. REP discovery interval"), default=600)
-    rep_discovery_max_interval = models.IntegerField(
-        _("Max. REP discovery interval"), default=86400)
-    # BFD Topology discovery
-    enable_bfd_discovery = models.BooleanField(
-            _("Enable BFD discovery"), default=True)
-    bfd_discovery_min_interval = models.IntegerField(
-        _("Min. BFD discovery interval"), default=600)
-    bfd_discovery_max_interval = models.IntegerField(
-        _("Max. BFD discovery interval"), default=86400)
-    # UDLD Topology discovery
-    enable_udld_discovery = models.BooleanField(
-            _("Enable UDLD discovery"), default=True)
-    udld_discovery_min_interval = models.IntegerField(
-        _("Min. UDLD discovery interval"), default=600)
-    udld_discovery_max_interval = models.IntegerField(
-        _("Max. UDLD discovery interval"), default=86400)
-    # OAM Topology discovery
-    enable_oam_discovery = models.BooleanField(
-            _("Enable OAM discovery"), default=True)
-    oam_discovery_min_interval = models.IntegerField(
-        _("Min. OAM discovery interval"), default=600)
-    oam_discovery_max_interval = models.IntegerField(
-        _("Max. OAM discovery interval"), default=86400)
-    # Asset discovery
-    enable_asset_discovery = models.BooleanField(
-            _("Enable asset discovery"), default=True)
-    asset_discovery_min_interval = models.IntegerField(
-        _("Min. asset discovery interval"), default=600)
-    asset_discovery_max_interval = models.IntegerField(
-        _("Max. asset discovery interval"), default=86400)
+    # Enable box discovery.
+    # Box discovery launched on system changes
+    enable_box_discovery = models.BooleanField(default=True)
+    # Interval of periodic discovery when no changes registered
+    box_discovery_interval = models.IntegerField(default=86400)
+    # Retry interval in case of failure (Object is down)
+    box_discovery_failed_interval = models.IntegerField(default=10800)
+    # Start box discovery when system start registered
+    box_discovery_on_system_start = models.BooleanField(default=False)
+    # after delay
+    box_discovery_system_start_delay = models.IntegerField(default=300)
+    # Start box discovery when config change registered
+    box_discovery_on_config_changed = models.BooleanField(default=False)
+    # After delay
+    box_discovery_config_changed_delay = models.IntegerField(default=300)
+    # Collect version info
+    enable_box_discovery_version = models.BooleanField(default=False)
+    # Collect capabilities
+    enable_box_discovery_caps = models.BooleanField(default=False)
+    # Collect interface settings
+    enable_box_discovery_interface = models.BooleanField(default=False)
+    # Extract interface prefixes and synchronize with ipam
+    enable_box_discovery_prefix = models.BooleanField(default=False)
+    # Collect chassis ID information
+    enable_box_discovery_id = models.BooleanField(default=False)
+    # Collect config
+    enable_box_discovery_config = models.BooleanField(default=False)
+    # Collect hardware configuration
+    enable_box_discovery_asset = models.BooleanField(default=False)
+    # Collect static vlans
+    enable_box_discovery_vlan = models.BooleanField(default=False)
+    # L2 topology using BFD
+    enable_box_discovery_bfd = models.BooleanField(default=False)
+    # L2 topology using CDP
+    enable_box_discovery_cdp = models.BooleanField(default=False)
+    # L2 topology using FDP
+    enable_box_discovery_fdp = models.BooleanField(default=False)
+    # L2 topology using LLDP
+    enable_box_discovery_lldp = models.BooleanField(default=False)
+    # L2 topology using OAM
+    enable_box_discovery_oam = models.BooleanField(default=False)
+    # L2 topology using REP
+    enable_box_discovery_rep = models.BooleanField(default=False)
+    # L2 topology using STP
+    enable_box_discovery_stp = models.BooleanField(default=False)
+    # L2 topology using UDLD
+    enable_box_discovery_udld = models.BooleanField(default=False)
+    # Enable periodic discovery.
+    # Periodic discovery launched repeatedly
+    enable_periodic_discovery = models.BooleanField(default=True)
+    # Periodic discovery repeat interval
+    periodic_discovery_interval = models.IntegerField(default=300)
+    # Collect uptime
+    enable_periodic_discovery_uptime = models.BooleanField(default=False)
+    # Collect interface status
+    enable_periodic_discovery_interface_status = models.BooleanField(default=False)
+    # Collect mac address table
+    enable_periodic_discovery_mac = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name

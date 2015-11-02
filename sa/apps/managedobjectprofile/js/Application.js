@@ -20,7 +20,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     metricModelId: "sa.ManagedObjectProfile",
     validationModelId: "sa.ManagedObjectProfile",
 
-    initComponent: function() {
+    initComponent: function () {
         var me = this;
 
         me.ITEM_VALIDATION_SETTINGS = me.registerItem(
@@ -56,120 +56,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     renderer: NOC.render.Bool
                 },
                 {
-                    text: "Config",
-                    dataIndex: "enable_config_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "Version",
-                    dataIndex: "enable_version_inventory",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "Caps",
-                    dataIndex: "enable_caps_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "Uptime",
-                    dataIndex: "enable_uptime_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "Int.",
-                    dataIndex: "enable_interface_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "Int.S",
-                    dataIndex: "enable_interface_status_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "Asset",
-                    dataIndex: "enable_asset_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "IP",
-                    dataIndex: "enable_ip_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "Prefix",
-                    dataIndex: "enable_prefix_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "VLAN",
-                    dataIndex: "enable_vlan_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "MAC",
-                    dataIndex: "enable_mac_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "ID",
-                    dataIndex: "enable_id_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "LLDP",
-                    dataIndex: "enable_lldp_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "CDP",
-                    dataIndex: "enable_cdp_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "STP",
-                    dataIndex: "enable_stp_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "REP",
-                    dataIndex: "enable_rep_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "BFD",
-                    dataIndex: "enable_bfd_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "UDLD",
-                    dataIndex: "enable_udld_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "OAM",
-                    dataIndex: "enable_oam_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
                     text: "IPAM",
                     dataIndex: "sync_ipam",
                     width: 50,
@@ -191,487 +77,320 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     allowBlank: false
                 },
                 {
-                    name: "description",
-                    xtype: "textarea",
-                    fieldLabel: "Description",
-                    allowBlank: true
-                },
-                {
-                    name: "level",
-                    xtype: "numberfield",
-                    fieldLabel: "Level",
-                    allowBlank: false,
-                    uiStyle: "small"
-                },
-                {
-                    name: "style",
-                    xtype: "main.style.LookupField",
-                    fieldLabel: "Style",
-                    allowBlank: true
-                },
-                {
-                    name: "shape",
-                    xtype: "main.ref.stencil.LookupField",
-                    fieldLabel: "Shape",
-                    allowBlank: true
-                },
-                {
-                    name: "name_template",
-                    xtype: "textfield",
-                    fieldLabel: "Name template",
-                    allowBlank: true
-                },
-                {
-                    name: "sync_ipam",
-                    xtype: "checkboxfield",
-                    boxLabel: "Enable IPAM synchronization",
-                    allowBlank: false
-                },
-                {
-                    name: "fqdn_template",
-                    xtype: "textarea",
-                    fieldLabel: "FQDN template",
-                    allowBlank: true
-                },
-                {
-                    xtype: "fieldcontainer",
-                    fieldLabel: "Ping Check",
-                    layout: "hbox",
-                    items: [
-                        {
-                            name: "enable_ping",
-                            xtype: "checkboxfield",
-                            fieldLabel: "Enable",
-                            allowBlank: false
-                        },
-                        {
-                            name: "ping_interval",
-                            xtype: "numberfield",
-                            fieldLabel: "Interval"
-                        }
-                    ]
-                },
-                {
-                    name: "down_severity",
-                    xtype: "numberfield",
-                    fieldLabel: "Down severity",
-                    allowBlank: false
-                },
-                {
-                    name: "check_link_interval",
-                    xtype: "multiintervalfield",
-                    fieldLabel: "check_link interval",
-                    allowBlank: true
-                },
-                {
-                    xtype: "fieldcontainer",
-                    fieldLabel: "Discovery",
-                    layout: {
-                        type: "table",
-                        columns: 4
+                    xtype: "tabpanel",
+                    layout: "fit",
+                    autoScroll: true,
+                    anchor: "-0, -50",
+                    defaults: {
+                        autoScroll: true,
+                        layout: "anchor"
                     },
                     items: [
-                        // Header
                         {
-                            xtype: "label"
-                        },
-                        {
-                            xtype: "label",
-                            text: "Enabled"
-                        },
-                        {
-                            xtype: "label",
-                            text: "Min. interval"
-                        },
-                        {
-                            xtype: "label",
-                            text: "Max. interval"
-                        },
-                        // Config
-                        {
-                            xtype: "label",
-                            text: "Config"
-                        },
-                        {
-                            name: "enable_config_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "config_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "config_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // Version inventory
-                        {
-                            xtype: "label",
-                            text: "Version inventory"
-                        },
-                        {
-                            name: "enable_version_inventory",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "version_inventory_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "version_inventory_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // Caps discovery
-                        {
-                            xtype: "label",
-                            text: "Caps Discovery"
-                        },
-                        {
-                            name: "enable_caps_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "caps_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "caps_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // Uptime discovery
-                        {
-                            xtype: "label",
-                            text: "Uptime Discovery"
-                        },
-                        {
-                            name: "enable_uptime_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "uptime_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "uptime_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // Interface discovery
-                        {
-                            xtype: "label",
-                            text: "Interface discovery"
-                        },
-                        {
-                            name: "enable_interface_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "interface_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "interface_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // Interface status discovery
-                        {
-                            xtype: "label",
-                            text: "Interface Status Discovery"
-                        },
-                        {
-                            name: "enable_interface_status_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "interface_status_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "interface_status_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // Asset discovery
-                        {
-                            xtype: "label",
-                            text: "Asset discovery"
-                        },
-                        {
-                            name: "enable_asset_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "asset_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "asset_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // IP discovery
-                        {
-                            xtype: "label",
-                            text: "IP discovery"
-                        },
-                        {
-                            name: "enable_ip_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "ip_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "ip_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // Prefix discovery
-                        {
-                            xtype: "label",
-                            text: "Prefix discovery"
-                        },
-                        {
-                            name: "enable_prefix_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "prefix_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "prefix_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // VLAN discovery
-                        {
-                            xtype: "label",
-                            text: "VLAN discovery"
-                        },
-                        {
-                            name: "enable_vlan_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "vlan_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "vlan_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // MAC discovery
-                        {
-                            xtype: "label",
-                            text: "MAC discovery"
-                        },
-                        {
-                            name: "enable_mac_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "mac_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "mac_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // ID
-                        {
-                            xtype: "label",
-                            text: "ID discovery"
-                        },
-                        {
-                            name: "enable_id_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "id_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "id_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // LLDP
-                        {
-                            xtype: "label",
-                            text: "LLDP discovery"
-                        },
-                        {
-                            name: "enable_lldp_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "lldp_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "lldp_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // CDP
-                        {
-                            xtype: "label",
-                            text: "CDP discovery"
-                        },
-                        {
-                            name: "enable_cdp_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "cdp_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "cdp_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // STP
-                        {
-                            xtype: "label",
-                            text: "STP discovery"
-                        },
-                        {
-                            name: "enable_stp_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "stp_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "stp_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // REP
-                        {
-                            xtype: "label",
-                            text: "REP discovery"
-                        },
-                        {
-                            name: "enable_rep_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "rep_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "rep_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // BFD
-                        {
-                            xtype: "label",
-                            text: "BFD discovery"
-                        },
-                        {
-                            name: "enable_bfd_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "bfd_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "bfd_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // UDLD
-                        {
-                            xtype: "label",
-                            text: "UDLD discovery"
-                        },
-                        {
-                            name: "enable_udld_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "udld_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "udld_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        // UDLD
-                        {
-                            xtype: "label",
-                            text: "OAM discovery"
-                        },
-                        {
-                            name: "enable_oam_discovery",
-                            xtype: "checkboxfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "oam_discovery_min_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
-                        },
-                        {
-                            name: "oam_discovery_max_interval",
-                            xtype: "numberfield",
-                            allowBlank: false
+                            title: "Common",
+                            items: [
+                                {
+                                    name: "description",
+                                    xtype: "textarea",
+                                    fieldLabel: "Description",
+                                    allowBlank: true,
+                                    uiStyle: "extra"
+                                },
+                                {
+                                    name: "level",
+                                    xtype: "numberfield",
+                                    fieldLabel: "Level",
+                                    allowBlank: false,
+                                    uiStyle: "small"
+                                },
+                                {
+                                    name: "style",
+                                    xtype: "main.style.LookupField",
+                                    fieldLabel: "Style",
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "shape",
+                                    xtype: "main.ref.stencil.LookupField",
+                                    fieldLabel: "Shape",
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "name_template",
+                                    xtype: "textfield",
+                                    fieldLabel: "Name template",
+                                    allowBlank: true,
+                                    uiStyle: "large"
+                                }
+                            ]
+                        },
+                        {
+                            title: "IPAM",
+                            items: [
+                                {
+                                    name: "sync_ipam",
+                                    xtype: "checkboxfield",
+                                    boxLabel: "Enable IPAM synchronization",
+                                    allowBlank: false
+                                },
+                                {
+                                    name: "fqdn_template",
+                                    xtype: "textarea",
+                                    fieldLabel: "FQDN template",
+                                    allowBlank: true,
+                                    uiStyle: "extra"
+                                }
+                            ]
+                        },
+                        {
+                            title: "Ping Check",
+                            items: [
+                                {
+                                    name: "enable_ping",
+                                    xtype: "checkboxfield",
+                                    boxLabel: "Enable",
+                                    allowBlank: false
+                                },
+                                {
+                                    name: "ping_interval",
+                                    xtype: "numberfield",
+                                    fieldLabel: "Interval",
+                                    uiStyle: "small"
+                                }
+                            ]
+                        },
+                        {
+                            title: "FM",
+                            items: [
+                                {
+                                    name: "down_severity",
+                                    xtype: "numberfield",
+                                    fieldLabel: "Down severity",
+                                    allowBlank: false,
+                                    uiStyle: "small"
+                                },
+                                {
+                                    name: "check_link_interval",
+                                    xtype: "multiintervalfield",
+                                    fieldLabel: "check_link interval",
+                                    allowBlank: true
+                                }
+                            ]
+                        },
+                        {
+                            title: "Box discovery",
+                            items: [
+                                {
+                                    name: "enable_box_discovery",
+                                    xtype: "checkbox",
+                                    boxLabel: "Enable"
+                                },
+                                {
+                                    xtype: "container",
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: "0 8 0 0"
+                                    },
+                                    items: [
+                                        {
+                                            name: "box_discovery_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: "Interval",
+                                            allowBlank: false,
+                                            uiStyle: "small",
+                                        },
+                                        {
+                                            name: "box_discovery_failed_interval",
+                                            xtype: "numberfield",
+                                            fieldLabel: "Failed Interval",
+                                            allowBlank: false,
+                                            uiStyle: "small"
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "container",
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: "4 8 0 0"
+                                    },
+                                    items: [
+                                        {
+                                            name: "box_discovery_on_system_start",
+                                            xtype: "checkbox",
+                                            boxLabel: "Check on system start after "
+                                        },
+                                        {
+                                            name: "box_discovery_system_start_delay",
+                                            xtype: "numberfield",
+                                            allowBlank: false,
+                                            uiStyle: "small"
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "container",
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: "4 8 0 0"
+                                    },
+                                    items: [
+                                        {
+                                            name: "box_discovery_on_config_changed",
+                                            xtype: "checkbox",
+                                            boxLabel: "Check on config change after "
+                                        },
+                                        {
+                                            name: "box_discovery_config_changed_delay",
+                                            xtype: "numberfield",
+                                            allowBlank: false,
+                                            uiStyle: "small"
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "container",
+                                    layout: {
+                                        type: "table",
+                                        columns: 4
+                                    },
+                                    defaults: {
+                                        padding: "4 8 0 0"
+                                    },
+                                    items: [
+                                        {
+                                            name: "enable_box_discovery_version",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "Version"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_caps",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "Caps"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_interface",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "Interface"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_prefix",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "Prefix"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_id",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "ID"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_config",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "Config"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_asset",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "Asset"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_vlan",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "VLAN"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_bfd",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "BFD"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_cdp",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "CDP"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_fdp",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "FDP"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_lldp",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "LLDP"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_oam",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "OAM"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_rep",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "REP"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_stp",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "STP"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_udld",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "UDLD"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            title: "Periodic discovery",
+                            items: [
+                                {
+                                    name: "enable_periodic_discovery",
+                                    xtype: "checkbox",
+                                    boxLabel: "Enable"
+                                },
+                                {
+                                    name: "periodic_discovery_interval",
+                                    xtype: "numberfield",
+                                    fieldLabel: "Interval",
+                                    allowBlank: false,
+                                    uiStyle: "small"
+                                },
+                                {
+                                    xtype: "container",
+                                    layout: {
+                                        type: "table",
+                                        columns: 4
+                                    },
+                                    defaults: {
+                                        padding: "4 8 0 0"
+                                    },
+                                    items: [
+                                        {
+                                            name: "enable_periodic_discovery_uptime",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "Uptime"
+                                        },
+                                        {
+                                            name: "enable_periodic_discovery_interface_status",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "Interface status"
+                                        },
+                                        {
+                                            name: "enable_periodic_discovery_mac",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "MAC"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
+                    ],
+                    formToolbar: [
+                        me.validationSettingsButton
                     ]
                 }
-            ],
-            formToolbar: [
-                me.validationSettingsButton
             ]
         });
         me.callParent();

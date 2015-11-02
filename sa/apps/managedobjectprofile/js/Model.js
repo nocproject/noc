@@ -79,284 +79,144 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
-            name: "config_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "config_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_version_inventory",
+            name: "enable_box_discovery",
             type: "boolean",
+            defautlValue: true
+        },
+        {
+            name: "box_discovery_interval",
+            type: "integer",
+            defautlValue: 86400
+        },
+        {
+            name: "box_discovery_failed_interval",
+            type: "integer",
+            defautlValue: 10800
+        },
+        {
+            name: "box_discovery_on_system_start",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "version_inventory_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "version_inventory_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_caps_discovery",
-            type: "boolean",
-            defaultValue: false
-        },
-        {
-            name: "caps_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "caps_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_uptime_discovery",
-            type: "boolean",
-            defaultValue: false
-        },
-        {
-            name: "uptime_discovery_min_interval",
-            type: "int",
-            defaultValue: 60
-        },
-        {
-            name: "uptime_discovery_max_interval",
-            type: "int",
+            name: "box_discovery_system_start_delay",
+            xtype: "integer",
             defaultValue: 300
         },
         {
-            name: "enable_interface_discovery",
-            type: "boolean",
+            name: "box_discovery_on_config_changed",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "interface_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
+            name: "box_discovery_config_changed_delay",
+            xtype: "integer",
+            defaultValue: 300
         },
         {
-            name: "interface_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_interface_status_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_version",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "interface_status_discovery_min_interval",
-            type: "int",
-            defaultValue: 60
-        },
-        {
-            name: "interface_status_discovery_max_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "enable_ip_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_caps",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "ip_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "ip_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_prefix_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_interface",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "prefix_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "prefix_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_vlan_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_prefix",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "vlan_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "vlan_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_mac_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_id",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "mac_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "mac_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_id_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_config",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "id_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "id_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_lldp_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_asset",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "lldp_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "lldp_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_cdp_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_vlan",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "cdp_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "cdp_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_stp_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_bfd",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "stp_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "stp_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_rep_discovery",
-            type: "boolean",
-            defaultValue: true
-        },
-        {
-            name: "rep_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "rep_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_bfd_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_cdp",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "bfd_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "bfd_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_udld_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_fdp",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "udld_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "udld_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_oam_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_lldp",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "oam_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
-        },
-        {
-            name: "oam_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
-        },
-        {
-            name: "enable_asset_discovery",
-            type: "boolean",
+            name: "enable_box_discovery_oam",
+            xtype: "boolean",
             defaultValue: false
         },
         {
-            name: "asset_discovery_min_interval",
-            type: "int",
-            defaultValue: 600
+            name: "enable_box_discovery_rep",
+            xtype: "boolean",
+            defaultValue: false
         },
         {
-            name: "asset_discovery_max_interval",
-            type: "int",
-            defaultValue: 86400
+            name: "enable_box_discovery_stp",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_udld",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_periodic_discovery",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "periodic_discovery_interval",
+            xtype: "integer",
+            defaultValue: 300
+        },
+        {
+            name: "enable_periodic_discovery_uptime",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_periodic_discovery_interface_status",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_periodic_discovery_mac",
+            xtype: "boolean",
+            defaultValue: false
         },
         {
             name: "row_class",
@@ -369,4 +229,5 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             persist: false
         }
     ]
-});
+})
+;
