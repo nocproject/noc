@@ -97,6 +97,7 @@ class SNMP(object):
                 self.result = yield snmp_count(
                     address=self.script.credentials["address"],
                     oid=oid,
+                    community=str(self.script.credentials["snmp_ro"]),
                     bulk=self.script.has_snmp_bulk,
                     filter=filter,
                     ioloop=self.get_ioloop()
@@ -111,14 +112,16 @@ class SNMP(object):
         return self.result
 
     def getnext(self, oid, community_suffix=None,
-                filter=None, cached=False, only_first=False):
+                filter=None, cached=False,
+                only_first=False, bulk=None):
         @tornado.gen.coroutine
         def run():
             try:
                 self.result = yield snmp_getnext(
                     address=self.script.credentials["address"],
                     oid=oid,
-                    bulk=self.script.has_snmp_bulk,
+                    community=str(self.script.credentials["snmp_ro"]),
+                    bulk=self.script.has_snmp_bulk if bulk is None else bulk,
                     filter=filter,
                     only_first=only_first,
                     ioloop=self.get_ioloop()
