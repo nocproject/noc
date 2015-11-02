@@ -1,0 +1,16 @@
+---
+- name: "Install PostgreSQL"
+  yum: name="{{item}}" state=present update_cache=yes
+  with_items:
+    - postgresql-server
+    - postgresql-contrib
+    - postgresql-plpython
+    - python-psycopg2
+
+- name: PostgreSQL init db
+  command: postgresql-setup initdb creates=/var/lib/pgsql/data/
+
+- name: Set config paths
+  set_fact:
+    postgresql_conf_path: "/var/lib/pgsql/data/postgresql.conf"
+    postgresql_hba_path: "/var/lib/pgsql/data/pg_hba.conf"

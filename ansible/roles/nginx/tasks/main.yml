@@ -3,6 +3,12 @@
 - include: "os/Debian/main.yml"
   when: ansible_distribution == "Debian"
 
+- include: "os/Ubuntu/main.yml"
+  when: ansible_distribution == "Ubuntu"
+
+- include: "os/CentOS/main.yml"
+  when: ansible_distribution == "CentOS"
+
 - name: Setup nginx
   template: src="etc/nginx/conf.d/noc.conf.j2" dest="{{ nginx_conf_path }}"
   notify: restart nginx
