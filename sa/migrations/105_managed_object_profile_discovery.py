@@ -13,11 +13,9 @@ from south.db import db
 class Migration:
     RENAME_COLUMNS = [
         # Box
-        ("enable_box_discovery", "enable_version_inventory"),
         ("enable_box_discovery_version", "enable_version_inventory"),
         ("enable_box_discovery_caps", "enable_caps_discovery"),
-        (
-        "enable_box_discovery_interface", "enable_interface_discovery"),
+        ("enable_box_discovery_interface", "enable_interface_discovery"),
         ("enable_box_discovery_id", "enable_id_discovery"),
         ("enable_box_discovery_config", "enable_config_discovery"),
         ("enable_box_discovery_asset", "enable_asset_discovery"),
@@ -56,8 +54,6 @@ class Migration:
         "interface_status_discovery_max_interval",
         "ip_discovery_min_interval",
         "ip_discovery_max_interval",
-        "prefix_discovery_min_interval",
-        "prefix_discovery_min_interval",
         "vlan_discovery_min_interval",
         "vlan_discovery_max_interval",
         "mac_discovery_min_interval",
@@ -87,8 +83,13 @@ class Migration:
     def forwards(self):
         # Rename columns
         for o, n in self.RENAME_COLUMNS:
-            db.rename_column("sa_managedobjectprofile", o, n)
+            db.rename_column("sa_managedobjectprofile", n, o)
         # Create new columns
+        db.add_column(
+            "sa_managedobjectprofile",
+            "enable_box_discovery",
+            models.BooleanField(default=False)
+        )
         db.add_column(
             "sa_managedobjectprofile",
             "box_discovery_interval",
@@ -98,11 +99,6 @@ class Migration:
             "sa_managedobjectprofile",
             "box_discovery_failed_interval",
             models.IntegerField(default=10800)
-        )
-        db.add_column(
-            "sa_managedobjectprofile",
-            "periodic_discovery_interval",
-            models.IntegerField(default=300)
         )
         db.add_column(
             "sa_managedobjectprofile",
@@ -122,6 +118,16 @@ class Migration:
         db.add_column(
             "sa_managedobjectprofile",
             "box_discovery_config_changed_delay",
+            models.IntegerField(default=300)
+        )
+        db.add_column(
+            "sa_managedobjectprofile",
+            "enable_periodic_discovery",
+            models.BooleanField(default=False)
+        )
+        db.add_column(
+            "sa_managedobjectprofile",
+            "periodic_discovery_interval",
             models.IntegerField(default=300)
         )
         # Drop deprecated columns

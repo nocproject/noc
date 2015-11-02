@@ -40,11 +40,9 @@ from noc.lib.scheduler.utils import (get_job, refresh_schedule,
                                      start_schedule)
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter
-from noc.inv.discovery.utils import get_active_discovery_methods
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.engine import Engine
 from noc.sa.models.action import Action
-from noc.inv.models.discoveryjob import DiscoveryJob
 
 
 class ManagedObjectApplication(ExtModelApplication):

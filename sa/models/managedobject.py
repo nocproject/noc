@@ -36,7 +36,7 @@ from noc.lib.stencil import stencil_registry
 from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.fts_queue import FTSQueue
 from noc.settings import config
-from noc.inv.discovery.utils import get_active_discovery_methods
+from noc.core.scheduler.job import Job
 from noc.lib.solutions import get_solution
 from noc.lib.debug import error_report
 from noc.main.models.fts_queue import full_text_search
@@ -198,6 +198,9 @@ class ManagedObject(models.Model):
 
     PROFILE_LINK = "object_profile"
 
+    BOX_DISCOVERY_JOB = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
+    PERIODIC_DISCOVERY_JOB = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
+
     ## object.scripts. ...
     class ScriptsProxy(object):
         class CallWrapper(object):
@@ -221,6 +224,15 @@ class ManagedObject(models.Model):
             cw = ManagedObject.ScriptsProxy.CallWrapper(self._object, name)
             self._cache[name] = cw
             return cw
+
+        def __contains__(self, item):
+            """
+            Check object has script name
+            """
+            if "." not in item:
+                # Normalize to full name
+                item = "%s.%s" % (self._object.profile_name, item)
+            return script_loader.has_script(item)
 
     class ActionsProxy(object):
         class CallWrapper(object):
@@ -344,6 +356,8 @@ class ManagedObject(models.Model):
                 self.address != old.address
         ):
             ObjectMap.invalidate(self.pool)
+        # Apply discovery jobs
+        self.ensure_discovery_jobs()
 
     def delete(self, *args, **kwargs):
         # Deny to delete "SAE" object
@@ -796,6 +810,48 @@ class ManagedObject(models.Model):
         else:
             return get_solution("noc.cm.parsers.base.BaseParser")(self)
 
+    def ensure_discovery_jobs(self):
+        """
+        Check and schedule discovery jobs
+        """
+        if self.object_profile.enable_box_discovery:
+            Job.submit(
+                "discovery",
+                self.BOX_DISCOVERY_JOB,
+                key=self.id,
+                pool=self.pool.name
+            )
+        else:
+            Job.remove(
+                "discovery",
+                self.BOX_DISCOVERY_JOB,
+                key=self.id,
+                pool=self.pool.name
+            )
+        if self.object_profile.enable_periodic_discovery:
+            Job.submit(
+                "discovery",
+                self.PERIODIC_DISCOVERY_JOB,
+                key=self.id,
+                pool=self.pool.name
+            )
+        else:
+            Job.remove(
+                "discovery",
+                self.PERIODIC_DISCOVERY_JOB,
+                key=self.id,
+                pool=self.pool.name
+            )
+
+    def schedule_box_discovery(self, delta):
+        """
+        Schedule box discovery to run after delta seconds
+        """
+        if self.object_profile.enable_box_discovery:
+            pass
+        else:
+            pass
+
 
 class ManagedObjectAttribute(models.Model):
 
@@ -820,7 +876,6 @@ class ManagedObjectAttribute(models.Model):
 from useraccess import UserAccess
 from groupaccess import GroupAccess
 from noc.lib.scheduler.utils import refresh_schedule
-#from noc.vc.models.vcdomain import VCDomain
 from objectnotification import ObjectNotification
 from selectorcache import SelectorCache
 from objectcapabilities import ObjectCapabilities, CapsItem
