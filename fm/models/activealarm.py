@@ -19,7 +19,6 @@ from noc.main.models.style import Style
 from noc.main.models.notification import Notification
 from noc.sa.models.managedobject import ManagedObject
 from alarmseverity import AlarmSeverity
-from noc.lib.scheduler.utils import submit_job
 
 
 class ActiveAlarm(nosql.Document):
@@ -166,9 +165,10 @@ class ActiveAlarm(nosql.Document):
                 "probable_causes": a.alarm_class.probable_causes
             })
         elif ct:
+            pass
             # Schedule delayed job
-            submit_job("fm.correlator", "control_notify",
-                       key=a.id, ts=a.control_time)
+            #submit_job("fm.correlator", "control_notify",
+            #           key=a.id, ts=a.control_time)
         return a
 
     def get_template_vars(self):
