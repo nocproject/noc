@@ -511,4 +511,3 @@ signals.pre_init.connect(Object._pre_init, sender=Object)
 
 ## Avoid circular references
 from objectconnection import ObjectConnection, ObjectConnectionItem
-from noc.lib.scheduler.utils import refresh_schedule
