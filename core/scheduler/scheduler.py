@@ -147,6 +147,17 @@ class Scheduler(object):
                 continue
             # @todo: Group restrictions
             job = jcls(self, job_data)
+            self.logger.debug(
+                "update({_id: %s}, {$set: {%s: '%s'}})",
+                job_data["_id"], Job.ATTR_STATUS, Job.S_RUN
+            )
+            self.get_collection().update({
+                "_id": job_data["_id"]
+            }, {
+                "$set": {
+                    Job.ATTR_STATUS: Job.S_RUN
+                }
+            })
             self.get_executor().submit(job.run)
 
     def remove_job(self, jcls, key=None):
