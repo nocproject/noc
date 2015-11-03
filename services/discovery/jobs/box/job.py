@@ -14,6 +14,7 @@ from caps import CapsCheck
 from interface import InterfaceCheck
 from id import IDCheck
 from config import ConfigCheck
+from asset import AssetCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -30,6 +31,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             IDCheck(self).run()
         if self.object.object_profile.enable_box_discovery_config:
             ConfigCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_asset:
+            AssetCheck(self).run()
 
     def can_run(self):
         return (
