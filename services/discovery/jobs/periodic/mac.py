@@ -17,13 +17,9 @@ class MACCheck(DiscoveryCheck):
     MAC discovery
     """
     name = "mac"
+    required_script = "get_mac_address_table"
 
     def handler(self):
-        if "get_mac_address_table" not in self.object.scripts:
-            self.logger.info(
-                "get_mac_address_table is not supported. Skipping"
-            )
-            return
         result = self.object.scripts.get_mac_address_table()
         # Populate MACDB
         # @todo: Remove duplicates

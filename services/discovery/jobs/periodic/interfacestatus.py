@@ -16,6 +16,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
     Interface status discovery
     """
     name = "interfacestatus"
+    required_script = "get_interface_status_ex"
 
     def handler(self):
         has_interfaces = "DB | Interfaces" in self.object.get_caps()
@@ -35,11 +36,11 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 managed_object=self.object.id)
         )
         for i in result:
-            iface = interfaces.get(i)
+            iface = interfaces.get(i["interface"])
             if not iface:
                 continue
             kwargs = {
-                "interface": i["interface"],
+                "name": i["interface"],
                 "admin_status": i.get("admin_status"),
                 "oper_status": i.get("oper_status"),
                 "full_duplex": i.get("full_duplex"),
