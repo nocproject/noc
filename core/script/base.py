@@ -102,6 +102,7 @@ class BaseScript(object):
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.to_shutdown_session = False
         self.scripts = ScriptsHub(self)
+        self.is_cached = False  # Cache CLI and SNMP calls, if set
 
     def __call__(self, *args, **kwargs):
         self.args = kwargs
