@@ -13,6 +13,7 @@ from version import VersionCheck
 from caps import CapsCheck
 from interface import InterfaceCheck
 from id import IDCheck
+from config import ConfigCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -27,6 +28,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             InterfaceCheck(self).run()
         if self.object.object_profile.enable_box_discovery_id:
             IDCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_config:
+            ConfigCheck(self).run()
 
     def can_run(self):
         return (
