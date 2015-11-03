@@ -16,7 +16,6 @@ from noc.sa.models.managedobject import ManagedObject
 from alarmclass import AlarmClass
 from alarmlog import AlarmLog
 from alarmseverity import AlarmSeverity
-from noc.lib.scheduler.utils import remove_job
 
 
 class ArchivedAlarm(nosql.Document):
@@ -134,7 +133,7 @@ class ArchivedAlarm(nosql.Document):
         # @todo: Clear related correlator jobs
         self.delete()
         # Remove pending control_notify job
-        remove_job("fm.correlator", "control_notify", key=a.id)
+        #remove_job("fm.correlator", "control_notify", key=a.id)
         # Send notifications
         # Do not set notifications for child and for previously reopened
         # alarms
