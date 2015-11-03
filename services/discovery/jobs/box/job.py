@@ -15,6 +15,7 @@ from interface import InterfaceCheck
 from id import IDCheck
 from config import ConfigCheck
 from asset import AssetCheck
+from vlan import VLANCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -33,6 +34,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             ConfigCheck(self).run()
         if self.object.object_profile.enable_box_discovery_asset:
             AssetCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_vlan:
+            VLANCheck(self).run()
 
     def can_run(self):
         return (
