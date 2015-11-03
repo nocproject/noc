@@ -128,4 +128,3 @@ signals.post_save.connect(Link._update_pop_links, sender=Link)
 
 ##
 from object import Object
-from noc.lib.scheduler.utils import refresh_schedule

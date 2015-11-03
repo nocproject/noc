@@ -35,9 +35,6 @@ from noc.vc.models.vcdomain import VCDomain
 from sa.models.objectcapabilities import ObjectCapabilities
 from mongoengine.queryset import Q as MQ
 from noc.lib.serialize import json_decode
-from noc.lib.scheduler.utils import (get_job, refresh_schedule,
-                                     submit_job, stop_schedule,
-                                     start_schedule)
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.cm.models.objectfact import ObjectFact
