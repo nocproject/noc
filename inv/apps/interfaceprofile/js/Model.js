@@ -41,6 +41,10 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             name: "check_link_interval",
             type: "string"
         },
+        {
+            name: "discovery_policy",
+            type: "string"
+        },
         // CSS
         {
             name: "row_class",

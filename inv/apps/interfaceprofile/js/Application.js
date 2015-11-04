@@ -59,6 +59,16 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         renderer: NOC.render.Lookup("style")
                     },
                     {
+                        text: "Policy",
+                        dataIndex: "discovery_policy",
+                        renderer: NOC.render.Choices({
+                            I: "Ignore",
+                            O: "Create new",
+                            R: "Replace",
+                            C: "Cloud"
+                        })
+                    },
+                    {
                         text: "MAC",
                         dataIndex: "mac_discovery",
                         renderer: NOC.render.Bool,
@@ -107,7 +117,27 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 },
                                 {id: "A", label: "Raise alarms"}
                             ]
-                        }
+                        },
+                        uiStyle: "medium"
+                    },
+                    {
+                        name: "discovery_policy",
+                        xtype: "combobox",
+                        fieldLabel: "Discovery Policy",
+                        allowBlank: false,
+                        queryMode: "local",
+                        displayField: "label",
+                        valueField: "id",
+                        store: {
+                            fields: ["id", "label"],
+                            data: [
+                                {id: "I", label: "Ignore"},
+                                {id: "O", label: "Create new"},
+                                {id: "R", label: "Replace"},
+                                {id: "C", label: "Cloud"}
+                            ]
+                        },
+                        uiStyle: "medium"
                     },
                     {
                         name: "check_link_interval",
