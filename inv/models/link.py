@@ -8,10 +8,12 @@
 
 ## Python modules
 from collections import defaultdict
+import datetime
 ## Third-party modules
 from mongoengine import signals
 ## NOC modules
-from noc.lib.nosql import Document, PlainReferenceListField, StringField
+from noc.lib.nosql import (Document, PlainReferenceListField,
+                           StringField, DateTimeField)
 from interface import Interface
 
 
@@ -30,7 +32,12 @@ class Link(Document):
     }
 
     interfaces = PlainReferenceListField(Interface)
+    # Name of discovery method or "manual"
     discovery_method = StringField()
+    # Timestamp of first discovery
+    first_discovered = DateTimeField(default=datetime.datetime.now)
+    # Timestamp of last confirmation
+    last_seen = DateTimeField()
 
     def __unicode__(self):
         return u"(%s)" % ", ".join([unicode(i) for i in self.interfaces])
@@ -100,6 +107,15 @@ class Link(Document):
         :return:
         """
         return self.other(interface)[0]
+
+    def touch(self, method=None):
+        """
+        Touch last_seen
+        """
+        self.last_seen = datetime.datetime.now()
+        if method:
+            self.last_seen.method = method
+        self.save()
 
     @classmethod
     def object_links(cls, object):
