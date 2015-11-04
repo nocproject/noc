@@ -35,6 +35,16 @@ class InterfaceProfile(Document):
         default="A"
     )
     # Discovery settings
+    discovery_policy = StringField(
+        choices=[
+            ("I", "Ignore"),
+            ("O", "Create new"),
+            ("R", "Replace"),
+            ("C", "Add to cloud")
+        ],
+        default="R"
+    )
+    # Collect mac addresses on interface
     mac_discovery = BooleanField(default=False)
     # check_link alarm job interval settings
     # Either None or T0,I0,T1,I1,...,Tn-1,In-1,,In
