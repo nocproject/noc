@@ -496,7 +496,7 @@ class Scheduler(object):
             jcls = self.job_classes.get(job_data[self.ATTR_CLASS])
             if not jcls:
                 # Invalid job class. Park job to FAIL state
-                self.logger.error("Invalid job class: %s", jcls)
+                self.logger.error("Invalid job class: %s", job_data[self.ATTR_CLASS])
                 self.set_job_status(job_data[self.ATTR_CLASS],
                     job_data[self.ATTR_KEY], Job.S_FAILED)
                 continue
