@@ -17,12 +17,14 @@ from config import ConfigCheck
 from asset import AssetCheck
 from vlan import VLANCheck
 from cdp import CDPCheck
+from oam import OAMCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
     name = "box"
 
     TOPOLOGY_METHODS = [
+        OAMCheck,
         CDPCheck
     ]
 
