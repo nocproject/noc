@@ -151,7 +151,7 @@ class InterfaceCheck(DiscoveryCheck):
                          ifindex=None
                          ):
         enabled_protocols = enabled_protocols or []
-        iface = self.get_interface(name)
+        iface = self.get_interface_by_name(name)
         if iface:
             # Interface exists
             changes = self.update_if_changed(iface, {

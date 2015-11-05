@@ -95,7 +95,7 @@ class DiscoveryCheck(object):
             self.logger.info("%s: %s" % (
                 msg, ", ".join("%s = %s" % (k, v) for k, v in changes)))
 
-    def get_interface(self, name, mo=None):
+    def get_interface_by_name(self, name, mo=None):
         """
         Returns Interface instance
         """
@@ -238,7 +238,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
     def confirm_link(self, local_object, local_interface,
                      remote_object, remote_interface):
         # Get interfaces
-        li = self.get_interface(mo=local_object, name=local_interface)
+        li = self.get_interface_by_name(mo=local_object,
+                                        name=local_interface)
         if not li:
             self.logger.debug(
                 "Not linking: %s:%s -- %s:%s. "
@@ -248,7 +249,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 local_object.name, local_interface
             )
             return
-        ri = self.get_interface(mo=local_object, name=local_interface)
+        ri = self.get_interface_by_name(mo=remote_object,
+                                        name=remote_interface)
         if not ri:
             self.logger.debug(
                 "Not linking: %s:%s -- %s:%s. "
