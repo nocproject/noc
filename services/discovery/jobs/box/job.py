@@ -18,6 +18,7 @@ from asset import AssetCheck
 from vlan import VLANCheck
 from cdp import CDPCheck
 from oam import OAMCheck
+from lldp import LLDPCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -25,6 +26,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
 
     TOPOLOGY_METHODS = [
         OAMCheck,
+        LLDPCheck,
         CDPCheck
     ]
 
