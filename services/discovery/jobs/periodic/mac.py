@@ -28,7 +28,7 @@ class MACCheck(DiscoveryCheck):
         for v in result:
             if v["type"] != "D" or not v["interfaces"]:
                 continue
-            iface = self.get_interface(v["interfaces"][0])
+            iface = self.get_interface_by_name(v["interfaces"][0])
             if not iface:
                 continue  # Interface not found
             if not iface.profile or not iface.profile.mac_discovery:
