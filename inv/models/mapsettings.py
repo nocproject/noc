@@ -154,7 +154,7 @@ class MapSettings(Document):
                 continue  # Not found
             l.vertices = [
                 VertexPosition(x=v["x"], y=v["y"])
-                for v in nl["vertices"]
+                for v in nl.get("vertices", [])
             ]
             l.connector = nl.get("connector", LC_NORMAL)
             nn += [l]
