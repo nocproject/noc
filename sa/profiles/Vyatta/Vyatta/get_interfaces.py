@@ -25,6 +25,7 @@ class Script(BaseScript):
     rx_descr = re.compile(r"^\s+Description:\s+(?P<descr>.+?)\s*$")
     rx_inet = re.compile(r"^\s+inet\s+(?P<inet>\S+)")
     rx_inet6 = re.compile(r"^\s+inet6\s+(?P<inet6>\S+)")
+    rx_mac = re.compile(r"\s+link/ether\s+(?P<mac>\S+)")
 
     def execute(self):
         ifaces = {}
@@ -55,6 +56,11 @@ class Script(BaseScript):
             match = self.rx_descr.search(l)
             if match:
                 ifaces[last_if]["description"] = match.group("descr")
+                continue
+            # mac
+            match = self.rx_mac.search(l)
+            if match:
+                ifaces[last_if]["mac"] = match.group("mac")
                 continue
             # inet
             match = self.rx_inet.search(l)
