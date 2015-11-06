@@ -13,10 +13,9 @@ import logging
 import os
 import re
 ## Django modules
-from django.utils.translation import ugettext_lazy as _
-from django.db import models
-from django.db.models import Q
 from django.db import IntegrityError
+from django.db.models import (Q, Model, CharField, BooleanField,
+                              ForeignKey, IntegerField, SET_NULL)
 from django.contrib.auth.models import User, Group
 ## NOC modules
 from administrativedomain import AdministrativeDomain
@@ -58,48 +57,66 @@ logger = logging.getLogger(__name__)
 
 @full_text_search
 @probe_config
-class ManagedObject(models.Model):
+class ManagedObject(Model):
     """
     Managed Object
     """
 
     class Meta:
-        verbose_name = _("Managed Object")
-        verbose_name_plural = _("Managed Objects")
+        verbose_name = "Managed Object"
+        verbose_name_plural = "Managed Objects"
         db_table = "sa_managedobject"
         app_label = "sa"
         ordering = ["name"]
 
-    name = models.CharField(_("Name"), max_length=64, unique=True)
-    is_managed = models.BooleanField(_("Is Managed?"), default=True)
-    administrative_domain = models.ForeignKey(AdministrativeDomain,
-            verbose_name=_("Administrative Domain"))
+    name = CharField("Name", max_length=64, unique=True)
+    is_managed = BooleanField("Is Managed?", default=True)
+    administrative_domain = ForeignKey(
+        AdministrativeDomain,
+        verbose_name="Administrative Domain"
+    )
     segment = DocumentReferenceField(
-            NetworkSegment, null=False, blank=False)
+        NetworkSegment, null=False, blank=False
+    )
     pool = DocumentReferenceField(
         Pool,
         null=False, blank=False
     )
-    profile_name = models.CharField(_("SA Profile"),
-            max_length=128, choices=profile_loader.choices())
-    object_profile = models.ForeignKey(ManagedObjectProfile,
-        verbose_name=_("Object Profile"))
-    description = models.CharField(_("Description"),
-            max_length=256, null=True, blank=True)
+    profile_name = CharField(
+        "SA Profile",
+        max_length=128, choices=profile_loader.choices()
+    )
+    object_profile = ForeignKey(
+        ManagedObjectProfile,
+        verbose_name="Object Profile")
+    description = CharField(
+        "Description",
+        max_length=256, null=True, blank=True)
     # Access
-    auth_profile = models.ForeignKey(
-        AuthProfile, verbose_name="Auth Profile", null=True, blank=True)
-    scheme = models.IntegerField(_("Scheme"), choices=scheme_choices)
-    address = models.CharField(_("Address"), max_length=64)
-    port = models.IntegerField(_("Port"), blank=True, null=True)
-    user = models.CharField(_("User"), max_length=32, blank=True, null=True)
-    password = models.CharField(_("Password"),
-            max_length=32, blank=True, null=True)
-    super_password = models.CharField(_("Super Password"),
-            max_length=32, blank=True, null=True)
-    remote_path = models.CharField(_("Path"),
-            max_length=256, blank=True, null=True)
-    trap_source_type = models.CharField(
+    auth_profile = ForeignKey(
+        AuthProfile,
+        verbose_name="Auth Profile",
+        null=True, blank=True
+    )
+    scheme = IntegerField(
+        "Scheme", choices=scheme_choices
+    )
+    address = CharField("Address", max_length=64)
+    port = IntegerField("Port", blank=True, null=True)
+    user = CharField("User", max_length=32, blank=True, null=True)
+    password = CharField(
+        "Password",
+        max_length=32, blank=True, null=True
+    )
+    super_password = CharField(
+        "Super Password",
+        max_length=32, blank=True, null=True
+    )
+    remote_path = CharField(
+        "Path",
+        max_length=256, blank=True, null=True
+    )
+    trap_source_type = CharField(
         max_length=1,
         choices=[
             ("d", "Disable"),
@@ -110,9 +127,11 @@ class ManagedObject(models.Model):
         ],
         default="d", null=False, blank=False
     )
-    trap_source_ip = INETField(_("Trap Source IP"), null=True,
-            blank=True, default=None)
-    syslog_source_type = models.CharField(
+    trap_source_ip = INETField(
+        "Trap Source IP",
+        null=True, blank=True, default=None
+    )
+    syslog_source_type = CharField(
         max_length=1,
         choices=[
             ("d", "Disable"),
@@ -123,62 +142,76 @@ class ManagedObject(models.Model):
         ],
         default="d", null=False, blank=False
     )
-    syslog_source_ip = INETField(_("Syslog Source IP"), null=True,
-            blank=True, default=None)
-    trap_community = models.CharField(_("Trap Community"),
-            blank=True, null=True, max_length=64)
-    snmp_ro = models.CharField(_("RO Community"),
-            blank=True, null=True, max_length=64)
-    snmp_rw = models.CharField(_("RW Community"),
-            blank=True, null=True, max_length=64)
+    syslog_source_ip = INETField(
+        "Syslog Source IP",
+        null=True, blank=True, default=None)
+    trap_community = CharField(
+        "Trap Community",
+        blank=True, null=True, max_length=64
+    )
+    snmp_ro = CharField(
+        "RO Community",
+        blank=True, null=True, max_length=64
+    )
+    snmp_rw = CharField(
+        "RW Community",
+        blank=True, null=True, max_length=64
+    )
     #
-    vc_domain = models.ForeignKey(
-        "vc.VCDomain", verbose_name="VC Domain", null=True, blank=True)
+    vc_domain = ForeignKey(
+        "vc.VCDomain",
+        verbose_name="VC Domain",
+        null=True, blank=True
+    )
     # CM
     config = GridVCSField("config", mirror=CONFIG_MIRROR)
     # Default VRF
-    vrf = models.ForeignKey("ip.VRF", verbose_name=_("VRF"),
+    vrf = ForeignKey("ip.VRF", verbose_name="VRF",
                             blank=True, null=True)
     # For service terminators
     # Name of service termination group (i.e. BRAS, SBC)
-    termination_group = models.ForeignKey(
-        TerminationGroup, verbose_name=_("Termination Group"),
+    termination_group = ForeignKey(
+        TerminationGroup, verbose_name="Termination Group",
         blank=True, null=True,
         related_name="termination_set"
     )
     # For access switches -- L3 terminator
-    service_terminator = models.ForeignKey(
-        TerminationGroup, verbose_name=_("Service termination"),
+    service_terminator = ForeignKey(
+        TerminationGroup, verbose_name="Service termination",
         blank=True, null=True,
         related_name="access_set"
     )
     # Stencils
-    shape = models.CharField(_("Shape"), blank=True, null=True,
+    shape = CharField("Shape", blank=True, null=True,
         choices=stencil_registry.choices, max_length=128)
     # pyRules
-    config_filter_rule = models.ForeignKey(PyRule,
-            verbose_name="Config Filter pyRule",
-            limit_choices_to={"interface": "IConfigFilter"},
-            null=True, blank=True,
-            on_delete=models.SET_NULL,
-            related_name="managed_object_config_filter_rule_set")
-    config_diff_filter_rule = models.ForeignKey(PyRule,
-            verbose_name=_("Config Diff Filter Rule"),
-            limit_choices_to={"interface": "IConfigDiffFilter"},
-            null=True, blank=True,
-            on_delete=models.SET_NULL,
-            related_name="managed_object_config_diff_rule_set")
-    config_validation_rule = models.ForeignKey(PyRule,
-            verbose_name="Config Validation pyRule",
-            limit_choices_to={"interface": "IConfigValidator"},
-            null=True, blank=True,
-            on_delete=models.SET_NULL,
-            related_name="managed_object_config_validation_rule_set")
-    max_scripts = models.IntegerField(_("Max. Scripts"),
-            null=True, blank=True,
-            help_text=_("Concurrent script session limits"))
+    config_filter_rule = ForeignKey(
+        PyRule,
+        verbose_name="Config Filter pyRule",
+        limit_choices_to={"interface": "IConfigFilter"},
+        null=True, blank=True,
+        on_delete=SET_NULL,
+        related_name="managed_object_config_filter_rule_set")
+    config_diff_filter_rule = ForeignKey(
+        PyRule,
+        verbose_name="Config Diff Filter Rule",
+        limit_choices_to={"interface": "IConfigDiffFilter"},
+        null=True, blank=True,
+        on_delete=SET_NULL,
+        related_name="managed_object_config_diff_rule_set")
+    config_validation_rule = ForeignKey(
+        PyRule,
+        verbose_name="Config Validation pyRule",
+        limit_choices_to={"interface": "IConfigValidator"},
+        null=True, blank=True,
+        on_delete=SET_NULL,
+        related_name="managed_object_config_validation_rule_set")
+    max_scripts = IntegerField(
+        "Max. Scripts",
+        null=True, blank=True,
+        help_text="Concurrent script session limits")
     #
-    tags = TagsField(_("Tags"), null=True, blank=True)
+    tags = TagsField("Tags", null=True, blank=True)
 
     # Use special filter for profile
     profile_name.existing_choices_filter = True
@@ -329,7 +362,7 @@ class ManagedObject(models.Model):
                 if ManagedObject.objects.filter(GroupAccess.Q(g) &
                                                 Q(id=self.id)).exists()]
 
-    def save(self):
+    def save(self, *args, **kwargs):
         """
         Overload model's save()
         """
@@ -339,7 +372,7 @@ class ManagedObject(models.Model):
         else:
             old = None
         # Save
-        super(ManagedObject, self).save()
+        super(ManagedObject, self).save(*args, **kwargs)
         # IPAM sync
         if self.object_profile.sync_ipam:
             self.sync_ipam()
@@ -748,14 +781,18 @@ class ManagedObject(models.Model):
             if c in caps:
                 if local:
                     if cc.local_value != caps[c]:
-                        logger.info("[%s] Setting local capability %s = %s",
-                                    self.name, c, caps[c])
+                        logger.info(
+                            "[%s] Setting local capability %s = %s",
+                            self.name, c, caps[c]
+                        )
                         cc.local_value = caps[c]
                         to_save = True
                 else:
                     if cc.discovered_value != caps[c]:
-                        logger.info("[%s] Setting discovered capability %s = %s",
-                                    self.name, c, caps[c])
+                        logger.info(
+                            "[%s] Setting discovered capability %s = %s",
+                            self.name, c, caps[c]
+                        )
                         cc.discovered_value = caps[c]
                         to_save = True
             nc += [cc]
@@ -853,20 +890,20 @@ class ManagedObject(models.Model):
             pass
 
 
-class ManagedObjectAttribute(models.Model):
+class ManagedObjectAttribute(Model):
 
     class Meta:
-        verbose_name = _("Managed Object Attribute")
-        verbose_name_plural = _("Managed Object Attributes")
+        verbose_name = "Managed Object Attribute"
+        verbose_name_plural = "Managed Object Attributes"
         db_table = "sa_managedobjectattribute"
         app_label = "sa"
         unique_together = [("managed_object", "key")]
         ordering = ["managed_object", "key"]
 
-    managed_object = models.ForeignKey(ManagedObject,
-            verbose_name=_("Managed Object"))
-    key = models.CharField(_("Key"), max_length=64)
-    value = models.CharField(_("Value"), max_length=4096,
+    managed_object = ForeignKey(ManagedObject,
+            verbose_name="Managed Object")
+    key = CharField("Key", max_length=64)
+    value = CharField("Value", max_length=4096,
             blank=True, null=True)
 
     def __unicode__(self):
