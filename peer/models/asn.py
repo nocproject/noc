@@ -16,7 +16,7 @@ from maintainer import Maintainer
 from rir import RIR
 from noc.settings import config
 from noc.lib.rpsl import rpsl_format
-from noc.lib.fields import TagsField
+from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 
 

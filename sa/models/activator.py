@@ -13,7 +13,7 @@ from django.db import models
 from activatorcapabilitiescache import ActivatorCapabilitiesCache
 from noc.main.models import Shard
 from noc.main.models.prefixtable import PrefixTable
-from noc.lib.fields import TagsField
+from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 
 

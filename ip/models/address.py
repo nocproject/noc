@@ -17,7 +17,7 @@ from afi import AFI_CHOICES
 from noc.main.models.style import Style
 from noc.main.models.resourcestate import ResourceState
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.fields import TagsField, INETField, MACField
+from noc.core.model.fields import TagsField, INETField, MACField
 from noc.lib.app import site
 from noc.lib.validators import (
     ValidationError, check_fqdn, check_ipv4, check_ipv6)

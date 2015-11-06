@@ -84,7 +84,7 @@ class ExtModelApplication(ExtApplication):
         :type field: Field
         :return:
         """
-        from noc.lib.fields import TagsField, TextArrayField
+        from noc.core.model.fields import TagsField, TextArrayField
 
         if isinstance(field, BooleanField):
             return BooleanParameter()

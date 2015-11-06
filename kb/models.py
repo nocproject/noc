@@ -18,7 +18,7 @@ from noc.main.models import Language, database_storage
 from noc.kb.parsers import parser_registry
 from noc.lib.validators import is_int
 from noc.lib.app.site import site
-from noc.lib.fields import AutoCompleteTagsField
+from noc.core.model.fields import AutoCompleteTagsField
 
 ##
 ## Register all wiki-syntax parsers

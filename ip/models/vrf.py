@@ -18,7 +18,7 @@ from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from vrfgroup import VRFGroup
 from noc.lib.validators import check_rd, is_rd
-from noc.lib.fields import TagsField
+from noc.core.model.fields import TagsField
 from noc.lib.app import site
 from noc.main.models.fts_queue import full_text_search
 

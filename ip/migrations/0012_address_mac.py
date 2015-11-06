@@ -9,7 +9,7 @@ from django.db import models
 ## Third-party modules
 from south.db import db
 ## NOC modules
-from noc.lib.fields import MACField
+from noc.core.model.fields import MACField
 
 
 class Migration:

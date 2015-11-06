@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection
 ## NOC modules
 from managedobject import ManagedObject
-from noc.lib.fields import PickledField
+from noc.core.model.fields import PickledField
 
 
 class MapTask(models.Model):

@@ -10,7 +10,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 ## NOC modules
-from noc.lib.fields import TagsField
+from noc.core.model.fields import TagsField
 from noc.lib.app import site
 
 

@@ -10,7 +10,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 ## NOC modules
-from noc.lib.fields import INETField, DocumentReferenceField
+from noc.core.model.fields import INETField, DocumentReferenceField
 from noc.main.models.sync import Sync
 
 

@@ -1,6 +1,6 @@
 # encoding: utf-8
 from south.db import db
-from noc.lib.fields import TagsField
+from noc.core.model.fields import TagsField
 
 
 class Migration:

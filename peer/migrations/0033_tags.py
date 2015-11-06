@@ -1,7 +1,7 @@
 # encoding: utf-8
 from south.db import db
 from noc.ip.models import *
-from noc.lib.fields import AutoCompleteTagsField
+from noc.core.model.fields import AutoCompleteTagsField
 
 class Migration:
     TAG_MODELS=["peer_as","peer_asset","peer_peer"]

@@ -7,7 +7,7 @@
 """
 from south.db import db
 from noc.ip.models import *
-from noc.lib.fields import CIDRField
+from noc.core.model.fields import CIDRField
 
 class Migration:
     

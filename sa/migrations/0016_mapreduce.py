@@ -9,7 +9,7 @@ from django.db import models
 ## Third-party modules
 from south.db import db
 ## NOC modules
-from noc.lib.fields import PickledField
+from noc.core.model.fields import PickledField
 
 
 class Migration:

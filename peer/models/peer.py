@@ -13,7 +13,7 @@ from noc.project.models.project import Project
 from asn import AS
 from peergroup import PeerGroup
 from peeringpoint import PeeringPoint
-from noc.lib.fields import INETField, TagsField
+from noc.core.model.fields import INETField, TagsField
 from noc.lib.tt import tt_url
 from noc.settings import config
 from noc.lib.app.site import site

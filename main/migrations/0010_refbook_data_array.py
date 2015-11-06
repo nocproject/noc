@@ -1,7 +1,7 @@
 
 from south.db import db
 from noc.main.models import *
-from noc.lib.fields import TextArrayField
+from noc.core.model.fields import TextArrayField
 
 class Migration:
     

@@ -18,7 +18,7 @@ from afi import AFI_CHOICES
 from noc.peer.models import AS
 from noc.vc.models.vc import VC
 from noc.main.models import Style, ResourceState
-from noc.lib.fields import TagsField, CIDRField
+from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
