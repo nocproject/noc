@@ -1,6 +1,6 @@
 # encoding: utf-8
 from south.db import db
-from noc.lib.fields import AutoCompleteTagsField
+from noc.core.model.fields import AutoCompleteTagsField
 from django.contrib.contenttypes.management import update_contenttypes
 import noc.sa.models
 

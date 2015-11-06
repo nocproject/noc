@@ -29,7 +29,7 @@ from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.networksegment import NetworkSegment
 from noc.core.profile.loader import loader as profile_loader
-from noc.lib.fields import INETField, TagsField, DocumentReferenceField
+from noc.core.model.fields import INETField, TagsField, DocumentReferenceField
 from noc.lib.app.site import site
 from noc.lib.stencil import stencil_registry
 from noc.core.gridvcs.manager import GridVCSField

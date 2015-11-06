@@ -20,7 +20,7 @@ from terminationgroup import TerminationGroup
 from noc.main.models import Shard
 from noc.main.models.prefixtable import PrefixTable
 from noc.core.profile.loader import loader as profile_loader
-from noc.lib.fields import TagsField
+from noc.core.model.fields import TagsField
 from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.lib.db import SQL, QTags
 

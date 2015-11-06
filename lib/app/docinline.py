@@ -122,7 +122,7 @@ class DocInline(object):
         :type field: Field
         :return:
         """
-        from noc.lib.fields import AutoCompleteTagsField
+        from noc.core.model.fields import AutoCompleteTagsField
 
         if isinstance(field, BooleanField):
             return BooleanParameter()

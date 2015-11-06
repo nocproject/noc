@@ -16,7 +16,7 @@ from django.template import Template, Context
 ## NOC modules
 from noc.main.models import Permission
 from managedobjectselector import ManagedObjectSelector
-from noc.lib.fields import TagsField
+from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 
 

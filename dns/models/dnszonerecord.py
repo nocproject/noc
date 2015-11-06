@@ -13,7 +13,7 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 ## NOC modules
 from dnszone import DNSZone
-from noc.lib.fields import TagsField
+from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 
 

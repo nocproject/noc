@@ -14,7 +14,7 @@ from vrf import VRF
 from afi import AFI_CHOICES
 from noc.sa.models.terminationgroup import TerminationGroup
 
-from noc.lib.fields import CIDRField, TextArrayField
+from noc.core.model.fields import CIDRField, TextArrayField
 from noc.lib.validators import check_ipv4, check_ipv6
 
 

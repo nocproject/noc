@@ -22,7 +22,7 @@ from django.db import models
 from noc.main.models import PyRule
 from managedobject import ManagedObject
 from managedobjectselector import ManagedObjectSelector
-from noc.lib.fields import PickledField
+from noc.core.model.fields import PickledField
 
 
 class ReduceTask(models.Model):

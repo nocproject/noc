@@ -1,7 +1,7 @@
 # encoding: utf-8
 from south.db import db
 from noc.ip.models import *
-from noc.lib.fields import AutoCompleteTagsField
+from noc.core.model.fields import AutoCompleteTagsField
 
 class Migration:
     TAG_MODELS=["ip_vrf","ip_ipv4block","ip_ipv4address"]

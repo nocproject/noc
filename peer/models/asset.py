@@ -10,7 +10,7 @@
 from django.db import models
 ## NOC module
 from noc.project.models.project import Project
-from noc.lib.fields import TagsField
+from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 from noc.lib.rpsl import rpsl_format
 

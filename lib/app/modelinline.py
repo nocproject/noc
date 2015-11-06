@@ -18,7 +18,7 @@ from noc.sa.interfaces.base import (BooleanParameter, IntParameter,
                                StringListParameter,
                                NoneParameter, InterfaceTypeError)
 from noc.lib.validators import is_int
-from noc.lib.fields import TextArrayField
+from noc.core.model.fields import TextArrayField
 
 
 class ModelInline(object):
@@ -134,7 +134,7 @@ class ModelInline(object):
         :type field: Field
         :return:
         """
-        from noc.lib.fields import AutoCompleteTagsField
+        from noc.core.model.fields import AutoCompleteTagsField
 
         if isinstance(field, BooleanField):
             return BooleanParameter()

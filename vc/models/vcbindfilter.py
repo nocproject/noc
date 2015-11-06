@@ -13,7 +13,7 @@ from vcdomain import VCDomain
 from vcfilter import VCFilter
 from vc import VC
 from noc.ip.models.afi import AFI_CHOICES
-from noc.lib.fields import CIDRField
+from noc.core.model.fields import CIDRField
 
 
 class VCBindFilter(models.Model):

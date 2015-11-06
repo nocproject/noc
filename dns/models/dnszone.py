@@ -24,7 +24,7 @@ from noc.main.models import (NotificationGroup, SystemNotification,
 from noc.project.models.project import Project
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
-from noc.lib.fields import TagsField
+from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 from noc.lib.ip import IPv6
 from noc.lib.validators import is_ipv4, is_ipv6

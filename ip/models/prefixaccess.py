@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from vrf import VRF
 from prefix import Prefix
 from afi import AFI_CHOICES
-from noc.lib.fields import CIDRField
+from noc.core.model.fields import CIDRField
 from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix
 
 

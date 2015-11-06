@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 ## NOC Modules
 from noc.lib.ip import IP
-from noc.lib.fields import CIDRField
+from noc.core.model.fields import CIDRField
 
 
 class PrefixTable(models.Model):

@@ -1,7 +1,7 @@
 
 from south.db import db
 from django.db import models
-from noc.lib.fields import AutoCompleteTagsField
+from noc.core.model.fields import AutoCompleteTagsField
 
 
 class Migration:

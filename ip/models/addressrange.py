@@ -14,7 +14,7 @@ from django.template import Template, Context
 from vrf import VRF
 from address import Address
 from afi import AFI_CHOICES
-from noc.lib.fields import TagsField, CIDRField
+from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app import site
 from noc.lib.ip import IP
 from noc.lib.validators import check_ipv4, check_ipv6

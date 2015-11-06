@@ -26,10 +26,10 @@ from django.template import Context
 from mongoengine.django.sessions import MongoSession
 ## NOC Modules
 from noc import settings
-from noc.lib.fields import BinaryField
+from noc.core.model.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 from noc.main.refbooks.downloaders import downloader_registry
-from noc.lib.fields import TextArrayField, CIDRField
+from noc.core.model.fields import TextArrayField, CIDRField
 from noc.lib.middleware import get_user, get_request
 from noc.lib.timepattern import TimePattern as TP
 from noc.lib.timepattern import TimePatternList
