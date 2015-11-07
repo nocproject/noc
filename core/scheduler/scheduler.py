@@ -137,9 +137,10 @@ class Scheduler(object):
         for job_data in self.iter_pending_jobs():
             try:
                 jcls = get_solution(job_data[Job.ATTR_CLASS])
-            except ImportError:
+            except ImportError, why:
                 self.logger.error("Invalid job class %s",
                                   job_data[Job.ATTR_CLASS])
+                self.logger.error("Error: %s", why)
                 self.remove_job(
                     job_data[Job.ATTR_CLASS],
                     job_data[Job.ATTR_KEY]
