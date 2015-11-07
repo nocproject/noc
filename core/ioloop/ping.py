@@ -42,10 +42,11 @@ class PingSocket(object):
     ECHO_TYPE = None
     HEADER_SIZE = None
 
-    def __init__(self, io_loop=None):
+    def __init__(self, io_loop=None, tos=None):
         self.io_loop = io_loop or IOLoop.current()
         self.socket = None
         self._ready = False
+        self.tos = tos
         self.create_socket()
         self._ready = True
         self.io_loop.add_handler(
@@ -200,7 +201,12 @@ class Ping4Socket(PingSocket):
 
     def create_socket(self):
         self.socket = socket.socket(
-            socket.AF_INET, socket.SOCK_RAW, ICMPv4_PROTO)
+            socket.AF_INET, socket.SOCK_RAW, ICMPv4_PROTO
+        )
+        if self.tos:
+            self.socket.setsockopt(
+                socket.IPPROTO_IP, socket.IP_TOS, self.tos
+            )
 
     def parse_reply(self, msg, addr):
         """
@@ -237,7 +243,12 @@ class Ping6Socket(PingSocket):
 
     def create_socket(self):
         self.socket = socket.socket(
-            socket.AF_INET6, socket.SOCK_RAW, ICMPv6_PROTO)
+            socket.AF_INET6, socket.SOCK_RAW, ICMPv6_PROTO
+        )
+        if self.tos:
+            self.socket.setsockopt(
+                socket.IPPROTO_IP, socket.IP_TOS, self.tos
+            )
 
     def parse_reply(self, msg, addr):
         """
@@ -265,10 +276,11 @@ class Ping(object):
 
     iter_request = itertools.count(os.getpid())
 
-    def __init__(self, io_loop=None):
+    def __init__(self, io_loop=None, tos=None):
         self.io_loop = io_loop or IOLoop.current()
         self.ping4 = None
         self.ping6 = None
+        self.tos = tos
 
     def get_socket(self, address):
         """
@@ -277,11 +289,11 @@ class Ping(object):
         try:
             if ":" in address:
                 if not self.ping6:
-                    self.ping6 = Ping6Socket(self.io_loop)
+                    self.ping6 = Ping6Socket(self.io_loop, tos=self.tos)
                 return self.ping6
             else:
                 if not self.ping4:
-                    self.ping4 = Ping4Socket(self.io_loop)
+                    self.ping4 = Ping4Socket(self.io_loop, tos=self.tos)
                 return self.ping4
         except socket.error, why:
             logger.error("Failed to create ping socket: %s", why)
