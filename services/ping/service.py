@@ -41,7 +41,7 @@ class PingService(Service):
     @tornado.gen.coroutine
     def on_activate(self):
         # Open ping sockets
-        self.ping = Ping(self.ioloop)
+        self.ping = Ping(self.ioloop, tos=self.config.tos)
         # Register RPC aliases
         self.omap = self.open_rpc("omap")
         self.fmwriter = self.open_rpc("fmwriter", pool=self.config.pool)
