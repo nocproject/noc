@@ -27,7 +27,3 @@ from mrtconfig import MRTConfig
 from failedscriptlog import FailedScriptLog
 from action import Action, ActionParameter
 from actioncommands import ActionCommands
-##
-## Post-initialization
-##
-import post_init

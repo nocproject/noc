@@ -13,7 +13,6 @@ import logging
 import os
 import re
 ## Django modules
-from django.db import IntegrityError
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, SET_NULL)
 from django.contrib.auth.models import User, Group
@@ -42,6 +41,8 @@ from noc.main.models.fts_queue import full_text_search
 from noc.pm.models.probeconfig import probe_config
 from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
+from noc.core.model.decorator import on_save, on_init, on_delete
+from noc.core.defer import call_later
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http")]
@@ -57,6 +58,9 @@ logger = logging.getLogger(__name__)
 
 @full_text_search
 @probe_config
+@on_init
+@on_save
+@on_delete
 class ManagedObject(Model):
     """
     Managed Object
@@ -362,41 +366,30 @@ class ManagedObject(Model):
                 if ManagedObject.objects.filter(GroupAccess.Q(g) &
                                                 Q(id=self.id)).exists()]
 
-    def save(self, *args, **kwargs):
-        """
-        Overload model's save()
-        """
-        # Get previous version
-        if self.id:
-            old = ManagedObject.objects.get(id=self.id)
-        else:
-            old = None
-        # Save
-        super(ManagedObject, self).save(*args, **kwargs)
+    def on_save(self):
         # IPAM sync
         if self.object_profile.sync_ipam:
             self.sync_ipam()
         # Notify new object
-        if old is None:
-            SelectorCache.rebuild_for_object(self)
+        if not self.initial_data["id"]:
             self.event(self.EV_NEW, {"object": self})
         if (
-            old is None or
-                self.trap_source_type != old.trap_source_type or
-                self.trap_source_ip != old.trap_source_ip or
-                self.syslog_source_type != old.syslog_source_type or
-                self.syslog_source_ip != old.syslog_source_ip or
-                self.address != old.address
+            not self.initial_data["id"] is None or
+            "trap_source_type" in self.changed_fields or
+            "trap_source_ip" in self.changed_fields or
+            "syslog_source_type" in self.changed_fields or
+            "syslog_source_ip" in self.changed_fields or
+            "address" in self.changed_fields
         ):
             ObjectMap.invalidate(self.pool)
         # Apply discovery jobs
         self.ensure_discovery_jobs()
+        # Rebuild selector cache
+        SelectorCache.refresh()
 
-    def delete(self, *args, **kwargs):
-        # Deny to delete "SAE" object
-        if self.name == "SAE":
-            raise IntegrityError("Cannot delete SAE object")
-        super(ManagedObject, self).delete(*args, **kwargs)
+    def on_delete(self):
+        # Rebuild selector cache
+        SelectorCache.refresh()
 
     def sync_ipam(self):
         """
@@ -917,3 +910,4 @@ from selectorcache import SelectorCache
 from objectcapabilities import ObjectCapabilities, CapsItem
 from noc.inv.models.capability import Capability
 from action import Action
+from selectorcache import SelectorCache

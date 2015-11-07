@@ -12,8 +12,11 @@ from django.db import models
 from vctype import VCType
 from vcfilter import VCFilter
 from noc.main.models import Style
+from noc.core.model.decorator import on_save, on_delete
 
 
+@on_save
+@on_delete
 class VCDomain(models.Model):
     """
     Virtual circuit domain, allows to separate unique VC spaces
@@ -38,6 +41,14 @@ class VCDomain(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def on_save(self):
+        # Rebuild selector cache
+        SelectorCache.refresh()
+
+    def on_delete(self):
+        # Rebuild selector cache
+        SelectorCache.refresh()
 
     @classmethod
     def get_for_object(cls, managed_object):
@@ -79,3 +90,4 @@ class VCDomain(models.Model):
 
 ## Avoid circular references
 from vc import VC
+from noc.sa.models.selectorcache import SelectorCache

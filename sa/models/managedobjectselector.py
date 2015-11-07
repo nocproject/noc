@@ -23,8 +23,11 @@ from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import TagsField
 from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.lib.db import SQL, QTags
+from noc.core.model.decorator import on_delete, on_save
 
 
+@on_save
+@on_delete
 class ManagedObjectSelector(models.Model):
     class Meta:
         verbose_name = _("Managed Object Selector")
@@ -86,6 +89,14 @@ class ManagedObjectSelector(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def on_save(self):
+        # Rebuild selector cache
+        SelectorCache.refresh()
+
+    def on_delete(self):
+        # Rebuild selector cache
+        SelectorCache.refresh()
 
     @property
     def Q(self):
@@ -368,3 +379,5 @@ class ManagedObjectSelectorByAttribute(models.Model):
         return u"%s: %s = %s" % (
             self.selector.name, self.key_re, self.value_re)
 
+
+from selectorcache import SelectorCache

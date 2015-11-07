@@ -26,7 +26,7 @@ class SchedulerService(Service):
     @tornado.gen.coroutine
     def on_activate(self):
         self.scheduler = Scheduler(
-            "discovery",
+            "scheduler",
             reset_running=True,
             ioloop=self.ioloop
         )
