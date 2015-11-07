@@ -79,10 +79,13 @@ class Job(object):
         """
         self.scheduler = scheduler
         self.attrs = attrs
-        self.logger = PrefixLoggerAdapter(scheduler.logger, self.name)
         self.object = None
         self.start_time = None
         self.duration = None
+        self.logger = PrefixLoggerAdapter(
+            scheduler.logger,
+            self.get_display_key()
+        )
 
     @tornado.gen.coroutine
     def run(self):
