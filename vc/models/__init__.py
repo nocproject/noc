@@ -12,8 +12,3 @@ from vcdomain import VCDomain
 from vc import VC
 from vcbindfilter import VCBindFilter
 from vcdomainprovisioningconfig import VCDomainProvisioningConfig
-##
-## Post-initialization
-##
-import post_init
-

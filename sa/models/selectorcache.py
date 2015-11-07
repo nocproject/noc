@@ -3,12 +3,17 @@
 ## SelectorCache
 ## Updated by sa.refresh_selector_cache job
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import logging
 ## NOC modules
 from noc.lib.nosql import Document, IntField
+from noc.core.defer import call_later
+
+logger = logging.getLogger(__name__)
 
 
 class SelectorCache(Document):
@@ -26,7 +31,10 @@ class SelectorCache(Document):
 
     @classmethod
     def refresh(cls):
-        sliding_job("main.jobs", "sa.refresh_selector_cache", delta=5)
+        call_later(
+            "noc.sa.models.selectorcache.refresh",
+            delay=10
+        )
 
     @classmethod
     def get_object_selectors(cls, object):
@@ -37,6 +45,7 @@ class SelectorCache(Document):
 
     @classmethod
     def rebuild_for_object(cls, object):
+        from managedobjectselector import ManagedObjectSelector
         # Remove old data
         cls.objects.filter(object=object.id).delete()
         #
@@ -54,5 +63,33 @@ class SelectorCache(Document):
         if r:
             cls._get_collection().insert(r)
 
-##
-from managedobjectselector import ManagedObjectSelector
+
+def refresh():
+    """
+    Rebuild selector cache job
+    """
+    from managedobjectselector import ManagedObjectSelector
+
+    r = []
+    logger.info("Building selector cache")
+    for s in ManagedObjectSelector.objects.filter(is_enabled=True):
+        for o in s.managed_objects:
+            d = o.vc_domain.id if o.vc_domain else None
+            r += [
+                {
+                    "object": o.id,
+                    "selector": s.id,
+                    "vc_domain": d
+                }
+            ]
+    # Write temporary cache
+    if r:
+        logger.info("Writing cache")
+        cache = SelectorCache._get_collection_name()
+        c = SelectorCache._get_db()[cache + ".tmp"]
+        c.insert(r)
+        # Substitute cache
+        c.rename(cache, dropTarget=True)
+    else:
+        # No data
+        logger.info("No data to write")
