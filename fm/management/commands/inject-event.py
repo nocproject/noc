@@ -16,8 +16,8 @@ from optparse import OptionParser, make_option
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import simplejson
 ## NOC modules
-from noc.sa.models import ManagedObject
-from noc.fm.models import NewEvent
+from noc.sa.models.managedobject import ManagedObject
+from noc.fm.models.newevent import NewEvent
 
 
 class Command(BaseCommand):

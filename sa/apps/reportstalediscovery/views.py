@@ -13,7 +13,7 @@ import datetime
 from noc.lib.app.simplereport import SimpleReport
 from noc.lib.nosql import get_db
 from noc.lib.dateutils import humanize_distance
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
 
 
 class ReportStaleDiscoveryJob(SimpleReport):

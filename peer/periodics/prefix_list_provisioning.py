@@ -17,7 +17,8 @@ class Task(noc.lib.periodic.Task):
     wait_for=["cm.prefix_list_pull"]
     def execute(self):
         from noc.peer.models import PrefixListCache
-        from noc.sa.models import ManagedObject,ReduceTask
+        from noc.sa.models.managedobject import ManagedObject
+        from noc.sa.models.reducetask import ReduceTask
         #
         prefix_lists={} # PeeringPoint -> [prefix_lists]
         # For all out-of-dated prefix lists

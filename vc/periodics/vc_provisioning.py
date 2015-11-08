@@ -17,8 +17,8 @@ class Task(noc.lib.periodic.Task):
     description=""
     
     def execute(self):
-        from noc.vc.models import VCDomain
-        from noc.sa.models import ReduceTask
+        from noc.vc.models.vcdomain import VCDomain
+        from noc.sa.models.reducetask import ReduceTask
         
         tasks=[]
         # Get config

@@ -12,7 +12,7 @@ import os
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
 from noc.lib.validators import is_int
 from noc.settings import config
 from noc.lib.fileutils import safe_rewrite

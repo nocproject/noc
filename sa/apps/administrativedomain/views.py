@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.sa.models import AdministrativeDomain
+from noc.sa.models.administrativedomain import AdministrativeDomain
 
 
 class AdministrativeDomainApplication(ExtModelApplication):

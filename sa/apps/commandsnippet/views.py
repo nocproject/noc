@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.sa.models import CommandSnippet
+from noc.sa.models.commandsnippet import CommandSnippet
 
 
 class CommandSnippetApplication(ExtModelApplication):

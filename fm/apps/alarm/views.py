@@ -18,7 +18,7 @@ from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models import get_alarm, get_event
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models import AdministrativeDomain
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.selectorcache import SelectorCache
 from noc.main.models import User
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,

@@ -27,7 +27,8 @@ from noc.main.models import Permission, Style, CustomField, ResourceState
 from noc.project.models.project import Project
 from noc.peer.models import AS
 from noc.vc.models import VCBindFilter
-from noc.sa.models import ReduceTask, ManagedObject
+from noc.sa.models.reducetask import ReduceTask
+from noc.sa.models.managedobject import ManagedObject
 from noc.lib.db import SQL
 
 

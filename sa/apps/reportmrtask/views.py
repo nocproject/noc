@@ -11,7 +11,7 @@ import datetime
 from django.utils.dateformat import DateFormat
 ## NOC modules
 from noc.lib.app.simplereport import *
-from noc.sa.models import ReduceTask
+from noc.sa.models.reducetask import ReduceTask
 from noc import settings
 ##
 ## Map/Reduce task report

@@ -12,7 +12,7 @@ import re
 from django import template
 from django.utils.safestring import SafeString
 ## NOC modules
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
 
 register = template.Library()
 

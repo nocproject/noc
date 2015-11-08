@@ -596,7 +596,8 @@ class Application(object):
     @view(url="^mrt/(?P<name>[^/]+)/$", method=["POST"],
           access=True, api=True)
     def api_run_mrt(self, request, name):
-        from noc.sa.models import ReduceTask, ManagedObjectSelector
+        from noc.sa.models.reducetask import ReduceTask
+        from noc.sa.models.managedobjectselector import ManagedObjectSelector
 
         # Check MRT configured
         if name not in self.mrt_config:
@@ -643,7 +644,8 @@ class Application(object):
     @view(url="^mrt/(?P<name>[^/]+)/(?P<task>\d+)/$", method=["GET"],
           access=True, api=True)
     def api_get_mrt_result(self, request, name, task):
-        from noc.sa.models import ReduceTask, ManagedObjectSelector
+        from noc.sa.models.reducetask import ReduceTask
+        from noc.sa.models.managedobjectselector import ManagedObjectSelector
 
         # Check MRT configured
         if name not in self.mrt_config:

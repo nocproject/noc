@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.sa.models import UserAccess
+from noc.sa.models.useraccess import UserAccess
 
 
 class UserAccessApplication(ExtModelApplication):

@@ -12,7 +12,7 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 # NOC modules
 from noc.peer.models import WhoisCache
-from noc.sa.models import profile_registry
+from noc.core.profile.loader import loader
 
 
 class Command(BaseCommand):
@@ -33,8 +33,7 @@ class Command(BaseCommand):
             raise CommandError("No expression given")
         expression = args[0]
         # Process profile
-        if (options["profile"] and
-            options["profile"] not in profile_registry.classes):
+        if options["profile"] and loader.has_profile(options["profile"]):
             raise CommandError("Invalid profile: %s" % options["profile"])
         # Create output
         try:
@@ -52,7 +51,7 @@ class Command(BaseCommand):
         if profile is None:
             l = "\n".join(p[0] for p in prefixes)
         else:
-            l = profile_registry[profile]().generate_prefix_list(name, prefixes)
+            l = loader.get_profile(profile)().generate_prefix_list(name, prefixes)
         if not l.endswith("\n"):
             l += "\n"
         out.write(l)
