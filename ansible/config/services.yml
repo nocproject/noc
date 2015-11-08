@@ -123,6 +123,11 @@ config:
       type: int
       default: 20
 
+    tos:
+      label: IP ToS mark
+      type: int
+      default: 0
+
   discovery:
     max_threads:
       label: Discovery threads
