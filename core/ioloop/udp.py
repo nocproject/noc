@@ -32,11 +32,15 @@ class UDPSocket(object):
         # Close socket
         sock.close()
     """
-    def __init__(self, ioloop=None):
+    def __init__(self, ioloop=None, tos=None):
         self.ioloop = ioloop or IOLoop.current()
         self.send_buffer = None  # (data, address)
         self.bufsize = None
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        if tos:
+            self.socket.setsockopt(
+                socket.IPPROTO_IP, socket.IP_TOS, tos
+            )
         self.fd = self.socket.fileno()
         self.socket.setblocking(0)
         self.future = None

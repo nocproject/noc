@@ -44,6 +44,7 @@ class SNMP(object):
                     address=self.script.credentials["address"],
                     oids=oids,
                     community=str(self.script.credentials["snmp_ro"]),
+                    tos=self.script.tos,
                     ioloop=self.get_ioloop()
                 )
             except SNMPError, why:
@@ -68,6 +69,7 @@ class SNMP(object):
                     address=self.script.credentials["address"],
                     varbinds=varbinds,
                     community=str(self.script.credentials["snmp_rw"]),
+                    tos=self.script.tos,
                     ioloop=self.get_ioloop()
                 )
             except SNMPError, why:
@@ -100,6 +102,7 @@ class SNMP(object):
                     community=str(self.script.credentials["snmp_ro"]),
                     bulk=self.script.has_snmp_bulk,
                     filter=filter,
+                    tos=self.script.tos,
                     ioloop=self.get_ioloop()
                 )
             except SNMPError, why:
@@ -124,6 +127,7 @@ class SNMP(object):
                     bulk=self.script.has_snmp_bulk if bulk is None else bulk,
                     filter=filter,
                     only_first=only_first,
+                    tos=self.script.tos,
                     ioloop=self.get_ioloop()
                 )
             except SNMPError, why:

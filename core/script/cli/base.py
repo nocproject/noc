@@ -27,7 +27,7 @@ class CLI(object):
     class CLIError(Exception): pass
     class InvalidPagerPattern(Exception): pass
 
-    def __init__(self, script):
+    def __init__(self, script, tos=None):
         self.script = script
         self.profile = script.profile
         self.logger = PrefixLoggerAdapter(self.script.logger, self.name)
@@ -44,9 +44,14 @@ class CLI(object):
         self.result = None
         self.pattern_table = None
         self.collected_data = []
+        self.tos = tos
 
     def create_iostream(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if self.tos:
+            s.setsockopt(
+                socket.IPPROTO_IP, socket.IP_TOS, self.tos
+            )
         return self.iostream_class(s, self)
 
     def execute(self, cmd):
