@@ -31,6 +31,7 @@ def snmp_get(address, oids, port=161,
              community="public",
              version=SNMP_v2c,
              timeout=10,
+             tos=None,
              ioloop=None):
     """
     Perform SNMP get request and returns Future to be used
@@ -45,7 +46,7 @@ def snmp_get(address, oids, port=161,
     else:
         raise ValueError("oids must be either string or dict")
     logger.debug("[%s] SNMP GET %s", address, oids)
-    sock = UDPSocket(ioloop=ioloop)
+    sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
     # Send GET PDU
     pdu = get_pdu(community=community, oids=oids)
@@ -84,6 +85,7 @@ def snmp_count(address, oid, port=161,
                bulk=False,
                filter=None,
                max_repetitions=BULK_MAX_REPETITIONS,
+               tos=None,
                ioloop=None):
     """
     Perform SNMP get request and returns Future to be used
@@ -94,7 +96,7 @@ def snmp_count(address, oid, port=161,
         filter = lambda x, y: True
     poid = oid + "."
     result = 0
-    sock = UDPSocket(ioloop=ioloop)
+    sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
     while True:
         # Get PDU
@@ -139,6 +141,7 @@ def snmp_getnext(address, oid, port=161,
                  filter=None,
                  max_repetitions=BULK_MAX_REPETITIONS,
                  only_first=False,
+                 tos=None,
                  ioloop=None):
     """
     Perform SNMP GETNEXT/BULK request and returns Future to be used
@@ -149,7 +152,7 @@ def snmp_getnext(address, oid, port=161,
         filter = lambda x, y: True
     poid = oid + "."
     result = []
-    sock = UDPSocket(ioloop=ioloop)
+    sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
     while True:
         # Get PDU
@@ -189,13 +192,14 @@ def snmp_set(address, varbinds, port=161,
              community="public",
              version=SNMP_v2c,
              timeout=10,
+             tos=None,
              ioloop=None):
     """
     Perform SNMP set request and returns Future to be used
     inside @tornado.gen.coroutine
     """
     logger.debug("[%s] SNMP SET %s", address, varbinds)
-    sock = UDPSocket(ioloop=ioloop)
+    sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
     # Send GET PDU
     pdu = set_pdu(community=community, varbinds=varbinds)

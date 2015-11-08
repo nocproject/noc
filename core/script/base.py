@@ -78,8 +78,9 @@ class BaseScript(object):
     def __init__(self, service, credentials,
                  args=None, capabilities=None,
                  version=None, parent=None, timeout=None,
-                 name = None):
+                 name=None):
         self.service = service
+        self.tos = self.service.config.tos
         self.pool = self.service.config.pool
         self.parent = parent
         name = name or self.name
@@ -561,7 +562,7 @@ class BaseScript(object):
             self.logger.debug("Open %s CLI", protocol)
             self.cli_stream = get_solution(
                 self.cli_protocols[protocol]
-            )(self)
+            )(self, tos=self.tos)
             # Run session setup
             if self.profile.setup_session:
                 self.logger.debug("Setup session")
