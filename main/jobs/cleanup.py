@@ -14,7 +14,8 @@ from django.db import transaction
 from mongoengine.django.sessions import MongoSession
 ## NOC modules
 from noc.lib.scheduler.autointervaljob import AutoIntervalJob
-from noc.sa.models import ReduceTask, MapTask
+from noc.sa.models.reducetask import ReduceTask
+from noc.sa.models.maptask import MapTask
 from noc.lib.db import vacuum
 from noc.sa.models.failedscriptlog import FailedScriptLog
 

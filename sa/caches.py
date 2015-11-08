@@ -9,7 +9,7 @@
 ## NOC modules
 from noc.settings import config
 from noc.lib.cache import Cache
-from noc.sa.models import ManagedObjectSelector
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 
 
 class ManagedObjectSelectorObjectsIds(Cache):

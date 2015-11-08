@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.sa.models import AuthProfile
+from noc.sa.models.authprofile import AuthProfile
 
 
 class AuthProfileApplication(ExtModelApplication):

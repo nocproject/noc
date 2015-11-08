@@ -8,7 +8,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.inv.models import Interface, InterfaceProfile
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models import ManagedObjectAttribute
 
 

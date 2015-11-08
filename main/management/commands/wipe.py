@@ -78,7 +78,7 @@ class Command(BaseCommand):
         :return: ManagedObject
         :rtype: ManagedObject
         """
-        from noc.sa.models import ManagedObject
+        from noc.sa.models.managedobject import ManagedObject
 
         # Try to get object by id
         if is_int(o_id):
@@ -132,9 +132,10 @@ class Command(BaseCommand):
         """
         from noc.main.models import AuditTrail, NotificationGroupUser,\
                                     UserProfile, Checkpoint, UserState
-        from noc.sa.models import UserAccess
-        from noc.fm.models import ActiveAlarm
-        from noc.ip.models import PrefixAccess, PrefixBookmark
+        from noc.sa.models.useraccess import UserAccess
+        from noc.fm.models.activealarm import ActiveAlarm
+        from noc.ip.models.prefixaccess import PrefixAccess
+        from noc.ip.models.prefixbookmark import PrefixBookmark
         from noc.kb.models import KBEntryPreviewLog, KBUserBookmark
         # Clean UserState
         with self.log("Cleaning user preferences"):

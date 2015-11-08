@@ -60,8 +60,9 @@ class Task(noc.lib.periodic.Task):
     TIMEOUT=60
     
     def execute(self):
-        from noc.sa.models import ReduceTask,ManagedObject
-        from noc.ip.models import Address
+        from noc.sa.models.reducetask import ReduceTask
+        from noc.sa.models.managedobject import ManagedObject
+        from noc.ip.models.address import Address
         
         # Get a list of managed objects to fetch ARP cache
         objects=list(ManagedObject.objects.raw("""

@@ -10,7 +10,9 @@
 import sys
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
-from noc.sa.models import ManagedObjectSelector, ManagedObject, ReduceTask
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.reducetask import ReduceTask
 
 
 ## Reduce task script

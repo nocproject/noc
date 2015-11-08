@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.sa.models import ManagedObjectProfile
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
 
 class ManagedObjectProfileApplication(ExtModelApplication):

@@ -15,7 +15,7 @@ from django.db import models
 ## NOC modules
 from error import (MIBRequiredException, MIBNotFoundException,
                    InvalidTypedef, OIDCollision)
-from noc.sa.models import ManagedObjectSelector
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models import TimePattern, NotificationGroup, PyRule
 from noc.main.models import Template as NOCTemplate
 

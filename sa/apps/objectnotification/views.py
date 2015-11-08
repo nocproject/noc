@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.sa.models import ObjectNotification
+from noc.sa.models.objectnotification import ObjectNotification
 
 
 class ObjectNotificationApplication(ExtModelApplication):

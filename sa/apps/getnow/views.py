@@ -8,7 +8,7 @@
 
 #  # NOC modules
 from noc.lib.app import view, ExtApplication
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
 from noc.lib.dateutils import humanize_distance
 from noc.sa.interfaces.base import ModelParameter
 

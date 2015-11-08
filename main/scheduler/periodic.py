@@ -20,8 +20,8 @@ from django.db import transaction, reset_queries
 from noc.lib.periodic import periodic_registry
 from noc.lib.debug import error_report
 from noc.main.models import Schedule, TimePattern, PyRule
-from noc.sa.models import ManagedObject
-from noc.fm.models import NewEvent
+from noc.sa.models.managedobject import ManagedObject
+from noc.fm.models.newevent import NewEvent
 
 
 class PeriodicScheduler(threading.Thread):

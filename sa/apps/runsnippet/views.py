@@ -13,7 +13,9 @@ from django import forms
 from django.utils.datastructures import SortedDict
 ## NOC modules
 from noc.lib.app import Application, view, NOCForm
-from noc.sa.models import CommandSnippet, ReduceTask, ManagedObject
+from noc.sa.models.commandsnippet import CommandSnippet
+from noc.sa.models.reducetask import ReduceTask
+from noc.sa.models.managedobject import ManagedObject
 from noc.main.models import Permission
 from noc.lib.mac import MAC
 

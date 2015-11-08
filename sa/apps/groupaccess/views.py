@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.sa.models import GroupAccess
+from noc.sa.models.groupaccess import GroupAccess
 
 
 class GroupAccessApplication(ExtModelApplication):

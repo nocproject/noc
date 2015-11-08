@@ -12,7 +12,7 @@ from collections import defaultdict
 from noc.lib.app import ExtApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface
-from noc.sa.models import ManagedObject
+from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
 from noc.sa.models.objectstatus import ObjectStatus

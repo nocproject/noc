@@ -20,7 +20,7 @@ from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.mib import MIB
 from noc.fm.models.utils import get_alarm, get_event, get_severity
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models import AdministrativeDomain
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.selectorcache import SelectorCache
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter)
