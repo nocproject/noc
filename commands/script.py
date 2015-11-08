@@ -34,6 +34,13 @@ class Command(BaseCommand):
             help="Pretty-print output"
         )
         parser.add_argument(
+            "--yaml",
+            action="store_true",
+            dest="yaml",
+            default=False,
+            help="YAML output"
+        )
+        parser.add_argument(
             "script",
             nargs=1,
             help="Script name"
@@ -50,6 +57,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, config, script, object_name, arguments, pretty,
+               yaml,
                *args, **options):
         # Get object
         obj = self.get_object(object_name[0])
@@ -75,6 +83,10 @@ class Command(BaseCommand):
         result = scr.run()
         if pretty:
             pprint.pprint(result)
+        elif yaml:
+            import yaml
+            import sys
+            yaml.dump(result, sys.stdout)
         else:
             print result
 
