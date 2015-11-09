@@ -203,6 +203,7 @@ class Interface(Document):
 
     @property
     def subinterface_set(self):
+        from subinterface import SubInterface
         return SubInterface.objects.filter(interface=self.id)
 
     @property
@@ -282,6 +283,5 @@ class Interface(Document):
 
 
 ## Avoid circular references
-from subinterface import SubInterface
 from link import Link
 from macdb import MACDB
