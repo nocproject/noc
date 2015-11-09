@@ -609,7 +609,7 @@ class ScriptsHub(object):
         else:
             from loader import loader as script_loader
 
-            sc = script_loader.get_script("name")
+            sc = script_loader.get_script(item)
             if sc:
                 parent = self._script
                 return sc(
