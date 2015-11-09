@@ -18,8 +18,6 @@ from noc.lib.debug import error_report
 from noc.lib.log import PrefixLoggerAdapter
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
-from noc.inv.models.link import Link
-from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -107,7 +105,7 @@ class DiscoveryCheck(object):
         key = (mo, name)
         if key not in self.if_name_cache:
             i = Interface.objects.filter(
-                managed_object=self.object.id,
+                managed_object=mo,
                 name=name
             ).first()
             self.if_name_cache[key] = i
@@ -121,7 +119,7 @@ class DiscoveryCheck(object):
         key = (mo, mac)
         if key not in self.if_mac_cache:
             li = list(Interface.objects.filter(
-                managed_object=self.object.id,
+                managed_object=mo,
                 mac=mac,
                 type="physical"
             ))
@@ -155,7 +153,8 @@ class DiscoveryCheck(object):
         """
         Fill interface cache
         """
-        self.if_name_cache[name] = iface
+        key = (self.object, name)
+        self.if_name_cache[key] = iface
 
     def get_subinterface(self, interface, name):
         """
@@ -181,19 +180,21 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         self.neighbor_hostname_cache = {}  # (method, id) -> managed object
         self.neighbor_ip_cache = {}  # (method, ip) -> managed object
         self.neighbor_mac_cache = {}  # (method, mac) -> managed object
+        self.neighbor_id_cache = {}
 
     def handler(self):
         self.logger.info("Checking %s topology", self.name)
         # remote object -> [(local, remote), ..]
         candidates = defaultdict(set)
         loops = {}  # first interface, second interface
+        # Check local side
         for li, ro, ri in self.iter_neighbors(self.object):
             # Resolve remote object
-            remote_object = self.get_neighbor(ri)
+            remote_object = self.get_neighbor(ro)
             if not remote_object:
                 self.logger.debug(
                     "Remote object '%s' is not found. Skipping",
-                    ri
+                    ro
                 )
                 continue
             # Resolve remote interface name
@@ -201,6 +202,12 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_object,
                 ri
             )
+            if not remote_interface:
+                self.logger.debug(
+                    "Cannot resolve remote interface %s:%r. Skipping",
+                    remote_object.name, ri
+                )
+                continue
             # Detecting loops
             if remote_object.id == self.object.id:
                 loops[li] = remote_interface
@@ -240,7 +247,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     self.object,
                     ri
                 )
-                confirmed.add((remote_interface, li))
+                if remote_interface:
+                    confirmed.add((remote_interface, li))
             for l, r in candidates[remote_object] & confirmed:
                 self.confirm_link(
                     self.object, l,
@@ -276,9 +284,23 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 if len(m) == 1:
                     n = m[0].object  # Exact match
             self.neighbor_hostname_cache[hostname] = n
+            self.neighbor_id_cache[n.id] = n
         return self.neighbor_hostname_cache[hostname]
 
     get_neighbor = get_neighbor_by_hostname
+
+    def get_neighbor_by_id(self, id):
+        """
+        Resolve neighbor by managed object's id
+        """
+        if id not in self.neighbor_id_cache:
+            try:
+                mo = ManagedObject.objects.get(id=id)
+                self.neighbor_id_cache[id] = mo
+                self.neighbor_hostname_cache[mo.name] = id
+            except ManagedObject.DoesNotExist:
+                self.neighbor_id_cache[id] = None
+        return self.neighbor_id_cache[id]
 
     def get_neighbor_by_mac(self, mac):
         """
@@ -286,7 +308,42 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         """
         if mac not in self.neighbor_mac_cache:
             d = DiscoveryID.find_object(mac)
-            self.neighbor_mac_cache[mac] = d
+            if not d:
+                self.neighbor_mac_cache[mac] = d
+                self.neighbor_id_cache[d.id] = d
+            else:
+                # Fallback to interface mac
+                r = Interface.objects.aggregate(
+                    {
+                        "$match": {
+                            "mac": mac
+                        }
+                    },
+                    {
+                        "$group": {
+                            "_id": "$managed_object",
+                            "total": {
+                                "$sum": 1
+                            }
+                        }
+                    },
+                    {
+                        "$limit": 2
+                    }
+                )
+                n_id = None
+                for ar in r:
+                    if n_id is None:
+                        n_id = ar["_id"]
+                    else:
+                        # Ambiguous result
+                        n_id = None
+                        break
+                if n_id:
+                    self.neighbor_mac_cache[mac] = self.get_neighbor_by_id(n_id)
+                else:
+                    self.neighbor_mac_cache[mac] = None
+
         return self.neighbor_mac_cache[mac]
 
     def get_neighbor_by_ip(self, ip):
@@ -297,6 +354,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             d = DiscoveryID.objects.filter(router_id=ip).first()
             if d:
                 self.neighbor_ip_cache[ip] = d.object
+                self.neighbor_id_cache[d.object.id] = d.object
             else:
                 # @todo: Try interface lookup
                 self.neighbor_ip_cache[ip] = None
@@ -312,6 +370,11 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
 
     def confirm_link(self, local_object, local_interface,
                      remote_object, remote_interface):
+        self.logger.debug(
+            "Confirm link: %s:%s -- %s:%s",
+            local_object, local_interface,
+            remote_object, remote_interface
+        )
         # Get interfaces
         li = self.get_interface_by_name(mo=local_object,
                                         name=local_interface)
@@ -372,8 +435,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         # * O - Link created only if not exists
         # * R - Existing link will be replaced
         # * C - Link will be attached to cloud
-        lpolicy = llink.interface_profile.discovery_policy
-        rpolicy = llink.interface_profile.discovery_policy
+        lpolicy = li.profile.discovery_policy
+        rpolicy = ri.profile.discovery_policy
         #
         if lpolicy == "I" or rpolicy == "I":
             self.logger.debug(
@@ -462,7 +525,12 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
 
     def reject_link(self, local_object, local_interface,
                     remote_object, remote_interface):
-                # Get interfaces
+        self.logger.debug(
+            "Reject link: %s:%s -- %s:%s",
+            local_object, local_interface,
+            remote_object, remote_interface
+        )
+        # Get interfaces
         li = self.get_interface_by_name(mo=local_object,
                                         name=local_interface)
         if not li:
