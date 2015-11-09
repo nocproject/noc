@@ -327,7 +327,8 @@ class InterfaceCheck(DiscoveryCheck):
         Try to resolve missed ifindexes
         """
         missed_ifindexes = [
-            n for n in self.if_cache if self.if_cache[n].ifindex
+            n[1] for n in self.if_name_cache
+            if n in self.if_name_cache and self.if_name_cache[n].ifindex is None
         ]
         if not missed_ifindexes:
             return
@@ -345,7 +346,7 @@ class InterfaceCheck(DiscoveryCheck):
         if not updates:
             return
         for n, i in updates.iteritems():
-            iface = self.get_interface(n)
+            iface = self.get_interface_by_name(n)
             if iface:
                 self.logger.info("Set ifindex for %s: %s", n, i)
                 iface.ifindex = i
