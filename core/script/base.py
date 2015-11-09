@@ -609,7 +609,9 @@ class ScriptsHub(object):
         else:
             from loader import loader as script_loader
 
-            sc = script_loader.get_script(item)
+            sc = script_loader.get_script(
+                "%s.%s" % (self._script.profile.name, item)
+            )
             if sc:
                 parent = self._script
                 return sc(
@@ -630,5 +632,5 @@ class ScriptsHub(object):
         from loader import loader as script_loader
         if "." not in item:
             # Normalize to full name
-            item = "%s.%s" % (self._script.profile, item)
+            item = "%s.%s" % (self._script.profile.name, item)
         return script_loader.has_script(item)
