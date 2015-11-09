@@ -31,7 +31,7 @@ class SNMP(object):
             self.ioloop = tornado.ioloop.IOLoop()
         return self.ioloop
 
-    def get(self, oids):
+    def get(self, oids, cached=False):
         """
         Perform SNMP GET request
         :param oid: string or list of oids
