@@ -15,6 +15,7 @@ import time
 from tornado.httpclient import HTTPClient, HTTPError
 ## NOC modules
 from snmp.base import SNMP
+from snmp.beef import BeefSNMP
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
 from context import (ConfigurationContextManager, CacheContextManager,
@@ -72,7 +73,8 @@ class BaseScript(object):
 
     cli_protocols = {
         "telnet": "noc.core.script.cli.telnet.TelnetCLI",
-        "ssh": "noc.core.script.cli.ssh.SSHCLI"
+        "ssh": "noc.core.script.cli.ssh.SSHCLI",
+        "beef": "noc.core.script.cli.beef.BeefCLI"
     }
 
     def __init__(self, service, credentials,
@@ -98,7 +100,10 @@ class BaseScript(object):
         self.start_time = None
         self.args = self.clean_input(args or {})
         self.cli_stream = None
-        self.snmp = SNMP(self)
+        if self.credentials.get("beef"):
+            self.snmp = BeefSNMP(self)
+        else:
+            self.snmp = SNMP(self)
         self.http = HTTPClient()
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.to_shutdown_session = False
