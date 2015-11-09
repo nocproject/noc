@@ -114,7 +114,7 @@ class Link(Document):
         """
         self.last_seen = datetime.datetime.now()
         if method:
-            self.last_seen.method = method
+            self.discovery_method = method
         self.save()
 
     @classmethod
