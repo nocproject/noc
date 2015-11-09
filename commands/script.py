@@ -76,7 +76,7 @@ class Command(BaseCommand):
             service=service,
             credentials=credentials,
             capabilities=obj.get_caps(),
-            version=None,
+            version=None,  #@todo: Fix
             timeout=3600,
             name=script
         )
