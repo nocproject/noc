@@ -122,6 +122,19 @@ class BaseScript(object):
         self.to_shutdown_session = False
         self.scripts = ScriptsHub(self)
         self.is_cached = False  # Cache CLI and SNMP calls, if set
+        # Suitable only when self.parent is None.
+        # Cached results for scripts marked with "cache"
+        self.call_cache = {}
+        #
+        if not parent and version and not name.endswith(".get_version"):
+            self.logger.debug("Filling get_version cache with %s",
+                              version)
+            s = name.split(".")
+            self.set_cache(
+                "%s.%s.get_version" % (s[0], s[1]),
+                {},
+                version
+            )
 
     def __call__(self, *args, **kwargs):
         self.args = kwargs
