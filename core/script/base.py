@@ -9,8 +9,9 @@
 ## Python modules
 import re
 import logging
-import functools
 import time
+import itertools
+import operator
 ## Third-party modules
 from tornado.httpclient import HTTPClient, HTTPError
 ## NOC modules
@@ -28,6 +29,18 @@ class BaseScript(object):
     """
     Service Activation script base class
     """
+    class __metaclass__(type):
+        """
+        Process @match decorators
+        """
+        def __new__(mcs, name, bases, attrs):
+            n = type.__new__(mcs, name, bases, attrs)
+            n._execute_chain = sorted(
+                (v for v in attrs.itervalues() if hasattr(v, "_seq")),
+                key=operator.attrgetter("_seq")
+            )
+            return n
+
     # Script name in form of <vendor>.<system>.<name>
     name = None
     # Enable call cache
@@ -43,7 +56,7 @@ class BaseScript(object):
     #
     base_logger = logging.getLogger(name or "script")
     #
-    _execute_chain = []
+    _x_seq = itertools.count()
 
     # Common errors
     # LoginError = LoginError
@@ -224,10 +237,10 @@ class BaseScript(object):
         """
         execute method decorator
         """
-        @functools.wraps
         def wrap(f):
             # Append to the execute chain
-            cls._execute_chain += [(x, f)]
+            f._match = x
+            f._seq = cls._x_seq.next()
             return f
 
         # Compile check function
@@ -253,8 +266,8 @@ class BaseScript(object):
             # Get version information
             v = self.scripts.get_version()
             # Find and execute proper handler
-            for c, f in self._execute_chain:
-                if c(self, v):
+            for f in self._execute_chain:
+                if f._match(self, v):
                     return f(self, **kwargs)
                 # Raise error
             raise self.NotSupportedError()
