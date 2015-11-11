@@ -12,7 +12,7 @@
         "noc.fm.handlers.alarm.managed_object.set_down_severity"
     ],
     "subject_template": "Ping Failed",
-    "body_template": "Failed to ping managed object {{event.managed_object.name}} (IP: {{event.managed_object.address}}). All SA tasks to this object are temporary suspended",
+    "body_template": "Failed to ping managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). All SA tasks to this object are temporary suspended",
     "symptoms": "Cannot execute SA tasks on the object",
     "probable_causes": "The object is not responding to ICMP echo-requests",
     "recommended_actions": "Check object is alive. Check routing to this object. Check firewalls",

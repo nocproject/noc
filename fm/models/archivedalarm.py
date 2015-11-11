@@ -67,7 +67,7 @@ class ArchivedAlarm(nosql.Document):
         Prepare template variables
         """
         vars = self.vars.copy()
-        vars.update({"event": self})
+        vars.update({"alarm": self})
         return vars
 
     @property
@@ -151,3 +151,4 @@ class ArchivedAlarm(nosql.Document):
 
 ## Avoid circular references
 from activealarm import ActiveAlarm
+
