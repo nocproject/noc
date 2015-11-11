@@ -284,7 +284,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 if len(m) == 1:
                     n = m[0].object  # Exact match
             self.neighbor_hostname_cache[hostname] = n
-            self.neighbor_id_cache[n.id] = n
+            if n:
+                self.neighbor_id_cache[n.id] = n
         return self.neighbor_hostname_cache[hostname]
 
     get_neighbor = get_neighbor_by_hostname
