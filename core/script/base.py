@@ -113,10 +113,13 @@ class BaseScript(object):
         self.start_time = None
         self.args = self.clean_input(args or {})
         self.cli_stream = None
-        if self.credentials.get("beef"):
-            self.snmp = BeefSNMP(self)
+        if self.parent:
+            self.snmp = self.root.snmp
         else:
-            self.snmp = SNMP(self)
+            if self.credentials.get("beef"):
+                self.snmp = BeefSNMP(self)
+            else:
+                self.snmp = SNMP(self)
         self.http = HTTPClient()
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.to_shutdown_session = False

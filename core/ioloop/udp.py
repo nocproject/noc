@@ -36,6 +36,8 @@ class UDPSocket(object):
         self.ioloop = ioloop or IOLoop.current()
         self.send_buffer = None  # (data, address)
         self.bufsize = None
+        self.timeout_task = None
+        self.socket = None
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         if tos:
             self.socket.setsockopt(
@@ -45,7 +47,6 @@ class UDPSocket(object):
         self.socket.setblocking(0)
         self.future = None
         self.timeout = None
-        self.timeout_task = None
         self.events = None
 
     def __del__(self):
