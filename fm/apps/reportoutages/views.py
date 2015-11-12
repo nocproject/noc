@@ -43,7 +43,7 @@ class ReportOutagesApplication(SimpleReport):
             start = max(o.start, b)
             stop = o.stop if o.stop else now
             outages[o.object] += [o]
-            otime[o.object] = total_seconds(stop - start)
+            otime[o.object] += total_seconds(stop - start)
         td = total_seconds(d)
         # Load managed objects
         mos = list(otime)
