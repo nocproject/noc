@@ -127,10 +127,10 @@ def get_traceback_frames(tb):
     if not frames:
         frames = [{
             "filename": "unknown",
-                    "function": "?",
-                    "lineno": "?",
-                    "context_line": "???",
-                }]
+            "function": "?",
+            "lineno": "?",
+            "context_line": "???"
+        }]
     return frames
 
 
@@ -188,18 +188,21 @@ def format_frames(frames, reverse=TRACEBACK_REVERSE):
     for f in fr:
         r += [u"File: %s (Line: %s)" % (os.path.relpath(f["filename"]), f["lineno"])]
         r += [u"Function: %s" % (f["function"])]
-        r += [format_source(f["pre_context_lineno"], f["pre_context"])]
-        r += [u"%5d ==> %s" % (f["lineno"], f["context_line"])]
-        r += [format_source(f["lineno"] + 1, f["post_context"])]
-        r += [u"Variables:"]
-        for n, v in f["vars"]:
-            try:
-                pv = unicode(repr(v), "utf-8")
-                if len(pv) > 72:
-                    pv = u"\n" + pprint.pformat(v)
-            except:
-                pv = u"repr() failed"
-            r += [u"%20s = %s" % (n, pv)]
+        if "pre_context_lineno" in f:
+            r += [format_source(f["pre_context_lineno"], f["pre_context"])]
+            r += [u"%5d ==> %s" % (f["lineno"], f["context_line"])]
+            r += [format_source(f["lineno"] + 1, f["post_context"])]
+            r += [u"Variables:"]
+            for n, v in f["vars"]:
+                try:
+                    pv = unicode(repr(v), "utf-8")
+                    if len(pv) > 72:
+                        pv = u"\n" + pprint.pformat(v)
+                except:
+                    pv = u"repr() failed"
+                r += [u"%20s = %s" % (n, pv)]
+        else:
+            r += ["???"]
         r += [u"-" * 72]
     r += [u"END OF TRACEBACK"]
     return u"\n".join(r)
@@ -232,17 +235,31 @@ def get_traceback(reverse=TRACEBACK_REVERSE, fp=None):
     except:
         pass  # Ignore exceptions
     now = datetime.datetime.now()
-    r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
-    r += ["BRANCH: %s TIP: %s" % (get_branch(), get_tip())]
-    r += ["PROCESS: %s" % sys.argv[0]]
+    try:
+        branch = get_branch()
+        tip = get_tip()
+    except:
+        # We cannot get branch and tip on "Too many open files" error
+        branch = "unknown"
+        tip = "unknown"
+    r = [
+        "UNHANDLED EXCEPTION (%s)" % str(now),
+        "BRANCH: %s TIP: %s" % (branch, tip),
+        "PROCESS: %s" % sys.argv[0]
+    ]
     if fp:
         r += ["ERROR FINGERPRINT: %s" % fp]
-    r += ["WORKING DIRECTORY: %s" % os.getcwd()]
-    r += ["EXCEPTION: %s %s" % (t, v)]
-    r += [format_frames(get_traceback_frames(tb), reverse=reverse)]
+    r += [
+        "WORKING DIRECTORY: %s" % os.getcwd(),
+        "EXCEPTION: %s %s" % (t, v),
+        format_frames(get_traceback_frames(tb), reverse=reverse)
+    ]
     if not reverse:
-        r += ["UNHANDLED EXCEPTION (%s)" % str(now)]
-        r += [str(t), str(v)]
+        r += [
+            "UNHANDLED EXCEPTION (%s)" % str(now),
+            str(t),
+            str(v)
+        ]
     return "\n".join(r)
 
 
