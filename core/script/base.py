@@ -588,6 +588,8 @@ class BaseScript(object):
         return r
 
     def get_cli_stream(self):
+        if self.parent:
+            return self.root.get_cli_stream()
         if not self.cli_stream:
             protocol = self.credentials.get("cli_protocol", "telnet")
             self.logger.debug("Open %s CLI", protocol)
