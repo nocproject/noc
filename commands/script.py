@@ -41,6 +41,12 @@ class Command(BaseCommand):
             help="YAML output"
         )
         parser.add_argument(
+            "--without-snmp",
+            action="store_false",
+            dest="use_snmp",
+            help="Disable SNMP"
+        ),
+        parser.add_argument(
             "script",
             nargs=1,
             help="Script name"
@@ -57,7 +63,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, config, script, object_name, arguments, pretty,
-               yaml,
+               yaml, use_snmp,
                *args, **options):
         # Get object
         obj = self.get_object(object_name[0])
@@ -70,12 +76,20 @@ class Command(BaseCommand):
         script_class = loader.get_script(script)
         if not script_class:
             self.die("Failed to load script %s" % script_class)
+        # Get capabilities
+        caps = obj.get_caps()
+        #
+        if not use_snmp:
+            if "snmp_ro" in credentials:
+                del credentials["snmp_ro"]
+            if "SNMP" in caps:
+                del caps["SNMP"]
         # Run script
         service = ServiceStub(pool=obj.pool.name)
         scr = script_class(
             service=service,
             credentials=credentials,
-            capabilities=obj.get_caps(),
+            capabilities=caps,
             version=None,  #@todo: Fix
             timeout=3600,
             name=script
