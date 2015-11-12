@@ -14,7 +14,7 @@ esmre==0.3.1
 futures>=2.2.0
 ipython==3.1.0
 jsonschema==2.4.0
-protobuf==2.6.1
+Jinja2==2.8
 pyasn1==0.1.7
 pyasn1-modules==0.0.5
 pyparsing==2.0.3

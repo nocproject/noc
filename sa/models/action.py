@@ -8,14 +8,13 @@
 
 ## Python modules
 import re
-import time
-## Django modules
-from django.template import Template, Context
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, IntField,
                                 BooleanField, ListField,
                                 EmbeddedDocumentField)
+import jinja2
+## NOC modules
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 from noc.lib.ip import IP
@@ -131,8 +130,12 @@ class Action(Document):
         ac = self.get_commands(obj)
         if not ac:
             return None
-        ctx = Context(self.clean_args(obj, **kwargs))
-        commands = Template(ac.commands).render(ctx).splitlines()
+        # Render template
+        loader = jinja2.DictLoader({"tpl": ac.commands})
+        env = jinja2.Environment(loader=loader)
+        template = env.get_template("tpl")
+        commands = template.render(**self.clean_args(obj, **kwargs))
+        # Execute rendered commands
         if ac.config_mode:
             return obj.scripts.configure(commands=commands)
         else:
