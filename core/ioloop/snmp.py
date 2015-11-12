@@ -46,16 +46,18 @@ def snmp_get(address, oids, port=161,
     else:
         raise ValueError("oids must be either string or dict")
     logger.debug("[%s] SNMP GET %s", address, oids)
-    sock = UDPSocket(ioloop=ioloop, tos=tos)
-    sock.settimeout(timeout)
     # Send GET PDU
     pdu = get_pdu(community=community, oids=oids)
+    sock = UDPSocket(ioloop=ioloop, tos=tos)
+    sock.settimeout(timeout)
     # Wait for result
     try:
         yield sock.sendto(pdu, (address, port))
         data, addr = yield sock.recvfrom(4096)
     except socket.timeout:
         raise SNMPError(code=TIMED_OUT, oid=oids[0])
+    finally:
+        sock.close()
     resp = parse_get_response(data)
     if resp.error_status != NO_ERROR:
         oid = None
@@ -110,6 +112,7 @@ def snmp_count(address, oid, port=161,
             yield sock.sendto(pdu, (address, port))
             data, addr = yield sock.recvfrom(4096)
         except socket.timeout:
+            sock.close()
             raise SNMPError(code=TIMED_OUT, oid=oid)
         # Parse response
         resp = parse_get_response(data)
@@ -118,6 +121,7 @@ def snmp_count(address, oid, port=161,
             break
         elif resp.error_status != NO_ERROR:
             # Error
+            sock.close()
             raise SNMPError(code=resp.error_status, oid=oid)
         else:
             # Success value
@@ -129,7 +133,9 @@ def snmp_count(address, oid, port=161,
                 else:
                     logger.debug("[%s] COUNT result: %s",
                                  address, result)
+                    sock.close()
                     raise Return(result)
+    sock.close()
 
 
 @coroutine
@@ -166,6 +172,7 @@ def snmp_getnext(address, oid, port=161,
             yield sock.sendto(pdu, (address, port))
             data, addr = yield sock.recvfrom(4096)
         except socket.timeout:
+            sock.close()
             raise SNMPError(code=TIMED_OUT, oid=oid)
         # Parse response
         resp = parse_get_response(data)
@@ -174,6 +181,7 @@ def snmp_getnext(address, oid, port=161,
             break
         elif resp.error_status != NO_ERROR:
             # Error
+            sock.close()
             raise SNMPError(code=resp.error_status, oid=oid)
         else:
             # Success value
@@ -185,7 +193,9 @@ def snmp_getnext(address, oid, port=161,
                 else:
                     logger.debug("[%s] GETNEXT result: %s",
                                  address, result)
+                    sock.close()
                     raise Return(result)
+    sock.close()
 
 @coroutine
 def snmp_set(address, varbinds, port=161,
@@ -216,7 +226,9 @@ def snmp_set(address, varbinds, port=161,
             oid = resp.varbinds[resp.error_index - 1][0]
         logger.debug("[%s] SNMP error: %s %s",
                      address, oid, resp.error_status)
+        sock.close()
         raise SNMPError(code=resp.error_status, oid=oid)
     else:
         logger.debug("[%s] SET result: OK", address)
+        sock.close()
         raise Return(True)
