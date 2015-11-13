@@ -59,21 +59,24 @@ class BaseScript(object):
     _x_seq = itertools.count()
 
     # Common errors
-    # LoginError = LoginError
-    class CLISyntaxError(Exception):
-        pass
+    class ScriptError(Exception):
+        """Script error"""
 
-    class CLIOperationError(Exception):
-        pass
+    # LoginError = LoginError
+    class CLISyntaxError(ScriptError):
+        """Syntax error"""
+
+    class CLIOperationError(ScriptError):
+        """Operational CLI error"""
     # CLITransportError = CLITransportError
     # CLIDisconnectedError = CLIDisconnectedError
     # TimeOutError = TimeOutError
 
-    class NotSupportedError(Exception):
-        pass
+    class NotSupportedError(ScriptError):
+        """Feature is not supported"""
 
-    class UnexpectedResultError(Exception):
-        pass
+    class UnexpectedResultError(ScriptError):
+        """Unexpected result"""
 
     HTTPError = HTTPError
 
