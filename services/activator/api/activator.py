@@ -52,5 +52,8 @@ class ActivatorAPI(API):
             timeout=timeout,
             name=name
         )
-        result = script.run()
+        try:
+            result = script.run()
+        except script.ScriptError, why:
+            raise APIError("Script error: %s", why.__doc__)
         return result
