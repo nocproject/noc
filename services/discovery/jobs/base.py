@@ -309,7 +309,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         """
         if mac not in self.neighbor_mac_cache:
             d = DiscoveryID.find_object(mac)
-            if not d:
+            if d:
                 self.neighbor_mac_cache[mac] = d
                 self.neighbor_id_cache[d.id] = d
             else:
@@ -341,7 +341,9 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         n_id = None
                         break
                 if n_id:
-                    self.neighbor_mac_cache[mac] = self.get_neighbor_by_id(n_id)
+                    n = self.get_neighbor_by_id(n_id)
+                    self.neighbor_mac_cache[mac] = n
+                    self.neighbor_id_cache[n.id] = n
                 else:
                     self.neighbor_mac_cache[mac] = None
 
