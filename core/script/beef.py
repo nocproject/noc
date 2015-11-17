@@ -9,6 +9,9 @@
 ## Python modules
 import json
 import re
+import uuid
+import os
+import glob
 
 
 class Beef(object):
@@ -19,6 +22,7 @@ class Beef(object):
         "date", "private", "guid", "type"]
 
     type_signature = "script::beef"
+    BEEF_ROOT = "var/beef/sa"
 
     def __init__(self):
         self.guid = None
@@ -43,7 +47,7 @@ class Beef(object):
         def q(s):
             ts = type(s)
             if ts == dict:
-                return dict((k, q(s[k])) for k in s)
+                return dict((str(k), q(s[k])) for k in s)
             elif ts == list:
                 return [q(x) for x in s]
             elif isinstance(s, basestring):
@@ -58,6 +62,7 @@ class Beef(object):
         for n in self.beef_args:
             if n in beef:
                 setattr(self, n, q(beef[n]))
+        return self
 
     rx_timestamp = re.compile(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?$")
 
@@ -79,3 +84,28 @@ class Beef(object):
         else:
             # Return unprocessed
             return r
+
+    @classmethod
+    def load_by_id(cls, beef_id):
+        """
+        Find beef by ID or by path
+        :return: Beef instance or None
+        """
+        # Load from file
+        if os.path.isfile(beef_id):
+            beef = Beef()
+            beef.load(beef_id)
+            return beef
+        # Load by UUID
+        try:
+            uuid.UUID(beef_id)
+        except ValueError:
+            return None
+        #
+        for path in glob.glob(os.path.join(
+            cls.BEEF_ROOT, "*/*/*/*/%s.json" % beef_id
+        )):
+            beef = Beef()
+            beef.load(path)
+            return beef
+        return None
