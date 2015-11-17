@@ -1,0 +1,23 @@
+{
+    "name": "APC | NetShelter SX | 48U AR3107",
+    "$collection": "inv.objectmodels",
+    "uuid": "c5b7d7aa-f22e-4328-9b68-88ac78153852",
+    "vendor__code": "APC",
+    "description": "NetShelter SX 48U 600mm Wide x 1070mm Deep Enclosure",
+    "connections": [],
+    "data": {
+        "asset": {
+            "part_no": ["AR3107"]
+        },
+        "container": {
+            "container": true
+        },
+        "rack": {
+            "depth": 1050,
+            "front_door": "l",
+            "rear_door": "2",
+            "units": 48,
+            "width": 600
+        }
+    }
+}

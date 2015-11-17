@@ -1,7 +1,7 @@
 {
     "name": "Juniper | EX | EX3300-24P",
     "$collection": "inv.objectmodels",
-    "uuid": "",
+    "uuid": "0673fb5b-d669-4fab-8f65-dea15243e264",
     "vendor__code": "JUNIPER",
     "description": "24-port 10/100/1000BASE-T (24-ports PoE+) with 4 SFP uplink ports\n",
     "connection_rule__name": "Juniper | EX2200",

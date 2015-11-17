@@ -1,7 +1,7 @@
 {
     "name": "Juniper | SRX | SRX240H2",
     "$collection": "inv.objectmodels",
-    "uuid": "",
+    "uuid": "635842cc-4a21-49ed-89fb-3456d1d2419a",
     "vendor__code": "JUNIPER",
     "description": "SRX services gateway 240 with 16 x GE ports, 4xmini-PIM slots, and high memory (2GB RAM, 1GB FLASH)",
     "connections": [
@@ -228,11 +228,11 @@
         "rackmount": {
             "units": 1
         },
-        "dimensions": {
-            "depth": 381,
-            "height": 44.5,
-            "width": 445
-        },
+		"dimensions": {
+			"depth": 381,
+			"height": 44.5,
+			"width": 445
+		},
         "stack": {
             "stackable": true
         }

@@ -1,7 +1,7 @@
 {
     "name": "Cisco | 6500 | WS-C6509-V-E",
     "$collection": "inv.objectmodels",
-    "uuid": "",
+    "uuid": "b2d33890-9eb0-4b7d-b0e3-0707ed22761e",
     "vendor__code": "CISCO",
     "description": "Cisco C6509-V-E 9-slot Chassis",
     "connection_rule__name": "Cisco | 6500-E",

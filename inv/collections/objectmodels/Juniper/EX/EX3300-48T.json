@@ -1,7 +1,7 @@
 {
     "name": "Juniper | EX | EX3300-48T",
     "$collection": "inv.objectmodels",
-    "uuid": "",
+    "uuid": "ae566f15-6402-42dc-8ebc-50840e4476d1",
     "vendor__code": "JUNIPER",
     "description": "EX 3300, 48-port 10/100/1000BaseT with 4 SFP uplink ports\n",
     "connection_rule__name": "Juniper | EX2200",
