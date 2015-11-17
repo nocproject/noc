@@ -26,14 +26,16 @@ class Command(BaseCommand):
             default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
             help="Configuration path"
         )
-        parser.add_argument(
+        # Output options
+        out_group = parser.add_mutually_exclusive_group()
+        out_group.add_argument(
             "--pretty",
             action="store_true",
             dest="pretty",
             default=False,
             help="Pretty-print output"
         )
-        parser.add_argument(
+        out_group.add_argument(
             "--yaml",
             action="store_true",
             dest="yaml",
@@ -45,7 +47,7 @@ class Command(BaseCommand):
             action="store_false",
             dest="use_snmp",
             help="Disable SNMP"
-        ),
+        )
         parser.add_argument(
             "script",
             nargs=1,
