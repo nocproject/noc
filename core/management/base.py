@@ -75,7 +75,8 @@ class BaseCommand(object):
         """
         Apply default parser arguments
         """
-        parser.add_argument(
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument(
             "--loglevel",
             action="store",
             dest="loglevel",
@@ -85,14 +86,14 @@ class BaseCommand(object):
             ],
             default="info"
         )
-        parser.add_argument(
+        group.add_argument(
             "--quiet",
             action="store_const",
             dest="loglevel",
             const="none",
             help="Suppress logging"
         )
-        parser.add_argument(
+        group.add_argument(
             "--debug",
             action="store_const",
             dest="loglevel",
