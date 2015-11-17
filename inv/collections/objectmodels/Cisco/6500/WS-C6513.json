@@ -1,0 +1,169 @@
+{
+    "name": "Cisco | 6500 | WS-C6513",
+    "$collection": "inv.objectmodels",
+    "uuid": "dff1e2ad-af2b-4445-a72c-4d9bb691a3bb",
+    "vendor__code": "CISCO",
+    "description": "Cisco C6513 13-slot Chassis",
+    "connection_rule__name": "Cisco | 6500",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "CLK module slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "clk1",
+            "type__name": "Cisco | 6500 | CLK"
+        },
+        {
+            "description": "CLK module slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "clk2",
+            "type__name": "Cisco | 6500 | CLK"
+        },
+        {
+            "description": "VTT module slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "vtt1",
+            "type__name": "Cisco | 6500 | VTT"
+        },
+        {
+            "description": "VTT module slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "vtt2",
+            "type__name": "Cisco | 6500 | VTT"
+        },
+        {
+            "description": "VTT module slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "vtt3",
+            "type__name": "Cisco | 6500 | VTT"
+        },
+        {
+            "description": "Linecard slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard1",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "Linecard slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard2",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "Linecard slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard3",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "Linecard slot 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard4",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "Linecard slot 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard5",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "Linecard slot 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard6",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "Linecard 7/Supervisor slot 7",
+            "direction": "i",
+            "gender": "f",
+			"internal_name": "sup7",
+            "name": "linecard7",
+            "type__name": "Cisco | 7600 | Linecard/Supervisor"
+        },
+        {
+            "description": "Linecard 8/Supervisor slot 8",
+            "direction": "i",
+            "gender": "f",
+			"internal_name": "sup8",
+            "name": "linecard8",
+            "type__name": "Cisco | 7600 | Linecard/Supervisor"
+        },
+        {
+            "description": "Linecard slot 9",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard9",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+		{
+            "description": "Linecard slot 10",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard10",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+		{
+            "description": "Linecard slot 11",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard11",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+		{
+            "description": "Linecard slot 12",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard12",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+		{
+            "description": "Linecard slot 13",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard13",
+            "type__name": "Cisco | 7600 | Fabric Linecard"
+        },
+        {
+            "description": "Power Supply  slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Cisco | 6500 | PSU"
+        },
+        {
+            "description": "Power Supply slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Cisco | 6500 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-C6513"]
+        },
+        "dimensions": {
+            "depth": 460,
+            "height": 846,
+            "width": 437
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 20.0
+        }
+    }
+}
