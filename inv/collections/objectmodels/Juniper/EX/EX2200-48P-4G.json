@@ -1,7 +1,7 @@
 {
     "name": "Juniper | EX | EX2200-48P-4G",
     "$collection": "inv.objectmodels",
-    "uuid": "",
+    "uuid": "48b44658-3b7c-49fd-84f2-57cf6ed752df",
     "vendor__code": "JUNIPER",
     "description": "EX 2200, 48-port 10/100/1000BaseT (48-ports PoE+) with 4 SFP uplink ports\n",
     "connection_rule__name": "Juniper | EX2200",
