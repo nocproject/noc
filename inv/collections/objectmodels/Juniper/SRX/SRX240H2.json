@@ -228,10 +228,10 @@
         "rackmount": {
             "units": 1
         },
-		"dimensions": {
-			"depth": 381,
-			"height": 44.5,
-			"width": 445
+        "dimensions": {
+            "depth": 381,
+            "height": 44.5,
+            "width": 445
 		},
         "stack": {
             "stackable": true

@@ -498,18 +498,18 @@
         "asset": {
             "order_part_no": ["EX2200-48P-4G"]
         },
-		"management": {
+        "management": {
             "managed": true
         },
         "rackmount": {
             "units": 1
         },
-		"dimensions": {
+        "dimensions": {
             "depth": 254.3,
             "height": 44.5,
             "width": 446
         },
-		"stack": {
+        "stack": {
             "stackable": true
         }
     }

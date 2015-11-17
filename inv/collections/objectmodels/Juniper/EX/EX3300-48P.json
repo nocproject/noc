@@ -540,7 +540,7 @@
         "rackmount": {
             "units": 1.0
         },
-		"dimensions": {
+        "dimensions": {
             "depth": 331,
             "height": 43,
             "width": 441
