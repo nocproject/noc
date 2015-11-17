@@ -10,8 +10,6 @@
 import pprint
 import glob
 import os
-# Third-party modules
-import yaml
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
@@ -29,6 +27,13 @@ class Command(BaseCommand):
         )
         # list command
         list_parser = subparsers.add_parser("list")
+        # test command
+        test_parser = subparsers.add_parser("test")
+        test_parser.add_argument(
+            "beef",
+            nargs=1,
+            help="Beef UUID or path"
+        )
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -99,6 +104,50 @@ class Command(BaseCommand):
         # Dump output
         self.stdout.write("\n".join(r) + "\n")
         return
+
+    def handle_test(self, beef, *options, **args):
+        from noc.core.script.loader import loader
+
+        b = Beef.load_by_id(beef[0])
+        if not b:
+            self.die("Beef not found: %s" % beef[0])
+        script_class = loader.get_script(b.script)
+        if not script_class:
+            self.die("Invalid script: %s", b.script)
+        # Build credentials
+        credentials = {
+            "address": b.guid,
+            "cli_protocol": "beef",
+            "beef": b
+        }
+        # Get capabilities
+        caps = {}
+        # Run script
+        service = ServiceStub(pool="default")
+        scr = script_class(
+            service=service,
+            credentials=credentials,
+            capabilities=caps,
+            version={
+                "vendor": b.vendor,
+                "platform": b.platform,
+                "version": b.version
+            },
+            timeout=3600,
+            name=b.script
+        )
+        result = scr.run()
+        pprint.pprint(result)
+
+
+class ServiceStub(object):
+    class ServiceConfig(object):
+        def __init__(self, pool, tos=None):
+            self.pool = pool
+            self.tos = tos
+
+    def __init__(self, pool):
+        self.config = self.ServiceConfig(pool=pool)
 
 if __name__ == "__main__":
     Command().run()
