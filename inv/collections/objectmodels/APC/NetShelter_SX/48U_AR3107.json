@@ -13,7 +13,7 @@
             "container": true
         },
         "rack": {
-            "depth": 1050,
+            "depth": 1070,
             "front_door": "l",
             "rear_door": "2",
             "units": 48,
