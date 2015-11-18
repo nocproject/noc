@@ -99,7 +99,11 @@ class Scheduler(object):
                 Job.ATTR_STATUS: Job.S_WAIT
             }
         }, multi=True, safe=True)
-        self.logger.debug("Resetted: %d", r["nModified"])
+        nm = r.get("nModified", 0)
+        if nm:
+            self.logger.debug("Resetted: %d", nm)
+        else:
+            self.logger.debug("Nothing to reset")
 
     def ensure_indexes(self):
         """
