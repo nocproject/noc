@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | EX | EX3300-24T",
+    "name": "Juniper | EX | EX3300-24P",
     "$collection": "inv.objectmodels",
-    "uuid": "b1df44e7-bfa5-4920-a899-52557e35cb59",
+    "uuid": "0673fb5b-d669-4fab-8f65-dea15243e264",
     "vendor__code": "JUNIPER",
-    "description": "24-port 10/100/1000BASE-T with 4 SFP uplink ports\n",
+    "description": "24-port 10/100/1000BASE-T (24-ports PoE+) with 4 SFP uplink ports\n",
     "connection_rule__name": "Juniper | EX2200",
     "cr_context": "CHASSIS",
     "connections": [
@@ -22,7 +22,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -31,7 +31,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -40,7 +40,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -49,7 +49,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -58,7 +58,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/4",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -67,7 +67,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/5",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -76,7 +76,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/6",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -85,7 +85,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/7",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -94,7 +94,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/8",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -103,7 +103,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/9",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -112,7 +112,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/10",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -121,7 +121,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/11",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -130,7 +130,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/12",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -139,7 +139,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/13",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -148,7 +148,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/14",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -157,7 +157,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/15",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -166,7 +166,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/16",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -175,7 +175,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/17",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -184,7 +184,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/18",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -193,7 +193,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/19",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -202,7 +202,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/20",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -211,7 +211,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/21",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -220,7 +220,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/22",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -229,7 +229,7 @@
             "gender": "f",
             "group": "0",
             "name": "0/23",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -307,7 +307,7 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["EX3300-24T"],
+            "order_part_no": ["EX3300-24P"],
         },
         "management": {
             "managed": true

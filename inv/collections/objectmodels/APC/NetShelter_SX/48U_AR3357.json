@@ -1,23 +1,23 @@
 {
-    "name": "APC | NetShelter SX | 42U AR3100",
+    "name": "APC | NetShelter SX | 48U AR3357",
     "$collection": "inv.objectmodels",
-    "uuid": "dcb53f4c-7725-493d-b0d8-b054df22e1db",
+    "uuid": "142074ef-6012-44a5-9712-d62df313cf93",
     "vendor__code": "APC",
-    "description": "NetShelter SX 42U 600mm Wide x 1070mm Deep Enclosure",
+    "description": "NetShelter SX 48U 750mm Wide x 1200mm Deep Enclosure",
     "connections": [],
     "data": {
         "asset": {
-            "part_no": ["AR3100"]
+            "part_no": ["AR3357"]
         },
         "container": {
             "container": true
         },
         "rack": {
-            "depth": 1070,
+            "depth": 1200,
             "front_door": "l",
             "rear_door": "2",
-            "units": 42,
-            "width": 600
+            "units": 48,
+            "width": 750
         }
     }
 }
