@@ -22,7 +22,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa1",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -31,7 +31,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa2",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -40,7 +40,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa3",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -49,7 +49,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa4",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -58,7 +58,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa5",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -67,7 +67,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa6",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -76,7 +76,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa7",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -85,7 +85,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa8",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -94,7 +94,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa9",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -103,7 +103,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa10",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -112,7 +112,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa11",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -121,7 +121,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa12",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -130,7 +130,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa13",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -139,7 +139,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa14",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -148,7 +148,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa15",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -157,7 +157,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa16",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -166,7 +166,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa17",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -175,7 +175,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa18",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -184,7 +184,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa19",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -193,7 +193,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa20",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -202,7 +202,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa21",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -211,7 +211,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa22",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -220,7 +220,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa23",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -229,7 +229,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa24",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -238,7 +238,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa25",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -247,7 +247,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa26",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -256,7 +256,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa27",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -265,7 +265,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa28",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -274,7 +274,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa29",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -283,7 +283,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa30",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -292,7 +292,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa31",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -301,7 +301,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa32",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -310,7 +310,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa33",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -319,7 +319,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa34",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -328,7 +328,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa35",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -337,7 +337,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa36",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -346,7 +346,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa37",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -355,7 +355,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa38",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -364,7 +364,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa39",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -373,7 +373,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa40",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -382,7 +382,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa41",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -391,7 +391,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa42",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -400,7 +400,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa43",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -409,7 +409,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa44",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -418,7 +418,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa45",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -427,7 +427,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa46",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -436,7 +436,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa47",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -445,7 +445,7 @@
             "gender": "f",
             "group": "0",
             "name": "Fa48",
-            "protocols": ["10BASET", "100BASETX"],
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -503,6 +503,14 @@
         },
         "rackmount": {
             "units": 1.0
+        },
+        "dimensions": {
+            "depth": 378,
+            "height": 44,
+            "width": 445
+        },
+        "stack": {
+            "stackable": true
         }
     }
 }

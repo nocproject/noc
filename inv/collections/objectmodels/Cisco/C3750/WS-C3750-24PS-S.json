@@ -1,9 +1,9 @@
 {
-    "name": "Cisco | C3750 | WS-C3750G-24T-S",
+    "name": "Cisco | C3750 | WS-C3750-24PS-S",
     "$collection": "inv.objectmodels",
-    "uuid": "e8e763fc-fec7-4285-999c-3df71583e1e3",
+    "uuid": "54e27719-a670-43c0-b037-658501e22509",
     "vendor__code": "CISCO",
-    "description": "24 Ethernet 10/100/1000 ports",
+    "description": "24 Ethernet 10/100 PoE ports, 2 SFP-based Gigabit Ethernet ports",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [
@@ -17,220 +17,238 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/1 port",
+            "description": "FastEthernet 0/1 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa1",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/2 port",
+            "description": "FastEthernet 0/2 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa2",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/3 port",
+            "description": "FastEthernet 0/3 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa3",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/4 port",
+            "description": "FastEthernet 0/4 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi4",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa4",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/5 port",
+            "description": "FastEthernet 0/5 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi5",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa5",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/6 port",
+            "description": "FastEthernet 0/6 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi6",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa6",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/7 port",
+            "description": "FastEthernet 0/7 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi7",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa7",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/8 port",
+            "description": "FastEthernet 0/8 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi8",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa8",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/9 port",
+            "description": "FastEthernet 0/9 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi9",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa9",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/10 port",
+            "description": "FastEthernet 0/10 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi10",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa10",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/11 port",
+            "description": "FastEthernet 0/11 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi11",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa11",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/12 port",
+            "description": "FastEthernet 0/12 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi12",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa12",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/13 port",
+            "description": "FastEthernet 0/13 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi13",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa13",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/14 port",
+            "description": "FastEthernet 0/14 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi14",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa14",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/15 port",
+            "description": "FastEthernet 0/15 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi15",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa15",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/16 port",
+            "description": "FastEthernet 0/16 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi16",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa16",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/17 port",
+            "description": "FastEthernet 0/17 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi17",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa17",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/18 port",
+            "description": "FastEthernet 0/18 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi18",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa18",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/19 port",
+            "description": "FastEthernet 0/19 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi19",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa19",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/20 port",
+            "description": "FastEthernet 0/20 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi20",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa20",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/21 port",
+            "description": "FastEthernet 0/21 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi21",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa21",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/22 port",
+            "description": "FastEthernet 0/22 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi22",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa22",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/23 port",
+            "description": "FastEthernet 0/23 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi23",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa23",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet 0/24 port",
+            "description": "FastEthernet 0/24 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "Gi24",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "name": "Fa24",
+            "protocols": ["10BASET", "100BASETX", "<POE"],
             "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "Power input",
@@ -244,7 +262,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3750G-24T-S"]
+            "part_no": ["WS-C3750-24PS-S"]
         },
         "management": {
             "managed": true
@@ -253,8 +271,8 @@
             "units": 1.0
         },
         "dimensions": {
-            "depth": 295,
-            "height": 66,
+            "depth": 300,
+            "height": 44,
             "width": 445
         },
         "stack": {
