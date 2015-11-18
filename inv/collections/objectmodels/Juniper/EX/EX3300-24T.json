@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "b1df44e7-bfa5-4920-a899-52557e35cb59",
     "vendor__code": "JUNIPER",
-    "description": "24-port 10/100/1000BASE-T with 4 SFP uplink ports\n",
+    "description": "24-port 10/100/1000BASE-T with 4 SFP uplink ports",
     "connection_rule__name": "Juniper | EX2200",
     "cr_context": "CHASSIS",
     "connections": [
@@ -268,7 +268,7 @@
             "protocols": ["TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
-		{
+        {
             "description": "xe-X/1/0 SFP+ port",
             "direction": "i",
             "gender": "f",
@@ -307,18 +307,18 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["EX3300-24T"],
+            "order_part_no": ["EX3300-24T"]
+        },
+        "dimensions": {
+            "depth": 331,
+            "height": 43,
+            "width": 441
         },
         "management": {
             "managed": true
         },
         "rackmount": {
             "units": 1.0
-        },
-        "dimensions": {
-            "depth": 331,
-            "height": 43,
-            "width": 441
         },
         "stack": {
             "stackable": true

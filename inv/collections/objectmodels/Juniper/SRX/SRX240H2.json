@@ -222,17 +222,17 @@
         "asset": {
             "order_part_no": ["SRX240H2"]
         },
+        "dimensions": {
+            "depth": 381,
+            "height": 44.5,
+            "width": 445
+        },
         "management": {
             "managed": true
         },
         "rackmount": {
             "units": 1
         },
-        "dimensions": {
-            "depth": 381,
-            "height": 44.5,
-            "width": 445
-		},
         "stack": {
             "stackable": true
         }

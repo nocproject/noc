@@ -277,7 +277,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/29 port",
             "direction": "s",
             "gender": "f",
@@ -286,7 +286,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/30 port",
             "direction": "s",
             "gender": "f",
@@ -295,7 +295,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/31 port",
             "direction": "s",
             "gender": "f",
@@ -304,7 +304,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/32 port",
             "direction": "s",
             "gender": "f",
@@ -313,7 +313,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/33 port",
             "direction": "s",
             "gender": "f",
@@ -322,7 +322,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/34 port",
             "direction": "s",
             "gender": "f",
@@ -331,7 +331,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/35 port",
             "direction": "s",
             "gender": "f",
@@ -340,7 +340,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/36 port",
             "direction": "s",
             "gender": "f",
@@ -349,7 +349,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/37 port",
             "direction": "s",
             "gender": "f",
@@ -358,7 +358,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/38 port",
             "direction": "s",
             "gender": "f",
@@ -367,7 +367,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/39 port",
             "direction": "s",
             "gender": "f",
@@ -376,7 +376,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/40 port",
             "direction": "s",
             "gender": "f",
@@ -385,7 +385,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/41 port",
             "direction": "s",
             "gender": "f",
@@ -394,7 +394,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/42 port",
             "direction": "s",
             "gender": "f",
@@ -403,7 +403,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/43 port",
             "direction": "s",
             "gender": "f",
@@ -412,7 +412,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/44 port",
             "direction": "s",
             "gender": "f",
@@ -421,7 +421,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/45 port",
             "direction": "s",
             "gender": "f",
@@ -430,7 +430,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/46 port",
             "direction": "s",
             "gender": "f",
@@ -439,7 +439,7 @@
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
-		{
+        {
             "description": "ge-X/0/47 port",
             "direction": "s",
             "gender": "f",
@@ -498,16 +498,16 @@
         "asset": {
             "order_part_no": ["EX2200-48T-4G"]
         },
+        "dimensions": {
+            "depth": 254.3,
+            "height": 44.5,
+            "width": 446
+        },
         "management": {
             "managed": true
         },
         "rackmount": {
             "units": 1
-        },
-        "dimensions": {
-            "depth": 254.3,
-            "height": 44.5,
-            "width": 446
         },
         "stack": {
             "stackable": true
