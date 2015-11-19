@@ -71,6 +71,11 @@ class ManagedObjectApplication(ExtModelApplication):
         }
     }
 
+    DISCOVERY_JOBS = [
+        ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
+        ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob")
+    ]
+
     def field_platform(self, o):
         return o.platform
 
@@ -213,6 +218,8 @@ class ManagedObjectApplication(ExtModelApplication):
     @view(url="^(?P<id>\d+)/discovery/$", method=["GET"],
           access="read", api=True)
     def api_discovery(self, request, id):
+        from noc.core.scheduler.job import Job
+
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
@@ -228,28 +235,27 @@ class ManagedObjectApplication(ExtModelApplication):
             "status": o.get_status(),
             "last_run": None,
             "last_status": None,
-            "next_run": None,
-            "link_count": None
+            "next_run": None
         }]
-        for name in get_active_discovery_methods():
-            job = get_job("inv.discovery", name, o.id) or {}
-            if name.endswith("_discovery"):
-                lcmethod = name[:-10]
-            else:
-                lcmethod = None
+
+        for name, jcls in self.DISCOVERY_JOBS:
+            job = Job.get_job_data(
+                "discovery",
+                jcls=jcls,
+                key=o.id,
+                pool=o.pool.name
+            ) or {}
             d = {
                 "name": name,
                 "enable_profile": getattr(o.object_profile,
-                                          "enable_%s" % name),
+                                          "enable_%s_discovery" % name),
                 "status": job.get("s"),
                 "last_run": self.to_json(job.get("last")),
                 "last_status": job.get("ls"),
-                "next_run": self.to_json(job.get("ts")),
-                "link_count": link_count.get(lcmethod, "")
+                "next_run": self.to_json(job.get("ts"))
             }
             r += [d]
         return r
-
 
     @view(url="^actions/set_managed/$", method=["POST"],
           access="create", api=True,
@@ -280,19 +286,24 @@ class ManagedObjectApplication(ExtModelApplication):
     @view(url="^(?P<id>\d+)/discovery/run/$", method=["POST"],
           access="change_discovery", api=True)
     def api_run_discovery(self, request, id):
+        from noc.core.scheduler.job import Job
+
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         r = json_decode(request.raw_post_data).get("names", [])
-        d = 0
-        DiscoveryJob.apply_object_jobs(o)
-        for name in get_active_discovery_methods():
-            cfg = "enable_%s" % name
-            if getattr(o.object_profile, cfg) and name in r:
-                start_schedule("inv.discovery", name, o.id)
-                refresh_schedule("inv.discovery",
-                                 name, o.id, delta=d)
-                d += 1
+        for name, jcls in self.DISCOVERY_JOBS:
+            if not name in r:
+                continue
+            if not getattr(o.object_profile,
+                           "enable_%s_discovery" % name):
+                continue  # Disabled by profile
+            Job.submit(
+                "discovery",
+                jcls,
+                key=o.id,
+                pool=o.pool.name
+            )
         return {
             "success": True
         }
