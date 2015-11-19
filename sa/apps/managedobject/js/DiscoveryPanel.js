@@ -70,10 +70,6 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
                 {
                     name: "next_run",
                     type: "date"
-                },
-                {
-                    name: "link_count",
-                    type: "integer"
                 }
             ]
         });
@@ -134,19 +130,6 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
                     dataIndex: "next_run",
                     width: 120,
                     renderer: NOC.render.DateTime
-                },
-                {
-                    text: "Links Found",
-                    dataIndex: "link_count",
-                    width: 50,
-                    align: "right",
-                    renderer: function(v) {
-                        if(v) {
-                            return v;
-                        } else {
-                            return "";
-                        }
-                    }
                 }
             ],
             dockedItems: [
