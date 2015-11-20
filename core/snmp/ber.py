@@ -56,7 +56,7 @@ class BERDecoder(object):
             l = v & 0x7f
             v = 0
             for c in msg[1:1 + l]:
-                v += (v << 8) + ord(c)
+                v = (v << 8) + ord(c)
             return v, msg[1 + l:]
         else:
             # Short form
@@ -234,7 +234,6 @@ class BERDecoder(object):
         0: {
             # Primitive types
             True: {
-                # EOC (End-of-Content)	P	0	0
                 0: parse_eoc,  # 0, 0, EOC (End-of-Content)
                 1: parse_boolean,  # 1, 0x1, BOOLEAN
                 2: parse_int,  # 2, 0x2, INTEGER
