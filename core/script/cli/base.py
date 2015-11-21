@@ -24,8 +24,11 @@ class CLI(object):
     BUFFER_SIZE = 1048576
     MATCH_TAIL = 256
 
-    class CLIError(Exception): pass
-    class InvalidPagerPattern(Exception): pass
+    class CLIError(Exception):
+        pass
+
+    class InvalidPagerPattern(Exception):
+        pass
 
     def __init__(self, script, tos=None):
         self.script = script
@@ -76,7 +79,7 @@ class CLI(object):
         # Perform all necessary login procedures
         if not self.is_started:
             self.on_start()
-            yield self.read_until_prompt()
+            self.motd = yield self.read_until_prompt()
             self.is_started = True
         # Send command
         # @todo: encode to object's encoding
@@ -335,3 +338,9 @@ class CLI(object):
         self.patterns["prompt"] = re.compile(
             pattern, re.DOTALL | re.MULTILINE
         )
+
+    def get_motd(self):
+        """
+        Return collected message of the day
+        """
+        return self.motd
