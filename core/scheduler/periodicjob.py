@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+import time
 import datetime
-import math
 ## NOC modules
 from job import Job
 
@@ -19,7 +19,7 @@ class PeriodicJob(Job):
     # Interval after failure (S_FAIL)
     failed_interval = 1
     # Shift start time to random offset
-    use_offset = True
+    use_offset = False
 
     def get_interval(self):
         """
@@ -37,15 +37,19 @@ class PeriodicJob(Job):
         elif status in (self.E_FAILED, self.E_DEFERRED):
             interval = self.get_failed_interval()
         if interval:
-            now = datetime.datetime.now()
-            # Get amount of full intervals passed
-            td = (now - self.attrs[self.ATTR_TS])
-            so = (td.seconds + td.days * 86400) // interval * interval
-            # And add next interval
-            so += interval
-            # Set next schedule
-            delta = datetime.timedelta(seconds=so)
-            ts = self.attrs[self.ATTR_TS] + delta
+            now = time.mktime(datetime.datetime.now().timetuple())
+            # Select base time
+            if self.use_offset:
+                t0 = now // interval * interval
+                t0 -= interval * self.attrs[self.ATTR_OFFSET]
+            else:
+                t0 = time.mktime(self.attrs[self.ATTR_TS].timetuple())
+            # Skip all fully passed intervals
+            t0 += (now - t0) // interval * interval
+            if t0 < now:
+                # To next interval
+                t0 += interval
+            ts = datetime.datetime.fromtimestamp(t0)
             self.scheduler.set_next_run(
                 self.attrs[self.ATTR_CLASS],
                 self.attrs[self.ATTR_KEY],
