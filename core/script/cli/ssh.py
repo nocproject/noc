@@ -35,35 +35,45 @@ class SSHIOStream(IOStream):
         """
         user = self.script.credentials["user"]
         self.logger.debug("Startup ssh session")
-        self.session.startup(self.socket)
-        host_hash = self.session.hostkey_hash(2)  # SHA1
-        self.logger.debug("Connected. Host fingerprint is %s",
-                          host_hash.encode("hex"))
-        auth_methods = self.session.userauth_list(user).split(",")
-        self.logger.debug("Supported authentication methods: %s",
-                          ", ".join(auth_methods))
-        # Try to authenticate
-        authenticated = False
-        for method in auth_methods:
-            ah = getattr(self, "auth_%s" % method, None)
-            if ah:
-                authenticated |= ah()
-                if authenticated:
-                    break
-        if authenticated:
-            self.logger.debug("User is authenticated")
-        else:
-            self.logger.error("Failed to authenticate user '%s'", user)
-        self.channel = self.session.open_session()
-        self.channel.pty("xterm")
-        self.channel.shell()
-        self.channel.setblocking(0)
+        try:
+            self.session.startup(self.socket)
+            host_hash = self.session.hostkey_hash(2)  # SHA1
+            self.logger.debug("Connected. Host fingerprint is %s",
+                              host_hash.encode("hex"))
+            auth_methods = self.session.userauth_list(user).split(",")
+            self.logger.debug("Supported authentication methods: %s",
+                              ", ".join(auth_methods))
+            # Try to authenticate
+            authenticated = False
+            for method in auth_methods:
+                ah = getattr(self, "auth_%s" % method, None)
+                if ah:
+                    authenticated |= ah()
+                    if authenticated:
+                        break
+            if authenticated:
+                self.logger.debug("User is authenticated")
+            else:
+                self.logger.error("Failed to authenticate user '%s'", user)
+                raise self.cli.CLIError("Failed to log in")
+            self.channel = self.session.open_session()
+            self.channel.pty("xterm")
+            self.channel.shell()
+            self.channel.setblocking(0)
+        except _libssh2.Error, why:
+            raise self.cli.CLIError("SSH Error: %s" % why)
 
     def read_from_fd(self):
-        return self.channel.read(self.read_chunk_size)
+        try:
+            return self.channel.read(self.read_chunk_size)
+        except _libssh2.Error, why:
+            raise self.cli.CLIError("SSH Error: %s" % why)
 
     def write_to_fd(self, data):
-        return self.channel.write(data)
+        try:
+            return self.channel.write(data)
+        except _libssh2.Error, why:
+            raise self.cli.CLIError("SSH Error: %s" % why)
 
     def auth_publickey(self):
         """

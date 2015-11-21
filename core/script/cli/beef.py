@@ -34,3 +34,6 @@ class BeefCLI(CLI):
             result = result[len(cmd):]
         #
         return result
+
+    def get_motd(self):
+        return self.beef.motd
