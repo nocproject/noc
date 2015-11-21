@@ -90,7 +90,7 @@ class Job(object):
     @tornado.gen.coroutine
     def run(self):
         self.start_time = time.time()
-        self.logger.info("Starting")
+        self.logger.info("[%s] Starting", self.name)
         # Run handler
         if self.dereference():
             if self.can_run():
@@ -232,3 +232,15 @@ class Job(object):
             pool=pool
         )
         scheduler.remove_job(name, key=key)
+
+    @classmethod
+    def get_job_data(cls, scheduler, jcls, key=None, pool=None):
+        from scheduler import Scheduler
+        scheduler = Scheduler(
+            name=scheduler,
+            pool=pool
+        )
+        return scheduler.get_collection().find_one({
+            Job.ATTR_CLASS: jcls,
+            Job.ATTR_KEY: key
+        })
