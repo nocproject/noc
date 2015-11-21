@@ -379,7 +379,8 @@ class ManagedObject(Model):
             "trap_source_ip" in self.changed_fields or
             "syslog_source_type" in self.changed_fields or
             "syslog_source_ip" in self.changed_fields or
-            "address" in self.changed_fields
+            "address" in self.changed_fields or
+            "pool" in self.changed_fields
         ):
             ObjectMap.invalidate(self.pool)
         # Apply discovery jobs
