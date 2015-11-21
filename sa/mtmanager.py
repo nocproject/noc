@@ -28,7 +28,6 @@ class MTManagerImplementation(object):
         """
         Run SA script and wait for result
         """
-        client = tornado.httpclient.HTTPClient()
         tid = self.tid.next()
         if "." in script:
             # Leave only script name
@@ -51,11 +50,12 @@ class MTManagerImplementation(object):
                     }
                 )
             except tornado.httpclient.HTTPError, why:
-                if why.code in (404, 500):
-                    raise Exception("Failed to call")
-                continue
+                if why.code == 599:
+                    logger.debug("Timed out")
+                    continue
+                raise Exception("Failed to call: %s" % why)
             except Exception, why:
-                continue
+                raise Exception("Failed to call: %s" % why)
         if not response:
             raise Exception("No SAE service found")
         data = json.loads(response.body)
