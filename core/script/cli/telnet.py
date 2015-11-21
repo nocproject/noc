@@ -130,9 +130,6 @@ class TelnetIOStream(IOStream):
         """
         Send IAC response
         """
-        def cb(*args, **kwargs):
-            pass
-
         self.logger.debug("Send %s", self.iac_repr(cmd, opt))
         self.write_to_fd(IAC + cmd + opt)
 
@@ -178,6 +175,7 @@ class TelnetIOStream(IOStream):
             IAC_CMD.get(cmd, cmd),
             TELNET_OPTIONS.get(opt, opt),
         )
+
 
 class TelnetCLI(CLI):
     name = "telnet"
