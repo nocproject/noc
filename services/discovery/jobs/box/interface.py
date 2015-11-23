@@ -112,7 +112,7 @@ class InterfaceCheck(DiscoveryCheck):
     def submit_forwarding_instance(self, name, type, rd, vr):
         if name == "default":
             return None
-        forwarding_instance = ForwardingInstance.object.filter(
+        forwarding_instance = ForwardingInstance.objects.filter(
             managed_object=self.object.id,
             name=name
         ).first()
