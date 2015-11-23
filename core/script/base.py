@@ -635,6 +635,22 @@ class ScriptsHub(object):
     Object representing Script.scripts structure.
     Returns initialized child script which can be used ans callable
     """
+    class _CallWrapper(object):
+        def __init__(self, script_class, parent):
+            self.parent = parent
+            self.script_class = script_class
+
+        def __call__(self, **kwargs):
+            return self.script_class(
+                parent=self.parent,
+                service=self.parent.service,
+                args=kwargs,
+                credentials=self.parent.credentials,
+                capabilities=self.parent.capabilities,
+                version=self.parent.version,
+                timeout=self.parent.timeout
+            ).run()
+
     def __init__(self, script):
         self._script = script
 
@@ -648,15 +664,7 @@ class ScriptsHub(object):
                 "%s.%s" % (self._script.profile.name, item)
             )
             if sc:
-                parent = self._script
-                return sc(
-                    parent=parent,
-                    service=parent.service,
-                    credentials=parent.credentials,
-                    capabilities=parent.capabilities,
-                    version=parent.version,
-                    timeout=parent.timeout
-                )
+                return self._CallWrapper(sc, self._script)
             else:
                 raise AttributeError(item)
 
