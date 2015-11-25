@@ -39,12 +39,19 @@ class SAEAPI(API):
             cursor = connection.cursor()
             cursor.execute("""
                 SELECT
-                    name, is_managed, profile_name,
-                    scheme, address, port, "user", password,
-                    super_password, remote_path,
-                    snmp_ro, pool
-                FROM sa_managedobject
-                WHERE id=%s
+                    mo.name, mo.is_managed, mo.profile_name,
+                    mo.scheme, mo.address, mo.port, mo."user",
+                    mo.password,
+                    mo.super_password, mo.remote_path,
+                    mo.snmp_ro, mo.pool,
+                    mo.auth_profile_id,
+                    ap.user, ap.password, ap.super_password,
+                    ap.snmp_ro, ap.snmp_rw
+                FROM
+                    sa_managedobject mo
+                    LEFT JOIN sa_authprofile ap
+                        ON (mo.auth_profile_id = ap.id)
+                WHERE mo.id=%s
             """, [object_id])
             data = cursor.fetchall()
             if not data:
@@ -52,7 +59,10 @@ class SAEAPI(API):
             (name, is_managed, profile_name,
              scheme, address, port, user, password,
              super_password, remote_path,
-             snmp_ro, pool_id) = data[0]
+             snmp_ro, pool_id,
+             auth_profile_id,
+             ap_user, ap_password, ap_super_password,
+             ap_snmp_ro, ap_snmp_rw) = data[0]
             cursor.execute("""
                 SELECT key, value
                 FROM sa_managedobjectattribute
@@ -62,6 +72,12 @@ class SAEAPI(API):
         # Check object is managed
         if not is_managed:
             raise APIError("Object is not managed")
+        if auth_profile_id:
+            user = ap_user
+            password = ap_password
+            super_password = ap_super_password
+            snmp_ro = ap_snmp_ro
+            snmp_rw = ap_snmp_rw
         # Find pool name
         pool = self.service.get_pool_name(pool_id)
         if not pool:
