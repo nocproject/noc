@@ -88,6 +88,9 @@ class Profile(BaseProfile):
                 return "Ca %s/%s" % (match.group('pr_if'), match.group('sub_if'))
         if il.startswith("virtual-template"):
             return "Vi %s" % il[16:].strip()
+        # Serial0/1/0:15-Signaling -> Serial0/1/0:15
+        if il.startswith("se") and "-" in interface:
+            interface = interface.split("-")[0]
         # Fake name. Used only with FM
         if il == "all":
             return "all"
