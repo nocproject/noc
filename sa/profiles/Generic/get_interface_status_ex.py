@@ -38,14 +38,16 @@ class Script(BaseScript):
     def get_data(self):
         # ifIndex -> ifName mapping
         r = {}  # ifindex -> data
+        unknown_interfaces = []
         for ifindex, name in self.get_iftable("IF-MIB::ifDescr").iteritems():
             try:
                 v = self.profile.convert_interface_name(name)
             except InterfaceTypeError, why:
-                self.logger.info(
+                self.logger.debug(
                     "Ignoring unknown interface %s: %s",
-                    v, why
+                    name, why
                 )
+                unknown_interfaces += [name]
                 continue
             r[ifindex] = {
                 "interface": v
@@ -76,6 +78,9 @@ class Script(BaseScript):
                     if s:
                         r[ifindex]["in_speed"] = s * 1000
                         r[ifindex]["out_speed"] = s * 1000
+        if unknown_interfaces:
+            self.logger.info("%d unknown interfaces has been ignored",
+                             len(unknown_interfaces))
         return r.values()
 
     def execute(self):
