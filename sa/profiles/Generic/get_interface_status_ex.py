@@ -84,8 +84,10 @@ class Script(BaseScript):
         return r.values()
 
     def execute(self):
-        r = {}
-        try:
-            return self.get_data()
-        except self.snmp.TimeOutError:
-            return []
+        r = []
+        if self.has_snmp():
+            try:
+                r= self.get_data()
+            except self.snmp.TimeOutError:
+                pass
+        return r
