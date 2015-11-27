@@ -20,19 +20,24 @@ class Script(BaseScript):
 
     def execute(self):
         r = {}
+        unknown_interfaces = []
         if self.has_snmp():
             try:
-                for oid, v in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
+                for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
                     try:
-                        v = self.profile.convert_interface_name(v)
+                        v = self.profile.convert_interface_name(name)
                     except InterfaceTypeError, why:
-                        self.logger.info(
+                        self.logger.debug(
                             "Ignoring unknown interface %s: %s",
-                            v, why
+                            name, why
                         )
+                        unknown_interfaces += [name]
                         continue
                     ifindex = int(oid.split(".")[-1])
                     r[v] = ifindex
+                if unknown_interfaces:
+                    self.logger.info("%d unknown interfaces has been ignored",
+                                     len(unknown_interfaces))
             except self.snmp.TimeOutError:
                 pass
         return r
