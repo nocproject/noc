@@ -45,6 +45,15 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             name: "discovery_policy",
             type: "string"
         },
+        {
+            name: "status_change_notification",
+            type: "string"
+        },
+        {
+            name: "status_change_notification__label",
+            type: "string",
+            persist: false
+        },
         // CSS
         {
             name: "row_class",

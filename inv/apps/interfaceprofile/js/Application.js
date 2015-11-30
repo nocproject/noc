@@ -11,6 +11,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
     requires: [
         "NOC.inv.interfaceprofile.Model",
         "NOC.main.style.LookupField",
+        "NOC.main.notificationgroup.LookupField",
         "Ext.ux.form.MultiIntervalField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
@@ -149,6 +150,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         name: "mac_discovery",
                         xtype: "checkbox",
                         boxLabel: "MAC Discovery",
+                        allowBlank: true
+                    },
+                    {
+                        name: "status_change_notification",
+                        xtype: "main.notificationgroup.LookupField",
+                        fieldLabel: "Status Change Notification",
                         allowBlank: true
                     }
                 ],
