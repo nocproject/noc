@@ -248,7 +248,7 @@ class InterfaceCheck(DiscoveryCheck):
             ForwardingInstance.objects.filter(
                 managed_object=self.object.id).only("name"))
         for i in db_fi - set(fi):
-            self.info("Removing forwarding instance %s" % i)
+            self.logger.info("Removing forwarding instance %s", i)
             for dfi in ForwardingInstance.objects.filter(
                 managed_object=self.object.id, name=i):
                 dfi.delete()
