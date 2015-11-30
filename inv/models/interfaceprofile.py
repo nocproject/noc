@@ -8,7 +8,8 @@
 
 ## NOC modules
 from noc.lib.nosql import Document, StringField, ForeignKeyField, BooleanField
-from noc.main.models import Style
+from noc.main.models.style import Style
+from noc.main.models.notificationgroup import NotificationGroup
 from noc.pm.models.probeconfig import probe_config
 
 
@@ -50,6 +51,9 @@ class InterfaceProfile(Document):
     # Either None or T0,I0,T1,I1,...,Tn-1,In-1,,In
     # See MultiIntervalJob settings for details
     check_link_interval = StringField(default=",60")
+    # Send up/down notifications
+    status_change_notification = ForeignKeyField(NotificationGroup,
+                                                 required=False)
 
     def __unicode__(self):
         return self.name
