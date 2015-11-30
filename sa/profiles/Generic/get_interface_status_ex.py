@@ -39,7 +39,7 @@ class Script(BaseScript):
         # ifIndex -> ifName mapping
         r = {}  # ifindex -> data
         unknown_interfaces = []
-        for ifindex, name in self.get_iftable("IF-MIB::ifDescr").iteritems():
+        for ifindex, name in self.get_iftable("IF-MIB::ifName").iteritems():
             try:
                 v = self.profile.convert_interface_name(name)
             except InterfaceTypeError, why:
