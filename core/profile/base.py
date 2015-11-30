@@ -35,10 +35,10 @@ class BaseProfile(object):
     supported_schemes = []
     # Regular expression to catch user name prompt
     # (Usually during telnet sessions)
-    pattern_username = "([Uu]sername|[Ll]ogin):"
+    pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
     # Regulal expression to catch password prompt
     # (Telnet/SSH sessions)
-    pattern_password = "[Pp]assword:"
+    pattern_password = "[Pp]ass[Ww]ord:"
     # Regular expression to catch command prompt
     # (CLI Sessions)
     pattern_prompt = r"^\S*[>#]"
