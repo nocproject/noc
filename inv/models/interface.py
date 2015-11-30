@@ -6,9 +6,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import datetime
+import logging
 ## NOC Modules
 from noc.lib.nosql import (Document, ForeignKeyField, StringField,
-    IntField, BooleanField, PlainReferenceField, ListField)
+    IntField, BooleanField, PlainReferenceField, ListField,
+    DateTimeField)
 from interfaceprofile import InterfaceProfile
 from coverage import Coverage
 from noc.sa.models.managedobject import ManagedObject
@@ -27,6 +31,9 @@ INTERFACE_PROTOCOLS = (IGetInterfaces.returns
                        .element.attrs["interfaces"]
                        .element.attrs["enabled_protocols"]
                        .element.choices)
+
+
+logger = logging.getLogger(__name__)
 
 
 @probe_config
@@ -64,6 +71,8 @@ class Interface(Document):
     # Current status
     admin_status = BooleanField(required=False)
     oper_status = BooleanField(required=False)
+    oper_status_change = DateTimeField(required=False,
+                                       default=datetime.datetime.now)
     full_duplex = BooleanField(required=False)
     in_speed = IntField(required=False)  # Input speed, kbit/s
     out_speed = IntField(required=False)  # Output speed, kbit/s
@@ -281,6 +290,34 @@ class Interface(Document):
             s += ["-", "-"]
         return "/".join(s)
 
+    def set_oper_status(self, status):
+        """
+        Set current oper status
+        """
+        if self.oper_status == status:
+            return
+        now = datetime.datetime.now()
+        if self.oper_status != status and (
+                    not self.oper_status_change or
+                        self.oper_status_change < now
+        ):
+            self.update(oper_status=status, oper_status_change=now)
+            if self.profile.status_change_notification:
+                logger.debug(
+                    "Sending status change notification to %s",
+                    self.profile.status_change_notification.name
+                )
+                self.profile.status_change_notification.notify(
+                    subject="[%s] Interface %s(%s) is %s" % (
+                        self.managed_object.name, self.name,
+                        self.description or "",
+                        "up" if status else "down"
+                    ),
+                    body="Interface %s (%s) is %s" % (
+                        self.name, self.description or "",
+                        "up" if status else "down"
+                    )
+                )
 
 ## Avoid circular references
 from link import Link

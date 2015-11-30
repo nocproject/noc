@@ -20,25 +20,21 @@ def oper_up(event):
     """
     Set oper status to up
     """
-    Interface._get_collection().update({
-        "managed_object": event.managed_object.id,
-        "name": event.vars["interface"]
-    }, {
-        "$set": {
-            "oper_status": True
-        }
-    })
+    iface = Interface.objects.filter(
+        managed_object=event.managed_object.id,
+        name=event.vars["interface"]
+    ).first()
+    if iface:
+        iface.set_oper_status(True)
 
 
 def oper_down(event):
     """
     Set oper status to down
     """
-    Interface._get_collection().update({
-        "managed_object": event.managed_object.id,
-        "name": event.vars["interface"]
-    }, {
-        "$set": {
-            "oper_status": False
-        }
-    })
+    iface = Interface.objects.filter(
+        managed_object=event.managed_object.id,
+        name=event.vars["interface"]
+    ).first()
+    if iface:
+        iface.set_oper_status(False)
