@@ -74,11 +74,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
-            name: "enable_config_discovery",
-            type: "boolean",
-            defaultValue: false
-        },
-        {
             name: "enable_box_discovery",
             type: "boolean",
             defautlValue: true
