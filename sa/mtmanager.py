@@ -8,12 +8,9 @@
 
 ## Python modules
 import logging
-import itertools
-import json
-## Third-party modules
-import tornado.httpclient
 ## NOC modules
-from noc.core.service.catalog import ServiceCatalog
+from noc.core.service.client import RPCClient
+
 
 logger = logging.getLogger(__name__)
 
@@ -21,47 +18,17 @@ logger = logging.getLogger(__name__)
 class MTManagerImplementation(object):
     def __init__(self, limit=0):
         self.limit = limit
-        self.catalog = ServiceCatalog()
-        self.tid = itertools.count(1)
 
     def run(self, object, script, params=None, timeout=None):
         """
         Run SA script and wait for result
         """
-        tid = self.tid.next()
         if "." in script:
             # Leave only script name
             script = script.split(".")[-1]
-        req = {
-            "id": tid,
-            "method": "script",
-            "params": [object.id, script, params]
-        }
-        client = tornado.httpclient.HTTPClient()
-        response = None
-        for l in self.catalog.get_service("sae").listen:
-            try:
-                response = client.fetch(
-                    "http://%s/api/sae/" % l,
-                    method="POST",
-                    body=json.dumps(req),
-                    headers={
-                        "X-NOC-Calling-Service": "MTManager"
-                    }
-                )
-            except tornado.httpclient.HTTPError, why:
-                if why.code == 599:
-                    logger.debug("Timed out")
-                    continue
-                raise Exception("Failed to call: %s" % why)
-            except Exception, why:
-                raise Exception("Failed to call: %s" % why)
-        if not response:
-            raise Exception("No SAE service found")
-        data = json.loads(response.body)
-        if data.get("error"):
-            raise Exception(data["error"])
-        return data["result"]
+        return RPCClient("sae", calling_service="MTManager").script(
+            object.id, script, params, timeout
+        )
 
 
 # Run single instance
