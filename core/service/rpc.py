@@ -11,22 +11,18 @@ import itertools
 import json
 import logging
 import socket
+import random
+import time
 ## Third-party modules
 import tornado.concurrent
 import tornado.gen
 import tornado.httpclient
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
+from client import (RPCError, RPCNoService, RPCHTTPError,
+                    RETRY_SOCKET_ERRORS, RPCException, RPCRemoteError)
 
 logger = logging.getLogger(__name__)
-
-
-class RPCError(Exception):
-    pass
-
-
-class RPCTimeOutError(RPCError):
-    pass
 
 
 class RPCProxy(object):
@@ -65,58 +61,65 @@ class RPCProxy(object):
         is_notify = "_notify" in kwargs
         if not is_notify:
             msg["id"] = tid
-        msg = json.dumps(msg)
-        for timeout in self._service.iter_rpc_retry_timeout():
-            services = self._service.resolve_service(self._service_name)
-            if not services:
-                raise RPCError("Service not found")
-            for svc in services:
-                client = tornado.httpclient.AsyncHTTPClient()
-                try:
-                    response = yield client.fetch(
-                        "http://%s/api/%s/" % (svc, self._api),
-                        method="POST",
-                        body=msg,
-                        headers={
-                            "X-NOC-Calling-Service": self._service.name
-                        }
-                    )
-                except tornado.httpclient.HTTPError, why:
-                    if why.code != 499:
-                        raise RPCError("RPC call failed: %s", why)
-                    else:
-                        self._logger.info(
-                            "Service is not available at %s. Retrying",
-                            svc
-                        )
-                        continue
-                except socket.error, why:
-                    self._logger.info(
-                        "Service is not available at %s (%s). Retrying",
-                        svc, why
-                    )
+        body = json.dumps(msg)
+        # Get services
+        services = self._service.config.get_service(
+            self._service_name
+        )
+        timeouts = list(self._service.iter_rpc_retry_timeout())
+        retries = len(timeouts) + 1
+        if len(services) < retries:
+            services *= retries
+        response = None
+        last = None
+        for svc in random.sample(services, retries):
+            client = tornado.httpclient.AsyncHTTPClient()
+            # Sleep when trying same instance
+            if svc == last:
+                yield tornado.gen.sleep(timeouts.pop())
+            #
+            last = svc
+            try:
+                response = yield client.fetch(
+                    "http://%s/api/%s/" % (svc, self._api),
+                    method="POST",
+                    body=body,
+                    headers={
+                        "X-NOC-Calling-Service": self._service.name
+                    }
+                )
+                break
+            except tornado.httpclient.HTTPError, why:
+                if why.code == 599:
+                    logger.debug("Timed out")
                     continue
-                except Exception, why:
-                    # Fatal error
-                    self._logger.error("RPC call failed: %s", why)
-                    raise RPCError("RPC call failed: %s" % why)
-                if not is_notify:
-                    result = json.loads(response.body)
-                    if result.get("error"):
-                        self._logger.error("RPC call failed: %s", result["error"])
-                        raise RPCError("RPC call failed: %s" % result["error"])
-                    else:
-                        raise tornado.gen.Return(result["result"])
+                raise RPCHTTPError("HTTP Error %s: %s" % (
+                    why.code, why.message))
+            except socket.error as e:
+                if e.args[0] in RETRY_SOCKET_ERRORS:
+                    logger.debug("Socket error: %s" % e)
+                    continue
+                raise RPCException(str(e))
+            except Exception, why:
+                raise RPCException(why)
+        if response:
+            if not is_notify:
+                result = json.loads(response.body)
+                if result.get("error"):
+                    self._logger.error("RPC call failed: %s",
+                                       result["error"])
+                    raise RPCRemoteError(
+                        "RPC call failed: %s" % result["error"]
+                    )
                 else:
-                    # Notifications return None
-                    raise tornado.gen.Return()
-            self._logger.info(
-                "No services available. Waiting %s seconds",
-                timeout
+                    raise tornado.gen.Return(result["result"])
+            else:
+                # Notifications return None
+                raise tornado.gen.Return()
+        else:
+            raise RPCNoService(
+                "No active service %s found" % self._service_name
             )
-            yield tornado.gen.sleep(timeout)
-        self._logger.error("RPC call failed. Timed out")
-        raise RPCTimeOutError("RPC call failed. Timed out")
 
 
 class RPCMethod(object):
@@ -130,6 +133,7 @@ class RPCMethod(object):
 
     @tornado.gen.coroutine
     def __call__(self, *args, **kwargs):
+        t0 = time.time()
         self._proxy._logger.debug(
             "[CALL>] %s.%s(%s, %s)",
             self._proxy._service_name,
@@ -137,9 +141,11 @@ class RPCMethod(object):
         )
         self._proxy._service.perf_metrics[self._metric] += 1
         result = yield self._proxy._call(self._name, *args, **kwargs)
+        t = time.time() - t0
         self._proxy._logger.debug(
-            "[CALL<] %s.%s",
+            "[CALL<] %s.%s (%.2fms)",
             self._proxy._service_name,
-            self._name
+            self._name,
+            t * 1000
         )
         raise tornado.gen.Return(result)
