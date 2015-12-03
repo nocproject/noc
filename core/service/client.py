@@ -33,7 +33,8 @@ CALLING_SERVICE_HEADER = "X-NOC-Calling-Service"
 #
 RETRIES = 5
 #
-RETRY_SOCKET_ERRORS = (errno.ECONNREFUSED, errno.EHOSTDOWN)
+RETRY_SOCKET_ERRORS = (errno.ECONNREFUSED, errno.EHOSTDOWN,
+                       errno.EHOSTUNREACH, errno.ENETUNREACH)
 
 
 class RPCError(Exception):
