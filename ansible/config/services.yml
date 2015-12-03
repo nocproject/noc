@@ -117,6 +117,12 @@ config:
       type: str
       default: 0.0.0.0:162
 
+  sae:
+    db_threads:
+      label: DB threads
+      type: int
+      default: 4
+
   activator:
     script_threads:
       label: Script threads
