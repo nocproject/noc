@@ -22,6 +22,7 @@ class Script(noc.sa.script.Script):
     implements = [IGetConfig]
 
     data = '<AFRICA><Platform ID=\"1\" Action=\"GET_TREE\" /></AFRICA>'
+    rx_sub = re.compile('\n\t+\n+', re.MULTILINE| re.DOTALL)
 
     def execute(self):
         url = 'http://' + self.access_profile.address + '/BrowseConfig'
@@ -44,4 +45,4 @@ class Script(noc.sa.script.Script):
         config = self.rx_sub.sub('\n', config)
         config = config.replace(">\n</", "></")
 
-        return self.cleaned_config(config)
+        return config
