@@ -98,7 +98,6 @@ _MODELS = {
     "main.RefBookField": "noc.main.models.RefBookField",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
     "main.Schedule": "noc.main.models.Schedule",
-    "main.Shard": "noc.main.models.Shard",
     "main.SlowOp": "noc.main.models.slowop.SlowOp",
     "main.Style": "noc.main.models.style.Style",
     "main.Sync": "noc.main.models.sync.Sync",
@@ -163,10 +162,8 @@ _MODELS = {
     "inv.UnknownModel": "noc.inv.models.unknownmodel.UnknownModel",
     "inv.Vendor": "noc.inv.models.vendor.Vendor",
     # sa models
-    "sa.Activator": "noc.sa.models.activator.Activator",
     "sa.AdministrativeDomain": "noc.sa.models.administrativedomain.AdministrativeDomain",
     "sa.AuthProfile": "noc.sa.models.authprofile.AuthProfile",
-    "sa.Collector": "noc.sa.models.collector.Collector",
     "sa.FailedScriptLog": "noc.sa.models.failedscriptlog.FailedScriptLog",
     "sa.GroupAccess": "noc.sa.models.groupaccess.GroupAccess",
     "sa.InteractionLog": "noc.sa.models.interactionlog.InteractionLog",
