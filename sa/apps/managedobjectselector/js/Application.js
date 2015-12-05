@@ -15,9 +15,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
         "NOC.sa.managedobjectselector.M2MField",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.main.prefixtable.LookupField",
-        "NOC.main.shard.LookupField",
         "NOC.sa.administrativedomain.LookupField",
-        "NOC.sa.activator.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.sa.terminationgroup.LookupField",
@@ -130,21 +128,9 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "filter_shard",
-                    xtype: "main.shard.LookupField",
-                    fieldLabel: "Filter by Shard",
-                    allowBlank: true
-                },
-                {
                     name: "filter_administrative_domain",
                     xtype: "sa.administrativedomain.LookupField",
                     fieldLabel: "Filter by Administrative Domain",
-                    allowBlank: true
-                },
-                {
-                    name: "filter_activator",
-                    xtype: "sa.activator.LookupField",
-                    fieldLabel: "Filter by Activator",
                     allowBlank: true
                 },
                 {

@@ -15,9 +15,7 @@ import six
 ## NOC modules
 from administrativedomain import AdministrativeDomain
 from managedobjectprofile import ManagedObjectProfile
-from activator import Activator
 from terminationgroup import TerminationGroup
-from noc.main.models import Shard
 from noc.main.models.prefixtable import PrefixTable
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import TagsField
@@ -54,13 +52,9 @@ class ManagedObjectSelector(models.Model):
             max_length=256, null=True, blank=True, validators=[check_re])
     filter_prefix = models.ForeignKey(PrefixTable,
             verbose_name=_("Filter by Prefix Table"), null=True, blank=True)
-    filter_shard = models.ForeignKey(Shard,
-            verbose_name=_("Filter by Shard"), null=True, blank=True)
     filter_administrative_domain = models.ForeignKey(AdministrativeDomain,
             verbose_name=_("Filter by Administrative Domain"),
             null=True, blank=True)
-    filter_activator = models.ForeignKey(Activator,
-            verbose_name=_("Filter by Activator"), null=True, blank=True)
     filter_vrf = models.ForeignKey("ip.VRF",
             verbose_name=_("Filter by VRF"), null=True, blank=True)
     filter_vc_domain = models.ForeignKey("vc.VCDomain",
@@ -135,15 +129,9 @@ class ManagedObjectSelector(models.Model):
                     SELECT * FROM main_prefixtableprefix p
                     WHERE   table_id=%d
                         AND address::inet <<= p.prefix)""" % self.filter_prefix.id)
-        # Filter by shard
-        if self.filter_shard:
-            q &= Q(activator__shard=self.filter_shard)
         # Filter by administrative domain
         if self.filter_administrative_domain:
             q &= Q(administrative_domain=self.filter_administrative_domain)
-        # Filter by activator
-        if self.filter_activator:
-            q &= Q(activator=self.filter_activator)
         # Filter by VRF
         if self.filter_vrf:
             q &= Q(vrf=self.filter_vrf)

@@ -8,8 +8,6 @@
 
 ## Import models
 from administrativedomain import AdministrativeDomain
-from activator import Activator
-from collector import Collector
 from managedobjectprofile import ManagedObjectProfile
 from authprofile import AuthProfile
 from terminationgroup import TerminationGroup
@@ -22,7 +20,6 @@ from groupaccess import GroupAccess
 from reducetask import ReduceTask
 from maptask import MapTask
 from commandsnippet import CommandSnippet
-from activatorcapabilitiescache import ActivatorCapabilitiesCache
 from mrtconfig import MRTConfig
 from failedscriptlog import FailedScriptLog
 from action import Action, ActionParameter

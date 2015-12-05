@@ -20,7 +20,7 @@ from django.db.models import Q
 import pytz
 ## NOC modules
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.activator import Activator
+from noc.main.models.pool import Pool
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.gridvcs.manager import GridVCSField
@@ -94,10 +94,10 @@ class Command(BaseCommand):
             default="default"
         ),
         make_option(
-            "--activator",
+            "--pool",
             action="store",
-            dest="activator",
-            help="Set activator for created objects",
+            dest="pool",
+            help="Set pool for created objects",
             default="default"
         ),
         make_option(
@@ -289,13 +289,13 @@ class Command(BaseCommand):
                 name=options["domain"].strip())
         except AdministrativeDomain.DoesNotExist:
             raise CommandError("Invalid administrative domain: %s" % options["domain"])
-        if not options["activator"]:
-            raise CommandError("No activatorset")
+        if not options["pool"]:
+            raise CommandError("No pool set")
         try:
-            activator = Activator.objects.get(
+            pool = Pool.objects.get(
                 name=options["domain"].strip())
-        except Activator.DoesNotExist:
-            raise CommandError("Invalid activator: %s" % options["activator"])
+        except Pool.DoesNotExist:
+            raise CommandError("Invalid pool: %s" % options["pool"])
         shard_member = 0
         shard_members = 0
         if options.get("shard"):
@@ -357,7 +357,7 @@ class Command(BaseCommand):
                         name=name,
                         object_profile=object_profile,
                         administrative_domain=domain,
-                        activator=activator,
+                        pool=pool,
                         scheme=1 if method == "ssh" else 0,
                         address=address,
                         profile_name=profile,
