@@ -67,29 +67,11 @@ Ext.define("NOC.sa.managedobjectselector.Model", {
             persist: false
         },
         {
-            name: "filter_shard",
-            type: "int"
-        },
-        {
-            name: "filter_shard__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "filter_administrative_domain",
             type: "int"
         },
         {
             name: "filter_administrative_domain__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "filter_activator",
-            type: "int"
-        },
-        {
-            name: "filter_activator__label",
             type: "string",
             persist: false
         },
