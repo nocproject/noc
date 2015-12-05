@@ -348,40 +348,11 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
-        def _create_object(attrs, m2m_attrs):
-            o = self.model(**attrs)
-            try:
-                o.save()
-                if m2m_attrs:
-                    self.update_m2ms(o, m2m_attrs)
-            except IntegrityError, why:
-                return self.render_json(
-                    {
-                        "status": False,
-                        "message": "Integrity error: %s" % why
-                    }, status=self.CONFLICT)
-            # Check format
-            if request.is_extjs:
-                rs = {
-                    "success": True,
-                    "data": self.instance_to_dict(o)
-                }
-            else:
-                rs = self.instance_to_dict(o)
-            return self.response(rs, status=self.CREATED)
-
         attrs, m2m_attrs = self.split_mtm(
             self.deserialize(request.raw_post_data))
         try:
             attrs = self.clean(attrs)
         except ValueError, why:
-            return self.render_json(
-                {
-                    "success": False,
-                    "message": "Bad request",
-                    "traceback": str(why)
-                }, status=self.BAD_REQUEST)
-        except InterfaceTypeError, why:
             return self.render_json(
                 {
                     "success": False,
@@ -409,10 +380,26 @@ class ExtModelApplication(ExtApplication):
                     "message": "Duplicated record"
                 }, status=self.CONFLICT)
         except self.model.DoesNotExist:
-            return self.submit_slow_op(
-                request, _create_object,
-                attrs, m2m_attrs
-            )
+            o = self.model(**attrs)
+            try:
+                o.save()
+                if m2m_attrs:
+                    self.update_m2ms(o, m2m_attrs)
+            except IntegrityError, why:
+                return self.render_json(
+                    {
+                        "status": False,
+                        "message": "Integrity error: %s" % why
+                    }, status=self.CONFLICT)
+            # Check format
+            if request.is_extjs:
+                rs = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                rs = self.instance_to_dict(o)
+            return self.response(rs, status=self.CREATED)
 
     @view(method=["GET"], url="^(?P<id>\d+)/?$", access="read", api=True)
     def api_read(self, request, id):
@@ -431,28 +418,6 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
-        def _update_object(o, attrs, m2m_attrs):
-            for k, v in attrs.items():
-                setattr(o, k, v)
-            try:
-                o.save()
-                if m2m_attrs:
-                    self.update_m2ms(o, m2m_attrs)
-            except IntegrityError:
-                return self.render_json(
-                    {
-                        "success": False,
-                        "message": "Integrity error"
-                    }, status=self.CONFLICT)
-            if request.is_extjs:
-                r = {
-                    "success": True,
-                    "data": self.instance_to_dict(o)
-                }
-            else:
-                r = self.instance_to_dict(o)
-            return self.response(r, status=self.OK)
-
         attrs, m2m_attrs = self.split_mtm(
             self.deserialize(request.raw_post_data))
         try:
@@ -475,15 +440,29 @@ class ExtModelApplication(ExtApplication):
             o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
-        return self.submit_slow_op(request, _update_object,
-                                   o, attrs, m2m_attrs)
+        for k, v in attrs.items():
+            setattr(o, k, v)
+        try:
+            o.save()
+            if m2m_attrs:
+                self.update_m2ms(o, m2m_attrs)
+        except IntegrityError:
+            return self.render_json(
+                {
+                    "success": False,
+                    "message": "Integrity error"
+                }, status=self.CONFLICT)
+        if request.is_extjs:
+            r = {
+                "success": True,
+                "data": self.instance_to_dict(o)
+            }
+        else:
+            r = self.instance_to_dict(o)
+        return self.response(r, status=self.OK)
 
     @view(method=["DELETE"], url="^(?P<id>\d+)/?$", access="delete", api=True)
     def api_delete(self, request, id):
-        def _delete_object(o):
-            o.delete()  # @todo: Detect errors
-            return HttpResponse(status=self.DELETED)
-
         try:
             o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
@@ -491,7 +470,8 @@ class ExtModelApplication(ExtApplication):
                 "status": False,
                 "message": "Not found"
             }, status=self.NOT_FOUND)
-        return self.submit_slow_op(request, _delete_object, o)
+        o.delete()  # @todo: Detect errors
+        return HttpResponse(status=self.DELETED)
 
     @view(url="^actions/group_edit/$", method=["POST"],
           access="update", api=True)

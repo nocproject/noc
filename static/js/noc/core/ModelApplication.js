@@ -633,49 +633,7 @@ Ext.define("NOC.core.ModelApplication", {
             Model = me.store.getModel(),
             record = new Model(data),
             mv = record.validate(),
-            result = {},
-            pollProgress = function(url) {
-                Ext.Ajax.request({
-                    url: url,
-                    method: "GET",
-                    scope: me,
-                    success: onSuccess,
-                    failure: onFailure
-                });
-            },
-            onSuccess = function(response) {
-                if(response.status === 202) {
-                    // Future in progress
-                    Ext.Function.defer(
-                        pollProgress, 1000, me,
-                        [response.getResponseHeader("Location")]
-                    );
-                } else {
-                    // Process result
-                    var data = Ext.decode(response.responseText);
-                    // @todo: Update current record with data
-                    if(me.currentQuery[me.idField]) {
-                        delete me.currentQuery[me.idField];
-                    }
-                    me.showGrid();
-                    me.reloadStore();
-                    me.saveInlines(data[me.idField], me.inlineStores);
-                    me.unmask();
-                }
-            },
-            onFailure = function(response) {
-                var message = "Error saving record";
-                if(response.responseText) {
-                    try {
-                        message = Ext.decode(response.responseText).message;
-                    }
-                    catch(err) {
-                        console.log(response.responseText);
-                    }
-                }
-                NOC.error(message);
-                me.unmask();
-            };
+            result = {};
 
         if(!mv.isValid()) {
             // @todo: Error report
@@ -699,8 +657,31 @@ Ext.define("NOC.core.ModelApplication", {
             method: me.currentRecord ? "PUT" : "POST",
             scope: me,
             jsonData: result,
-            success: onSuccess,
-            failure: onFailure
+            success: function(response) {
+                    // Process result
+                    var data = Ext.decode(response.responseText);
+                    // @todo: Update current record with data
+                    if(me.currentQuery[me.idField]) {
+                        delete me.currentQuery[me.idField];
+                    }
+                    me.showGrid();
+                    me.reloadStore();
+                    me.saveInlines(data[me.idField], me.inlineStores);
+                    me.unmask();
+            },
+            failure: function(response) {
+                var message = "Error saving record";
+                if(response.responseText) {
+                    try {
+                        message = Ext.decode(response.responseText).message;
+                    }
+                    catch(err) {
+                        console.log(response.responseText);
+                    }
+                }
+                NOC.error(message);
+                me.unmask();
+            }
         });
     },
     //
