@@ -37,8 +37,7 @@ Ext.define("NOC.sa.managedobjectselector.Model", {
         },
         {
             name: "filter_managed",
-            type: "boolean",
-            defaultValue: true
+            type: "auto"            
         },
         {
             name: "filter_profile",

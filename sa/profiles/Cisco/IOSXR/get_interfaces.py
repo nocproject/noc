@@ -22,6 +22,7 @@ class Script(BaseScript):
     types = {
         "packet over sonet/sdh": "physical",
         "gigabitethernet/ieee 802.3 interface(s)": "physical",
+        "fortygige": "physical",
         "tengige": "physical",
         "gigabitethernet": "physical",
         "management ethernet": "management",
@@ -205,6 +206,8 @@ class Script(BaseScript):
                 # IF-MIB::ifDescr
                 t = self.snmp.get_table("1.3.6.1.2.1.2.2.1.2", bulk=True)
                 for i in t:
+                    if t[i].startswith("ControlEthernet"):
+                        continue
                     m[self.profile.convert_interface_name(t[i])] = i
             except self.snmp.TimeOutError:
                 pass

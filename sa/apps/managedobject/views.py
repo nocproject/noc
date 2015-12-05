@@ -514,7 +514,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o.is_managed = False
         o.description = "Wiping! Do not touch!"
         o.save()
-        submit_job("main.jobs", "sa.wipe_managedobject", key=o.id)
+        submit_job("main.jobs", "sa.wipe_managed_object", key=o.id)
         return HttpResponse(status=self.DELETED)
 
     @view(url="^actions/run_discovery/$", method=["POST"],
