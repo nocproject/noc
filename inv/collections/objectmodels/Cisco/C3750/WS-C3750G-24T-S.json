@@ -251,6 +251,14 @@
         },
         "rackmount": {
             "units": 1.0
+        },
+        "dimensions": {
+            "depth": 295,
+            "height": 66,
+            "width": 445
+        },
+        "stack": {
+            "stackable": true
         }
     }
 }

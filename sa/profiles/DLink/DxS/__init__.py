@@ -36,6 +36,8 @@ class Profile(BaseProfile):
     ## <major>.<minor><sep><patch>
     ##
     rx_ver = re.compile(r"\d+")
+    rx_blocked_session = re.compile(".*System locked by other session!",
+                                    re.MULTILINE | re.DOTALL)
 
     def cmp_version(self, x, y):
         return cmp([int(z) for z in self.rx_ver.findall(x)],
@@ -263,6 +265,12 @@ class Profile(BaseProfile):
                     "untagged_ports": untagged_ports
                 }]
         return vlans
+    
+    def cleaned_config(self, config):
+        if self.rx_blocked_session.search(config):
+            raise BaseException("System locked by other session.")
+        config = super(Profile, self).cleaned_config(config)
+        return config
 
 
 def DES3028(v):

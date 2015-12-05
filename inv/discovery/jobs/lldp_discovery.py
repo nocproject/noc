@@ -247,3 +247,4 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
             return iface
         # Use algorithms from get_remote_port_by_local as last resort.
         return self.get_remote_port_by_local(object, port)
+

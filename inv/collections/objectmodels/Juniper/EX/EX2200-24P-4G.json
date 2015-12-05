@@ -282,11 +282,19 @@
         "asset": {
             "order_part_no": ["EX2200-24P-4G"]
         },
+        "dimensions": {
+            "depth": 254.3,
+            "height": 44.5,
+            "width": 446
+        },
         "management": {
             "managed": true
         },
         "rackmount": {
             "units": 1.0
+        },
+        "stack": {
+            "stackable": true
         }
     }
 }

@@ -150,3 +150,4 @@ class ArchivedAlarm(nosql.Document):
 
 ## Avoid circular references
 from activealarm import ActiveAlarm
+
