@@ -1,0 +1,31 @@
+# Ubuntu settings
+---
+# NOC settings
+noc_system_service: noc
+noc_service_pidfile: /var/run/noc.pid
+# Postgres settings
+postgres_system_service: postgresql
+postgres_user: pgsql
+postgres_path: /usr/local/bin/postgres
+postgresql_conf_path: /usr/local/pgsql/data/postgresql.conf
+postgresql_hba_path: /usr/local/pgsql/data/pg_hba.conf
+# Mongo settings
+mongod_system_service: mongod
+mongod_arbiter_system_service: mongod-arbiter
+mongo_user: mongodb
+mongod_path: /usr/local/bin/mongod
+mongo_path: /usr/local/bin/mongo
+mongo_db_path: /var/db/mongodb/
+mongo_log_path: /var/db/mongodb/mongod.log
+mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
+mongo_pid: /var/db/mongodb/mongod.lock
+mongo_arbiter_pid: " "
+mongo_fork: "false"
+# Nginx settings
+nginx_system_service: nginx
+nginx_user: www
+nginx_path: /usr/local/sbin/nginx
+nginx_conf_path: /usr/local/etc/nginx/nginx.conf
+nginx_log_dir: /var/log
+# APT settings
+apt_cache_valid_time: 3600
