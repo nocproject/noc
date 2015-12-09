@@ -15,8 +15,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Qtech.QSW2800"
-    pattern_username = r"^login:"
-    pattern_password = r"^Password:"
     pattern_more = [
         (r"^ --More-- $", " "),
         (r"^Confirm to overwrite current startup-config configuration","\ny\n"),

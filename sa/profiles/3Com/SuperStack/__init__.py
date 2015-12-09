@@ -13,8 +13,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "3Com.SuperStack"
-    pattern_username = "Login:"
-    pattern_password = "Password:"
     pattern_prompt = r"^Select menu option.*:"
     pattern_more = [
         (r"Enter <CR> for more or 'q' to quit--:", "\r"),

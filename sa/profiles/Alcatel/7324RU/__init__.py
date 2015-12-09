@@ -14,8 +14,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Alcatel.7324RU"
-    pattern_username = "User name:"
-    pattern_password = "Password:"
     pattern_prompt = "^\S+>"
     command_save_config = "config save"
     command_exit = "exit"

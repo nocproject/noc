@@ -6,7 +6,6 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Cisco.DCM"
     pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
-    pattern_password = "^[Pp]assword:"
     pattern_prompt = "^holding+@.*:"
     pattern_syntax_error = r"^(-\w+: \w+: not found|-\w+: \w+: No such file or directory|\w+: \w+: command not found|\w+: \w+: \w+: No such file or directory)"
     command_exit = "exit"

@@ -16,8 +16,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "DLink.DFL"
-    pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
-    pattern_password = "[Pp]ass[Ww]ord:"
     pattern_syntax_error = r"Error: Unknown command:"
     pattern_prompt = r"^(?P<hostname>\S+(:\S+)*):/> "
     command_more = "a"

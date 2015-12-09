@@ -17,7 +17,6 @@ class Profile(BaseProfile):
     username_submit = "\n\r"
     password_submit = "\r\n"
     pattern_username = r"^(User: |\S+ login: )"
-    pattern_password = r"^Password:"
     pattern_more = [
         (r"^Disconnect Now? (Y/N)", "Y"),
         (r"^More: <space>,  Quit: q, One line: <return>$", " ")

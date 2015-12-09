@@ -13,7 +13,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Zyxel.ZyNOS_EE"
-#    pattern_username="User name:"
     pattern_password = "Password: "
     pattern_prompt = r"^\S+?> "
     pattern_more = r"^-- more --.*?$"

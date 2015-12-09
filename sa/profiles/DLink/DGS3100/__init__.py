@@ -16,8 +16,6 @@ from noc.sa.interfaces.base import InterfaceTypeError
 
 class Profile(BaseProfile):
     name = "DLink.DGS3100"
-    pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
-    pattern_password = "[Pp]ass[Ww]ord:"
     pattern_more = [
         (r"CTRL\+C.+?a All", "a"),
         (r"CTRL\+C.+?a ALL", "a"),

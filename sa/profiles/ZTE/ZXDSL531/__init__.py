@@ -14,6 +14,5 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "ZTE.ZXDSL531"
     pattern_username = "Login name:"
-    pattern_password = "Password:"
     pattern_prompt = "^>"
     config_volatile = ["<entry1 sessionID=.+?/>"]

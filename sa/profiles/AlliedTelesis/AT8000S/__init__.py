@@ -14,7 +14,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "AlliedTelesis.AT8000S"
-    pattern_username = "User Name:"
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_prompt = r"^\S+?#"
     pattern_more = [

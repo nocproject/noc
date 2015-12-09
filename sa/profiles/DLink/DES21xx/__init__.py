@@ -14,7 +14,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "DLink.DES21xx"
-    pattern_password = "[Pp]assword:"
     pattern_prompt = r"^\S+?>"
     command_exit = "logout"
     command_save_config = "save"

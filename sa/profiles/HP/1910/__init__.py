@@ -13,7 +13,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "HP.1910"
-    pattern_username = r"^Username:"
     pattern_password = r"^(Password:|Please input password:)"
     pattern_more = [
         (r"^\s+---- More ----$", " "),
