@@ -7,4 +7,5 @@
 
 - name: PostgreSQL init db
   command: service postgresql initdb
-  creates: "{{ postgresql_hba_path }}"
+  args:
+    creates: "{{ postgresql_hba_path }}"
