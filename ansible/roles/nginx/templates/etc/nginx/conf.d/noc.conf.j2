@@ -11,19 +11,19 @@ server {
     error_log  {{ nginx_log_dir }}/noc.error.log;
 
     location /media/ {
-        alias /opt/noc/lib/python/site-packages/django/contrib/admin/static/;
+        alias {{ noc_root }}/lib/python/site-packages/django/contrib/admin/static/;
         gzip on;
         gzip_types text/css text/x-js;
     }
 
     location /static/ {
-        alias /opt/noc/static/;
+        alias {{ noc_root }}/static/;
         gzip on;
         gzip_types text/css text/x-js;
     }
 
     location ~ ^([^/]+)/([^/]+)/(js|css|img)/(.+)$ {
-        root /opt/noc;
+        root {{ noc_root }};
         rewrite ^([^/]+)/([^/]+)/(js|css|img)/(.+)$
                 /$1/apps/$2/$3/$4 break;
         gzip on;
