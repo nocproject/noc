@@ -19,7 +19,6 @@ class Profile(BaseProfile):
     pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = r"% Invalid input"
-    pattern_username = "Login:"
     pattern_more = [
         (r"^ --More--", "\n"),
         (r"\?\s*\[confirm\]", "\n")

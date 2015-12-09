@@ -13,7 +13,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "f5.BIGIP"
-    pattern_username = "^([Uu]sername|[Ll]ogin):"
     pattern_prompt = r"^(?P<user>\S+?)@(?P<part>\(.+?\))\(tmos\)# "
     pattern_more = [
         (r"^---\(less \d+%\)---", " "),

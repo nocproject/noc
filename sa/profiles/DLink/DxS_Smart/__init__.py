@@ -15,8 +15,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "DLink.DxS_Smart"
-    pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
-    pattern_password = "[Pp]ass[Ww]ord:"
     pattern_more = [
         ("--More--", " "),
         ("CTRL\+C.+?(a All)|(r Refresh)", "a")
