@@ -1,0 +1,13 @@
+---
+- name: Install FreeBSD system packages
+  pkgng: name={{item}} state=present
+  with_items:
+    - ca_root_nss
+    - python2
+    - py27-virtualenv
+    - mercurial
+    - sudo
+    - quilt
+
+- name: Install supervisord init script
+  template: src="FreeBSD/etc/rc.d/noc.j2" dest="/usr/local/etc/rc.d/{{ noc_system_service }}" mode="a+rx"

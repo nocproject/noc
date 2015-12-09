@@ -1,0 +1,8 @@
+# mongodb  FreeBSD
+---
+- name: Set mongod defaults
+  template: src="FreeBSD/etc/default/mongod.j2" dest="/etc/default/mongod"
+  notify: restart mongod
+
+- name: Install MongoDB
+  pkgng: name="mongodb" state=present
