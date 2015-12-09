@@ -1,0 +1,4 @@
+---
+- name: Install FreeBSD system packages
+  pkgng: name="libssh2" state=present
+  sudo: true
