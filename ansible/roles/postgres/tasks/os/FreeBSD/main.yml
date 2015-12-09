@@ -6,9 +6,5 @@
     - py27-psycopg2
 
 - name: PostgreSQL init db
-  raw: service postgresql initdb
-
-- name: Set config paths
-  set_fact:
-    postgresql_conf_path: "/usr/local/pgsql/data/postgresql.conf"
-    postgresql_hba_path: "/usr/local/pgsql/data/pg_hba.conf"
+  command: service postgresql initdb
+  creates: "{{ postgresql_hba_path }}"
