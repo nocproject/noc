@@ -2,6 +2,5 @@
   pkgng: name="nginx" state=present
 
 - name: Remove default.conf site
-  file: path=/usr/local/etc/nginx/nginx.conf state=absent
   template: src="/etc/nginx/conf.d/noc.conf.j2" dest="/usr/local/etc/nginx/nginx.conf"
   notify: restart nginx
