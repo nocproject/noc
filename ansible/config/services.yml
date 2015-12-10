@@ -16,6 +16,7 @@ services:
     description: Nginx server
     level: system
     port: 443
+    require_cert: true
 
   classifier:
     description: Classifier
