@@ -5,8 +5,13 @@ upstream noc-web {
 }
 
 server {
-    listen 80;
+    listen 443;
     server_name {{ noc_web_host }};
+    ssl on;
+    ssl_protocols
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_certificate {{ nginx_ssl_key_path }};
+    ssl_certificate_key {{ nginx_ssl_crt_path }};
     access_log  {{ nginx_log_dir }}/noc.access.log;
     error_log  {{ nginx_log_dir }}/noc.error.log;
 
@@ -36,6 +41,5 @@ server {
         gzip_types text/css text/x-js;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
-
     }
 }
