@@ -12,6 +12,9 @@
 - include: "os/CentOS/main.yml"
   when: ansible_distribution == "CentOS"
 
+- name: Set up SSL directory
+  file: path="{{ nginx_ssl_key_path }}" mode=0700 owner="{{ nginx_user }}" state=directory
+
 - name: Set up SSL certificates
   copy: content="{{ item.content }}" dest="{{ item.path }}" mode=0400 owner="{{ nginx_user }}"
   notify: restart nginx
