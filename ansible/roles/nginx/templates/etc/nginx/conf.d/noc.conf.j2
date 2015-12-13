@@ -9,8 +9,8 @@ server {
     server_name {{ noc_web_host }};
     ssl on;
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    ssl_certificate {{ nginx_ssl_key_path }};
-    ssl_certificate_key {{ nginx_ssl_cert_path }};
+    ssl_certificate {{ nginx_ssl_cert_path }};
+    ssl_certificate_key {{ nginx_ssl_key_path }};
     access_log  {{ nginx_log_dir }}/noc.access.log;
     error_log  {{ nginx_log_dir }}/noc.error.log;
 
