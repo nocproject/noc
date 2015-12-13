@@ -15,14 +15,13 @@
 - name: Set up SSL directory
   file: path="{{ nginx_ssl_key_path | dirname }}" mode=0700 owner="{{ nginx_user }}" state=directory
 
-- name: Set up SSL certificates
-  copy: content="{{ item.content }}" dest="{{ item.path }}" mode=0400 owner="{{ nginx_user }}"
+- name: Set up SSL key
+  copy: content="{{ noc_ssl_key }}" dest="{{ nginx_ssl_key_path }}" mode=0400 owner="{{ nginx_user }}"
   notify: restart nginx
-  with_items:
-    - path: "{{ nginx_ssl_key_path }}"
-      content: "{{ noc_ssl_key }}"
-    - path: "{{ nginx_ssl_cert_path }}"
-      content: "{{ noc_ssl_cert }}"
+
+- name: Set up SSL certificate
+  copy: content="{{ noc_ssl_cert }}" dest="{{ nginx_ssl_cert_path }}" mode=0400 owner="{{ nginx_user }}"
+  notify: restart nginx
 
 - name: Setup nginx
   template: src="etc/nginx/conf.d/noc.conf.j2" dest="{{ nginx_conf_path }}"
