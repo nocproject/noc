@@ -65,7 +65,6 @@ class ManagedObject(Model):
     """
     Managed Object
     """
-
     class Meta:
         verbose_name = "Managed Object"
         verbose_name_plural = "Managed Objects"
@@ -550,13 +549,20 @@ class ManagedObject(Model):
             data__management__managed_object=self.id))
 
     def run_discovery(self, delta=0):
-        op = self.object_profile
-        for name in get_active_discovery_methods():
-            cfg = "enable_%s" % name
-            if getattr(op, cfg):
-                refresh_schedule(
-                    "inv.discovery", name, self.id, delta=delta)
-                delta += 1
+        """
+        Schedule box discovery
+        """
+        if not self.object_profile.enable_box_discovery:
+            return
+        logger.debug("[%s] Scheduling box discovery after %ds",
+                     self.name, delta)
+        Job.submit(
+            "discovery",
+            self.BOX_DISCOVERY_JOB,
+            key=self.id,
+            pool=self.pool.name,
+            delta=delta
+        )
 
     def event(self, event_id, data=None, delay=None, tag=None):
         """
@@ -804,17 +810,6 @@ class ManagedObject(Model):
         Disable all discovery methods related with managed object
         """
 
-    def apply_discovery(self):
-        """
-        Apply effective discovery settings
-        """
-        methods = []
-        for name in get_active_discovery_methods():
-            cfg = "enable_%s" % name
-            if getattr(self.object_profile, cfg):
-                methods += [cfg]
-        # @todo: Create tasks
-
     @property
     def version(self):
         """
@@ -874,15 +869,6 @@ class ManagedObject(Model):
                 pool=self.pool.name
             )
 
-    def schedule_box_discovery(self, delta):
-        """
-        Schedule box discovery to run after delta seconds
-        """
-        if self.object_profile.enable_box_discovery:
-            pass
-        else:
-            pass
-
 
 class ManagedObjectAttribute(Model):
 
@@ -907,7 +893,6 @@ class ManagedObjectAttribute(Model):
 from useraccess import UserAccess
 from groupaccess import GroupAccess
 from objectnotification import ObjectNotification
-from selectorcache import SelectorCache
 from objectcapabilities import ObjectCapabilities, CapsItem
 from noc.inv.models.capability import Capability
 from action import Action

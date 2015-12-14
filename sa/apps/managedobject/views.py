@@ -18,7 +18,6 @@ from noc.lib.app import ExtModelApplication, view
 from noc.sa.models.managedobject import (ManagedObject,
                                          ManagedObjectAttribute)
 from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.reducetask import ReduceTask
 from noc.sa.models.maptask import MapTask
 from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -40,6 +39,7 @@ from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.engine import Engine
 from noc.sa.models.action import Action
+from noc.core.scheduler.job import Job
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -285,14 +285,12 @@ class ManagedObjectApplication(ExtModelApplication):
     @view(url="^(?P<id>\d+)/discovery/run/$", method=["POST"],
           access="change_discovery", api=True)
     def api_run_discovery(self, request, id):
-        from noc.core.scheduler.job import Job
-
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         r = json_decode(request.raw_post_data).get("names", [])
         for name, jcls in self.DISCOVERY_JOBS:
-            if not name in r:
+            if name not in r:
                 continue
             if not getattr(o.object_profile,
                            "enable_%s_discovery" % name):
@@ -314,12 +312,18 @@ class ManagedObjectApplication(ExtModelApplication):
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         r = json_decode(request.raw_post_data).get("names", [])
-        d = 0
-        for name in get_active_discovery_methods():
-            cfg = "enable_%s" % name
-            if getattr(o.object_profile, cfg) and name in r:
-                stop_schedule("inv.discovery", name, o.id)
-                d += 1
+        for name, jcls in self.DISCOVERY_JOBS:
+            if name not in r:
+                continue
+            if not getattr(o.object_profile,
+                           "enable_%s_discovery" % name):
+                continue  # Disabled by profile
+            Job.remove(
+                "discovery",
+                jcls,
+                key=o.id,
+                pool=o.pool.name
+            )
         return {
             "success": True
         }
@@ -522,17 +526,12 @@ class ManagedObjectApplication(ExtModelApplication):
               "ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)
           })
     def api_action_run_discovery(self, request, ids):
+        d = 0
         for o in ids:
             if not o.has_access(request.user):
                 continue
-            d = 0
-            for name in get_active_discovery_methods():
-                cfg = "enable_%s" % name
-                if getattr(o.object_profile, cfg):
-                    refresh_schedule(
-                        "inv.discovery",
-                        name, o.id, delta=d)
-                    d += 1
+            o.run_discovery(delta=d)
+            d += 1
         return "Discovery processes has been scheduled"
 
     def get_nested_inventory(self, o):
