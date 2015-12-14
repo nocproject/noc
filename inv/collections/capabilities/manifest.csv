@@ -6,6 +6,9 @@ DB | Interfaces,8b2d38a0-a601-42ee-90eb-a3ef6aecfebc,DB/Interfaces.json,ba2c7cd9
 MikroTik | RouterOS | License | Level,e954d09a-d04b-4c41-b971-7387fb91c693,MikroTik/RouterOS/License/Level.json,7fe502924d89cc301183afb5029ec5f23ac7351a0fd38c7254649a9f9998c810
 MikroTik | RouterOS | License | SoftwareID,254db3ab-f94d-42ef-b991-16610412ff24,MikroTik/RouterOS/License/SoftwareID.json,cc9bbeca872edcf7242708cb609a5c0d31dbf03463db22055c6ebfca53a7d3c1
 MikroTik | RouterOS | License | Upgradable To,427e1cc7-1936-4f03-bceb-aa3402ffb0f5,MikroTik/RouterOS/License/Upgradable_To.json,6efc2ae9e806994882ce9da6c525f3a2e7abde69c17509a7c7ee20fcb1b110d5
+Network | CDP,16e9be1c-66f2-45db-acbd-354fa585208e,Network/CDP.json,1cc026b8c6724d80443946e5849b2de2929798fb6a34981e9e602bac1d13184c
+Network | LLDP,45dd98d4-deab-4d48-91c7-66c2b884e8d2,Network/LLDP.json,fe6876aa7ed4255692d8c007c629c72bc28bb34345cf70cf0a0ce579a5bfa2a7
+Network | OAM,f7cc66b8-8f94-410d-a353-f5cf7f811b06,Network/OAM.json,4982ba79aa10bc2cb8a90a5f6a72b2c371976532fd4d7e7d820229dee11d1bb1
 SNMP,24ce2f73-c23b-4f7b-b3d9-fc02d2d9a3d0,SNMP.json,c6590df5fd3eeda8c7ed39573e1b4a736e2a9bc38c9b79cca123c67135f96e5c
 SNMP | Bulk,01c0cbe7-12c6-4ca6-9d38-b09c6e5e5b63,SNMP/Bulk.json,6c8a9833d2072f20b6a89736ee11a1f331275f242a145c63bb2b51800184c436
 SNMP | IF-MIB,a9ae93c7-39d8-4e57-a439-41929a02d38a,SNMP/IF-MIB.json,3739a5f1c6ed4d2a9e4168e431158e2545e2ed478a3d84f2fa5b1403d00b0e7e
