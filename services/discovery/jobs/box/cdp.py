@@ -17,6 +17,7 @@ class CDPCheck(TopologyDiscoveryCheck):
     """
     name = "cdp"
     required_script = "get_cdp_neighbors"
+    required_capabilities = ["Network | CDP"]
 
     def iter_neighbors(self, mo):
         result = mo.scripts.get_cdp_neighbors()

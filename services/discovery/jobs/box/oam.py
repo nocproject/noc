@@ -18,6 +18,7 @@ class OAMCheck(TopologyDiscoveryCheck):
     """
     name = "oam"
     required_script = "get_oam_status"
+    required_capabilities = ["Network | OAM"]
 
     def iter_neighbors(self, mo):
         result = mo.scripts.get_oam_status()

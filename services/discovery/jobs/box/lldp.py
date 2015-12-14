@@ -21,6 +21,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
     """
     name = "lldp"
     required_script = "get_lldp_neighbors"
+    required_capabilities = ["Network | LLDP"]
 
     CHASSIS_SUBTYPE_MAC = 4
     CHASSIS_SUBTYPE_NETWORK_ADDRESS = 4
