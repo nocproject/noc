@@ -90,7 +90,7 @@ class Script(BaseScript):
                 hw = match.group("hw").lower()
                 t = self.types.get(hw, "unknown")
                 if t == "unknown":
-                    self.error("Unknown hardware type: %s" % hw)
+                    self.logger.error("Unknown hardware type: %s" % hw)
                 ifaces[current]["type"] = t
                 mac = match.group("mac")
                 if mac:

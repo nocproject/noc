@@ -287,5 +287,5 @@ class Script(BaseScript):
                             untagged[i] = tag
                 continue
             # @todo: Q-in-Q handling
-        self.debug("VLANS: %s %s" % (untagged, tagged))
+        self.logger.debug("VLANS: %s %s" % (untagged, tagged))
         return untagged, tagged

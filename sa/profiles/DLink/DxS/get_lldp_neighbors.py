@@ -79,7 +79,7 @@ class Script(BaseScript):
                 match = self.rx_remote_chassis_id_subtype.search(s1)
                 if not match:
                     # Debug string
-                    self.debug('remote_chassis_id_subtype is empty!')
+                    self.logger.debug('remote_chassis_id_subtype is empty!')
                     continue
                 remote_chassis_id_subtype = match.group("subtype").strip()
                 # TODO: Find other subtypes
@@ -106,7 +106,7 @@ class Script(BaseScript):
                 match = self.rx_remote_chassis_id.search(s1)
                 if not match:
                     # Debug string
-                    self.debug('remote_chassis_id is empty!')
+                    self.logger.debug('remote_chassis_id is empty!')
                     continue
                 n["remote_chassis_id"] = match.group("id").strip()
 
@@ -114,7 +114,7 @@ class Script(BaseScript):
                 match = self.rx_remote_port_id_subtype.search(s1)
                 if not match:
                     # Debug string
-                    self.debug('remote_port_id_subtype is empty!')
+                    self.logger.debug('remote_port_id_subtype is empty!')
                     continue
                 remote_port_subtype = match.group("subtype").strip()
                 # TODO: Find other subtypes
@@ -155,7 +155,7 @@ class Script(BaseScript):
                         n["remote_port_subtype"] = 5
                     else:
                         # Debug string
-                        self.debug('remote_port_id is empty!')
+                        self.logger.debug('remote_port_id is empty!')
                         continue
 
                 n["remote_port"] = match.group("port").strip()
@@ -200,7 +200,7 @@ class Script(BaseScript):
                     match = self.rx_remote_port_id2.search(n["remote_port"])
                     if not match:
                         # Debug string
-                        self.debug('Invalid remote_port_id!')
+                        self.logger.debug('Invalid remote_port_id!')
                         continue
                     n["remote_port"] = match.group("port")
 

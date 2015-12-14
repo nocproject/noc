@@ -26,23 +26,23 @@ class Script(BaseScript):
         rawportlist = []
         st = self.cli('show lag brief')
         for trunk in self.rx_trunk.findall(st):
-            self.debug('\nRAWPORTLIST:' + trunk[5] + '<--')
+            self.logger.debug('\nRAWPORTLIST:' + trunk[5] + '<--')
             rawportlist = trunk[5].split('e ')
-            self.debug('\nPORTLIST:'.join(map(str, rawportlist)) + '<--')
+            self.logger.debug('\nPORTLIST:'.join(map(str, rawportlist)) + '<--')
             portlist = []
             for port in rawportlist:
                 if port:
                     port = port.strip()
-                    self.debug('\n   PORT:' + port)
+                    self.logger.debug('\n   PORT:' + port)
                     if port.find(' to ') > 0:
                         first = port.split()[0].split('/')[1]
                         last = port.split()[2].split('/')[1]
                         for n in range(int(first), int(last) + 1):
-                            self.debug('\n   ADDING PORT:' + port.split()[0].split('/')[0] + '/' + repr(n))
+                            self.logger.debug('\n   ADDING PORT:' + port.split()[0].split('/')[0] + '/' + repr(n))
                             portlist += [port.split()[0].split('/')[0] + '/' + repr(n)]
 
                     else:
-                        self.debug('\n   ADDING PORT:' + port)
+                        self.logger.debug('\n   ADDING PORT:' + port)
                         portlist += [port]
 
             r += [{'interface': trunk[0],

@@ -70,7 +70,6 @@ class Script(BaseScript):
                 ii = ii.split(' ')[0]
             elif ii != '':
                 ii = ii.split(' ')[1]
-            self.debug(ii)
             ospf += [ii.strip()]
 
         pim = []
@@ -144,13 +143,13 @@ class Script(BaseScript):
         untagged = {}
         r = []
         for v in shrunvlan.split('!'):
-            self.debug('\nPROCESSING:' + v + '\n')
+            self.logger.debug('\nPROCESSING:' + v + '\n')
             match = self.rx_vlan_list.findall(v)
             if match:
                 tag = 1
                 m2 = match
                 for m in match:
-                    self.debug('    m[0]:' + m[0] + '\n')
+                    self.logger.debug('    m[0]:' + m[0] + '\n')
                     if not m[0]:
                         tag = 0
                         continue
@@ -192,7 +191,7 @@ class Script(BaseScript):
         c = c.strip('\n')
         for ii in c.split('\n'):
             if not ii.startswith('Port'):
-                self.debug('\nPROCESSING LINE: ' + ii + '\n')
+                self.logger.debug('\nPROCESSING LINE: ' + ii + '\n')
                 ii = ii.lower()
                 ii = ii.replace('disabled', ' disabled ')
                 ii = ii.replace('disabn', ' disabled n')
@@ -202,19 +201,19 @@ class Script(BaseScript):
                 if len(port) > 1:
                     ifname = port[0]
                     ift = ''
-                    self.debug('INT :' + ifname + '\n')
+                    self.logger.debug('INT :' + ifname + '\n')
                     if ifname.find('/') > 0:
                         ift = 'physical'
-                        self.debug('FOUND PHYSICAL\n')
+                        self.logger.debug('FOUND PHYSICAL\n')
                     if ifname.find('e') > 0:
                         ift = 'SVI'
-                        self.debug('FOUND VIRTUAL\n')
+                        self.logger.debug('FOUND VIRTUAL\n')
                     if ifname.find('b') > 0:
                         ift = 'loopback'
-                        self.debug('FOUND LOOPBACK\n')
+                        self.logger.debug('FOUND LOOPBACK\n')
                     if ifname.find('g') > 0:
                         ift = 'management'
-                        self.debug('FOUND MANAGEMENT\n')
+                        self.logger.debug('FOUND MANAGEMENT\n')
                     if ifname.find('n') > 0:
                         ift = 'tunnel'
                     i = {'name': ifname,
@@ -232,7 +231,7 @@ class Script(BaseScript):
                         ip_address = []
                         for l in ipal:
                             l = l.strip()
-                            self.debug('ip.split len:' + str(len(l.split())))
+                            self.logger.debug('ip.split len:' + str(len(l.split())))
                             if len(l.split()) > 3:
                                 ip_address.append('%s/%s' % (l.split()[2], IPv4.netmask_to_len(l.split()[3])))
                             else:
