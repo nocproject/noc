@@ -60,7 +60,7 @@ class Script(BaseScript):
                     fwver = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.4.0"
                                             % oid)
                 else:
-                    self.error("Cannot find base OID for model '%s'"
+                    self.logger.error("Cannot find base OID for model '%s'"
                                 % platform)
                     raise self.snmp.TimeOutError  # Fallback to CLI
                 return {

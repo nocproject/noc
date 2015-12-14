@@ -26,7 +26,7 @@ class Script(BaseScript):
             name = l["name"]
             if len(l["prefix_list"]) == 0:
                 result += [{"name": name, "status": False}]
-                self.error("Refusing to apply empty policy-option %s" % name)
+                self.logger.error("Refusing to apply empty policy-option %s" % name)
                 continue
             suffix = "exact" if l["strict"] else "orlonger"
             # Retrieve prefix list

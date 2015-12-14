@@ -150,7 +150,7 @@ class Script(BaseScript):
                     }
                     i["subinterfaces"] += [self.si]
                 else:
-                    self.debug('\nError: subinterfaces already exists in ' \
+                    self.logger.debug('\nError: subinterfaces already exists in ' \
                         'interface \n%s\n' % i)
                     continue
             else:

@@ -94,13 +94,13 @@ class Script(BaseScript):
         if "Turbo" in match.group("platform"):
             match1 = self.rx_item_ti.search(v)
             objects[0].update({"serial": match1.group("serial")})
-            self.debug(media)
+            self.logger.debug(media)
             for match2 in media.splitlines():
                 nodata = ""
                 if "Port" in match2:
                     partno = ""
                     l = match2.split()
-                    self.debug(l)
+                    self.logger.debug(l)
                     if l[4] == "EMPTY":
                         port = ""
                     elif "M-TX" in match2:
@@ -115,13 +115,13 @@ class Script(BaseScript):
                         serial = "None"
                     else:
                         port = l[1][:-1]
-                        self.debug(l[4])
-                        self.debug(port)
+                        self.logger.debug(l[4])
+                        self.logger.debug(port)
                         trans = " ".join(l[4:])
                         serial = ""
                 elif "Vendor" in match2:
                     l = match2.split()
-                    self.debug(l)
+                    self.logger.debug(l)
                     descr = l[1]
                 elif "Serial" in match2:
                     l = match2.split()
@@ -132,7 +132,7 @@ class Script(BaseScript):
                         serial = "SNUNKNOWN"
                     partno = l[2]
                 # if match2[0].split("/")[0]==match1[0] and match2[1]!="EMPTY":
-                # self.debug(match2)
+                # self.logger.debug(match2)
                 if nodata:
                     partno = self.TRANS_MAP[trans]
                 if serial:
@@ -178,26 +178,26 @@ class Script(BaseScript):
                     "vendor": "BROCADE"
                 }]
                 media = self.cli("show media slot %s" % match1[0])
-                self.debug(media)
+                self.logger.debug(media)
                 for match2 in media.splitlines():
                     if "Port" in match2:
                         l = match2.split()
-                        self.debug(l)
+                        self.logger.debug(l)
                         if l[4] == "EMPTY":
                             port = ""
                         else:
                             port = l[1][:-1].split("/")[1]
-                            self.debug(l[4])
-                            self.debug(port)
+                            self.logger.debug(l[4])
+                            self.logger.debug(port)
                             trans = " ".join(l[4:])
                             serial = ""
                     elif "Vendor" in match2:
                         l = match2.split()
-                        self.debug(l)
+                        self.logger.debug(l)
                         descr = l[1]
                     elif "Serial" in match2:
                         l = match2.split()
-                        self.debug(l)
+                        self.logger.debug(l)
                         #			descr=l[2]
                         if l[4]:
                             serial = l[4]

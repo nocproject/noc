@@ -163,6 +163,7 @@ class Script(BaseScript):
             # SFP+-10G-LR
             t, s, m = n
         else:
-            self.error("Cannot detect transceiver type: '%s'" % description)
+            self.logger.error("Cannot detect transceiver type: '%s'",
+                              description)
             return self.UNKNOWN_XCVR
         return "NoName | Transceiver | %s | %s %s" % (s, t, m)
