@@ -33,6 +33,9 @@ class DiscoveryCheck(object):
     # If not none, check required script is available
     # before running check
     required_script = None
+    # If not none, check object has all required capablities
+    # from list
+    required_capabilities = None
 
     def __init__(self, job):
         self.job = job
@@ -48,11 +51,31 @@ class DiscoveryCheck(object):
         self.profile_cache = {}
 
     def run(self):
+        # Check required scripts
         if (self.required_script and
                 self.required_script not in self.object.scripts):
             self.logger.info("%s script is not supported. Skipping",
                              self.required_script)
             return
+        # Check required capabilities
+        if self.required_capabilities:
+            caps = self.object.get_caps()
+            for cn in self.required_capabilities:
+                if cn not in caps:
+                    self.logger.info(
+                        "Object hasn't required capability '%s'. "
+                        "Skipping",
+                        cn
+                    )
+                    return
+                v = caps[cn]
+                if not v:
+                    self.logger.info(
+                        "Capability '%s' is disabled. Skipping",
+                        cn
+                    )
+                    return
+        # Run check
         try:
             self.handler()
         except Exception:
