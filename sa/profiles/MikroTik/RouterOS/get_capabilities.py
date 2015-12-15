@@ -2,21 +2,18 @@
 ##----------------------------------------------------------------------
 ## MikroTik.RouterOS.get_capabilities_ex
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetcapabilitiesex import IGetCapabilitiesEx
+from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 
 
 class Script(BaseScript):
-    name = "MikroTik.RouterOS.get_capabilities_ex"
-    cache = True
-    interface = IGetCapabilitiesEx
+    name = "MikroTik.RouterOS.get_capabilities"
 
-    def check_license(self, caps):
+    def execute_platform(self, caps):
         v = self.cli("/system license print")
         c = {}
         for l in v.splitlines():
@@ -30,7 +27,3 @@ class Script(BaseScript):
         upto = c.get("upgradable-to")
         if upto:
             caps["MikroTik | RouterOS | License | Upgradable To"] = upto
-
-    def execute(self, caps={}):
-        self.check_license(caps)
-        return caps
