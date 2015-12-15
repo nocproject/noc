@@ -176,7 +176,7 @@ class BaseScript(object):
                 pass
         # Execute script
         if not cache_hit:
-            result = self.execute()
+            result = self.execute(**self.args)
             if self.to_shutdown_session:
                 self.logger.debug("Shutdown session")
                 self.profile.shutdown_session(self)
