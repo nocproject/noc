@@ -1,3 +1,3 @@
 # NOC PostgreSQL tuning
 listen_addresses = '*'
-max_connections = 500
+max_connections = {% if ansible_distribution == "FreeBSD" %}300{% else %}500{% endif %}
