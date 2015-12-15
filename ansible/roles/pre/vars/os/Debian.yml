@@ -23,7 +23,7 @@ mongo_arbiter_pid: " "
 mongo_fork: "false"
 # Nginx settings
 nginx_system_service: nginx
-nginx_user: nginx
+nginx_user: www-data
 nginx_path: /usr/sbin/nginx
 nginx_conf_path: /etc/nginx/conf.d/noc.conf
 nginx_log_dir: /var/log/nginx
