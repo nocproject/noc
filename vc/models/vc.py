@@ -19,7 +19,7 @@ from noc.main.models import ResourceState, Style
 from noc.project.models.project import Project
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
-from noc.main.models.fts_queue import full_text_search
+from noc.main.models.textindex import full_text_search
 
 ## Regular expressions
 rx_vc_underline = re.compile("\s+")

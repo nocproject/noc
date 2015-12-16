@@ -12,7 +12,7 @@ from whoosh.index import open_dir
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces.base import UnicodeParameter
-from noc.main.models.fts_queue import FTSQueue
+from noc.main.models.textindex import TextIndex
 
 
 class SearchApplication(ExtApplication):
@@ -21,8 +21,6 @@ class SearchApplication(ExtApplication):
     """
     title = "Search"
     menu = "Search"
-    INDEX = "local/index"
-    LIMIT = 1000
     glyph = "search noc-preview"
 
     @view(url="^$", method=["POST"], access="launch", api=True,
@@ -30,24 +28,17 @@ class SearchApplication(ExtApplication):
               "query": UnicodeParameter()
           })
     def api_search(self, request, query):
-        user = request.user
-        index = open_dir(self.INDEX, readonly=True)
-        parser = QueryParser("content", index.schema)
-        r = []
-        q = parser.parse(query)
-        with index.searcher() as searcher:
-            for hit in searcher.search(q, limit=self.LIMIT):
-                o = FTSQueue.get_object(hit["id"])
-                if not o:
-                    continue  # Not found in database
-                li = o.get_search_info(user)
-                if not li:
-                    continue  # Not accessible for user
-                r += [{
-                    "id": hit["id"],
-                    "title": hit["title"],
-                    "card": hit["card"],
-                    "tags": hit.get("tags"),
-                    "info": li
-                }]
-        return r
+        def get_info(model, id):
+            return [
+                model.lower(),
+                "history",
+                {"args": [str(id)]}
+            ]
+
+        return [{
+            "id": "%s:%s" % (qr.model, qr.object),
+            "title": str(qr.title),
+            "card": str(qr.card),
+            "tags:": [str(x) for x in qr.tags],
+            "info": get_info(qr.model, qr.object)
+        } for qr in TextIndex.search(query)]

@@ -21,7 +21,7 @@ from noc.core.model.fields import TagsField, INETField, MACField
 from noc.lib.app import site
 from noc.lib.validators import (
     ValidationError, check_fqdn, check_ipv4, check_ipv6)
-from noc.main.models.fts_queue import full_text_search
+from noc.main.models.textindex import full_text_search
 
 
 @full_text_search
