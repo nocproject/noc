@@ -271,3 +271,11 @@ _MODELS = {
     # support models
     "support.Crashinfo": "noc.support.models.crashinfo.Crashinfo"
 }
+
+FTS_MODELS = [
+    "ip.Address",
+    "ip.Prefix",
+    "ip.VRF",
+    "vc.VC",
+    "sa.ManagedObject"
+]

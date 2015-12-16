@@ -23,7 +23,7 @@ from noc.lib.app import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
 from noc.lib.ip import IP, IPv4
-from noc.main.models.fts_queue import full_text_search
+from noc.main.models.textindex import full_text_search
 
 
 @full_text_search
