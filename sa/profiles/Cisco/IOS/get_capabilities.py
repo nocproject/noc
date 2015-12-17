@@ -26,7 +26,7 @@ class Script(BaseScript):
         """
         Check box has lldp enabled
         """
-        r = self.cli("show lldp neighbors", ignore_errors=True)
+        r = self.cli("show lldp neighbors")
         return "% LLDP is not enabled" not in r
 
     @false_on_cli_error
@@ -34,7 +34,7 @@ class Script(BaseScript):
         """
         Check box has cdp enabled
         """
-        r = self.cli("show cdp neighbors", ignore_errors=True)
+        r = self.cli("show cdp neighbors")
         return "% CDP is not enabled" not in r
 
     @false_on_cli_error
@@ -42,5 +42,5 @@ class Script(BaseScript):
         """
         Check box has oam enabled
         """
-        r = self.cli("show ethernet oam summary", ignore_errors=True)
+        r = self.cli("show ethernet oam summary")
         return "% OAM is not enabled" not in r  # @todo:  not tested
