@@ -141,6 +141,9 @@ class BaseScript(object):
                 {},
                 version
             )
+        #
+        if self.profile.setup_script:
+            self.profile.setup_script(self)
 
     def __call__(self, *args, **kwargs):
         self.args = kwargs
