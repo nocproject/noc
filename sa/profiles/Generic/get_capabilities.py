@@ -2,10 +2,12 @@
 ##----------------------------------------------------------------------
 ## Generic.get_capabilities
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import functools
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcapabilities import IGetCapabilities
@@ -62,7 +64,6 @@ class Script(BaseScript):
         return self.check_snmp_getnext(mib["IF-MIB::ifIndex"],
                                        only_first=True)
 
-
     def has_snmp_ifmib_hc(self):
         """
         Check IF-MIB 64 bit counters
@@ -115,3 +116,13 @@ class Script(BaseScript):
         if self.has_oam():
             caps["Network | OAM"] = True
         return caps
+
+
+def false_on_cli_error(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except (BaseScript.CLIOperationError, BaseScript.CLISyntaxError):
+            return False
+    return wrapper
