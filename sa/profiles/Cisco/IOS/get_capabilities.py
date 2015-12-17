@@ -8,6 +8,7 @@
 
 ## NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 from noc.lib.mib import mib
 
 
@@ -19,3 +20,27 @@ class Script(BaseScript):
         "BRAS | L2TP": mib["CISCO-VPDN-MGMT-MIB::cvpdnSystemTunnelTotal", 2],
         "BRAS | PPTP": mib["CISCO-VPDN-MGMT-MIB::cvpdnSystemTunnelTotal", 3]
     }
+
+    @false_on_cli_error
+    def has_lldp(self):
+        """
+        Check box has lldp enabled
+        """
+        r = self.cli("show lldp neighbors", ignore_errors=True)
+        return "% LLDP is not enabled" not in r
+
+    @false_on_cli_error
+    def has_cdp(self):
+        """
+        Check box has cdp enabled
+        """
+        r = self.cli("show cdp neighbors", ignore_errors=True)
+        return "% CDP is not enabled" not in r
+
+    @false_on_cli_error
+    def has_oam(self):
+        """
+        Check box has oam enabled
+        """
+        r = self.cli("show ethernet oam summary", ignore_errors=True)
+        return "% OAM is not enabled" not in r  # @todo:  not tested
