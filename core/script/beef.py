@@ -12,6 +12,9 @@ import re
 import uuid
 import os
 import glob
+import datetime
+## NOC modules
+from noc.lib.fileutils import safe_rewrite
 
 
 class Beef(object):
@@ -109,3 +112,27 @@ class Beef(object):
             beef.load(path)
             return beef
         return None
+
+    def save(self, path):
+        def q(s):
+            ts = type(s)
+            if ts == datetime.datetime:
+                return s.isoformat()
+            elif ts == dict:
+                return dict((k, q(s[k])) for k in s)
+            elif ts == list:
+                return [q(x) for x in s]
+            elif ts == tuple:
+                return tuple([q(x) for x in s])
+            elif isinstance(s, basestring):
+                return str(s).encode("string_escape")
+            else:
+                return s
+
+        beef = dict((k, getattr(self, k, None)) for k in self.beef_args)
+        if not beef.get("date"):
+            beef["date"] = datetime.datetime.now()
+        if not beef.get("guid"):
+            beef["guid"] = str(uuid.uuid4())
+        beef = q(beef)
+        safe_rewrite(path, json.dumps(beef), mode=0644)

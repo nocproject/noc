@@ -34,6 +34,13 @@ class Command(BaseCommand):
             nargs=1,
             help="Beef UUID or path"
         )
+        # fix command
+        fix_parser = subparsers.add_parser("fix")
+        fix_parser.add_argument(
+            "beef",
+            nargs=1,
+            help="Beef UUID or path"
+        )
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -106,6 +113,12 @@ class Command(BaseCommand):
         return
 
     def handle_test(self, beef, *options, **args):
+        self.run_beef(beef)
+
+    def handle_fix(self, beef, *options, **args):
+        self.run_beef(beef, fix=True)
+
+    def run_beef(self, beef, fix=False):
         from noc.core.script.loader import loader
 
         b = Beef.load_by_id(beef[0])
@@ -113,7 +126,7 @@ class Command(BaseCommand):
             self.die("Beef not found: %s" % beef[0])
         script_class = loader.get_script(b.script)
         if not script_class:
-            self.die("Invalid script: %s", b.script)
+            self.die("Invalid script: %s" % b.script)
         # Build credentials
         credentials = {
             "address": b.guid,
@@ -137,7 +150,11 @@ class Command(BaseCommand):
             name=b.script
         )
         result = scr.run()
-        pprint.pprint(result)
+        pprint.pprint(result, stream=self.stdout)
+        if fix and b.result != result:
+            self.stdout.write("Fixing %s\n" % beef[0])
+            b.result = result
+            b.save(beef[0])
 
 
 class ServiceStub(object):
