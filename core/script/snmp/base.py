@@ -26,8 +26,15 @@ class SNMP(object):
         self.result = None
         self.logger = PrefixLoggerAdapter(script.logger, "snmp")
 
+    def close(self):
+        if self.ioloop:
+            self.logger.debug("Closing IOLoop")
+            self.ioloop.close(all_fds=True)
+            self.ioloop = None
+
     def get_ioloop(self):
         if not self.ioloop:
+            self.logger.debug("Creating IOLoop")
             self.ioloop = tornado.ioloop.IOLoop()
         return self.ioloop
 

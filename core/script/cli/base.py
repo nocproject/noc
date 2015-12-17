@@ -36,7 +36,7 @@ class CLI(object):
         self.logger = PrefixLoggerAdapter(self.script.logger, self.name)
         self.iostream = None
         self.motd = ""
-        self.ioloop = tornado.ioloop.IOLoop()
+        self.ioloop = None
         self.command = None
         self.more_patterns = []
         self.more_commands = []
@@ -49,6 +49,12 @@ class CLI(object):
         self.collected_data = []
         self.tos = tos
 
+    def close(self):
+        if self.ioloop:
+            self.logger.debug("Closing IOLoop")
+            self.ioloop.close(all_fds=True)
+            self.ioloop = None
+
     def create_iostream(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if self.tos:
@@ -60,6 +66,9 @@ class CLI(object):
     def execute(self, cmd):
         self.buffer = ""
         self.command = cmd
+        if not self.ioloop:
+            self.logger.debug("Creating IOLoop")
+            self.ioloop = tornado.ioloop.IOLoop()
         self.ioloop.run_sync(self.submit)
         return self.result
 
