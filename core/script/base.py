@@ -176,10 +176,14 @@ class BaseScript(object):
                 pass
         # Execute script
         if not cache_hit:
-            result = self.execute(**self.args)
-            if self.to_shutdown_session:
-                self.logger.debug("Shutdown session")
-                self.profile.shutdown_session(self)
+            try:
+                result = self.execute(**self.args)
+            finally:
+                if not self.parent:
+                    # Close SNMP socket when necessary
+                    self.snmp.close()
+                    # Close CLI socket when necessary
+                    self.close_cli_stream()
         # Clean result
         result = self.clean_output(result)
         self.logger.debug("Result: %s", result)
@@ -566,7 +570,7 @@ class BaseScript(object):
             if (self.profile.rx_pattern_syntax_error and
                     self.profile.rx_pattern_syntax_error.search(r)):
                 raise self.CLISyntaxError(r)
-            # Then check for operaion error
+            # Then check for operation error
             if (self.profile.rx_pattern_operation_error and
                     self.profile.rx_pattern_operation_error.search(r)):
                 raise self.CLIOperationError(r)
@@ -610,6 +614,16 @@ class BaseScript(object):
                 self.cli(self.profile.command_disable_pager,
                          ignore_errors=True)
         return self.cli_stream
+
+    def close_cli_stream(self):
+        if self.parent:
+            return
+        if self.cli_stream:
+            if self.to_shutdown_session:
+                self.logger.debug("Shutdown session")
+                self.profile.shutdown_session(self)
+            self.cli_stream.close()
+            self.cli_stream = None
 
     def has_snmp(self):
         """
