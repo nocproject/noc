@@ -184,6 +184,8 @@ class BaseScript(object):
                     self.snmp.close()
                     # Close CLI socket when necessary
                     self.close_cli_stream()
+                    # Close HTTP Client
+                    self.http.close()
         # Clean result
         result = self.clean_output(result)
         self.logger.debug("Result: %s", result)
