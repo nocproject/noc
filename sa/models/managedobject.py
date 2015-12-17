@@ -32,17 +32,15 @@ from noc.core.model.fields import INETField, TagsField, DocumentReferenceField
 from noc.lib.app.site import site
 from noc.lib.stencil import stencil_registry
 from noc.core.gridvcs.manager import GridVCSField
-from noc.main.models.fts_queue import FTSQueue
+from noc.main.models.textindex import full_text_search, TextIndex
 from noc.settings import config
 from noc.core.scheduler.job import Job
 from noc.lib.solutions import get_solution
 from noc.lib.debug import error_report
-from noc.main.models.fts_queue import full_text_search
 from noc.pm.models.probeconfig import probe_config
 from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete
-from noc.core.defer import call_later
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http")]
@@ -443,22 +441,17 @@ class ManagedObject(Model):
             content += [self.description]
         config = self.config.read()
         if config:
-            content += [config]
+            if len(config) > 10000000:
+                content += [config[:10000000]]
+            else:
+                content += [config]
         r = {
-            "id": "sa.managedobject:%s" % self.id,
             "title": self.name,
             "content": "\n".join(content),
-            "card": card
+            "card": card,
+            "tags": self.tags
         }
-        if self.tags:
-            r["tags"] = self.tags
         return r
-
-    def get_search_info(self, user):
-        if self.has_access(user):
-            return ("sa.managedobject", "history", {"args": [self.id]})
-        else:
-            return None
 
     ##
     ## Returns True if Managed Object presents in more than one networks
@@ -596,7 +589,7 @@ class ManagedObject(Model):
         # Schedule FTS reindex
         if event_id in (
             self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED):
-            FTSQueue.schedule_update(self)
+            TextIndex.update_index(ManagedObject, self)
 
     def save_config(self, data):
         if isinstance(data, list):
