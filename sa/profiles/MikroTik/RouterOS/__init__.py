@@ -34,9 +34,10 @@ class Profile(BaseProfile):
         :param script:
         :return:
         """
-        if (script.parent is None and
-                not script.access_profile.user.endswith("+ct")):
-            script.access_profile.user += "+ct"
+        if script.parent is None:
+            user = script.credentials.get("user", "")
+            if not user.endswith("+ct"):
+                script.credentials["user"] = user + "+ct"
         self.add_script_method(script, "cli_detail", self.cli_detail)
 
     def cli_detail(self, script, cmd, cached=False):
@@ -47,13 +48,10 @@ class Profile(BaseProfile):
         :param cached:
         :return:
         """
-        try:
-            if cached == True:
-                return self.parse_detail(script.cli(cmd, cached=True))
-            else:
-                return self.parse_detail(script.cli(cmd))
-        except:
-            return []
+        if cached:
+            return self.parse_detail(script.cli(cmd, cached=True))
+        else:
+            return self.parse_detail(script.cli(cmd))
 
     rx_p_new = re.compile("^\s*(?P<line>\d+)\s+")
     rx_key = re.compile("([0-9a-zA-Z\-]+)=")
