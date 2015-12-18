@@ -127,6 +127,7 @@ class API(object):
 
     def __init__(self, service, request):
         self.service = service
+        self.logger = service.logger
         self.request = request
 
 
