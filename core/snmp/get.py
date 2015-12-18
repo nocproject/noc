@@ -29,7 +29,7 @@ def _build_pdu(community, pdu_type, oids, request_id):
     # Encode variable bindings
     varbinds = e.encode_sequence([
         e.encode_sequence([
-            e.encode_oid(oid),
+            e.encode_oid(str(oid)),
             e.encode_null()
         ]) for oid in oids
     ])
@@ -43,7 +43,7 @@ def _build_pdu(community, pdu_type, oids, request_id):
     # SNMP v2c PDU
     return e.encode_sequence([
         e.encode_int(SNMP_v2c),
-        e.encode_octet_string(community),
+        e.encode_octet_string(str(community)),
         pdu
     ])
 
