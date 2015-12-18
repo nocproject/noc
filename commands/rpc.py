@@ -45,9 +45,8 @@ class Command(BaseCommand):
     def handle(self, config, rpc, arguments, pretty,
                *args, **options):
         service, method = rpc[0].split(".", 1)
-        api = service.split("-")[0]
         try:
-            client = RPCClient(api, calling_service="cli")
+            client = RPCClient(service, calling_service="cli")
             method = getattr(client, method)
             result = method(*arguments)
         except RPCError, why:
