@@ -6,9 +6,12 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+import tornado.gen
 ## NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.script.loader import loader
+from noc.core.ioloop.snmp import snmp_get, SNMPError
 
 
 class ActivatorAPI(API):
@@ -57,3 +60,30 @@ class ActivatorAPI(API):
         except script.ScriptError, why:
             raise APIError("Script error: %s", why.__doc__)
         return result
+
+    @api
+    @tornado.gen.coroutine
+    def snmp_v2c_get(self, address, community, oid):
+        """
+        Perform SNMP v2c GET and return result
+        :param address: IP address
+        :param community: SNMP v2c community
+        :param oid: Resolved oid
+        :returns: Result as a string, or None, when no response
+        """
+        self.logger.debug("SNMP GET %s %s", address, oid)
+        try:
+            result = yield snmp_get(
+                address=address,
+                oids=oid,
+                community=community,
+                tos=self.service.config.tos,
+                ioloop=self.service.ioloop
+            )
+            self.logger.debug("SNMP GET %s %s returns %s",
+                              address, oid, result)
+        except SNMPError, why:
+            result = None
+            self.logger.debug("SNMP GET %s %s returns error %s",
+                              address, oid, why)
+        raise tornado.gen.Return(result)
