@@ -100,7 +100,7 @@ class RPCClient(object):
                 logger.debug("Sending request to %s", l)
                 try:
                     response = client.fetch(
-                        "http://%s/api/sae/" % l,
+                        "http://%s/api/%s/" % (l, self.client._api),
                         method="POST",
                         body=body,
                         headers=headers,
@@ -134,6 +134,7 @@ class RPCClient(object):
 
     def __init__(self, service, calling_service=None):
         self._service = service
+        self._api = service.split("-")[0]
         self._calling_service = calling_service
 
     def __getattr__(self, item):
