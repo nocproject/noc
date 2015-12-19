@@ -41,6 +41,7 @@ class ManagedObjectProfile(models.Model):
     name_template = models.CharField(_("Name template"), max_length=256,
         blank=True, null=True)
     ## IPAM Synchronization
+    ## During ManagedObject save
     sync_ipam = models.BooleanField(_("Sync. IPAM"), default=False)
     fqdn_template = models.TextField(_("FQDN template"),
         null=True, blank=True)
@@ -76,6 +77,8 @@ class ManagedObjectProfile(models.Model):
     box_discovery_on_config_changed = models.BooleanField(default=False)
     # After delay
     box_discovery_config_changed_delay = models.IntegerField(default=300)
+    # Check profile
+    enable_box_discovery_profile = models.BooleanField(default=True)
     # Collect version info
     enable_box_discovery_version = models.BooleanField(default=False)
     # Collect capabilities
@@ -90,6 +93,8 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_config = models.BooleanField(default=False)
     # Collect hardware configuration
     enable_box_discovery_asset = models.BooleanField(default=False)
+    # Collect interface IP addresses
+    # enable_box_discovery_ip = models.BooleanField(default=False)
     # Collect static vlans
     enable_box_discovery_vlan = models.BooleanField(default=False)
     # L2 topology using BFD
@@ -119,6 +124,8 @@ class ManagedObjectProfile(models.Model):
     enable_periodic_discovery_interface_status = models.BooleanField(default=False)
     # Collect mac address table
     enable_periodic_discovery_mac = models.BooleanField(default=False)
+    # Collect ARP cache
+    # enable_periodic_discovery_ip = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name

@@ -259,6 +259,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     },
                                     items: [
                                         {
+                                            name: "enable_box_discovery_profile",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "Profile"
+                                        },
+                                        {
                                             name: "enable_box_discovery_version",
                                             xtype: "checkboxfield",
                                             boxLabel: "Version"
