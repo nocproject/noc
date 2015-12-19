@@ -42,7 +42,6 @@ class InterfaceStatusCheck(DiscoveryCheck):
             kwargs = {
                 "name": i["interface"],
                 "admin_status": i.get("admin_status"),
-                "oper_status": i.get("oper_status"),
                 "full_duplex": i.get("full_duplex"),
                 "in_speed": i.get("in_speed"),
                 "out_speed": i.get("out_speed"),
@@ -56,3 +55,8 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 "Interface %s status has been changed" % i["interface"],
                 changes
             )
+            ostatus = i.get("oper_status")
+            if iface.oper_status != ostatus and ostatus is not None:
+                self.logger.info("[%s] set oper status to %s",
+                                 i["interface"], ostatus)
+                iface.set_oper_status(ostatus)
