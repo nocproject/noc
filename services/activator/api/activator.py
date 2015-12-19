@@ -6,8 +6,11 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python module
+import socket
 ## Third-party modules
 import tornado.gen
+import tornado.httpclient
 ## NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.script.loader import loader
@@ -86,4 +89,26 @@ class ActivatorAPI(API):
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s",
                               address, oid, why)
+        raise tornado.gen.Return(result)
+
+    @api
+    @tornado.gen.coroutine
+    def http_get(self, url):
+        """
+        Perform HTTP/HTTPS get and return result
+        :param url: Request URL
+        :returns" Result as a string, or None in case of errors
+        """
+        self.logger.debug("HTTP GET %s", url)
+        client = tornado.httpclient.AsyncHTTPClient()
+        result = None
+        try:
+            response = yield client.fetch(
+                url,
+                follow_redirects=True,
+                validate_cert=False
+            )
+            result = response.body
+        except (tornado.httpclient.HTTPError, socket.error) as e:
+            self.logger.debug("HTTP GET %s failed: %s", e)
         raise tornado.gen.Return(result)
