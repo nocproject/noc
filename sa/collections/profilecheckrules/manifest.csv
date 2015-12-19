@@ -1,0 +1,5 @@
+name,uuid,path,hash
+MikroTik | RouterOS | HTTP,f91a9bc4-5d67-44a0-b74c-370257db8600,MikroTik/RouterOS/HTTP.json,a74d29113296ed8bc6458f65c95294aa929791b620691fbd319e11f57e46a989
+MikroTik | RouterOS | HTTPS,5b96252c-9cf7-4b09-8562-6646c1d033e6,MikroTik/RouterOS/HTTPS.json,9639487ec3ca59c9966a5ff421ab39c4466aecbf73a987481625c753a920e937
+MikroTik | RouterOS | sysDescr,dbb056e1-638c-4266-9938-9090ee9f35d7,MikroTik/RouterOS/sysDescr.json,2c5b9d0427e294de4cf22c9336f94753486695de9d05d2901ea4ae403fae0ed0
+Vyatta | Vyatta | sysDescr,dc19fd75-8113-41b4-b859-48fcdbabb96a,Vyatta/Vyatta/sysDescr.json,24cdc43edceda2d2fa386b89a9ad099e9f811ed9904851f97339d7f73b06f5da
