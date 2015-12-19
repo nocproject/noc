@@ -9,6 +9,7 @@
 
 ## NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
+from profile import ProfileCheck
 from version import VersionCheck
 from caps import CapsCheck
 from interface import InterfaceCheck
@@ -33,6 +34,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
     TOPOLOGY_NAMES = [m.name for m in TOPOLOGY_METHODS]
 
     def handler(self, **kwargs):
+        if self.object.object_profile.enable_box_discovery_profile:
+            ProfileCheck(self).run()
         if self.object.object_profile.enable_box_discovery_version:
             VersionCheck(self).run()
         if self.object.object_profile.enable_box_discovery_caps:
