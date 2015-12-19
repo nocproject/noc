@@ -1,4 +1,7 @@
 name,uuid,path,hash
+EdgeCore | ES | ECS3510-52T sysObjectID,83f80dc7-bab0-460a-8c68-d25e6d47446b,EdgeCore/ES/ECS3510-52T_sysObjectID.json,b3ff1dfa873a2edc4226382a104d5cc471efa58e00b16fec77d67af39de5bf31
+EdgeCore | ES | ES3528M sysObjectID,29781a21-4110-489a-a40d-0dee6770b586,EdgeCore/ES/ES3528M_sysObjectID.json,567a62ba98dd89050b2482e4b9a2781aeaaf58dc2226e4fec761cb2d09795335
+EdgeCore | ES | ES3528MV2 sysObjectID,26bb8ba4-df36-4ec5-a96e-9fe45b706620,EdgeCore/ES/ES3528MV2_sysObjectID.json,8dbe87b6ca93824ab96dddaf7225ece8a080a515287e6f017f915953f67ed00d
 MikroTik | RouterOS | HTTP,f91a9bc4-5d67-44a0-b74c-370257db8600,MikroTik/RouterOS/HTTP.json,a74d29113296ed8bc6458f65c95294aa929791b620691fbd319e11f57e46a989
 MikroTik | RouterOS | HTTPS,5b96252c-9cf7-4b09-8562-6646c1d033e6,MikroTik/RouterOS/HTTPS.json,9639487ec3ca59c9966a5ff421ab39c4466aecbf73a987481625c753a920e937
 MikroTik | RouterOS | sysDescr,dbb056e1-638c-4266-9938-9090ee9f35d7,MikroTik/RouterOS/sysDescr.json,2c5b9d0427e294de4cf22c9336f94753486695de9d05d2901ea4ae403fae0ed0
