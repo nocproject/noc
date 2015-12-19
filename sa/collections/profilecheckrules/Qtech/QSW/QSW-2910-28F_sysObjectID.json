@@ -1,0 +1,13 @@
+{
+    "name": "Qtech | QSW | QSW-2910-28F sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "69a2d8c1-7701-4553-9888-5415092632f7",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.27514.1.3.26.7",
+    "action": "match",
+    "profile": "Qtech.QSW"
+}
