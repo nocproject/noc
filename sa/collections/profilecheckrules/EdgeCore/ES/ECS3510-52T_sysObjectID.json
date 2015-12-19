@@ -1,0 +1,13 @@
+{
+    "name": "EdgeCore | ES | ECS3510-52T sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "83f80dc7-bab0-460a-8c68-d25e6d47446b",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.259.10.1.27.102",
+    "action": "match",
+    "profile": "EdgeCore.ES"
+}
