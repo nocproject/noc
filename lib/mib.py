@@ -22,6 +22,10 @@ class MIBRegistry(object):
 
     def __getitem__(self, item):
         if isinstance(item, basestring):
+            if ":" not in item:
+                return item  # No conversion needed
+            if "." in item:
+                return self[item.split(".", 1)]
             return self.mib[item]
         else:
             return ".".join([self.mib[item[0]]] + [str(x) for x in item[1:]])
