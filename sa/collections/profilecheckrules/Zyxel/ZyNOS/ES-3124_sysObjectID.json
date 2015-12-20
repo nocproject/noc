@@ -1,0 +1,13 @@
+{
+    "name": "Zyxel | ZyNOS | ES-3124 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "79be82de-d2b5-4575-b4a9-b349bde244f0",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.890.1.5.8.12",
+    "action": "match",
+    "profile": "Zyxel.ZyNOS"
+}

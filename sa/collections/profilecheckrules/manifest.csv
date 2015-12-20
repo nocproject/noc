@@ -17,3 +17,7 @@ Qtech | QSW | QSW-3400-28T-AC sysObjectID 2,e235620e-4aa7-4de8-9970-c918cdcd71d6
 Qtech | QSW | QSW-3470-28T-AC sysObjectID,29922293-6432-4646-aebe-6d1d174e833d,Qtech/QSW/QSW-3470-28T-AC_sysObjectID.json,4ea88225de545a7cee042790bc9f0ebb396f7d064464a9dcc7d6f6614f714b80
 Siklu | EH | EH-1200L.v700 sysObjectID,c1051bf9-0f3a-4fc3-9746-d8441e6c2c5d,Siklu/EH/EH-1200L_v700_sysObjectID.json,030fa9083a30eb2bfe41fcd2280e0f2974f25bab866643a25d82fe9f337e9b5b
 Vyatta | Vyatta | sysDescr,dc19fd75-8113-41b4-b859-48fcdbabb96a,Vyatta/Vyatta/sysDescr.json,24cdc43edceda2d2fa386b89a9ad099e9f811ed9904851f97339d7f73b06f5da
+Zyxel | ZyNOS | ES-2024A sysObjectID,c3c53a53-270d-4cdf-b711-b8d77d5c65b6,Zyxel/ZyNOS/ES-2024A_sysObjectID.json,3928e1c623942bb6d08e969cd941a948c31d58c2869ead67dc32afedf0b61221
+Zyxel | ZyNOS | ES-2226 sysObjectID,7f360a7a-74c5-4176-b2d7-303d43984336,Zyxel/ZyNOS/ES-2226_sysObjectID.json,fac363929e99c49a13672ecb68b304d07668e00ebf92317a7371da94bf343257
+Zyxel | ZyNOS | ES-3124 sysObjectID,79be82de-d2b5-4575-b4a9-b349bde244f0,Zyxel/ZyNOS/ES-3124_sysObjectID.json,a27acf6fe8dbe30eb423aca3cd0ed70e5f0a4c5e18cbb297a6577d8ea2ee591c
+Zyxel | ZyNOS | ES-3124-4F sysObjectID,6dd24ed3-1feb-4b3d-9923-7d40a2f5e77b,Zyxel/ZyNOS/ES-3124-4F_sysObjectID.json,59b450baebd84dae3ae85c188fea616b935b0b424018ff3f78b166edf7ebf525
