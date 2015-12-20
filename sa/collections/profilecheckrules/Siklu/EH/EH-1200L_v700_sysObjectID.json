@@ -1,0 +1,13 @@
+{
+    "name": "Siklu | EH | EH-1200L.v700 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "c1051bf9-0f3a-4fc3-9746-d8441e6c2c5d",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.31926",
+    "action": "match",
+    "profile": "Siklu.EH"
+}
