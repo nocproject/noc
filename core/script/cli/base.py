@@ -50,6 +50,8 @@ class CLI(object):
         self.tos = tos
 
     def close(self):
+        if self.iostream:
+            self.iostream.close()
         if self.ioloop:
             self.logger.debug("Closing IOLoop")
             self.ioloop.close(all_fds=True)
