@@ -56,6 +56,7 @@ class SSHIOStream(IOStream):
             else:
                 self.logger.error("Failed to authenticate user '%s'", user)
                 raise self.cli.CLIError("Failed to log in")
+            self.logger.debug("Open channel")
             self.channel = self.session.open_session()
             self.channel.pty("xterm")
             self.channel.shell()
@@ -74,6 +75,19 @@ class SSHIOStream(IOStream):
             return self.channel.write(data)
         except _libssh2.Error, why:
             raise self.cli.CLIError("SSH Error: %s" % why)
+
+    def close(self, exc_info=False):
+        if not self.closed():
+            if self.channel:
+                self.logger.debug("Closing channel")
+                try:
+                    self.channel.close()
+                except _libssh2.Error as e:
+                    self.logger.debug("Cannot close channel clearly: %s", e)
+                self.channel = None
+            self.logger.debug("Closing ssh session")
+            self.session.close()
+        super(SSHIOStream, self).close(exc_info=exc_info)
 
     def auth_publickey(self):
         """
