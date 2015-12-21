@@ -1,7 +1,7 @@
 # mongodb  FreeBSD
 ---
 - name: Set mongod defaults
-  template: src="FreeBSD/etc/default/mongod.j2" dest="/usr/local/etc"
+  template: src="FreeBSD/etc/default/mongod.j2" dest="/usr/local/etc/mongodb.conf"
   notify: restart mongod
 
 - name: Install MongoDB
