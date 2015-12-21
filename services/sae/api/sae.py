@@ -58,7 +58,7 @@ class SAEAPI(API):
         try:
             result = yield activator.script(
                 script_name, data.credentials, data.capabilities,
-                data.version, timeout
+                data.version, args, timeout
             )
         except RPCError, why:
             raise APIError("RPC Error: %s" % why)

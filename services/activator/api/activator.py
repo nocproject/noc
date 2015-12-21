@@ -28,6 +28,7 @@ class ActivatorAPI(API):
     def script(self, name, credentials,
                capabilities=None,
                version=None,
+               args=None,
                timeout=None):
         """
         Execute SA script
@@ -53,6 +54,7 @@ class ActivatorAPI(API):
         script = script_class(
             service=self.service,
             credentials=credentials,
+            args=args,
             capabilities=capabilities,
             version=version,
             timeout=timeout,
