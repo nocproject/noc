@@ -5,7 +5,7 @@
     "description": "Matches:\nES3528M\nES3552M\n",
     "preference": 10,
     "method": "snmp_v2c_get",
-    "param": "SNMPv2-MIB::sysObjectID",
+    "param": "SNMPv2-MIB::sysObjectID.0",
     "match_method": "eq",
     "value": "1.3.6.1.4.1.259.6.10.94",
     "action": "match",
