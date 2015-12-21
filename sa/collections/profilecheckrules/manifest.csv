@@ -8,6 +8,7 @@ Huawei | VRP | S3928TP-SI sysObjectID,82c25606-7fd5-4baa-9576-7f5e139817d7,Huawe
 MikroTik | RouterOS | HTTP,f91a9bc4-5d67-44a0-b74c-370257db8600,MikroTik/RouterOS/HTTP.json,a74d29113296ed8bc6458f65c95294aa929791b620691fbd319e11f57e46a989
 MikroTik | RouterOS | HTTPS,5b96252c-9cf7-4b09-8562-6646c1d033e6,MikroTik/RouterOS/HTTPS.json,9639487ec3ca59c9966a5ff421ab39c4466aecbf73a987481625c753a920e937
 MikroTik | RouterOS | sysDescr,dbb056e1-638c-4266-9938-9090ee9f35d7,MikroTik/RouterOS/sysDescr.json,2c5b9d0427e294de4cf22c9336f94753486695de9d05d2901ea4ae403fae0ed0
+MikroTik | RouterOS | sysObjectID,48316735-c90a-4c5d-8489-914eddccb4cc,MikroTik/RouterOS/sysObjectID.json,da82ed97b654fdaa906dd8f0ad527b6191a2bfa521e14cc3c7d1794306feafc1
 Qtech | QSW | QSW-2800-10T-AC sysObjectID,97e6c2e4-68b5-4f7c-9adf-fc69734ddd83,Qtech/QSW/QSW-2800-10T-AC_sysObjectID.json,949f95fa98899649e259a676e9063c7bccb1019b0b91852e876ef8135771e97d
 Qtech | QSW | QSW-2800-10T-DC sysObjectID,2c4d0a5e-0340-44d3-a7ad-fc3fcce81d3c,Qtech/QSW/QSW-2800-10T-DC_sysObjectID.json,a668e63fbe673333d17850ec04b831413c2ee9318c74e9175da0128e8ebffda5
 Qtech | QSW | QSW-2800-28T sysObjectID,78b01343-6ada-4c0d-98a6-18a719a48f3b,Qtech/QSW/QSW-2800-28T_sysObjectID.json,b4594558697dbd045690259f5c556af83b80ce1b661c58c78fea0c44f5d2b874
@@ -18,6 +19,7 @@ Qtech | QSW | QSW-3470-28T-AC sysObjectID,29922293-6432-4646-aebe-6d1d174e833d,Q
 Raisecom | ROS | ISCOM2128EA-MA-AC sysObjectID,12df24c0-833a-4da3-bddd-b8c2aa0fc49e,Raisecom/ROS/ISCOM2128EA-MA-AC_sysObjectID.json,8f7f4b3b7cfb29a5d23d218f60f97128abbacb08beeadd23b9060291ed6e167b
 Siklu | EH | EH-1200L.v700 sysObjectID,c1051bf9-0f3a-4fc3-9746-d8441e6c2c5d,Siklu/EH/EH-1200L_v700_sysObjectID.json,48979e16266493f8abd1c39688d37d27cdb5682e0043687f7e3f746902cee10a
 Vyatta | Vyatta | sysDescr,dc19fd75-8113-41b4-b859-48fcdbabb96a,Vyatta/Vyatta/sysDescr.json,24cdc43edceda2d2fa386b89a9ad099e9f811ed9904851f97339d7f73b06f5da
+Vyatta | Vyatta | sysObjectID,50af788f-ec33-4697-a65d-409a3921a172,Vyatta/Vyatta/sysObjectID.json,f5d1129dd38076d80c6dba086d556c22e7a3f9b4d4342fea45f96469a0fea001
 Zyxel | ZyNOS | ES-2024A sysObjectID,c3c53a53-270d-4cdf-b711-b8d77d5c65b6,Zyxel/ZyNOS/ES-2024A_sysObjectID.json,557d755bbf37e83dfb07662ba9a352e41bf87104d29bcd08faf57124b0dbbb7f
 Zyxel | ZyNOS | ES-2226 sysObjectID,7f360a7a-74c5-4176-b2d7-303d43984336,Zyxel/ZyNOS/ES-2226_sysObjectID.json,640b075683792f28991477844e6b9ba4c6a63cbb342662731ee4b4394c26a4f5
 Zyxel | ZyNOS | ES-3124 sysObjectID,79be82de-d2b5-4575-b4a9-b349bde244f0,Zyxel/ZyNOS/ES-3124_sysObjectID.json,92e14d3296823e4ac3e5b162c6563458d5c5ec0ddf3b5053a40dfa90abce7df3
