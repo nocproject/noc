@@ -41,6 +41,8 @@
 - name: Create user
   postgresql_user: name="{{noc_pg_user}}"
                    password="{{noc_pg_password}}"
+                   login_user="{{ postgres_user }}"
+                   db=postgres
                    role_attr_flags=CREATEDB,NOSUPERUSER
   become_user: "{{postgres_user}}"
   when: "'svc-postgres-master' in group_names"
@@ -49,6 +51,7 @@
   postgresql_db: name="{{noc_pg_db}}"
                  encoding="UTF-8"
                  owner="{{noc_pg_user}}"
+                 login_user="{{ postgres_user }}"
                  state="present"
   become_user: "{{postgres_user}}"
   when: "'svc-postgres-master' in group_names"
