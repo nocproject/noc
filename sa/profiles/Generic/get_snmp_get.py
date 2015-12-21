@@ -17,8 +17,8 @@ class Script(BaseScript):
     interface = IGetSNMPGet
     requires = []
 
-    def execute(self, oid, community_suffix=None):
+    def execute(self, oid):
         try:
-            return self.snmp.get(oid, community_suffix=community_suffix)
+            return self.snmp.get(oid)
         except self.snmp.TimeOutError:
             return None
