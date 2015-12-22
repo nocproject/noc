@@ -97,12 +97,12 @@
   stat: path="{{noc_root}}/lib/python/site-packages/sitecustomize.py"
   register: sitecustomizes
 
-- name: Install sitecustomize
+- name: Install sitecustomize.py
   template: src="lib/python/site-packages/sitecustomize.py.j2" dest="{{noc_root}}/lib/python/site-packages/sitecustomize.py"
   when: sitecustomizes.stat.exists == False
 
-- name: Update sitecustomize
-  replace: dest="{{noc_root}}/lib/python/site-packages/sitecustomize.py" regexp="ascii" replace="utf-8"
+- name: Update site.py
+  replace: dest="{{noc_root}}/lib/python/site.py" regexp="encoding = \"ascii"\" replace="encoding = \"utf-8\""
   when: sitecustomizes.stat.exists == True
 
 - name: Compile bytecode
