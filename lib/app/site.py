@@ -21,13 +21,12 @@ from django.http import HttpResponse, HttpResponseNotFound,\
 from django.conf.urls.defaults import *
 from django.core.urlresolvers import *
 from django.conf import settings
-from django.utils.simplejson.encoder import JSONEncoder
 from django.utils.encoding import smart_str
 from django.db.models.loading import load_app
 ## NOC modules
 from noc.settings import INSTALLED_APPS, config
 from noc.lib.debug import error_report
-from noc.lib.serialize import json_decode
+from noc.lib.serialize import json_decode, json_encode
 
 logger = logging.getLogger(__name__)
 
@@ -220,7 +219,7 @@ class Site(object):
                         # Return error response
                         ext_format = ("__format=ext"
                                     in request.META["QUERY_STRING"].split("&"))
-                        r = JSONEncoder(ensure_ascii=False).encode({
+                        r = json_encode({
                             "status": False,
                             "errors": errors
                         })
@@ -278,7 +277,7 @@ class Site(object):
             if not isinstance(r, HttpResponse):
                 try:
                     r = HttpResponse(
-                        JSONEncoder(ensure_ascii=False).encode(r),
+                        json_encode(r),
                         mimetype="text/json; charset=utf-8"
                     )
                 except:
