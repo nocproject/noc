@@ -23,8 +23,8 @@ def main():
         try:
             pool = Pool.objects.get(name=p)
             if pool.description != data["pools"][p]["description"]:
-                p.description = data["pools"][p]["description"]
-                p.save()
+                pool.description = data["pools"][p]["description"]
+                pool.save()
                 changed = True
         except Pool.DoesNotExist:
             Pool(
