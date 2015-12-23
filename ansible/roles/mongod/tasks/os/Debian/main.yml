@@ -3,7 +3,6 @@
 - name: "Add MongoDB apt key"
   apt_key: keyserver=keyserver.ubuntu.com id="{{ item }}"
   with_items:
-    - D68FA50F
     - 7F0CEB10
     - EA312927
 
