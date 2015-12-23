@@ -106,7 +106,7 @@ class Script(BaseScript):
                 caps["SNMP | IF-MIB"] = True
                 if self.has_snmp_ifmib_hc():
                     caps["SNMP | IF-MIB | HC"] = True
-            for cap, oid in self.CHECK_SNMP_GET.itervalues():
+            for cap, oid in self.CHECK_SNMP_GET.iteritems():
                 if self.check_snmp_get(oid):
                     caps[cap] = True
         if self.has_lldp():
