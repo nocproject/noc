@@ -184,10 +184,7 @@ class Script(BaseScript):
                         match = self.rx_tagged.search(ifaces[i])
                         tagged = match.group("tagged")
                         tagged = tagged.replace('(default vlan)', '')
-                        tagged_ = []
-                        for j in tagged.split(', '):
-                            tagged_.append(int(j))
-                        iface["subinterfaces"][0]["tagged_vlans"] = tagged_
+                        iface["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(tagged)
                     else:
                         match = self.rx_tag.search(ifaces[i])
                         tagged = match.group("tagged")
