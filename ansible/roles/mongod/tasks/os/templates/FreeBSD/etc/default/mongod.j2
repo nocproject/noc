@@ -1,8 +1,22 @@
-#
-# mongod configuation
-# Set by ansible
-# Do not edit
-#
-CONF={{ noc_root }}/var/etc/mongo/mongod.conf
-chown {{ mongo_user }} {{ noc_root }}/var/etc/mongo/mongo.key
-chmod 0400 {{ noc_root }}/var/etc/mongo/mongo.key
+# mongod.conf
+
+storage:
+  journal:
+    enabled: true
+  engine: {{ noc_mongo_storageengine }}
+
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+
+security:
+  keyFile: {{ noc_root }}/var/etc/mongo/mongo.key
+  clusterAuthMode: keyFile
+  authorization: enabled
+
+replication:
+  replSetName: {{ noc_mongo_replicaset }}
+
+#operationProfiling:
+
+#sharding:
