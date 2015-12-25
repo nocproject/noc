@@ -113,7 +113,7 @@ class Script(BaseScript):
                     if c:
                         cap |= {
                             "O": 1, "Repeater": 2, "Bridge": 4,
-                            "W": 8, "Router": 16, "T": 32,
+                            "W": 8, "Router": 16, "T": 32, "Telephone": 32,
                             "C": 64, "S": 128, "D": 256,
                             "H": 512, "TP": 1024,
                         }[c]
