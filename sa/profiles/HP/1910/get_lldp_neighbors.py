@@ -101,6 +101,8 @@ class Script(BaseScript):
                 port_type = match.group("port_type")
                 if port_type == 'Interface name':
                     remote_port_subtype = 3
+                if port_type == 'Locally assigned':
+                    remote_port_subtype = 7
 
                 # Build neighbor data
                 # Get capability
