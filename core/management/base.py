@@ -115,18 +115,23 @@ class BaseCommand(object):
         Set loglevel
         """
         import logging
+
+        level = {
+            "critical": logging.CRITICAL,
+            "error": logging.ERROR,
+            "warning": logging.WARNING,
+            "info": logging.INFO,
+            "debug": logging.DEBUG,
+            "none": logging.NOTSET
+        }[loglevel]
+        # Get Root logger
         logger = logging.getLogger()
+        if logger.level != level:
+            logger.setLevel(level)
         logging.captureWarnings(True)
         fmt = logging.Formatter(self.LOG_FORMAT, None)
-        for l in logger.manager.loggerDict.itervalues():
-            if hasattr(l, "setLevel"):
-                l.setLevel({
-                    "critical": logging.CRITICAL,
-                    "error": logging.ERROR,
-                    "warning": logging.WARNING,
-                    "info": logging.INFO,
-                    "debug": logging.DEBUG,
-                    "none": logging.NOTSET
-                }[loglevel])
         for h in logger.handlers:
             h.setFormatter(fmt)
+        for l in logger.manager.loggerDict.itervalues():
+            if hasattr(l, "setLevel"):
+                l.setLevel(level)
