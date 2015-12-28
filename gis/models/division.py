@@ -42,7 +42,7 @@ class Division(Document):
 
     def __unicode__(self):
         if self.short_name:
-            return "%s, %s" % (self.name, self.short_name)
+            return self.short_name
         else:
             return self.name
 
