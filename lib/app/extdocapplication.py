@@ -251,7 +251,7 @@ class ExtDocApplication(ExtApplication):
     @view(method=["GET"], url=r"^tree_lookup/$", access="lookup", api=True)
     def api_lookup_tree(self, request):
         def trim(s):
-            return s.rsplit(" | ")[-1]
+            return unicode(o).rsplit(" | ")[-1]
 
         if not self.parent_field:
             return None
@@ -270,7 +270,7 @@ class ExtDocApplication(ExtApplication):
         if ordering:
             data = data.order_by(*ordering)
         count = data.count()
-        data = [{"id": str(o.id), "label": trim(unicode(o)).encode("utf8")} for o in data]
+        data = [{"id": str(o.id), "label": trim(o)} for o in data]
         return {
             "total": count,
             "success": True,
