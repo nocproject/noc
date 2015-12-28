@@ -14,6 +14,7 @@ import os
 import urllib
 import hashlib
 import logging
+import json
 from collections import defaultdict
 ## Django modules
 from django.http import HttpResponse, HttpResponseNotFound,\
@@ -26,7 +27,6 @@ from django.db.models.loading import load_app
 ## NOC modules
 from noc.settings import INSTALLED_APPS, config
 from noc.lib.debug import error_report
-from noc.lib.serialize import json_decode, json_encode
 
 logger = logging.getLogger(__name__)
 
@@ -196,7 +196,7 @@ class Site(object):
                             ct = request.META.get("CONTENT_TYPE")
                             if ct and ("text/json" in ct or
                                        "application/json" in ct):
-                                g = json_decode(request.raw_post_data)
+                                g = json.loads(request.raw_post_data)
                             else:
                                 g = dict((k, v[0] if len(v) == 1 else v)
                                            for k, v in request.POST.lists())
@@ -219,7 +219,7 @@ class Site(object):
                         # Return error response
                         ext_format = ("__format=ext"
                                     in request.META["QUERY_STRING"].split("&"))
-                        r = json_encode({
+                        r = json.dumps({
                             "status": False,
                             "errors": errors
                         })
@@ -233,7 +233,7 @@ class Site(object):
                         ct = request.META.get("CONTENT_TYPE")
                         if ct and ("text/json" in ct or
                                    "application/json" in ct):
-                            a = json_decode(request.raw_post_data)
+                            a = json.loades(request.raw_post_data)
                         else:
                             a = dict((k, v[0] if len(v) == 1 else v)
                                      for k, v in request.POST.lists())
@@ -277,7 +277,7 @@ class Site(object):
             if not isinstance(r, HttpResponse):
                 try:
                     r = HttpResponse(
-                        json_encode(r),
+                        json.dumps(r),
                         mimetype="text/json; charset=utf-8"
                     )
                 except:
