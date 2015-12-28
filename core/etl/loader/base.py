@@ -83,6 +83,7 @@ class BaseLoader(object):
         if self.model:
             if isinstance(self.model._meta, dict):
                 self.update_document_clean_map()
+        self.pending_deletes = []  # (id, string)
 
     def load_mappings(self):
         """
@@ -199,31 +200,6 @@ class BaseLoader(object):
                 self.on_delete(o)
             else:
                 self.on_change(o, n)
-        self.logger.info(
-            "Summary: %d new, %d changed, %d removed",
-            self.c_add, self.c_change, self.c_delete
-        )
-        self.save_state()
-
-    @classmethod
-    def load_all(cls, system):
-        """
-        Load all data from system
-        """
-        from loader import loader
-
-        # @todo: Loader dependency
-        prefix = os.path.join(cls.PREFIX, system)
-        if not os.path.isdir(prefix):
-            logger.error("Cannot open directory: %s", prefix)
-            return 1
-        for d in os.listdir(prefix):
-            if os.path.isdir(os.path.join(prefix, d)):
-                lc = loader.get_loader(d)
-                if not lc:
-                    continue
-                lc(system).load()
-        return 0
 
     def on_add(self, row):
         """
@@ -257,15 +233,27 @@ class BaseLoader(object):
         """
         Delete record
         """
-        self.logger.debug("Delete: %s", "|".join(row))
-        self.c_delete += 1
-        obj = self.model.objects.get(pk=self.mappings[row[0]])
-        obj.delete()
+        self.pending_deletes += [(row[0], "|".join(row))]
+
+    def purge(self):
+        """
+        Perform pending deletes
+        """
+        for r_id, msg in reversed(self.pending_deletes):
+            self.logger.debug("Delete: %s", msg)
+            self.c_delete += 1
+            obj = self.model.objects.get(pk=self.mappings[r_id])
+            obj.delete()
+        self.pending_deletes = []
 
     def save_state(self):
         """
         Save current state
         """
+        self.logger.info(
+            "Summary: %d new, %d changed, %d removed",
+            self.c_add, self.c_change, self.c_delete
+        )
         t = time.localtime()
         archive_path = os.path.join(
             self.archive_dir,
@@ -298,7 +286,12 @@ class BaseLoader(object):
 
     def clean_str(self, value):
         if value:
-            return value
+            if isinstance(value, str):
+                return unicode(value, "utf-8")
+            elif not isinstance(value, basestring):
+                return str(value)
+            else:
+                return value
         else:
             return None
 
