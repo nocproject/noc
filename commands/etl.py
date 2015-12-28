@@ -6,22 +6,59 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+import yaml
 ## NOC modules
 from noc.core.management.base import BaseCommand
+from noc.lib.solutions import get_solution
 
 
 class Command(BaseCommand):
+    CONF = "etc/etl.yml"
+
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         # load command
         load_parser = subparsers.add_parser("load")
+        # extract command
+        extract_parser = subparsers.add_parser("extract")
+
+    def get_config(self):
+        with open(self.CONF) as f:
+            return yaml.load(f)
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_load(self, *args, **options):
-        from noc.core.etl.loader.base import BaseLoader
-        BaseLoader.load_all("test")
+        from noc.core.etl.loader.loader import loader
+
+        config = self.get_config()
+        for system in config:
+            chain = []
+            for x_config in system.get("data"):
+                lc = loader.get_loader(x_config["type"])
+                chain += [lc(system["system"])]
+            # Add & Modify
+            for l in chain:
+                l.load()
+            # Remove in reverse order
+            for l in reversed(chain):
+                l.purge()
+            # Save state
+            for l in chain:
+                l.save_state()
+
+    def handle_extract(self, *args, **options):
+        config = self.get_config()
+        for system in config:
+            system_config = system.get("config", {})
+            for x_config in system.get("data", []):
+                config = system_config.copy()
+                config.update(x_config.get("config", {}))
+                xc = get_solution(x_config["extractor"])
+                extractor = xc(system["system"], config=config)
+                extractor.extract()
 
 
 if __name__ == "__main__":
