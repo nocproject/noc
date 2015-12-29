@@ -70,8 +70,9 @@ class Script(BaseScript):
             n = {"remote_chassis_id_subtype": 4}
             if match:
                 n["remote_port_subtype"] = {
-                    "Mac address": 3,
                     "Interface alias": 1,
+                    "Port component": 2,
+                    "Mac address": 3,
                     "Interface name": 5,
                     "Locally assigned": 7
                 }[match.get("p_type")]
@@ -104,8 +105,9 @@ class Script(BaseScript):
                 match = self.match_lines(self.rx_detail1, v)
                 if match:
                     n["remote_port_subtype"] = {
-                        "Mac address": 3,
                         "Interface alias": 1,
+                        "Port component": 2,
+                        "Mac address": 3,
                         "Interface name": 5,
                         "Locally assigned": 7
                     }[match.get("p_type")]
@@ -127,8 +129,9 @@ class Script(BaseScript):
                     match = self.match_lines(self.rx_detail2, v)
                     if match:
                         n["remote_port_subtype"] = {
-                            "Mac address": 3,
                             "Interface alias": 1,
+                            "Port component": 2,
+                            "Mac address": 3,
                             "Interface name": 5,
                             "Locally assigned": 7
                         }[match.get("p_type")]
