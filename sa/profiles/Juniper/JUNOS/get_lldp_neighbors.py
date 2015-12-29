@@ -92,7 +92,8 @@ class Script(BaseScript):
                 # Get capability
                 cap = 0
                 if match.get("capability"):
-                    for c in match.get("capability").strip().split(" "):
+                    s = match.get("capability").replace(" Access Point", "")
+                    for c in s.strip().split(" "):
                             cap |= {
                             "Other": 1, "Repeater": 2, "Bridge": 4,
                             "WLAN": 8, "Router": 16, "Telephone": 32,
