@@ -455,6 +455,35 @@ class Object(Document):
         return cls.objects.filter(data__management__managed_object=mo)
 
     @classmethod
+    def get_root(cls):
+        """
+        Returns Root container
+        """
+        root = getattr(cls, "_root_container", None)
+        if not root:
+            rm = ObjectModel.objects.get(name="Root")
+            root = Object.objects.get(model=rm.id)
+            cls._root_container = root
+        return root
+
+    @classmethod
+    def get_path(cls, path):
+        """
+        Get object by given path.
+        :param path: List of names following to path
+        :returns: Object instance. None if not found
+        """
+        current = cls.get_root()
+        for p in path:
+            if not current:
+                break
+            current = Object.objects.filter(
+                name=p,
+                container=current.id
+            ).first()
+        return current
+
+    @classmethod
     def change_container(cls, sender, document, target=None,
                          created=False, **kwargs):
         if created:
