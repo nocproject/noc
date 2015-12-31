@@ -48,7 +48,8 @@ class Script(BaseScript):
          r"Port \S+\s+:\s(?P<p_id>.+)"
     ]
 
-    @BaseScript.match(platform__regex="[em]x")
+    # Match mx, ex and qfx
+    @BaseScript.match(platform__regex="[em]x|qfx")
     def execute_ex(self):
         r = []
         # Collect data
@@ -93,7 +94,10 @@ class Script(BaseScript):
                 # Get capability
                 cap = 0
                 if match.get("capability"):
+                    # WLAN Access Point
                     s = match.get("capability").replace(" Access Point", "")
+                    # Station Only
+                    s = match.get("capability").replace(" Only", "")
                     for c in s.strip().split(" "):
                             cap |= {
                             "Other": 1, "Repeater": 2, "Bridge": 4,
