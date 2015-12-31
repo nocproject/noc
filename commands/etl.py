@@ -31,19 +31,18 @@ class Command(BaseCommand):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_load(self, *args, **options):
-        from noc.core.etl.loader.loader import loader
+        from noc.core.etl.loader.chain import LoaderChain
 
         config = self.get_config()
         for system in config:
-            chain = []
-            for x_config in system.get("data"):
-                lc = loader.get_loader(x_config["type"])
-                chain += [lc(system["system"])]
+            chain = LoaderChain(system["system"])
+            for d in system.get("data"):
+                chain.get_loader(d["type"])
             # Add & Modify
             for l in chain:
                 l.load()
             # Remove in reverse order
-            for l in reversed(chain):
+            for l in reversed(list(chain)):
                 l.purge()
             # Save state
             for l in chain:
