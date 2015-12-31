@@ -240,13 +240,11 @@ class Command(BaseCommand):
         """
         Suspend/resumed discovery jobs
         """
-        from noc.inv.discovery.scheduler import get_scheduler
         from noc.sa.models.managedobject import ManagedObject
 
         self.info("Suspending/Resuming discovery jobs")
-        scheduler = get_scheduler()
         for o in ManagedObject.objects.filter(is_managed=True):
-            scheduler.ensure_jobs(o, o.get_status())
+            o.ensure_discovery_jobs()
 
     def fix_db_interfaces_capability(self):
         """
