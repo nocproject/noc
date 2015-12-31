@@ -11,9 +11,9 @@ import logging
 import gzip
 import os
 import csv
+import time
 ## Python modules
 from noc.lib.log import PrefixLoggerAdapter
-
 
 logger = logging.getLogger(__name__)
 
@@ -36,12 +36,18 @@ class BaseExtractor(object):
         self.import_dir = os.path.join(self.PREFIX, system, self.name)
 
     def get_new_state(self):
+        if not os.path.isdir(self.import_dir):
+            self.logger.info("Creating directory %s", self.import_dir)
+            os.makedirs(self.import_dir)
         path = os.path.join(self.import_dir, "import.csv.gz")
         self.logger.info("Writing to %s", path)
         return gzip.GzipFile(path, "w")
 
     def iter_data(self):
         raise NotImplementedError()
+
+    def clean(self, row):
+        return row
 
     def extract(self):
         def q(s):
@@ -54,12 +60,19 @@ class BaseExtractor(object):
 
         self.logger.info("Extracting %s from %s",
                          self.name, self.system)
+        t0 = time.time()
         with self.get_new_state() as f:
             writer = csv.writer(f)
             n = 0
             for row in self.iter_data():
+                row = self.clean(row)
                 writer.writerow([q(x) for x in row])
                 n += 1
                 if n % self.REPORT_INTERVAL == 0:
                     self.logger.info("   ... %d records", n)
-        self.logger.info("%d records downloaded", n)
+        dt = time.time() - t0
+        speed = n / dt
+        self.logger.info(
+            "%d records downloaded in %.2fs (%d records/s)",
+            n, dt, speed
+        )
