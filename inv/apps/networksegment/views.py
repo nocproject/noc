@@ -19,6 +19,7 @@ class NetworkSegmentApplication(ExtDocApplication):
     title = "NetworkSegment"
     menu = "Setup | Network Segments"
     model = NetworkSegment
+    query_fields = ["name__icontains", "description__icontains"]
 
     def field_count(self, o):
         return ManagedObject.objects.filter(segment=o).count()
