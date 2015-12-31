@@ -16,7 +16,11 @@ from noc.inv.models.object import Object
 
 class GeoData(Document):
     meta = {
-        "collection": "noc.geodata"
+        "collection": "noc.geodata",
+        "indexes": [
+            "layer",
+            ("layer", "object")
+        ]
     }
 
     # Layer id
