@@ -40,16 +40,20 @@ class Map(object):
     def set_point(self, object, layer, x, y, srid=None, label=None):
         # Resolve layer
         layer = self.get_layer(layer)
-        # Try to find existing point
-        p = GeoData.objects.filter(layer=layer, object=object).first()
-        if not p:
-            p = GeoData(layer=layer, object=object)
-        # Set point
+        #
         src_srid = self.get_proj(srid) if srid else self.db_proj
         pd = geojson.Point(coordinates=[x, y])
-        p.data = self.transform(pd, src_srid, self.db_proj)
-        p.label = label
-        p.save()
+        point = self.transform(pd, src_srid, self.db_proj)
+        #
+        GeoData._get_collection().update({
+            "layer": layer,
+            "object": object.id
+        }, {
+            "$set": {
+                "data": point,
+                "label": label
+            }
+        }, upsert=True)
 
     def delete_point(self, object, layer=None):
         if layer:
@@ -64,7 +68,7 @@ class Map(object):
             return self.layers[name]
         layer = Layer.objects.filter(code=name).first()
         if layer:
-            self.layers[name] = str(layer.id)
+            self.layers[name] = layer.id
             return self.layers[name]
         raise Exception("Layer not found: %s" % name)
 
