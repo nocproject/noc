@@ -53,6 +53,8 @@ class BaseLoader(object):
     name = None
     # Loader model
     model = None
+    # Mapped fields
+    mapped_fields = {}
 
     fields = []
 
@@ -61,12 +63,14 @@ class BaseLoader(object):
         "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
     )
 
-    def __init__(self, system):
-        self.system = system
+    def __init__(self, chain):
+        self.chain = chain
+        self.system = chain.system
         self.logger = PrefixLoggerAdapter(
-            logger, "%s][%s" % (system, self.name)
+            logger, "%s][%s" % (self.system, self.name)
         )
-        self.import_dir = os.path.join(self.PREFIX, system, self.name)
+        self.import_dir = os.path.join(self.PREFIX,
+                                       self.system, self.name)
         self.archive_dir = os.path.join(self.import_dir, "archive")
         self.mappings_path = os.path.join(
             self.import_dir,
@@ -80,15 +84,15 @@ class BaseLoader(object):
         # Build clean map
         self.clean_map = dict((n, self.clean_str)
                               for n in self.fields)  # field name -> clean function
-        if self.model:
-            if isinstance(self.model._meta, dict):
-                self.update_document_clean_map()
         self.pending_deletes = []  # (id, string)
 
     def load_mappings(self):
         """
         Load mappings file
         """
+        if self.model:
+            if isinstance(self.model._meta, dict):
+                self.update_document_clean_map()
         if not os.path.exists(self.mappings_path):
             return
         self.logger.info("Loading mappings from %s", self.mappings_path)
@@ -201,39 +205,57 @@ class BaseLoader(object):
             else:
                 self.on_change(o, n)
 
+    def create_object(self, v):
+        """
+        Create object with attributes. Override to save complex
+        data structures
+        """
+        o = self.model(**v)
+        o.save()
+        return o
+
+    def change_object(self, object_id, v):
+        """
+        Change object with attributes
+        """
+        o = self.model.objects.get(pk=object_id)
+        for k, nv in v.iteritems():
+            setattr(o, k, nv)
+        o.save()
+        return o
+
     def on_add(self, row):
         """
         Create new record
         """
-        self.logger.debug("Add: %s", "|".join(row))
+        self.logger.debug("Add: %s", ";".join(row))
         self.c_add += 1
         v = self.clean(row)
         # @todo: Check record is already exists
         if self.fields[0] in v:
             del v[self.fields[0]]
-        o = self.model(**v)
-        o.save()
+        o = self.create_object(v)
         self.set_mappings(row[0], o.id)
 
     def on_change(self, o, n):
         """
         Create change record
         """
-        self.logger.debug("Change: %s", "|".join(n))
+        self.logger.debug("Change: %s", ";".join(n))
         self.c_change += 1
-        obj = self.model.objects.get(pk=self.mappings[n[0]])
         v = self.clean(n)
+        vv = {}
         for fn, (ov, nv) in zip(self.fields[1:], zip(o[1:], n[1:])):
             if ov != nv:
                 self.logger.debug("   %s: %s -> %s", fn, ov, nv)
-                setattr(obj, fn, v[fn])
-        obj.save()
+                vv[fn] = v[fn]
+        self.change_object(self.mappings[n[0]], vv)
 
     def on_delete(self, row):
         """
         Delete record
         """
-        self.pending_deletes += [(row[0], "|".join(row))]
+        self.pending_deletes += [(row[0], ";".join(row))]
 
     def purge(self):
         """
@@ -314,7 +336,8 @@ class BaseLoader(object):
         self.mappings[str(rv)] = str(lv)
 
     def update_document_clean_map(self):
-        from mongoengine.fields import BooleanField, IntField, FloatField
+        from mongoengine.fields import (BooleanField, IntField,
+                                        FloatField, ReferenceField)
         from noc.lib.nosql import PlainReferenceField
 
         for fn, ft in self.model._fields.iteritems():
@@ -322,8 +345,10 @@ class BaseLoader(object):
                 continue
             if isinstance(ft, BooleanField):
                 self.clean_map[fn] = self.clean_bool
-            elif isinstance(ft, PlainReferenceField):
-                self.clean_map[fn] = functools.partial(
-                    self.clean_plain_reference,
-                    self.mappings, ft.document_type
-                )
+            elif isinstance(ft, (PlainReferenceField, ReferenceField)):
+                if fn in self.mapped_fields:
+                    self.clean_map[fn] = functools.partial(
+                        self.clean_plain_reference,
+                        self.chain.get_mappings(self.mapped_fields[fn]),
+                        ft.document_type
+                    )
