@@ -64,6 +64,12 @@ class Profile(BaseProfile):
         return "\n".join(r)
 
     def get_interface_names(self, name):
+        """
+        TODO: for QFX convert it from ifIndex
+        QFX send like:
+        Port type          : Locally assigned
+        Port ID            : 546
+        """
         names = []
         n = self.convert_interface_name(name)
         if n.endswith(".0"):
