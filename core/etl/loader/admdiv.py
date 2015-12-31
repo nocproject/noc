@@ -24,6 +24,6 @@ class AdmDivLoader(BaseLoader):
         "short_name"
     ]
 
-    _mappings = {
+    mapped_fields = {
         "parent": "admdiv"
     }
