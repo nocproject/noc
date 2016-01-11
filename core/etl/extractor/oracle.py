@@ -7,6 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+import os
+## NOC modules
 from sql import SQLExtractor
 
 
@@ -14,10 +16,17 @@ class ORACLEExtractor(SQLExtractor):
     def iter_data(self):
         import cx_Oracle
 
+        # Alter session
+        env = self.config.get("env", {}) or {}
+        old_env = os.environ.copy()  # Save environment
+        os.environ.update(env)
+        # Connect to database
         self.logger.info("Connecting to database")
         connect = cx_Oracle.connect(self.config["dsn"])
-        self.logger.info("Fetching data")
+        os.environ = old_env  # Restore environment
         cursor = connect.cursor()
+        # Fetch data
+        self.logger.info("Fetching data")
         query, params = self.get_sql()
         cursor.execute(query, params)
         for row in cursor:
