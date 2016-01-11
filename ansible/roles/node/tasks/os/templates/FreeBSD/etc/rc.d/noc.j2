@@ -32,22 +32,4 @@ command_interpreter=./bin/python
 pidfile=/var/run/$name.pid
 required_files=${noc_config}
 
-command_args=$1
-
-case "$command_args" in
-	force*)
-		command_args=${command_args#force};
-		;;
-	fast*)
-	command_args=${command_args#fast};
-		;;
-	restart)
-		command_args="stop"
-		run_rc_command "stop"
-		command_args="start"
-		run_rc_command "start"
-		;;
-	*)
-		run_rc_command "$1"
-		;;
-esac
+run_rc_command "$1"
