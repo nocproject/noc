@@ -27,3 +27,5 @@ nginx_user: nginx
 nginx_path: /usr/sbin/nginx
 nginx_conf_path: /etc/nginx/conf.d/noc.conf
 nginx_log_dir: /var/log/nginx
+nginx_ssl_key_path: /etc/nginx/ssl/noc.key
+nginx_ssl_cert_path: /etc/nginx/ssl/noc.crt

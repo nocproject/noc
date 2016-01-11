@@ -27,5 +27,7 @@ nginx_user: www
 nginx_path: /usr/local/sbin/nginx
 nginx_conf_path: /usr/local/etc/nginx/nginx.conf
 nginx_log_dir: /var/log
+nginx_ssl_key_path: /usr/local/etc/nginx/ssl/noc.key
+nginx_ssl_cert_path: /usr/local/etc/nginx/ssl/noc.crt
 # APT settings
 apt_cache_valid_time: 3600
