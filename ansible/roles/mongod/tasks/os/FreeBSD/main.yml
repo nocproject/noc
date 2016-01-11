@@ -8,4 +8,4 @@
   file: path="{{noc_root}}/var/etc/mongo/mongo.key" owner={{mongo_user}} mode=0400
 
 - name: Install MongoDB
-  pkgng: name="mongodb3" state=present
+  pkgng: name="mongodb" state=present
