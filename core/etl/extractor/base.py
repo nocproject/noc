@@ -26,6 +26,8 @@ class BaseExtractor(object):
     name = None
     PREFIX = "var/import"
     REPORT_INTERVAL = 1000
+    # List of rows to be used as constant data
+    data = []
 
     def __init__(self, system, config=None):
         self.system = system
@@ -44,7 +46,8 @@ class BaseExtractor(object):
         return gzip.GzipFile(path, "w")
 
     def iter_data(self):
-        raise NotImplementedError()
+        for row in self.data:
+            yield row
 
     def clean(self, row):
         return row
