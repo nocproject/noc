@@ -1,3 +1,11 @@
+{% if ansible_distribution == "FreeBSD" %}
+events {
+    worker_connections  1024;
+}
+
+http {
+{% endif %}
+
 upstream noc-web {
     {% for n in groups["svc-web"] %}
     server {{ n }}:8000;
@@ -42,3 +50,6 @@ server {
         proxy_set_header X-Scheme $scheme;
     }
 }
+{% if ansible_distribution == "FreeBSD" %}
+}
+{% endif %}
