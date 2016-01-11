@@ -2,13 +2,10 @@
 ##----------------------------------------------------------------------
 ## main.search application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Third-party modules
-from whoosh.qparser import QueryParser
-from whoosh.index import open_dir
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces.base import UnicodeParameter
