@@ -54,7 +54,7 @@ class Script(BaseScript):
 
     internal_interfaces = re.compile(
         r"^(lc-|cbp|demux|dsc|em|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|bme|"
-        r"jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-0|pc-0|me0|sp-)")
+        r"jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-0|pc-0|me0|sp-|fab)")
     internal_interfaces_olive = re.compile(
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-)")
 
