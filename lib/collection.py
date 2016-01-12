@@ -17,7 +17,6 @@ from operator import attrgetter
 import logging
 ## Third-party modules
 from mongoengine.fields import ListField, EmbeddedDocumentField
-import mongoengine.signals
 ## NOC modules
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.serialize import json_decode
