@@ -233,7 +233,7 @@ class Site(object):
                         ct = request.META.get("CONTENT_TYPE")
                         if ct and ("text/json" in ct or
                                    "application/json" in ct):
-                            a = json.loades(request.raw_post_data)
+                            a = json.loads(request.raw_post_data)
                         else:
                             a = dict((k, v[0] if len(v) == 1 else v)
                                      for k, v in request.POST.lists())
@@ -458,6 +458,9 @@ class Site(object):
         if self.apps:
             # Do not discover site twice
             return
+        # Connect to mongodb
+        import noc.lib.nosql
+        #
         noc_apps = [a for a in INSTALLED_APPS if a.startswith("noc.")]
         noc_models = {}
         # Load models
