@@ -542,6 +542,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 ["l", "Loopback address"],
                                 ["a", "All interface addresses"]
                             ],
+                            value: "d",
                             listeners: {
                                 scope: me,
                                 change: function(combo, newValue, oldValue, eOpts) {
@@ -567,6 +568,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 ["l", "Loopback address"],
                                 ["a", "All interface addresses"]
                             ],
+                            value: "d",
                             listeners: {
                                 scope: me,
                                 change: function(combo, newValue, oldValue, eOpts) {
