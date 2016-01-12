@@ -4,6 +4,8 @@ events {
 }
 
 http {
+    include       mime.types;
+    default_type  application/octet-stream;
 {% endif %}
 
 upstream noc-web {
