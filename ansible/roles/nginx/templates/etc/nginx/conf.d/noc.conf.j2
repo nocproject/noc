@@ -9,8 +9,8 @@ http {
 {% endif %}
 
 upstream noc-web {
-    {% for n in groups["svc-web"] %}
-    server {{ n }}:8000;
+    {% for n in noc_config["services"]["web"] %}
+    server {{ n }};
     {% endfor %}
 }
 
