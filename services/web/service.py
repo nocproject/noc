@@ -14,8 +14,6 @@ import tornado.web
 import tornado.httpserver
 import tornado.web
 import tornado.wsgi
-import mercurial.ui
-from mercurial.hgweb.hgwebdir_mod import hgwebdir
 import django.core.handlers.wsgi
 ## NOC modules
 from noc.core.service.base import Service
@@ -34,19 +32,6 @@ class WebService(Service):
         noc_wsgi = tornado.wsgi.WSGIContainer(
                 django.core.handlers.wsgi.WSGIHandler()
         )
-
-        # Mercurial handler
-        ui = mercurial.ui.ui()
-        ui.setconfig('ui', 'report_untrusted', 'off', 'hgwebdir')
-        ui.setconfig('ui', 'nontty', 'true', 'hgwebdir')
-        ui.setconfig("web", "baseurl", "/hg", "hgwebdir")
-        ui.setconfig("web", "style", "gitweb", "hgwebdir")
-        ui.setconfig("web", "logourl", "http://nocproject.org/",
-                     "hgwebdir")
-        hg_paths = [
-            ("noc", ".")
-        ]
-        hg_wsgi = tornado.wsgi.WSGIContainer(hgwebdir(hg_paths, ui))
 
         addr, port = self.get_service_address()
         self.logger.info("Running HTTP server at http://%s:%s/",
@@ -71,7 +56,6 @@ class WebService(Service):
             (r"^/hg/static/(.*)", tornado.web.StaticFileHandler, {
                 "path": "lib/python/site-packages/mercurial/templates/static"
             }),
-            (r"^/hg.*$", HGHandler, {"fallback": hg_wsgi}),
             # Pass to NOC
             (r"^.*$", AppHandler, {"fallback": noc_wsgi})
         ])
@@ -110,13 +94,6 @@ class AppHandler(tornado.web.FallbackHandler):
             self.request.uri = "/pm/metric/find/" + self.request.uri[
                                                     14:]
         super(AppHandler, self).prepare()
-
-
-class HGHandler(tornado.web.FallbackHandler):
-    def prepare(self):
-        # Rewrite /hg -> /
-        self.request.path = self.request.path[3:]
-        super(HGHandler, self).prepare()
 
 
 if __name__ == "__main__":
