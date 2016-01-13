@@ -16,14 +16,16 @@ class PrefixLoggerAdapter(logging.LoggerAdapter):
     Add [prefix] to log message
     """
     def __init__(self, logger, prefix, extra=None):
+        self._pattern = None
         self.set_prefix(prefix)
         logging.LoggerAdapter.__init__(self, logger, extra or {})
 
     def process(self, msg, kwargs):
-        return self.pattern % msg, kwargs
+        return self._pattern % msg, kwargs
 
     def set_prefix(self, prefix):
-        self.pattern = "[%s] %%s" % prefix
+        self._pattern = "[%s] %%s" % prefix
+        self._pattern = self._pattern.replace("][", "|")
 
 
 class TeeLoggerAdapter(logging.LoggerAdapter):
