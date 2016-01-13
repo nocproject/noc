@@ -9,13 +9,13 @@ http {
 {% endif %}
 
 upstream noc-web {
-{% for n in noc_config["services"]["web"] %}
+{% for n in noc_config["services"].get("web", []) %}
     server {{ n }};
 {% endfor %}
 }
 
 upstream notebook {
-{% for n in noc_config["services"]["notebook"] %}
+{% for n in noc_config["services"].get("notebook", []) %}
     server {{ n }};
 {% endfor %}
 }
