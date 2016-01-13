@@ -73,9 +73,11 @@ def build(node):
         # Read environment setting
         if config.has_option(s, "environment"):
             for ec in config.get(s, "environment").split(","):
-                k, v = ec.split("=", 1)
+                k, v = [z.strip() for z in ec.split("=", 1)]
                 if v.startswith("\"") and v.endswith("\""):
                     v = v[1:-1]
+                for e in ne:
+                    v = v.replace("%%(ENV_%s)s" % e, ne[e])
                 se[k] = v
         # Process program secrion
         if s.startswith("program:"):
