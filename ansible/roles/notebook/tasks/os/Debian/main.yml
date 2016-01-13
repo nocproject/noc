@@ -1,0 +1,7 @@
+---
+- name: Install Debian system packages
+  apt: name={{item}} update_cache=yes cache_valid_time=3600
+  sudo: true
+  with_items:
+    - libzmq3
+    - libzmq3-dev
