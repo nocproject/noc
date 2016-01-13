@@ -20,7 +20,6 @@ upstream notebook {
 {% endfor %}
 }
 
-
 server {
     listen 443;
     server_name {{ noc_web_host }};
@@ -56,8 +55,8 @@ server {
         gzip_types text/css text/x-js;
     }
 
-    location ~* /notebook/(api/kernels/[^/]+/(channels|iopub|shell|stdin)|terminals/websocket)/? {
-        proxy_pass http://noc-web;
+    location ~* ^/notebook/(api/kernels/[^/]+/(channels|iopub|shell|stdin)|terminals/websocket)/? {
+        proxy_pass http://notebook;
         gzip on;
         gzip_types text/css text/x-js;
         proxy_set_header Host $http_host;
@@ -73,7 +72,7 @@ server {
     }
 
     location /notebook {
-        proxy_pass http://noc-web;
+        proxy_pass http://notebook;
         gzip on;
         gzip_types text/css text/x-js;
         proxy_set_header Host $http_host;
