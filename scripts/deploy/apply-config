@@ -115,6 +115,7 @@ def build(node):
                     out.set(sn, o, v)
                 out.set(sn, "environment", format_env(pe))
                 out.set(sn, "autostart", "true")
+                out.set(sn, "numprocs", jcfg["config"][j].get("n_instances", "1"))
         elif s == "supervisord":
             out.add_section(s)
             # Copy config
