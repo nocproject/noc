@@ -128,14 +128,14 @@ c.NotebookApp.allow_origin = '*'
 # The base URL for the notebook server.
 #
 # Leading and trailing slashes can be omitted, and will automatically be added.
-c.NotebookApp.base_url = '/notebook/'
+c.NotebookApp.base_url = u'/notebook/'
 
 # The session manager class to use.
 # c.NotebookApp.session_manager_class = <class 'notebook.services.sessions.sessionmanager.SessionManager'>
 
 # Supply overrides for the tornado.web.Application that the Jupyter notebook
 # uses.
-c.NotebookApp.tornado_settings = {'static_url_prefix': '/notebook/static/'}
+c.NotebookApp.tornado_settings = {'static_url_prefix': u'/notebook/static/'}
 
 # The directory to use for notebooks and kernels.
 c.NotebookApp.notebook_dir = u'{{ noc_root }}/var/notebooks'
