@@ -66,6 +66,14 @@ services:
     description: Service activation engine
     level: global
 
+  dev:
+    description: Development node
+    level: global
+
+  notebook:
+    description: Notebook
+    level: global
+
   activator:
     description: Activator service
     level: pool
