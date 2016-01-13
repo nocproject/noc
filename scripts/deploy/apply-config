@@ -54,7 +54,8 @@ def build(node):
         "NOC_ENV": jcfg["nodes"][node]["environment"],
         "NOC_DC": jcfg["nodes"][node]["datacenter"],
         "NOC_NODE": node,
-        "NOC_USER": jcfg["config"]["noc"]["user"]
+        "NOC_USER": jcfg["config"]["noc"]["user"],
+        "NOC_ROOT": os.getcwd()
     }
     # Build config
     out = ConfigParser.ConfigParser()
