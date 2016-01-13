@@ -10,5 +10,8 @@
     virtualenv="{{noc_root}}"
     extra_args="--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"
 
+- name: Create notebooks directory
+  file: path="{{ noc_root }}/var/notebooks" owner="{{ noc_user }}" mode=0700 state=directory
+
 - name: Set up config
-  template: src="etc/notebook.conf.j2" dest="{{ noc_root }}/etc/notebook.conf"
+  template: src="etc/notebook.py.j2" dest="{{ noc_root }}/etc/notebook.py"

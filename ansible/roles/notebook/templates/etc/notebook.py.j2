@@ -37,7 +37,7 @@
 # Base class for Jupyter applications
 
 # Answer yes to any prompts.
-# c.JupyterApp.answer_yes = False
+c.JupyterApp.answer_yes = True
 
 # Full path of a config file.
 # c.JupyterApp.config_file = u''
@@ -138,7 +138,7 @@ c.NotebookApp.port = {{ noc_config["services"]["notebook"][0].split(":")[1] }}
 # c.NotebookApp.tornado_settings = traitlets.Undefined
 
 # The directory to use for notebooks and kernels.
-# c.NotebookApp.notebook_dir = u''
+c.NotebookApp.notebook_dir = u'{{ noc_root }}/var/notebooks'
 
 # The kernel manager class to use.
 # c.NotebookApp.kernel_manager_class = <class 'notebook.services.kernels.kernelmanager.MappingKernelManager'>
@@ -182,7 +182,7 @@ c.NotebookApp.port = {{ noc_config["services"]["notebook"][0].split(":")[1] }}
 # platform dependent and determined by the python standard library `webbrowser`
 # module, unless it is overridden using the --browser (NotebookApp.browser)
 # configuration option.
-# c.NotebookApp.open_browser = True
+c.NotebookApp.open_browser = False
 
 # Hashed password to use for web authentication.
 #
