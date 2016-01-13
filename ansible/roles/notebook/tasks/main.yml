@@ -14,9 +14,13 @@
   file: path="{{ noc_root }}/{{ item }}" owner="{{ noc_user }}" mode=0700 state=directory
   with_items:
     - etc/jupyter
+    - etc/jupyter/profile_default
     - var/notebooks
     - var/jupyter
     - var/jupyter/runtime
 
 - name: Set up configs
-  template: src="etc/jupyter/jupyter_notebook_config.py.j2" dest="{{ noc_root }}/etc/jupyter/jupyter_notebook_config.py"
+  template: src="{{ item }}" dest="{{ noc_root }}/{{ item[:-3] }}"
+  with_items:
+    - etc/jupyter/jupyter_notebook_config.py.j2
+    - etc/jupyter/profile_default/jupyter_notebook_config.py.j2
