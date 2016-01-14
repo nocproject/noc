@@ -4,8 +4,5 @@
   template: src="FreeBSD/etc/default/mongod.j2" dest="/usr/local/etc/mongodb.conf"
   notify: restart mongod
 
-- name: Set up mongo.key permission
-  file: path="{{noc_root}}/var/etc/mongo/mongo.key" owner={{mongo_user}} mode=0400
-
 - name: Install MongoDB
   pkgng: name="mongodb" state=present
