@@ -15,8 +15,11 @@
   when: "'svc-mongod-arbiter' in group_names"
 
 - name: Generating mongo key file
-  copy: src="{{lookup('mongo_key', tower_data + '/mongo/mongo.key')}}"
-        dest="{{noc_root}}/var/etc/mongo/mongo.key"
+  copy:
+    src: "{{lookup('mongo_key', tower_data + '/mongo/mongo.key')}}"
+    dest: "{{noc_root}}/var/etc/mongo/mongo.key"
+    owner: "{{mongo_user}}"
+    mode: 0400
 
 - include: "os/Debian/main.yml"
   when: ansible_distribution == "Debian"
