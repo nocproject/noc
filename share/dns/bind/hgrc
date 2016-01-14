@@ -1,2 +1,0 @@
-[hooks]
-changegroup = sudo .hg/named-update
