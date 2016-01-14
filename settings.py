@@ -17,11 +17,12 @@ if not config.sections():
     # @todo: Remove?
     config.read(["../../../../etc/noc.defaults", "../../../../etc/noc.conf"])
 # Load solutions's config
-for sn in config.options("solutions"):
-    if config.getboolean("solutions", sn):
-        v, s = sn.split(".")
-        cfg = os.path.join("solutions", v, s, "etc", "noc.")
-        config.read([cfg + "defaults", cfg + "conf"])
+if config.has_section("solutions"):
+    for sn in config.options("solutions"):
+        if config.getboolean("solutions", sn):
+            v, s = sn.split(".")
+            cfg = os.path.join("solutions", v, s, "etc", "noc.")
+            config.read([cfg + "defaults", cfg + "conf"])
 
 DEBUG = config.getboolean("main", "debug")
 TEMPLATE_DEBUG = DEBUG
@@ -155,6 +156,7 @@ INSTALLED_APPS = [
     "noc.project",
     # "noc.wf",
     "noc.gis",
+    "noc.crm",
     "noc.inv",
     "noc.sa",
     "noc.fm",
