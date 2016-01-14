@@ -14,6 +14,7 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
     ],
     model: "NOC.crm.subscriberprofile.Model",
     search: true,
+    rowClassField: "row_class",
 
     initComponent: function() {
         var me = this;
