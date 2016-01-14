@@ -15,7 +15,10 @@ class SubscriberProfileApplication(ExtDocApplication):
     """
     SubscriberProfile application
     """
-    title = "SubscriberProfile"
+    title = "Subscriber Profile"
     menu = "Setup | Subscriber Profiles"
     model = SubscriberProfile
     query_fields = ["name__icontains", "description__icontains"]
+
+    def field_row_class(self, o):
+        return o.style.css_class_name if o.style else ""
