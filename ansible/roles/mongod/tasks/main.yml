@@ -14,13 +14,6 @@
   notify: restart mongod-arbiter
   when: "'svc-mongod-arbiter' in group_names"
 
-- name: Generating mongo key file
-  copy:
-    src: "{{lookup('mongo_key', tower_data + '/mongo/mongo.key')}}"
-    dest: "{{noc_root}}/var/etc/mongo/mongo.key"
-    owner: "{{mongo_user}}"
-    mode: 0400
-
 - include: "os/Debian/main.yml"
   when: ansible_distribution == "Debian"
 
@@ -32,6 +25,13 @@
 
 - include: "os/Ubuntu/main.yml"
   when: ansible_distribution == "Ubuntu"
+
+- name: Generating mongo key file
+  copy:
+    src: "{{lookup('mongo_key', tower_data + '/mongo/mongo.key')}}"
+    dest: "{{noc_root}}/var/etc/mongo/mongo.key"
+    owner: "{{mongo_user}}"
+    mode: 0400
 
 - name: Enable MongoDB system service
   service: name="{{mongod_system_service}}" enabled=yes state=started
