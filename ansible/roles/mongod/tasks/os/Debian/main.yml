@@ -13,7 +13,7 @@
   lineinfile: "dest=/etc/default/grub state=present backrefs=yes regexp='^GRUB_CMDLINE_LINUX_DEFAULT=\"\"' line='GRUB_CMDLINE_LINUX_DEFAULT=\"transparent_hugepage=never\"'"
   register: dht_status
 
-  shell: update-grub
+- shell: update-grub
   notify: restart mongod
   when: dht_status.changed
 
