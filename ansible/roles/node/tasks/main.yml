@@ -8,7 +8,8 @@
               regexp=".*{{ item }}"
   with_items: groups["nodes"]
 
-- include: "os/{{ ansible_distribution }}/main.yml"
+- name: "Include OS-specific tasks"
+  include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Create NOC group
   group: name="{{noc_group}}" state=present
@@ -45,7 +46,16 @@
     executable="{{noc_root}}/bin/pip"
     requirements="requirements/node.txt"
     virtualenv="{{noc_root}}"
-    extra_args="--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"
+    extra_args="--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --upgrade"
+
+- name: Install python 2.6 compatibility packages
+  pip:
+    chdir: "{{ noc_root }}"
+    executable: "{{ noc_root }}/bin/pip"
+    requirements: "requirements/python-2.6.txt"
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  when: "ansible_python_version.startswith('2.6')"
 
 - name: Apply local patches
   command: "{{ noc_root }}/scripts/deploy/apply-patches"
