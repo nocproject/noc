@@ -1,6 +1,6 @@
 ---
 - name: Set mongod-arbiter defaults
-  template: src="CentOS/etc/sysconfig/mongod-arbiter.j2" dest="/etc/sysconfig/mongod-arbiter"
+  template: src="os/CentOS/etc/sysconfig/mongod-arbiter.j2" dest="/etc/sysconfig/mongod-arbiter"
   notify: restart mongod-arbiter
 
 - name: Check mongod-arbiter init file

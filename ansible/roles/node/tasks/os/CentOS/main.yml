@@ -18,7 +18,7 @@
    - postgresql-devel
 
 - name: Install supervisord init script
-  template: src="CentOS/etc/systemd/system/noc.service.j2" dest="/usr/lib/systemd/system//{{ noc_system_service }}.service" mode="a+rx"
+  template: src="os/CentOS/etc/systemd/system/noc.service.j2" dest="/usr/lib/systemd/system//{{ noc_system_service }}.service" mode="a+rx"
 
 - name: Reload systemd daemon
   shell: /usr/bin/systemctl daemon-reload

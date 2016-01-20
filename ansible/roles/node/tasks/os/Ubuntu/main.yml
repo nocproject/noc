@@ -15,4 +15,4 @@
     - libpq-dev
 
 - name: Install supervisord init script
-  template: src="Ubuntu/etc/init.d/noc.j2" dest="/etc/init.d/{{ noc_system_service }}" mode="a+rx"
+  template: src="os/Ubuntu/etc/init.d/noc.j2" dest="/etc/init.d/{{ noc_system_service }}" mode="a+rx"
