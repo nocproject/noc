@@ -1,7 +1,7 @@
 ---
 - name: Install and upgrade NOC
   hosts: nodes
-  sudo: yes
+  become: yes
   roles:
     - role: pre
 

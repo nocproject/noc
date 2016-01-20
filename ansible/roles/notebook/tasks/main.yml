@@ -1,6 +1,5 @@
 ---
-- include: "os/Debian/main.yml"
-  when: ansible_distribution == "Debian"
+- include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Install packages
   pip: >

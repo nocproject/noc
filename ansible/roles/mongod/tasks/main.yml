@@ -14,17 +14,7 @@
   notify: restart mongod-arbiter
   when: "'svc-mongod-arbiter' in group_names"
 
-- include: "os/Debian/main.yml"
-  when: ansible_distribution == "Debian"
-
-- include: "os/FreeBSD/main.yml"
-  when: ansible_distribution == "FreeBSD"
-
-- include: "os/CentOS/main.yml"
-  when: ansible_distribution == "CentOS"
-
-- include: "os/Ubuntu/main.yml"
-  when: ansible_distribution == "Ubuntu"
+- include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Generating mongo key file
   copy:
