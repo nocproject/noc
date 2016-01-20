@@ -1,6 +1,6 @@
 ---
 - name: Set mongod-arbiter defaults
-  template: src="Ubuntu/etc/default/mongod-arbiter.j2" dest="/etc/default/mongod-arbiter"
+  template: src="os/Ubuntu/etc/default/mongod-arbiter.j2" dest="/etc/default/mongod-arbiter"
   notify: restart mongod-arbiter
 
 - name: Check mongod-arbiter init file

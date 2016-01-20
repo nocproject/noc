@@ -20,7 +20,7 @@
   notify: restart mongod
 
 - name: Set mongod defaults
-  template: src="Ubuntu/etc/default/mongod.j2" dest="/etc/default/mongod"
+  template: src="os/Ubuntu/etc/default/mongod.j2" dest="/etc/default/mongod"
   notify: restart mongod
 
 - name: Install MongoDB
