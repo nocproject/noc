@@ -13,14 +13,16 @@
   lineinfile: "dest=/etc/default/grub state=present backrefs=yes regexp='^GRUB_CMDLINE_LINUX_DEFAULT=\"\"' line='GRUB_CMDLINE_LINUX_DEFAULT=\"transparent_hugepage=never\"'"
   register: dht_status
 
+  shell: update-grub
+  notify: restart mongod
+  when: dht_status.changed
+
 - name: Disable Transparent Hugepages (runtime)
   shell: if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
             echo never > /sys/kernel/mm/transparent_hugepage/enabled;
             echo never > /sys/kernel/mm/transparent_hugepage/defrag;
          fi
   when: dht_status.changed
-  shell: update-grub
-  notify: restart mongod
 
 - name: Set mongod defaults
   template: src="os/Debian/etc/default/mongod.j2" dest="/etc/default/mongod"
