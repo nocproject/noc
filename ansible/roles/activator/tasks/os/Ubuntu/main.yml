@@ -1,7 +1,6 @@
 ---
 - name: Install Ubuntu system packages
   apt: name={{item}} update_cache=yes cache_valid_time=3600
-  sudo: true
   with_items:
     - libssh2-1
     - libssh2-1-dev
