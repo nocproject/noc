@@ -5,14 +5,11 @@
 import os
 # Ansible modules
 from ansible import utils, errors
+from ansible.plugins.lookup import LookupBase
 
 
-class LookupModule(object):
-    def __init__(self, basedir=None, **kwargs):
-        self.basedir = basedir
-
+class LookupModule(LookupBase):
     def run(self, terms, inject=None, **kwargs):
-        terms = utils.listify_lookup_plugin_terms(terms, self.basedir, inject)
         ret = []
 
         # this can happen if the variable contains a string, strictly not desired for lookup
@@ -23,7 +20,7 @@ class LookupModule(object):
         for term in terms:
             params = term.split()
             relpath = params[0]
-            path = utils.path_dwim(self.basedir, relpath)
+            path = self._loader.path_dwim(relpath)
             if os.path.exists(path):
                 with open(path) as f:
                     key = f.read().strip()
