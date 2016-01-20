@@ -1,16 +1,6 @@
 # nginx role
 ---
-- include: "os/Debian/main.yml"
-  when: ansible_distribution == "Debian"
-
-- include: "os/FreeBSD/main.yml"
-  when: ansible_distribution == "FreeBSD"
-
-- include: "os/Ubuntu/main.yml"
-  when: ansible_distribution == "Ubuntu"
-
-- include: "os/CentOS/main.yml"
-  when: ansible_distribution == "CentOS"
+- include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Set up SSL directory
   file: path="{{ nginx_ssl_key_path | dirname }}" mode=0700 owner="{{ nginx_user }}" state=directory

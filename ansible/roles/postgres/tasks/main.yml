@@ -1,15 +1,5 @@
 ---
-- include: "os/Debian/main.yml"
-  when: ansible_distribution == "Debian"
-
-- include: "os/FreeBSD/main.yml"
-  when: ansible_distribution == "FreeBSD"
-
-- include: "os/Ubuntu/main.yml"
-  when: ansible_distribution == "Ubuntu"
-
-- include: "os/CentOS/main.yml"
-  when: ansible_distribution == "CentOS"
+- include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Creating postgres directories
   file: path="{{item}}" state="directory" owner="{{postgres_user}}" mode=0700
