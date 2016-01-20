@@ -8,17 +8,7 @@
               regexp=".*{{ item }}"
   with_items: groups["nodes"]
 
-- include: "os/Debian/main.yml"
-  when: ansible_distribution == "Debian"
-
-- include: "os/FreeBSD/main.yml"
-  when: ansible_distribution == "FreeBSD"
-
-- include: "os/Ubuntu/main.yml"
-  when: ansible_distribution == "Ubuntu"
-
-- include: "os/CentOS/main.yml"
-  when: ansible_distribution == "CentOS"
+- include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Create NOC group
   group: name="{{noc_group}}" state=present
