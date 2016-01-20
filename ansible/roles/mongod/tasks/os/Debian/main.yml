@@ -23,7 +23,7 @@
   notify: restart mongod
 
 - name: Set mongod defaults
-  template: src="Debian/etc/default/mongod.j2" dest="/etc/default/mongod"
+  template: src="os/Debian/etc/default/mongod.j2" dest="/etc/default/mongod"
   notify: restart mongod
 
 - name: Install MongoDB
