@@ -3,8 +3,10 @@ Description=NOC Node Service
 After=network.target
 
 [Service]
+Type=forking
 ExecStart={{ noc_root }}/bin/supervisord -c {{ noc_root }}/etc/supervisord.conf
-ExecReload={{ noc_root }}/bin/supervisorctl restart
+ExecReload={{ noc_root }}/bin/supervisorctl reload
+ExecStop={{ noc_root }}/bin/supervisorctl shutdown
 WorkingDirectory={{ noc_root }}
 KillMode=process
 Restart=on-failure
