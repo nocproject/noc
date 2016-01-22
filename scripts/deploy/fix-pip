@@ -1,0 +1,63 @@
+#!./bin/python
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Fix broken pip versions
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+import sys
+import subprocess
+import urllib2
+import tempfile
+
+GET_PIP_DISTRIBUTION = "https://bootstrap.pypa.io/get-pip.py"
+
+
+def get_pip_version():
+    """
+    Returns virtualenv's pip version
+    """
+    r = subprocess.check_output([
+        os.path.join(os.getcwd(), "bin", "pip"), "--version"
+    ])
+    _, version, _ = r.split(" ", 2)
+    return version
+
+
+def is_broken_version(v):
+    """
+    Check whether virtualenv is provided with broken version,
+    which must be replaced
+    """
+    parts = v.split(".")
+    major = int(parts[0])
+    minor = int(parts[1])
+    return major < 8
+
+
+def fix_pip():
+    """
+    Get last PIP version via get-pip
+    """
+    # Fetch get-pip
+    response = urllib2.urlopen(GET_PIP_DISTRIBUTION)
+    with tempfile.NamedTemporaryFile() as script:
+        script.write(response.read())
+        script.flush()
+        subprocess.check_call([sys.executable, script.name])
+
+
+def main():
+    v = get_pip_version()
+    if is_broken_version(v):
+        fix_pip()
+        print "CHANGED"
+    else:
+        print "OK"
+
+if __name__ == "__main__":
+    main()
