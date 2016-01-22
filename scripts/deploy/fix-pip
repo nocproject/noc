@@ -16,13 +16,22 @@ import tempfile
 
 GET_PIP_DISTRIBUTION = "https://bootstrap.pypa.io/get-pip.py"
 
+def get_pip_path():
+    return os.path.join(os.getcwd(), "bin", "pip")
+
+def is_pip_installed():
+    """
+    Check if pip installed
+    """
+    return os.path.exists(get_pip_path())
+
 
 def get_pip_version():
     """
     Returns virtualenv's pip version
     """
     r = subprocess.check_output([
-        os.path.join(os.getcwd(), "bin", "pip"), "--version"
+        get_pip_path(), "--version"
     ])
     _, version, _ = r.split(" ", 2)
     return version
@@ -52,12 +61,16 @@ def fix_pip():
 
 
 def main():
-    v = get_pip_version()
-    if is_broken_version(v):
+    if is_pip_installed():
+        v = get_pip_version()
+        if is_broken_version(v):
+            fix_pip()
+            print "CHANGED"
+        else:
+            print "OK"
+    else:
         fix_pip()
         print "CHANGED"
-    else:
-        print "OK"
 
 if __name__ == "__main__":
     main()
