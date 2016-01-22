@@ -116,6 +116,10 @@ class Script(BaseScript):
             ifname = self.profile.convert_interface_name(full_ifname)
             if ifname.startswith("NULL"):
                 continue
+            # I do not known, what are these
+            if ifname.startswith("DCN-Serial") \
+            or ifname.startswith("Cpos-Trunk"):
+                continue
             sub = {
                 "name": ifname,
                 "admin_status": True,
