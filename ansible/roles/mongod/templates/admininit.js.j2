@@ -1,16 +1,9 @@
 //
 // Create admin users
 //
+db.createUser({
+    user: "{{{{noc_mongo_admin_user}}"",
+    pwd: "{{noc_mongo_admin_password}}",
+    roles: ["root"]
+});
 
-(function() {
-    var user = "{{noc_mongo_admin_user}}",
-        au = db.getUser(user);
-    if(!au) {
-        // Create root user
-        db.createUser({
-            user: user,
-            pwd: "{{noc_mongo_admin_password}}",
-            roles: ["root"]
-        });
-    }
-})();
