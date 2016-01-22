@@ -1,6 +1,9 @@
 ---
 - name: Install Debian system packages
-  apt: name={{item}} update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
   with_items:
     - less
     - telnet
@@ -15,10 +18,15 @@
     - libpq-dev
 
 - name: Install supervisord init script
-  template: src="os/Debian/etc/init.d/noc.j2" dest="/etc/init.d/{{ noc_system_service }}" mode="a+rx"
-  when: "ansible_service_mgr != systemd"
+  template:
+    src: "os/Debian/etc/init.d/noc.j2"
+    dest: "/etc/init.d/{{ noc_system_service }}"
+    mode: "a+rx"
+  when: "ansible_service_mgr != 'systemd'"
 
 - name: Install supervisord systemd service
-  template: src="os/Debian/etc/systemd/system/{{ noc_system_service }}.service.j2" dest="/etc/systemd/system/{{ noc_system_service }}.service"
-  when: "ansible_service_mgr != systemd"
+  template:
+    src: "os/Debian/etc/systemd/system/{{ noc_system_service }}.service.j2"
+    dest: "/etc/systemd/system/{{ noc_system_service }}.service"
+  when: "ansible_service_mgr == 'systemd'"
   notify: reload systemd
