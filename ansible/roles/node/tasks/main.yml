@@ -20,6 +20,13 @@
 - name: Pull NOC
   hg: repo="{{noc_repo}}" dest="{{noc_root}}" revision="{{noc_revision}}"
 
+- name: Fix broken PIP versions
+  command: "{{ noc_root }}/scripts/deploy/fix-pip"
+  args:
+    chdir: "{{ noc_root }}"
+  register: s
+  changed_when: "'CHANGED' in s.stdout"
+
 - name: Upgrade PIP
   pip: >
     chdir="{{noc_root}}"
