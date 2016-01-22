@@ -5,6 +5,7 @@ After=network.target
 [Service]
 ExecStart={{ noc_root }}/bin/supervisord -c {{ noc_root }}/etc/supervisord.conf
 ExecReload={{ noc_root }}/bin/supervisorctl restart
+WorkingDirectory={{ noc_root }}
 KillMode=process
 Restart=on-failure
 
