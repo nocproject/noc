@@ -24,8 +24,8 @@
   command: "{{ noc_root }}/scripts/deploy/fix-pip"
   args:
     chdir: "{{ noc_root }}"
-  register: s
-  changed_when: "'CHANGED' in s.stdout"
+  register: result
+  changed_when: "'CHANGED' in result.stdout"
 
 - name: Upgrade PIP
   pip: >
