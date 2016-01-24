@@ -20,6 +20,8 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd")
         # load command
         load_parser = subparsers.add_parser("load")
+        # check command
+        check_parser = subparsers.add_parser("check")
         # extract command
         extract_parser = subparsers.add_parser("extract")
 
@@ -59,6 +61,28 @@ class Command(BaseCommand):
                 extractor = xc(system["system"], config=config)
                 extractor.extract()
 
+    def handle_check(self, *args, **options):
+        from noc.core.etl.loader.chain import LoaderChain
+        config = self.get_config()
+        n_errors = 0
+        summary = []
+        for system in config:
+            chain = LoaderChain(system["system"])
+            for d in system.get("data"):
+                chain.get_loader(d["type"])
+            # Check
+            for l in chain:
+                n = l.check(chain)
+                if n:
+                    s = "%d errors" % n
+                else:
+                    s = "OK"
+                summary += ["%s.%s: %s" % (system["system"], l.name, s)]
+                n_errors += n
+        if summary:
+            self.stdout.write("Summary:\n")
+            self.stdout.write("\n".join(summary) + "\n")
+        return 1 if n_errors else 0
 
 if __name__ == "__main__":
     Command().run()
