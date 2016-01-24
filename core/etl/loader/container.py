@@ -12,11 +12,11 @@ from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 
 
-class PoPLoader(BaseLoader):
+class ContainerLoader(BaseLoader):
     """
-    Administrative division loader
+    Inventory container loader
     """
-    name = "pop"
+    name = "container"
     model = Object
     fields = [
         "id",
@@ -31,7 +31,7 @@ class PoPLoader(BaseLoader):
     CONTAINER_MODEL = "Group"
 
     def __init__(self, *args, **kwargs):
-        super(PoPLoader, self).__init__(*args, **kwargs)
+        super(ContainerLoader, self).__init__(*args, **kwargs)
         self.model_map = {}
         self.containers = {}  # Path -> Object
 
