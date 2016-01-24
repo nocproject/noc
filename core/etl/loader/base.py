@@ -60,21 +60,21 @@ class BaseLoader(object):
 
     PREFIX = "var/import"
     rx_archive = re.compile(
-        "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
+            "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
     )
 
     def __init__(self, chain):
         self.chain = chain
         self.system = chain.system
         self.logger = PrefixLoggerAdapter(
-            logger, "%s][%s" % (self.system, self.name)
+                logger, "%s][%s" % (self.system, self.name)
         )
         self.import_dir = os.path.join(self.PREFIX,
                                        self.system, self.name)
         self.archive_dir = os.path.join(self.import_dir, "archive")
         self.mappings_path = os.path.join(
-            self.import_dir,
-            "mappings.csv"
+                self.import_dir,
+                "mappings.csv"
         )
         self.mappings = {}
         self.new_state_path = None
@@ -83,7 +83,8 @@ class BaseLoader(object):
         self.c_delete = 0
         # Build clean map
         self.clean_map = dict((n, self.clean_str)
-                              for n in self.fields)  # field name -> clean function
+                              for n in
+                              self.fields)  # field name -> clean function
         self.pending_deletes = []  # (id, string)
 
     def load_mappings(self):
@@ -136,8 +137,8 @@ class BaseLoader(object):
                                   self.archive_dir, why)
                 # @todo: Die
         fn = sorted(
-            f for f in os.listdir(self.archive_dir)
-            if self.rx_archive.match(f)
+                f for f in os.listdir(self.archive_dir)
+                if self.rx_archive.match(f)
         )
         if fn:
             path = os.path.join(self.archive_dir, fn[-1])
@@ -153,6 +154,7 @@ class BaseLoader(object):
         * old, None -- when removed
         * None, new -- when added
         """
+
         def getnext(g):
             try:
                 return g.next()
@@ -273,13 +275,14 @@ class BaseLoader(object):
         Save current state
         """
         self.logger.info(
-            "Summary: %d new, %d changed, %d removed",
-            self.c_add, self.c_change, self.c_delete
+                "Summary: %d new, %d changed, %d removed",
+                self.c_add, self.c_change, self.c_delete
         )
         t = time.localtime()
         archive_path = os.path.join(
-            self.archive_dir,
-            "import-%04d-%02d-%02d-%02d-%02d-%02d.csv.gz" % tuple(t[:6])
+                self.archive_dir,
+                "import-%04d-%02d-%02d-%02d-%02d-%02d.csv.gz" % tuple(
+                        t[:6])
         )
         self.logger.info("Moving %s to %s",
                          self.new_state_path, archive_path)
@@ -348,7 +351,87 @@ class BaseLoader(object):
             elif isinstance(ft, (PlainReferenceField, ReferenceField)):
                 if fn in self.mapped_fields:
                     self.clean_map[fn] = functools.partial(
-                        self.clean_plain_reference,
-                        self.chain.get_mappings(self.mapped_fields[fn]),
-                        ft.document_type
+                            self.clean_plain_reference,
+                            self.chain.get_mappings(
+                                    self.mapped_fields[fn]),
+                            ft.document_type
                     )
+
+    def check(self, chain):
+        self.logger.info("Checking")
+        # Get constraints
+        if hasattr(self.model, "_fields"):
+            # Document
+            required_fields = [
+                f.name
+                for f in self.model._fields.itervalues()
+                if f.required or f.unique
+            ]
+            unique_fields = [
+                f.name
+                for f in self.model._fields.itervalues()
+                if f.unique
+            ]
+        else:
+            # Model
+            required_fields = [f.name for f in self.model._meta.fields
+                               if not f.blank]
+            unique_fields = [f.name for f in self.model._meta.fields
+                             if f.unique and
+                             f.name != self.model._meta.pk.name]
+        if not required_fields and not unique_fields:
+            self.logger.info("Nothing to check, skipping")
+            return 0
+        # Prepare data
+        ns = self.get_new_state()
+        if not ns:
+            self.logger.info("No new state, skipping")
+            return 0
+        new_state = csv.reader(ns)
+        r_index = set(self.fields.index(f) for f in required_fields if f in self.fields)
+        u_index = set(self.fields.index(f) for f in unique_fields)
+        m_index = set(self.fields.index(f) for f in self.mapped_fields)
+        uv = set()
+        m_data = {}  # field_number -> set of mapped ids
+        # Load mapped ids
+        for f in self.mapped_fields:
+            l = chain.get_loader(self.mapped_fields[f])
+            ms = csv.reader(l.get_new_state())
+            m_data[self.fields.index(f)] = set(row[0] for row in ms)
+        # Process data
+        n_errors = 0
+        for row in new_state:
+            # Check required fields
+            for i in r_index:
+                if not row[i]:
+                    self.logger.error(
+                            "ERROR: Required field #%d(%s) is missed in row: %s",
+                            i, self.fields[i], ",".join(row)
+                    )
+                    n_errors += 1
+                    continue
+            # Check unique fields
+            for i in u_index:
+                v = row[i]
+                if (i, v) in uv:
+                    self.logger.error(
+                            "ERROR: Field #%d(%s) value is not unique: %s",
+                            i, self.fields[i], ",".join(row)
+                    )
+                    n_errors += 1
+                else:
+                    uv.add((i, v))
+            # Check mapped fields
+            for i in m_index:
+                v = row[i]
+                if v and v not in m_data[i]:
+                    self.logger.error(
+                            "ERROR: Field #%d(%s) refers to non-existent record: %s",
+                            i, self.fields[i], ",".join(row)
+                    )
+                    n_errors += 1
+        if n_errors:
+            self.logger.info("%d errors found", n_errors)
+        else:
+            self.logger.info("No errors found")
+        return n_errors
