@@ -25,6 +25,8 @@ class ORACLEExtractor(SQLExtractor):
         connect = cx_Oracle.connect(self.config["dsn"])
         os.environ = old_env  # Restore environment
         cursor = connect.cursor()
+        if self.config.get("arraysize"):
+            cursor.arraysize = int(self.config["arraysize"])
         # Fetch data
         self.logger.info("Fetching data")
         query, params = self.get_sql()
