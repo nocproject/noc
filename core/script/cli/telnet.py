@@ -82,6 +82,7 @@ class TelnetIOStream(IOStream):
         self.cli = cli
         self.logger = cli.logger
         self.iac_seq = ""
+        self.out_iac_seq = []
         self.naws = "\x00\x80\x00\x80"
 
     @tornado.gen.coroutine
@@ -115,10 +116,19 @@ class TelnetIOStream(IOStream):
                     chunk = right[2:]
                 else:
                     # Process IAC SB ... SE sequence
-                    pass
+                    if SE not in right:
+                        self.iac_seq = IAC + right
+                        break
+                    else:
+                        i = right.index(SE)
+                        self.process_iac_sb(right[1:i - 1])
+                        chunk = right[i:]
             else:
                 # Return leftovers
                 break
+        if self.out_iac_seq:
+            self.write_to_fd("".join(self.out_iac_seq))
+            self.out_iac_seq = []
         return "".join(r)
 
     def write(self, data, callback=None):
@@ -131,7 +141,8 @@ class TelnetIOStream(IOStream):
         Send IAC response
         """
         self.logger.debug("Send %s", self.iac_repr(cmd, opt))
-        self.write_to_fd(IAC + cmd + opt)
+        self.out_iac_seq += [IAC + cmd + opt]
+        # self.write_to_fd(IAC + cmd + opt)
 
     def send_iac_sb(self, opt, data=None):
         sb = IAC + SB + opt
@@ -140,7 +151,8 @@ class TelnetIOStream(IOStream):
         sb += IAC + SE
         self.logger.debug("Send IAC SB %r %r IAC SE",
                           opt, data)
-        self.write_to_fd(sb)
+        self.out_iac_seq += [sb]
+        #self.write_to_fd(sb)
 
     def process_iac(self, cmd, opt):
         """
@@ -161,6 +173,11 @@ class TelnetIOStream(IOStream):
         # Send NAWS response
         if cmd == DO and opt == NAWS:
             self.send_iac_sb(opt, self.naws)
+
+    def process_iac_sb(self, sb):
+        self.logger.debug("Received IAC SB %s SE", sb.encode("hex"))
+        if sb == "\x18\x01":  # TTYPE SEND
+            self.out_iac_seq += [IAC + SB + "\x18\x00XTERM" + IAC + SE]
 
     def iac_repr(self, cmd, opt):
         """
