@@ -15,6 +15,7 @@ from noc.main.models.style import Style
 from noc.lib.validators import is_fqdn
 from noc.lib.stencil import stencil_registry
 from noc.pm.models.probeconfig import probe_config
+from noc.core.model.fields import TagsField
 
 
 @probe_config
@@ -126,6 +127,7 @@ class ManagedObjectProfile(models.Model):
     enable_periodic_discovery_mac = models.BooleanField(default=False)
     # Collect ARP cache
     # enable_periodic_discovery_ip = models.BooleanField(default=False)
+    tags = TagsField("Tags", null=True, blank=True)
 
     def __unicode__(self):
         return self.name
