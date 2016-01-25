@@ -9,7 +9,7 @@
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, BooleanField,
-                                DateTimeField, IntField)
+                                DateTimeField, IntField, ListField)
 from noc.lib.nosql import PlainReferenceField
 
 
@@ -39,6 +39,8 @@ class Division(Document):
     #
     start_date = DateTimeField()
     end_date = DateTimeField()
+    #
+    tags = ListField(StringField())
 
     def __unicode__(self):
         if self.short_name:
