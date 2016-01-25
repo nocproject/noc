@@ -16,7 +16,7 @@ Ext.define("NOC.sa.managedobject.scripts.ErrorPreview", {
                 xtype: "container",
                 autoScroll: true,
                 bodyPadding: 4,
-                html: "<b>ERROR: </b>" + me.result.code + "<br/>" + Ext.util.Format.htmlEncode(me.result.text)
+                html: "<b>ERROR: </b>" + Ext.util.Format.htmlEncode(me.result)
             }]
         });
         me.callParent();

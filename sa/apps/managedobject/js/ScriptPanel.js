@@ -109,33 +109,12 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
             scope: me,
             jsonData: params,
             success: function(response) {
-                var task = Ext.decode(response.responseText);
-                me.waitResult(name, task);
-            },
-            failure: function() {
-                me.loadMask.hide();
-                NOC.error("Failed to run script");
-            }
-        });
-    },
-    //
-    waitResult: function(name, task) {
-        var me = this;
-        Ext.Ajax.request({
-            url: "/sa/managedobject/" + me.currentRecord.get("id") + "/scripts/" + name + "/" + task + "/",
-            method: "GET",
-            scope: me,
-            success: function(response) {
                 var data = Ext.decode(response.responseText);
-                if(data.ready) {
-                    me.loadMask.hide();
-                    if(data.result && data.result.code > 0 && data.result.text.length > 0) {
-                        me.showError(name, data.result);
-                    } else {
-                        me.showResult(name, data.result);
-                    }
+                me.loadMask.hide();
+                if(data.error) {
+                    me.showError(name, data.error)
                 } else {
-                    Ext.defer(Ext.bind(me.waitResult, me, [name, task]), 1000);
+                    me.showResult(name, data.result)
                 }
             },
             failure: function() {
