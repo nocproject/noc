@@ -371,6 +371,10 @@ class BaseLoader(object):
     def clean_bool(self, value):
         if value == "":
             return None
+        try:
+            return int(value) != 0
+        except ValueError:
+            pass
         value = value.lower()
         return value in ("t", "true", "y", "yes")
 
