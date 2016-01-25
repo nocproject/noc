@@ -12,6 +12,7 @@ from collections import namedtuple
 import logging
 import os
 import re
+import itertools
 ## Django modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, SET_NULL)
@@ -266,6 +267,9 @@ class ManagedObject(Model):
             self._cache[name] = cw
             return cw
 
+        def __getitem__(self, item):
+            return getattr(self, item)
+
         def __contains__(self, item):
             """
             Check object has script name
@@ -274,6 +278,16 @@ class ManagedObject(Model):
                 # Normalize to full name
                 item = "%s.%s" % (self._object.profile_name, item)
             return script_loader.has_script(item)
+
+        def __iter__(self):
+            return itertools.imap(
+                    lambda y: y.split(".")[-1],
+                    itertools.ifilter(
+                            lambda x: x.startswith(self._object.profile_name + "."),
+                            script_loader.iter_scripts()
+                    )
+            )
+
 
     class ActionsProxy(object):
         class CallWrapper(object):
