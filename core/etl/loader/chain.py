@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+import cachetools
 ## NOC modules
 from loader import loader as loader_loader
 
@@ -15,6 +17,10 @@ class LoaderChain(object):
         self.system = system
         self.loaders = {}  # name -> loader
         self.lseq = []
+        self.cache = cachetools.LRUCache(
+            maxsize=1000,
+            missing=self.get_cached
+        )
 
     def get_loader(self, name):
         loader = self.loaders.get(name)
@@ -34,3 +40,10 @@ class LoaderChain(object):
         Retuns mappings for a loader *name*
         """
         return self.get_loader(name).mappings
+
+    def get_cached(self, r):
+        """
+        Returns cached object reference
+        """
+        model, key = r
+        return model.objects.get(id=key)
