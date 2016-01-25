@@ -16,7 +16,7 @@ import csv
 import time
 import shutil
 import functools
-## Python modules
+## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.fileutils import safe_rewrite
 
@@ -58,10 +58,18 @@ class BaseLoader(object):
 
     fields = []
 
+    # List of tags to add to the created records
+    tags = []
+
     PREFIX = "var/import"
     rx_archive = re.compile(
             "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
     )
+
+    REPORT_INTERVAL = 1000
+
+    class Deferred(Exception):
+        pass
 
     def __init__(self, chain):
         self.chain = chain
@@ -73,8 +81,8 @@ class BaseLoader(object):
                                        self.system, self.name)
         self.archive_dir = os.path.join(self.import_dir, "archive")
         self.mappings_path = os.path.join(
-                self.import_dir,
-                "mappings.csv"
+            self.import_dir,
+            "mappings.csv"
         )
         self.mappings = {}
         self.new_state_path = None
@@ -86,14 +94,30 @@ class BaseLoader(object):
                               for n in
                               self.fields)  # field name -> clean function
         self.pending_deletes = []  # (id, string)
+        self.tags = []
+        if self.is_document:
+            if "tags" in self.model._fields:
+                self.tags += ["src:%s" % self.system]
+        else:
+            if any(f for f in self.model._meta.fields if f.name == "tags"):
+                self.tags += ["src:%s" % self.system]
+
+    @property
+    def is_document(self):
+        """
+        Returns True if model is Document, False - if Model
+        """
+        return hasattr(self.model, "_fields")
 
     def load_mappings(self):
         """
         Load mappings file
         """
         if self.model:
-            if isinstance(self.model._meta, dict):
+            if self.is_document:
                 self.update_document_clean_map()
+            else:
+                self.update_model_clean_map()
         if not os.path.exists(self.mappings_path):
             return
         self.logger.info("Loading mappings from %s", self.mappings_path)
@@ -186,7 +210,7 @@ class BaseLoader(object):
                 else:
                     # Removed
                     yield o, None
-                    o = getnext(o)
+                    o = getnext(old)
 
     def load(self):
         """
@@ -199,13 +223,34 @@ class BaseLoader(object):
             return
         current_state = csv.reader(self.get_current_state())
         new_state = csv.reader(ns)
+        deferred = []
         for o, n in self.diff(current_state, new_state):
             if o is None and n:
-                self.on_add(n)
+                try:
+                    self.on_add(n)
+                except self.Deferred:
+                    deferred += [n]
             elif o and n is None:
                 self.on_delete(o)
             else:
                 self.on_change(o, n)
+            rn = self.c_add + self.c_change + self.c_delete
+            if rn % self.REPORT_INTERVAL == 0:
+                self.logger.info("   ... %d records", rn)
+        # Load deferred record
+        while len(deferred):
+            nd = []
+            for row in deferred:
+                try:
+                    self.on_add(row)
+                except self.Deferred:
+                    deferred += [row]
+            if len(nd) == len(deferred):
+                raise Exception("Unable to defer references")
+            deferred = nd
+            rn = self.c_add + self.c_change + self.c_delete
+            if rn % self.REPORT_INTERVAL == 0:
+                self.logger.info("   ... %d records", rn)
 
     def create_object(self, v):
         """
@@ -213,6 +258,9 @@ class BaseLoader(object):
         data structures
         """
         o = self.model(**v)
+        if self.tags:
+            t = o.tags or []
+            o.tags = t + self.tags
         o.save()
         return o
 
@@ -231,8 +279,8 @@ class BaseLoader(object):
         Create new record
         """
         self.logger.debug("Add: %s", ";".join(row))
-        self.c_add += 1
         v = self.clean(row)
+        self.c_add += 1
         # @todo: Check record is already exists
         if self.fields[0] in v:
             del v[self.fields[0]]
@@ -326,13 +374,16 @@ class BaseLoader(object):
         value = value.lower()
         return value in ("t", "true", "y", "yes")
 
-    def clean_plain_reference(self, mappings, r_model, value):
+    def clean_reference(self, mappings, r_model, value):
         if not value:
             return None
         else:
             # @todo: Get proper mappings
-            value = mappings[value]
-            return r_model.objects.get(id=value)
+            try:
+                value = mappings[value]
+            except KeyError:
+                raise self.Deferred()
+            return self.chain.cache[r_model, value]
 
     def set_mappings(self, rv, lv):
         self.logger.debug("Set mapping remote: %s, local: %s", rv, lv)
@@ -351,16 +402,42 @@ class BaseLoader(object):
             elif isinstance(ft, (PlainReferenceField, ReferenceField)):
                 if fn in self.mapped_fields:
                     self.clean_map[fn] = functools.partial(
-                            self.clean_plain_reference,
+                            self.clean_reference,
                             self.chain.get_mappings(
                                     self.mapped_fields[fn]),
                             ft.document_type
                     )
 
+    def update_model_clean_map(self):
+        from django.db.models import BooleanField, ForeignKey
+        from noc.core.model.fields import DocumentReferenceField
+
+        for f in self.model._meta.fields:
+            if f.name not in self.clean_map:
+                continue
+            if isinstance(f, BooleanField):
+                self.clean_map[f.name] = self.clean_bool
+            elif isinstance(f, DocumentReferenceField):
+                if f.name in self.mapped_fields:
+                    self.clean_map[f.name] = functools.partial(
+                        self.clean_reference,
+                        self.chain.get_mappings(
+                            self.mapped_fields[f.name]),
+                        f.document
+                    )
+            elif isinstance(f, ForeignKey):
+                if f.name in self.mapped_fields:
+                    self.clean_map[f.name] = functools.partial(
+                        self.clean_reference,
+                        self.chain.get_mappings(
+                            self.mapped_fields[f.name]),
+                        f.rel.to
+                    )
+
     def check(self, chain):
         self.logger.info("Checking")
         # Get constraints
-        if hasattr(self.model, "_fields"):
+        if self.is_document:
             # Document
             required_fields = [
                 f.name
