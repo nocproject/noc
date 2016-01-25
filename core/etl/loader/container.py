@@ -65,7 +65,8 @@ class ContainerLoader(BaseLoader):
         o = self.model(
             name=v["name"],
             container=self.get_container(v["path"]).id,
-            model=self.get_model(v["model"])
+            model=self.get_model(v["model"]),
+            tags=self.tags
         )
         if v.get("lon") and v.get("lat"):
             o.set_data("geopoint", "x", v["lon"])
