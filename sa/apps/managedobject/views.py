@@ -63,14 +63,6 @@ class ManagedObjectApplication(ExtModelApplication):
         ]
     }
 
-    mrt_config = {
-        "console": {
-            "access": "console",
-            "map_script": "commands",
-            "timeout": 60
-        }
-    }
-
     DISCOVERY_JOBS = [
         ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
         ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob")

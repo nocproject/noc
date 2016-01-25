@@ -126,23 +126,26 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         me.cmdIndex = me.cmdHistory.length;
         // Display
         me.consoleOut(me.prompt + cmd);
-        NOC.mrt({
-            url: "/sa/managedobject/mrt/console/",
-            selector: me.currentRecord.get("id"),
-            mapParams: {
+        // me.loadMask.show();
+        Ext.Ajax.request({
+            url: "/sa/managedobject/" + me.currentRecord.get("id") + "/scripts/commands/",
+            method: "POST",
+            scope: me,
+            jsonData: {
                 commands: [cmd],
                 ignore_cli_errors: true
             },
-            loadMask: me,
-            scope: me,
-            success: function(result) {
-                var t = "Timed out.";
-                if(result) {
-                    t = result[0].result[0];
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                //me.loadMask.hide();
+                if(data.error) {
+                    me.consoleOut("%%%" + data.error);
+                } else {
+                    me.consoleOut(data.result);
                 }
-                me.consoleOut(t);
             },
             failure: function() {
+                me.loadMask.hide();
                 NOC.error("Failed to run command");
             }
         });
