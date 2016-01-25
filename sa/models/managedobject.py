@@ -23,6 +23,7 @@ from managedobjectprofile import ManagedObjectProfile
 from objectstatus import ObjectStatus
 from objectmap import ObjectMap
 from terminationgroup import TerminationGroup
+from service import Service
 from noc.main.models.pool import Pool
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
@@ -41,6 +42,7 @@ from noc.pm.models.probeconfig import probe_config
 from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete
+from noc.inv.models.object import Object
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http")]
@@ -72,6 +74,9 @@ class ManagedObject(Model):
 
     name = CharField("Name", max_length=64, unique=True)
     is_managed = BooleanField("Is Managed?", default=True)
+    container = DocumentReferenceField(
+        Object, null=True, blank=True
+    )
     administrative_domain = ForeignKey(
         AdministrativeDomain,
         verbose_name="Administrative Domain"
@@ -211,6 +216,8 @@ class ManagedObject(Model):
         "Max. Scripts",
         null=True, blank=True,
         help_text="Concurrent script session limits")
+    #
+    service = DocumentReferenceField(Service, null=True, blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 
