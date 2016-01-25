@@ -22,3 +22,6 @@ class AdminitstrativeDomainLoader(BaseLoader):
         "name",
         "parent"
     ]
+    mapped_fields = {
+        "parent": "administrativedomain"
+    }
