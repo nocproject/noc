@@ -32,7 +32,11 @@ class Object(Document):
     meta = {
         "collection": "noc.objects",
         "allow_inheritance": False,
-        "indexes": ["data", "container"]
+        "indexes": [
+            "data",
+            "container",
+            ("name", "container")
+        ]
     }
 
     name = StringField()
