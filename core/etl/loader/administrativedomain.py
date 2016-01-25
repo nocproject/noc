@@ -20,4 +20,5 @@ class AdminitstrativeDomainLoader(BaseLoader):
     fields = [
         "id",
         "name",
+        "parent"
     ]
