@@ -40,6 +40,7 @@ from noc.cm.models.objectfact import ObjectFact
 from noc.cm.engine import Engine
 from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
+from noc.core.script.loader import loader as script_loader
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -637,9 +638,13 @@ class ManagedObjectApplication(ExtModelApplication):
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         r = []
-        for s in sorted(o.profile.scripts):
-            script = o.profile.scripts[s]
-            interface = script.implements[0]
+        for s in o.scripts:
+            sn = o.profile_name + "." + s
+            script = script_loader.get_script(sn)
+            if not script:
+                self.logger.error("Failed to load script: %s", sn)
+                continue
+            interface = script.interface()
             ss = {
                 "name": s,
                 "has_input": any(interface.gen_parameters()),
@@ -655,36 +660,23 @@ class ManagedObjectApplication(ExtModelApplication):
     def api_run_script(self, request, id, name):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
-            return self.response_forbidden("Access denied")
-        if name not in o.profile.scripts:
-            return self.response_not_found("Script not found: %s" % name)
+            return {
+                "error": "Access denied"
+            }
+        if name not in o.scripts:
+            return {
+                "error": "Script not found: %s" % name
+            }
         params = self.deserialize(request.raw_post_data)
-        t = MapTask.create_task(o, name, params)
-        return t.id
-
-    @view(url="^(?P<id>\d+)/scripts/(?P<name>[^/]+)/(?P<task>\d+)/$",
-          method=["GET"], access="script", api=True)
-    def api_get_script_result(self, request, id, name, task):
-        o = self.get_object_or_404(ManagedObject, id=id)
-        if not o.has_access(request.user):
-            return self.response_forbidden("Access denied")
-        if name not in o.profile.scripts:
-            return self.response_not_found("Script not found: %s" % name)
-        t = self.get_object_or_404(MapTask, id=int(task))
-        if t.complete:
+        try:
+            result = o.scripts[name](**params)
+        except Exception, why:
             return {
-                "ready": True,
-                "max_timeout": 0,
-                "status": t.status == "C",
-                "result": t.script_result
+                "error": str(why)
             }
-        else:
-            return {
-                "ready": False,
-                "max_timeout": (t.stop_time - datetime.datetime.now()).seconds,
-                "result": None,
-                "status": False
-            }
+        return {
+            "result": result
+        }
 
     @view(url="(?P<id>\d+)/caps/$", method=["GET"],
           access="read", api=True)
