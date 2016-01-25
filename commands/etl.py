@@ -43,12 +43,10 @@ class Command(BaseCommand):
             # Add & Modify
             for l in chain:
                 l.load()
+                l.save_state()
             # Remove in reverse order
             for l in reversed(list(chain)):
                 l.purge()
-            # Save state
-            for l in chain:
-                l.save_state()
 
     def handle_extract(self, *args, **options):
         config = self.get_config()
