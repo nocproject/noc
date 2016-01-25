@@ -9,6 +9,7 @@
 ## Django modules
 from django.db import models
 ## NOC modules
+from noc.core.model.fields import TagsField
 
 
 class TerminationGroup(models.Model):
@@ -29,6 +30,7 @@ class TerminationGroup(models.Model):
     # 10 -- 10% oversubscription
     # -10  -- Reserve 10%
     # dynamic_oversub = models.IntegerField("Dynamic Oversub", default=0)
+    tags = TagsField("Tags", null=True, blank=True)
 
     def __unicode__(self):
         return self.name
