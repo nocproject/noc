@@ -235,7 +235,7 @@ class BaseLoader(object):
             else:
                 self.on_change(o, n)
             rn = self.c_add + self.c_change + self.c_delete
-            if rn % self.REPORT_INTERVAL == 0:
+            if rn > 0 and rn % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", rn)
         # Load deferred record
         while len(deferred):
