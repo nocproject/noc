@@ -58,7 +58,7 @@ logger = logging.getLogger(__name__)
 
 
 @full_text_search
-@probe_config
+#@probe_config
 @on_init
 @on_save
 @on_delete
@@ -854,7 +854,7 @@ class ManagedObject(Model):
         """
         Check and schedule discovery jobs
         """
-        if self.object_profile.enable_box_discovery:
+        if self.is_managed and self.object_profile.enable_box_discovery:
             Job.submit(
                 "discovery",
                 self.BOX_DISCOVERY_JOB,
@@ -868,7 +868,7 @@ class ManagedObject(Model):
                 key=self.id,
                 pool=self.pool.name
             )
-        if self.object_profile.enable_periodic_discovery:
+        if self.is_managed and self.object_profile.enable_periodic_discovery:
             Job.submit(
                 "discovery",
                 self.PERIODIC_DISCOVERY_JOB,

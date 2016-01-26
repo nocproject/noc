@@ -16,9 +16,14 @@ from noc.lib.validators import is_fqdn
 from noc.lib.stencil import stencil_registry
 from noc.pm.models.probeconfig import probe_config
 from noc.core.model.fields import TagsField
+from noc.core.model.decorator import on_save, on_init
+from noc.main.models.pool import Pool
+from noc.core.scheduler.job import Job
 
 
-@probe_config
+#@probe_config
+@on_init
+@on_save
 class ManagedObjectProfile(models.Model):
 
     class Meta:
@@ -148,3 +153,48 @@ class ManagedObjectProfile(models.Model):
 
     def get_probe_config(self, config):
         raise ValueError("Invalid config parameter '%s'" % config)
+
+    def on_save(self):
+        def iter_objects():
+            pool_ids = {}
+            for o_id, is_managed, pool_id in self.managedobject_set.values_list("id", "is_managed", "pool"):
+                pool = pool_ids.get(pool_id)
+                if not pool:
+                    pool = Pool.objects.get(id=pool_id)
+                    pool_ids[pool_id] = pool.name
+                yield o_id, is_managed, pool
+
+        if self.initial_data["enable_box_discovery"] != self.enable_box_discovery:
+            enable = self.enable_box_discovery
+            for mo_id, is_managed, pool in iter_objects():
+                if enable and is_managed:
+                    Job.submit(
+                        "discovery",
+                        "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                        key=mo_id,
+                        pool=pool
+                    )
+                else:
+                    Job.remove(
+                        "discovery",
+                        "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                        key=mo_id,
+                        pool=pool
+                    )
+        if self.initial_data["enable_periodic_discovery"] != self.enable_box_discovery:
+            enable = self.enable_periodic_discovery
+            for mo_id, is_managed, pool in iter_objects():
+                if enable and is_managed:
+                    Job.submit(
+                        "discovery",
+                        "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
+                        key=mo_id,
+                        pool=pool
+                    )
+                else:
+                    Job.remove(
+                        "discovery",
+                        "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
+                        key=mo_id,
+                        pool=pool
+                    )
