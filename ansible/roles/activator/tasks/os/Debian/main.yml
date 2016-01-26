@@ -1,6 +1,9 @@
 ---
 - name: Install Debian system packages
-  apt: name={{item}} update_cache=yes cache_valid_time=3600
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
   with_items:
     - libssh2-1
     - libssh2-1-dev
