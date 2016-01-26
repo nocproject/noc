@@ -29,7 +29,7 @@ class ORACLEExtractor(SQLExtractor):
             cursor.arraysize = int(self.config["arraysize"])
         # Fetch data
         self.logger.info("Fetching data")
-        query, params = self.get_sql()
-        cursor.execute(query, params)
-        for row in cursor:
-            yield row
+        for query, params in self.get_sql():
+            cursor.execute(query, params)
+            for row in cursor:
+                yield row
