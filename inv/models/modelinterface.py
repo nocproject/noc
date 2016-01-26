@@ -12,6 +12,7 @@ import os
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, UUIDField)
+import cachetools
 ## NOC modules
 from error import ModelDataError
 from noc.lib.utils import deep_copy
@@ -19,6 +20,8 @@ from noc.lib.escape import json_escape as q
 from noc.sa.interfaces.base import (StringParameter, BooleanParameter,
                                     FloatParameter, IntParameter,
                                     StringListParameter)
+
+attr_cache = cachetools.TTLCache(1000, 10)
 
 
 T_MAP = {
@@ -157,3 +160,15 @@ class ModelInterface(Document):
                         vv = [x.strip() for x in sorted(r) if x.strip()]
                     v[a.name] = T_MAP[a.type].clean(vv)
         return d
+
+    @classmethod
+    @cachetools.cached(attr_cache)
+    def get_interface_attr(cls, interface, key):
+        mi = ModelInterface.objects.filter(name=interface).first()
+        if not mi:
+            raise ModelDataError("Invalid interface '%s'" % interface)
+        attr = mi.get_attr(key)
+        if not attr:
+            raise ModelDataError("Invalid attribute '%s.%s'" % (
+                interface, key))
+        return attr
