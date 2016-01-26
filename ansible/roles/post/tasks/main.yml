@@ -8,4 +8,9 @@
     chdir: "{{ noc_root }}"
 
 - name: Start NOC node
-  service: name="{{ noc_system_service }}" state=restarted sleep=3 enabled=yes
+  service:
+    name: "{{ noc_system_service }}"
+    state: restarted
+    sleep: 3
+    enabled: yes
+  changed_when: False
