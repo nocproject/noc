@@ -15,7 +15,6 @@ from mongoengine.fields import (StringField, UUIDField,
 ## NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
-from noc.lib.collection import collection
 
 
 class Context(EmbeddedDocument):
@@ -85,7 +84,6 @@ class Rule(EmbeddedDocument):
         }
 
 
-@collection
 class ConnectionRule(Document):
     """
     Equipment vendor

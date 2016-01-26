@@ -15,10 +15,8 @@ from mongoengine.fields import (StringField, UUIDField, IntField,
 ## NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
-from noc.lib.collection import collection
 
 
-@collection
 class Layer(Document):
     meta = {
         "collection": "noc.layers",

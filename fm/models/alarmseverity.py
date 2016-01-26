@@ -15,10 +15,8 @@ from noc.main.models.style import Style
 from noc.lib.nosql import ForeignKeyField
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
-from noc.lib.collection import collection
 
 
-@collection
 class AlarmSeverity(Document):
     """
     Alarm severities

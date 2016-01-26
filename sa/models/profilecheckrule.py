@@ -15,12 +15,10 @@ from mongoengine.fields import (StringField, UUIDField, ObjectIdField,
 ## NOC modules
 from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json
-from noc.lib.collection import collection
 from noc.lib.text import quote_safe_path
 
 
 @category
-@collection
 class ProfileCheckRule(Document):
     meta = {
         "collection": "noc.profilecheckrules",

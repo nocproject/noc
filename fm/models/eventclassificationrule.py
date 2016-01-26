@@ -17,7 +17,6 @@ from datasource import DataSource
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.escape import json_escape as jq
 from noc.lib.text import quote_safe_path
-from noc.lib.collection import collection
 
 
 class EventClassificationRuleVar(EmbeddedDocument):
@@ -73,7 +72,6 @@ class EventClassificationPattern(EmbeddedDocument):
         return self.key_re == other.key_re and self.value_re == other.value_re
 
 
-@collection
 class EventClassificationRule(Document):
     """
     Classification rules

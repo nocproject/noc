@@ -18,7 +18,6 @@ import jinja2
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 from noc.lib.ip import IP
-from noc.lib.collection import collection
 
 
 class ActionParameter(EmbeddedDocument):
@@ -53,7 +52,6 @@ class ActionParameter(EmbeddedDocument):
         return r
 
 
-@collection
 class Action(Document):
     meta = {
         "collection": "noc.actions",
