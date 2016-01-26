@@ -229,7 +229,8 @@ class Scheduler(object):
         # Build increase/set operations
         now = datetime.datetime.now()
         set_op = {
-            Job.ATTR_STATUS: Job.S_WAIT
+            Job.ATTR_STATUS: Job.S_WAIT,
+            Job.ATTR_LAST: now
         }
         inc_op = {}
         if status:
