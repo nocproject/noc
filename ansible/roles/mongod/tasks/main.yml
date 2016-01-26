@@ -14,12 +14,16 @@
   notify: restart mongod-arbiter
   when: "'svc-mongod-arbiter' in group_names"
 
-- include: "os/{{ ansible_distribution }}/main.yml"
-
 - name: Generating mongo key file
   copy:
     src: "{{lookup('mongo_key', tower_data + '/mongo/mongo.key')}}"
     dest: "{{noc_root}}/var/etc/mongo/mongo.key"
+
+- include: "os/{{ ansible_distribution }}/main.yml"
+
+- name: Setting mongo.key permissions
+  file:
+    path: "{{noc_root}}/var/etc/mongo/mongo.key"
     owner: "{{mongo_user}}"
     mode: 0400
 
