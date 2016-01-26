@@ -126,7 +126,6 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         me.cmdIndex = me.cmdHistory.length;
         // Display
         me.consoleOut(me.prompt + cmd);
-        // me.loadMask.show();
         Ext.Ajax.request({
             url: "/sa/managedobject/" + me.currentRecord.get("id") + "/scripts/commands/",
             method: "POST",
@@ -137,7 +136,6 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
             },
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                //me.loadMask.hide();
                 if(data.error) {
                     me.consoleOut("%%%" + data.error);
                 } else {
@@ -145,7 +143,6 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
                 }
             },
             failure: function() {
-                me.loadMask.hide();
                 NOC.error("Failed to run command");
             }
         });
