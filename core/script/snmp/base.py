@@ -200,3 +200,38 @@ class SNMP(object):
         # Yield result
         for i in sorted(index):
             yield [".".join([str(x) for x in i])] + [t.get(i) for t in tables]
+
+    def join(self, oids, community_suffix=None, cached=False, join="left"):
+        """
+        Query list of tables, merge by oid index
+        Tables are records of:
+        * <oid>.<index> = value
+
+        join may be one of:
+        * left
+        * inner
+        * outer
+
+        Yield records of (<index>, <value1>, ..., <valueN>)
+        """
+        tables = [
+            self.get_table(o, community_suffix=community_suffix,
+                           cached=cached)
+            for o in oids
+        ]
+        if join == "left":
+            lt = tables[1:]
+            for k in sorted(tables[0]):
+                yield tuple([k + tables[0][k]] + [t.get(k) for t in lt])
+        elif join == "inner":
+            keys = set(tables[0])
+            for lt in tables[1:]:
+                keys &= set(lt)
+            for k in sorted(keys):
+                yield tuple([k] + [t.get(k) for t in tables])
+        elif join == "outer":
+            keys = set(tables[0])
+            for lt in tables[1:]:
+                keys |= set(lt)
+            for k in sorted(keys):
+                yield tuple([k] + [t.get(k) for t in tables])
