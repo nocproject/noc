@@ -21,6 +21,7 @@ from mongoengine.fields import ListField, EmbeddedDocumentField
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.serialize import json_decode
 from noc.lib.log import PrefixLoggerAdapter
+from noc.models import COLLECTIONS, get_model
 
 logger = logging.getLogger(__name__)
 
@@ -506,6 +507,13 @@ class Collection(object):
     @classmethod
     def setup(cls):
         from noc.settings import config
+        cls.COLLECTIONS = {}
+        cls.COLLECTION_ORDER = []
+        for c in COLLECTIONS:
+            cc = get_model(c)
+            cn = cc._meta["json_collection"]
+            cls.COLLECTIONS[cn] = cc
+            cls.COLLECTION_ORDER += [cn]
         for opt in config.options("i18n"):
             if opt.startswith("collections."):
                 cn = opt[12:]
@@ -527,51 +535,10 @@ class Collection(object):
         """
         yield (collection name, collection class)
         """
-        if not cls.COLLECTION_ORDER:
-            # Order collections on json_depends_on meta property
-            pending = []
-            for c in cls.COLLECTIONS:
-                d = cls.COLLECTIONS[c]
-                depends_on = d._meta.get("json_depends_on", [])
-                if depends_on:
-                    pending += [(c, depends_on)]
-                else:
-                    cls.COLLECTION_ORDER += [c]
-            while pending:
-                new_pending = []
-                for c, d in pending:
-                    if sum(1 for n in cls.COLLECTION_ORDER if n in d) == len(d):
-                        # All requirements match
-                        cls.COLLECTION_ORDER += [c]
-                    else:
-                        new_pending += [(c, d)]
-                if len(new_pending) == len(pending):
-                    raise RuntimeError("Cannot resolve collection dependencies")
-                else:
-                    pending = new_pending
         for o in cls.COLLECTION_ORDER:
             yield o
 
-
 Collection.setup()
-
-
-def collection(cls):
-    """
-    Decorator to denote JSON-synchronizable collections
-
-    @collection
-    class MyDocument(Document):
-        meta = {
-            "json_collection": ...
-        }
-    """
-    assert "json_collection" in cls._meta, "Class %s must have json_collection" % cls.__name__
-    cn = cls._meta["json_collection"]
-    logger.debug("Registering collection %s", cn)
-    Collection.COLLECTIONS[cn] = cls
-    return cls
-
 
 ##
 from noc.main.models.collectioncache import CollectionCache

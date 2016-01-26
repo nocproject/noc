@@ -11,10 +11,8 @@ from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, DictField)
 ## NOC modules
 from noc.lib.prettyjson import to_json
-from noc.lib.collection import collection
 
 
-@collection
 class SyntaxAlias(Document):
     meta = {
         "collection": "noc.syntaxaliases",

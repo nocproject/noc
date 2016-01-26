@@ -12,10 +12,8 @@ from mongoengine.fields import (StringField, BooleanField, URLField,
                                 UUIDField)
 ## NOC modules
 from noc.lib.prettyjson import to_json
-from noc.lib.collection import collection
 
 
-@collection
 class Vendor(Document):
     """
     Equipment vendor

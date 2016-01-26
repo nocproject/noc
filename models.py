@@ -81,7 +81,6 @@ _MODELS = {
     "main.DBTrigger": "noc.main.models.dbtrigger.DBTrigger",
     "main.DatabaseStorage": "noc.main.models.DatabaseStorage",
     "main.DocCategory": "noc.main.models.doccategory.DocCategory",
-    "main.FTSQueue": "noc.main.models.fts_queue.FTSQueue",
     "main.Favorites": "noc.main.models.favorites.Favorites",
     "main.Language": "noc.main.models.language.Language",
     "main.MIMEType": "noc.main.models.MIMEType",
@@ -136,7 +135,6 @@ _MODELS = {
     "inv.Coverage": "noc.inv.models.coverage.Coverage",
     "inv.CoveredBuilding": "noc.inv.models.coveredbuilding.CoveredBuilding",
     "inv.CoveredObject": "noc.inv.models.coveredobject.CoveredObject",
-    "inv.DiscoveryJob": "noc.inv.models.discoveryjob.DiscoveryJob",
     "inv.ForwardingInstance": "noc.inv.models.forwardinginstance.ForwardingInstance",
     "inv.Interface": "noc.inv.models.interface.Interface",
     "inv.InterfaceClassificationRule": "noc.inv.models.interfaceclassificationrule.InterfaceClassificationRule",
@@ -162,6 +160,8 @@ _MODELS = {
     "inv.UnknownModel": "noc.inv.models.unknownmodel.UnknownModel",
     "inv.Vendor": "noc.inv.models.vendor.Vendor",
     # sa models
+    "sa.Action": "noc.sa.models.action.Action",
+    "sa.ActionCommands": "noc.sa.models.action.ActionCommands",
     "sa.AdministrativeDomain": "noc.sa.models.administrativedomain.AdministrativeDomain",
     "sa.AuthProfile": "noc.sa.models.authprofile.AuthProfile",
     "sa.FailedScriptLog": "noc.sa.models.failedscriptlog.FailedScriptLog",
@@ -279,3 +279,29 @@ FTS_MODELS = [
     "vc.VC",
     "sa.ManagedObject"
 ]
+
+COLLECTIONS = [
+    "fm.SyntaxAlias",
+    "sa.Action",
+    "inv.Capability",
+    "pm.MetricType",
+    "fm.Enumeration",
+    "inv.ConnectionRule",
+    "inv.ConnectionType",
+    "inv.Vendor",
+    "fm.MIBAlias",
+    "gis.Layer",
+    "cm.ErrorType",
+    "fm.OIDAlias",
+    "inv.Technology",
+    "fm.MIBPreference",
+    "inv.ModelInterface",
+    "fm.AlarmSeverity",
+    "sa.ActionCommands",
+    "inv.ObjectModel",
+    "fm.AlarmClass",
+    "fm.EventClass",
+    "fm.EventClassificationRule",
+    "fm.CloneClassificationRule"
+]
+
