@@ -84,6 +84,7 @@ server {
 
     location / {
         proxy_pass http://noc-web;
+        proxy_read_timeout 900;
         gzip on;
         gzip_types text/css text/x-js;
         proxy_set_header Host $http_host;
