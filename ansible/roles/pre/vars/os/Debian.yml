@@ -30,4 +30,4 @@ nginx_log_dir: /var/log/nginx
 nginx_ssl_key_path: /etc/nginx/ssl/noc.key
 nginx_ssl_cert_path: /etc/nginx/ssl/noc.crt
 # APT settings
-apt_cache_valid_time: 3600
+apt_cache_valid_time: 86400
