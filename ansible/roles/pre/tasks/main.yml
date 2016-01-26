@@ -6,3 +6,4 @@
 - name: Stop NOC node
   service: name="{{ noc_system_service }}" state=stopped
   failed_when: False
+  changed_when: False
