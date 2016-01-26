@@ -222,7 +222,7 @@ class SNMP(object):
         if join == "left":
             lt = tables[1:]
             for k in sorted(tables[0]):
-                yield tuple([k + tables[0][k]] + [t.get(k) for t in lt])
+                yield tuple([k, tables[0][k]] + [t.get(k) for t in lt])
         elif join == "inner":
             keys = set(tables[0])
             for lt in tables[1:]:
