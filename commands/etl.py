@@ -22,6 +22,8 @@ class Command(BaseCommand):
         load_parser = subparsers.add_parser("load")
         # check command
         check_parser = subparsers.add_parser("check")
+        # diff command
+        diff = subparsers.add_parser("diff")
         # extract command
         extract_parser = subparsers.add_parser("extract")
 
@@ -81,6 +83,17 @@ class Command(BaseCommand):
             self.stdout.write("Summary:\n")
             self.stdout.write("\n".join(summary) + "\n")
         return 1 if n_errors else 0
+
+    def handle_diff(self, *args, **options):
+        from noc.core.etl.loader.chain import LoaderChain
+        config = self.get_config()
+        for system in config:
+            chain = LoaderChain(system["system"])
+            for d in system.get("data"):
+                chain.get_loader(d["type"])
+            # Check
+            for l in chain:
+                l.check_diff()
 
 if __name__ == "__main__":
     Command().run()

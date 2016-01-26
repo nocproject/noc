@@ -516,3 +516,22 @@ class BaseLoader(object):
         else:
             self.logger.info("No errors found")
         return n_errors
+
+    def check_diff(self):
+        def dump(cmd, row):
+            print "%s %s" % (cmd, ",".join(row))
+
+        print "--- %s.%s" % (self.chain.system, self.name)
+        ns = self.get_new_state()
+        if not ns:
+            return
+        current_state = csv.reader(self.get_current_state())
+        new_state = csv.reader(ns)
+        for o, n in self.diff(current_state, new_state):
+            if o is None and n:
+                dump("+", n)
+            elif o and n is None:
+                dump("-", o)
+            else:
+                dump("-", o)
+                dump("+", n)
