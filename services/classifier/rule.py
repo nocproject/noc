@@ -72,7 +72,7 @@ class Rule(object):
         c4 = []
         self.rxp = {}
         self.fixups = set()
-        self.profile = None
+        self.profile = r"^.*$"
         for x in rule.patterns:
             if clone_rule:
                 # Rewrite, when necessary

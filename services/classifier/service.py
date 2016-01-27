@@ -159,11 +159,7 @@ class ClassifierService(Service):
                         continue
             for rule in rs:
                 # Find profile restriction
-                if rule.profile:
-                    profile_re = rule.profile
-                else:
-                    profile_re = r"^.*$"
-                rx = re.compile(profile_re)
+                rx = re.compile(rule.profile)
                 for p in profiles:
                     if rx.search(p):
                         if rule.chain not in self.rules[p]:
