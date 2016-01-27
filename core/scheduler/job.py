@@ -12,8 +12,9 @@ import time
 ## Third-party modules
 import tornado.gen
 ## NOC modules
-from noc.lib.log import PrefixLoggerAdapter, TeeLoggerAdapter
+from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.debug import error_report
+from noc.lib.nosql import get_db
 
 logger = logging.getLogger(__name__)
 
