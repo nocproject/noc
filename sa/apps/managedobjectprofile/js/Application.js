@@ -53,13 +53,31 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     text: "Ping",
                     dataIndex: "enable_ping",
                     width: 50,
+                    renderer: function(value, meta, record) {
+                        var v = NOC.render.Bool(value);
+                        if(value) {
+                            v += " " + record.get("ping_interval");
+                        }
+                        return v
+                    }
+                },
+                {
+                    text: "Box",
+                    dataIndex: "enable_box_discovery",
+                    width: 50,
                     renderer: NOC.render.Bool
                 },
                 {
-                    text: "IPAM",
-                    dataIndex: "sync_ipam",
+                    text: "Periodic",
+                    dataIndex: "enable_periodic_discovery",
                     width: 50,
-                    renderer: NOC.render.Bool
+                    renderer: function(value, meta, record) {
+                        var v = NOC.render.Bool(value);
+                        if(value) {
+                            v += " " + record.get("periodic_discovery_interval");
+                        }
+                        return v
+                    }
                 },
                 {
                     text: "Objects",
