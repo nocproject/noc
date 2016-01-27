@@ -573,6 +573,9 @@ class BaseScript(object):
         if list_re is regular expression object, return a list of dicts (group name -> value),
             one dict per matched line
         """
+        if file:
+            with open(file) as f:
+                return f.read()
         command_submit = command_submit or self.profile.command_submit
         stream = self.get_cli_stream()
         r = stream.execute(cmd + command_submit)
