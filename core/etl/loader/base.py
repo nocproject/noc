@@ -220,6 +220,7 @@ class BaseLoader(object):
         ns = self.get_new_state()
         if not ns:
             self.logger.info("No new state, skipping")
+            self.load_mappings()
             return
         current_state = csv.reader(self.get_current_state())
         new_state = csv.reader(ns)
