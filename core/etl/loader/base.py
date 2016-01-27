@@ -66,6 +66,9 @@ class BaseLoader(object):
             "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
     )
 
+    # Discard records which cannot be dereferenced
+    discard_deferred = False
+
     REPORT_INTERVAL = 1000
 
     class Deferred(Exception):
@@ -230,7 +233,8 @@ class BaseLoader(object):
                 try:
                     self.on_add(n)
                 except self.Deferred:
-                    deferred += [n]
+                    if not self.discard_deferred:
+                        deferred += [n]
             elif o and n is None:
                 self.on_delete(o)
             else:
