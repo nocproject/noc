@@ -9,6 +9,8 @@
 
 ## Python modules
 from collections import defaultdict
+## Third-party modules
+import gridfs
 ## NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.sa.models.managedobject import ManagedObject
@@ -18,11 +20,28 @@ from noc.lib.debug import error_report
 from noc.lib.log import PrefixLoggerAdapter
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
+from noc.lib.log import TeeLoggerAdapter
+from noc.lib.nosql import get_db
 
 
 class MODiscoveryJob(PeriodicJob):
     model = ManagedObject
     use_offset = True
+
+    def __init__(self, *args, **kwargs):
+        super(MODiscoveryJob, self).__init__(*args, **kwargs)
+        self.out_log = []
+        self.logger = TeeLoggerAdapter(self.logger, self.out_log)
+
+    def schedule_next(self, status):
+        super(MODiscoveryJob, self).schedule_next(status)
+        key = "discovery-%s-%s" % (
+            self.attrs[self.ATTR_CLASS],
+            self.attrs[self.ATTR_KEY]
+        )
+        fs = gridfs.GridFS(get_db(), "noc.joblog")
+        fs.delete(key)
+        fs.put("\n".join(self.out_log), _id=key)
 
     def can_run(self):
         return self.object.is_managed

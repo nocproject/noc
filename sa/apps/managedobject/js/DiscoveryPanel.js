@@ -70,6 +70,10 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
                 {
                     name: "next_run",
                     type: "date"
+                },
+                {
+                    name: "jcls",
+                    type: "string"
                 }
             ]
         });
@@ -279,7 +283,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
         me.runSelectedButton.setDisabled(!canRun);
         me.stopSelectedButton.setDisabled(!canStop);
         if(records.length === 1) {
-            me.showLog(records[0].get("name"));
+            me.showLog(records[0].get("jcls"));
         }
     },
     //
@@ -288,9 +292,9 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
         me.logPanel.items.first().update("<pre>" + Ext.util.Format.htmlEncode(text) + "<pre>");
     },
     //
-    showLog: function(name) {
+    showLog: function(jcls) {
         var me = this,
-            url = "/sa/managedobject/" + me.currentRecord.get("id") + "/job_log/" + name + "/";
+            url = "/sa/managedobject/" + me.currentRecord.get("id") + "/job_log/" + jcls + "/";
         Ext.Ajax.request({
             url: url,
             method: "GET",
