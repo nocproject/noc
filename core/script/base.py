@@ -280,9 +280,11 @@ class BaseScript(object):
         """
         inline version for BaseScript.match
         """
+        if not self.version:
+            self.version = self.scripts.get_version()
         return self.compile_match_filter(*args, **kwargs)(
             self,
-            self.scripts.get_version()
+            self.version
         )
 
     def execute(self, **kwargs):
@@ -292,10 +294,11 @@ class BaseScript(object):
         """
         if self._execute_chain and not self.name.endswith(".get_version"):
             # Get version information
-            v = self.scripts.get_version()
+            if not self.version:
+                self.version = self.scripts.get_version()
             # Find and execute proper handler
             for f in self._execute_chain:
-                if f._match(self, v):
+                if f._match(self, self.version):
                     return f(self, **kwargs)
                 # Raise error
             raise self.NotSupportedError()
