@@ -44,6 +44,7 @@ class ManagedObjectLoader(BaseLoader):
         "object_profile": "managedobjectprofile",
         "segment": "networksegment",
         "termination_group": "terminationgroup",
+        "service_terminator": "terminationgroup",
         "container": "container"
     }
 
