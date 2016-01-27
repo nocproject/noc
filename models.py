@@ -178,6 +178,7 @@ _MODELS = {
     "sa.ReduceTask": "noc.sa.models.reducetask.ReduceTask",
     "sa.TerminationGroup": "noc.sa.models.terminationgroup.TerminationGroup",
     "sa.UserAccess": "noc.sa.models.useraccess.UserAccess",
+    "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
     # fm models
     "fm.ActiveAlarm": "noc.fm.models.activealarm.ActiveAlarm",
     "fm.ActiveEvent": "noc.fm.models.activeevent.ActiveEvent",
@@ -302,6 +303,7 @@ COLLECTIONS = [
     "fm.AlarmClass",
     "fm.EventClass",
     "fm.EventClassificationRule",
-    "fm.CloneClassificationRule"
+    "fm.CloneClassificationRule",
+    "sa.ProfileCheckRule"
 ]
 
