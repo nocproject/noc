@@ -32,15 +32,16 @@ class Outage(Document):
         return self.stop is None
 
     @classmethod
-    def register_outage(cls, object, status):
+    def register_outage(cls, object, status, ts=None):
         """
         Change current outage status
         :param cls:
         :param object: Managed Object
         :param status: True - if object is down, False - otherwise
+        :param ts: Effective event timestamp. None for current time
         :return:
         """
-        ts = datetime.datetime.now()
+        ts = ts or datetime.datetime.now()
         o = cls.objects.filter(object=object.id,
             start__lte=datetime.datetime.now()).order_by("-start").first()
         if o and o.is_active and not status:
