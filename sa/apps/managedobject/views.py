@@ -13,6 +13,8 @@ import os
 import datetime
 ## Django modules
 from django.http import HttpResponse
+## Third-party modules
+import gridfs
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.sa.models.managedobject import (ManagedObject,
@@ -41,6 +43,7 @@ from noc.cm.engine import Engine
 from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
+from noc.lib.nosql import get_db
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -227,7 +230,8 @@ class ManagedObjectApplication(ExtModelApplication):
             "status": o.get_status(),
             "last_run": None,
             "last_status": None,
-            "next_run": None
+            "next_run": None,
+            "jcls": None
         }]
 
         for name, jcls in self.DISCOVERY_JOBS:
@@ -241,10 +245,11 @@ class ManagedObjectApplication(ExtModelApplication):
                 "name": name,
                 "enable_profile": getattr(o.object_profile,
                                           "enable_%s_discovery" % name),
-                "status": job.get("s"),
-                "last_run": self.to_json(job.get("last")),
-                "last_status": job.get("ls"),
-                "next_run": self.to_json(job.get("ts"))
+                "status": job.get(Job.ATTR_STATUS),
+                "last_run": self.to_json(job.get(Job.ATTR_LAST)),
+                "last_status": job.get(Job.ATTR_LAST_STATUS),
+                "next_run": self.to_json(job.get(Job.ATTR_TS)),
+                "jcls": jcls
             }
             r += [d]
         return r
@@ -588,27 +593,19 @@ class ManagedObjectApplication(ExtModelApplication):
             "children": r
         }
 
-    @view(url="^(?P<id>\d+)/job_log/(?P<job>[a-zA-Z0-9_]+)/$", method=["GET"],
+    @view(url="^(?P<id>\d+)/job_log/(?P<job>\S+)/$", method=["GET"],
         access="read", api=True)
     def api_job_log(self, request, id, job):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        if not hasattr(self, "discovery_log_jobs"):
-            # Read config
-            self.discovery_log_jobs = None
-            config = SafeConfigParser()
-            config.read("etc/noc-discovery.conf")
-            if config.has_section("main") and config.has_option("main", "log_jobs"):
-                p = config.get("main", "log_jobs")
-                if os.path.isdir(p):
-                    self.discovery_log_jobs = p
-        if self.discovery_log_jobs:
-            p = os.path.join(self.discovery_log_jobs, job, id)
-            if os.path.exists(p):
-                with open(p) as f:
-                    return self.render_plain_text(f.read())
-        return self.render_plain_text("No data!")
+        fs = gridfs.GridFS(get_db(), "noc.joblog")
+        key = "discovery-%s-%s" % (job, o.id)
+        try:
+            f = fs.get(key)
+            return self.render_plain_text(f.read())
+        except gridfs.errors.NoFile:
+            return self.render_plain_text("No data")
 
     @view(url="^(?P<id>\d+)/interactions/$", method=["GET"],
           access="interactions", api=True)
