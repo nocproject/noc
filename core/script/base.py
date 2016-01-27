@@ -267,12 +267,16 @@ class BaseScript(object):
         """
         def wrap(f):
             # Append to the execute chain
-            f._match = x
+            if hasattr(f, "_match"):
+                old_filter = f._match
+                f._match = lambda self, v, old_filter=old_filter, new_filter=new_filter: new_filter(self, v) or old_filter(self, v)
+            else:
+                f._match = new_filter
             f._seq = cls._x_seq.next()
             return f
 
         # Compile check function
-        x = cls.compile_match_filter(*args, **kwargs)
+        new_filter = cls.compile_match_filter(*args, **kwargs)
         # Return decorated function
         return wrap
 
