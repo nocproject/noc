@@ -550,8 +550,8 @@ class ManagedObject(Model):
     def get_status(self):
         return ObjectStatus.get_status(self)
 
-    def set_status(self, status):
-        ObjectStatus.set_status(self, status)
+    def set_status(self, status, ts=None):
+        ObjectStatus.set_status(self, status, ts=None)
 
     def get_inventory(self):
         """
