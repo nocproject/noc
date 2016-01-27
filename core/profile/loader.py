@@ -78,7 +78,7 @@ class ProfileLoader(object):
         """
         Scan all available profiles
         """
-        ns = set()
+        ns = set(["Generic.Host"])
         for path in glob.glob("sa/profiles/*/*/__init__.py"):
             vendor, system = path.split(os.sep)[-3:-1]
             ns.add("%s.%s" % (vendor, system))
