@@ -566,7 +566,7 @@ class ManagedObject(Model):
         """
         Schedule box discovery
         """
-        if not self.object_profile.enable_box_discovery:
+        if not self.object_profile.enable_box_discovery or not self.is_managed:
             return
         logger.debug("[%s] Scheduling box discovery after %ds",
                      self.name, delta)
